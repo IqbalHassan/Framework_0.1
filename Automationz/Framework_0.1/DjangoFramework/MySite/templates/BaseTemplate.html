@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- Above code is for adding HTML5 and XHTML to your html code. Copy paste to your other html files -->
+<head>
+		
+		<title>{% block title %} {% endblock %}</title>
+		<link rel="stylesheet" type="text/css" href="/site_media/CSS-Style-Sheet.css" />
+		
+		
+		<!-- Google CDN file   https://developers.google.com/speed/libraries/devguide#jquery -->
+		 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+		
+		<!-- JQuery UI Files http://jqueryui.com/themeroller/ -->
+		<link type="text/css" href="/site_media/Jquery/jquery-ui-1.8.23.Dot Luv/css/custom-theme/jquery-ui-1.8.23.custom.css" rel="Stylesheet" /> 
+		<script type="text/javascript" src="/site_media/Jquery/jquery-ui-1.8.23.Dot Luv/js/jquery-1.8.0.min.js"></script>
+		<script type="text/javascript" src="/site_media/Jquery/jquery-ui-1.8.23.Dot Luv/js/jquery-ui-1.8.23.custom.min.js"></script>
+		
+		<!-- JQuery URL Address plug In Files http://www.asual.com/jquery/address/ -->
+		<script type="text/javascript" src="/site_media/Jquery/jquery.address-1.4/jquery.address-1.4.js"></script>
+		<script type="text/javascript" src="/site_media/Jquery/jquery.address-1.4/jquery.address-1.4.min.js"></script>
+		
+		<!-- JQuery Spager for controlling table data plug http://code.google.com/p/spager/downloads/detail?name=jquery.spager.js -->
+		<script type="text/javascript" src="/site_media/Jquery/Spager_Controll_TableData.js"></script>
+		
+		<!-- JQuery Local Files -->
+		<script type="text/javascript" src="/site_media/Jquery/Local/JQuery.js"></script>
+		<script type="text/javascript" src="/site_media/Jquery/Local/RunTest.js"></script>
+		<script type="text/javascript" src="/site_media/Jquery/Local/Daily_Build.js"></script>
+		<script type="text/javascript" src="/site_media/Jquery/Local/MKS_Report.js"></script>
+		<script type="text/javascript" src="/site_media/Jquery/Local/Performance.js"></script>
+		<script type="text/javascript" src="/site_media/Jquery/Local/Analysis.js"></script>
+		<script type="text/javascript" src="/site_media/Jquery/Local/Execution_Report.js"></script>
+		
+		
+</head>
+
+	
+	<body id = "BaseTempBody"  >
+	
+	
+	<div id = "Main_Heading_And_Menu">
+		<!-- Top Row data (logo and Heading) -->
+		<table id = "TopRowTable"  >
+		  <tr>
+		  	<th id = "MainPageHeading" >  <a>Link Automation </a></th>
+		  </tr>
+        <!-- Second row data ( Tabs ) -->
+		  <tr>
+		    <td id = "MainTabs"  >
+			    <ul id = "MainTabDiv">
+			    	<li>	
+			    		<a href = "/Home/"  class = 'MainManu'> Home &nbsp;</a>
+				    	
+			    	</li>
+			    	
+			    	<li>	
+			    		<a href = "/Home/ManageTestCases/"  class = 'MainManu'> Manage Test Case &nbsp;</a>
+				    	
+			    	</li>
+			    			
+			    	<li>
+			    		<a  href = "/Home/RunTest/" class = 'MainManu'> Run &nbsp;</a>
+			    			
+			    	</li>
+			    			 
+			    	<li>
+			    		<a  href = "/Home/Search/" class = 'MainManu'> Result &nbsp;</a>
+			    				
+			    	</li>
+			    			
+			    	<li>
+			    	 	<a  href = "/Home/Performance/" class = 'MainManu'> Performance &nbsp; </a>
+			    		 	
+			    	 </li>
+			    	
+			    	<!-- 
+			    	<li>
+			    		<a  href = "/Home/MKS-Report/" class = 'MainManu'> MKSReport &nbsp; </a>
+			    			
+			    	</li>
+			    	 
+			    	
+			    	<li>
+			    		<a  href = "/Home/Analysis/" class = 'MainManu'> Analysis &nbsp; </a>
+			    			
+			    	</li>
+			    	-->		
+			    	<li>
+			    		<a  href = "/Home/Documentation/" class = 'MainManu'> Documentation &nbsp; </a>
+			    			
+			    	</li>	
+			    	
+			    	<li>
+			    		<a  href = "/Home/ExecutionReport/" class = 'MainManu'> Reports &nbsp; </a>
+			    			
+			    	</li>	
+			    		
+			    
+			    </ul>
+			    
+		     </td>
+		     
+		  </tr>
+		  
+		</table>
+	</div>
+	
+	<!-- 	<p class="flip" style="margin-left:; width:99%"  >Show/Hide Menu</p>
+	<p> &nbsp; </p>
+	<div class="dialog" style="display: block;" >
+	
+	
+		
+	</div> -->
+	
+
+		
+		{% block content %} {% endblock %}
+		
+		<!-- Bottom data ( footer ) -->
+		<p id = "footer"  >
+	
+				<a>&#174; COPYRIGHT 2013 ALL RIGHTS RESERVED BLACKBERRY</a>
+		</p>
+	</body>
+</html>
+
+
+
+
+

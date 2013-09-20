@@ -1,0 +1,256 @@
+ 
+{% extends "BaseTemplate.html" %}
+	
+	
+	{% block title%} Test Results {% endblock %}	
+		
+	{% block content %}	
+<script type="text/javascript" src="/site_media/Jquery/Local/SearchResult.js"></script>
+
+
+
+			<!---------------- Main Result Table  ---------------------------->
+			<h1 id = 'LoadingText' style = "display: block" align="middle">  Loading. . . </h1>
+			
+			<div id = "Search_Result_Table" align="middle">
+		
+				<!--   <img src="/site_media/loading_animation.gif" height="300" width="300"/> --> 	
+				
+				
+			</div>
+
+			<!---------------- Environment Details Table ---------------------------->
+			<p class='flip' title = 'Environment Details'> Environment Details </p>
+				<div id = 'EnvironmentDetailsTable' style="display: none;">
+			
+				</div>
+				
+			
+			<!---------------- All Test Cases Table ---------------------------->
+			<p>&nbsp; </p>
+			<p class='flip' title = 'All Test Cases'> All Test Cases </p>
+				<div id = 'AllTestCasesTable' style="display: none;">
+			
+				</div>
+			
+			
+			<!---------------- Pass Test Cases Table ---------------------------->
+			<p>&nbsp; </p>	
+			<p class='flip' title = 'Passed Test Cases'>Passed Test Cases </p>
+				<div id = 'PassTestCasesTable' style="display: none;" >
+			
+				</div>
+			
+			
+			<!---------------- Fail Test Cases Table ---------------------------->
+			<p>&nbsp; </p>
+			<p class='flip' title = 'Failed Test Cases'>Failed Test Cases </p>
+		
+				<div id = 'FailTestCasesTable' style="display: none;">
+		
+				</div>
+			<p style ="margin-left: 30px; font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="Failed"> Re-Run Failed </p>		
+			<p style =" font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="Pending"> Re-Run Pending </p>		
+			<p style ="font-size: small; width:250px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="FailedAndPending"> Re-Run Failed + Pending </p>		
+			
+			<!---------------- Failed Steps Table ---------------------------->
+			<p>&nbsp; </p>		
+			<p class='flip' title = 'Failed Steps' >Common Failed Steps</p>
+		
+			<div id = 'FailedStepsTable' style="display: none; ">
+	
+			</div>
+							
+		
+		<!--  include "ResultTable.html" %}   -->
+		
+		
+		
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+
+			
+			
+	{% endblock %}
+	
+	
+	
+	
+	<!---------- Second Tab Manu Code 	
+<table id = "SecondTabManu"   >
+	<tbody>
+		<tr>
+		   <td>
+				<form action="." method = "GET">
+				
+						<p> <font color="#FFFFFF">&nbsp;</font>  </p>
+						
+						<a  href = "javascript:history.back()">
+			    			<img src="/site_media/reset.png"   alt="RunTest" title="Back"/>
+			    			
+			    		</a>
+			    		
+			    		<a  href = "javascript:location.reload(true)">
+			    			<img src="/site_media/refresh.png"  alt="RunTest" title="Refresh"/>
+			    			
+			    		</a>
+				
+						
+						<input  name = "search" type="image" src = "/site_media/search.png"   title="Search"   value="Search" />
+					
+			</td>
+		</tr>
+	</tbody>
+</table>	
+		<p> </p>
+		
+------------->	
+
+
+<!--  	
+<table border="1" cellpadding="5" cellspacing="2" style="background-color:#000033; color: white;"; width: 500 px;">
+	<tbody>					
+			<tr>
+			
+					{% if runid_count %}
+					
+					  	<!--  Tester ID drop down 
+						{% include "DropDown.html" with BoxName="Tester ID:" DropDownName="tstrid" MyList=tester_id %}
+						
+					
+						<!-- Test Set Name drop down 
+						{% include "DropDown.html" with BoxName="Test Set Name:" DropDownName="tstsetname" MyList=testset_name %}
+					
+						
+						<!-- Bundle No drop down 
+						{% include "DropDown.html" with BoxName="Bundle No:" DropDownName="bundle" MyList=bundle_no %}
+					 
+					{% endif %}
+					
+					
+						<!-- Run ID drop down 
+						{% include "DropDown.html" with BoxName="Run ID:" DropDownName="runid" MyList=run_id %}
+					
+			</tr>
+				
+				
+				
+					<!-- Test Case Name drop down 
+					{% if tc_id_count %}
+			<tr>		
+							{% include "DropDown.html" with BoxName="Test Case Name:" DropDownName="tcid" MyList=tc_id %}
+							
+			</tr>
+							
+							
+					{% endif %}
+					
+					
+					<!-- Failed Test Case Name drop down 
+					{% if FailedTCID %}
+			
+			<tr>		
+							{% include "DropDown.html" with BoxName="Failed Test Case Name:" DropDownName="failtcid" MyList=FailedTCID %}
+			</tr>				
+					{% endif %}
+								
+			
+					
+			
+			
+			
+					{% if test_steps_count %}
+					
+							<!-- Test Steps Name Drop down 
+							
+							{% include "DropDown.html" with BoxName="Test Steps Name:" DropDownName="test_steps" MyList=test_steps %}
+					
+					{% endif %}
+			
+			
+					
+	
+			<tr> 
+					{% if FaildSteps %}	
+							<!-- Faild Steps Selection Box 
+							
+							{% include "DropDown.html" with BoxName="Faild Steps:" DropDownName="faildstep" MyList=FaildSteps %}
+					{% endif %}		
+			</tr>
+					
+					
+			 <tr> 
+						
+					{% if emailnotification != "All" and emailnotification != "" %}
+							<!-- Email Id Selection Box 
+									
+							{% include "DropDown.html" with BoxName="Select Email Id For  Above Run Id Notification" DropDownName="email_id" MyList=email_id Button="Add" %}
+					
+					{% endif %}				
+			  </tr>
+					
+					
+			
+			</form>
+			
+			
+			<tr>
+				<td>
+					
+					<h3 style="color: silver; text-align: center;text-decoration: underline;">Result For Following Selected Data</h3>
+					{% if emailforheading != "" and emailforheading != "None" %} 
+						<p> {{emailforheading}} has been added!<p>
+					{% endif %}
+					
+					{% if TesterIdForHeading  %}
+					<p> Tester id =  "{{TesterIdForHeading}}" 
+					{% endif %}
+					
+					{% if DescriptionForHeading %}
+						<p> Test Set = "{{DescriptionForHeading}}" <p>
+					{% endif %}
+					
+					{% if TestRunIdForHeading %}
+						<p> Test Run Id = "{{TestRunIdForHeading}}" </p>
+					{% endif %}
+					
+					{% if TestCaseIdForHeading != "None" and  TestCaseIdForHeading != "" %}
+						<p> Test Case Name = "{{TestCaseIdForHeading}}" <p>
+						
+					{% endif %}
+					
+					
+					{% if TestCaseStepForHeading != "None" and  TestCaseStepForHeading != "" %}
+						<p> Test Step Name = "{{TestCaseStepForHeading}}" <p>
+						
+					{% endif %}
+										
+					{% if FailedTestCaseForHeading != "None" and  FailedTestCaseForHeading != "" %}
+						<p> Failed Test Case Name = "{{FailedTestCaseForHeading}}" <p>
+						
+					{% endif %}
+					
+					{% if FailedTestStepForHeading != "None" and  FailedTestStepForHeading != "" %}
+						<p> Failed Test Step = "{{FailedTestCaseForHeading}}" <p>
+						
+					{% endif %}
+					
+					
+				</td>	
+		  </tr>
+		
+		
+		
+	</tbody>					
+</table>				-->	

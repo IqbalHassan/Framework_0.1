@@ -1,0 +1,35 @@
+
+{% if result  %}
+		 
+			<table id = "ResultTable" >
+				<tbody>
+					<tr>
+						{% for Cname in ColumnNames %}
+						<th>{{Cname}}</th>
+						{% endfor %}
+					</tr>
+					{% for item in result %}
+		    			<tr > 
+		    			{% for L in item %}
+		    			
+		    				{% if "/" in L %}
+		    					<td > <font style="background:silver; color:black">{{L}}</font></td>
+		    				
+		    				{% else %} {% if "In-Progress" in L %}
+		    						<td style="text-align: center; background-color: None" > <img src="/site_media/InProgress.gif" width="80%"/> </td>
+		    						
+		    						
+		    						
+		    				{% else %}
+		    					<td align = "center" >{{L}}</td>
+		    				{% endif %} {% endif %} 
+		    				
+		    			{% endfor %}
+		    			 </tr>
+					{% endfor %}
+				</tbody>
+		
+			</table>
+		{% else %}
+		<h2 style = "color: #380000 ">Sorry! There is no data for selected items.</h2>
+{% endif %}
