@@ -125,10 +125,11 @@ def ProductSectionsCreated(request):
         sections_string = ''
         for i in range(len(sections) - 1):
             if sections[i].strip() != '':
-                sections_string += sections[i] + "."
-        if sections[4].strip() != '':
-            sections_string += sections[4];
-        conn = GetConnection();
+                if sections_string != '':
+                    sections_string += "."
+                sections_string += sections[i]
+        sections_string.strip()
+        conn = GetConnection()
         if sections_string:
             DB.InsertNewRecordInToTable(conn, "product_sections", section_path=sections_string)
         print (sections_string)

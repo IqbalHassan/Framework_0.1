@@ -2,8 +2,23 @@
 {% block title%} Create/Edit Test Case{%endblock%} 
 {% block content %}
 
-<script type="text/javascript"
-	src="/site_media/Jquery/Local/CreateTest.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/Local/CreateTest.js"></script>
+<script src="/site_media/Jquery/js/jquery-1.7.2.js"></script>
+<script src="/site_media/Jquery/development-bundle/ui/jquery.ui.core.js"></script>
+<script src="/site_media/Jquery/development-bundle/ui/jquery.ui.widget.js"></script>
+<script src="/site_media/Jquery/development-bundle/ui/jquery.ui.accordion.js"></script>
+
+<script>
+$(function() {
+	$( "#accordion" ).accordion({
+		collapsible: true,
+		clearStyle: true,
+		header: 'h6'
+	});
+});
+
+</script>
+
 
 <p class='text' id="question_text" style="color: black; display: block; font-family: Arial, sans-serif; font-size: 25px; font-weight: 900; text-align: center">
 	<a>Please enter the test case details.</a>
@@ -11,164 +26,282 @@
 
 <label id="TC_Id" class="new_tc_form Text" style="display:none; text-align: center;"></label>
 
-<form id="tc_enable" class="new_tc_form" style="display: none;height:30px;">
-	<b class="Text">Status:</b> <br>
-	<div style="text-align: center; position:relative;top:-22px">
-		<input id="Enable_radio" type="radio" name="Status" value="Production" style="width:auto"> 
-		<label for="Enable_radio">Enabled</label> &nbsp; &nbsp;
-		<input id="Disable_radio" type="radio" name="Status" value="Development" style="width:auto"> 
-		<label for="Disable_radio">Disabled</label>
-	</div>
-</form>
-
-<div id="sectiongroup" class="new_tc_form" style="text-align: center;width: 1000px;">
-	<span style="color: #f00">*</span><label class="new_tc_form Text" style="text-align: center;"><b>Section:</b></label>
-	<select class="section" data-level="" id="1">
-		<option>Choose...</option>
-	</select>
-</div>
-
 <form id="tc_title" class="new_tc_form">
-	<span style="color: #f00">*</span><b class="Text">Title:</b> <br>
-	<input class="ui-corner-all ui-autocomplete-input" id="title_txtbox" type="text"
-		title="Enter the reference MKS/JIRA id" name="searchboxname" autocomplete="off">
-	<br>
-</form>
-<form id="tc_platform" class="new_tc_form" style="height:30px;">
-	<span style="color: #f00">*</span><b class="Text">Platform:</b> <br>
-	<div style="text-align: center; position:relative;top:-22px">
-		<input id="PC_radio" type="radio" name="platform" value="PC" style="width:auto"> 
-		<label for="PC_radio">PC</label> &nbsp; &nbsp;
-		<input id="MAC_radio" type="radio" name="platform" value="MAC" style="width:auto"> 
-		<label for="MAC_radio">Mac</label>
-	</div>
-</form>
-
-<form id="tc_applicable_client" class="new_tc_form">
-	<span style="color: #f00">*</span><b class="Text">Dependancy:</b> <br>
-	<div style="text-align: center;">
-		<input type="checkbox" name="dependancy" value="Outlook" style="width:auto">
-		<label>Outlook</label>
-		<input type="checkbox" name="dependancy" value="MacNative" style="width:auto">
-		<label>MacNative</label>
-		<input type="checkbox" name="dependancy" value="iTunes" style="width:auto">
-		<label>iTunes</label><br>
-		<input type="checkbox" name="dependancy" value="iPhoto" style="width:auto">
-		<label>iPhoto</label>
-		<input type="checkbox" name="dependancy" value="BBX" style="width:auto">
-		<label>BBX</label>
-		<input type="checkbox" name="dependancy" value="SD" style="width:auto">
-		<label>SD</label>
-	</div>
-</form>
-
-<form id="tc_type" class="new_tc_form" style="height:30px;">
-	<span style="color: #f00">*</span><b class="Text">Type:</b> <br>
-	<div style="text-align: center; position:relative;top:-22px">
-		<input id="smoke_check" type="checkbox" name="type" value="smoke" style="width:auto"> 
-		<label for="smoke_check">Smoke</label>&nbsp; &nbsp;
-		<input id="si_check" type="checkbox" name="type" value="si" style="width:auto"> 
-		<label for="si_check">SI</label>&nbsp; &nbsp;
-		<input id="svv_check" type="checkbox" name="type" value="svv" style="width:auto"> 
-		<label for="svv_check">SVV</label>
-	</div>
-	<br>
-</form>
-
-<form id="tc_priority" class="new_tc_form">
-	<b class="Text">Priority:</b> <br>
-	<div style="text-align: center;">
-		<select id="priotiy_select" name="priority" style="width:100%"> 
-			<option value="1">1 (Highest)</option>
-			<option value="2">2</option>
-			<option value="3">3</option>
-			<option value="4">4</option>
-			<option value="5">5</option>
-		</select>
-	</div>
-	<br>
-</form>
-
-<form id="tc_assoc" class="new_tc_form">
-	<b class="Text">Defect ID(s):</b> <br>
-	<input class="ui-corner-all ui-autocomplete-input" id="defectid_txtbox" type="text"
-		name="searchboxname" autocomplete="off">
-	<br>
-</form>
-
-<form id="tc_id" class="new_tc_form">
-	<b class="Text">Test Case ID(s):</b><br>
-	<input class="ui-corner-all ui-autocomplete-input" id="id_txtbox" type="text"
-		name="searchboxname" autocomplete="off">
-	<br>
-</form>
-<form id="req_id" class="new_tc_form">
-	<b class="Text">Requirement ID(s):</b><br>
-	<input class="ui-corner-all ui-autocomplete-input" id="reqid_txtbox" type="text"
-		name="searchboxname" autocomplete="off">
-	<br>
-</form>
-<form id="tc_tag" class="new_tc_form">
-	<b class="Text">Tag(s):</b> <br>
-	<input class="ui-corner-all ui-autocomplete-input" id="tag_txtbox" type="text"
-		name="searchboxname" autocomplete="off">
-	<br>
-</form>
-
-<table class="new_tc_form" style="width: 300px">
-	<tbody>
+	<table>
 		<tr>
-			<td id="searchedtag"></td>
+			<td class="tc_form_label_col">
+				<span class="tc_form_required_field">*</span><b class="Text">Title:</b>
+			</td>
+			<td class="tc_form_input_col">
+				<input class="ui-corner-all ui-autocomplete-input" id="title_txtbox" type="text"
+					title="Enter the reference MKS/JIRA id" name="searchboxname" autocomplete="off">
+			</td>
 		</tr>
-	</tbody>
-</table>
+	</table>
+</form>
+		
+<div id="accordion" style="width:600px;background=transparent;margin-left:auto;margin-right:auto;" >
 
-<!--  <table id="tc_step1" class="new_tc_form" style="display: none;">
-		<tbody>
-			<tr>
-				<td><label> <b class="Text">Step 1: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
-				</label>
-				<input class="ui-corner-all ui-autocomplete-input" id="step1_txtbox"
-					style="margin-left: -2%" type="text"
-					title="Enter the reference MKS/JIRA id"
-					name="searchboxname" autocomplete="off">
-				</td>
-			</tr>
-		</tbody>
-	</table>-->
+	<!-- Begin section 1 -->
+	<h6><a href="#">Properties</a></h6>
+	<div>
+		
+		<form id="tc_enable" class="new_tc_form">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<b class="Text">Status:</b>
+					</td>
+					<td class="tc_form_input_col">
+						<table width="100%">
+							<tr>
+								<td width="50%">
+									<input id="Enable_radio" type="radio" name="Status" value="Production" style="width:auto"> 
+									<label for="Enable_radio">Enabled</label> &nbsp; &nbsp;
+								</td>
+								<td width="50%">
+									<input id="Disable_radio" type="radio" name="Status" value="Development" style="width:auto" checked="true"> 
+									<label for="Disable_radio">Disabled</label>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</form>
+		
+		<div class="new_tc_form" style="text-align: center;width: 500px;">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<span class="tc_form_required_field">*</span><b class="Text">Section:</b>
+					</td>
+					<td class="tc_form_input_col" id="sectiongroup" align="left">
+						<select class="section" data-level="" id="1">
+							<option>Choose...</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<HR class="tc_form_divider"/>
+		
+		<form id="tc_platform" class="new_tc_form">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<label><span class="tc_form_required_field">*</span><b class="Text">Platform:</b></label>
+					</td>
+					<td class="tc_form_input_col">
+						<table width="100%">
+							<tr>
+								<td width="50%">
+									<input id="PC_radio" type="checkbox" name="platform" value="PC" style="width:auto">
+									<label for="PC_radio">PC</label>
+								</td>
+								<td width="50%">
+									<input id="MAC_radio" type="checkbox" name="platform" value="MAC" style="width:auto">
+									<label for="MAC_radio">Mac</label>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</form>
+		
+		<form id="tc_applicable_client" class="new_tc_form">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<label><span class="tc_form_required_field">*</span><b class="Text">Dependency:</b></label>
+					</td>
+					<td class="tc_form_input_col">
+						<table width="100%">
+							<tr>
+								<td width="50%">
+									<input id="Outlook" type="checkbox" name="dependancy" value="Outlook" style="width:auto">
+									<label for="Outlook">Outlook</label>
+								</td>
+								<td width="50%">
+									<input id="MacNative" type="checkbox" name="dependancy" value="MacNative" style="width:auto">
+									<label for="MacNative">MacNative</label>
+								</td>
+							</tr>
+							<tr>
+								<td width="50%">
+									<input id="iTunes" type="checkbox" name="dependancy" value="iTunes" style="width:auto">
+									<label for="iTunes">iTunes</label>
+								</td>
+								<td width="50%">
+									<input id="iPhoto" type="checkbox" name="dependancy" value="iPhoto" style="width:auto">
+									<label for="iPhoto">iPhoto</label>
+								</td>
+							</tr>
+							<tr>
+								<td width="50%">
+									<input id="BBX" type="checkbox" name="dependancy" value="BBX" style="width:auto">
+									<label for="BBX">BBX</label>
+								</td>
+								<td width="50%">
+									<input id="SD" type="checkbox" name="dependancy" value="SD" style="width:auto">
+									<label for="SD">SD</label>
+								</td>
+							</tr>
+						</table>
+					</td>
+			</table>
+		</form>
+		
+		<form id="tc_type" class="new_tc_form">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<span class="tc_form_required_field">*</span><b class="Text">Type:</b>
+					</td>
+					<td class="tc_form_input_col">
+						<table width="100%">
+							<tr>
+								<td width="50%">
+									<input id="smoke_check" type="checkbox" name="type" value="smoke" style="width:auto" />
+									<label for="smoke_check">Smoke</label>
+								</td>
+								<td width="50%">
+									<input id="si_check" type="checkbox" name="type" value="si" style="width:auto" />
+									<label for="si_check">SI</label>
+								</td>
+							</tr>
+							<tr>
+								<td width="50%">
+									<input id="svv_check" type="checkbox" name="type" value="svv" style="width:auto" />
+									<label for="svv_check">SVV</label>
+								</td>
+							</tr>
+						</table>
+					</td>
+				<tr>
+			</table>
+		</form>
+		
+		<form id="tc_tag" class="new_tc_form">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<b class="Text">Tag(s):</b> <br>
+					</td>
+					<td class="tc_form_input_col">
+						<input class="ui-corner-all ui-autocomplete-input" id="tag_txtbox" type="text"
+							name="searchboxname" autocomplete="off">
+				</tr>
+			</table>
+		</form>
+		
+		<HR class="tc_form_divider"/>
+		
+		<form id="tc_priority" class="new_tc_form">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<b class="Text">Priority:</b> <br>
+					</td>
+					<td class="tc_form_input_col">
+						<div style="text-align: center;">
+							<select id="priotiy_select" name="priority" style="width:100%"> 
+								<option value="1">1 (Highest)</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+							</select>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</form>
+		
+		<form id="tc_assoc" class="new_tc_form">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<b class="Text">Defect ID(s):</b>
+					</td>
+					<td class="tc_form_input_col">
+						<input class="ui-corner-all ui-autocomplete-input" id="defectid_txtbox" type="text"
+							name="searchboxname" autocomplete="off">
+					</td>
+				</tr>
+			</table>
+		</form>
+		
+		<form id="tc_id" class="new_tc_form">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<b class="Text">Test Case ID(s):</b>
+					</td>
+					<td class="tc_form_input_col">
+						<input class="ui-corner-all ui-autocomplete-input" id="id_txtbox" type="text"
+							name="searchboxname" autocomplete="off">
+				</tr>
+			</table>
+		</form>
+		
+		<form id="req_id" class="new_tc_form">
+			<table>
+				<tr>
+					<td class="tc_form_label_col">
+						<b class="Text">Requirement ID(s):</b>
+					</td>
+					<td class="tc_form_input_col">
+						<input class="ui-corner-all ui-autocomplete-input" id="reqid_txtbox" type="text"
+							name="searchboxname" autocomplete="off">
+				</tr>
+			</table>
+		</form>
+		
+		<table class="new_tc_form" style="width: 300px">
+			<tbody>
+				<tr>
+					<td id="searchedtag"></td>
+				</tr>
+			</tbody>
+		</table>
+		
+	</div>
+	<!-- End section 1 -->
 
-<p class='new_tc_form' style="color: black; text-align:center; font-family: Arial, Gadget, sans-serif; font-size: 25px; font-weight: 900;">
-	<span style="color: #f00">*</span>Test Steps
-</p>
+	<!-- Begin section 2 -->
+	<h6><a href="#">Test Steps</a></h6>
+	<div>		
+		<!-- All steps get inserted here -->
+		<div id="stepbox">
+		</div>
+		
+		<div class="new_tc_form" style="text-align: center">
+			<input id="add_test_step" class="buttonCustom new_tc_form" type='image'
+					src='/site_media/add_step.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
+			<input id="remove_test_step" class="buttonCustom new_tc_form" type='image'
+				src='/site_media/remove_step.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
+		</div>
+		
+		<!-- {% include "ResultTable.html" %}  -->
+		
+		<p style="margin-left: 20">
+			<font color="#FFFFFF">&nbsp;</font>
+		</p>
+		<p style="margin-left: 20">
+			<font color="#FFFFFF">&nbsp;</font>
+		</p>
+		
+		<!-- Following Code is for Create Flip button  -->
+		<p class='new_tc_form buttonCustom' id='submit' style="width:20%;">
+			<img style='margin-bottom: 10px;' src="/site_media/submit_tc.png"
+				width='100'> <br>Submit Test Case
+		</p>
+	</div>
+	<!-- End section 2 -->
 
-<!-- All steps get inserted here -->
-<div id="stepbox">
 </div>
-
-<div class="new_tc_form" style="text-align: center">
-	<input id="add_test_step" class="buttonCustom new_tc_form" type='image'
-			src='/site_media/add_step.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
-	<input id="remove_test_step" class="buttonCustom new_tc_form" type='image'
-		src='/site_media/remove_step.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
-</div>
-
-<!-- {% include "ResultTable.html" %}  -->
-
-<p style="margin-left: 20">
-	<font color="#FFFFFF">&nbsp;</font>
-</p>
-<p style="margin-left: 20">
-	<font color="#FFFFFF">&nbsp;</font>
-</p>
-
-<!-- Following Code is for Create Flip button  -->
-<p class='new_tc_form buttonCustom' id='submit' style="width:20%;">
-	<img style='margin-bottom: 10px;' src="/site_media/submit_tc.png"
-		width='100'> <br>Submit Test Case
-</p>
-
-
-
-
 
 {% endblock %}

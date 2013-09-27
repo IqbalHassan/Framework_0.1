@@ -1,6 +1,6 @@
 /*================ EVERYTHING ========================*/
 input, textarea{
-	background-color:#DBFFDB;
+	/*background-color:#DBFFDB;*/
 }
 
 
@@ -372,13 +372,32 @@ p.flip:ACTIVE,p.flip:HOVER {
 }
 
 /* =================== Test Case Creation/Edit ========================*/
-.new_tc_form{
+.new_tc_form {
+	margin-top: 10px;
 	margin:5px auto;
     width: 500px;
     clear: both;
 }
-.new_tc_form input {
+.new_tc_form input[type=text] {
     width: 100%;
+    background:transparent;
+}
+.tc_form_label_col {
+	width: 200px;
+	vertical-align: top;
+	text-align: left;
+}
+.tc_form_input_col {
+	width: 300px;
+}
+.tc_form_divider {
+	width: 500px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.tc_form_required_field {
+	margin-left:-8px;
+	color: #f00;
 }
 .buttonCustom{
 	text-align: center;

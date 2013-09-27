@@ -579,7 +579,7 @@ function validate_data(str){
 
 function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
 	$(WhereToPlaceId).append(
-			"<form id='AutoSearchResult" + stepNumber + "' class='new_tc_form' style='width:700px;display:block'>" +
+			"<form id='AutoSearchResult" + stepNumber + "' class='new_tc_form'>" +
 
 			"	<fieldset>"+
 		  	"		<legend class='Text'><b>" + Label + "</b></legend>"+
