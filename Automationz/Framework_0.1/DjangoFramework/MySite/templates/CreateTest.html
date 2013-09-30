@@ -3,17 +3,11 @@
 {% block content %}
 
 <script type="text/javascript" src="/site_media/Jquery/Local/CreateTest.js"></script>
-<script src="/site_media/Jquery/js/jquery-1.7.2.js"></script>
-<script src="/site_media/Jquery/development-bundle/ui/jquery.ui.core.js"></script>
-<script src="/site_media/Jquery/development-bundle/ui/jquery.ui.widget.js"></script>
-<script src="/site_media/Jquery/development-bundle/ui/jquery.ui.accordion.js"></script>
 
 <script>
 $(function() {
 	$( "#accordion" ).accordion({
-		collapsible: true,
-		clearStyle: true,
-		header: 'h6'
+		collapsible: true
 	});
 });
 
@@ -43,7 +37,7 @@ $(function() {
 <div id="accordion" style="width:600px;background=transparent;margin-left:auto;margin-right:auto;" >
 
 	<!-- Begin section 1 -->
-	<h6><a href="#">Properties</a></h6>
+	<h3><a href="#">Properties</a></h3>
 	<div>
 		
 		<form id="tc_enable" class="new_tc_form">
@@ -272,7 +266,7 @@ $(function() {
 	<!-- End section 1 -->
 
 	<!-- Begin section 2 -->
-	<h6><a href="#">Test Steps</a></h6>
+	<h3><a href="#">Test Steps</a></h3>
 	<div>		
 		<!-- All steps get inserted here -->
 		<div id="stepbox">
