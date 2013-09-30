@@ -1,2 +1,2 @@
-cd "C:\git\c2tran\Automationz\Framework_0.1\DjangoFramework"
+cd ".\DjangoFramework"
 python manage.py runserver
