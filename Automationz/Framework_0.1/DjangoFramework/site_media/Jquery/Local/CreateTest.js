@@ -180,8 +180,9 @@ $(document).ready(function() {
 					else if(dependancy_list[dependancy] == 'MacNative') $('input[value="MacNative"]').attr('checked', true);
 					else if(dependancy_list[dependancy] == 'iTunes') $('input[value="iTunes"]').attr('checked', true);
 					else if(dependancy_list[dependancy] == 'iPhoto') $('input[value="iPhoto"]').attr('checked', true);
-					else if(dependancy_list[dependancy] == 'BBX') $('input[value="BBX"]').attr('checked', true);
-					else if(dependancy_list[dependancy] == 'SD') $('input[value="SD"]').attr('checked', true);
+					else if(dependancy_list[dependancy] == 'Chrome') $('input[value="Chrome"]').attr('checked', true);
+					else if(dependancy_list[dependancy] == 'Firefox') $('input[value="Firefox"]').attr('checked', true);
+					else if(dependancy_list[dependancy] == 'IE') $('input[value="IE"]').attr('checked', true);
 				}
 				//Type
 				for(var type in tc_types){
