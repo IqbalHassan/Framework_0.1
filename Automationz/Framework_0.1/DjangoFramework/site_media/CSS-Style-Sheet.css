@@ -15,16 +15,14 @@ input, textarea{
 	border: none;
 	width: 100%;
 	height: 100%;
-	background-color: #FFFFFF
 	/*background-image: url("/site_media/tweed.png");*/	
 }
 
 #MainPageHeading {
-	font-family: monospace;
 	font-size: 200%;
-	color: #ffffff;
-
-	/*text-shadow: 5px 5px 8px gray;*/
+	color: white;
+	text-shadow: 5px 5px 8px gray;
+	background-color: black;
 }
 #Main_Heading_And_Menu{
 	box-shadow: 4px 0px 5px #555555;
@@ -59,13 +57,9 @@ input, textarea{
 
 */
 .MainManu {
-	opacity: 0.6;
 	display: block;
-	font-family: monospace;
-	color: #cccccc;
-	font-size: x-large;
+	color: black;
 	font-weight: bold;
-	text-decoration: none;
 	outline: none;
 	text-align: center;
 	width: 100%;
@@ -73,9 +67,9 @@ input, textarea{
 	text-decoration: none;
 }
 
-a.MainManu{
+/*a.MainManu{
 	text-shadow: 1px 1px 0px #777777;
-}
+}*/
 
 #MainTabs{
 	display:table;
