@@ -1,8 +1,9 @@
 {% extends "BaseTemplate.html" %} 
 {% block title%} Test Case Management {%endblock%} 
 {% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/SearchEdit.js"></script>
 
-		<script type="text/javascript" src="/site_media/Jquery/Local/SearchEdit.js"></script>
+<article>
 
 <p class='text' id="question_text" style="color: black; display: block; font-family: Arial, sans-serif; font-size: 25px; font-weight: 900; text-align: center">
 	<a>What operation would you like to perform?</a>
@@ -45,6 +46,7 @@
 		</td>
 	</tr>
 </table>
+</article>
 
 <script>
 $(".flip[title='Create_New']").click(function() {
@@ -60,5 +62,4 @@ $(".flip[title='Create_Sections']").click(function() {
 });
 
 </script>
-
 {% endblock %}

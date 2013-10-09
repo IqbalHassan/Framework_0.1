@@ -1,138 +1,4 @@
-/*================ EVERYTHING ========================*/
-input, textarea{
-	/*background-color:#DBFFDB;*/
-}
 
-
-
-/*================ Top Row Table ========================*/
-#TopRowTable { 
-				/*background-repeat:no-repeat;
-				background-repeat:repeat;
-				background-color: #CFCFCF;
-				
-				*/
-	border: none;
-	width: 100%;
-	height: 100%;
-	/*background-image: url("/site_media/tweed.png");*/	
-}
-
-#MainPageHeading {
-	font-size: 200%;
-	color: white;
-	text-shadow: 5px 5px 8px gray;
-	background-color: black;
-}
-#Main_Heading_And_Menu{
-	box-shadow: 4px 0px 5px #555555;
-}
-/* =================  Main Page Tabs / link ============= */
-
-/*
-#MainTabs img, #MainTabs img:LINK, #MainTabs img:VISITED {
-	
-															
-															opacity: 0.6;
-															filter:progid:DXImageTransform.Microsoft.Alpha(opacity=80);
-															
-															width:70px;
-															height: 30px;
-															vertical-align: bottom;
-															text-decoration: none;
-															border:0px;
-															outline: none;
-															
-															}
-
-
-#MainTabs img:FOCUS, #MainTabs img:HOVER, #MainTabs img:ACTIVE {
-																	
-																	opacity: 1;
-																	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
-																	
-																	outline: none;
-																}				
-																
-
-*/
-.MainManu {
-	display: block;
-	color: black;
-	font-weight: bold;
-	outline: none;
-	text-align: center;
-	width: 100%;
-	padding: 5px;
-	text-decoration: none;
-}
-
-/*a.MainManu{
-	text-shadow: 1px 1px 0px #777777;
-}*/
-
-#MainTabs{
-	display:table;
-	margin-left:auto;
-	margin-right:auto;
-}
-ul#MainTabDiv {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
-	overflow: hidden;
-}
-
-#MainTabDiv li {
-	float: left;
-}
-
-/*					
- #MainTabDiv a:visited {
-	
-	         		
-				    width:100%;
-				    line-height:24px;
-				    font-family:'arial narrow',sans-serif;
-				    color:#00f;
-				    text-align:center;
-				    text-decoration:none;
-				    opacity: 0.5;
-					filter:progid:DXImageTransform.Microsoft.Alpha(opacity=80);
-					text-shadow: 5px 5px 8px gray; 
-	         		
-	         		
-	         		
-	         	opacity: 1;
-						filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
-                 		-moz-outline-style:none;
-                 		color:#00BFFF;	
-	         		
-	         		
-	         		
-	    			
-	         		
-			}
-
-*/
-#MainTabDiv a:HOVER {
-	opacity: 1;
-	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100 );
-	-moz-outline-style: none;
-	color: #0BAFFF;
-}
-
-/*
-#MainTabDiv a:active {
-						
-						opacity: 1;
-						filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
-						outline: none;
-						color:#00BFFF;
-					
-					}
-					
-*/
 
 /* =========================== flip Panel ========================*/
 p.flip { /*
@@ -427,5 +293,109 @@ p.flip:ACTIVE,p.flip:HOVER {
 #enter_sections_text{
 	text-align: center;
 }
+
+/*=======================HTML5===============*/
+
+/*** General Styles ***/
+body{
+	background-color: white;
+	margin: 0px;
+}
+
+#master_wrap{ 
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased; 
+}
+
+/*===========header===========*/
+
+header.main_header{
+	background-color: #666;
+	display:block;
+	float: top;
+	font-size: 250%;
+	color:#FFF;
+	text-align: center;
+	font-weight: bold;
+	margin: 0px 0px 0px 0px;
+	border: 1px solid #666;
+}
+
+aside{
+	display: block;
+	float: right;
+	width: 15%;
+}
+
+/*=======Nav bar=======*/
+
+nav{
+	display:block;
+	width: 10%;
+	float: left;
+	margin: 0px 0px 0px 0px;
+	background-color: #666;
+	color: #fff;
+}
+
+nav a:link, nav a:visited{
+	display:block;
+	border-bottom: 3px solid #fff;
+	padding: 10px;
+	background-color: #666;
+	text-decoration: none;
+	font-weight: bold;
+	color: #eee;
+}
+
+nav a:hover{
+	color: white;
+}
+
+/*============section===========*/
+section{
+	display: block;
+	width: 75%;
+	float: left;
+	margin: 0px;
+	padding-top: 10px;
+}
+
+section header{
+	
+}
+
+article{
+	display:block;
+	margin-left: 100px;
+	width: 100%;
+}
+
+/*=========content page============*/
+article header{
+	font-size: 200%;
+}
+
+/*=========home page============*/
+#about_us_list.pros{
+	list-style-type: circle;
+}
+
+/*=========createtest=======*/
+.tc_title
+{
+	margin-right: auto;
+	margin-bottom: 10px;
+}
+
+/*========create product sections========*/
+#section_names
+{
+	margin-right: auto;
+}
+
+
+
+
 
 

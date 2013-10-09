@@ -1,6 +1,10 @@
 {% extends "BaseTemplate.html" %} 
 {% block title%} Create new product sections {%endblock%} 
 {% block content %}
+<article>
+<header>
+Create Product Sections
+</header>
 <div id="enter_sections_text">
 <p>
 Please Enter a name for the main section and its optional subsections.  These names will be used to group tests together.
@@ -16,5 +20,5 @@ Please Enter a name for the main section and its optional subsections.  These na
 	Subsection 4: <input type="text" name="subsection_4"><br><br>
 <input type="submit" value="Submit"><br><br>
 </form>
-
+</article>
 {% endblock %}

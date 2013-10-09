@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <!-- Above code is for adding HTML5 and XHTML to your html code. Copy paste to your other html files -->
 <head>
 		
@@ -32,98 +30,45 @@
 		<script type="text/javascript" src="/site_media/Jquery/Local/Performance.js"></script>
 		<script type="text/javascript" src="/site_media/Jquery/Local/Analysis.js"></script>
 		<script type="text/javascript" src="/site_media/Jquery/Local/Execution_Report.js"></script>
-		
+		<script type="text/javascript" src="/site_media/Jquery/Local/PageAnimation.js"></script>
 		
 </head>
 
 	
-	<body id = "BaseTempBody"  >
-	
-	
-	<div id = "Main_Heading_And_Menu">
-		<!-- Top Row data (logo and Heading) -->
-		<table id = "TopRowTable"  >
-		  <tr>
-		  	<th id = "MainPageHeading" >  <a>Automation Solutionz</a></th>
-		  </tr>
-        <!-- Second row data ( Tabs ) -->
-		  <tr>
-		    <td id = "MainTabs"  >
-			    <ul id = "MainTabDiv">
-			    	<li>	
-			    		<a href = "/Home/"  class = 'MainManu'> Home &nbsp;</a>
-				    	
-			    	</li>
-			    	
-			    	<li>	
-			    		<a href = "/Home/ManageTestCases/"  class = 'MainManu'> Manage Test Case &nbsp;</a>
-				    	
-			    	</li>
-			    			
-			    	<li>
-			    		<a  href = "/Home/RunTest/" class = 'MainManu'> Run &nbsp;</a>
-			    			
-			    	</li>
-			    			 
-			    	<li>
-			    		<a  href = "/Home/Search/" class = 'MainManu'> Result &nbsp;</a>
-			    				
-			    	</li>
-			    			
-			    	<li>
-			    	 	<a  href = "/Home/Performance/" class = 'MainManu'> Performance &nbsp; </a>
-			    		 	
-			    	 </li>
-			    	
-			    	<!-- 
-			    	<li>
-			    		<a  href = "/Home/MKS-Report/" class = 'MainManu'> MKSReport &nbsp; </a>
-			    			
-			    	</li>
-			    	 
-			    	
-			    	<li>
-			    		<a  href = "/Home/Analysis/" class = 'MainManu'> Analysis &nbsp; </a>
-			    			
-			    	</li>
-			    	-->		
-			    	<li>
-			    		<a  href = "/Home/Documentation/" class = 'MainManu'> Documentation &nbsp; </a>
-			    			
-			    	</li>	
-			    	
-			    	<li>
-			    		<a  href = "/Home/ExecutionReport/" class = 'MainManu'> Reports &nbsp; </a>
-			    			
-			    	</li>	
-			    		
-			    
-			    </ul>
-			    
-		     </td>
-		     
-		  </tr>
-		  
-		</table>
-	</div>
-	
-	<!-- 	<p class="flip" style="margin-left:; width:99%"  >Show/Hide Menu</p>
-	<p> &nbsp; </p>
-	<div class="dialog" style="display: block;" >
-	
-	
-		
-	</div> -->
-	
+	<body>
+		<div id="master_wrap">
+			<header class="main_header">
+				<h1>Automationz</h1>
+			</header>
+			<div id="outer_wrap">
+				<nav>
+					<h3>Menu</h3>
+    				<a href = "/Home/"  class = 'MainManu'> Home &nbsp;</a>
+    				<a href = "/Home/ManageTestCases/"  class = 'MainManu'> Manage Test Case &nbsp;</a>
+    				<a href = "/Home/RunTest/" class = 'MainManu'> Run &nbsp;</a>
+	    			<a href = "/Home/Search/" class = 'MainManu'> Result &nbsp;</a>
+    		 		<a href = "/Home/Performance/" class = 'MainManu'> Performance &nbsp; </a>
+    				<a href = "/Home/MKS-Report/" class = 'MainManu'> MKSReport &nbsp; </a>
+	    			<a href = "/Home/Analysis/" class = 'MainManu'> Analysis &nbsp; </a>
+    				<!--  a href = "/Home/Documentation/" class = 'MainManu'> Documentation &nbsp; </a> -->
+    				<a href = "/Home/ExecutionReport/" class = 'MainManu'> Reports &nbsp; </a>
+				</nav>
+				<section>			
+					{% block content %} {% endblock %}			
+				</section>
+				<aside>
+					{% block aside %}
+					
+					{% endblock %}
+				</aside>
+				<footer>
+					{% block footer %}
+					
+					{% endblock %}
+				</footer>
+			</div>
+		</div>
 
-		
-		{% block content %} {% endblock %}
-		
-		<!-- Bottom data ( footer ) -->
-		<p id = "footer"  >
-	
-				<a>&#174; COPYRIGHT 2013 ALL RIGHTS RESERVED AUTOMATION SOLUTIONZ</a>
-		</p>
 	</body>
 </html>
 
