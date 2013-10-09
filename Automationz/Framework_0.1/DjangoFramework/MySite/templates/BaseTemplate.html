@@ -5,6 +5,8 @@
 <head>
 		
 		<title>{% block title %} {% endblock %}</title>
+		<link rel="icon" type="image/ico" href="/site_media/Logo.ico"></link> 
+		<link rel="shortcut icon" href="/site_media/Logo.ico"></link>
 		<link rel="stylesheet" type="text/css" href="/site_media/CSS-Style-Sheet.css" />
 		
 		
@@ -38,33 +40,32 @@
 	<body>
 		<div id="master_wrap">
 			<header class="main_header">
-				<h1>Automationz</h1>
+				<a id="logo" href="/Home/">
+					<img src="/site_media/Logo.png" style="width:256px;border:0;"/>
+				</a>
 			</header>
 			<div id="outer_wrap">
-				<nav>
-					<h3>Menu</h3>
-    				<a href = "/Home/"  class = 'MainManu'> Home &nbsp;</a>
-    				<a href = "/Home/ManageTestCases/"  class = 'MainManu'> Manage Test Case &nbsp;</a>
-    				<a href = "/Home/RunTest/" class = 'MainManu'> Run &nbsp;</a>
-	    			<a href = "/Home/Search/" class = 'MainManu'> Result &nbsp;</a>
-    		 		<a href = "/Home/Performance/" class = 'MainManu'> Performance &nbsp; </a>
-    				<a href = "/Home/MKS-Report/" class = 'MainManu'> MKSReport &nbsp; </a>
-	    			<a href = "/Home/Analysis/" class = 'MainManu'> Analysis &nbsp; </a>
-    				<!--  a href = "/Home/Documentation/" class = 'MainManu'> Documentation &nbsp; </a> -->
-    				<a href = "/Home/ExecutionReport/" class = 'MainManu'> Reports &nbsp; </a>
+				<nav id="topnav">
+					<ul>
+    				<li><a href = "/Home/"  class = 'MainManu'>Home</a></li>
+    				<li><a href = "/Home/ManageTestCases/"  class = 'MainManu'>Manage Test Case</a></li>
+    				<li><a href = "/Home/RunTest/" class = 'MainManu'>Run</a></li>
+	    			<li><a href = "/Home/Search/" class = 'MainManu'>Result</a></li>
+    		 		<li><a href = "/Home/Performance/" class = 'MainManu'>Performance</a></li>
+    				<li><a href = "/Home/MKS-Report/" class = 'MainManu'>MKSReport</a></li>
+	    			<li><a href = "/Home/Analysis/" class = 'MainManu'>Analysis</a></li>
+    				<!-- <li><a href = "/Home/Documentation/" class = 'MainManu'>Documentation</a> </li>-->
+    				<li><a href = "/Home/ExecutionReport/" class = 'MainManu'>Reports</a></li>
+					</ul>
 				</nav>
 				<section>			
 					{% block content %} {% endblock %}			
 				</section>
 				<aside>
-					{% block aside %}
-					
-					{% endblock %}
+					{% block aside %} {% endblock %}
 				</aside>
 				<footer>
-					{% block footer %}
-					
-					{% endblock %}
+					{% block footer %} {% endblock %}
 				</footer>
 			</div>
 		</div>

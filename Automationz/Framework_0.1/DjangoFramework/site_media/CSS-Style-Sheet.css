@@ -287,11 +287,11 @@ p.flip:ACTIVE,p.flip:HOVER {
 
 /* =====================Create Product Sections============================ */
 #section_names{
-	text-align: center;
+	text-align: left;
 }
 
 #enter_sections_text{
-	text-align: center;
+	text-align: left;
 }
 
 /*=======================HTML5===============*/
@@ -307,28 +307,24 @@ body{
 	-webkit-font-smoothing: antialiased; 
 }
 
-/*===========header===========*/
+/*=========== Header ===========*/
 
 header.main_header{
-	background-color: #666;
-	display:block;
-	float: top;
-	font-size: 250%;
-	color:#FFF;
-	text-align: center;
-	font-weight: bold;
-	margin: 0px 0px 0px 0px;
-	border: 1px solid #666;
+	margin-top: 10px;
+	margin-left: 40px;
 }
 
+/*=========== Side nav ===========*/
+/*
 aside{
 	display: block;
-	float: right;
-	width: 15%;
+	float: left;
+	width: 0;
 }
+*/
 
-/*=======Nav bar=======*/
-
+/*======= Top nav bar=======*/
+/*
 nav{
 	display:block;
 	width: 10%;
@@ -350,14 +346,33 @@ nav a:link, nav a:visited{
 
 nav a:hover{
 	color: white;
+}*/
+
+#topnav ul {
+	list-style-type: none;
+	overflow:hidden;
+}
+
+#topnav ul li {
+	display: inline-block;
+}
+
+#topnav ul li a {
+	border: 2px solid grey;
+	padding: .2em 1em;
+	text-decoration: none;
+	color: white;
+	background-color: #666;
+}
+
+#topnav ul li a:hover {
+	background-color: grey;
 }
 
 /*============section===========*/
 section{
 	display: block;
-	width: 75%;
-	float: left;
-	margin: 0px;
+	margin: 20px;
 	padding-top: 10px;
 }
 
@@ -367,13 +382,14 @@ section header{
 
 article{
 	display:block;
-	margin-left: 100px;
-	width: 100%;
+	margin-left: 20px;
+	width: 90%;
 }
 
 /*=========content page============*/
 article header{
-	font-size: 200%;
+	font-size: 150%;
+	font-weight: bold;
 }
 
 /*=========home page============*/
