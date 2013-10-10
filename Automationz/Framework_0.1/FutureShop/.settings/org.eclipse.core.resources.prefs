@@ -1,0 +1,11 @@
+eclipse.preferences.version=1
+encoding/CommonUtil.py=utf-8
+encoding/DataBaseUtilities.py=utf-8
+encoding/FileUtilities.py=utf-8
+encoding/Global.py=cp1252
+encoding/JIRA.py=cp1252
+encoding/MD5.py=UTF8
+encoding/MainDriver.py=cp1252
+encoding/Performance.py=utf-8
+encoding/Program.py=utf-8
+encoding/WinCommonFoldersPaths.py=UTF8
