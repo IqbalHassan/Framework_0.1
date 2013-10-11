@@ -235,7 +235,7 @@ p.flip:ACTIVE,p.flip:HOVER {
 .new_tc_form {
 	margin-top: 10px;
 	margin:5px auto;
-    width: 500px;
+    width: 640px;
     clear: both;
 }
 .new_tc_form input[type=text] {
@@ -243,15 +243,15 @@ p.flip:ACTIVE,p.flip:HOVER {
     background:transparent;
 }
 .tc_form_label_col {
-	width: 200px;
+	width: 240px;
 	vertical-align: top;
 	text-align: left;
 }
 .tc_form_input_col {
-	width: 300px;
+	width: 400px;
 }
 .tc_form_divider {
-	width: 500px;
+	width: 640px;
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
@@ -262,25 +262,17 @@ p.flip:ACTIVE,p.flip:HOVER {
 .buttonCustom{
 	text-align: center;
 	text-shadow: white;
-	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60 );
-	opacity: 0.8;
-	font-family: monospace, Gadget, sans-serif;
-	font-size: normal;
-	font-weight: bold;
-	color: black;
-	background-color: #acacac;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+	opacity: 1;
+	color: white;
+	background-color: #666;
 	padding: 5px;
 	border: 1px #000 solid;
 }
-.buttonCustom:ACTIVE{
-	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100 );
-	opacity: 3;
-	cursor: pointer;
-	cursor: hand
-}
+
 .buttonCustom:HOVER {
-	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100 );
-	opacity: 3;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
+	opacity: 0.8;
 	cursor: pointer;
 	cursor: hand
 }

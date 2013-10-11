@@ -7,7 +7,8 @@
 <script>
 $(function() {
 	$( "#accordion" ).accordion({
-		collapsible: true
+		collapsible: true,
+		heightStyle: "content"
 	});
 });
 
@@ -36,7 +37,7 @@ $(function() {
 </form>
 </div>
 		
-<div id="accordion" style="width:600px;background=transparent;margin-left:auto;margin-right:auto;" >
+<div id="accordion" style="width:720px;background=transparent;margin-left:auto;margin-right:auto;" >
 
 	<!-- Begin section 1 -->
 	<h3><a href="#">Properties</a></h3>
@@ -66,7 +67,7 @@ $(function() {
 			</table>
 		</form>
 		
-		<div class="new_tc_form" style="text-align: center;width: 500px;">
+		<div class="new_tc_form" style="text-align: center;">
 			<table>
 				<tr>
 					<td class="tc_form_label_col">
@@ -146,7 +147,7 @@ $(function() {
 								</td>
 							</tr>
 							<tr>
-								<td width="50%">
+								<td colspan="2">
 									<input id="IE" type="checkbox" name="dependancy" value="IE" style="width:auto">
 									<label for="IE">Internet Explorer</label>
 								</td>
@@ -282,28 +283,20 @@ $(function() {
 		
 		<div class="new_tc_form" style="text-align: center">
 			<input id="add_test_step" class="buttonCustom new_tc_form" type='image'
-					src='/site_media/add_step.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
+					src='/site_media/plus.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
 			<input id="remove_test_step" class="buttonCustom new_tc_form" type='image'
-				src='/site_media/remove_step.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
+				src='/site_media/minus.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
 		</div>
-		
-		<!-- {% include "ResultTable.html" %}  -->
-		
-		<p style="margin-left: 20">
-			<font color="#FFFFFF">&nbsp;</font>
-		</p>
-		<p style="margin-left: 20">
-			<font color="#FFFFFF">&nbsp;</font>
-		</p>
-		
-		<!-- Following Code is for Create Flip button  -->
-		<p class='new_tc_form buttonCustom' id='submit' style="width:20%;">
-			<img style='margin-bottom: 10px;' src="/site_media/submit_tc.png"
-				width='100'> <br>Submit Test Case
-		</p>
 	</div>
 	<!-- End section 2 -->
 
+</div>
+
+<div style="text-align:center;margin-top:20px">
+	<!-- Following Code is for Create Flip button  -->
+	<div class='new_tc_form buttonCustom' id='submit' style="width:100px;">
+		<img src="/site_media/check.png" width='20px' style=""><div>Save</div>
+	</div>
 </div>
 
 {% endblock %}
