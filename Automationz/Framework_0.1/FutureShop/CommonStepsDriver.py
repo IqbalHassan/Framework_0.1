@@ -86,6 +86,12 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
             #Adding working around for the current bug where we are not able to select browser
             browser = "Firefox"
             sTestStepReturnStatus = WebProgram.BrowserSelection(browser)
+            print sTestStepReturnStatus
+
+        elif CurrentStep == "Open WebPage":
+            DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
+            web_link = DataSet[0][2]
+            sTestStepReturnStatus = WebProgram.OpenLink(web_link)
 
         elif CurrentStep == "Close Browser":
             CommonUtil.ExecLog(sModuleInfo, "skipping closing browser", 1)

@@ -21,17 +21,17 @@ def BrowserSelection(browser):
             sBrowser = webdriver.Chrome()
             print "Started Chrome Browser"
             CommonUtil.ExecLog(sModuleInfo, "Started Chrome Browser", 1)
-            return "Passed"
+            return "PASS"
         elif browser == 'Firefox':
             sBrowser = webdriver.Firefox()
             CommonUtil.ExecLog(sModuleInfo, "Started Firefox Browser", 1)
             print "Started Firefox Browser"
-            return "Passed"
+            return "PASS"
         elif browser == 'IE':
             sBrowser = webdriver.Ie()
             CommonUtil.ExecLog(sModuleInfo, "Started Internet Explorer Browser", 1)
             print "Started Internet Explorer Browser"
-            return "Passed"
+            return "PASS"
         else:
             print "You did not select a valid browser"
             CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser", 3)
@@ -49,7 +49,7 @@ def OpenLink(link):
         WebDriverWait(sBrowser, 30)
         CommonUtil.ExecLog(sModuleInfo, "Successfully opened your link: %s"%link, 1)
         print "Successfully opened your link: " +link
-        return "Passed"
+        return "PASS"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Failed to open your link: %s"%link, 3)
@@ -70,12 +70,12 @@ def SelectFirstLevelMenu(menu_name_1):
                 print "Found the Main Menu: " + element.text
                 result = HoeverOver(element)
                 CommonUtil.ExecLog(sModuleInfo, "Hovering over to your main menu: %s"%menu_name_1, 1)
-                if result != "Passed":
+                if result != "PASS":
                     CommonUtil.ExecLog(sModuleInfo, "Unable to hover over your main menu: %s"%menu_name_1, 3)
                     return "Critical"
                 else: 
                     CommonUtil.ExecLog(sModuleInfo, "Successfully hovered over your main menu: %s"%menu_name_1, 1)
-                    return "Passed" 
+                    return "PASS" 
         print "Unable to find your element: " + menu_name_1
         CommonUtil.ExecLog(sModuleInfo, "Unable to find your main menu object: %s"%menu_name_1, 3)
         return "Critical"
@@ -100,12 +100,12 @@ def SelectSecondLevelMenu(menu_name_2):
                 CommonUtil.ExecLog(sModuleInfo, "Found the second level menu:  %s"%menu_name_2, 3)
                 CommonUtil.ExecLog(sModuleInfo, "Hovering over to your second level menu: %s"%menu_name_2, 1)
                 result = HoeverOver(element)
-                if result != "Passed":
+                if result != "PASS":
                     CommonUtil.ExecLog(sModuleInfo, "Unable to hover over your second level element: %s"%menu_name_2, 3)
                     return "Critical"
                 else: 
                     CommonUtil.ExecLog(sModuleInfo, "Successfully hovered over your second level menu: %s"%menu_name_2, 1)
-                    return "Passed" 
+                    return "PASS" 
         print "Unable to find your element: " + menu_name_2
         CommonUtil.ExecLog(sModuleInfo, "Unable to find second level menu item: %s"%menu_name_2, 3)
         return "Critical"
@@ -125,7 +125,7 @@ def SelectThirdLevelMenu(menu_name_3):
                 sBrowser.get(eachElements.get_attribute('href'))
                 print "Successfully clicked your item: " + menu_name_3
                 CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your item: %s"%menu_name_3, 1)
-                return "Passed"
+                return "PASS"
         print "Unable to find your item to click: " + menu_name_3
         CommonUtil.ExecLog(sModuleInfo, "Unable to find your item to click: %s"%menu_name_3, 3)
         return "Critical"
@@ -146,7 +146,7 @@ def HoeverOver(element):
         print "Hovering over to the element " + (element.text)
         hov = ActionChains(sBrowser).move_to_element(element)
         hov.perform()
-        return "Passed"
+        return "PASS"
     except:
         print "Unable to hover over the element"
         return "Critical"
@@ -173,7 +173,7 @@ def FilterBySelection(check_box_name):
                     time.sleep(5)
                     print "Your check box: %s is now checked" %check_box_name
                     CommonUtil.ExecLog(sModuleInfo, "Your check box: %s is now checked" %check_box_name, 3)
-                    return "Passed"
+                    return "PASS"
         '''
         Verify if check box was already checked
         '''
@@ -181,7 +181,7 @@ def FilterBySelection(check_box_name):
         for elem in sBrowser.find_elements_by_xpath('.//li[@class="%s"]'%if_check_box_checked):
             print "your check box was already selected"
             CommonUtil.ExecLog(sModuleInfo, "Your check box %s was already selected." %check_box_name, 3)
-            return "Passed"
+            return "PASS"
         print "Unable to locate your check box: %s"  %check_box_name 
         CommonUtil.ExecLog(sModuleInfo, "Unable to locate your check box: %s" %check_box_name, 3)
         return "Critical"
@@ -196,7 +196,7 @@ def FilterBySelection(check_box_name):
 def RemoveFilter(check_box_name):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     print 'checkbox'  
-    return "Passed"          
+    return "PASS"          
 
 
 
@@ -260,7 +260,7 @@ def SearchItem(search_text, search_box = "Search products, articles & help topic
                     return "Critical"
                 print "Waited for browser to load"
                 CommonUtil.ExecLog(sModuleInfo, "Waited for browser to fully load: %s" %search_text, 1)
-                return "Passed"
+                return "PASS"
             else:
                 print "Search button was not found"
                 CommonUtil.ExecLog(sModuleInfo, "Search button was not found: %s" %search_text, 3)
