@@ -1009,68 +1009,187 @@ class LocalInfo():
     gets local machine info and uploads it to database
     """
     def getInstalledClients_Win(self):
-        """
-        gets Installed clients such as iTunes / WMP etc
-        """
+        
+        '''
+            In future we should collect this list from the dependency clients.  Any run time settings that would have version
+            should fall under "Clients".  This would help us maintain the code better and dynamically manage what type of application run manager
+            collects.  This list will define what the version we should collect when run manager runs
+        '''
+                
         try:
+
+            list_of_clients = ["Chrome","FireFox","IE"]
             Clients = []
+            #FireFox
+            if "FireFox" in list_of_clients:
+                try:
+                    OLPath = False
+                    allFiles = FileUtil.SearchFiles(ComPath.Get_Program_Files_Path() + os.sep + "Mozilla Firefox", "firefox.exe")
+                    #print allFiles
+                
+                    for eachFile in allFiles:
+                        if os.path.basename(eachFile) == 'firefox.exe':
+                            OLPath = eachFile
+                            break
+                    if OLPath == False:
+                        allFiles = FileUtil.SearchFiles("C:\\Program Files\\Mozilla Firefox", "firefox.exe")
+                        for eachFile in allFiles:
+                            if os.path.basename(eachFile) == 'firefox.exe':
+                                OLPath = eachFile
+                                break
+                    if OLPath:
+                        if os.path.isfile(OLPath):
+                            #Version
+                            fileVer = "Unknown Version"
+                            fileVer = FileUtil.getFileVersion(OLPath)
+                
+                
+                                #fileVer = fileVer[0:4]
+                            #Bitness
+                            fileBit = win32file.GetBinaryType(OLPath)
+                            if fileBit == 0:
+                                fileBit = "32"
+                            elif fileBit == 6:
+                                fileBit = "64"
+                            else:
+                                fileBit = ""
+                            Clients.append("FireFox(" +"V" + str(fileVer) +";"+ fileBit +"Bit)")
+                except Exception, e:
+                    print "Error getting FireFox information:", e
+            #IE
+            if "IE" in list_of_clients:
+                try:
+                    OLPath = False
+                    allFiles = FileUtil.SearchFiles(ComPath.Get_Program_Files_Path() + os.sep + "Internet Explorer", "iexplore.exe")
+                    #print allFiles
+                
+                    for eachFile in allFiles:
+                        if os.path.basename(eachFile) == 'iexplore.exe':
+                            OLPath = eachFile
+                            break
+                    if OLPath == False:
+                        allFiles = FileUtil.SearchFiles("C:\\Program Files\\Internet Explorer", "iexplore.exe")
+                        for eachFile in allFiles:
+                            if os.path.basename(eachFile) == 'iexplore.exe':
+                                OLPath = eachFile
+                                break
+                    if OLPath:
+                        if os.path.isfile(OLPath):
+                            #Version
+                            fileVer = "Unknown Version"
+                            fileVer_ = FileUtil.getFileVersion(OLPath)
+                            #fileVer = fileVer_.split(".")[0] +"."+ fileVer_.split(".")[1]+ "."+ fileVer_.split(".")[2]
+                            fileVer = fileVer_.split(".")[0] 
+                            #fileVer = fileVer[0:4]
+                            #Bitness
+                            fileBit = win32file.GetBinaryType(OLPath)
+                            if fileBit == 0:
+                                fileBit = "32"
+                            elif fileBit == 6:
+                                fileBit = "64"
+                            else:
+                                fileBit = ""
+                            Clients.append("IE(" +"V" + str(fileVer) +";"+ fileBit +"Bit)")
+                except Exception, e:
+                    print "Error getting IE information:", e
+                
+            #Chrome
+            if "Chrome" in list_of_clients:
+                try:
+                    OLPath = False
+                    allFiles = FileUtil.SearchFiles(ComPath.Get_Program_Files_Path() + os.sep + "Google\\Chrome\\Application", "chrome.exe")
+                    #print allFiles
+                
+                    for eachFile in allFiles:
+                        if os.path.basename(eachFile) == 'chrome.exe':
+                            OLPath = eachFile
+                            break
+                    if OLPath == False:
+                        allFiles = FileUtil.SearchFiles("Google\\Chrome\\Application", "chrome.exe")
+                        for eachFile in allFiles:
+                            if os.path.basename(eachFile) == 'chrome.exe':
+                                OLPath = eachFile
+                                break
+                    if OLPath:
+                        if os.path.isfile(OLPath):
+                            #Version
+                            fileVer = "Unknown Version"
+                            fileVer_ = FileUtil.getFileVersion(OLPath)
+                            #fileVer = fileVer_.split(".")[0] +"."+ fileVer_.split(".")[1]+ "."+ fileVer_.split(".")[2]
+                            fileVer = fileVer_.split(".")[0] 
+                            #fileVer = fileVer[0:4]
+                            #Bitness
+                            fileBit = win32file.GetBinaryType(OLPath)
+                            if fileBit == 0:
+                                fileBit = "32"
+                            elif fileBit == 6:
+                                fileBit = "64"
+                            else:
+                                fileBit = ""
+                            Clients.append("Chrome(" +"V" + str(fileVer) +";"+ fileBit +"Bit)")
+                except Exception, e:
+                    print "Error getting Chrome information:", e
+
+            if "iTunes" in list_of_clients:
             #iTunes
-            if os.path.isfile(ComPath.Get_Program_Files_Path() + "\\iTunes\\iTunes.exe"):
-                fileVer = FileUtil.getFileVersion(ComPath.Get_Program_Files_Path() + "\\iTunes\\iTunes.exe")
-                if fileVer != False:
-                    fileVer = fileVer[0:4]
-                Clients.append("iTunes:" + str(fileVer))
+                if os.path.isfile(ComPath.Get_Program_Files_Path() + "\\iTunes\\iTunes.exe"):
+                    fileVer = FileUtil.getFileVersion(ComPath.Get_Program_Files_Path() + "\\iTunes\\iTunes.exe")
+                    if fileVer != False:
+                        fileVer = fileVer[0:4]
+                    Clients.append("iTunes:" + str(fileVer))
 
             #WMP
-            if os.path.isfile(ComPath.Get_Program_Files_Path() + "\\Windows Media Player\\wmplayer.exe"):
-                fileVer = FileUtil.getFileVersion(ComPath.Get_Program_Files_Path() + "\\Windows Media Player\\wmplayer.exe")
-                if fileVer != False:
-                    fileVer = fileVer[0:4]
-                Clients.append("WMP:" + str(fileVer))
+            if "WMP" in list_of_clients:
+                if os.path.isfile(ComPath.Get_Program_Files_Path() + "\\Windows Media Player\\wmplayer.exe"):
+                    fileVer = FileUtil.getFileVersion(ComPath.Get_Program_Files_Path() + "\\Windows Media Player\\wmplayer.exe")
+                    if fileVer != False:
+                        fileVer = fileVer[0:4]
+                    Clients.append("WMP:" + str(fileVer))
 
             #Outlook
-            try:
-                OLPath = False
-                allFiles = FileUtil.SearchFiles(ComPath.Get_Program_Files_Path() + os.sep + "Microsoft Office", "OUTLOOK.EXE")
-                for eachFile in allFiles:
-                    if os.path.basename(eachFile) == 'OUTLOOK.EXE':
-                        OLPath = eachFile
-                        break
-                if OLPath == False:
-                    allFiles = FileUtil.SearchFiles("C:\\Program Files\\Microsoft Office", "OUTLOOK.EXE")
+            if "Outlook" in list_of_clients:
+                try:
+                    OLPath = False
+                    allFiles = FileUtil.SearchFiles(ComPath.Get_Program_Files_Path() + os.sep + "Microsoft Office", "OUTLOOK.EXE")
                     for eachFile in allFiles:
                         if os.path.basename(eachFile) == 'OUTLOOK.EXE':
                             OLPath = eachFile
                             break
-                if OLPath:
-                    if os.path.isfile(OLPath):
-                        #Version
-                        fileVer = FileUtil.getFileVersion(OLPath)
-                        if fileVer != False:
-                            if fileVer.startswith('15'):
-                                fileVer = "2013"
-                            elif fileVer.startswith('14'):
-                                fileVer = "2010"
-                            elif fileVer.startswith('12'):
-                                fileVer = "2007"
-                            elif fileVer.startswith('11'):
-                                fileVer = "2003"
+                    if OLPath == False:
+                        allFiles = FileUtil.SearchFiles("C:\\Program Files\\Microsoft Office", "OUTLOOK.EXE")
+                        for eachFile in allFiles:
+                            if os.path.basename(eachFile) == 'OUTLOOK.EXE':
+                                OLPath = eachFile
+                                break
+                    if OLPath:
+                        if os.path.isfile(OLPath):
+                            #Version
+                            fileVer = FileUtil.getFileVersion(OLPath)
+                            if fileVer != False:
+                                if fileVer.startswith('15'):
+                                    fileVer = "2013"
+                                elif fileVer.startswith('14'):
+                                    fileVer = "2010"
+                                elif fileVer.startswith('12'):
+                                    fileVer = "2007"
+                                elif fileVer.startswith('11'):
+                                    fileVer = "2003"
+                                else:
+                                    fileVer = ""
+    
+                                #fileVer = fileVer[0:4]
+                            #Bitness
+                            fileBit = win32file.GetBinaryType(OLPath)
+                            if fileBit == 0:
+                                fileBit = "32"
+                            elif fileBit == 6:
+                                fileBit = "64"
                             else:
-                                fileVer = ""
-
-                            #fileVer = fileVer[0:4]
-                        #Bitness
-                        fileBit = win32file.GetBinaryType(OLPath)
-                        if fileBit == 0:
-                            fileBit = "32"
-                        elif fileBit == 6:
-                            fileBit = "64"
-                        else:
-                            fileBit = ""
-
-                        Clients.append("Outlook:" + str(fileVer) + " " + fileBit)
-            except Exception, e:
-                print "Error getting Outlook information:", e
+                                fileBit = ""
+    
+                            Clients.append("Outlook:" + str(fileVer) + " " + fileBit)
+                except Exception, e:
+                    print "Error getting Outlook information:", e
 
             rVal = ",".join(Clients)
             return rVal
