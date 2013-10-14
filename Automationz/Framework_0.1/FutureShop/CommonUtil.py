@@ -313,7 +313,9 @@ def TimeStamp(format):
     if format == "string":
         TimeStamp = datetime.datetime.now().ctime().replace(' ', '-').replace('--', '-')
     elif format == "integer":
-        TimeStamp = int(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+        #TimeStamp = int(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+        TimeStamp = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        #print TimeStamp
 #        now = datetime.datetime.now()
 #        year = "%d" % now.year
 #        month = "%d" % now.month
@@ -1463,3 +1465,5 @@ def LogCriticalException(sModuleInfo, e):
     ExecLog(sModuleInfo, "Exception:%s" % e, 2)
     ExecLog(sModuleInfo, "Framework Error", 3)
     return "Critical"
+
+
