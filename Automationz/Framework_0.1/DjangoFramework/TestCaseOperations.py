@@ -370,7 +370,7 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Section_L
     #Add Dependency tags
     for eachDependency in Dependency_List:
         Tag_List.append(('%s' % Dependency_Tag, eachDependency))
-        if eachDependency in ['Outlook', 'MacNative', 'iTunes', 'iPhoto', 'WMP']:
+        if eachDependency in ['Outlook', 'MacNative', 'iTunes', 'iPhoto', 'WMP', 'IE', 'Firefox', 'Chrome', 'Safari']:
             Tag_List.append(('%s' % eachDependency, 'client'))
         elif eachDependency in ['BBX', 'SD']:
             Tag_List.append(('%s' % eachDependency, 'device_memory'))
