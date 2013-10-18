@@ -1000,9 +1000,9 @@ def Table_Data_UserList(request): #==================Returns Available user list
 
             if UserData == "True":
 
-                tabledata = DB.GetData(Conn, "Select  * from test_run_env where status = 'Unassigned' and machine_os ilike '%" + Environment + "%'", False)
-                Heading = GetColumnNames('test_run_env')
-                Heading.reverse()
+                tabledata = DB.GetData(Conn, "Select  tester_id,machine_os,client,last_updated_time,machine_ip from test_run_env where status = 'Unassigned' and machine_os ilike '%" + Environment + "%'", False)
+                Heading = ["Tester ID", "Machine OS", "Client", "Last Updated Time", "Machine IP"]
+                #Heading.reverse()
     results = {'Heading':Heading, 'TableData':tabledata}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
