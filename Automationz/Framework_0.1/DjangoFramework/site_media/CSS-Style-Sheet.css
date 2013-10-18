@@ -235,7 +235,7 @@ p.flip:ACTIVE,p.flip:HOVER {
 .new_tc_form {
 	margin-top: 10px;
 	margin:5px auto;
-    width: 640px;
+    width: 100%;
     clear: both;
 }
 .new_tc_form input[type=text] {

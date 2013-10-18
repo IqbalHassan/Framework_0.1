@@ -515,7 +515,7 @@ function addDataToStep(_this,value){
 		$(_this).parent().append("	<fieldset class='searchbox"+indx+''+step_num_data_num[indx] + "data'>"+
 			  	"						<legend class='Text'><b>Data " + step_num_data_num[indx] + "</b></legend>"+
 			  							"<div >" +
-											"<textarea class='data' placeholder='Enter Data' style = 'position:relative; width:670px;height:100px;max-height: 150px;max-width: 670px;margin:5px;'/>" +
+											"<textarea class='data' placeholder='Enter Data' style = 'position:relative; width:534px;height:100px;max-height: 150px;max-width: 534px;margin:5px;'/>" +
 										"</div>" +
 									"</fieldset>");
 		$(".searchbox"+indx+''+step_num_data_num[indx] + "data  textarea.data").val(dataArrayToString(value));
@@ -588,7 +588,7 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
 			"		title='Please Type Keyword and Click On that to add to query' name='searchboxname" + stepNumber + "' autocomplete='off'"+
 			"		aria-autocomplete='list' aria-haspopup='true'>"+
 			
-			"		<div id='searchbox"+stepNumber+"data' style='display:none; text-align: right;'>"+
+			"		<div id='searchbox"+stepNumber+"data' style='display:none; text-align: right;margin:10px'>"+
 			"			<a class='Text'>Test Data </a>"+
 			"			<img class='add_test_data buttonCustom' id='" + stepNumber + "' src='/site_media/add_step.png' style='background-color: transparent; width:20px; height:20px'>"+
 			"			<img class='remove_test_data buttonCustom' id='" + stepNumber + "' src='/site_media/remove_step.png' style='background-color: transparent; width:20px; height:20px'>"+
