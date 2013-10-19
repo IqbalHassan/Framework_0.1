@@ -1,0 +1,4 @@
+2013-10-19 14:00:00,125 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-19 14:00:00,144 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
+2013-10-19 14:00:37,819 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-19 14:00:37,845 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled

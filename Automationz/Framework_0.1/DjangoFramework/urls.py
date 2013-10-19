@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     # Examples:
     
     #Home Page
+	url(r'^$', HomePage),
     url(r'^Home/$',HomePage),
     
     
