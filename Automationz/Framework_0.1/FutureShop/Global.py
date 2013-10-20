@@ -17,7 +17,8 @@ if Environment == "Test":
     go_url = "enter/url"
 
     #database ip
-    database_ip = "127.0.0.1"
+    #database_ip = "127.0.0.1"
+    database_ip = "135.23.123.67"
 
     #Email List for Daily Build
     dl_list = "test@test.com"
