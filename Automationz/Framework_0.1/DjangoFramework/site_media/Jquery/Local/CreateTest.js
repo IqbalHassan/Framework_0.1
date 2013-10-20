@@ -615,7 +615,7 @@ function AddAutoCompleteToTag() {
 			});
 		},
 
-		// source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
+		// source : 'AutoCompleteTagSearch?Env = ' +Env,
 		select : function(event, ui) {
 
 			var value = ui.item.value
@@ -644,7 +644,7 @@ function RunTestAutocompleteSearch(Env, step) {
 		// box) and Env variable.
 
 		/*
-		 * source : 'AutoCompleteTestCasesSearch' ,
+		 * source : 'AutoCompleteTestStepSearch' ,
 		 * 
 		 * extraParams: { Env: function() {return Env}, },
 		 */
@@ -670,7 +670,7 @@ function RunTestAutocompleteSearch(Env, step) {
 			});
 		},
 
-		// source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
+		// source : 'AutoCompleteTestStepSearch?Env = ' +Env,
 		select : function(event, ui) {
 
 			var value = ui.item.value

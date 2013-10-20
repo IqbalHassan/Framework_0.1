@@ -230,12 +230,24 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             TCStatusName = "Status"
 
 
-        results = DB.GetData(Conn, "select distinct name from test_case_tag "
-                                   "where name Ilike '%" + value + "%' "
-                                     "and property in('" + Section + "','" + Test_Run_Type + "','" + Priority + "','tcid') "
-                                     "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
-                                     )
+      # results = DB.GetData(Conn, "select distinct name from test_case_tag "
+                                   # "where name Ilike '%" + value + "%' "
+                                     # "and property in('" + Section + "','" + Test_Run_Type + "','" + Priority + "','tcid') "
+                                     # "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
+                                     # )
 
+        id_names = DB.GetData(Conn, "select distinct tc_id, tc_name from test_cases "
+                                    "where tc_name ilike '%" + value + "%' "
+                                    "or tc_id ilike '%" + value + "%' "
+                                    "or tc_id in ( "
+                                        "select distinct name from test_case_tag "
+                                        "where name ilike '%" + value + "%' "
+                                            "and property in('" + Section + "','" + Test_Run_Type + "','" + Priority + "','tcid') "
+                                            "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
+                                        ")", False)
+
+        for each_id_name in id_names:
+            results.append(each_id_name[0] + " - " + each_id_name[1])
 
         if len(results) > 0:
             results.append("*Dev")

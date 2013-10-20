@@ -41,7 +41,7 @@ def GetProcessID(ProcessName):
     return ProcessID
 
 
-def TimeStamp(format):
+def TimeStamp(frmt):
     """
 
     ========= Instruction: ============
@@ -54,19 +54,19 @@ def TimeStamp(format):
 
     Parameter Description:
 
-    - string: this returns a readable string for the current date and time format
+    - string: this returns a readable string for the current date and time frmt
         Example:
         TimeStamp = TimeStamp("string") = Fri-Jan-20-10:20:31-2012
 
-    - integer: this returns a readable string for the current date and time format
+    - integer: this returns a readable string for the current date and time frmt
         Example:
         TimeStamp = TimeStamp("integer") = 2012120102051
     ======= End of Instruction: =========
 
     """
-    if format == "string":
+    if frmt == "string":
         TimeStamp = datetime.datetime.now().ctime().replace(' ', '-').replace('--', '-')
-    elif format == "integer":
+    elif frmt == "integer":
         now = datetime.datetime.now()
         year = "%d" % now.year
         month = "%d" % now.month

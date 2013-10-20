@@ -1,0 +1,64 @@
+2013-10-19 14:00:00,125 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-19 14:00:00,144 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
+2013-10-19 14:00:37,819 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-19 14:00:37,845 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
+2013-10-19 14:15:40,101 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-19 14:15:40,128 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
+2013-10-19 14:19:07,407 - INFO - main : MainDriver - Database connection successful
+2013-10-19 14:19:07,611 - INFO - main : MainDriver - Running Test cases from Test Set : [('Sat-Oct-19-14:18:59-2013', 'FIL-0033', 'sazid', 'Windows post2008Server - 64', 'FireFox(V22.0;32Bit),IE(V10;32Bit),Chrome(V30;32Bit)', 'Default', None)]
+2013-10-19 14:19:07,671 - INFO - main : MainDriver - Running Test cases from list : [('FIL-0033',)]
+2013-10-19 14:19:07,697 - INFO - main : MainDriver - -------------*************--------------
+2013-10-19 14:19:07,723 - INFO - main : MainDriver - Running Test case id : FIL-0033 :: [('new menu selection',)]
+2013-10-19 14:19:08,000 - INFO - main : MainDriver - Step : Open Browser
+2013-10-19 14:19:08,068 - INFO - ExecuteTestSteps : Sub_Driver_Futureshop - Opening browser
+2013-10-19 14:19:23,164 - INFO - BrowserSelection : WebProgram - Started Firefox Browser
+2013-10-19 14:19:23,572 - INFO - main : MainDriver - Open Browser : Test Step Passed
+2013-10-19 14:19:23,644 - INFO - main : MainDriver - Step : Open WebPage
+2013-10-19 14:19:26,717 - ERROR - OpenLink : WebProgram - Failed to open your link: http://www.futureshop.ca/
+2013-10-19 14:19:26,858 - ERROR - main : MainDriver - Open WebPage : Test Step Critical Failure
+2013-10-19 14:19:26,891 - ERROR - main : MainDriver - Test Case Failed
+2013-10-19 14:19:27,022 - INFO - main : MainDriver - Test Set Completed
+2013-10-19 14:19:55,101 - INFO - main : MainDriver - Database connection successful
+2013-10-19 14:19:55,138 - INFO - main : MainDriver - Running Test cases from Test Set : [('Sat-Oct-19-14:19:52-2013', 'FIL-0033', 'sazid', 'Windows post2008Server - 64', 'FireFox(V22.0;32Bit),IE(V10;32Bit),Chrome(V30;32Bit)', 'Default', None)]
+2013-10-19 14:19:55,171 - INFO - main : MainDriver - Running Test cases from list : [('FIL-0033',)]
+2013-10-19 14:19:55,198 - INFO - main : MainDriver - -------------*************--------------
+2013-10-19 14:19:55,220 - INFO - main : MainDriver - Running Test case id : FIL-0033 :: [('new menu selection',)]
+2013-10-19 14:19:55,250 - INFO - main : MainDriver - Step : Open Browser
+2013-10-19 14:19:55,276 - INFO - ExecuteTestSteps : Sub_Driver_Futureshop - Opening browser
+2013-10-19 14:20:01,877 - INFO - BrowserSelection : WebProgram - Started Firefox Browser
+2013-10-19 14:20:02,005 - INFO - main : MainDriver - Open Browser : Test Step Passed
+2013-10-19 14:20:02,038 - INFO - main : MainDriver - Step : Open WebPage
+2013-10-19 14:20:13,654 - ERROR - OpenLink : WebProgram - Failed to open your link: http://www.futureshop.ca/
+2013-10-19 14:20:13,779 - ERROR - main : MainDriver - Open WebPage : Test Step Critical Failure
+2013-10-19 14:20:13,809 - ERROR - main : MainDriver - Test Case Failed
+2013-10-19 14:20:13,861 - INFO - main : MainDriver - Test Set Completed
+2013-10-19 14:56:32,161 - INFO - main : MainDriver - Database connection successful
+2013-10-19 14:56:32,194 - INFO - main : MainDriver - Running Test cases from Test Set : [('Sat-Oct-19-14:56:29-2013', 'FIL-0033', 'sazid', 'Windows post2008Server - 64', 'FireFox(V22.0;32Bit),IE(V10;32Bit),Chrome(V30;32Bit)', 'Default', None)]
+2013-10-19 14:56:32,233 - INFO - main : MainDriver - Running Test cases from list : [('FIL-0033',)]
+2013-10-19 14:56:32,260 - INFO - main : MainDriver - -------------*************--------------
+2013-10-19 14:56:32,288 - INFO - main : MainDriver - Running Test case id : FIL-0033 :: [('new menu selection',)]
+2013-10-19 14:56:32,322 - INFO - main : MainDriver - Step : Open Browser
+2013-10-19 14:56:32,375 - INFO - ExecuteTestSteps : Sub_Driver_Futureshop - Opening browser
+2013-10-19 14:56:39,167 - INFO - BrowserSelection : WebProgram - Started Firefox Browser
+2013-10-19 14:56:39,296 - INFO - main : MainDriver - Open Browser : Test Step Passed
+2013-10-19 14:56:39,328 - INFO - main : MainDriver - Step : Open WebPage
+2013-10-19 14:56:45,165 - ERROR - OpenLink : WebProgram - Failed to open your link: http://www.futureshop.ca/
+2013-10-19 14:56:45,305 - ERROR - main : MainDriver - Open WebPage : Test Step Critical Failure
+2013-10-19 14:56:45,334 - ERROR - main : MainDriver - Test Case Failed
+2013-10-19 14:56:45,398 - INFO - main : MainDriver - Test Set Completed
+2013-10-19 19:29:26,753 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-19 19:29:26,806 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
+2013-10-19 19:30:45,117 - INFO - main : MainDriver - Database connection successful
+2013-10-19 19:30:45,341 - INFO - main : MainDriver - Running Test cases from Test Set : [('Sat-Oct-19-19:30:40-2013', 'FIL-0033', 'sazid', 'Windows post2008Server - 64', 'FireFox(V24.0;32Bit),IE(V10;32Bit),Chrome(V30;32Bit)', 'Default', None)]
+2013-10-19 19:30:45,459 - INFO - main : MainDriver - Running Test cases from list : [('FIL-0033',)]
+2013-10-19 19:30:45,533 - INFO - main : MainDriver - -------------*************--------------
+2013-10-19 19:30:45,608 - INFO - main : MainDriver - Running Test case id : FIL-0033 :: [('new menu selection',)]
+2013-10-19 19:30:45,684 - INFO - main : MainDriver - Step : Open Browser
+2013-10-19 19:30:45,727 - INFO - ExecuteTestSteps : Sub_Driver_Futureshop - Opening browser
+2013-10-19 19:30:56,483 - INFO - BrowserSelection : WebProgram - Started Firefox Browser
+2013-10-19 19:30:56,720 - INFO - main : MainDriver - Open Browser : Test Step Passed
+2013-10-19 19:30:56,749 - INFO - main : MainDriver - Step : Open WebPage
+2013-10-19 19:31:01,003 - ERROR - OpenLink : WebProgram - Failed to open your link: http://www.futureshop.ca/
+2013-10-19 19:31:01,154 - ERROR - main : MainDriver - Open WebPage : Test Step Critical Failure
+2013-10-19 19:31:01,184 - ERROR - main : MainDriver - Test Case Failed
+2013-10-19 19:31:01,286 - INFO - main : MainDriver - Test Set Completed
