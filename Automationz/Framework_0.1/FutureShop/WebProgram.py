@@ -17,7 +17,7 @@ def BrowserSelection(browser):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     global sBrowser
     try:
-        if browser == 'Chrome':
+        if "Chrome" in browser:
             sBrowser = webdriver.Chrome()
             print "Started Chrome Browser"
             CommonUtil.ExecLog(sModuleInfo, "Started Chrome Browser", 1)
@@ -27,14 +27,16 @@ def BrowserSelection(browser):
             CommonUtil.ExecLog(sModuleInfo, "Started Firefox Browser", 1)
             print "Started Firefox Browser"
             return "PASS"
-        elif browser == 'IE':
+        elif "IE" in browser:
             sBrowser = webdriver.Ie()
             CommonUtil.ExecLog(sModuleInfo, "Started Internet Explorer Browser", 1)
             print "Started Internet Explorer Browser"
             return "PASS"
         else:
-            print "You did not select a valid browser"
-            CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser", 3)
+            
+            print "You did not select a valid browser: %s" %browser
+            
+            CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser: %s"%browser, 3)
             return "Critical"
     except Exception, e:
         print "Exception : ", e
@@ -387,11 +389,14 @@ def GetItemDetail():
     
     
 
-#print BrowserSelection('Firefox')
+#print BrowserSelection('IE')
 #print OpenLink('http://www.futureshop.ca')
+#print SearchItem('10272357')
+#print GetItemDetail()
 #print SelectFirstLevelMenu ('Departments')
-#print SelectSecondLevelMenu('Computers & Software')
-#print SelectThirdLevelMenu('iPad & Tablets')
-##print SelectThirdLevelMenu('Software')
+#print SelectSecondLevelMenu('TV & Home Theater')
+##print SelectThirdLevelMenu('iPad & Tablets')
+#print SelectThirdLevelMenu('TVs')
 #print FilterBySelection("On Sale")
 #print GetFilterCount("On Sale")
+
