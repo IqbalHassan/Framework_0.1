@@ -286,7 +286,7 @@ $(document).ready(function() {
 			var req_id = $("#reqid_txtbox").val();
 			//status
 			var status;
-			if($('input[value="Production"]').attr('checked') == true)
+			if($('input[value="Production"]').attr('checked') == "checked")
 				status = "Ready"
 			else
 				status = "Dev"
