@@ -17,7 +17,7 @@ To Drop Primary key: Alter Table test_run
 To Change the Column Data Type: Alter Table test_run
                                 Alter execution_time Type VARCHAR(255)
 """
-def ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost=''):
+def ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost='135.23.123.67'):
 
     for x in range (0, 5):
             conn = False
