@@ -234,7 +234,10 @@ function RunTestAutocompleteSearch()
 				source : 'AutoCompleteTestCasesSearch',
 				select : function(event, ui) {
 
-						var value = ui.item.value
+						var tc_id_name = ui.item.value.split(" - ");
+						var value = "";
+						if (tc_id_name != null)
+							value = tc_id_name[0];
 
 							// Checking if Search Text box is for User Search
 						if ($("#AutoSearchTextBoxLabel").text() == "Select Test Machine:")
