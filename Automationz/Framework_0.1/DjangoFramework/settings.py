@@ -10,7 +10,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    #('Furqan Malik', 'fumalik@rim.com'),
+    #
 )
 
 MANAGERS = ADMINS
@@ -22,7 +22,7 @@ DATABASES = {
         'USER': 'postgres', # Not used with sqlite3.
         'PASSWORD': 'password', # Not used with sqlite3.
         'HOST': '135.23.123.67', # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '8000', # Set to empty string for default. Not used with sqlite3.
+        'PORT': '5432', # Set to empty string for default. Not used with sqlite3.
     }
 }
 
