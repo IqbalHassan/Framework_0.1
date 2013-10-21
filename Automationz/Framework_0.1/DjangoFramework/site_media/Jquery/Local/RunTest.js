@@ -367,10 +367,7 @@ function RunTestAutocompleteSearch(Env)
 				//source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
 				select : function(event, ui) {
 
-						var tc_id_name = ui.item.value.split(" - ");
-						var value = "";
-						if (tc_id_name != null)
-							value = tc_id_name[0];
+						var value = ui.item.value
 
 							// Checking if Search Text box is for User Search
 						if ($("#AutoSearchTextBoxLabel").text().trim() === "*Select Test Machine:")
