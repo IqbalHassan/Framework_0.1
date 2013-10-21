@@ -84,7 +84,7 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
             CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
             browser = sClientName
             #Adding working around for the current bug where we are not able to select browser
-            browser = "Firefox"
+            #browser = "Firefox"
             sTestStepReturnStatus = WebProgram.BrowserSelection(browser)
             print sTestStepReturnStatus
 
