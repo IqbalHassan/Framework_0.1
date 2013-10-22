@@ -235,7 +235,7 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
                                      # "and property in('" + Section + "','" + Test_Run_Type + "','" + Priority + "','tcid') "
                                      # "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
                                      # )
-
+        #ID and Names
         id_names = DB.GetData(Conn, "select distinct tc_id, tc_name from test_cases "
                                     "where tc_name ilike '%" + value + "%' "
                                     "or tc_id ilike '%" + value + "%' "
@@ -246,8 +246,19 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
                                             "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
                                         ")", False)
 
+        
         for each_id_name in id_names:
             results.append(each_id_name[0] + " - " + each_id_name[1])
+        
+        #Section and Sub Section Names
+        section_sub_section = DB.GetData(Conn, "select name from test_case_tag where property ilike 'Section'"
+                                    "and name ilike '%" + value + "%' ")
+
+        
+        for each_section_sub_section in section_sub_section:
+            results.append(each_section_sub_section)
+
+
 
         if len(results) > 0:
             results.append("*Dev")

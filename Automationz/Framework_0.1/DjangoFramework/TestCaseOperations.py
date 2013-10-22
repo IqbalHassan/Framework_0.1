@@ -358,14 +358,17 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Section_L
         Tag_List.append(('%s' % each_TC_Type, TestRunType_Tag))
     Tag_List.append(('%s' % Priority, Priority_Tag))
 
-    #Add section tags
-    for eachSection in Section_List:
-        Tag_List.append(('%s' % eachSection, Section_Tag))
 
     #Add Section id based on hierarchy
     Section_Id = DBUtil.GetData(conn, "select section_id from product_sections where section_path = '%s'" % Section_Path)
     if len(Section_Id) > 0:
         Tag_List.append(('%d' % Section_Id[0], Section_Path_Tag))
+
+
+    #Add section tags
+    Section_List = Section_Path.split(".")
+    for eachSection in Section_List:
+        Tag_List.append(('%s' % eachSection, Section_Tag))
 
     #Add Dependency tags
     for eachDependency in Dependency_List:
