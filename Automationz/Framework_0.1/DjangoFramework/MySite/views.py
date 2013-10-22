@@ -251,7 +251,7 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             results.append(each_id_name[0] + " - " + each_id_name[1])
         
         #Section and Sub Section Names
-        section_sub_section = DB.GetData(Conn, "select name from test_case_tag where property ilike 'Section'"
+        section_sub_section = DB.GetData(Conn, "select distinct name from test_case_tag where property ilike 'Section'"
                                     "and name ilike '%" + value + "%' ")
 
         
