@@ -318,15 +318,18 @@ def Insert_ExpectedDataSet(conn, TC_Id, Step_Index, Step_Seq, Test_Case_DataSet_
 
     return Expected_Data_Set_Id
 
-def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Section_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List):
+def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
 
     Tag_List = []
     #Add test case id tag
     Tag_List.append(('%s' % TC_Id, 'tcid'))
-    if Manual_TC_Id != '':
-        Tag_List.append(('%s' % Manual_TC_Id, 'MKS'))
-    else:
+    ManualTCIDFound = False
+    for eachManual_Id in Manual_TC_Id:
+        if eachManual_Id.strip() != '':
+            Tag_List.append(('%s' % eachManual_Id, 'MKS'))
+            ManualTCIDFound = True
+    if ManualTCIDFound == False:
         Tag_List.append(('%s' % TC_Id, 'MKS'))
 
     #hard coded tags for now
@@ -336,6 +339,7 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Section_L
     if Platform.lower() == 'pc':
         Tag_List.append(('PC', 'machine_os'))
         Section_Tag = 'Section'
+        Custom_Tag = 'CustomTag'
         Section_Path_Tag = 'section_id'
         TestRunType_Tag = 'test_run_type'
         Priority_Tag = 'Priority'
@@ -344,6 +348,7 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Section_L
     elif Platform.lower() == 'mac':
         Tag_List.append(('Mac', 'machine_os'))
         Section_Tag = 'MacSection'
+        Custom_Tag = 'MacCustomTag'
         Section_Path_Tag = 'mac_section_id'
         TestRunType_Tag = 'Mac_test_run_type'
         Priority_Tag = 'MacPriority'
@@ -358,22 +363,23 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Section_L
         Tag_List.append(('%s' % each_TC_Type, TestRunType_Tag))
     Tag_List.append(('%s' % Priority, Priority_Tag))
 
+    #Add custom tags
+    for eachTag in Custom_Tag_List:
+        Tag_List.append(('%s' % eachTag, Custom_Tag))
 
     #Add Section id based on hierarchy
     Section_Id = DBUtil.GetData(conn, "select section_id from product_sections where section_path = '%s'" % Section_Path)
     if len(Section_Id) > 0:
         Tag_List.append(('%d' % Section_Id[0], Section_Path_Tag))
 
-
-    #Add section tags
-    Section_List = Section_Path.split(".")
-    for eachSection in Section_List:
+    #Work around to display section names in run page
+    for eachSection in Section_Path.split('.'):
         Tag_List.append(('%s' % eachSection, Section_Tag))
 
     #Add Dependency tags
     for eachDependency in Dependency_List:
         Tag_List.append(('%s' % Dependency_Tag, eachDependency))
-        if eachDependency in ['Outlook', 'MacNative', 'iTunes', 'iPhoto', 'WMP', 'IE', 'Firefox', 'Chrome', 'Safari']:
+        if eachDependency in ['Outlook', 'MacNative', 'iTunes', 'iPhoto', 'WMP', 'Chrome', 'Firefox', 'IE']:
             Tag_List.append(('%s' % eachDependency, 'client'))
         elif eachDependency in ['BBX', 'SD']:
             Tag_List.append(('%s' % eachDependency, 'device_memory'))

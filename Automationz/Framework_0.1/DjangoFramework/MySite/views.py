@@ -222,42 +222,20 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             Test_Run_Type = "Mac_test_run_type"
             Priority = "MacPriority"
             TCStatusName = "MacStatus"
+            CustomTag = "MacCustomTag"
 
         if Environment == "PC":
             Section = "Section"
             Test_Run_Type = "test_run_type"
             Priority = "Priority"
             TCStatusName = "Status"
+            CustomTag = "CustomTag"
 
-
-      # results = DB.GetData(Conn, "select distinct name from test_case_tag "
-                                   # "where name Ilike '%" + value + "%' "
-                                     # "and property in('" + Section + "','" + Test_Run_Type + "','" + Priority + "','tcid') "
-                                     # "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
-                                     # )
-        #ID and Names
-        id_names = DB.GetData(Conn, "select distinct tc_id, tc_name from test_cases "
-                                    "where tc_name ilike '%" + value + "%' "
-                                    "or tc_id ilike '%" + value + "%' "
-                                    "or tc_id in ( "
-                                        "select distinct name from test_case_tag "
-                                        "where name ilike '%" + value + "%' "
-                                            "and property in('" + Section + "','" + Test_Run_Type + "','" + Priority + "','tcid') "
-                                            "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
-                                        ")", False)
-
-        
-        for each_id_name in id_names:
-            results.append(each_id_name[0] + " - " + each_id_name[1])
-        
-        #Section and Sub Section Names
-        section_sub_section = DB.GetData(Conn, "select distinct name from test_case_tag where property ilike 'Section'"
-                                    "and name ilike '%" + value + "%' ")
-
-        
-        for each_section_sub_section in section_sub_section:
-            results.append(each_section_sub_section)
-
+        results = DB.GetData(Conn, "select distinct name from test_case_tag "
+                                   "where name Ilike '%" + value + "%' "
+                                     "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','tcid') "
+                                     "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
+                                     )
 
 
         if len(results) > 0:
@@ -315,13 +293,19 @@ def AutoCompleteTagSearch(request):
         Environment = request.GET.get(u'Env', '')
         if Environment == "Mac":
             Section = "MacSection"
+            CustomTag = "MacCustomTag"
 
         if Environment == "PC":
             Section = "Section"
+            CustomTag = "CustomTag"
 
 
         results = DB.GetData(Conn, "select distinct name from test_case_tag where name Ilike '%" + value + "%' "
-                                    + "and property = '" + Section + "' order by name")
+                                    + "and property in ('" + CustomTag + "') order by name")
+
+        mastertags = DB.GetData(Conn, "select distinct value from config_values where type = 'tag' order by value")
+
+        results = list(set(results + mastertags))
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -353,12 +337,14 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 Test_Run_Type = "Mac_test_run_type"
                 Priority = "MacPriority"
                 TCStatusName = "MacStatus"
+                CustomTag = "MacCustomTag"
 
             if Environment == "PC":
                 Section = "Section"
                 Test_Run_Type = "test_run_type"
                 Priority = "Priority"
                 TCStatusName = "Status"
+                CustomTag = "CustomTag"
 
             QueryText = []
             for eachitem in UserText:
@@ -393,10 +379,10 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         count = 1
         for eachitem in QueryText:
             if count == 1:
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         TableData = DB.GetData(Conn, "select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc "
@@ -923,6 +909,7 @@ def Verify_Query(request):  #==================Returns Message if Depandency is 
                 Priority = "MacPriority"
                 Env_Dependency = "MacDependency"
                 TCStatusName = "MacStatus"
+                CustomTag = "MacCustomTag"
 
             if Environment == "PC":
                 Section = "Section"
@@ -930,6 +917,7 @@ def Verify_Query(request):  #==================Returns Message if Depandency is 
                 Priority = "Priority"
                 Env_Dependency = "Dependency"
                 TCStatusName = "Status"
+                CustomTag = "CustomTag"
 
             QueryText = []
             for eachitem in UserText:
@@ -976,10 +964,10 @@ def Verify_Query(request):  #==================Returns Message if Depandency is 
         count = 1
         for eachitem in QueryText:
             if count == 1:
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
         Query = Query + "AND COUNT(CASE WHEN name = '" + TCStatusName + "' and property = '" + propertyValue + "' THEN 1 END) > 0 "
         Query = Query + "AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0 "
         DepandencyNamesValues = DB.GetData(Conn, "Select distinct t1. property,t2. property from test_case_tag t1, test_case_tag t2 "
@@ -1060,12 +1048,14 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                 Test_Run_Type = "Mac_test_run_type"
                 Priority = "MacPriority"
                 TCStatusName = "MacStatus"
+                CustomTag = "MacCustomTag"
 
             if Environment == "PC":
                 Section = "Section"
                 Test_Run_Type = "test_run_type"
                 Priority = "Priority"
                 TCStatusName = "Status"
+                CustomTag = "CustomTag"
 
             UserText = UserData.split(":");
             EmailIds = EmailIds.split(":")
@@ -1110,11 +1100,11 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         for eachitem in QueryText:
             if count == 1:
                 #Query = "HAVING COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
                 #Query = Query + "AND COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0" % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         TestCasesIDs = DB.GetData(Conn, "select distinct tct.tc_id from test_case_tag tct, test_cases tc "
@@ -1134,7 +1124,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
     TestSetName = ""
     for eachitem in QueryText:
-        TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s' and property = '%s'" % (eachitem, Section))
+        TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s' and property in ('%s','%s')" % (eachitem, Section, CustomTag))
         if len(TagName) > 0:
             TagName = TagName[0]
         else:
@@ -1148,7 +1138,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             if eachitem in iclient:
                 eachitem = iclient
 
-        if TagName == Section or TagName == Priority or TagName == 'tcid':
+        if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid':
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
             TestSetName = TestSetName + " " + eachitem
             TestSetName = TestSetName.strip()
@@ -1172,7 +1162,6 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-
 
 def ReRun_Fail_TestCases(request):
     Conn = GetConnection()
@@ -1472,13 +1461,13 @@ def PerformanceResult(request):
             GraphRequest = request.GET.get(u'GraphRequest', '')
         if UserData == "":
             tempEnvironments = DB.GetData(Conn, "select distinct machine_os, product_version,hw_model,tct.name from performance_results pr, test_case_tag tct where "
-                                        "pr.tc_id = tct.tc_id and tct.property in ('Section','MacSection') and tct.name in ('PIM Performance','Media Performance','Other Performance')", False)
+                                        "pr.tc_id = tct.tc_id and tct.property in ('Section','MacSection','CustomTag','MacCustomTag') and tct.name in ('PIM Performance','Media Performance','Other Performance')", False)
             #removing Performance from 'Media Performance' for eg
             for eachEnv in tempEnvironments:
                 Environments.append((eachEnv[0], eachEnv[1], eachEnv[2], eachEnv[3].replace(' Performance', ''),))
 
             tempCategories = DB.GetData(Conn, "select distinct tct.name from performance_results pr, test_case_tag tct where "
-                                        "pr.tc_id = tct.tc_id and tct.property in ('Section','MacSection') and tct.name in ('PIM Performance','Media Performance','Other Performance')", False)
+                                        "pr.tc_id = tct.tc_id and tct.property in ('Section','MacSection','CustomTag','MacCustomTag') and tct.name in ('PIM Performance','Media Performance','Other Performance')", False)
 
             for eachCat in tempCategories:
                 Categories.append((eachCat[0].replace(' Performance', ''),))
@@ -1509,8 +1498,8 @@ def PerformanceResult(request):
                             "product_version = '%s' and "
                             "hw_model = '%s' "
                             "group by pr.tc_id "
-                            "HAVING COUNT(CASE WHEN name = 'Duration' and property in ('MacSection','Section') THEN 1 END) > 0"
-                            "AND COUNT(CASE WHEN name = '%s Performance'  and property in ('MacSection','Section') THEN 1 END) > 0"
+                            "HAVING COUNT(CASE WHEN name = 'Duration' and property in ('MacSection','Section','CustomTag','MacCustomTag') THEN 1 END) > 0"
+                            "AND COUNT(CASE WHEN name = '%s Performance'  and property in ('MacSection','Section','CustomTag','MacCustomTag') THEN 1 END) > 0"
                             % (Machine_os, Product_Version, Hadrware_model, Category))
 
 
@@ -1523,8 +1512,8 @@ def PerformanceResult(request):
                             "product_version = '%s' and "
                             "hw_model = '%s' "
                             "group by pr.tc_id "
-                            "HAVING COUNT(CASE WHEN name = 'Memory' and property in ('MacSection','Section') THEN 1 END) > 0"
-                            "AND COUNT(CASE WHEN name = '%s Performance'  and property in ('MacSection','Section') THEN 1 END) > 0"
+                            "HAVING COUNT(CASE WHEN name = 'Memory' and property in ('MacSection','Section','CustomTag','MacCustomTag') THEN 1 END) > 0"
+                            "AND COUNT(CASE WHEN name = '%s Performance'  and property in ('MacSection','Section','CustomTag','MacCustomTag') THEN 1 END) > 0"
                             % (Machine_os, Product_Version, Hadrware_model, Category))
 
 
@@ -1536,8 +1525,8 @@ def PerformanceResult(request):
                             "product_version = '%s' and "
                             "hw_model = '%s' "
                             "group by pr.tc_id "
-                            "HAVING COUNT(CASE WHEN name = 'CPU' and property in ('MacSection','Section') THEN 1 END) > 0"
-                            "AND COUNT(CASE WHEN name = '%s Performance'  and property in ('MacSection','Section') THEN 1 END) > 0"
+                            "HAVING COUNT(CASE WHEN name = 'CPU' and property in ('MacSection','Section','CustomTag','MacCustomTag') THEN 1 END) > 0"
+                            "AND COUNT(CASE WHEN name = '%s Performance'  and property in ('MacSection','Section','CustomTag','MacCustomTag') THEN 1 END) > 0"
                             % (Machine_os, Product_Version, Hadrware_model, Category))
 
             #Creating Folder for Graph if request is for Graph
@@ -1568,7 +1557,8 @@ def PerformanceResult(request):
                                                     "pr.machine_os = '%s' and "
                                                     "pr.hw_model = '%s' and "
                                                     "tct.name = 'Duration' and "
-                                                    "tct.property = 'Section' "
+                                                    "tct.property in ('Section','MacSection','CustomTag','MacCustomTag') "
+
                                                      % (eachTC_ID, eachBun, Machine_os, Hadrware_model))
         #                DurationCount = DB.GetData(Conn,"Select Count( duration ) from performance_results where tc_id = '%s' and product_version = '%s'" %(eachTC_ID,eachBun),False )
         #                DurationMax = DB.GetData(Conn,"Select to_char(MAX(duration),'HH24:MI:SS') from performance_results where tc_id = '%s' and product_version = '%s'" %(eachTC_ID,eachBun),False )
@@ -2131,11 +2121,11 @@ def ViewTestCase(TC_Id):
             #find all the tag details about test case
             test_case_tag_details = DB.GetData(Conn, "select name,property from test_case_tag where tc_id = '%s'" % TC_Id, False)
             Manual_TC_Id_List = [x[0] for x in test_case_tag_details if x[1] == 'MKS']
-            Manual_TC_Id = ''.join(Manual_TC_Id_List)
+            Manual_TC_Id = ','.join(Manual_TC_Id_List)
 
             Platform = [x[0] for x in test_case_tag_details if x[1] == 'machine_os']
             TC_Type = [x[0] for x in test_case_tag_details if x[1] == 'test_run_type' or x[1] == 'Mac_test_run_type']
-            Tag_List = [x[0] for x in test_case_tag_details if x[1] == 'Section' or x[1] == 'MacSection']
+            Tag_List = [x[0] for x in test_case_tag_details if x[1] == 'CustomTag' or x[1] == 'MacCustomTag']
             Dependency_List = [x[1] for x in test_case_tag_details if x[0] == 'Dependency' or x[0] == 'MacDependency']
             Priority_List = [x[0] for x in test_case_tag_details if x[1] == 'Priority' or x[1] == 'MacPriority']
             Priority = ''.join(Priority_List)

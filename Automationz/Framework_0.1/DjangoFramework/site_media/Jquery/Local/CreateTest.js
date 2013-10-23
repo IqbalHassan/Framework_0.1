@@ -69,7 +69,7 @@ $(document).ready(function() {
 				var tc_id = data['Manual_TC_Id']
 				var dependancy_list = data['Dependency List'] 
 				var manual_tc_id = data['TC_Id']
-				var platform = data['platform']
+				var platform = data['Platform']
 				var priority = data['Priority']
 				var status = data['Status']
 				var steps_and_data = data['Steps and Data']
@@ -306,7 +306,7 @@ $(document).ready(function() {
 				type.push($(this).val())
 			});
 			
-			var priority = $("select option:selected").val();
+			var priority = 'P' + $("#priotiy_select").val();
 			
 			var tag = new Array();
 			for(var i = 0; i < $(".submitquery").length; i++){
