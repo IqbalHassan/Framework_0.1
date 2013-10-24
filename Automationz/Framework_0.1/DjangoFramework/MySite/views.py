@@ -233,17 +233,23 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
 
         results = DB.GetData(Conn, "select distinct name from test_case_tag "
                                    "where name Ilike '%" + value + "%' "
-                                     "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','tcid') "
+                                     "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') "
                                      "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
                                      )
 
+        tcidresults = DB.GetData(Conn, "select distinct name || ' - ' || tc_name from test_case_tag tct,test_cases tc "
+                                   "where tct.tc_id = tc.tc_id and name Ilike '%" + value + "%' "
+                                     "and property in('tcid') "
+                                     "and tct.tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
+                                     )
+
+        results = list(set(results + tcidresults))
 
         if len(results) > 0:
             results.append("*Dev")
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-
 
 def AutoCompleteUsersSearch(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
 
