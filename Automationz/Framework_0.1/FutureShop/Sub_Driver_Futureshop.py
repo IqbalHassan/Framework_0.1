@@ -6,6 +6,8 @@ import CommonUtil
 import Cleanup
 import sys, os, time, inspect
 import WebProgram
+import itertools, operator
+import Compare 
 
 if os.name == 'nt':
     import clr, System
@@ -134,6 +136,51 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
                 sTestStepReturnStatus = "Pass"
             else:
                 sTestStepReturnStatus = "Critical"
+        
+        elif CurrentStep == "Verify Product Details":
+            DataSet = DBUtil.GetData(conn, exp_SQLQuery, False)
+            DataGroup = []
+            DataList = []
+            ExpDataList = []
+            ActDataList = []
+            #Get expected data
+            for key, group in itertools.groupby(DataSet, operator.itemgetter(0)):
+                DataGroup.append(list(group))
+            for eachGroup in DataGroup:
+                DataList = [tuple(x[1:3])for x in eachGroup]
+                #Replace address data id with actual data
+                ExpAddrList = []
+                for i in range(len(DataList) - 1, -1, -1):
+                    eachData = DataList[i]
+                    if eachData[0] == 'Details':
+                        temp = list(DataList[i])
+                        address_find_SQLQuery = ("select "
+                        " pmd.field,"
+                        " pmd.value"
+                        " from master_data pmd"
+                        " where"
+                        " pmd.id = '%s'"
+                        " ;" % (temp[1]))
+                        AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
+                        temp[1] = AddressData
+                        ExpAddrList.append(tuple(temp))
+                        DataList.pop(i)
+                for eachData in ExpAddrList:
+                    DataList.append(eachData)
+                ExpDataList.append(DataList)
+
+            #Get actual data
+            ActDataList = WebProgram.GetItemDetail()
+            if ActDataList == "Critical":
+                CommonUtil.ExecLog(sModuleInfo, "Error in getting Product Details", 3)
+                sTestStepReturnStatus = "Critical"
+            else:
+                objCompare = Compare.Compare()
+                retValue = objCompare.FieldCompare(conn, ExpDataList, ActDataList, [], ['Web ID'])
+                if retValue == "Pass":
+                    sTestStepReturnStatus = "Pass"
+                else:
+                    sTestStepReturnStatus = "Critical"
 
         
         else:
