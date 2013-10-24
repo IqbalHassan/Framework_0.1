@@ -289,39 +289,39 @@ def GetItemDetail():
     sale_price_dollar = ""
     sale_dollar_cent = ""
     sale_price_cents = ""
-    product_title= []
-    product_model =[]
-    prod_web_id =[]
-    sale_price = []
-    saving=[]
-    details_specs = []
+#    product_title = []
+#    product_model = []
+#    prod_web_id = []
+#    sale_price = []
+#    saving = []
+#    details_specs = []
     full_product_detail = []
-    
+
     time.sleep(3)
     try:
         prod_title = WebDriverWait(sBrowser, 20).until(lambda driver : sBrowser.find_element_by_id(title_id))
-        product_title.append("Title")
-        product_title.append(prod_title.text)
+        product_title = ("Title", prod_title.text.replace('(', '<').replace(')', '>'))
+        full_product_detail.append(product_title)
         print "Successfully collected product title"
     except:
-        print "Unable to collect product title" 
+        print "Unable to collect product title"
     try:
         prod_model_number = WebDriverWait(sBrowser, 20).until(lambda driver : sBrowser.find_element_by_id(model_number))
-        product_model.append("Model")
-        product_model.append(prod_model_number.text)
+        product_model = ("Model", prod_model_number.text.replace('(', '<').replace(')', '>'))
+        full_product_detail.append(product_model)
         print "Successfully collected the model number"
     except:
         print "Unable to collect model number"
     try:
         prod_web_id_value = WebDriverWait(sBrowser, 20).until(lambda driver : sBrowser.find_element_by_id(web_id))
-        prod_web_id.append("Web ID")
-        prod_web_id.append(prod_web_id_value.text)
-        print "Successfully collected Web ID"   
+        prod_web_id = ("Web ID", prod_web_id_value.text.replace('(', '<').replace(')', '>'))
+        full_product_detail.append(prod_web_id)
+        print "Successfully collected Web ID"
     except:
-        print "Unable to collect Web ID"    
+        print "Unable to collect Web ID"
     #sale price
     try:
-        for elem in (WebDriverWait(sBrowser, 5).until(lambda driver: sBrowser.find_elements_by_xpath('.//div[@class="%s"]'%prod_sale_price))):
+        for elem in (WebDriverWait(sBrowser, 5).until(lambda driver: sBrowser.find_elements_by_xpath('.//div[@class="%s"]' % prod_sale_price))):
             try:
                 for price_dollars in sBrowser.find_elements_by_xpath('.//span[@class = "dollars"]'):
                     sale_price_dollar = price_dollars.text
@@ -331,60 +331,57 @@ def GetItemDetail():
                 print "Unable to collect sale price in dollars"
             try:
                 for price_cents in sBrowser.find_elements_by_xpath('.//span[@class = "cents"]'):
-                    sale_price_cents = price_cents.text  
+                    sale_price_cents = price_cents.text
                     print "Successfully collected sale price in cents"
                     break
             except:
                 print "Unable to collect sale price for cents"
-        sale_dollar_cent = sale_price_dollar+"."+sale_price_cents
-        sale_price.append("Sale Price")
-        sale_price.append(sale_dollar_cent)   
-        print "Successfully collected sale price information" 
+        sale_dollar_cent = sale_price_dollar + "." + sale_price_cents
+        sale_price = ("Sale Price", sale_dollar_cent.replace('(', '<').replace(')', '>'))
+        full_product_detail.append(sale_price)
+        print "Successfully collected sale price information"
     except:
         print "Unable to collect Sale Price information"
     #saving  
-    try: 
-        for sale_ele in (WebDriverWait(sBrowser, 5).until(lambda driver: sBrowser.find_elements_by_xpath('.//div[@class="%s"]'%prod_saving))):
+    try:
+        for sale_ele in (WebDriverWait(sBrowser, 5).until(lambda driver: sBrowser.find_elements_by_xpath('.//div[@class="%s"]' % prod_saving))):
             for price_dollars in sBrowser.find_elements_by_xpath(".//span[contains(text(),'$')]"):
                 break
-        saving.append("Saving")    
-        saving.append(price_dollars.text)  
+        saving = ("Saving", price_dollars.text.replace('(', '<').replace(')', '>'))
+        full_product_detail.append(saving)
         print "Successfully collected saving price"
     except:
         print "Unable to collect saving price"
     #Selecting detail and specs of the product 
     try:
-        menu_name_3 = "Details and Specs"    
+        menu_name_3 = "Details and Specs"
         time.sleep(1)
-        allElements= sBrowser.find_elements_by_xpath ("//*[contains(text(),'%s')]" % (menu_name_3))
+        allElements = sBrowser.find_elements_by_xpath ("//*[contains(text(),'%s')]" % (menu_name_3))
         for eachElements in allElements:
             eachElements.click()
             break
     except:
         print "Error trying to select the Detail & Specs"
     try:
-        time.sleep(1)  
+        time.sleep(1)
         table_x = []
         table_y = []
+        small_details_specs = []
         xpath = '//*[@class="span5"]'
         for i in sBrowser.find_elements_by_xpath(xpath):
             table_x.append(i.text)
-        xpath = '//*[@class="span7"]'   
+        xpath = '//*[@class="span7"]'
         for j in sBrowser.find_elements_by_xpath(xpath):
             table_y.append(j.text)
         for x, y in zip(table_x, table_y):
-            total = x,y
-            details_specs.append(total)
+            total = x.replace('(', '<').replace(')', '>'), y.replace('(', '<').replace(')', '>')
+            small_details_specs.append(total)
+        details_specs = ("Details", small_details_specs)
+        full_product_detail.append(details_specs)
         print 'successfully collected all the detail and specs'
     except:
         print "Unable to collect detail and specs detail"
-    full_product_detail.append(product_title)
-    full_product_detail.append(product_model)
-    full_product_detail.append(prod_web_id)
-    full_product_detail.append(sale_price)
-    full_product_detail.append(saving)
-    full_product_detail.append(details_specs)
-    return full_product_detail    
+    return full_product_detail 
     
     
     
