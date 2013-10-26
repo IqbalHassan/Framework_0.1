@@ -121,7 +121,7 @@ def ProductSectionsCreated(request):
         sections.append(request.POST['subsection_1'])
         sections.append(request.POST['subsection_2'])
         sections.append(request.POST['subsection_3'])
-        sections.append(request.POST['subsection_4'])        
+        sections.append(request.POST['subsection_4'])
         sections_string = ''
         for i in range(len(sections) - 1):
             if sections[i].strip() != '':
@@ -238,7 +238,7 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
                                      )
 
         tcidresults = DB.GetData(Conn, "select distinct name || ' - ' || tc_name from test_case_tag tct,test_cases tc "
-                                   "where tct.tc_id = tc.tc_id and name Ilike '%" + value + "%' "
+                                   "where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%" + value + "%' or tc.tc_name Ilike '%" + value + "%')"
                                      "and property in('tcid') "
                                      "and tct.tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
                                      )
@@ -1906,7 +1906,7 @@ def TestCase_ParseData(temp, Steps_Name_List):
                             address = False
                             a += 1
                             continue
-                        if tupleItem == '' or tupleItem == ' ' or tupleItem == ']' or tupleItem == '[': continue
+                        if tupleItem.strip() == '' or tupleItem == ']' or tupleItem == '[': continue
 
                         if address or '[' in tupleItem:
                             if not address:
@@ -1942,7 +1942,7 @@ def TestCase_ParseData(temp, Steps_Name_List):
                         address = False
                         a += 1
                         continue
-                    if tupleItem == '' or tupleItem == ' ' or tupleItem == ']' or tupleItem == '[': continue
+                    if tupleItem.strip() == '' or tupleItem == ']' or tupleItem == '[': continue
 
                     if address or '[' in tupleItem:
                         if not address:

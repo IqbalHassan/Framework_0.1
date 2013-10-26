@@ -452,7 +452,7 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
                     for each_Master_Data_Id in Master_Data_Id_List:
 
                         #Check if there is address data for this master data id, if yes delete that first
-                        Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where id = '%s' and (field = 'Home Address' or field = 'Work Address' or field = 'Other Address')" % each_Master_Data_Id)
+                        Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where id = '%s' and value ilike '%s%%'" % (each_Master_Data_Id, each_Master_Data_Id))
 
                         for each_Address_Data_Id in Address_Data_Id_List:
 
@@ -494,7 +494,7 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
                 for each_Master_Data_Id in Master_Data_Id_List:
 
                     #Check if there is address data for this master data id, if yes delete that first
-                    Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where id = '%s' and (field = 'Home Address' or field = 'Work Address' or field = 'Other Address')" % each_Master_Data_Id)
+                    Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where id = '%s' and value ilike '%s%%'" % (each_Master_Data_Id, each_Master_Data_Id))
 
                     for each_Address_Data_Id in Address_Data_Id_List:
 
@@ -512,7 +512,7 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
                 for each_Master_Data_Id in Master_Data_Id_List:
 
                     #Check if there is address data for this master data id, if yes delete that first
-                    Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where id = '%s' and (field = 'Home Address' or field = 'Work Address' or field = 'Other Address')" % each_Master_Data_Id)
+                    Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where id = '%s' and value ilike '%s%%'" % (each_Master_Data_Id, each_Master_Data_Id))
 
                     for each_Address_Data_Id in Address_Data_Id_List:
 
@@ -696,11 +696,53 @@ def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Depe
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format. It should be a list.", 4)
         return err_msg
     else:
-        for eachitem in Steps_Data_List:
-            if not isinstance(eachitem, tuple):
+        for eachstepdata in Steps_Data_List:
+            if not isinstance(eachstepdata, tuple):
                 print "Error. Test case steps format is incorrect for one of the step"
-                err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s. It should be a list." % eachitem, 4)
+                err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s." % eachstepdata, 4)
                 return err_msg
+            else:
+                #first element of tuple should be a string and second element a list
+                if not isinstance(eachstepdata[0], basestring) and not isinstance(eachstepdata[1], list):
+                    print "Error. Test case steps format is incorrect for one of the step"
+                    err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s." % eachstepdata, 4)
+                    return err_msg
+
+                #stepdata should be a list of lists
+                for stepdatalist in eachstepdata[1]:
+
+                    if not isinstance(stepdatalist, list):
+                        print "Error. Test case steps format is incorrect for one of the step"
+                        err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s." % stepdatalist, 4)
+                        return err_msg
+                    else:
+
+                        for eachdatalist in stepdatalist:
+
+                            if not isinstance(eachdatalist, tuple):
+                                print "Error. Test case steps format is incorrect for one of the step"
+                                err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s." % eachstepdata, 4)
+                                return err_msg
+                            else:
+
+                                #first element of tuple should be a string and second element a string or list
+                                if not (isinstance(eachdatalist[0], basestring) and (isinstance(eachdatalist[1], basestring) or isinstance(eachdatalist[1], list))):
+                                    print "Error. Test case steps format is incorrect for one of the step"
+                                    err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s. It should be a list." % eachdatalist, 4)
+                                    return err_msg
+
+                                if isinstance(eachdatalist[1], list):
+                                    for eachsubitem in eachdatalist[1]:
+                                        if not isinstance(eachsubitem, tuple):
+                                            print "Error. Test case steps format is incorrect for one of the step"
+                                            err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s. It should be a list." % eachsubitem, 4)
+                                            return err_msg
+                                        else:
+                                            if not isinstance(eachdatalist[0], basestring) and not isinstance(eachdatalist[1], basestring):
+                                                print "Error. Test case steps format is incorrect for one of the step"
+                                                err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s. It should be a list." % eachdatalist, 4)
+                                                return err_msg
+
 
 #        for step in Steps_Data_List:
 #            if not isinstance(step,tuple):
