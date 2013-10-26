@@ -129,6 +129,11 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
                 if sTestStepReturnStatus != "Pass":
                     return sTestStepReturnStatus
 
+        elif CurrentStep == "Search For An Item":
+            DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
+            search_text = DataSet[0][2]
+            sTestStepReturnStatus = WebProgram.SearchItem(search_text)
+            
         elif CurrentStep == "Verify Filter Items Count":
             DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
             check_box_name = DataSet[0][1]
