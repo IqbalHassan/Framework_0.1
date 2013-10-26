@@ -581,7 +581,7 @@ def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
     import MKSDevTaskFinder as MKS
 
     ToAddr = ToEmailAddress.split(',')
-    message = Message(From="test@test.com",
+    message = Message(From="automation.solutionz@gmail.com",
                       To=ToAddr,
                       charset="utf-8")
     if type == 'Daily_Build':
@@ -680,7 +680,7 @@ def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
         #TotalRun = DB.GetData(Conn,"Select count(*) as TotalRun from test_case_results where run_id = '%s' and status in ('Passed', 'Failed')"%Subject)
         Passed = DB.GetData(Conn, "Select count(*) as Passed from test_case_results where run_id = '%s' and status = 'Passed'" % Subject)
         Failed = DB.GetData(Conn, "Select count(*) as Passed from test_case_results where run_id = '%s' and status = 'Failed'" % Subject)
-        EnvInfo = DB.GetData(Conn, "Select machine_os,dtsversion,device_version,client,test_run_type,rundescription from test_run_env where run_id = '%s'" % Subject, False)
+        EnvInfo = DB.GetData(Conn, "Select machine_os,client,test_run_type,rundescription from test_run_env where run_id = '%s'" % Subject, False)
         #Branch bundle info
         BranchInfo = ''
         BundleInfo = ''
@@ -727,7 +727,7 @@ def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
                 print "Cant find Related items from MKS or some exception like Integrity not installed"
                 Fail_RelatedItems = []
 
-        if EnvInfo[0][4] == "Daily_Build":
+        if EnvInfo[0][3] == "Daily_Build":
             if EnvInfo[0][0].lower().startswith('win'):
                 SubjectLine = "PC %s Test - %s - %s" % (EnvInfo[0][5], BranchInfo, BundleInfo)
             else:
@@ -735,7 +735,7 @@ def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
 
             message.Subject = "Completed %s" % SubjectLine
         else:
-            message.Subject = "Completed %s" % EnvInfo[0][5]
+            message.Subject = "Completed %s" % EnvInfo[0][1]
         message.Html = """<strong>Test Run with id <a href="http://%s/Search/RunID/%s">%s</a> is completed.</strong>! Click on the link for details.""" % (Global.go_url, Subject, Subject)
         #message.Body = """%s""" %Body
 
@@ -763,18 +763,18 @@ def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
         #If BuildPath is found for the Daily Build, then use it to create a link. Otherwise just display the Build number
         if str(BuildPath) == "":
             Body = Body + """
-                                <tr><td style="font-weight:bold;">Desktop</td><td>%s</td></tr>
+                                <tr><td style="font-weight:bold;">Build</td><td>%s</td></tr>
                 """ % (DesktopInfo)
         else:
             Body = Body + """
-                                <tr><td style="font-weight:bold;">Desktop</td><td><a href="file:///%s">%s</a></td></tr>
+                                <tr><td style="font-weight:bold;">Build</td><td><a href="file:///%s">%s</a></td></tr>
                 """ % (BuildPath, DesktopInfo)
 
         Body = Body + """
-                                <tr><td style="font-weight:bold;">Device</td><td>%s</td></tr>
+                                
                                 <tr><td style="font-weight:bold;">Client</td><td>%s</td></tr>
                             </table>
-                                """ % (DeviceInfo, EnvInfo[0][3])
+                                """ % (EnvInfo[0][3])
 
         #If the test run has any failed test case, then add Failed Test Cases section to the email body
         if len(Fail_TestCases) > 0:
@@ -848,9 +848,12 @@ def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
                     """
 
         message.Html = message.Html + Body
+    username = "automation.solutionz"
+    password = "te@mwork"
 
-    sender = Mailer('mail.sw.rim.net')
+    sender = Mailer('smtp.gmail.com','587', True, username, password)
     sender.send(message)
+
 
 def InstallUninstallBuild(installLocation):
     try:
