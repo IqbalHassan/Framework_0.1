@@ -237,7 +237,7 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
         #Make sure each Data is a tuple
         if isinstance(eachData, tuple):
             #Check if field is address, in which case value will be a list of tuples
-            if 'address' in eachData[0].lower():
+            if isinstance(eachData[1], list):#'address' in eachData[0].lower():
                 #value for address should also be a list of tuples
                 if isinstance(eachData[1], list):
                     Addr_Data_Id = "%s_a%s" % (Data_Id, Addr_Data_Index)
@@ -249,7 +249,7 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                                                      )
 
                     if result != True:
-                        err_msg = LogMessage(sModuleInfo, "Failed to insert address data id: %s" % (eachData), 4)
+                        err_msg = LogMessage(sModuleInfo, "Failed to insert list data id: %s" % (eachData), 4)
                         return err_msg
 
                     for eachAddrData in eachData[1]:
@@ -263,7 +263,7 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                                                              )
 
                             if result != True:
-                                err_msg = LogMessage(sModuleInfo, "Failed to insert address data value: %s" % (eachAddrData), 4)
+                                err_msg = LogMessage(sModuleInfo, "Failed to insert list data value: %s" % (eachAddrData), 4)
                                 return err_msg
 
                         else:
@@ -273,7 +273,7 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                     Addr_Data_Index += 1
 
                 else:
-                    err_msg = LogMessage(sModuleInfo, "Address Data is not a list of tuples: %s" % (eachData), 4)
+                    err_msg = LogMessage(sModuleInfo, "Data is not a list of tuples: %s" % (eachData), 4)
                     return err_msg
 
 
@@ -296,6 +296,7 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
 
 
     return "Pass"
+
 
 def Insert_ExpectedDataSet(conn, TC_Id, Step_Index, Step_Seq, Test_Case_DataSet_Id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -599,7 +600,7 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
     AddressList = []
     for i in range(len(Data_List) - 1, -1, -1):
         eachTuple = Data_List[i]
-        if eachTuple[0] == 'Work Address' or eachTuple[0] == 'Home Address' or eachTuple[0] == 'Other Address':
+        if eachTuple[1].startswith(Data_Id):# or eachTuple[0] == 'Home Address' or eachTuple[0] == 'Other Address':
             if eachTuple[1] != "":
                 address_find_SQLQuery = ("select "
                 " pmd.field,"
