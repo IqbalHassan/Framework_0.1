@@ -7,7 +7,8 @@ import Cleanup
 import sys, os, time, inspect
 import WebProgram
 import itertools, operator
-import Compare 
+import Compare
+#Ver1.0
 
 if os.name == 'nt':
     import clr, System
@@ -98,7 +99,7 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
         elif CurrentStep == "Close Browser":
             CommonUtil.ExecLog(sModuleInfo, "skipping closing browser", 1)
             sTestStepReturnStatus = "Pass"
-        
+
         elif CurrentStep == "Open Futureshop":
             CommonUtil.ExecLog(sModuleInfo, "Opening futureshop site", 1)
             link = "http://www.futureshop.ca"
@@ -136,7 +137,7 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
                 sTestStepReturnStatus = "Pass"
             else:
                 sTestStepReturnStatus = "Critical"
-        
+
         elif CurrentStep == "Verify Product Details":
             DataSet = DBUtil.GetData(conn, exp_SQLQuery, False)
             DataGroup = []
@@ -152,7 +153,7 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
                 ExpAddrList = []
                 for i in range(len(DataList) - 1, -1, -1):
                     eachData = DataList[i]
-                    if eachData[0] == 'Details':
+                    if eachData[1].startswith(x[0]):# == 'Details':
                         temp = list(DataList[i])
                         address_find_SQLQuery = ("select "
                         " pmd.field,"
@@ -170,19 +171,21 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
                 ExpDataList.append(DataList)
 
             #Get actual data
-            ActDataList = WebProgram.GetItemDetail()
-            if ActDataList == "Critical":
+            ActDataList = []
+            ActItemDetail = WebProgram.GetItemDetail()
+            if ActItemDetail == "Critical":
                 CommonUtil.ExecLog(sModuleInfo, "Error in getting Product Details", 3)
                 sTestStepReturnStatus = "Critical"
             else:
+                ActDataList.append(ActItemDetail)
                 objCompare = Compare.Compare()
-                retValue = objCompare.FieldCompare(conn, ExpDataList, ActDataList, [], ['Web ID'])
+                retValue = objCompare.FieldCompare(ExpDataList, ActDataList, [], ['Web ID'])
                 if retValue == "Pass":
                     sTestStepReturnStatus = "Pass"
                 else:
                     sTestStepReturnStatus = "Critical"
 
-        
+
         else:
             sTestStepReturnStatus = "Warning"
             print "Unknown test step : ", CurrentStep
