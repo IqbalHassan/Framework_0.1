@@ -222,7 +222,7 @@ $(document).ready(function() {
 			}
 			
 			//if($("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_').indexOf("PIM.") == -1){
-			//	alert("Work in progress. For more information contact DesktopAutomation@blackberry.com")
+			//	alert("Work in progress. For more information contact automationsolutionz.com")
 			//	return;
 			//}
 			
