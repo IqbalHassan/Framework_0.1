@@ -90,7 +90,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 					{
 						mDiffRows = "Yes";
 					}
-				if ((String(mStr).indexOf("Work Address") !== -1) == true || (String(mStr).indexOf("Home Address") !== -1) == true || (String(mStr).indexOf("Other Address") !== -1) == true)
+				if ((String(mStr).indexOf("Details") !== -1) == true || (String(mStr).indexOf("Home Address") !== -1) == true || (String(mStr).indexOf("Other Address") !== -1) == true)
 					{
 						mAddress = "Yes";
 					}
@@ -180,7 +180,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 					{
 					
 					//This part of code is for Address Edits condition
-					if ((String(mStr).indexOf("Work Address") !== -1) == true || (String(mStr).indexOf("Home Address") !== -1) == true || (String(mStr).indexOf("Other Address") !== -1) == true)
+					if ((String(mStr).indexOf("Details") !== -1) == true || (String(mStr).indexOf("Home Address") !== -1) == true || (String(mStr).indexOf("Other Address") !== -1) == true)
 					{
 						var i = 0;
 						
