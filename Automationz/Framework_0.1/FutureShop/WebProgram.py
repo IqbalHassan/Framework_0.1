@@ -288,7 +288,7 @@ def GetItemDetail():
         title_id = "ctl00_CC_ctl00_PD_lblProductTitle"
         model_number = "ctl00_CC_ctl00_PD_lblModelNumber"
         web_id = "ctl00_CC_ctl00_PD_lblSku"
-        prod_sale_price = "prod-price sale"
+        prod_sale_price = "prod-price"
         prod_saving = "prod-saving"
         sale_price_dollar = ""
         sale_dollar_cent = ""
