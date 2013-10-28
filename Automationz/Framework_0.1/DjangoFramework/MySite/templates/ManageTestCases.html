@@ -44,6 +44,17 @@
 			<div id='create_sections' style='display: none'></div> 
 
 		</td>
+        
+        <td style="height: 150px; width: 150px">
+			<!-- Following Code is for Create Flip button  -->
+			<p class='flip'
+				style='color: black; display: block; margin: 10px auto; padding: 15px; height: 90%; width: 30%'
+				title='Delete_Existing'>
+				<img style='width: 200%; margin-bottom: 10px;'
+					src="/site_media/delete_existing_test_case.png"> Delete Existing
+			</p>
+			<div id='create_test' style='display: none'></div>
+		</td>
 	</tr>
 </table>
 </article>
@@ -59,6 +70,10 @@ $(".flip[title='Edit']").click(function() {
 
 $(".flip[title='Create_Sections']").click(function() {
 	window.location.href = '/Home/ManageTestCases/CreateProductSections/';
+});
+
+$(".flip[title='Delete_Existing']").click(function() {
+	window.location.href = '/Home/ManageTestCases/DeleteExisting/';
 });
 
 </script>

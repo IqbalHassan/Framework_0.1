@@ -62,3 +62,24 @@
 2013-10-19 19:31:01,154 - ERROR - main : MainDriver - Open WebPage : Test Step Critical Failure
 2013-10-19 19:31:01,184 - ERROR - main : MainDriver - Test Case Failed
 2013-10-19 19:31:01,286 - INFO - main : MainDriver - Test Set Completed
+2013-10-19 19:36:56,844 - INFO - main : MainDriver - Database connection successful
+2013-10-19 19:36:56,999 - INFO - main : MainDriver - Running Test cases from Test Set : [('Sat-Oct-19-19:36:56-2013', 'FIL-0033', 'sazid', 'Windows post2008Server - 64', 'FireFox(V24.0;32Bit),IE(V10;32Bit),Chrome(V30;32Bit)', 'Default', None)]
+2013-10-19 19:36:57,065 - INFO - main : MainDriver - Running Test cases from list : [('FIL-0033',)]
+2013-10-19 19:36:57,118 - INFO - main : MainDriver - -------------*************--------------
+2013-10-19 19:36:57,164 - INFO - main : MainDriver - Running Test case id : FIL-0033 :: [('new menu selection',)]
+2013-10-19 19:36:57,230 - INFO - main : MainDriver - Step : Open Browser
+2013-10-19 19:36:57,267 - INFO - ExecuteTestSteps : Sub_Driver_Futureshop - Opening browser
+2013-10-19 19:37:04,154 - INFO - BrowserSelection : WebProgram - Started Firefox Browser
+2013-10-19 19:37:04,348 - INFO - main : MainDriver - Open Browser : Test Step Passed
+2013-10-19 19:37:04,437 - INFO - main : MainDriver - Step : Open WebPage
+2013-10-19 19:37:20,908 - INFO - OpenLink : WebProgram - Successfully opened your link: http://www.futureshop.ca/
+2013-10-19 19:37:21,135 - INFO - main : MainDriver - Open WebPage : Test Step Passed
+2013-10-19 19:37:21,167 - INFO - main : MainDriver - Test Case Passed
+2013-10-19 19:37:21,217 - INFO - main : MainDriver - Test Set Completed
+2013-10-19 23:23:56,401 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-19 23:23:56,426 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
+2013-10-21 12:18:23,071 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-24 18:41:16,812 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-24 18:41:20,036 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
+2013-10-27 20:22:49,078 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
+2013-10-27 20:22:54,963 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled

@@ -23,6 +23,10 @@ import itertools, operator
 import TestCaseOperations
 import re
 import time
+from TestCaseOperations import Cleanup_TestCase
+
+# from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
+# import pylab
 
 
 Conn = GetConnection()
@@ -105,6 +109,16 @@ def ManageTestCases(request):
     variables = Context({ })
     output = templ.render(variables)
     return HttpResponse(output)
+
+def DeleteExisting(request):
+    TC_Id = request.GET.get('TC_Id', '')
+    if TC_Id != "":
+        return DeleteExistingTestCase(TC_Id)
+    else:
+        t = get_template('DeleteExisting.html')
+        c = Context({})
+        output = t.render(c)
+        return HttpResponse(output)
 
 def CreateProductSections(request):
     templ = get_template('CreateProductSections.html')
@@ -1365,9 +1379,6 @@ def getDatafromList(resp):
 
 def Bar_Chart(plot_data):
 
-        from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
-        import pylab
-
         data = plot_data[0]
         y_axis_lable = plot_data[1]
         graph_title = plot_data[2]
@@ -2466,3 +2477,12 @@ def Bundle_Report(request):  #==================Returns Report data for a specif
     results = {'ReportTable':ReportTable, 'DefectTable': DefectTable}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+
+def DeleteExistingTestCase(TC_Id):
+    conn = Conn
+    Cleanup_TestCase(conn, TC_Id)
+    
+    t = get_template("DeletedExistingTestCase.html")
+    c = Context({'TC_name': TC_Id})
+    output = t.render(c) 
+    return HttpResponse(output)

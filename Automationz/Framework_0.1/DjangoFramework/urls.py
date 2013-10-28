@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 import settings, os
 from MySite.views import *
@@ -47,6 +47,7 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTestCases/Create/AutoCompleteTestStepSearch/$', AutoCompleteTestStepSearch),
     url(r'^Home/ManageTestCases/Create/Submit_New_TestCase/$', Create_Submit_New_TestCase),
     url(r'^Home/.*/GetSections/$', Get_Sections),
+    url(r'^Home/ManageTestCases/DeleteExisting/$', DeleteExisting),
     
     #Run Test Page
     url(r'^Home/RunTest/$',RunTest),
