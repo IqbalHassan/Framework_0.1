@@ -1,0 +1,81 @@
+{% extends "BaseTemplate.html" %}
+
+
+ {% block title%} Search Test Cases {% endblock%}
+
+ {% block content %}
+ 
+<script type="text/javascript" src="/site_media/Jquery/Local/DeleteExisting.js"></script>
+<!-- <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script> -->
+<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script> -->
+
+<link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+
+
+<article>
+	<!--
+	<p>Hello!</p>
+	<form action="." method="GET">
+		Enter the name of test case: <input type="text" placeholder="Test Case name" name="TC_Id" />
+		<input type="submit" value="Delete Test Case" onClick="confirmDelete();" />
+	</form>
+	-->
+	
+		<!-- Following Code is for Available Test Machine Flip button  -->
+		<header>
+		<p class='flip' style='color: black;' title='Availeable Test Machine'>Available Test Machine</p>
+		</header>
+		<div id = 'AvailableTestMachine'></div>
+		<!-- *********************** -->
+		
+		
+		
+		<!-- AutoComplete Search Box -->
+		<div id = "Place_AutoComplete_Here">
+		
+		</div>
+		
+		<!-- Following code is for Result Table -->
+		<p> </p>
+		
+		<p class='flip'>Test Cases</p>
+		
+		<div id = "RunTestResultTable" style="display: none;" >
+			
+		</div>
+		
+		
+		<div id = "RunTestSubTable" style="display: none;">
+	
+		</div>
+		<!-- *********************** -->
+		
+		
+		
+		<!-- {% include "ResultTable.html" %}  -->
+		
+		
+				
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			
+			
+			
+</article>
+{% endblock %}		
+
+<div id="dialog-confirm" title="Delete the selected Test Case?">
+    <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>The Test Case will be permanently deleted and cannot be recovered. Are you sure to proceed deleting the test case?</p>
+<!--    <canvas id="verify_cvs" width="60px" height="50px"></canvas>-->
+</div>

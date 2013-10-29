@@ -1,0 +1,56 @@
+
+{% extends "BaseTemplate.html" %}
+		
+	{% block title%} Execution Log	{%endblock%}
+	
+	{% block content %}
+	<article>
+		 <p> </p>
+		 {% if ItemCount %} 	 
+				<table border="3" cellpadding="3" cellspacing="5" style="background-color:#c0c0c0";width: 900px;">
+					<tbody>
+					
+						<tr> 
+							{% for Cname in ColumnNames %}
+							<th>{{Cname}}</th>
+							{% endfor %}
+						</tr>
+						{% for item in DataItem %}
+			    			<tr> 
+			    			{% for L in item %}
+			    				<td>{{L}}</td>
+			    			{% endfor %}
+			    			 </tr>
+						{% endfor %}
+						</tbody>
+					</table>
+			{%else%}
+			<h1> Sorry! There is no execution log availabel in "Execution Log" table.</h1>
+			{% endif %}
+		
+		
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+					
+	</article>
+	{% endblock %}		
+
+
+
+
+
+

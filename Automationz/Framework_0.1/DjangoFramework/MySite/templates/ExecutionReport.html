@@ -1,0 +1,66 @@
+ 
+{% extends "BaseTemplate.html" %}
+	
+	
+	{% block title%} Test Results {% endblock %}	
+		
+	{% block content %}	
+	<article>
+	<header>Reports</header>
+
+			
+			<!---------------- PC Report  ------------------------------>
+			<p class='flip' title = 'GeneratePCReport' style='display:block; margin-left: 20px;'> Generate PC Report  </p>
+			<div id = 'SCM' style='display:none;'>  
+				
+				<div id = 'Current_SCM_Status' style="width: 800px;"> </div>
+				
+				
+				<!---------------- PC Report Table  ------------------------------>
+				
+				<!-- <p class='flip' style="margin-left: 50px; font-size: 11px; width:230px; height: 15px ;"  title = 'Daily SCM Build Result'> PC Report </p> -->
+				
+				<div id = "Daily_SCM_Build_Result_Table" style="display: none; margin-left: 20px;"> </div>
+				
+		   </div>
+		
+		
+		
+		<!---------------- Mac Report  ------------------------------>
+		<p> &nbsp; </p>
+		<p class='flip' title = 'to be added' style='display:block; margin-left: 20px;'> Generate Mac Report </p>
+		
+		<!---------------- MKS Report  ------------------------------>
+		<p> &nbsp; </p>
+		<p class='flip' style='display:block; margin-left: 20px;'><a href = "/Home/MKS-Report/" title = 'MKSReport' style="text-decoration: none; color: black"> Generate MKS Report </a></p>
+		
+		<!---------------- Test Case History  ------------------------------>
+		<p> &nbsp; </p>
+		<p class='flip' style='display:block; margin-left: 20px;'><a href = "/Home/Analysis/" title = 'TCHistory' style="text-decoration: none; color: black"> Generate Test Case History </a></p>
+
+		<!---------------- DailyBuild Report  ------------------------------>
+		<p> &nbsp; </p>
+		<p class='flip' style='display:block; margin-left: 20px;'><a href = "/Home/DailyBuildResults/" title = 'DailyBuildReport' style="text-decoration: none; color: black"> Automated Build History </a></p>
+			
+							
+		
+		
+		
+		
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+
+			
+	</article>			
+	{% endblock %}

@@ -1,0 +1,409 @@
+
+
+/* =========================== flip Panel ========================*/
+p.flip { /*
+			border: 1px solid #0b3e6f;
+			background: #0b3e6f url(images/ui-bg_inset-hard_15_0b3e6f_1x100.png);
+			background-repeat:no-repeat;
+			color: #f6f6f6;
+			font-weight: bold;
+			*/
+	display: none;
+	padding: 5px;
+	width: 20%;
+	text-align: center;
+	text-shadow: white;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60 );
+	opacity: 0.8;
+	font-family: monospace, Gadget, sans-serif;
+	font-size: small;
+	font-weight: bold;
+	color: black;
+	background-color: #0BAFFF;
+	/*background-image:url("/site_media/flip.jpg"); */
+	box-shadow: 1px 1px 5px #555555;
+	margin-left: auto;
+	margin-right: auto;
+	/*border:solid 1px #c3c3c3;*/
+}
+
+p.flip.lower {
+	background-color: #70D0FF;
+}
+
+p.flip.xlower {
+	background-color: #C1EBFF;
+}
+
+p.flip:ACTIVE,p.flip:HOVER {
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100 );
+	opacity: 3;
+	cursor: pointer;
+	cursor: hand
+}
+
+/*===================== Base Template Body =======================*/
+#BaseTempBody {
+	/*background-image:url("/site_media/squairy_light.png");*/
+	/*url(images/ui-bg_inset-hard_40_292929_1x100.png) 50% 50% repeat-x*/
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #FFFFFF;
+	/*background-color: #E5FFE3;*/
+}
+
+/* =============== footer ================*/
+#footer {
+	font-family: "Trebuchet MS", sans-serif;
+	font-size: 0.75em;
+	color: black;
+	text-align: center;
+	margin-top: 0%;
+}
+
+/*======================================================= Home Page Paragraph ===========================================*/
+#HomePagePara {
+	border-style: groove;
+	width: 100%;
+	padding: 0%;
+	/*background-image: url("/site_media/logo.png");*/
+	background-image: url("/site_media/droidiosbb.jpg");
+	background-position: bottom;
+	background-repeat: no-repeat;
+}
+
+/*======================================================= Second Menu ===========================================*/
+#SecondTabManu {
+	width: 100%;
+	height: 5%;
+	background-image: url("/site_media/second-tab-img.png");
+	background-repeat: no-repeat;
+
+	/*
+					font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+					background-image: -webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#e3e3e3), color-stop(.6,#B3B3B3)); 
+					background-image: -moz-linear-gradient(top, #D6D6D6, #B0B0B0, #B3B3B3 90%); 
+					*/
+}
+
+#SecondTabManu img {
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=80 );
+	opacity: 0.6;
+	width: 50px;
+	height: 30px;
+	text-decoration: none;
+	border: none;
+	outline: None;
+}
+
+#SecondTabManu img:HOVER,#SecondTabManu img:ACTIVE {
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100 );
+	opacity: 1;
+	text-decoration: none;
+	border: none;
+	outline: None;
+}
+
+#SecondTabManu a {
+	border-style: none;
+	padding-right: 10px;
+	text-decoration: none;
+	border: 0px;
+	outline: none;
+}
+
+#SecondTabManu input {
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60 );
+	opacity: 0.4;
+	width: 50px;
+	height: 30px;
+	text-decoration: none;
+	text-align: center;
+	border-style: none;
+}
+
+#SecondTabManu input:HOVER,#SecondTabManu input:ACTIVE {
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100 );
+	opacity: 1;
+	text-decoration: none;
+	border: none;
+	outline: None;
+}
+
+/*==============================Auto Complete Search Box Search / Run Button======================== */
+#AutoComplete_SearchButton,.Buttons {
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60 );
+	opacity: 0.8;
+	height: 30px;
+	width: 60px;
+}
+
+#AutoComplete_SearchButton:HOVER,#AutoComplete_SearchButton:ACTIVE,.Buttons:HOVER,.Buttons:ACTIVE
+	{
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100 );
+	opacity: 3;
+	cursor: pointer;
+	cursor: hand
+}
+
+/*===========Auto Complete Delete Button========= */
+.delete {
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60 );
+	opacity: 0.8;
+}
+
+.delete:HOVER,.delete:ACTIVE {
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100 );
+	opacity: 3;
+	cursor: pointer;
+	cursor: hand
+}
+
+#searchedtext {
+	color: black;
+}
+
+/*============================ Result Table ===================================*/
+#ResultTable { /*
+					display:block;
+					font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+					table-layout: fixed;
+					width:100%;
+					border:thick;
+					border-collapse:collapse;
+					 */
+	
+}
+
+#ResultTable td { /*
+					font-size:xx-small;
+					text-align:left;
+					border:1px solid gray;
+					padding:3px 7px 2px 7px;	
+						
+						*/
+	
+}
+
+#ResultTable th { /*
+					background-color:gray;
+					background-image:url("/site_media/Result-Table-Heading.png");
+					background-repeat:no-repeat;
+					font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+					border-collapse:collapse;
+					
+					text-align:center;
+					color: black;
+					
+					background-color: #C8C8C8;
+					border:1px solid black;
+					background-image: -webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#e3e3e3), color-stop(.6,#B3B3B3));
+					background-image: -moz-linear-gradient(top, #D6D6D6, #B0B0B0, #B3B3B3 90%);
+					border-bottom: solid 1px #999;
+					
+			*/
+	
+}
+
+/* ===========================  Drop Down List =================   */
+#DropDownOption {
+	background-color: #B0B0B0;
+	color: black;
+	font-family: Arial, Verdana, Helvetica, Sans-Serife;
+}
+
+/* =================== Text Class ========================*/
+.Text {
+	font-family: monospace;
+	font-size: 20px;
+	color: black;
+	/*text-shadow: 5px 5px 8px gray;*/
+}
+
+/* =================== Loading Text ========================*/
+#LoadingText {
+	font-family: monospace;
+	font-size: 30px;
+	color: #888888;
+	text-shadow: 1px 1px 0px black;
+	letter-Spacing: 15px;
+}
+
+/* =================== Test Case Creation/Edit ========================*/
+.new_tc_form {
+	margin-top: 10px;
+	margin:5px auto;
+    width: 100%;
+    clear: both;
+}
+.new_tc_form input[type=text] {
+    width: 100%;
+    background:transparent;
+}
+.tc_form_label_col {
+	width: 240px;
+	vertical-align: top;
+	text-align: left;
+}
+.tc_form_input_col {
+	width: 400px;
+}
+.tc_form_divider {
+	width: 640px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.tc_form_required_field {
+	margin-left:-8px;
+	color: #f00;
+}
+.buttonCustom{
+	text-align: center;
+	text-shadow: white;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+	opacity: 1;
+	color: white;
+	background-color: #666;
+	padding: 5px;
+	border: 1px #000 solid;
+}
+
+.buttonCustom:HOVER {
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
+	opacity: 0.8;
+	cursor: pointer;
+	cursor: hand
+}
+
+/* =====================Create Product Sections============================ */
+#section_names{
+	text-align: left;
+}
+
+#enter_sections_text{
+	text-align: left;
+}
+
+/*=======================HTML5===============*/
+
+/*** General Styles ***/
+body{
+	background-color: white;
+	margin: 0px;
+}
+
+#master_wrap{ 
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased; 
+}
+
+/*=========== Header ===========*/
+
+header.main_header{
+	margin-top: 10px;
+	margin-left: 40px;
+}
+
+/*=========== Side nav ===========*/
+/*
+aside{
+	display: block;
+	float: left;
+	width: 0;
+}
+*/
+
+/*======= Top nav bar=======*/
+/*
+nav{
+	display:block;
+	width: 10%;
+	float: left;
+	margin: 0px 0px 0px 0px;
+	background-color: #666;
+	color: #fff;
+}
+
+nav a:link, nav a:visited{
+	display:block;
+	border-bottom: 3px solid #fff;
+	padding: 10px;
+	background-color: #666;
+	text-decoration: none;
+	font-weight: bold;
+	color: #eee;
+}
+
+nav a:hover{
+	color: white;
+}*/
+
+#topnav ul {
+	list-style-type: none;
+	overflow:hidden;
+}
+
+#topnav ul li {
+	display: inline-block;
+}
+
+#topnav ul li a {
+	border: 2px solid grey;
+	padding: .2em 1em;
+	text-decoration: none;
+	color: white;
+	background-color: #666;
+}
+
+#topnav ul li a:hover {
+	background-color: grey;
+}
+
+/*============section===========*/
+section{
+	display: block;
+	margin: 20px;
+	padding-top: 10px;
+}
+
+section header{
+	
+}
+
+article{
+	display:block;
+	margin-left: 20px;
+	width: 90%;
+}
+
+/*=========content page============*/
+article header{
+	font-size: 150%;
+	font-weight: bold;
+}
+
+/*=========home page============*/
+#about_us_list.pros{
+	list-style-type: circle;
+}
+
+/*=========createtest=======*/
+.tc_title
+{
+	margin-right: auto;
+	margin-bottom: 10px;
+}
+
+/*========create product sections========*/
+#section_names
+{
+	margin-right: auto;
+}
+
+
+
+
+
+
