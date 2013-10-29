@@ -1,0 +1,63 @@
+{% extends "BaseTemplate.html" %}
+
+{% load multifor %}
+
+{% block title %}Select Test Cases to delete{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript">
+	
+$(document).ready(function() {
+	
+	/* see if anything is previously checked and reflect that in the view*/
+	$(".checklist input:checked").parent().addClass("selected");
+	
+	/* handle the user selections */
+	$(".checklist .checkbox-select").click(
+		function(event) {
+			event.preventDefault();
+			$(this).parent().addClass("selected");
+			$(this).parent().find(":checkbox").attr("checked","checked");
+		}
+	);
+	
+	$(".checklist .checkbox-deselect").click(
+		function(event) {
+			event.preventDefault();
+			$(this).parent().removeClass("selected");
+			$(this).parent().find(":checkbox").removeAttr("checked");
+		}
+	);
+	
+});
+	
+</script>
+
+<article>
+
+<div>
+<form action="." method="POST">{% csrf_token %}
+
+	<fieldset>
+		<legend>Select any Test Case to delete</legend>
+		<ul class="checklist">
+ 			{% for id in id_list; name in name_list %}
+			<li>
+				<input name="tc_ids" value="{{ id }}" type="checkbox" id="{{ id }}" />
+				<label for="{{ id }}" class="lbl"><span class="sec">ID:</span><br>{{ id }}<br><br><span class="sec">Name:</span><br>{{ name }}</label>
+				<a class="checkbox-select" href="#">Select</a>
+				<a class="checkbox-deselect" href="#">Cancel</a>
+			</li>
+ 			{% endfor %}
+		</ul>
+		<div style="clear: both;"></div>
+		<button type="submit" name="submitbutton" title="Delete the selected test case(s)">Delete TestCase(s)!</button>
+	</fieldset>
+
+</form>
+</div>
+
+</article>
+
+{% endblock %}
