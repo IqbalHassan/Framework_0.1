@@ -88,7 +88,7 @@ function Make_RunID_Clickable()
 {
 
 	$(".ui-widget tr td:first-child").css({
-		'color' : 'skyblue',
+		'color' : 'blue',
 		'cursor' : 'pointer'
 	});
 	$(".ui-widget tr>td:nth-child(12)").each(function() {
@@ -118,7 +118,7 @@ function Make_RunID_Clickable()
 
 function WhenClickingOnCommonFailedTestStep() {
 	$("#FailedStepsTable tr>td:nth-child(1)").css({
-		'color' : 'skyblue',
+		'color' : 'blue',
 		'cursor' : 'pointer'
 	});
 
@@ -228,7 +228,7 @@ function WhenClickingOnCommonFailedTestStep() {
 																										+ ' tr>td:nth-child(6)')
 																								.css(
 																										{
-																											'color' : 'skyblue',
+																											'color' : 'blue',
 																											'cursor' : 'pointer'
 																										});
 																						$("#" + ID).slideToggle("slow");
@@ -333,7 +333,7 @@ function WhenClickingOnCommonFailedTestStep() {
 																																										+ ' tr>td:nth-child(2)')
 																																								.css(
 																																										{
-																																											'color' : 'skyblue',
+																																											'color' : 'blue',
 																																											'cursor' : 'pointer'
 																																										});
 
@@ -378,7 +378,7 @@ function WhenClickingOnCommonFailedTestStep() {
 function TestCase_TestStep_Details_Table(sMainTableColumn) {
 
 	$(sMainTableColumn).css({
-		'color' : 'skyblue',
+		'color' : 'blue',
 		'cursor' : 'pointer'
 	});
 	$(sMainTableColumn).each(function() {
@@ -437,7 +437,7 @@ function TestCase_TestStep_Details_Table(sMainTableColumn) {
 															'margin-left' : '20px'
 														});
 														$('#' + ID + ' tr td:first-child').css({
-															'color' : 'skyblue',
+															'color' : 'blue',
 															'cursor' : 'pointer'
 														});
 														// Show Test Step
