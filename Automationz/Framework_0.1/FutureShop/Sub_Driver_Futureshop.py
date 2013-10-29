@@ -98,7 +98,7 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
 
         elif CurrentStep == "Close Browser":
             CommonUtil.ExecLog(sModuleInfo, "skipping closing browser", 1)
-            sTestStepReturnStatus = "Pass"
+            sTestStepReturnStatus = WebProgram.CloseBrowser()
 
         elif CurrentStep == "Open Futureshop":
             CommonUtil.ExecLog(sModuleInfo, "Opening futureshop site", 1)

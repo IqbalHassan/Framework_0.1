@@ -202,7 +202,18 @@ def RemoveFilter(check_box_name):
     return "PASS"
 
 
-
+def CloseBrowser():
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        sBrowser.close()
+        print "Successfully closed your browser"
+        return "PASS"
+    except Exception, e:
+        print "Exception : ", e
+        CommonUtil.ExecLog(sModuleInfo, "Failed to close the browser", 3)
+        print "Failed to close the browser"
+        return "Critical"
+    
 
 def GetFilterCount(check_box_name):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -395,6 +406,9 @@ def GetItemDetail():
 
 
 #print BrowserSelection('IE')
+#time.sleep(4)
+#print CloseBrowser()
+
 #print OpenLink('http://www.futureshop.ca')
 #print SearchItem('10272357')
 #print GetItemDetail()
