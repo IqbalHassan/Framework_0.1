@@ -6,7 +6,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-#from django.shortcuts import render_to_response
+from django.views.decorators.csrf import csrf_protect
+from django.core.context_processors import csrf
+from django.shortcuts import render_to_response
 
 from django.template import Context
 from django.template import RequestContext
@@ -24,6 +26,7 @@ import TestCaseOperations
 import re
 import time
 from TestCaseOperations import Cleanup_TestCase
+import psycopg2, psycopg2.extras
 
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
@@ -110,16 +113,63 @@ def ManageTestCases(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
+@csrf_protect
 def DeleteExisting(request):
-    TC_Id = request.GET.get('TC_Id', '')
-    if TC_Id != "":
-        return DeleteExistingTestCase(TC_Id)
-    else:
-        t = get_template('DeleteExisting.html')
-        c = Context({})
-        output = t.render(c)
-        return HttpResponse(output)
+#     TC_Id = request.GET.get('TC_Id', '')
+#     if TC_Id != "":
+#         return DeleteExistingTestCase(TC_Id)
+#     else:
+#         t = get_template('DeleteExisting.html')
+#         c = Context({})
+#         output = t.render(c)
+#         return HttpResponse(output)
 
+
+#     TC_Ids = request.POST.getlist('tc_ids')
+#     
+# 
+#     if TC_Ids:
+#         print TC_Ids
+#         return DeleteSelectedTestCases(request, TC_Ids)
+#     else:
+#         rows = GetData("test_cases")
+#         row_list = []
+#         
+#         for row in rows:
+#             row_list.append(row[0])
+#         
+#         c = Context({'TC_id_list': row_list})
+#         c.update(csrf(request))
+# #         output = t.render(c)
+# #         return HttpResponse(output)
+#         return render_to_response('ShowTestCasesToDelete.html', c)
+
+    TC_ids = request.POST.getlist('tc_ids')
+    
+    if TC_ids:
+        print TC_ids
+        return DeleteSelectedTestCases(request, TC_ids)
+    else:
+        rows = GetData('test_cases')
+        id_list = []
+        name_list = []
+        
+        for row in rows:
+            id_list.append(str(row[0]))
+            name_list.append(str(row[1]))
+        
+        print '-----------------------------------------'
+        print id_list
+        print '++++++++++'
+        print name_list
+        print '-----------------------------------------'
+        
+        c = Context({'id_list': id_list, 'name_list': name_list})
+        c.update(csrf(request))
+        
+        return render_to_response('ShowTestCasesToDelete.html', c)
+
+    
 def CreateProductSections(request):
     templ = get_template('CreateProductSections.html')
     variables = Context({ })
@@ -2486,3 +2536,18 @@ def DeleteExistingTestCase(TC_Id):
     c = Context({'TC_name': TC_Id})
     output = t.render(c) 
     return HttpResponse(output)
+
+
+@csrf_protect
+def DeleteSelectedTestCases(request, TC_ids):
+    print TC_ids
+    
+    conn = Conn
+    
+    for tc_id in TC_ids:
+        Cleanup_TestCase(conn, tc_id)
+
+#     t = get_template("DeletedExistingTestCase.html")
+    c = Context({'TC_name': TC_ids})
+#     output = t.render(c)
+    return render(request, "DeletedExistingTestCase.html", c)

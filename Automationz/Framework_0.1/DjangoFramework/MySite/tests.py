@@ -1,24 +1,27 @@
 # Create your views here.
-import datetime
-import json
-import time
-
 from django.http import HttpResponse
+#from django.shortcuts import render_to_response
+
 from django.template import Context
+#from django.template import RequestContext
 from django.template.loader import get_template
 from django.utils import simplejson
+import json
 
-import DataBaseUtilities as DB
+
+
 from models import GetConnection
-
-
-#from django.shortcuts import render_to_response
-#from django.template import RequestContext
+import DataBaseUtilities as DB
+import datetime
 #from CommonUtil import GetLocalOS,GetRegistryValue,TimeStamp,GetLocalUser
 #import DjangoConstants
+
 #import os
 #import FileUtilities as FL
+import time
+
 #import MKS_Report 
+
 Conn = GetConnection()
 tabledata = []
 UserData = ""

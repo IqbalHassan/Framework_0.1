@@ -152,20 +152,9 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 						//This is for the address portion of data after address field
 						if (mNewData.length >= 2)
 							{
-								mNewData[1] = mNewData[1].split('),')
-								var mInsideTable = "<table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'>";
-								for (eachinsiderow in mNewData[1])
-									{
-										mInsideTable += "<tr>";
-										insidecoldata = mNewData[1][eachinsiderow].split(',')
-										for (eachinsidecol in insidecoldata){
-											mInsideTable += "<td class = 'ui-widget-content' width='50%'>" + insidecoldata[eachinsidecol] + "</td>"
-										}
-										mInsideTable += "</tr>";
-									}
-								mInsideTable += "</table>";
-								//mNewData[1] = mNewData[1].replace(/[)]/g,"").replace(/]/g,"").replace("[","");
-								mCont += "<td class = 'ui-widget-content' width='50%'>" + mInsideTable //mNewData[1]
+							
+								mNewData[1] = mNewData[1].replace(/[)]/g,"").replace(/]/g,"").replace("[","");
+								mCont += "<td class = 'ui-widget-content' width='50%'>" + mNewData[1]
 									+ '</td><tr>';
 										
 								for(var i = 1;i<mAddData.length;i++)
