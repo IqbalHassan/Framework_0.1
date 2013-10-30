@@ -1395,7 +1395,7 @@ def NormalizeTimeInputs(tupleList):
 
                     else:
                         print "Critical failure occurred normalizing time value of %s" % (tupleList[i])
-                        ExecLog(sModuleInfo, "Critical failure occurred normalizing time value of %s" % (tupleList[i], 3))
+                        ExecLog(sModuleInfo, "Critical failure occurred normalizing time value of %s" % (tupleList[i], 4))
                         return tupleList
 
                 else:
@@ -1414,7 +1414,7 @@ def NormalizeTimeInputs(tupleList):
 
     except Exception, e:
         print "%s > Exception happened: (%s) " % (sModuleInfo, e)
-        ExecLog(sModuleInfo, "Exception: (%s)" % e, 2)
+        ExecLog(sModuleInfo, "Exception: (%s)" % e, 4)
         return tupleList
 
 def NormalizeTime(tuple):

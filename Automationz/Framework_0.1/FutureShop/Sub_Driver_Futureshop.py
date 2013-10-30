@@ -135,10 +135,14 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
             sTestStepReturnStatus = WebProgram.SearchItem(search_text)
             
         elif CurrentStep == "Verify Filter Items Count":
-            DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
+            DataSet = DBUtil.GetData(conn, exp_SQLQuery, False)
             check_box_name = DataSet[0][1]
-            exp_count = DataSet[0][2]
-            if exp_count == WebProgram.GetFilterCount(check_box_name):
+            ExpDataList = [[(DataSet[0][1],DataSet[0][2])]]
+            ActDataList = [[(check_box_name,WebProgram.GetFilterCount(check_box_name))]]
+
+            objCompare = Compare.Compare()
+            retValue = objCompare.FieldCompare(ExpDataList, ActDataList, [], [])
+            if retValue == "Pass":
                 sTestStepReturnStatus = "Pass"
             else:
                 sTestStepReturnStatus = "Critical"

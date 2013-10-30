@@ -300,8 +300,8 @@ class Compare():
                 print "Missing            records:", len(ExpMissing)
                 CommonUtil.ExecLog(sModuleInfo, "Missing            records:%s" % len(ExpMissing), 1)
 
-                print "Verification of expected and actual PIM data matched"
-                CommonUtil.ExecLog(sModuleInfo, "Verification of expected and actual PIM data matched", 1)
+                print "Verification of expected and actual  data matched"
+                CommonUtil.ExecLog(sModuleInfo, "Verification of expected and actual  data matched", 1)
 
                 sVerificationStatus = "Pass"
             else:
@@ -374,8 +374,8 @@ class Compare():
                     print "Verification failed for following expected fields %s" % (",".join(NMF))
                     CommonUtil.ExecLog(sModuleInfo, "Verification failed for following expected fields %s" % (",".join(NMF)), 3)
                 else:
-                    print "Verification of expected and actual PIM data did not match"
-                    CommonUtil.ExecLog(sModuleInfo, "Verification of expected and actual PIM data did not match", 3)
+                    print "Verification of expected and actual  data did not match"
+                    CommonUtil.ExecLog(sModuleInfo, "Verification of expected and actual data did not match", 3)
                 sVerificationStatus = "Critical"
 
 
@@ -393,9 +393,11 @@ def main():
 #                    [('Title', u'Apple iPad mini 16GB With Wi-Fi - Black & Slate'), ('Model', u'MD528C/A'), ('Web ID', u'10229777'), ('Sale Price', u'309.99'), ('Saving', u'$20'), ('Details', [(u'Display', u''), (u'Display Type', u'LCD'), (u'Screen Size', u'7.8 Inches'), (u'Native Screen Resolution', u'1024 x 768'), (u'Touchscreen', u'Yes'), (u'3D Capable Display', u'No'), (u'Screen Finish', u'Glossy'), (u'Storage', u''), (u'Built-in Storage Capacity', u'16 GB'), (u'Built-in Storage Type', u'Flash Memory'), (u'Built-in Memory Card Reader', u'No'), (u'Compatible Memory Card Types', u'Not Applicable'), (u'Max Memory Card Capacity', u'Not Applicable'), (u'RAM Size', u'Information Not Available'), (u'Cameras', u''), (u'Rear Camera Still Resolution', u'5 MP'), (u'Rear Camera Video Resolution', u'1920 x 1080 @ 30 fps'), (u'Rear Camera Autofocus', u'Yes'), (u'Rear Camera Flash', u'No'), (u'Front Camera Still Resolution', u'1.2 MP'), (u'Front Camera Video Resolution', u'1280 \xd7 720 @ 30 fps'), (u'Front Camera Autofocus', u'No'), (u'Front Camera Flash', u'No'), (u'Video Calling (WiFi)', u'Yes'), (u'Video Calling (Cellular)', u'No'), (u'3D Photos', u'No'), (u'3D Video Recording', u'No'), (u'Processor', u''), (u'Processor Type', u'Apple A5'), (u'Processor Speed', u'Information Not Available'), (u'Processor Cores', u'2'), (u'Software', u''), (u'Operating System', u'iOS 6'), (u'Operating System Language', u'Bilingual'), (u'Pre-loaded Software', u'Information Not Available'), (u'App Store Compatibility', u'Apple App Store'), (u'Audio', u''), (u'Built-in Speaker', u'Yes'), (u'Speaker Wattage', u'Information Not Available'), (u'Integrated Microphone', u'Yes'), (u'Microphone Input', u'No'), (u'Hardware Volume Control', u'Yes'), (u'Headphone Jack Size', u'3.5 mm'), (u'Connectivity', u''), (u'Integrated WiFi', u'802.11 a/b/g/n'), (u'Integrated Bluetooth', u'Yes - 4.0'), (u'3G', u'No'), (u'4G', u'No'), (u'Cellular Provider', u'NIL'), (u'Assisted GPS Navigation', u'No'), (u'Unassisted GPS Navigation', u'No'), (u'HDMI Output', u'Yes - Adapter Sold Separately'), (u'DLNA Certified', u'No'), (u'USB 3.0 Ports', u'No'), (u'USB 2.0 Ports', u'Yes (Via Lightning Connector)'), (u'Thunderbolt Ports', u'No'), (u'Other Inputs/Outputs', u'Not Applicable'), (u'Power', u''), (u'Approximate In-use Battery Life', u'Up To 10 Hours'), (u'Approximate Standby Battery Life', u'Information Not Available'), (u'Battery - Number of Cells', u'Information Not Available'), (u'Battery - Capacity', u'16.3 Wh'), (u'Charge over USB', u'Yes'), (u'Physical Features', u''), (u'Sensors', u'3-axis Gyro; Accelerometer; Ambient Light'), (u'Hard-key QWERTY Keyboard', u'No'), (u'Colour', u'Black'), (u'Height', u'20 cm'), (u'Depth', u'0.72 cm'), (u'Width', u'13.47 cm'), (u'Height (Inches)', u'7.9 Inches'), (u'Depth (Inches)', u'0.3 Inches'), (u'Width (Inches)', u'5.3 Inches'), (u'Weight', u'308 g'), (u'Warranty Labour', u'1 Year(s)'), (u'Warranty Parts', u'1 Year(s)')])],
 #                    ]
 #
-#    objCompare = Compare()
-#    retValue = objCompare.FieldCompare(ExpectedList, ActualList, ['Title'], ['Web ID'])
-#    print retValue
+#     ExpectedList= [[('On Sale','12')]]
+#     ActualList= [[('On Sale','12')]]
+#     objCompare = Compare()
+#     retValue = objCompare.FieldCompare(ExpectedList, ActualList, [], [])
+#     print retValue
 
 if __name__ == "__main__":
     main()
