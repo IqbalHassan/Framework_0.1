@@ -62,6 +62,7 @@ def OpenLink(link):
 def SelectFirstLevelMenu(menu_name_1):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
+        time.sleep(4)
         allElements = sBrowser.find_elements_by_xpath(".//a[@class]")
         if len(allElements) == 0:
             print "Unable to find your main menu object"
@@ -92,6 +93,7 @@ def SelectFirstLevelMenu(menu_name_1):
 def SelectSecondLevelMenu(menu_name_2):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
+        time.sleep(4)
         allElements = sBrowser.find_elements_by_xpath(".//a[@class]")
         if len(allElements) == 0:
             print "Unable to find your second level menu object"
@@ -121,6 +123,7 @@ def SelectSecondLevelMenu(menu_name_2):
 def SelectThirdLevelMenu(menu_name_3):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
+        time.sleep(4)
         allElements = sBrowser.find_elements_by_xpath ("//*[contains(text(),'%s')]" % (menu_name_3))
         for eachElements in allElements:
             if  menu_name_3 == eachElements.get_attribute("text"):
@@ -157,7 +160,7 @@ def HoeverOver(element):
 def FilterBySelection(check_box_name):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-
+        time.sleep(4)
         check_box = "filter-" + (check_box_name.replace(" ", "-")).lower()
         '''
         .// will allow us to look at only limited depth
