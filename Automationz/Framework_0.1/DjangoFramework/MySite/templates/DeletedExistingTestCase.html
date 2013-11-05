@@ -7,10 +7,12 @@
 <script type="text/javascript" src="/site_media/Jquery/Local/DeleteExisting.js"></script>
 
 <article>
-	<div width="400px" height="128px">
-		<img src="/site_media/verify_query.png" style="float:left;" />
+	<div width="400px" height="40%">
+		<img src="/site_media/verify_query.png" style="float:right; margin-bottom: 100%;" />
 		<br />
-		<p style="font-size: 2em">Deleted existing test case: <span style="font-weight: bold; color: #FF9900;">{{ TC_name }}</span></p>
+		{% for TC_name in tc_names %}
+		<p style="font-size: 2em; font-weight: normal; font-family: Open Sans;">Deleted existing test case: <span style="font-weight: bold; color: #FF9900;">{{ TC_name }}</span></p>
+		{% endfor %}
 	</div>
 </article>
 

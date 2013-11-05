@@ -6,7 +6,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-#from django.shortcuts import render_to_response
+from django.views.decorators.csrf import csrf_protect
+from django.shortcuts import render_to_response
 
 from django.template import Context
 from django.template import RequestContext
@@ -24,6 +25,7 @@ import TestCaseOperations
 import re
 import time
 from TestCaseOperations import Cleanup_TestCase
+from django.core.context_processors import csrf
 
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
@@ -110,15 +112,36 @@ def ManageTestCases(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
+@csrf_protect
 def DeleteExisting(request):
-    TC_Id = request.GET.get('TC_Id', '')
-    if TC_Id != "":
-        return DeleteExistingTestCase(TC_Id)
+#     TC_Id = request.GET.get('TC_Id', '')
+#     if TC_Id != "":
+#         return DeleteExistingTestCase(TC_Id)
+#     else:
+#         t = get_template('DeleteExisting.html')
+#         c = Context({})
+#         output = t.render(c)
+#         return HttpResponse(output)
+    TC_Ids = request.POST.getlist('selectTC')
+    if TC_Ids:
+        return DeleteExistingTestCase(TC_Ids)
     else:
-        t = get_template('DeleteExisting.html')
-        c = Context({})
-        output = t.render(c)
-        return HttpResponse(output)
+        data = GetData('test_cases')
+        
+        tc_ids = []
+        tc_names = []
+        counter = 0
+        
+        for row in data:
+            tc_ids.append(row[0])
+            tc_names.append(row[1])
+            counter += 1
+        
+        t = get_template('DeleteMultiple.html')
+        c = Context({'TC_ids': tc_ids, 'TC_names': tc_names})
+        c.update(csrf(request))
+        return HttpResponse(t.render(c))
+
 
 def CreateProductSections(request):
     templ = get_template('CreateProductSections.html')
@@ -2478,11 +2501,13 @@ def Bundle_Report(request):  #==================Returns Report data for a specif
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def DeleteExistingTestCase(TC_Id):
+def DeleteExistingTestCase(TC_Ids):
     conn = Conn
-    Cleanup_TestCase(conn, TC_Id)
+    
+    for tc_id in TC_Ids:
+        Cleanup_TestCase(conn, tc_id)
     
     t = get_template("DeletedExistingTestCase.html")
-    c = Context({'TC_name': TC_Id})
+    c = Context({'tc_names': TC_Ids})
     output = t.render(c) 
     return HttpResponse(output)
