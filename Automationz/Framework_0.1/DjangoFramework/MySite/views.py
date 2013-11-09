@@ -114,34 +114,38 @@ def ManageTestCases(request):
 
 @csrf_protect
 def DeleteExisting(request):
-#     TC_Id = request.GET.get('TC_Id', '')
-#     if TC_Id != "":
-#         return DeleteExistingTestCase(TC_Id)
-#     else:
-#         t = get_template('DeleteExisting.html')
-#         c = Context({})
-#         output = t.render(c)
-#         return HttpResponse(output)
-    TC_Ids = request.POST.getlist('selectTC')
-    if TC_Ids:
-        return DeleteExistingTestCase(TC_Ids)
-    else:
-        data = GetData('test_cases')
-        
-        tc_ids = []
-        tc_names = []
-        counter = 0
-        
-        for row in data:
-            tc_ids.append(row[0])
-            tc_names.append(row[1])
-            counter += 1
-        
-        t = get_template('DeleteMultiple.html')
-        c = Context({'TC_ids': tc_ids, 'TC_names': tc_names})
-        c.update(csrf(request))
-        return HttpResponse(t.render(c))
-
+    if request.method == 'GET':
+        TC_Id = request.GET.get('TC_Id', '')
+        print TC_Id
+        if TC_Id != '':
+            return DeleteExistingTestCase(TC_Id)
+        else:
+            t = get_template('DeleteExisting.html')
+            c = Context({})
+            c.update(csrf(request))
+            output = t.render(c)
+            return HttpResponse(output)
+    elif request.method == 'POST':
+        TC_Ids = request.POST.getlist('selectTC')
+        if TC_Ids:
+            return DeleteExistingTestCase(TC_Ids)
+        else:
+            data = GetData('test_cases')
+            
+            tc_ids = []
+            tc_names = []
+            counter = 0
+            
+            for row in data:
+                tc_ids.append(row[0])
+                tc_names.append(row[1])
+                counter += 1
+            
+            t = get_template('DeleteMultiple.html')
+            c = Context({'TC_ids': tc_ids, 'TC_names': tc_names})
+            c.update(csrf(request))
+            return HttpResponse(t.render(c))
+    
 
 def CreateProductSections(request):
     templ = get_template('CreateProductSections.html')
@@ -2503,11 +2507,19 @@ def Bundle_Report(request):  #==================Returns Report data for a specif
 
 def DeleteExistingTestCase(TC_Ids):
     conn = Conn
+    is_string = False
     
-    for tc_id in TC_Ids:
-        Cleanup_TestCase(conn, tc_id)
+    if type(TC_Ids) == type(u''):
+        is_string = True
+        Cleanup_TestCase(conn, TC_Ids)
+        print is_string
+        print "MESSAGE-----------------------------------------"
+    else:
+        for tc_id in TC_Ids:
+            Cleanup_TestCase(conn, tc_id)
+    
     
     t = get_template("DeletedExistingTestCase.html")
-    c = Context({'tc_names': TC_Ids})
+    c = Context({'is_string': is_string, 'tc_names': TC_Ids})
     output = t.render(c) 
     return HttpResponse(output)

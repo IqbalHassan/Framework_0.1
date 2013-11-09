@@ -54,6 +54,11 @@
 		
 		<!-- {% include "ResultTable.html" %}  -->
 		
+			
+			<form action="." method="POST">
+			{% csrf_token %}
+				<button style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Delete multiple Test Cases</button>
+			</form>
 		
 				
 			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
@@ -71,7 +76,6 @@
 			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
 			
 			
-			
 </article>
-{% endblock %}		
+{% endblock %}
 
