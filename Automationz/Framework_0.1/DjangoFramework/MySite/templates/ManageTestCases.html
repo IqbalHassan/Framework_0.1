@@ -55,18 +55,6 @@
 			</p>
 			<div id='create_test' style='display: none'></div>
 		</td>
-        <!--Edited by Taitalus(Shetu)-->
-        <td style="height: 150px; width: 150px">
-            <!-- Following Code is for Create Test Set Flip button  -->
-            <p class='flip'
-               style='color: black; display: block; margin: 10px auto; padding: 15px; height: 90%; width: 30%'
-               title='Create_Test_Set'>
-                <img style='width: 180%; margin-bottom: 10px;'
-                     src="/site_media/edit_case_old.png"> Create Test Set
-            </p>
-            <div id='create_test' style='display: none'></div>
-        </td>
-        <!--End Mark Taitalus(Shetu)-->
 	</tr>
 </table>
 </article>
@@ -87,8 +75,6 @@ $(".flip[title='Create_Sections']").click(function() {
 $(".flip[title='Delete_Existing']").click(function() {
 	window.location.href = '/Home/ManageTestCases/DeleteExisting/';
 });
-$(".flip[title='Create_Test_Set']").click(function() {
-    window.location.href = '/Home/ManageTestCases/TestSet/';
-});
+
 </script>
 {% endblock %}

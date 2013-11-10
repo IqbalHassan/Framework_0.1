@@ -4,10 +4,18 @@
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+<<<<<<< HEAD
+<<<<<<< HEAD
 from django.db import connection
+=======
+>>>>>>> parent of 5208765... Create Test Set added with create,update and delete function
 #from django.shortcuts import render_to_response
+=======
+from django.views.decorators.csrf import csrf_protect
+from django.shortcuts import render_to_response
+>>>>>>> 79295d8a9281fee2054c6e15061b281b41f17493
 
 from django.template import Context
 from django.template import RequestContext
@@ -25,6 +33,7 @@ import TestCaseOperations
 import re
 import time
 from TestCaseOperations import Cleanup_TestCase
+from django.core.context_processors import csrf
 
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
@@ -111,15 +120,40 @@ def ManageTestCases(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
+@csrf_protect
 def DeleteExisting(request):
-    TC_Id = request.GET.get('TC_Id', '')
-    if TC_Id != "":
-        return DeleteExistingTestCase(TC_Id)
-    else:
-        t = get_template('DeleteExisting.html')
-        c = Context({})
-        output = t.render(c)
-        return HttpResponse(output)
+    if request.method == 'GET':
+        TC_Id = request.GET.get('TC_Id', '')
+        print TC_Id
+        if TC_Id != '':
+            return DeleteExistingTestCase(TC_Id)
+        else:
+            t = get_template('DeleteExisting.html')
+            c = Context({})
+            c.update(csrf(request))
+            output = t.render(c)
+            return HttpResponse(output)
+    elif request.method == 'POST':
+        TC_Ids = request.POST.getlist('selectTC')
+        if TC_Ids:
+            return DeleteExistingTestCase(TC_Ids)
+        else:
+            data = GetData('test_cases')
+            
+            tc_ids = []
+            tc_names = []
+            counter = 0
+            
+            for row in data:
+                tc_ids.append(row[0])
+                tc_names.append(row[1])
+                counter += 1
+            
+            t = get_template('DeleteMultiple.html')
+            c = Context({'TC_ids': tc_ids, 'TC_names': tc_names})
+            c.update(csrf(request))
+            return HttpResponse(t.render(c))
+    
 
 def CreateProductSections(request):
     templ = get_template('CreateProductSections.html')
@@ -2479,85 +2513,21 @@ def Bundle_Report(request):  #==================Returns Report data for a specif
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def DeleteExistingTestCase(TC_Id):
+def DeleteExistingTestCase(TC_Ids):
     conn = Conn
-    Cleanup_TestCase(conn, TC_Id)
+    is_string = False
+    
+    if type(TC_Ids) == type(u''):
+        is_string = True
+        Cleanup_TestCase(conn, TC_Ids)
+        print is_string
+        print "MESSAGE-----------------------------------------"
+    else:
+        for tc_id in TC_Ids:
+            Cleanup_TestCase(conn, tc_id)
+    
     
     t = get_template("DeletedExistingTestCase.html")
-    c = Context({'TC_name': TC_Id})
+    c = Context({'is_string': is_string, 'tc_names': TC_Ids})
     output = t.render(c) 
     return HttpResponse(output)
-"""Taitalus(shetu) changes"""
-def TestSet(request):
-    def check(x):
-        if x in request.POST:
-            name=request.POST[x]
-            conn=GetConnection()
-            result=0
-            result=DB.GetData(conn,"SELECT count(*) FROM config_values WHERE value='"+name+"'")
-            return result[0]
-        else:
-            return -1
-    temp=check('searchboxname')   
-    if (temp==0):
-        error_message=""
-        name=request.POST['searchboxname']
-        return CreateNewTestSet(request,name)
-    if (temp>0):
-        name=request.POST['searchboxname']
-        error_message="Test Set Exists"
-        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name+"\" exists"},context_instance=RequestContext(request))
-    temp=check('renamesearchbox')   
-    if (temp>0):
-        name=request.POST['renamesearchbox']
-        return RenameNewTestSet(request,name)
-    if (temp==0):
-        name=request.POST['renamesearchbox']
-        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
-    temp=check('deletesearchbox')   
-    if (temp>0):
-        name=request.POST['deletesearchbox']
-        return DeleteTestSet(request,name)
-    if (temp==0):
-        name=request.POST['deletesearchbox']
-        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
-    return render_to_response('TestSet.html',{},context_instance=RequestContext(request))
-
-def CreateNewTestSet(request,name):
-    return render_to_response('NewTestSet.html',{'name':name},context_instance=RequestContext(request))       
-
-def Process(request):
-    if 'test_set_type' in request.POST:
-        name=request.POST['test_set_name']
-        test_type=request.POST['test_set_type']
-        conn=GetConnection()
-        testrunenv = DB.InsertNewRecordInToTable(Conn, "config_values", value=name,type=test_type)
-        conn.close()
-        if testrunenv==True:
-            return render_to_response('TestSet.html',{'error_message':"Test Set with name "+name+" is created successfully"},context_instance=RequestContext(request))
-        else:
-            return render_to_response('NewTestSet.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
-    return render_to_response('TestSet.html',{'error_message':"Something wrong happens.Please re-input."},context_instance=RequestContext(request))
-        
-def RenameTestSet(request):
-    if 'test_set_new' in request.POST:
-        old_name=request.POST['test_set_old']
-        new_name=request.POST['test_set_new']
-        conn=GetConnection()
-        query = "Where  value = '%s'" %(old_name)
-        testrunenv=DB.UpdateRecordInTable(conn,"config_values",query,value=new_name)
-        conn.close()
-        if testrunenv==True:
-            return render_to_response('TestSet.html',{'error_message':"Old Test Name \""+old_name+"\" is updated to \""+new_name+"\""},context_instance=RequestContext(request))
-        else:
-            return render_to_response('NewTestSet.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
-    return render_to_response('RenameTestSet,html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
-def RenameNewTestSet(request,name):
-    return render_to_response('RenameTestSet.html',{'name':name},context_instance=RequestContext(request))
-
-def DeleteTestSet(request,name):
-   conn=GetConnection()
-   testrunenv=DB.DeleteRecord(conn,"config_values",value=name)
-   conn.close()
-   if testrunenv==True:
-       return render_to_response('TestSet.html',{'error_message':"Test name with \""+name+"\" is deleted successfully."},context_instance=RequestContext(request))
