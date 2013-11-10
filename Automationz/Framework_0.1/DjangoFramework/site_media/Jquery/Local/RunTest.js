@@ -402,7 +402,7 @@ function RunTestAutocompleteSearch(Env)
 							}
 							$("#searchbox").val("");
 							return false
-						},
+						}
 
 		});
 
