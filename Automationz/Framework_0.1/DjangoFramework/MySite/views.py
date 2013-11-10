@@ -2530,3 +2530,77 @@ def DeleteExistingTestCase(TC_Ids):
     c = Context({'is_string': is_string, 'tc_names': TC_Ids})
     output = t.render(c) 
     return HttpResponse(output)
+"""Taitalus(shetu) changes"""
+def TestSet(request):
+    def check(x):
+        if x in request.POST:
+            name=request.POST[x]
+            conn=GetConnection()
+            result=0
+            result=DB.GetData(conn,"SELECT count(*) FROM config_values WHERE value='"+name+"'")
+            return result[0]
+        else:
+            return -1
+    temp=check('searchboxname')   
+    if (temp==0):
+        #error_message=""
+        name=request.POST['searchboxname']
+        return CreateNewTestSet(request,name)
+    if (temp>0):
+        name=request.POST['searchboxname']
+        #error_message="Test Set Exists"
+        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name+"\" exists"},context_instance=RequestContext(request))
+    temp=check('renamesearchbox')   
+    if (temp>0):
+        name=request.POST['renamesearchbox']
+        return RenameNewTestSet(request,name)
+    if (temp==0):
+        name=request.POST['renamesearchbox']
+        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
+    temp=check('deletesearchbox')   
+    if (temp>0):
+        name=request.POST['deletesearchbox']
+        return DeleteTestSet(request,name)
+    if (temp==0):
+        name=request.POST['deletesearchbox']
+        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
+    return render_to_response('TestSet.html',{},context_instance=RequestContext(request))
+
+def CreateNewTestSet(request,name):
+    return render_to_response('NewTestSet.html',{'name':name},context_instance=RequestContext(request))       
+
+def Process(request):
+    if 'test_set_type' in request.POST:
+        name=request.POST['test_set_name']
+        test_type=request.POST['test_set_type']
+        conn=GetConnection()
+        testrunenv = DB.InsertNewRecordInToTable(Conn, "config_values", value=name,type=test_type)
+        conn.close()
+        if testrunenv==True:
+            return render_to_response('TestSet.html',{'error_message':"Test Set with name "+name+" is created successfully"},context_instance=RequestContext(request))
+        else:
+            return render_to_response('NewTestSet.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
+    return render_to_response('TestSet.html',{'error_message':"Something wrong happens.Please re-input."},context_instance=RequestContext(request))
+        
+def RenameTestSet(request):
+    if 'test_set_new' in request.POST:
+        old_name=request.POST['test_set_old']
+        new_name=request.POST['test_set_new']
+        conn=GetConnection()
+        query = "Where  value = '%s'" %(old_name)
+        testrunenv=DB.UpdateRecordInTable(conn,"config_values",query,value=new_name)
+        conn.close()
+        if testrunenv==True:
+            return render_to_response('TestSet.html',{'error_message':"Old Test Name \""+old_name+"\" is updated to \""+new_name+"\""},context_instance=RequestContext(request))
+        else:
+            return render_to_response('NewTestSet.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
+    return render_to_response('RenameTestSet,html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
+def RenameNewTestSet(request,name):
+    return render_to_response('RenameTestSet.html',{'name':name},context_instance=RequestContext(request))
+
+def DeleteTestSet(request,name):
+    conn=GetConnection()
+    testrunenv=DB.DeleteRecord(conn,"config_values",value=name)
+    conn.close()
+    if testrunenv==True:
+        return render_to_response('TestSet.html',{'error_message':"Test name with \""+name+"\" is deleted successfully."},context_instance=RequestContext(request))
