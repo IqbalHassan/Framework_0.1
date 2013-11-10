@@ -8,13 +8,13 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 ##
 from django.db import connection
-=======
->>>>>>> parent of 5208765... Create Test Set added with create,update and delete function
+#=======
+#>>>>>>> parent of 5208765... Create Test Set added with create,update and delete function
 #from django.shortcuts import render_to_response
-=======
+#=======
 from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render_to_response
->>>>>>> 79295d8a9281fee2054c6e15061b281b41f17493
+#>>>>>>> 79295d8a9281fee2054c6e15061b281b41f17493
 
 from django.template import Context
 from django.template import RequestContext
