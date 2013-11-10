@@ -6,8 +6,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.views.decorators.csrf import csrf_exempt
+<<<<<<< HEAD
 from django.db import connection
 #from django.shortcuts import render_to_response
+=======
+from django.views.decorators.csrf import csrf_protect
+from django.shortcuts import render_to_response
+>>>>>>> 79295d8a9281fee2054c6e15061b281b41f17493
 
 from django.template import Context
 from django.template import RequestContext
@@ -25,6 +30,7 @@ import TestCaseOperations
 import re
 import time
 from TestCaseOperations import Cleanup_TestCase
+from django.core.context_processors import csrf
 
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
@@ -111,15 +117,40 @@ def ManageTestCases(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
+@csrf_protect
 def DeleteExisting(request):
-    TC_Id = request.GET.get('TC_Id', '')
-    if TC_Id != "":
-        return DeleteExistingTestCase(TC_Id)
-    else:
-        t = get_template('DeleteExisting.html')
-        c = Context({})
-        output = t.render(c)
-        return HttpResponse(output)
+    if request.method == 'GET':
+        TC_Id = request.GET.get('TC_Id', '')
+        print TC_Id
+        if TC_Id != '':
+            return DeleteExistingTestCase(TC_Id)
+        else:
+            t = get_template('DeleteExisting.html')
+            c = Context({})
+            c.update(csrf(request))
+            output = t.render(c)
+            return HttpResponse(output)
+    elif request.method == 'POST':
+        TC_Ids = request.POST.getlist('selectTC')
+        if TC_Ids:
+            return DeleteExistingTestCase(TC_Ids)
+        else:
+            data = GetData('test_cases')
+            
+            tc_ids = []
+            tc_names = []
+            counter = 0
+            
+            for row in data:
+                tc_ids.append(row[0])
+                tc_names.append(row[1])
+                counter += 1
+            
+            t = get_template('DeleteMultiple.html')
+            c = Context({'TC_ids': tc_ids, 'TC_names': tc_names})
+            c.update(csrf(request))
+            return HttpResponse(t.render(c))
+    
 
 def CreateProductSections(request):
     templ = get_template('CreateProductSections.html')
@@ -2479,12 +2510,22 @@ def Bundle_Report(request):  #==================Returns Report data for a specif
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def DeleteExistingTestCase(TC_Id):
+def DeleteExistingTestCase(TC_Ids):
     conn = Conn
-    Cleanup_TestCase(conn, TC_Id)
+    is_string = False
+    
+    if type(TC_Ids) == type(u''):
+        is_string = True
+        Cleanup_TestCase(conn, TC_Ids)
+        print is_string
+        print "MESSAGE-----------------------------------------"
+    else:
+        for tc_id in TC_Ids:
+            Cleanup_TestCase(conn, tc_id)
+    
     
     t = get_template("DeletedExistingTestCase.html")
-    c = Context({'TC_name': TC_Id})
+    c = Context({'is_string': is_string, 'tc_names': TC_Ids})
     output = t.render(c) 
     return HttpResponse(output)
 """Taitalus(shetu) changes"""
