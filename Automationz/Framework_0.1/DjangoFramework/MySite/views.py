@@ -6,8 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-<<<<<<< HEAD
-<<<<<<< HEAD
+##
 from django.db import connection
 =======
 >>>>>>> parent of 5208765... Create Test Set added with create,update and delete function
