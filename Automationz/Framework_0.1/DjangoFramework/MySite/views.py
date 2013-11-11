@@ -2554,6 +2554,7 @@ def TestSet(request):
         name=request.POST['searchboxname']
         #error_message="Test Set Exists"
         return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name+"\" exists"},context_instance=RequestContext(request))
+    
     temp=check('renamesearchbox')   
     if (temp>0):
         name=request.POST['renamesearchbox']
@@ -2562,8 +2563,18 @@ def TestSet(request):
         name=request.POST['renamesearchbox']
         if name=="":
             return render_to_response('TestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name'},context_instance=RequestContext(request))
-        
         return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
+    
+    temp=check('managesearchbox')
+    if(temp>0):
+        name=request.POST['managesearchbox']
+        return ManageTestSet(request,name)
+    if(temp==0):
+        name=request.POST['managesearchbox']
+        if name=="":
+            return render_to_response('TestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name'},context_instance=RequestContext(request))
+        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
+    
     temp=check('deletesearchbox')   
     if (temp>0):
         name=request.POST['deletesearchbox']
@@ -2584,7 +2595,7 @@ def Process(request):
         name=request.POST['test_set_name']
         test_type=request.POST['test_set_type']
         if test_type=="":
-            return render_to_response('RenameTestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name','name':name},context_instance=RequestContext(request))
+            return render_to_response('NewTestSet.html',{'error_message':'Input Field is empty.Enter the Test Set Type','name':name},context_instance=RequestContext(request))
         
         conn=GetConnection()
         testrunenv = DB.InsertNewRecordInToTable(Conn, "config_values", value=name,type=test_type)
@@ -2613,6 +2624,39 @@ def RenameTestSet(request):
     return render_to_response('RenameTestSet,html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
 def RenameNewTestSet(request,name):
     return render_to_response('RenameTestSet.html',{'name':name},context_instance=RequestContext(request))
+
+def ManageTestSet(request,name):
+    #for the case in set
+    conn=GetConnection()
+    result=DB.GetData(conn, "select tc_id from test_case_tag where name='"+name+"'")
+    data = GetData('test_cases')
+    ex_tc_ids=[]
+    ex_tc_names=[]
+    ex_tc_type=[]
+    for x in result:
+        ex_tc_ids.append(x[0])
+        ex_tc_names.append(x[1])
+        ex_tc_type.append(x[2])
+    ex_lst=[{'item1': t[0], 'item2': t[1],'item3': t[2]} for t in zip(ex_tc_ids,ex_tc_names,ex_tc_type)]
+    
+    tc_ids = []
+    tc_names = []
+    tc_type=[]   
+    for row in data:
+        if row[0] not in ex_tc_ids:
+            tc_ids.append(row[0])
+            tc_names.append(row[1])
+            tc_type.append(row[2])
+        
+    lst = [{'item1': t[0], 'item2': t[1],'item3': t[2]} for t in zip(tc_ids,tc_names,tc_type)]
+    return render_to_response('ManageTestSet.html',{'name':name,'lst':lst,'ex_lst':ex_lst},context_instance=RequestContext(request))
+
+def AddTestCaseToSet(request):
+    #if request.method=='POST':
+       # selected_tc=request.POST.getlist['selectTCAdd']
+        #for x in selected_tc:
+    return HttpResponse("here the add test process will be done")
+                    
 
 def DeleteTestSet(request,name):
     conn=GetConnection()

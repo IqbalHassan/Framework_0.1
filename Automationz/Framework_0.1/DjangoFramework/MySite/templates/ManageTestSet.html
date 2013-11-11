@@ -1,0 +1,70 @@
+{% extends "BaseTemplate.html" %}
+{% block title%} Test Case Management {%endblock%}
+{% block content %}
+<div id="info" style="margin: auto" align="center">
+    {% if error_message %}<p align="center"><strong>{{error_message}}</strong></p>{% endif %}
+    <h4>Test Set Name:<b style=" font-weight: bold; font-size: 1.4em;">    {{name}}</b></h4>
+</div>
+<div id="main" align="center" style="width: 100%;">
+    <div id="left_div" style="width: 50%;float: left;">
+        <form name="add_form" action="" method="POST">
+            {%csrf_token%}
+            <div style="display: block;margin:auto">
+                <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
+                    <thead style="text-align: left;">
+                    <tr style="border: none;">
+                        <th colspan="3" align="center" style="padding: 2px; font-weight: bold; font-size: 1.4em;">Available Test Cases(select to remove)<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                    </tr>
+                    <tr style="border: none;">
+                        <th style="padding: 2px; text-decoration: underline; font-weight: bold;">Test Case ID<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                        <th style="padding: 2px; text-decoration: underline; font-weight: bold;">Test Case name<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                        <th style="padding: 2px; text-decoration: underline; font-weight: bold;">Test Case Type<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for x in ex_lst %}
+                    <tr>
+                        <td style="padding: 5px; onclick="click"><label style="cursor: pointer;"><input type="checkbox" name="selectTCremove" value="{{x.item1}}" />{{x.item1}}</label><hr style="height: 2px; background-color: #ABCDEF; border: none;"></td>
+                        <td style="padding: 5px;">{{x.item2}}<hr style="height: 2px; background-color: #ABCDEF; border: none;"></td>
+                        <td style="padding: 5px;">{{x.item3}}<hr style="height: 2px; background-color: #ABCDEF; border: none;"></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <button id="RemoveBtn" style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Remove Selected TCs</button>
+            </div>
+        </form>
+    </div>
+    <div id="right_div" style="width:50%;float:left;">
+       <form name="add_form" action="{% url 'MySite.views.AddTestCaseToSet' %}" method="POST">
+           {%csrf_token%}
+           <div style="display: block;margin:auto">
+               <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
+                   <thead style="text-align: left;">
+                   <tr style="border: none;">
+                       <th colspan="3" align="center" style="padding: 2px; font-weight: bold; font-size: 1.4em;">Select Test Case(s) to add<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                   </tr>
+                   <tr style="border: none;">
+                       <th style="padding: 2px; text-decoration: underline; font-weight: bold;" align="center">Test Case ID<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                       <th style="padding: 2px; text-decoration: underline; font-weight: bold;" align="center">Test Case name<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                       <th style="padding: 2px; text-decoration: underline; font-weight: bold;" align="center">Test Case Type<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                   </tr>
+                   </thead>
+
+                   <tbody>
+                   {% for x in lst %}
+                   <tr>
+                       <td style="padding: 5px; onclick="click"><label style="cursor: pointer;"><input type="checkbox" name="selectTCAdd" value="{{x.item1}}" />{{x.item1}}</label><hr style="height: 2px; background-color: #ABCDEF; border: none;"></td>
+                       <td style="padding: 5px;">{{x.item2}}<hr style="height: 2px; background-color: #ABCDEF; border: none;"></td>
+                       <td style="padding: 5px;">{{x.item3}}<hr style="height: 2px; background-color: #ABCDEF; border: none;"></td>
+                   </tr>
+                   {% endfor %}
+                   </tbody>
+               </table>
+               <button id="AddBtn" style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Add Selected TCs</button>
+           </div>
+       </form>
+    </div>
+</div>
+{%endblock%}
