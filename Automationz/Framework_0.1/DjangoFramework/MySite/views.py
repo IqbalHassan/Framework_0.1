@@ -2530,6 +2530,7 @@ def DeleteExistingTestCase(TC_Ids):
     c = Context({'is_string': is_string, 'tc_names': TC_Ids})
     output = t.render(c) 
     return HttpResponse(output)
+
 """Taitalus(shetu) changes"""
 def TestSet(request):
     def check(x):
@@ -2541,10 +2542,13 @@ def TestSet(request):
             return result[0]
         else:
             return -1
-    temp=check('searchboxname')   
+    temp=check('searchboxname')
     if (temp==0):
         #error_message=""
         name=request.POST['searchboxname']
+        if name=="":
+            return render_to_response('TestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name'},context_instance=RequestContext(request))
+           
         return CreateNewTestSet(request,name)
     if (temp>0):
         name=request.POST['searchboxname']
@@ -2556,6 +2560,9 @@ def TestSet(request):
         return RenameNewTestSet(request,name)
     if (temp==0):
         name=request.POST['renamesearchbox']
+        if name=="":
+            return render_to_response('TestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name'},context_instance=RequestContext(request))
+        
         return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
     temp=check('deletesearchbox')   
     if (temp>0):
@@ -2563,6 +2570,9 @@ def TestSet(request):
         return DeleteTestSet(request,name)
     if (temp==0):
         name=request.POST['deletesearchbox']
+        if name=="":
+            return render_to_response('TestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name'},context_instance=RequestContext(request))
+        
         return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
     return render_to_response('TestSet.html',{},context_instance=RequestContext(request))
 
@@ -2573,6 +2583,9 @@ def Process(request):
     if 'test_set_type' in request.POST:
         name=request.POST['test_set_name']
         test_type=request.POST['test_set_type']
+        if test_type=="":
+            return render_to_response('RenameTestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name','name':name},context_instance=RequestContext(request))
+        
         conn=GetConnection()
         testrunenv = DB.InsertNewRecordInToTable(Conn, "config_values", value=name,type=test_type)
         conn.close()
@@ -2586,6 +2599,9 @@ def RenameTestSet(request):
     if 'test_set_new' in request.POST:
         old_name=request.POST['test_set_old']
         new_name=request.POST['test_set_new']
+        if new_name=="":
+            return render_to_response('RenameTestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name','name':old_name},context_instance=RequestContext(request))
+        
         conn=GetConnection()
         query = "Where  value = '%s'" %(old_name)
         testrunenv=DB.UpdateRecordInTable(conn,"config_values",query,value=new_name)
