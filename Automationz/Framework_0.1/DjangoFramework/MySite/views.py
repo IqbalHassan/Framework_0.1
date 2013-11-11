@@ -119,137 +119,40 @@ def ManageTestCases(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
-
 @csrf_protect
 def DeleteExisting(request):
-#     if request.method == 'GET':
-#         TC_Id = request.GET.get('TC_Id', '')
-#         print TC_Id
-#         if TC_Id != '':
-#             return DeleteExistingTestCase(TC_Id)
-#         else:
-#             t = get_template('DeleteExisting.html')
-#             c = Context({})
-#             c.update(csrf(request))
-#             output = t.render(c)
-#             return HttpResponse(output)
-#     elif request.method == 'POST':
-#         TC_Ids = request.POST.getlist('selectTC')
-#         if TC_Ids:
-#             return DeleteExistingTestCase(TC_Ids)
-#         else:
-#             data = GetData('test_cases')
-#             
-#             tc_ids = []
-#             tc_names = []
-#             counter = 0
-#             
-#             for row in data:
-#                 tc_ids.append(row[0])
-#                 tc_names.append(row[1])
-#                 counter += 1
-#             
-#             t = get_template('DeleteMultiple.html')
-#             c = Context({'TC_ids': tc_ids, 'TC_names': tc_names})
-#             c.update(csrf(request))
-#             return HttpResponse(t.render(c))
-    import re, string
-
-    TC_Ids = request.POST.getlist('selectTC')
-    
-    search_query = request.GET.get('test_case', '')
-    is_searching = False
-    
-    regex = re.compile('[%s]' % re.escape(string.punctuation))
-    processesed_string = regex.sub('', search_query).split()
-    
-    
-    if TC_Ids and request.method == 'POST':
-        return DeleteExistingTestCase(TC_Ids)
-    if request.method == 'POST':
+    if request.method == 'GET':
+        TC_Id = request.GET.get('TC_Id', '')
+        print TC_Id
+        if TC_Id != '':
+            return DeleteExistingTestCase(TC_Id)
+        else:
+            t = get_template('DeleteExisting.html')
+            c = Context({})
+            c.update(csrf(request))
+            output = t.render(c)
+            return HttpResponse(output)
+    elif request.method == 'POST':
         TC_Ids = request.POST.getlist('selectTC')
         if TC_Ids:
             return DeleteExistingTestCase(TC_Ids)
         else:
             data = GetData('test_cases')
-             
+            
             tc_ids = []
             tc_names = []
             counter = 0
-             
+            
             for row in data:
                 tc_ids.append(row[0])
                 tc_names.append(row[1])
                 counter += 1
-             
+            
             t = get_template('DeleteMultiple.html')
             c = Context({'TC_ids': tc_ids, 'TC_names': tc_names})
             c.update(csrf(request))
             return HttpResponse(t.render(c))
-        
-    else:
-        data = GetData('test_cases')
-         
-        tc_ids = []
-        tc_names = []
-        counter = 0
-        tcs = [tc_ids, tc_names]
-        search_object = {'tc_ids': [], 'tc_names': []}
-         
-        for row in data:
-            tc_ids.append(row[0])
-            tc_names.append(row[1])
-            counter += 1
-        
-        print "\n------------------MESSAGE-----------------------\n"
-#         for tc_id in tc_ids:
-#             regex = re.compile('[%s]' % re.escape(string.punctuation))
-#             tc_id= regex.sub('', tc_id).split()
-#             
-#             for item in processesed_string:
-#                 if tc_id[0] == item:
-#                     search_object['tc_ids'].append(tc_id[0])
-        
-        already_matched = []
-        for tc_name in tc_names:
-            split_name = tc_name.split()
-            for keyword in split_name:
-                for item in processesed_string:
-                    if keyword.lower() in item.lower():
-#                         print keyword
-#                         print tc_name
-                        already_matched.append(tc_name)
-                        break
-                    
-        for i in already_matched:
-            for x in already_matched:
-                if x == i:
-                    already_matched.pop(already_matched.index(i, ))
-                    already_matched.append(x)
-        
-        print "Already Matched:", already_matched
-        
-        import psycopg2
-        for tc_name in already_matched:
-            cur = Conn.cursor()
-#             get_name = GetQueryData("SELECT * FROM test_cases WHERE tc_name=%(tc_name)s" % {'tc_name': tc_name})
-            cur.execute("SELECT * FROM test_cases WHERE tc_name=%(tc_name)s", {'tc_name': tc_name})
-            data = cur.fetchone()
-            tc_id = data[0]
-            search_object['tc_ids'].append(tc_id)
-            search_object['tc_names'].append(tc_name)
-        
-        print "TC_Ids:", search_object['tc_ids']
-        print "TC_names:", search_object['tc_names']
-#         print processesed_string
-        print "\n------------------MESSAGE-----------------------\n"
-        
-        is_searching = True
-        
-        t = get_template('SearchAll.html')
-        c = Context({'TC_ids': search_object['tc_ids'], 'TC_names': search_object['tc_names'], 'is_searching': is_searching, 'search_query': search_query})
-        c.update(csrf(request))
-        return HttpResponse(t.render(c))
+    
 
 def CreateProductSections(request):
     templ = get_template('CreateProductSections.html')
@@ -2616,6 +2519,8 @@ def DeleteExistingTestCase(TC_Ids):
     if type(TC_Ids) == type(u''):
         is_string = True
         Cleanup_TestCase(conn, TC_Ids)
+        print is_string
+        print "MESSAGE-----------------------------------------"
     else:
         for tc_id in TC_Ids:
             Cleanup_TestCase(conn, tc_id)
