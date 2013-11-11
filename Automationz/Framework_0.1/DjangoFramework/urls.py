@@ -48,6 +48,10 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTestCases/Create/Submit_New_TestCase/$', Create_Submit_New_TestCase),
     url(r'^Home/.*/GetSections/$', Get_Sections),
     url(r'^Home/ManageTestCases/DeleteExisting/$', DeleteExisting),
+    url(r'^Home/ManageTestCases/TestSet/$', TestSet),
+    url(r'^Home/ManageTestCases/TestSet/Process/$', Process),
+    url(r'^Home/ManageTestCases/TestSet/RenameTestSet/$', RenameTestSet),
+    
     
     #Run Test Page
     url(r'^Home/RunTest/$',RunTest),

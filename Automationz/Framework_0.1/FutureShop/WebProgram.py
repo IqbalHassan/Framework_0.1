@@ -16,6 +16,12 @@ import CommonUtil
 
 def BrowserSelection(browser):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    
+    try:
+        sBrowser.close()
+    except:
+        True
+    
     global sBrowser
     try:
         if "Chrome" in browser:
@@ -34,15 +40,14 @@ def BrowserSelection(browser):
             print "Started Internet Explorer Browser"
             return "PASS"
         else:
-
             print "You did not select a valid browser: %s" % browser
-
             CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser: %s" % browser, 3)
             return "Critical"
     except Exception, e:
         print "Exception : ", e
         print "Unable to start WebDriver"
         CommonUtil.ExecLog(sModuleInfo, "Unable to start WebDriver", 3)
+
         return "Critical"
 
 def OpenLink(link):
@@ -86,6 +91,7 @@ def SelectFirstLevelMenu(menu_name_1):
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Error trying to select the main menu: %s" % menu_name_1, 3)
+        
         print "Error trying to select the main menu"
         return "Critical"
 
@@ -120,13 +126,35 @@ def SelectSecondLevelMenu(menu_name_2):
         print "Error trying to select the second level menu"
         return "Critical"
 
+#def SelectThirdLevelMenu(menu_name_3):
+#    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+#    try:
+#        time.sleep(4)
+#        allElements = sBrowser.find_elements_by_xpath ("//*[contains(text(),'%s')]" % (menu_name_3))
+#        for eachElements in allElements:
+#            if  menu_name_3 == eachElements.get_attribute("text"):
+#                print "Found your selection: " + menu_name_3
+#                sBrowser.get(eachElements.get_attribute('href'))
+#                print "Successfully clicked your item: " + menu_name_3
+#                CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your item: %s" % menu_name_3, 1)
+#                return "PASS"
+#        print "Unable to find your item to click: " + menu_name_3
+#        CommonUtil.ExecLog(sModuleInfo, "Unable to find your item to click: %s" % menu_name_3, 3)
+#        return "Critical"
+#    except Exception, e:
+#        print "Exception : ", e
+#        CommonUtil.ExecLog(sModuleInfo, "Error trying to select the 3rd level menu: %s" % menu_name_3, 3)
+#        print "Error trying to select the 3rd level menu"
+#        return "Critical"
+
 def SelectThirdLevelMenu(menu_name_3):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         time.sleep(4)
-        allElements = sBrowser.find_elements_by_xpath ("//*[contains(text(),'%s')]" % (menu_name_3))
+        allElements = sBrowser.find_elements_by_xpath('//a[@class="department-image"]')
         for eachElements in allElements:
-            if  menu_name_3 == eachElements.get_attribute("text"):
+            clean_text =  (((eachElements.get_attribute('text')).rstrip()).lstrip()).replace('\n', '')
+            if  menu_name_3 == clean_text:
                 print "Found your selection: " + menu_name_3
                 sBrowser.get(eachElements.get_attribute('href'))
                 print "Successfully clicked your item: " + menu_name_3
@@ -140,7 +168,6 @@ def SelectThirdLevelMenu(menu_name_3):
         CommonUtil.ExecLog(sModuleInfo, "Error trying to select the 3rd level menu: %s" % menu_name_3, 3)
         print "Error trying to select the 3rd level menu"
         return "Critical"
-
 
 def HoeverOver(element):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -213,8 +240,8 @@ def CloseBrowser():
         return "PASS"
     except Exception, e:
         print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Failed to close the browser", 3)
-        print "Failed to close the browser"
+        CommonUtil.ExecLog(sModuleInfo, "No open browser to close", 3)
+        print "No open browser to close"
         return "Critical"
     
 
@@ -408,16 +435,46 @@ def GetItemDetail():
 
 
 
-#print BrowserSelection('IE')
-#time.sleep(4)
-#print CloseBrowser()
-
+#print BrowserSelection('Chrome')
+#
+##print CloseBrowser()
+#
 #print OpenLink('http://www.futureshop.ca')
+#
+##allElements = sBrowser.find_elements_by_xpath('.//span[@class="department-title"]')
+#allElements = sBrowser.find_elements_by_xpath('//a[@class="department-image"]')
+##print allElements
+#
+#for eachElements in allElements:
+##    print eachElements
+##    print eachElements.get_attribute('text')
+##    print eachElements.get_attribute('href')
+#    print  eachElements.get_attribute('text')
+#    clean_text =  (((eachElements.get_attribute('text')).rstrip()).lstrip()).replace('\n', '')
+#
+#    if "Home Speakers" == clean_text:
+#        print eachElements.get_attribute('text')
+#        sBrowser.get(eachElements.get_attribute('href'))
+#        
+    
+#    eachElements.click()
+#    try:
+#        hreftest = eachElements.get_attribute('href')
+#        if hreftest != "None":
+#            sBrowser.get(eachElements.get_attribute('href'))
+#    except:
+#        pass
+
+    #print eachElements.get_attribute('href')
+#    if  menu_name_3 == eachElements.get_attribute("text"):
+#        print "Found your selection: " + menu_name_3
+#        sBrowser.get(eachElements.get_attribute('href'))
 #print SearchItem('10272357')
 #print GetItemDetail()
 #print SelectFirstLevelMenu ('Departments')
-#print SelectSecondLevelMenu('TV & Home Theater')
-##print SelectThirdLevelMenu('iPad & Tablets')
+#print SelectSecondLevelMenu('Gaming')
+#
+#print SelectThirdLevelMenu('PS3')
 #print SelectThirdLevelMenu('TVs')
 #print FilterBySelection("On Sale")
 #print GetFilterCount("On Sale")

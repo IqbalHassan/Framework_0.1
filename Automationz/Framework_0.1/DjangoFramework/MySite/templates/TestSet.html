@@ -1,0 +1,96 @@
+{% extends "BaseTemplate.html" %}
+{% block title%} Test Case Management {%endblock%}
+{% block content %}
+<script>
+    $(function() {
+        $( "#accordion" ).accordion({
+            collapsible: true,
+            heightStyle: "content"
+        });
+    });
+</script>
+<article>
+    <p class='text' id="question_text" style="color: black; display: block; font-family: Arial, sans-serif; font-size: 25px; font-weight: 900; text-align: center">
+        <a>What operation would you like to perform?</a>
+    </p>
+ </article>
+<div align="center">
+    {% if error_message %}<p align="center"><strong>{{error_message}}</strong></p>{% endif %}
+</div>
+<div id="accordion" style="width:720px;background:transparent;margin-left:auto;margin-right:auto;" >
+    <h3><a href="#">Create Test Set</a></h3>
+    <div id="Place_AutoComplete">
+
+        <form action="{% url 'MySite.views.TestSet' %}" method="POST">
+        {% csrf_token %}
+        <table id="TestSetName" style='display:block;'>
+            <tbody>
+            <tr>
+                <td>
+                    <label><b id="TestSetNameLabel" class="Text">Search for Creating</b></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input class="ui-corner-all" id="searchbox" style="margin-left: -2%" type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' />
+                    &nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="submit_button" value="Search"/>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+    </div>
+    <h3><a href="#">Rename Existing Test Set</a></h3>
+
+    <div>
+        <form action="{% url 'MySite.views.TestSet' %}" method="POST">
+            {% csrf_token %}
+            <table id="RenameTestSet" style='display:block;'>
+                <tbody>
+                <tr>
+                    <td>
+                        <label><b id="RenameTestSetLabel" class="Text">Search for Renaming</b></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input class="ui-corner-all" id="Renamesearchbox" style="margin-left: -2%" type='text' title = 'Please Type Keyword and Click On that to add to query' name='renamesearchbox'/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="Rename_Button" value="Search"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+
+    <h3><a href="#">Manage Existing Test Set</a></h3>
+    <div>
+        <form action="{% url 'MySite.views.TestSet' %}" method="POST">
+            {% csrf_token %}
+            <table id="ManageTestSet" style='display:block;'>
+                <tbody>
+                <tr>
+                    <td>
+                        <label><b id="ManageTestSetLabel" class="Text">Search for Editing</b></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input class="ui-corner-all" id="Managesearchbox" style="margin-left: -2%" type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname'/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="Manage_button" value="Search"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <h3><a href="#">Delete Test Set</a></h3>
+    <div>
+        <div>
+            <form action="{% url 'MySite.views.TestSet' %}" method="POST">
+                {% csrf_token %}
+                <table id="DeleteTestSet" style='display:block;'>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <label><b id="DeleteTestSetLabel" class="Text">Search for Deleting</b></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input class="ui-corner-all" id="Deletesearchbox" style="margin-left: -2%" type='text' title = 'Please Type Keyword and Click On that to add to query' name='deletesearchbox'/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="Delete_button" value="Delete"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+{%endblock%}
