@@ -2598,7 +2598,7 @@ def Process(request):
             return render_to_response('NewTestSet.html',{'error_message':'Input Field is empty.Enter the Test Set Type','name':name},context_instance=RequestContext(request))
         
         conn=GetConnection()
-        testrunenv = DB.InsertNewRecordInToTable(Conn, "config_values", value=name,type=test_type)
+        testrunenv = DB.InsertNewRecordInToTable(conn, "config_values", value=name,type=test_type)
         conn.close()
         if testrunenv==True:
             return render_to_response('TestSet.html',{'error_message':"Test Set with name "+name+" is created successfully"},context_instance=RequestContext(request))
@@ -2625,39 +2625,65 @@ def RenameTestSet(request):
 def RenameNewTestSet(request,name):
     return render_to_response('RenameTestSet.html',{'name':name},context_instance=RequestContext(request))
 
-def ManageTestSet(request,name):
+def ManageTestSet(request,set_name,error_message=""):
     #for the case in set
     conn=GetConnection()
-    result=DB.GetData(conn, "select tc_id from test_case_tag where name='"+name+"'")
+    result=DB.GetData(conn,"select tc_id,tc_name from test_cases where tc_id in (select tc_id from test_case_tag where name='"+set_name+"')",False)
     data = GetData('test_cases')
     ex_tc_ids=[]
     ex_tc_names=[]
-    ex_tc_type=[]
     for x in result:
         ex_tc_ids.append(x[0])
         ex_tc_names.append(x[1])
-        ex_tc_type.append(x[2])
-    ex_lst=[{'item1': t[0], 'item2': t[1],'item3': t[2]} for t in zip(ex_tc_ids,ex_tc_names,ex_tc_type)]
-    
+    ex_lst=[{'item1':t[0],'item2':t[1]} for t in zip(ex_tc_ids,ex_tc_names)]
     tc_ids = []
     tc_names = []
-    tc_type=[]   
     for row in data:
         if row[0] not in ex_tc_ids:
             tc_ids.append(row[0])
             tc_names.append(row[1])
-            tc_type.append(row[2])
         
-    lst = [{'item1': t[0], 'item2': t[1],'item3': t[2]} for t in zip(tc_ids,tc_names,tc_type)]
-    return render_to_response('ManageTestSet.html',{'name':name,'lst':lst,'ex_lst':ex_lst},context_instance=RequestContext(request))
+    lst = [{'item1': t[0], 'item2': t[1]} for t in zip(tc_ids,tc_names)]
+    return render_to_response('ManageTestSet.html',{'name':set_name,'lst':lst,'ex_lst':ex_lst,'error_message':error_message},context_instance=RequestContext(request))
 
 def AddTestCaseToSet(request):
-    #if request.method=='POST':
-       # selected_tc=request.POST.getlist['selectTCAdd']
-        #for x in selected_tc:
-    return HttpResponse("here the add test process will be done")
-                    
-
+    if request.method=='POST':
+        selected_tc=request.POST.getlist('selectTCAdd')
+        test_set_name=request.POST['name_tab']
+        if(len(selected_tc)==0):
+            return ManageTestSet(request,test_set_name,"No checkbox selected")
+        conn=GetConnection()
+        set_type=DB.GetData(conn, "SELECT type FROM config_values WHERE value='"+test_set_name+"'")
+        counter=0
+        for x in selected_tc:
+            testrunenv = DB.InsertNewRecordInToTable(conn, "test_case_tag",tc_id=x,name=test_set_name,property=set_type[0])
+            counter+=1
+        if testrunenv==True:
+            output="successfully added "+str(counter)+" test cases"
+            return ManageTestSet(request, test_set_name,output)
+        else:
+            output="added "+str(counter)+" test case(s) successfully,"+ str(len(selected_tc)-counter)+" test cases left"
+            return ManageTestSet(request,test_set_name,output)
+    return ManageTestSet(request,test_set_name,"Post Method exits abnormally") 
+def DeleteTestCaseFromSet(request):
+    output=""
+    if request.method=='POST':
+        set_name=request.POST['remove_name_tab']
+        selected_removed_tc=request.POST.getlist('selectTCremove')
+        conn=GetConnection()
+        counter=0
+        for x in selected_removed_tc:
+            testrunenv=DB.DeleteRecord(conn,"test_case_tag",name=set_name,tc_id=x)
+            counter+=1
+        if testrunenv==True:
+            output="successfully deleted "+str(counter)+" test case from Test Set "+set_name
+            return ManageTestSet(request,set_name,output)
+        else:
+            output="deleted "+str(counter)+" test case(s) successfully,"+str(len(selected_removed_tc)-counter)+" test cases left unaltered"
+            return ManageTestSet(request,set_name,output)
+    return ManageTestSet(request,set_name,"Post Method exits abnormally")
+            
+    return HttpResponse(output)   
 def DeleteTestSet(request,name):
     conn=GetConnection()
     testrunenv=DB.DeleteRecord(conn,"config_values",value=name)
