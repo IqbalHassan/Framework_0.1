@@ -57,11 +57,13 @@ def OpenLink(link):
         WebDriverWait(sBrowser, 30)
         CommonUtil.ExecLog(sModuleInfo, "Successfully opened your link: %s" % link, 1)
         print "Successfully opened your link: " + link
+        CommonUtil.TakeScreenShot("Demo")
         return "PASS"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Failed to open your link: %s" % link, 3)
         print "Failed to open your link: %s" % link
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
 
 def SelectFirstLevelMenu(menu_name_1):
@@ -72,6 +74,7 @@ def SelectFirstLevelMenu(menu_name_1):
         if len(allElements) == 0:
             print "Unable to find your main menu object"
             CommonUtil.ExecLog(sModuleInfo, "Unable to find your main menu object: %s" % menu_name_1, 3)
+            CommonUtil.TakeScreenShot("Demo")
             return "Critical"
         for element in allElements:
             if menu_name_1 == element.text:
@@ -81,18 +84,21 @@ def SelectFirstLevelMenu(menu_name_1):
                 CommonUtil.ExecLog(sModuleInfo, "Hovering over to your main menu: %s" % menu_name_1, 1)
                 if result != "PASS":
                     CommonUtil.ExecLog(sModuleInfo, "Unable to hover over your main menu: %s" % menu_name_1, 3)
+                    CommonUtil.TakeScreenShot("Demo")
                     return "Critical"
                 else:
                     CommonUtil.ExecLog(sModuleInfo, "Successfully hovered over your main menu: %s" % menu_name_1, 1)
+                    CommonUtil.TakeScreenShot("Demo")
                     return "PASS"
         print "Unable to find your element: " + menu_name_1
         CommonUtil.ExecLog(sModuleInfo, "Unable to find your main menu object: %s" % menu_name_1, 3)
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Error trying to select the main menu: %s" % menu_name_1, 3)
-        
         print "Error trying to select the main menu"
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
 
 
@@ -104,6 +110,7 @@ def SelectSecondLevelMenu(menu_name_2):
         if len(allElements) == 0:
             print "Unable to find your second level menu object"
             CommonUtil.ExecLog(sModuleInfo, "Unable to find your second level menu object: %s" % menu_name_2, 3)
+            CommonUtil.TakeScreenShot("Demo")
             return "Critical"
         for element in allElements:
             if menu_name_2 == element.text:
@@ -113,17 +120,21 @@ def SelectSecondLevelMenu(menu_name_2):
                 result = HoeverOver(element)
                 if result != "PASS":
                     CommonUtil.ExecLog(sModuleInfo, "Unable to hover over your second level element: %s" % menu_name_2, 3)
+                    CommonUtil.TakeScreenShot("Demo")
                     return "Critical"
                 else:
                     CommonUtil.ExecLog(sModuleInfo, "Successfully hovered over your second level menu: %s" % menu_name_2, 1)
+                    CommonUtil.TakeScreenShot("Demo")
                     return "PASS"
         print "Unable to find your element: " + menu_name_2
         CommonUtil.ExecLog(sModuleInfo, "Unable to find second level menu item: %s" % menu_name_2, 3)
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Error trying to select the second level menu: %s" % menu_name_2, 3)
         print "Error trying to select the second level menu"
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
 
 #def SelectThirdLevelMenu(menu_name_3):
@@ -159,14 +170,17 @@ def SelectThirdLevelMenu(menu_name_3):
                 sBrowser.get(eachElements.get_attribute('href'))
                 print "Successfully clicked your item: " + menu_name_3
                 CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your item: %s" % menu_name_3, 1)
+                CommonUtil.TakeScreenShot("Demo")
                 return "PASS"
         print "Unable to find your item to click: " + menu_name_3
         CommonUtil.ExecLog(sModuleInfo, "Unable to find your item to click: %s" % menu_name_3, 3)
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Error trying to select the 3rd level menu: %s" % menu_name_3, 3)
         print "Error trying to select the 3rd level menu"
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
 
 def HoeverOver(element):
@@ -200,12 +214,14 @@ def FilterBySelection(check_box_name):
         for elem in (WebDriverWait(sBrowser, 5).until(lambda driver: sBrowser.find_elements_by_xpath('.//li[@class="%s"]' % check_box))):
             print 'Your check box %s is found but it is currently not checked' % check_box_name
             CommonUtil.ExecLog(sModuleInfo, "Your check box %s is found but it is currently not checked" % check_box_name, 3)
+            CommonUtil.TakeScreenShot("Demo")
             for elem in sBrowser.find_elements_by_xpath('.//span[@class = "item"]'):
                 if elem.text == check_box_name:
                     elem.click()
                     time.sleep(5)
                     print "Your check box: %s is now checked" % check_box_name
                     CommonUtil.ExecLog(sModuleInfo, "Your check box: %s is now checked" % check_box_name, 3)
+                    CommonUtil.TakeScreenShot("Demo")
                     return "PASS"
         '''
         Verify if check box was already checked
@@ -214,15 +230,18 @@ def FilterBySelection(check_box_name):
         for elem in sBrowser.find_elements_by_xpath('.//li[@class="%s"]' % if_check_box_checked):
             print "your check box was already selected"
             CommonUtil.ExecLog(sModuleInfo, "Your check box %s was already selected." % check_box_name, 3)
+            CommonUtil.TakeScreenShot("Demo")
             return "PASS"
         print "Unable to locate your check box: %s" % check_box_name
         CommonUtil.ExecLog(sModuleInfo, "Unable to locate your check box: %s" % check_box_name, 3)
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
 
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Unable to select your check box: %s" % check_box_name, 3)
         print "Unable to select your check box: %s" % check_box_name
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
 
 
@@ -235,8 +254,10 @@ def RemoveFilter(check_box_name):
 def CloseBrowser():
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
+        CommonUtil.TakeScreenShot("Demo")
         sBrowser.close()
         print "Successfully closed your browser"
+        CommonUtil.TakeScreenShot("Demo")
         return "PASS"
     except Exception, e:
         print "Exception : ", e
@@ -262,18 +283,22 @@ def GetFilterCount(check_box_name):
         check_box_name_count = sBrowser.find_element_by_xpath('//li[@class="%s"]' % unchecked_name)
         check_box_count = check_box_name_count.find_element_by_xpath('.//span[@class="count"]')
         print "Found your checkbox and the count is: %s" % check_box_count.text
+        CommonUtil.TakeScreenShot("Demo")
         replace1 = (check_box_count.text).replace("(", "")
         return replace1.replace(")", "")
     except:
         print "Unable to find the check box.  It may be checked.  I will try to find if check box is checked"
+        CommonUtil.TakeScreenShot("Demo")
     try:
         check_box_name_count = sBrowser.find_element_by_xpath('//li[@class="%s"]' % checked_name)
         check_box_count = check_box_name_count.find_element_by_xpath('.//span[@class="count"]')
         print "Found your checkbox.  It was checked.  Your count is: %s" % check_box_count.text
         replace1 = (check_box_count.text).replace("(", "")
+        CommonUtil.TakeScreenShot("Demo")
         return replace1.replace(")", "")
     except:
         print "Unable to find the check box"
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
 
 def SearchItem(search_text, search_box="Search products, articles & help topics", search_button_id="ctl00_MasterPageHeader_GlobalSearchUC_BtnSubmitSearch"):
@@ -288,6 +313,7 @@ def SearchItem(search_text, search_box="Search products, articles & help topics"
             CommonUtil.ExecLog(sModuleInfo, "Found the search box", 1)
             elem.send_keys(search_text)
             print "Entered search item %s in the box" % search_box
+            CommonUtil.TakeScreenShot("Demo")
             CommonUtil.ExecLog(sModuleInfo, "Entered search item %s in the box" % search_box, 1)
             search_button = False
             search_button = WebDriverWait(sBrowser, 20).until(lambda driver : sBrowser.find_element_by_id(search_button_id))
@@ -301,21 +327,26 @@ def SearchItem(search_text, search_box="Search products, articles & help topics"
                     print "Exception : ", e
                     CommonUtil.ExecLog(sModuleInfo, "Timed out waiting over 30 seconds for the page to load", 3)
                     print "Timed out waiting over 30 seconds for the page to load"
+                    CommonUtil.TakeScreenShot("Demo")
                     return "Critical"
                 print "Waited for browser to load"
                 CommonUtil.ExecLog(sModuleInfo, "Waited for browser to fully load: %s" % search_text, 1)
+                CommonUtil.TakeScreenShot("Demo")
                 return "PASS"
             else:
                 print "Search button was not found"
                 CommonUtil.ExecLog(sModuleInfo, "Search button was not found: %s" % search_text, 3)
+                CommonUtil.TakeScreenShot("Demo")
                 return "Critical"
         print "Unable to find search box"
         CommonUtil.ExecLog(sModuleInfo, "Unable to find search box: %s" % search_text, 3)
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Framework error with searching your item: %s" % search_text, 3)
         print "Framework error with searching your item: %s" % search_text
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
 
 def GetItemDetail():
@@ -348,14 +379,18 @@ def GetItemDetail():
             product_title = ("Title", prod_title.text.replace('(', '<').replace(')', '>'))
             full_product_detail.append(product_title)
             print "Successfully collected product title"
+            CommonUtil.TakeScreenShot("Demo")
         except:
             print "Unable to collect product title"
+
         try:
             prod_model_number = WebDriverWait(sBrowser, 20).until(lambda driver : sBrowser.find_element_by_id(model_number))
             product_model = ("Model", prod_model_number.text.replace('(', '<').replace(')', '>'))
             full_product_detail.append(product_model)
+
             print "Successfully collected the model number"
         except:
+            CommonUtil.TakeScreenShot("Demo")
             print "Unable to collect model number"
         try:
             prod_web_id_value = WebDriverWait(sBrowser, 20).until(lambda driver : sBrowser.find_element_by_id(web_id))
@@ -404,6 +439,7 @@ def GetItemDetail():
             allElements = sBrowser.find_elements_by_xpath ("//*[contains(text(),'%s')]" % (menu_name_3))
             for eachElements in allElements:
                 eachElements.click()
+                CommonUtil.TakeScreenShot("Demo")
                 break
         except:
             print "Error trying to select the Detail & Specs"
@@ -430,6 +466,7 @@ def GetItemDetail():
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Framework error with searching your item: %s" % e, 3)
+        CommonUtil.TakeScreenShot("Demo")
         return "Critical"
 
 
