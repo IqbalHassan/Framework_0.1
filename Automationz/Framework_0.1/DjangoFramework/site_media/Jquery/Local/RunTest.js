@@ -334,91 +334,90 @@ function AvailebableTestMachineflipButton()
 	}); 
 	
 }
-
-
 function RunTestAutocompleteSearch(Env)
 
 {
-	
-	$("#searchbox").autocomplete(
-			{
-				//Calling AutoCompleteTestSearch function with 'term'(default) parameter and Env variable
-				//So AutoCompleteTestSearch function in View.py will receive two variable 'term' (this is the one when user type on search box) and Env variable.
-				
-				
-				/*source :  'AutoCompleteTestCasesSearch' ,
-					
-					extraParams: {
-									Env: function() {return Env},
-                    
-								  },*/
 
-				source : function(request, response) {
-				    									$.ajax({
-				    											url:"AutoCompleteTestCasesSearch",
-				    											dataType: "json",
-				    											data:{ term: request.term, Env: Env },
-				    											success: function( data ) {
-				    																			response( data );
-				    																	   }
-				    									});
-				  									 },
+    $("#searchbox").autocomplete(
+        {
+            //Calling AutoCompleteTestSearch function with 'term'(default) parameter and Env variable
+            //So AutoCompleteTestSearch function in View.py will receive two variable 'term' (this is the one when user type on search box) and Env variable.
 
-				//source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
-				select : function(event, ui) {
 
-						var tc_id_name = ui.item.value.split(" - ");
-						var value = "";
-						if (tc_id_name != null)
-							value = tc_id_name[0];
+            /*source :  'AutoCompleteTestCasesSearch' ,
 
-							// Checking if Search Text box is for User Search
-						if ($("#AutoSearchTextBoxLabel").text().trim() === "*Select Test Machine:")
+             extraParams: {
+             Env: function() {return Env},
 
-						{
-								$(".Buttons[title='Select User']").css('display', 'none');
-								$(".Buttons[title='Run Test']").fadeIn(2000);
-								$("P:contains('Dependency')").fadeOut(1000);
-								$("P:contains('Test Data Type')").fadeOut(1000);
-						}
+             },*/
 
-						else 
-							(value != "")
-						{
-								$(".Buttons[title='Search']").fadeIn(2000);
+            source : function(request, response) {
+                $.ajax({
+                    url:"AutoCompleteTestCasesSearch",
+                    dataType: "json",
+                    data:{ term: request.term, Env: Env },
+                    success: function( data ) {
+                        response( data );
+                    }
+                });
+            },
 
-								//$("#Main_Heading_And_Menu").slideUp("slow");
-								$("p:contains('Menu')").fadeIn(2000);
+            //source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
+            select : function(event, ui) {
 
-								$("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
-														+ '<td name = "submitquery" class = "Text" style = "size:10">'
-														+ value
-														+ ":&nbsp"
-														+ '</td>');
+                var tc_id_name = ui.item.value.split(" - ");
+                var value = "";
+                if (tc_id_name != null)
+                    value = tc_id_name[0];
 
-								if ($("#AutoSearchTextBoxLabel").text() != "Search User:") {
-									PerformSearch();
-								}
-							}
-							$("#searchbox").val("");
-							return false
-						},
+                // Checking if Search Text box is for User Search
+                if ($("#AutoSearchTextBoxLabel").text().trim() === "*Select Test Machine:")
 
-		});
+                {
+                    $(".Buttons[title='Select User']").css('display', 'none');
+                    $(".Buttons[title='Run Test']").fadeIn(2000);
+                    $("P:contains('Dependency')").fadeOut(1000);
+                    $("P:contains('Test Data Type')").fadeOut(1000);
+                }
 
-	$("#searchbox").keypress(function(event) {
-		if (event.which == 13) {
+                else
+                    (value != "")
+                {
+                    $(".Buttons[title='Search']").fadeIn(2000);
 
-			event.preventDefault();
+                    //$("#Main_Heading_And_Menu").slideUp("slow");
+                    $("p:contains('Menu')").fadeIn(2000);
 
-		}
+                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+                        + '<td name = "submitquery" class = "Text" style = "size:10">'
+                        + value
+                        + ":&nbsp"
+                        + '</td>');
 
-		if ($("#AutoSearchTextBoxLabel").text().trim() === "*Select Test Machine:") {
-			PerformSearch();
-		}
-	});
+                    if ($("#AutoSearchTextBoxLabel").text() != "Search User:") {
+                        PerformSearch();
+                    }
+                }
+                $("#searchbox").val("");
+                return false
+            },
 
+        });
+
+    $("#searchbox").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+
+        if ($("#AutoSearchTextBoxLabel").text().trim() === "*Select Test Machine:") {
+            PerformSearch();
+        }
+    });
 }
+
+
 
 
 

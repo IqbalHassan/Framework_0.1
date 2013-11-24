@@ -1,0 +1,80 @@
+{% extends "BaseTemplate.html" %}
+{% block title%} Test Case Management {%endblock%}
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/js/jquery-ui-1.10.3.custom.min.js"></script>
+
+<div id="main">
+    <div align="center">
+        <article>
+            <p class='text' id="question_text" style="color: black; display: block; font-family: Arial, sans-serif; font-size: 25px; font-weight: 900; text-align: center">
+                <a>Manage Test Set & Tag</a>
+            </p>
+        </article>
+    </div>
+    <div align="center">
+        {% if error_message %}<p align="center"><strong>{{error_message}}</strong></p>{% endif %}
+    </div>
+    <form action="#" method="get">
+        <div align="center">
+            <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
+                <tr>
+                    <td align="center">
+                        <div id="left">
+                            <label><b>Type:</b></label>
+                            <select name="type">
+                                <option selected value="">Select from list</option>
+                                <option value="set">Test Set</option>
+                                <option value="tag">Test Tag</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td align="center">
+                        <div id="center">
+                            <label><b>Name:</b></label>
+                            &nbsp;&nbsp;&nbsp;
+                            <input class="ui-corner-all" id="input" style="margin-left: -2%" type='text' title = 'Please Type Keyword' name='inputName' />
+                        </div>
+                    </td>
+                    <td align="center">
+                        <div id="right">
+                            <label><b>Operation:</b></label>
+                            <select name="operation">
+                                <option selected value="">Select from list</option>
+                                <option value="create">Create</option>
+                                <option value="rename">Rename</option>
+                                <option value="edit">Edit</option>
+                                <option value="delete">Delete</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td align="center">
+                        <input type="submit" id="submit_button" name="exe_button" value="Execute"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    function AutoComplete(){
+        $("#input").autocomplete({
+            source:function(request,response){
+                $.ajax({
+                    url:"TestSetTag_Auto",
+                    dataType:"json",
+                    data:{term:request.term},
+                    success:
+                            function(data){
+                                response(data);
+                            }
+                });
+            }
+        });
+    }
+    $(document).ready(
+        function(){
+            AutoComplete();
+        }
+    );
+</script>
+{%endblock%}

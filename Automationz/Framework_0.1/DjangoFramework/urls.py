@@ -49,10 +49,11 @@ urlpatterns = patterns('',
     url(r'^Home/.*/GetSections/$', Get_Sections),
     url(r'^Home/ManageTestCases/DeleteExisting/$', DeleteExisting),
     url(r'^Home/ManageTestCases/TestSet/$', TestSet),
-    url(r'^Home/ManageTestCases/TestSet/Process/$', Process),
-    url(r'^Home/ManageTestCases/TestSet/RenameTestSet/$', RenameTestSet),
-    url(r'^Home/ManageTestCases/TestSet/AddTestCase/$', AddTestCaseToSet),
-    url(r'^Home/ManageTestCases/TestSet/DeleteTestCase/$', DeleteTestCaseFromSet),
+    url(r'^Home/ManageTestCases/TestSet/TestSetTag_Auto/$',TestSetTag_Auto),
+    #url(r'^Home/ManageTestCases/TestSet/Process/$', Process),
+   # url(r'^Home/ManageTestCases/TestSet/RenameTestSet/$', RenameTestSet),
+    #url(r'^Home/ManageTestCases/TestSet/AddTestCase/$', AddTestCaseToSet),
+   # url(r'^Home/ManageTestCases/TestSet/DeleteTestCase/$', DeleteTestCaseFromSet),
     
     
     #Run Test Page

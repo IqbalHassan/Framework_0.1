@@ -2532,7 +2532,21 @@ def DeleteExistingTestCase(TC_Ids):
     return HttpResponse(output)
 
 """Taitalus(shetu) changes"""
+def TestSetTag_Auto(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        results = DB.GetData(Conn, "select  value from config_values where value Ilike '%" + value + "%'")
+        #test_tag=DB.GetData(Conn,"")
+        #results=list(set(results+test_tag))
+        if len(results) > 0:
+            results.append("*Dev")
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
 def TestSet(request):
+    return render_to_response('TestSet_Tag.html',{})
+"""def TestSet(request):
     def check(x):
         if x in request.POST:
             name=request.POST[x]
@@ -2690,3 +2704,4 @@ def DeleteTestSet(request,name):
     conn.close()
     if testrunenv==True:
         return render_to_response('TestSet.html',{'error_message':"Test name with \""+name+"\" is deleted successfully."},context_instance=RequestContext(request))
+        """
