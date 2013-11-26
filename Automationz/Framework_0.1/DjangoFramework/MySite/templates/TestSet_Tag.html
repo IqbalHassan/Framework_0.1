@@ -2,7 +2,8 @@
 {% block title%} Test Case Management {%endblock%}
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/js/jquery-ui-1.10.3.custom.min.js"></script>
-
+<link type="text/css" href="/site_media/Jquery/css/smoothness/jquery-ui-1.10.3.custom.css" rel="Stylesheet" />
+<script type="text/javascript" src="/site_media/Jquery/Local/testset_tag.js"></script>
 <div id="main">
     <div align="center">
         <article>
@@ -29,52 +30,37 @@
                         </div>
                     </td>
                     <td align="center">
+                        <div id="right">
+                            <label><b>Operation:</b></label>
+                            <select id="operation" name="operation">
+                                <option value="0"selected="selected">Select from list</option>
+                                <option value="1">Create</option>
+                                <option value="2">Rename</option>
+                                <option value="3">Edit</option>
+                                <option value="4">Delete</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td align="center">
                         <div id="center">
-                            <label><b>Name:</b></label>
+                            <label><b id="name_variable">Name:</b></label>
                             &nbsp;&nbsp;&nbsp;
                             <input class="ui-corner-all" id="input" style="margin-left: -2%" type='text' title = 'Please Type Keyword' name='inputName' />
                         </div>
                     </td>
                     <td align="center">
-                        <div id="right">
-                            <label><b>Operation:</b></label>
-                            <select name="operation">
-                                <option selected value="">Select from list</option>
-                                <option value="create">Create</option>
-                                <option value="rename">Rename</option>
-                                <option value="edit">Edit</option>
-                                <option value="delete">Delete</option>
-                            </select>
+                        <div id="renamebox">
+
                         </div>
                     </td>
                     <td align="center">
-                        <input type="submit" id="submit_button" name="exe_button" value="Execute"/>
+                        <div id="button_id">
+
+                        </div>
                     </td>
                 </tr>
             </table>
         </div>
     </form>
 </div>
-<script type="text/javascript">
-    function AutoComplete(){
-        $("#input").autocomplete({
-            source:function(request,response){
-                $.ajax({
-                    url:"TestSetTag_Auto",
-                    dataType:"json",
-                    data:{term:request.term},
-                    success:
-                            function(data){
-                                response(data);
-                            }
-                });
-            }
-        });
-    }
-    $(document).ready(
-        function(){
-            AutoComplete();
-        }
-    );
-</script>
 {%endblock%}

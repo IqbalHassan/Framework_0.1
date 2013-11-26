@@ -2544,6 +2544,7 @@ def TestSetTag_Auto(request):
             results.append("*Dev")
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+
 def TestSet(request):
     return render_to_response('TestSet_Tag.html',{})
 """def TestSet(request):
