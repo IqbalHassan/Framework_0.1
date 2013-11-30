@@ -8,7 +8,7 @@ $(document).ready(function(){
            $("#renamebox").html(
                "<label><b>New Name:</b></label>"
                    +"&nbsp;&nbsp;&nbsp;"
-                   +"<input class=\"ui-corner-all\" id=\"input\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName' />"
+                   +"<input class=\"ui-corner-all\" id=\"input2\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName2' />"
            );
            $("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
        }
@@ -32,7 +32,46 @@ $(document).ready(function(){
                }
                $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
            }
-
        }
    });
+   $("#input").autocomplete({
+       source: function(request,response){
+           $.ajax({
+               url:"TestSet_Auto",
+               dataType:"json",
+               data:{term:request.term},
+               success:function(data){
+                   response(data);
+               }
+           });
+       },
+       select: function(request,ui){
+           var tc_id_name = ui.item.value.split(" - ");
+           var value = "";
+           if (tc_id_name != null)
+               value = tc_id_name[0];
+           $("#input").val(value);
+           return false;
+       }
+   });
+   /* $("#input2").autocomplete({
+        source: function(request,response){
+            $.ajax({
+                url:"TestSetTag_Auto",
+                dataType:"json",
+                data:{term:request.term},
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select: function(request,ui){
+            var tc_id_name = ui.item.value.split(" - ");
+            var value = "";
+            if (tc_id_name != null)
+                value = tc_id_name[0];
+            $("#input2").val(value);
+            return false;
+        }
+    });*/
 });

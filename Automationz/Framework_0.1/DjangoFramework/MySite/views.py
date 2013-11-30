@@ -2532,7 +2532,7 @@ def DeleteExistingTestCase(TC_Ids):
     return HttpResponse(output)
 
 """Taitalus(shetu) changes"""
-def TestSetTag_Auto(request):
+def TestSet_Auto(request):
     Conn = GetConnection()
     results = []
     if request.method == "GET":
@@ -2544,123 +2544,169 @@ def TestSetTag_Auto(request):
             results.append("*Dev")
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+def TestTag_Auto(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        results = DB.GetData(Conn, "select  name from test_case_tag where property Ilike '%" + value + "%'")
+        if len(results)>0:
+            results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
 
-def TestSet(request):
-    return render_to_response('TestSet_Tag.html',{})
-"""def TestSet(request):
-    def check(x):
+def TestCase_Auto(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        results = DB.GetData(Conn, "select  tc_name from test_cases where tc_type Ilike '%" + value + "%'")
+        if len(results)>0:
+            results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+
+def TestSet(request,message=""):
+    return render_to_response('TestSet_Tag.html',{'error_message':message},context_instance=RequestContext(request))
+
+def Data_Process(request):
+    #output="in the post processing page"
+    if request.method=='POST':
+        data_type=request.POST['type']
+        if data_type=="tag":
+            return general_work(request,data_type)
+        if data_type=="set":
+            return general_work(request,data_type)
+    return TestSet(request,"data is not posted successfully")
+def general_work(request,data_type):
+    def Check_instance(x):
         if x in request.POST:
             name=request.POST[x]
             conn=GetConnection()
-            result=0
-            result=DB.GetData(conn,"SELECT count(*) FROM config_values WHERE value='"+name+"'")
+            result=DB.GetData(conn, "SELECT count(*) FROM config_values WHERE value='"+name+"'")
             return result[0]
         else:
             return -1
-    temp=check('searchboxname')
-    if (temp==0):
-        #error_message=""
-        name=request.POST['searchboxname']
-        if name=="":
-            return render_to_response('TestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name'},context_instance=RequestContext(request))
-           
-        return CreateNewTestSet(request,name)
-    if (temp>0):
-        name=request.POST['searchboxname']
-        #error_message="Test Set Exists"
-        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name+"\" exists"},context_instance=RequestContext(request))
-    
-    temp=check('renamesearchbox')   
-    if (temp>0):
-        name=request.POST['renamesearchbox']
-        return RenameNewTestSet(request,name)
-    if (temp==0):
-        name=request.POST['renamesearchbox']
-        if name=="":
-            return render_to_response('TestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name'},context_instance=RequestContext(request))
-        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
-    
-    temp=check('managesearchbox')
-    if(temp>0):
-        name=request.POST['managesearchbox']
-        return ManageTestSet(request,name)
-    if(temp==0):
-        name=request.POST['managesearchbox']
-        if name=="":
-            return render_to_response('TestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name'},context_instance=RequestContext(request))
-        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
-    
-    temp=check('deletesearchbox')   
-    if (temp>0):
-        name=request.POST['deletesearchbox']
-        return DeleteTestSet(request,name)
-    if (temp==0):
-        name=request.POST['deletesearchbox']
-        if name=="":
-            return render_to_response('TestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name'},context_instance=RequestContext(request))
-        
-        return render_to_response('TestSet.html',{'error_message':"Test Set with name \""+name +"\" does not exist"},context_instance=RequestContext(request))
-    return render_to_response('TestSet.html',{},context_instance=RequestContext(request))
-
-def CreateNewTestSet(request,name):
-    return render_to_response('NewTestSet.html',{'name':name},context_instance=RequestContext(request))       
-
-def Process(request):
-    if 'test_set_type' in request.POST:
-        name=request.POST['test_set_name']
-        test_type=request.POST['test_set_type']
-        if test_type=="":
-            return render_to_response('NewTestSet.html',{'error_message':'Input Field is empty.Enter the Test Set Type','name':name},context_instance=RequestContext(request))
-        
-        conn=GetConnection()
-        testrunenv = DB.InsertNewRecordInToTable(conn, "config_values", value=name,type=test_type)
-        conn.close()
-        if testrunenv==True:
-            return render_to_response('TestSet.html',{'error_message':"Test Set with name "+name+" is created successfully"},context_instance=RequestContext(request))
-        else:
-            return render_to_response('NewTestSet.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
-    return render_to_response('TestSet.html',{'error_message':"Something wrong happens.Please re-input."},context_instance=RequestContext(request))
-        
-def RenameTestSet(request):
-    if 'test_set_new' in request.POST:
-        old_name=request.POST['test_set_old']
-        new_name=request.POST['test_set_new']
-        if new_name=="":
-            return render_to_response('RenameTestSet.html',{'error_message':'Input Field is empty.Enter the Test Set name','name':old_name},context_instance=RequestContext(request))
-        
-        conn=GetConnection()
-        query = "Where  value = '%s'" %(old_name)
-        testrunenv=DB.UpdateRecordInTable(conn,"config_values",query,value=new_name)
-        conn.close()
-        if testrunenv==True:
-            return render_to_response('TestSet.html',{'error_message':"Old Test Name \""+old_name+"\" is updated to \""+new_name+"\""},context_instance=RequestContext(request))
-        else:
-            return render_to_response('NewTestSet.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
-    return render_to_response('RenameTestSet,html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
-def RenameNewTestSet(request,name):
-    return render_to_response('RenameTestSet.html',{'name':name},context_instance=RequestContext(request))
-
-def ManageTestSet(request,set_name,error_message=""):
-    #for the case in set
+    temp=0
+    if request.method=='POST':
+        operation=request.POST['operation']
+        command=request.POST['submit_button']
+        if operation=="2" and command=="Rename":
+            temp=Check_instance('inputName')
+            if(temp==0):
+                output="no such test "+data_type+ " with name '"+request.POST['inputName']+"'"
+                return TestSet(request,output)
+            if(temp>0):
+                first_name=request.POST['inputName']
+                second_name=request.POST['inputName2']
+                if(first_name!="" and second_name!=""):
+                    return rename(request,first_name,second_name,data_type)
+                else:
+                    output="Name field is empty"
+                    return TestSet(request,output)
+        if operation=="1" and command=="Create":
+            temp=Check_instance('inputName')
+            if(temp==0):
+                name=request.POST['inputName']
+                if(name!=""):
+                    return create(request,name,data_type)
+                else:
+                    output="Name field is empty"
+                    return TestSet(request,output)
+            if(temp>0):
+                output="Test "+data_type+" with name '"+request.POST['inputName']+"' is already in the database"
+                return TestSet(request,output)
+        if operation=="3" and command=="Edit":
+            temp=Check_instance('inputName')
+            if(temp>0):
+                name=request.POST['inputName']
+                if(name!=""):
+                    return edit(request,name,data_type)
+                else:
+                    output="Name field is empty"
+                    return TestSet(request,output)    
+            # output+=edit(name)
+        if operation=="4" and command=="Delete":
+            temp=Check_instance('inputName')
+            if(temp>0):
+                name=request.POST['inputName']
+                if(name!=""):
+                    return delete(request,name)
+                else:
+                    output="Name field is empty"
+                    TestSet(request,output)
+            if(temp==0):
+                output="No such test "+data_type+" with the name '"+request.POST['inputName']+"'"
+                return TestSet(request,output)
+            #output+=delete(name)
+    #return output
+def TestCases_InSet(name):
     conn=GetConnection()
-    result=DB.GetData(conn,"select tc_id,tc_name from test_cases where tc_id in (select tc_id from test_case_tag where name='"+set_name+"')",False)
-    data = GetData('test_cases')
+    result=DB.GetData(conn,"select tc_id,tc_name from test_cases where tc_id in (select tc_id from test_case_tag where name='"+name+"')",False)
     ex_tc_ids=[]
     ex_tc_names=[]
     for x in result:
         ex_tc_ids.append(x[0])
         ex_tc_names.append(x[1])
     ex_lst=[{'item1':t[0],'item2':t[1]} for t in zip(ex_tc_ids,ex_tc_names)]
-    tc_ids = []
-    tc_names = []
-    for row in data:
-        if row[0] not in ex_tc_ids:
-            tc_ids.append(row[0])
-            tc_names.append(row[1])
-        
-    lst = [{'item1': t[0], 'item2': t[1]} for t in zip(tc_ids,tc_names)]
-    return render_to_response('ManageTestSet.html',{'name':set_name,'lst':lst,'ex_lst':ex_lst,'error_message':error_message},context_instance=RequestContext(request))
+    return ex_lst
+def edit(request,name,data_type,error_message=""):
+    output={}
+    ex_lst=TestCases_InSet(name)
+    output.update({'name':name,'data_type':data_type})
+    output.update({'ex_lst':ex_lst})
+    return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
+def Process_Search(request):
+    output={}
+    if request.method=='POST':
+        set_name=request.POST['set_name']
+        output.update({'name':set_name})
+        set_type=request.POST['set_type']
+        output.update({'data_type':set_type})
+        ex_lst=TestCases_InSet(set_name)
+        output.update({'ex_lst':ex_lst})
+        search_name=request.POST['inputName']
+        output.update({'search_name':search_name})
+        lst=TestCases_InSet(search_name)
+        output.update({'lst':lst})
+        """if ('set_name','inputName','type','set_type') in request.POST:
+            set_name=request.POST['set_name']
+            set_type=request.POST['set_type']
+            ex_lst=TestCases_InSet(set_name)
+            output.update({'ex_lst':ex_lst,'name':set_name,'set_type':set_type})
+            search_name=request.POST['inputName']
+            test_type=request.POST['type']
+            if test_type=="1" and search_name!="":
+                lst=TestCases_InSet(search_name)
+                output.update({'lst':lst})"""
+    return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
+def rename(request,first,second,data_type):
+    conn=GetConnection()
+    query = "Where  value = '%s'" %(first)
+    testrunenv=DB.UpdateRecordInTable(conn,"config_values",query,value=second)
+    conn.close()
+    if testrunenv==True:
+        return render_to_response('TestSet_Tag.html',{'error_message':"Old Test Name \""+first+"\" is updated to \""+second+"\""},context_instance=RequestContext(request))
+    else:
+        return render_to_response('TestSet_Tag.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
+    
+def create(request,name,data_type):
+    conn=GetConnection()
+    testrunenv = DB.InsertNewRecordInToTable(conn, "config_values", value=name,type=data_type)
+    conn.close()
+    if testrunenv==True:
+        return render_to_response('TestSet_Tag.html',{'error_message':"Test Set with name "+name+" is created successfully"},context_instance=RequestContext(request))
+    else:
+        return render_to_response('TestSet_Tag.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
+    
 
+def delete(request,name):
+    conn=GetConnection()
+    testrunenv=DB.DeleteRecord(conn,"config_values",value=name)
+    conn.close()
+    if testrunenv==True:
+        return render_to_response('TestSet_Tag.html',{'error_message':"Test name with \""+name+"\" is deleted successfully."},context_instance=RequestContext(request))
+"""
 def AddTestCaseToSet(request):
     if request.method=='POST':
         selected_tc=request.POST.getlist('selectTCAdd')
@@ -2699,10 +2745,4 @@ def DeleteTestCaseFromSet(request):
     return ManageTestSet(request,set_name,"Post Method exits abnormally")
             
     return HttpResponse(output)   
-def DeleteTestSet(request,name):
-    conn=GetConnection()
-    testrunenv=DB.DeleteRecord(conn,"config_values",value=name)
-    conn.close()
-    if testrunenv==True:
-        return render_to_response('TestSet.html',{'error_message':"Test name with \""+name+"\" is deleted successfully."},context_instance=RequestContext(request))
-        """
+"""

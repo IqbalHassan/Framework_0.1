@@ -1,13 +1,46 @@
 {% extends "BaseTemplate.html" %}
 {% block title%} Test Case Management {%endblock%}
 {% block content %}
-<div id="info" style="margin: auto" align="center">
-    {% if error_message %}<p align="center"><strong>{{error_message}}</strong></p>{% endif %}
-    <h4>Test Set Name:<b style=" font-weight: bold; font-size: 1.4em;">    {{name}}</b></h4>
+<script type="text/javascript" src="/site_media/Jquery/Local/ManageTestSet.js"></script>
+<br>
+<div id="searchBox" align="center">
+    <form action="{% url 'MySite.views.Process_Search' %}" method="post">
+        {%csrf_token%}
+        <div id="info" style="margin: auto" align="center">
+            {% if error_message %}<p id="error" align="center"><strong>{{error_message}}</strong></p>{% endif %}
+            <div><input name="set_name" value="{{name}}" style="display:none"/></div>
+            <div><input name="set_type" value="{{data_type}}" style="display: none"/></div>
+            <h4>Test {{data_type}} Name:<b style=" font-weight: bold; font-size: 1.4em; color: #4169e1;">  {{name}}</b></h4>
+        </div>
+        <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
+            <tr>
+                <td>
+                    <label><b>Type:</b></label>
+                    <select id="type" name="type">
+                        <option selected value="0">Select from list</option>
+                        <option value="1">Test Set</option>
+                        <option value="2">Test Tag</option>
+                        <option value="3">Test Case</option>
+                    </select>
+                </td>
+                <td>
+                    <label><b id="query_variable">Name:</b></label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input class="ui-corner-all" id="input" style="margin-left: -2%" type='text' title = 'Please Type Keyword' name='inputName' />
+                </td>
+                <td>
+                    <div id="button_place">
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
 </div>
+<br>
 <div id="main" align="center" style="width: 100%;">
     <div id="left_div" style="width: 50%;float: left;">
-        <form name="add_form" action="{% url 'MySite.views.DeleteTestCaseFromSet' %}" method="POST">
+        <form name="add_form" action="" method="POST">
             {%csrf_token%}
             <div><input name="remove_name_tab" value="{{name}}" style="display: none;"/></div>
             <div style="display: block;margin:auto">
@@ -36,9 +69,10 @@
         </form>
     </div>
     <div id="right_div" style="width:50%;float:left;">
-       <form name="add_form" action="{% url 'MySite.views.AddTestCaseToSet' %}" method="POST">
+       <form name="add_form" action="" method="POST">
            {%csrf_token%}
-           <div><input value="{{name}}" name="name_tab" readonly="readonly" style="display: none;"/></div>
+           <div><input value="{{search_name}}" name="name_tab" style="display:none"/></div>
+           {% if search_name %}
            <div style="display: block;margin:auto">
                <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
                    <thead style="text-align: left;">
@@ -62,6 +96,7 @@
                </table>
                <button id="AddBtn" style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Add Selected TCs</button>
            </div>
+           {%endif%}
        </form>
     </div>
 </div>
