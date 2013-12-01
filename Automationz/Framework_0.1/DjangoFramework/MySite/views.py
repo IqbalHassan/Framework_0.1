@@ -2657,30 +2657,6 @@ def edit(request,name,data_type,error_message=""):
     output.update({'name':name,'data_type':data_type})
     output.update({'ex_lst':ex_lst})
     return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
-def Process_Search(request):
-    output={}
-    if request.method=='POST':
-        set_name=request.POST['set_name']
-        output.update({'name':set_name})
-        set_type=request.POST['set_type']
-        output.update({'data_type':set_type})
-        ex_lst=TestCases_InSet(set_name)
-        output.update({'ex_lst':ex_lst})
-        search_name=request.POST['inputName']
-        output.update({'search_name':search_name})
-        lst=TestCases_InSet(search_name)
-        output.update({'lst':lst})
-        """if ('set_name','inputName','type','set_type') in request.POST:
-            set_name=request.POST['set_name']
-            set_type=request.POST['set_type']
-            ex_lst=TestCases_InSet(set_name)
-            output.update({'ex_lst':ex_lst,'name':set_name,'set_type':set_type})
-            search_name=request.POST['inputName']
-            test_type=request.POST['type']
-            if test_type=="1" and search_name!="":
-                lst=TestCases_InSet(search_name)
-                output.update({'lst':lst})"""
-    return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
 def rename(request,first,second,data_type):
     conn=GetConnection()
     query = "Where  value = '"+first+"' and type='"+data_type+"'"
@@ -2715,7 +2691,7 @@ def delete(request,inputName,data_type):
         testrunenv_2=DB.DeleteRecord(conn,"test_case_tag",name=inputName)
     conn.close()
     if testrunenv==True:
-        return render_to_response('TestSet_Tag.html',{'error_message':"Test name with \""+inputName+"\" is deleted successfully."},context_instance=RequestContext(request))
+        return render_to_response('TestSet_Tag.html',{'error_message':"Test "+data_type +" name with \""+inputName+"\" is deleted successfully."},context_instance=RequestContext(request))
 """
 def AddTestCaseToSet(request):
     if request.method=='POST':

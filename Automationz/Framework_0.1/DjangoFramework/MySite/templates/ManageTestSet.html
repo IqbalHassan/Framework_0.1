@@ -3,39 +3,14 @@
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageTestSet.js"></script>
 <br>
-<div id="searchBox" align="center">
-    <form action="{% url 'MySite.views.Process_Search' %}" method="post">
-        {%csrf_token%}
-        <div id="info" style="margin: auto" align="center">
-            {% if error_message %}<p id="error" align="center"><strong>{{error_message}}</strong></p>{% endif %}
-            <div><input name="set_name" value="{{name}}" style="display:none"/></div>
-            <div><input name="set_type" value="{{data_type}}" style="display: none"/></div>
-            <h4>Test {{data_type}} Name:<b style=" font-weight: bold; font-size: 1.4em; color: #4169e1;">  {{name}}</b></h4>
-        </div>
-        <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
-            <tr>
-                <td>
-                    <label><b>Type:</b></label>
-                    <select id="type" name="type">
-                        <option selected value="0">Select from list</option>
-                        <option value="1">Test Set</option>
-                        <option value="2">Test Tag</option>
-                        <option value="3">Test Case</option>
-                    </select>
-                </td>
-                <td>
-                    <label><b id="query_variable">Name:</b></label>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <input class="ui-corner-all" id="input" style="margin-left: -2%" type='text' title = 'Please Type Keyword' name='inputName' />
-                </td>
-                <td>
-                    <div id="button_place">
+<div id="general_info">
+    <div id="info" style="margin: auto" align="center">
+        {% if error_message %}<p id="error" align="center"><strong>{{error_message}}</strong></p>{% endif %}
+        <h4>Test {{data_type}} Name:<b style=" font-weight: bold; font-size: 1.4em; color: #4169e1;">  {{name}}</b></h4>
+    </div>
+</div>
+<div id="searchBox" align="left">
 
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </form>
 </div>
 <br>
 <div id="main" align="center" style="width: 100%;">
@@ -50,16 +25,16 @@
                         <th colspan="2" align="center" style="padding: 2px; font-weight: bold; font-size: 1.4em;">Available Test Cases(select to remove)<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
                     </tr>
                     <tr style="border: none;">
-                        <th style="padding: 2px; text-decoration: underline; font-weight: bold;">Test Case ID<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
-                        <th style="padding: 2px; text-decoration: underline; font-weight: bold;">Test Case name<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                        <th style="padding: 1px; text-decoration: underline; font-weight: bold;">Test Case ID<hr style="height: 1px; background-color: #ABCDEF; border: none;"></th>
+                        <th style="padding: 1px; text-decoration: underline; font-weight: bold;">Test Case name<hr style="height: 1px; background-color: #ABCDEF; border: none;"></th>
                        </tr>
                     </thead>
 
                     <tbody>
                     {% for x in ex_lst %}
                     <tr>
-                        <td style="padding: 5px; onclick="click"><label style="cursor: pointer;"><input type="checkbox" name="selectTCremove" value="{{x.item1}}" />{{x.item1}}</label><hr style="height: 2px; background-color: #ABCDEF; border: none;"></td>
-                        <td style="padding: 5px;">{{x.item2}}<hr style="height: 2px; background-color: #ABCDEF; border: none;"></td>
+                        <td style="padding: 1px; onclick="click"><label style="cursor: pointer;"><input type="checkbox" name="selectTCremove" value="{{x.item1}}" />{{x.item1}}</label><hr style="height: 1px; background-color: #ABCDEF; border: none;"></td>
+                        <td style="padding: 1px;">{{x.item2}}<hr style="height: 1px; background-color: #ABCDEF; border: none;"></td>
                     </tr>
                     {% endfor %}
                     </tbody>
@@ -68,8 +43,8 @@
             </div>
         </form>
     </div>
-    <div id="right_div" style="width:50%;float:left;">
-       <form name="add_form" action="" method="POST">
+    <div id="right_div_outer" style="width:50%;float:left;">
+       <!--<form name="add_form" action="" method="POST">
            {%csrf_token%}
            <div><input value="{{search_name}}" name="name_tab" style="display:none"/></div>
            {% if search_name %}
@@ -97,6 +72,33 @@
                <button id="AddBtn" style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Add Selected TCs</button>
            </div>
            {%endif%}
+       </form>-->
+       <form action="" method="POST">
+           <div>
+               <div><input name="set_name" value="{{name}}" style="display: none"/></div>
+               <div><input name="set_type" value="{{data_type}}" style="display: none" /></div>
+           </div>
+            <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 5px;" width="80%">
+                <thead style="text-align: left;">
+                    <tr style="border: none;">
+                        <th colspan="2" align="center" style="padding: 2px; font-weight: bold; font-size: 1.4em;">Select Test Case(s) to add<hr style="height: 5px; background-color: #ABCDEF; border: none;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td align="center">
+                            <div id="right_div">
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <button id="addBtn" style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Add Selected TCs</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
        </form>
     </div>
 </div>

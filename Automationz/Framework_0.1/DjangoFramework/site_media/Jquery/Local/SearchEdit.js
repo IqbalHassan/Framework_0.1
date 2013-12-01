@@ -32,38 +32,38 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 {	
 	
 	$(WhereToPlaceId).append(
-						
-			
-		"<form method = 'get' >"
 
-				+"<table id='AutoSearchResult' style='display: block;' >"
-					+ "<tbody>"					
-					
-						+ "<tr>"
-							+ "<td>"
-								+ "<label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'>"
-								+ Label
-								+ " </b></label>"
-								+ "<input class = 'ui-corner-all' id='searchbox' style = 'margin-left:-2%' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' />"
-							+ "</td>"
-						+ "</tr>"
-						
-						
-					+ "</tbody>"
-				+ "</table>"
-				
-				
-				+"<table id = 'AutoSearchResult' >"
-					+ "<tbody>"
-						
-						+ "<tr id = 'searchedtext'>"
-							+"<p> </p>"
-							+ "<th class = 'Text' style= 'text-align: left'> Test Data Set: </th>"
-						+ "</tr>"
-						
-					+ "</tbody>"	
-				+ "</table>"
-	  + "</form>"
+
+        "<form method = 'get' >"
+
+            +"<table id='AutoSearchResult' style='display: block;' >"
+                + "<tbody>"
+
+                    + "<tr>"
+                        + "<td>"
+                            + "<label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'>"
+                            + Label
+                            + " </b></label>"
+                            + "<input class = 'ui-corner-all' id='searchbox' style = 'margin-left:-2%' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' />"
+                        + "</td>"
+                    + "</tr>"
+
+
+                + "</tbody>"
+            + "</table>"
+
+
+            +"<table id = 'AutoSearchResult' >"
+                + "<tbody>"
+
+                    + "<tr id = 'searchedtext'>"
+                        +"<p> </p>"
+                        + "<th class = 'Text' style= 'text-align: left'> Test Data Set: </th>"
+                    + "</tr>"
+
+                + "</tbody>"
+            + "</table>"
+        + "</form>"
 			
 			
 	
