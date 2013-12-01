@@ -19,10 +19,10 @@ $(document).ready(function(){
                 var url="TestTag_Auto"
             }
             if($("#type").val()==3){
-                var url="TestCase_Auto"
+                var url="AutoCompleteTestCasesSearch"
             }
             $.ajax({
-                url:url,
+                url:"AutoCompleteTestCasesSearch",
                 dataType:"json",
                 data:{term:request.term},
                 success:function(data){
@@ -35,11 +35,8 @@ $(document).ready(function(){
             var value = "";
             if (tc_id_name != null)
                 value = tc_id_name[0];
-            $("#input").val(value);
+            $("#input").val(value+"-"+tc_id_name[1]);
             return false;
         }
-    });
-    $("#submit_button").click(function(event){
-
     });
 });

@@ -2537,7 +2537,8 @@ def TestSet_Auto(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
-        results = DB.GetData(Conn, "select  value from config_values where value Ilike '%" + value + "%'")
+        data_type=request.GET.get(u'data_type','')
+        results = DB.GetData(Conn, "select  value from config_values where value Ilike '%" + value + "%' and type='"+data_type+"'")
         #test_tag=DB.GetData(Conn,"")
         #results=list(set(results+test_tag))
         if len(results) > 0:
@@ -2549,7 +2550,7 @@ def TestTag_Auto(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
-        results = DB.GetData(Conn, "select  name from test_case_tag where property Ilike '%" + value + "%'")
+        results = DB.GetData(Conn, "select tc_id from test_cases where tc_id in(select  tc_id from test_case_tag where property Ilike '%"+value+"%'")
         if len(results)>0:
             results.append("*Dev")
     json=simplejson.dumps(results)
@@ -2560,7 +2561,7 @@ def TestCase_Auto(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
-        results = DB.GetData(Conn, "select  tc_name from test_cases where tc_type Ilike '%" + value + "%'")
+        results = DB.GetData(Conn, "select  distinct tc_name from test_cases where tc_name Ilike '%" + value + "%'")
         if len(results)>0:
             results.append("*Dev")
     json=simplejson.dumps(results)
@@ -2579,11 +2580,11 @@ def Data_Process(request):
             return general_work(request,data_type)
     return TestSet(request,"data is not posted successfully")
 def general_work(request,data_type):
-    def Check_instance(x):
+    def Check_instance(x,data_type):
         if x in request.POST:
             name=request.POST[x]
             conn=GetConnection()
-            result=DB.GetData(conn, "SELECT count(*) FROM config_values WHERE value='"+name+"'")
+            result=DB.GetData(conn, "SELECT count(*) FROM config_values WHERE value='"+name+"' AND type='"+data_type+"'")
             return result[0]
         else:
             return -1
@@ -2592,7 +2593,7 @@ def general_work(request,data_type):
         operation=request.POST['operation']
         command=request.POST['submit_button']
         if operation=="2" and command=="Rename":
-            temp=Check_instance('inputName')
+            temp=Check_instance('inputName',data_type)
             if(temp==0):
                 output="no such test "+data_type+ " with name '"+request.POST['inputName']+"'"
                 return TestSet(request,output)
@@ -2605,7 +2606,7 @@ def general_work(request,data_type):
                     output="Name field is empty"
                     return TestSet(request,output)
         if operation=="1" and command=="Create":
-            temp=Check_instance('inputName')
+            temp=Check_instance('inputName',data_type)
             if(temp==0):
                 name=request.POST['inputName']
                 if(name!=""):
@@ -2617,7 +2618,7 @@ def general_work(request,data_type):
                 output="Test "+data_type+" with name '"+request.POST['inputName']+"' is already in the database"
                 return TestSet(request,output)
         if operation=="3" and command=="Edit":
-            temp=Check_instance('inputName')
+            temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']
                 if(name!=""):
@@ -2627,11 +2628,11 @@ def general_work(request,data_type):
                     return TestSet(request,output)    
             # output+=edit(name)
         if operation=="4" and command=="Delete":
-            temp=Check_instance('inputName')
+            temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']
                 if(name!=""):
-                    return delete(request,name)
+                    return delete(request,name,data_type)
                 else:
                     output="Name field is empty"
                     TestSet(request,output)
@@ -2682,11 +2683,17 @@ def Process_Search(request):
     return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
 def rename(request,first,second,data_type):
     conn=GetConnection()
-    query = "Where  value = '%s'" %(first)
+    query = "Where  value = '"+first+"' and type='"+data_type+"'"
     testrunenv=DB.UpdateRecordInTable(conn,"config_values",query,value=second)
+    result=DB.GetData(conn, "SELECT count(*) FROM test_case_tag WHERE name='"+first+"'")
+    if result[0]>0:
+        query="Where name='"+first+"'"
+        testrunenv_2=DB.UpdateRecordInTable(conn,"test_case_tag",query,name=second)
+        if testrunenv_2==True:
+            query=""
     conn.close()
     if testrunenv==True:
-        return render_to_response('TestSet_Tag.html',{'error_message':"Old Test Name \""+first+"\" is updated to \""+second+"\""},context_instance=RequestContext(request))
+        return render_to_response('TestSet_Tag.html',{'error_message':"Old Test "+data_type+" name \""+first+"\" is updated to \""+second+"\""},context_instance=RequestContext(request))
     else:
         return render_to_response('TestSet_Tag.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
     
@@ -2695,17 +2702,20 @@ def create(request,name,data_type):
     testrunenv = DB.InsertNewRecordInToTable(conn, "config_values", value=name,type=data_type)
     conn.close()
     if testrunenv==True:
-        return render_to_response('TestSet_Tag.html',{'error_message':"Test Set with name "+name+" is created successfully"},context_instance=RequestContext(request))
+        return render_to_response('TestSet_Tag.html',{'error_message':"Test "+data_type+" with name "+name+" is created successfully"},context_instance=RequestContext(request))
     else:
         return render_to_response('TestSet_Tag.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
     
 
-def delete(request,name):
+def delete(request,inputName,data_type):
     conn=GetConnection()
-    testrunenv=DB.DeleteRecord(conn,"config_values",value=name)
+    testrunenv=DB.DeleteRecord(conn,"config_values",value=inputName,type=data_type)
+    result=DB.GetData(conn, "SELECT count(*) FROM test_case_tag WHERE name='"+inputName+"'")
+    if result[0]>0:
+        testrunenv_2=DB.DeleteRecord(conn,"test_case_tag",name=inputName)
     conn.close()
     if testrunenv==True:
-        return render_to_response('TestSet_Tag.html',{'error_message':"Test name with \""+name+"\" is deleted successfully."},context_instance=RequestContext(request))
+        return render_to_response('TestSet_Tag.html',{'error_message':"Test name with \""+inputName+"\" is deleted successfully."},context_instance=RequestContext(request))
 """
 def AddTestCaseToSet(request):
     if request.method=='POST':
