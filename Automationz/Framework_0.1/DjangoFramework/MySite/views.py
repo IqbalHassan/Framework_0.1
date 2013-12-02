@@ -2654,6 +2654,7 @@ def TestCases_InSet(name,data_type):
         ex_tc_ids.append(x[0])
         ex_tc_names.append(x[1])
     ex_lst=[{'item1':t[0],'item2':t[1]} for t in zip(ex_tc_ids,ex_tc_names)]
+    conn.close()
     return ex_lst
 def edit(request,name,data_type,error_message=""):
     output={}
@@ -2669,7 +2670,7 @@ def rename(request,first,second,data_type):
         testrunenv=DB.UpdateRecordInTable(conn,"config_values",query,value=second)
         result=DB.GetData(conn, "SELECT count(*) FROM test_case_tag WHERE name='"+first+"'")
         if result[0]>0:
-            query="Where name='"+first+"'"
+            query="Where name='"+first+"' and property='"+data_type+"'"
             testrunenv_2=DB.UpdateRecordInTable(conn,"test_case_tag",query,name=second)
             if testrunenv_2==True:
                 query=""
@@ -2724,6 +2725,7 @@ def AddTestCasesToSet(request):
                     testrunenv=DB.InsertNewRecordInToTable(conn,"test_case_tag",tc_id=x,name=test_set_name,property=test_type)
                     if testrunenv==True:
                         count+=1
+            conn.close()
             if count==0:
                     message="No test cases are added to Test "+test_type+" '"+test_set_name+"'"
             if count>0:
@@ -2750,6 +2752,7 @@ def DeleteTestCasesFromSet(request):
                 testrunenv=DB.DeleteRecord(conn, "test_case_tag",tc_id=x,name=test_set_name,property=test_type)
                 if testrunenv==True:
                     count+=1
+            conn.close()
             if count==0:
                     message="No test cases are deleted from Test "+test_type+" '"+test_set_name+"'"
             if count>0:
