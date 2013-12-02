@@ -15,9 +15,12 @@
 <br>
 <div id="main" align="center" style="width: 100%;">
     <div id="left_div" style="width: 50%;float: left;">
-        <form name="add_form" action="" method="POST">
+        <form  action="{% url 'MySite.views.DeleteTestCasesFromSet' %}" method="POST">
             {%csrf_token%}
-            <div><input name="remove_name_tab" value="{{name}}" style="display: none;"/></div>
+            <div>
+                <div><input name="set_name" value="{{name}}" style="display: none"/></div>
+                <div><input name="set_type" value="{{data_type}}" style="display: none" /></div>
+            </div>
             <div style="display: block;margin:auto">
                 <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
                     <thead style="text-align: left;">
@@ -39,7 +42,7 @@
                     {% endfor %}
                     </tbody>
                 </table>
-                <button id="RemoveBtn" style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Remove Selected TCs</button>
+                <button type="submit" id="RemoveBtn" style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Remove Selected TCs</button>
             </div>
         </form>
     </div>
@@ -73,7 +76,8 @@
            </div>
            {%endif%}
        </form>-->
-       <form action="" method="POST">
+       <form action="{% url 'MySite.views.AddTestCasesToSet' %}" method="POST">
+           {%csrf_token%}
            <div>
                <div><input name="set_name" value="{{name}}" style="display: none"/></div>
                <div><input name="set_type" value="{{data_type}}" style="display: none" /></div>
@@ -94,7 +98,7 @@
                     </tr>
                     <tr>
                         <td align="center">
-                            <button id="addBtn" style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Add Selected TCs</button>
+                            <button type="submit" id="addBtn" style="font-size: 1.2em; padding: 6px; margin: 20px; border: 2px solid #ABCDEF; cursor: pointer;">Add Selected TCs</button>
                         </td>
                     </tr>
                 </tbody>

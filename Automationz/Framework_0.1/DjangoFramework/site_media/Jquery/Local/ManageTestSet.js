@@ -100,7 +100,7 @@ function RunAutoCompleteTestSearch(env){
                     value = tc_id_name[0];
                 if(value!=""){
                     $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
-                        + '<td name = "submitquery" class = "Text" style = "size:10">'
+                        +'<td name = "submitquery" class = "Text" style = "size:10">'
                         + value
                         + ":&nbsp"
                         + '</td>');
@@ -133,6 +133,10 @@ function PerformSearch(){
                 $('#right_div').children().remove();
                 $('#right_div').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
                 $("#DepandencyCheckboxes").children().remove();
+                $(".delete").click(function(){
+                    $(this).parent().next().remove();
+                    $(this).remove();
+                });
                 //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
             }
             else
@@ -149,8 +153,9 @@ function PerformSearch(){
 
                     //$(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50"/>');
                     //$(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/edit_case.png" height="50"/>');
-                    var value=$(this).attr("id");
-                    $(this).after('<input type="checkbox" name="selectTCAdd" value="value"/>')
+
+                    //var value=;
+                    $(this).after('<input id="'+ ID +'" type="checkbox" name="selectTCAdd" value="'+ID+'"/>');
                     indx++;
                 });
 
@@ -164,6 +169,7 @@ function PerformSearch(){
                 //$(".Buttons[title='Verify Query']").fadeIn(2000);
                 //$(".Buttons[title='Select User']").fadeOut();
                 $(".delete").click(function(){
+                   $(this).parent().next().remove();
                    $(this).remove();
                 });
             }

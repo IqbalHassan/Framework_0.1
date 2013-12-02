@@ -53,11 +53,8 @@ urlpatterns = patterns('',
     url(r'^Home/.*/TestTag_Auto/$',TestTag_Auto),
     url(r'^Home/.*/TestCase_Auto/$',TestCase_Auto),
     url(r'^Home/ManageTestCases/TestSet/Process/$',Data_Process),
-    #url(r'^Home/ManageTestCases/TestSet/Process_Search/$', Process_Search),
-    
-   # url(r'^Home/ManageTestCases/TestSet/RenameTestSet/$', RenameTestSet),
-    #url(r'^Home/ManageTestCases/TestSet/AddTestCase/$', AddTestCaseToSet),
-   # url(r'^Home/ManageTestCases/TestSet/DeleteTestCase/$', DeleteTestCaseFromSet),
+    url(r'^Home/ManageTestCases/TestSet/AddTestCase/$', AddTestCasesToSet),
+    url(r'^Home/ManageTestCases/TestSet/DeleteTestCase/$', DeleteTestCasesFromSet),
     
     
     #Run Test Page

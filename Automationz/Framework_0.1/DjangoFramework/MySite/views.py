@@ -2595,8 +2595,12 @@ def general_work(request,data_type):
         if operation=="2" and command=="Rename":
             temp=Check_instance('inputName',data_type)
             if(temp==0):
-                output="no such test "+data_type+ " with name '"+request.POST['inputName']+"'"
-                return TestSet(request,output)
+                if request.POST['inputName']!="":
+                    output="no such test "+data_type+ " with name '"+request.POST['inputName']+"'"
+                    return TestSet(request,output)
+                else:
+                    output="Name field is empty"
+                    return TestSet(request,output)
             if(temp>0):
                 first_name=request.POST['inputName']
                 second_name=request.POST['inputName2']
@@ -2641,9 +2645,9 @@ def general_work(request,data_type):
                 return TestSet(request,output)
             #output+=delete(name)
     #return output
-def TestCases_InSet(name):
+def TestCases_InSet(name,data_type):
     conn=GetConnection()
-    result=DB.GetData(conn,"select tc_id,tc_name from test_cases where tc_id in (select tc_id from test_case_tag where name='"+name+"')",False)
+    result=DB.GetData(conn,"select tc_id,tc_name from test_cases where tc_id in (select tc_id from test_case_tag where name='"+name+"' and property='"+data_type+"')",False)
     ex_tc_ids=[]
     ex_tc_names=[]
     for x in result:
@@ -2653,25 +2657,27 @@ def TestCases_InSet(name):
     return ex_lst
 def edit(request,name,data_type,error_message=""):
     output={}
-    ex_lst=TestCases_InSet(name)
+    ex_lst=TestCases_InSet(name,data_type)
     output.update({'name':name,'data_type':data_type})
-    output.update({'ex_lst':ex_lst})
+    output.update({'ex_lst':ex_lst,'error_message':error_message})
     return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
+
 def rename(request,first,second,data_type):
     conn=GetConnection()
-    query = "Where  value = '"+first+"' and type='"+data_type+"'"
-    testrunenv=DB.UpdateRecordInTable(conn,"config_values",query,value=second)
-    result=DB.GetData(conn, "SELECT count(*) FROM test_case_tag WHERE name='"+first+"'")
-    if result[0]>0:
-        query="Where name='"+first+"'"
-        testrunenv_2=DB.UpdateRecordInTable(conn,"test_case_tag",query,name=second)
-        if testrunenv_2==True:
-            query=""
-    conn.close()
-    if testrunenv==True:
-        return render_to_response('TestSet_Tag.html',{'error_message':"Old Test "+data_type+" name \""+first+"\" is updated to \""+second+"\""},context_instance=RequestContext(request))
-    else:
-        return render_to_response('TestSet_Tag.html',{'error_message':"Check the input fields"},context_instance=RequestContext(request))
+    if first != second and first!="" and second!="":
+        query = "Where  value = '"+first+"' and type='"+data_type+"'"
+        testrunenv=DB.UpdateRecordInTable(conn,"config_values",query,value=second)
+        result=DB.GetData(conn, "SELECT count(*) FROM test_case_tag WHERE name='"+first+"'")
+        if result[0]>0:
+            query="Where name='"+first+"'"
+            testrunenv_2=DB.UpdateRecordInTable(conn,"test_case_tag",query,name=second)
+            if testrunenv_2==True:
+                query=""
+        conn.close()
+        if testrunenv==True:
+            return render_to_response('TestSet_Tag.html',{'error_message':"Old Test "+data_type+" name \""+first+"\" is updated to \""+second+"\""},context_instance=RequestContext(request))
+           
+    return render_to_response('TestSet_Tag.html',{'error_message':"Check the input fields or Same name in both fields"},context_instance=RequestContext(request))
     
 def create(request,name,data_type):
     conn=GetConnection()
@@ -2688,47 +2694,65 @@ def delete(request,inputName,data_type):
     testrunenv=DB.DeleteRecord(conn,"config_values",value=inputName,type=data_type)
     result=DB.GetData(conn, "SELECT count(*) FROM test_case_tag WHERE name='"+inputName+"'")
     if result[0]>0:
-        testrunenv_2=DB.DeleteRecord(conn,"test_case_tag",name=inputName)
+        testrunenv_2=DB.DeleteRecord(conn,"test_case_tag",name=inputName,property=data_type)
     conn.close()
     if testrunenv==True:
         return render_to_response('TestSet_Tag.html',{'error_message':"Test "+data_type +" name with \""+inputName+"\" is deleted successfully."},context_instance=RequestContext(request))
-"""
-def AddTestCaseToSet(request):
-    if request.method=='POST':
-        selected_tc=request.POST.getlist('selectTCAdd')
-        test_set_name=request.POST['name_tab']
-        if(len(selected_tc)==0):
-            return ManageTestSet(request,test_set_name,"No checkbox selected")
-        conn=GetConnection()
-        set_type=DB.GetData(conn, "SELECT type FROM config_values WHERE value='"+test_set_name+"'")
-        counter=0
-        for x in selected_tc:
-            testrunenv = DB.InsertNewRecordInToTable(conn, "test_case_tag",tc_id=x,name=test_set_name,property=set_type[0])
-            counter+=1
-        if testrunenv==True:
-            output="successfully added "+str(counter)+" test cases"
-            return ManageTestSet(request, test_set_name,output)
-        else:
-            output="added "+str(counter)+" test case(s) successfully,"+ str(len(selected_tc)-counter)+" test cases left"
-            return ManageTestSet(request,test_set_name,output)
-    return ManageTestSet(request,test_set_name,"Post Method exits abnormally") 
-def DeleteTestCaseFromSet(request):
+
+def AddTestCasesToSet(request):
+    #output="in the add test case page"
     output=""
     if request.method=='POST':
-        set_name=request.POST['remove_name_tab']
-        selected_removed_tc=request.POST.getlist('selectTCremove')
-        conn=GetConnection()
-        counter=0
-        for x in selected_removed_tc:
-            testrunenv=DB.DeleteRecord(conn,"test_case_tag",name=set_name,tc_id=x)
-            counter+=1
-        if testrunenv==True:
-            output="successfully deleted "+str(counter)+" test case from Test Set "+set_name
-            return ManageTestSet(request,set_name,output)
+        selected_tc=request.POST.getlist('selectTCAdd')
+        test_set_name=request.POST['set_name']
+        test_type=request.POST['set_type']
+        if(len(selected_tc)==0):
+            ex_lst=TestCases_InSet(test_set_name)
+            output={}
+            output.update({'ex_lst':ex_lst})
+            output.update({'error_message':"No check box selected",'name':test_set_name,'type':test_type})
+            return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
         else:
-            output="deleted "+str(counter)+" test case(s) successfully,"+str(len(selected_removed_tc)-counter)+" test cases left unaltered"
-            return ManageTestSet(request,set_name,output)
-    return ManageTestSet(request,set_name,"Post Method exits abnormally")
-            
-    return HttpResponse(output)   
-"""
+            conn=GetConnection()
+            tc_cases=[]
+            available_tc=DB.GetData(conn, "SELECT tc_id FROM test_case_tag WHERE name='"+test_set_name+"'", False)
+            for x in available_tc:
+                tc_cases.append(x[0])
+            count=0
+            for x in selected_tc:
+                if x not in tc_cases:
+                    testrunenv=DB.InsertNewRecordInToTable(conn,"test_case_tag",tc_id=x,name=test_set_name,property=test_type)
+                    if testrunenv==True:
+                        count+=1
+            if count==0:
+                    message="No test cases are added to Test "+test_type+" '"+test_set_name+"'"
+            if count>0:
+                message=str(count) +" test cases are added to Test "+test_type+" '"+test_set_name+"',"+str(len(selected_tc)-count)+" test cases are left"
+            return edit(request, test_set_name, test_type, message)
+    return edit(request, test_set_name, test_type, output)
+    
+def DeleteTestCasesFromSet(request):
+    output=""
+    if request.method=='POST':
+        selected_tc=request.POST.getlist('selectTCremove')
+        test_set_name=request.POST['set_name']
+        test_type=request.POST['set_type']
+        if(len(selected_tc)==0):
+            ex_lst=TestCases_InSet(test_set_name)
+            output={}
+            output.update({'ex_lst':ex_lst})
+            output.update({'error_message':"No check box selected",'name':test_set_name,'type':test_type})
+            return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
+        else:
+            conn=GetConnection()
+            count=0
+            for x in selected_tc:
+                testrunenv=DB.DeleteRecord(conn, "test_case_tag",tc_id=x,name=test_set_name,property=test_type)
+                if testrunenv==True:
+                    count+=1
+            if count==0:
+                    message="No test cases are deleted from Test "+test_type+" '"+test_set_name+"'"
+            if count>0:
+                message=str(count) +" test cases are deleted from Test "+test_type+" '"+test_set_name+"'"
+            return edit(request, test_set_name, test_type, message)
+    return edit(request,test_set_name,test_type,output)

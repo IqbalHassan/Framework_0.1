@@ -33,7 +33,7 @@ $(document).ready(function(){
                    var value = "";
                    if (tc_id_name != null)
                        value = tc_id_name[0];
-                   $("#input").val(value);
+                   $("#input2").val(value);
                    return false;
                }
            });
