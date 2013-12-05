@@ -2759,3 +2759,9 @@ def DeleteTestCasesFromSet(request):
                 message=str(count) +" test cases are deleted from Test "+test_type+" '"+test_set_name+"'"
             return edit(request, test_set_name, test_type, message)
     return edit(request,test_set_name,test_type,output)
+
+def TestStep(request):
+    templ=get_template('TestStep.html')
+    variables=Context({})
+    output=templ.render(variables)
+    return HttpResponse(output)

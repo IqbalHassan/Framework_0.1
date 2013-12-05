@@ -48,6 +48,7 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTestCases/Create/Submit_New_TestCase/$', Create_Submit_New_TestCase),
     url(r'^Home/.*/GetSections/$', Get_Sections),
     url(r'^Home/ManageTestCases/DeleteExisting/$', DeleteExisting),
+    #Test Set Management Section
     url(r'^Home/ManageTestCases/TestSet/$', TestSet),
     url(r'^Home/.*/TestSet_Auto/$',TestSet_Auto),
     url(r'^Home/.*/TestTag_Auto/$',TestTag_Auto),
@@ -55,7 +56,8 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTestCases/TestSet/Process/$',Data_Process),
     url(r'^Home/ManageTestCases/TestSet/AddTestCase/$', AddTestCasesToSet),
     url(r'^Home/ManageTestCases/TestSet/DeleteTestCase/$', DeleteTestCasesFromSet),
-    
+    #Test Step Management Section
+    url(r'^Home/ManageTestCases/TestStep/$',TestStep),
     
     #Run Test Page
     url(r'^Home/RunTest/$',RunTest),
