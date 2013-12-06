@@ -2532,6 +2532,8 @@ def DeleteExistingTestCase(TC_Ids):
     return HttpResponse(output)
 
 """Taitalus(shetu) changes"""
+#Test Set and Tag Management section
+
 def TestSet_Auto(request):
     Conn = GetConnection()
     results = []
@@ -2759,6 +2761,40 @@ def DeleteTestCasesFromSet(request):
                 message=str(count) +" test cases are deleted from Test "+test_type+" '"+test_set_name+"'"
             return edit(request, test_set_name, test_type, message)
     return edit(request,test_set_name,test_type,output)
+
+
+#Test Step Management Section Functions
+def TestStep_Auto(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        results = DB.GetData(Conn, "select  distinct stepname from test_steps_list where stepname Ilike '%" + value + "%'")
+        if len(results)>0:
+            results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+def TestCase_Results(request):
+    conn=GetConnection()
+    TableData = []
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'Query', '')
+            sQuery="select tc_id,tc_name from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='"+UserData+"'))"
+            TableData=DB.GetData(conn, sQuery, False)
+    Heading = ['TestCase_ID', 'TestCase_Name']
+    results = {'Heading':Heading, 'TableData':TableData}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Populate_info_div(request):
+    conn=GetConnection()
+    if request.method=='GET':
+        value=request.GET.get(u'term','')
+        sQuery="SELECT * from test_steps_list where stepname='"+value+"'"
+    results=DB.GetData(conn, sQuery,False)
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
 
 def TestStep(request):
     templ=get_template('TestStep.html')
