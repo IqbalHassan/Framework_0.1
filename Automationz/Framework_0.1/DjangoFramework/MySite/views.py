@@ -2764,6 +2764,39 @@ def DeleteTestCasesFromSet(request):
 
 
 #Test Step Management Section Functions
+def TestStep_Delete(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        results = DB.GetData(Conn, "select count(*) from test_steps where step_id=(select step_id from test_steps_list where stepname='"+value+"')")
+        if(results[0]==0):
+            testrunenv=DB.DeleteRecord(Conn, "test_steps_list",stepname=value)
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+
+def TestFeature_Auto(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        results = DB.GetData(Conn, "select  distinct value from config_values where value Ilike '%" + value + "%' and type='feature'")
+        if len(results)>0:
+            results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+
+def TestDriver_Auto(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        results = DB.GetData(Conn, "select  distinct value from config_values where value Ilike '%" + value + "%' and type='driver'")
+        if len(results)>0:
+            results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+
 def TestStep_Auto(request):
     Conn = GetConnection()
     results = []
@@ -2774,6 +2807,7 @@ def TestStep_Auto(request):
             results.append("*Dev")
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
+
 def TestCase_Results(request):
     conn=GetConnection()
     TableData = []
@@ -2797,7 +2831,86 @@ def Populate_info_div(request):
     return HttpResponse(json, mimetype='application/json')
 
 def TestStep(request):
-    templ=get_template('TestStep.html')
+    """templ=get_template('TestStep.html')
     variables=Context({})
     output=templ.render(variables)
+    return HttpResponse(output)"""
+    output={}
+    return render_to_response('TestStep.html',output,context_instance=RequestContext(request))
+
+def Process_TestStep(request):
+    output="in the processing page"
+    if request.method=='POST':
+        step_name=request.POST['step_name']
+        step_desc=request.POST['step_desc']
+        step_feature=request.POST['step_feature']
+        step_data=request.POST['step_data']
+        step_type=request.POST['step_type']
+        step_driver=request.POST['step_driver'] 
+        if step_name!="" and step_desc!="" and step_feature!="" and step_data!="0":
+            if step_type!="0" and step_driver!="":
+                conn=GetConnection()
+                sQuery="select count(*) from test_steps_list where stepname='"+step_name+"'"
+                result=DB.GetData(conn, sQuery)
+                if(result[0]>0):
+                    if(step_data=="1"):
+                        data="true"
+                    if(step_data=="2"):
+                        data="false"
+                    if(step_type=="1"):
+                        s_type="automated"
+                    if(step_type=="2"):
+                        s_type="manual"
+                    if(step_type=="3"):
+                        s_type="performance"
+                    query = "Where  stepname = '"+step_name+"'"
+                    testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",query,description=step_desc,data_required=data,steptype=s_type,stepsection=step_driver,stepfeature=step_feature)
+                    query="SELECT count(*) FROM config_values where type='feature' and value='"+step_feature+"'"
+                    feature_count=DB.GetData(conn,query)
+                    if(feature_count[0]<1):
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type='feature',value=step_feature)
+                    query="SELECT count(*) FROM config_values where type='driver' and value='"+step_driver+"'"
+                    driver_count=DB.GetData(conn, query)
+                    if(driver_count[0]<1):
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type='driver',value=step_driver)
+                    if testrunenv==True:
+                        message="Test Step with name '"+step_name+"' is updated"
+                        return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                    else:
+                        message="Test Step with name '"+step_name+"' is not updated.Please Try again"
+                        return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                else:
+                    if(step_data=="1"):
+                        data="true"
+                    if(step_data=="2"):
+                        data="false"
+                    if(step_type=="1"):
+                        s_type="automated"
+                    if(step_type=="2"):
+                        s_type="manual"
+                    if(step_type=="3"):
+                        s_type="performance"
+                    testrunenv=DB.InsertNewRecordInToTable(conn, "test_steps_list",stepname=step_name,description=step_desc,data_required=data,steptype=s_type,stepsection=step_driver,stepfeature=step_feature)
+                    query="SELECT count(*) FROM config_values where type='feature' and value='"+step_feature+"'"
+                    feature_count=DB.GetData(conn,query)
+                    if(feature_count[0]<1):
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type='feature',value=step_feature)
+                    query="SELECT count(*) FROM config_values where type='driver' and value='"+step_driver+"'"
+                    driver_count=DB.GetData(conn, query)
+                    if(driver_count[0]<1):
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type='driver',value=step_driver)
+                    if testrunenv==True:
+                        message="Test Step with name '"+step_name+"' is created"
+                        return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                    else:
+                        message="Test Step with name '"+step_name+"' is not created.Please Try again"
+                        return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))         
+            else:
+                error_message="Input Fields are empty.Check the input fields"
+                error={'error_message':error_message}
+                return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
+        else:
+                error_message="Input Fields are empty.Check the input fields"
+                error={'error_message':error_message}
+                return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
     return HttpResponse(output)

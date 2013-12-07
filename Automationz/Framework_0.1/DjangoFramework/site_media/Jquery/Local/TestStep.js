@@ -1,8 +1,9 @@
 $(document).ready(function(){
     $("#create_edit").click(function(event){
         //event.preventDefault();
-        console.log("clicked");
+        //console.log("clicked");
         $('#search').hide();
+        $('#error').hide();
         $('#create_edit').hide();
         $("#choice").append("<p style='font-size:1.5em;'><b>Action</b>: Create/Edit</p>");
         populate_info_div();
@@ -37,9 +38,9 @@ function populate_info_div(){
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
             '<label><b>Data Requirement:<b></label><br>' +
                 '<select id="step_data" name="step_data">' +
-                    '<option value="3" selected="selected">Select from the below choices:</option>' +
+                    '<option value="0" selected="selected">Select from the below choices:</option>' +
                     '<option value="1">True</option>' +
-                    '<option value="0">False</option> ' +
+                    '<option value="2">False</option> ' +
                 '</select>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
@@ -84,7 +85,10 @@ function populate_info_div(){
                         $("#step_desc").val(row[2]);
                         $("#step_driver").val(row[3]);
                         if(row[5]==null){
-                            $("#step_data").val(0);
+                            $("#step_data").val(2);
+                        }
+                        if(row[5]==false){
+                            $("#step_data").val(2);
                         }
                         if(row[5]==true){
                             $("#step_data").val(1);
@@ -101,6 +105,50 @@ function populate_info_div(){
                         $("#step_feature").val(row[6]);
                     }
                 });
+                return false;
+            }
+        }
+    });
+    $("#step_feature").autocomplete({
+        source: function(request,response){
+            $.ajax({
+                url:"TestFeature_Auto",
+                dataType:"json",
+                data:{term:request.term},
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select: function(request,ui){
+            var tc_id_name = ui.item.value.split(" - ");
+            var value = "";
+            if (tc_id_name != null)
+                value = tc_id_name[0];
+            if(value!=""){
+                $("#step_feature").val(value);
+                return false;
+            }
+        }
+    });
+    $("#step_driver").autocomplete({
+        source: function(request,response){
+            $.ajax({
+                url:"TestDriver_Auto",
+                dataType:"json",
+                data:{term:request.term},
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select: function(request,ui){
+            var tc_id_name = ui.item.value.split(" - ");
+            var value = "";
+            if (tc_id_name != null)
+                value = tc_id_name[0];
+            if(value!=""){
+                $("#step_driver").val(value);
                 return false;
             }
         }
@@ -151,15 +199,31 @@ function populate_footer_div(){
                 $(".templateBtn").click(function (){
                     window.location = '/Home/ManageTestCases/Create/'+ $(this).attr("id");
                 });
-                VerifyQueryProcess();
+                //VerifyQueryProcess();
                 //$(".Buttons[title='Verify Query']").fadeIn(2000);
-                $(".Buttons[title='Select User']").fadeOut();
+                //$(".Buttons[title='Select User']").fadeOut();
             }
 
         });
 
     });
-}
-function info_div(data){
-
+    $("#delete_button").click(function(){
+        var name=$("#step_name").val();
+        console.log(name);
+        $.ajax({
+            url:"TestStep_Delete",
+            dataType:"json",
+            data:{term:name},
+            success:function(data){
+                var count=data[0];
+                console.log(count);
+                if(count>0){
+                    $("#delete_error").html("<p><b>This test step can't be deleted. There are "+count+" test cases using this test step '"+name+"'</b></p>");
+                }
+                if(count==0){
+                    window.location = '/Home/ManageTestCases/TestStep';
+                }
+        }
+    });
+    });
 }

@@ -59,8 +59,12 @@ urlpatterns = patterns('',
     #Test Step Management Section
     url(r'^Home/ManageTestCases/TestStep/$',TestStep),
     url(r'^Home/.*/TestStep_Auto/$',TestStep_Auto),
+    url(r'^Home/.*/TestFeature_Auto/$',TestFeature_Auto),
+    url(r'^Home/.*/TestDriver_Auto/$',TestDriver_Auto),
     url(r'^Home/.*/TestCase_Results/$',TestCase_Results),
     url(r'^Home/.*/Populate_info_div/$',Populate_info_div),
+    url(r'^Home/.*/TestStep_Delete/$',TestStep_Delete),
+    url(r'^Home/ManageTestCases/Process_TestStep/$',Process_TestStep),
     #Run Test Page
     url(r'^Home/RunTest/$',RunTest),
     url(r'^Home/.*/Verify_Query/$', Verify_Query),

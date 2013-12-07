@@ -11,20 +11,33 @@
 
     </div>
     <br>
-    <div id='info_div'>
+    <form action="{% url 'MySite.views.Process_TestStep'%}" method="post">
+        {%csrf_token%}
+        <div id='info_div'>
 
-    </div>
-    <br>
-    <div id='footer_div' style="margin-top: 150px;">
+        </div>
+        <br>
+        <div id='footer_div' style="margin-top: 150px;">
 
-    </div>
+        </div>
+    </form>
 </div>
 <div id='search_div' align="center">
     <div id='search_choice'>
 
     </div>
 </div>
-<div id='search_result' align="center">
+{% if error_message %}
+<div id="error" align="center">
+    <p><strong>{{error_message}}</strong></p>
+</div>
+{%endif%}
+<div align="center">
+    <div id="delete_error" align="center">
 
+    </div>
+    <div id='search_result' align="center">
+
+    </div>
 </div>
 {% endblock %}
