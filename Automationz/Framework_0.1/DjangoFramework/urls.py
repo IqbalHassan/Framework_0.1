@@ -64,6 +64,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/TestCase_Results/$',TestCase_Results),
     url(r'^Home/.*/Populate_info_div/$',Populate_info_div),
     url(r'^Home/.*/TestStep_Delete/$',TestStep_Delete),
+    url(r'^Home/ManageTestCases/TestStepDelete/$',TestStepDelete),
     url(r'^Home/ManageTestCases/Process_TestStep/$',Process_TestStep),
     #Run Test Page
     url(r'^Home/RunTest/$',RunTest),

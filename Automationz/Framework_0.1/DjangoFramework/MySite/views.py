@@ -2829,13 +2829,15 @@ def Populate_info_div(request):
     results=DB.GetData(conn, sQuery,False)
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-
-def TestStep(request):
+def TestStepDelete(request):
+    error_message="Test Step is deleted successfully"
+    return TestStep(request,error_message)
+def TestStep(request,error_message=""):
     """templ=get_template('TestStep.html')
     variables=Context({})
     output=templ.render(variables)
     return HttpResponse(output)"""
-    output={}
+    output={'error_message':error_message}
     return render_to_response('TestStep.html',output,context_instance=RequestContext(request))
 
 def Process_TestStep(request):
