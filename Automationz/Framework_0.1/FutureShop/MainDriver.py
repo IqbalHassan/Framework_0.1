@@ -116,8 +116,10 @@ def main():
         now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
         sTestSetStartTime = str(now[0][0])
         iTestSetStartTime = now[0][0]
-        cur.execute("insert into test_env_results (run_id,rundescription,tester_id,status,teststarttime) values ('%s','%s','%s','In-Progress','%s')" % (sTestResultsRunId, TestRunID[1], Userid, sTestSetStartTime))
-        conn.commit()
+        #cur.execute("insert into test_env_results (run_id,rundescription,tester_id,status,teststarttime) values ('%s','%s','%s','In-Progress','%s')" % (sTestResultsRunId, TestRunID[1], Userid, sTestSetStartTime))
+        #conn.commit()
+        DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='In-Progress', teststarttime='%s' % (sTestSetStartTime))
+
 
         # Find the type of dataset we want to run for given testset
         DataTypeList = DBUtil.GetData(conn, "Select data_type From test_run_env Where run_id = '%s'" % TestRunID[0], False)

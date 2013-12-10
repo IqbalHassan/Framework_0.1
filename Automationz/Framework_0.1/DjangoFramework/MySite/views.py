@@ -1209,6 +1209,9 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                                      Status='Submitted',
                                      data_type=TestDataType
                                      )
+    #NJ-Insert into run env results to display submitted runs
+    Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective}
+    EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query, test_objective = TestObjective  )
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , Status = 'Submitted' ) 
 
