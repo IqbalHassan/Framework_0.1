@@ -6,7 +6,7 @@ import inspect
 import DataBaseUtilities as DBUtil
 import FileUtilities as FL
 import Global, CommonUtil
-import Sub_Driver_Futureshop
+from Drivers import Futureshop 
 #import FSDriver
 import Performance
 
@@ -174,7 +174,7 @@ def main():
 
             #get the test case steps for this test case
             #TestStepsList = DBUtil.GetData(conn,"Select teststepname From TestSteps where TC_ID = '%s' Order By teststepsequence" %TCID,False)
-            TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.stepsection,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % TCID, False)
+            TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % TCID, False)
             Stepscount = len(TestStepsList)
             sTestStepResultList = []
 
@@ -224,12 +224,12 @@ def main():
                             #if Global.ThreadingEnabled:
                             q = Queue.Queue()
                             #Call Test Step
-                            if TestStepsList[StepSeq - 1][3] == "WebDriver":
+                            if TestStepsList[StepSeq - 1][3] == "Futureshop":
                                 #If threading is enabled
                                 if Global.ThreadingEnabled:
-                                    stepThread = threading.Thread(target=CommonStepsDriver.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q))
+                                    stepThread = threading.Thread(target=Futureshop.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q))
                                 else:
-                                    sStepResult = Sub_Driver_Futureshop.ExecuteTestSteps(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q)
+                                    sStepResult = Futureshop.ExecuteTestSteps(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q)
 
 #                            elif TestStepsList[StepSeq - 1][3] == "FS":
 #                                #If threading is enabled
