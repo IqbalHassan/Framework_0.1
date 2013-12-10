@@ -134,6 +134,7 @@ if __name__ == '__main__':
 
 
         #Check if there is a FW update available
+        print "test"
         objFW = FWUpdate.AutoUpdate()
         if objFW.UpdateProcess() == 'restart':
             os.execl (sys.executable, sys.executable, *sys.argv)

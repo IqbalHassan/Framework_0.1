@@ -150,6 +150,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 							}
 						
 						//This is for the address portion of data after address field
+                        //Change here
 						if (mNewData.length >= 2)
 							{
 								mNewData[1] = mNewData[1].split('),')
