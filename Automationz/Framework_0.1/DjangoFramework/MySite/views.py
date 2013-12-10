@@ -476,7 +476,7 @@ def Table_Data_TestResult(request):  #==================Returns Test Results Whe
                                     "te.machine_os,"
                                     "te.machine_ip, "
                                     "te.client "
-                                    "from test_env_results tr, test_run_env te where tr.run_id = te.run_id and tr.status = 'In-Progress'  and (cast (now() AS timestamp without time zone)-teststarttime ) < interval '%s day' ORDER BY tr.teststarttime DESC)"
+                                    "from test_env_results tr, test_run_env te where tr.run_id = te.run_id and tr.status = 'In-Progress'   and (cast (now() AS timestamp without time zone)-teststarttime ) < interval '%s day' ORDER BY tr.teststarttime DESC)"
                                     " union all "
                                     "(Select te.run_id,"
                                     "te.test_objective, "
@@ -1209,6 +1209,13 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                                      Status='Submitted',
                                      data_type=TestDataType
                                      )
+    #NJ-Insert into run env results to display submitted runs
+    now = DB.GetData(Conn, "SELECT CURRENT_TIMESTAMP;", False)
+    sTestSetStartTime = str(now[0][0])
+    print sTestSetStartTime
+
+    Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
+    EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query, test_objective = TestObjective  )
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , Status = 'Submitted' ) 
 
