@@ -2811,13 +2811,43 @@ def TestStep_Auto(request):
 def TestCase_Results(request):
     conn=GetConnection()
     TableData = []
+    RefinedData=[]
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
             sQuery="select tc_id,tc_name from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='"+UserData+"'))"
             TableData=DB.GetData(conn, sQuery, False)
-    Heading = ['TestCase_ID', 'TestCase_Name']
-    results = {'Heading':Heading, 'TableData':TableData}
+            test_type=[u'automated',u'manual',u'performance']
+            type_selector=[]
+            for each in TableData:
+                type_selector=[]
+                data=[]
+                data.append(each[0])
+                data.append(each[1])
+                for item in test_type:
+                    sQuery="select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='"+each[0]+"') and steptype='"+item+"'"
+                    result=DB.GetData(conn, sQuery, False)
+                    type_selector.append(result[0])
+                a = type_selector[0]
+                b = type_selector[1]
+                c = type_selector[2]
+                if b[0]>0L:
+                    data.append(test_type[1])
+                    each=tuple(data)
+                    RefinedData.append(each)
+                elif c[0]>0L:
+                    #print "performance"
+                    data.append(test_type[2])
+                    each=tuple(data)
+                    RefinedData.append(each)
+                else:
+                    # print "automated"
+                    data.append(test_type[0])
+                    each=tuple(data)
+                    RefinedData.append(each)
+    Heading = ['TestCase_ID', 'TestCase_Name','TestCase_Type']
+    results = {'Heading':Heading, 'TableData':RefinedData}
+    #results={'TableData':TableData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -2916,3 +2946,18 @@ def Process_TestStep(request):
                 error={'error_message':error_message}
                 return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
     return HttpResponse(output)
+
+def TestStepAutoComplete(request):
+    Conn = GetConnection()
+    results = []
+    test=[]
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        field=[u'stepname',u'stepfeature',u'steptype',u'driver']
+        for each in field:
+            test = DB.GetData(Conn, "select  distinct "+each+" from test_steps_list where "+ each+" Ilike '%" + value + "%'")
+            results=list(results+test)    
+    if len(results)>0:
+        results.append("*Dev")    
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json') 

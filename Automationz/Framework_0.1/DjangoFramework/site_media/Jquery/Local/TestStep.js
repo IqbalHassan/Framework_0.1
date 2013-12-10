@@ -13,11 +13,7 @@ $(document).ready(function(){
         $("#choice_div").hide();
         $("#create_edit_div").hide();
         $("#search_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Search Test Step</p>");
-        $('#search_div').append('' +
-            '<div>' +
-                '<label><b>Search for the Test Steps:</b></label>' +
-                '<input type="text" name="search_query" placeholder="enter the keywords"/>' +
-            '</div>');
+        populate_search_div();
     });
 });
 
@@ -184,7 +180,7 @@ function populate_footer_div(){
 
                 // add edit btn
                 var indx = 0;
-                $('#search_result tr>td:nth-child(2)').each(function(){
+                $('#search_result tr>td:nth-child(3)').each(function(){
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50"/>');
@@ -223,7 +219,52 @@ function populate_footer_div(){
                 if(count==0){
                     window.location = '/Home/ManageTestCases/TestStepDelete';
                 }
-        }
+            }
+        });
     });
+}
+function populate_search_div(){
+    $('#search_div').append('' +
+        '<div>' +
+            '<label><b>Search for the Test Steps:</b></label>' +
+            '<input type="text" id="search_query" name="search_query" placeholder="enter the keywords"/>' +
+        '</div>' +
+        '<div>' +
+            '<table id = "AutoSearchResult" >'
+                +   '<tbody>'
+                    + '<tr id = "searchedtext">'
+                        +'<p> </p>'
+                        + '<th class = "Text" style= "text-align: left"> Test Data Set: </th>'
+                    + '</tr>'
+                +   '</tbody>' +
+            '</table>' +
+        '</div>'
+    );
+    $("#search_query").autocomplete({
+        source:function(request,response){
+            $.ajax(
+                {url: "TestStepAutoComplete",
+                dataType:"json",
+                data:{term:request.term},
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(request,ui){
+            var tc_id_name = ui.item.value.split(" - ");
+            var value = "";
+            if (tc_id_name != null)
+                value = tc_id_name[0];
+            if(value!=""){
+                $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+                    +'<td name = "submitquery" class = "Text" style = "size:10">'
+                    + value
+                    + ":&nbsp"
+                    + '</td>');
+                $("#search_query").val("");
+                return false;
+            }
+        }
     });
 }
