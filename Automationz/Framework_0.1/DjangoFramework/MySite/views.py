@@ -2866,7 +2866,7 @@ def Process_TestStep(request):
                     if(step_type=="3"):
                         s_type="performance"
                     query = "Where  stepname = '"+step_name+"'"
-                    testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",query,description=step_desc,data_required=data,steptype=s_type,stepsection=step_driver,stepfeature=step_feature)
+                    testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",query,description=step_desc,data_required=data,steptype=s_type,driver=step_driver,stepfeature=step_feature)
                     query="SELECT count(*) FROM config_values where type='feature' and value='"+step_feature+"'"
                     feature_count=DB.GetData(conn,query)
                     if(feature_count[0]<1):
@@ -2892,7 +2892,7 @@ def Process_TestStep(request):
                         s_type="manual"
                     if(step_type=="3"):
                         s_type="performance"
-                    testrunenv=DB.InsertNewRecordInToTable(conn, "test_steps_list",stepname=step_name,description=step_desc,data_required=data,steptype=s_type,stepsection=step_driver,stepfeature=step_feature)
+                    testrunenv=DB.InsertNewRecordInToTable(conn, "test_steps_list",stepname=step_name,description=step_desc,data_required=data,steptype=s_type,driver=step_driver,stepfeature=step_feature)
                     query="SELECT count(*) FROM config_values where type='feature' and value='"+step_feature+"'"
                     feature_count=DB.GetData(conn,query)
                     if(feature_count[0]<1):
