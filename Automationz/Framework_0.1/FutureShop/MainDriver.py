@@ -224,7 +224,7 @@ def main():
                             #if Global.ThreadingEnabled:
                             q = Queue.Queue()
                             #Call Test Step
-                            if TestStepsList[StepSeq - 1][3] == "Common":
+                            if TestStepsList[StepSeq - 1][3] == "WebDriver":
                                 #If threading is enabled
                                 if Global.ThreadingEnabled:
                                     stepThread = threading.Thread(target=CommonStepsDriver.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q))
