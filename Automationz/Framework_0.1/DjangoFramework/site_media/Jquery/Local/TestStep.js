@@ -240,31 +240,98 @@ function populate_search_div(){
             '</table>' +
         '</div>'
     );
-    $("#search_query").autocomplete({
-        source:function(request,response){
-            $.ajax(
-                {url: "TestStepAutoComplete",
-                dataType:"json",
-                data:{term:request.term},
-                success:function(data){
-                    response(data);
+    AutoComplete();
+}
+function AutoComplete(){
+    $("#search_query").autocomplete(
+        {
+            source : function(request, response) {
+                $.ajax({
+                    url:"TestStepAutoComplete",
+                    dataType: "json",
+                    data:{ term: request.term },
+                    success: function( data ) {
+                        response( data );
+                    }
+                });
+            },
+            select : function(event, ui) {
+
+                var tc_id_name = ui.item.value.split(" - ");
+                var value = "";
+                if (tc_id_name != null)
+                    value = tc_id_name[0];
+                if(value!=""){
+                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+                        +'<td name = "submitquery" class = "Text" style = "size:10">'
+                        + value
+                        + ":&nbsp"
+                        +'</td>');
+                    //console.log(value);
+                    PerformSearch();
+                    $("#search_query").val("");
+                    return false;
                 }
-            });
-        },
-        select:function(request,ui){
-            var tc_id_name = ui.item.value.split(" - ");
-            var value = "";
-            if (tc_id_name != null)
-                value = tc_id_name[0];
-            if(value!=""){
-                $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
-                    +'<td name = "submitquery" class = "Text" style = "size:10">'
-                    + value
-                    + ":&nbsp"
-                    + '</td>');
-                $("#search_query").val("");
-                return false;
+
             }
         }
+    );
+    $("#search_query").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+
+    });
+}
+function PerformSearch(){
+    $("#AutoSearchResult #searchedtext").each(function(){
+        var UserText=$(this).find("td").text();
+        console.log(UserText);
+        UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        console.log("Changed:"+UserText);
+        $.get("TestStep_TestCases",{Query:UserText},function(data){
+            if (data['TableData'].length == 0)
+            {
+                $('#search_result').children().remove();
+                $('#search_result').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+                //$("#DepandencyCheckboxes").children().remove();
+                //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
+            }
+            else
+            {
+                ResultTable('#search_result',data['Heading'],data['TableData'],"Test Cases");
+
+                $("#search_result").fadeIn(1000);
+                $("p:contains('Show/Hide Test Cases')").fadeIn(0);
+
+                // add edit btn
+                var indx = 0;
+                $('#search_result tr>td:nth-child(2)').each(function(){
+                    var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+                    $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50"/>');
+                    $(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/edit_case.png" height="50"/>');
+
+                    indx++;
+                });
+
+                $(".editBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id");
+                });
+                $(".templateBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/Create/'+ $(this).attr("id");
+                });
+                //VerifyQueryProcess();
+                //$(".Buttons[title='Verify Query']").fadeIn(2000);
+                //$(".Buttons[title='Select User']").fadeOut();
+            }
+
+        });
+        $(".delete").click(function(){
+            $(this).parent().next().remove();
+            $(this).remove();
+        });
     });
 }

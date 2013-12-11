@@ -10,7 +10,13 @@ $(document).ready(function(){
                    +"&nbsp;&nbsp;&nbsp;"
                    +"<input class=\"ui-corner-all\" id=\"input2\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName2' />"
            );
-           $("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
+           //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
+           $("#error").hide();
+          // console.log("choice_value:"+choice_value);
+           $("#select_button").val("Rename");
+           var value=$("#select_button").val();
+         //  console.log(value);
+           $("#button_id").show();
            $("#input2").autocomplete({
                source: function(request,response){
                    if($("#type").val()=="set"){
@@ -43,7 +49,13 @@ $(document).ready(function(){
            $("#renamebox").html("");
            var button_value="";
            if(choice_value==0){
-                $("#button_id").html("");
+               button_value=0;
+               if(button_value==0){
+                   $("#select_button").val(button_value);
+                   $("#button_id").hide();
+                   $("#error").show();
+               }
+
            }
            else{
                if(choice_value==1)
@@ -56,7 +68,12 @@ $(document).ready(function(){
                if(choice_value==4){
                    button_value="Delete";
                }
-               $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
+               console.log("choice_value:"+choice_value);
+               $("#error").hide();
+               $("#select_button").val(button_value);
+               console.log($("#select_button").val());
+               $("#button_id").show();
+              // $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
            }
        }
    });

@@ -399,7 +399,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 Priority = "Priority"
                 TCStatusName = "Status"
                 CustomTag = "CustomTag"
-
+                #CustomSet="set"
             QueryText = []
             for eachitem in UserText:
                 if len(eachitem) != 0 and  len(eachitem) != 1:
@@ -436,7 +436,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         TableData = DB.GetData(Conn, "select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc "
@@ -2968,3 +2968,29 @@ def TestStepAutoComplete(request):
         results.append("*Dev")    
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json') 
+
+def TestStep_TestCases(request):
+    Conn=GetConnection()
+    fields=[u'stepfeature',u'driver',u'steptype']
+    TableData=[]
+    if request.is_ajax():
+        if request.method=="GET":
+            search_query=request.GET.get(u'Query','')
+            search_value=search_query.split(":")
+            for each_item in search_value:
+                each_item=each_item.strip();
+                if each_item!="":
+                    query=" where stepname='"+each_item+"'"
+                    for each in fields:
+                        query+=" or "+each+"='"+each_item+"'"
+                    query="SELECT distinct tc_id,tc_name FROM test_cases where tc_id in (SELECT distinct tc_id from test_steps where step_id in(SELECT distinct step_id from test_steps_list "+query+"))"
+                    TableData_1=DB.GetData(Conn, query,False)
+                    TableData.append(TableData_1)
+            resultData=TableData[0]
+            for each in TableData:
+                setData=set(resultData).intersection(set(each))
+                resultData=list(setData)
+        Heading = ['TestCase_ID', 'TestCase_Name','TestCase_Type']
+        results = {'Heading':Heading, 'TableData':resultData}
+        json=simplejson.dumps(results)
+        return HttpResponse(json,mimetype='application/json')
