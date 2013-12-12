@@ -2787,9 +2787,9 @@ def TestFeature_Auto(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
-        results = DB.GetData(Conn, "select  distinct value from config_values where value Ilike '%" + value + "%' and type='feature'")
-        if len(results)>0:
-            results.append("*Dev")
+        results = DB.GetData(Conn, "select  distinct value,type from config_values where value Ilike '%" + value + "%' and type='feature'",False)
+        #if len(results)>0:
+            #results.append("*Dev")
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
 
@@ -2798,9 +2798,9 @@ def TestDriver_Auto(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
-        results = DB.GetData(Conn, "select  distinct value from config_values where value Ilike '%" + value + "%' and type='driver'")
-        if len(results)>0:
-            results.append("*Dev")
+        results = DB.GetData(Conn, "select  distinct value,type from config_values where value Ilike '%" + value + "%' and type='driver'",False)
+        #if len(results)>0:
+            #results.append("*Dev")
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
 
@@ -2809,9 +2809,9 @@ def TestStep_Auto(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
-        results = DB.GetData(Conn, "select  distinct stepname from test_steps_list where stepname Ilike '%" + value + "%'")
-        if len(results)>0:
-            results.append("*Dev")
+        results = DB.GetData(Conn, "select  distinct stepname,steptype from test_steps_list where stepname Ilike '%" + value + "%'",False)
+        # if len(results)>0:
+        #  results.append("*Dev")
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
 
@@ -2965,7 +2965,16 @@ def TestStepAutoComplete(request):
         value = request.GET.get(u'term', '')
         field=[u'stepname',u'stepfeature',u'steptype',u'driver']
         for each in field:
-            test = DB.GetData(Conn, "select  distinct "+each+" from test_steps_list where "+ each+" Ilike '%" + value + "%'")
+            statement=""
+            if each=='stepname':
+                statement='step'
+            if each=='stepfeature':
+                statement='feature'
+            if each=='steptype':
+                statement='type'
+            if each=='driver':
+                statement='driver'
+            test = DB.GetData(Conn, "select  distinct "+each+"||' - "+statement+"' from test_steps_list where "+ each+" Ilike '%" + value + "%'")
             results=list(results+test)    
     if len(results)>0:
         results.append("*Dev")    

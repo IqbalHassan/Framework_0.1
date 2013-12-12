@@ -65,10 +65,7 @@ function populate_info_div(){
             });
         },
         select: function(request,ui){
-            var tc_id_name = ui.item.value.split(" - ");
-            var value = "";
-            if (tc_id_name != null)
-                value = tc_id_name[0];
+            var value=ui.item[0];
             if(value!=""){
                 $("#step_name").val(value);
                 $.ajax({
@@ -104,7 +101,12 @@ function populate_info_div(){
                 return false;
             }
         }
-    });
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+            .appendTo( ul );
+    };
     $("#step_feature").autocomplete({
         source: function(request,response){
             $.ajax({
@@ -117,16 +119,18 @@ function populate_info_div(){
             });
         },
         select: function(request,ui){
-            var tc_id_name = ui.item.value.split(" - ");
-            var value = "";
-            if (tc_id_name != null)
-                value = tc_id_name[0];
+            var value = ui.item[0];
             if(value!=""){
                 $("#step_feature").val(value);
                 return false;
             }
         }
-    });
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+            .appendTo( ul );
+    };
     $("#step_driver").autocomplete({
         source: function(request,response){
             $.ajax({
@@ -139,16 +143,18 @@ function populate_info_div(){
             });
         },
         select: function(request,ui){
-            var tc_id_name = ui.item.value.split(" - ");
-            var value = "";
-            if (tc_id_name != null)
-                value = tc_id_name[0];
+            var value = ui.item[0];
             if(value!=""){
                 $("#step_driver").val(value);
                 return false;
             }
         }
-    });
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+            .appendTo( ul );
+    };
 }
 function populate_footer_div(){
     $('#footer_div').append('' +
@@ -243,8 +249,7 @@ function populate_search_div(){
     AutoComplete();
 }
 function AutoComplete(){
-    $("#search_query").autocomplete(
-        {
+    $("#search_query").autocomplete({
             source : function(request, response) {
                 $.ajax({
                     url:"TestStepAutoComplete",
@@ -274,8 +279,7 @@ function AutoComplete(){
                 }
 
             }
-        }
-    );
+        });
     $("#search_query").keypress(function(event) {
         if (event.which == 13) {
 
@@ -310,6 +314,7 @@ function PerformSearch(){
                 // add edit btn
                 var indx = 0;
                 $('#search_result tr>td:nth-child(3)').each(function(){
+
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50"/>');
