@@ -2824,40 +2824,43 @@ def TestCase_Results(request):
             UserData = request.GET.get(u'Query', '')
             sQuery="select tc_id,tc_name from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='"+UserData+"'))"
             TableData=DB.GetData(conn, sQuery, False)
-            test_type=[u'automated',u'manual',u'performance']
-            type_selector=[]
-            for each in TableData:
-                type_selector=[]
-                data=[]
-                data.append(each[0])
-                data.append(each[1])
-                for item in test_type:
-                    sQuery="select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='"+each[0]+"') and steptype='"+item+"'"
-                    result=DB.GetData(conn, sQuery, False)
-                    type_selector.append(result[0])
-                a = type_selector[0]
-                b = type_selector[1]
-                c = type_selector[2]
-                if b[0]>0L:
-                    data.append(test_type[1])
-                    each=tuple(data)
-                    RefinedData.append(each)
-                elif c[0]>0L:
-                    #print "performance"
-                    data.append(test_type[2])
-                    each=tuple(data)
-                    RefinedData.append(each)
-                else:
-                    # print "automated"
-                    data.append(test_type[0])
-                    each=tuple(data)
-                    RefinedData.append(each)
+            Check_TestCase(TableData, RefinedData)
     Heading = ['TestCase_ID', 'TestCase_Name','TestCase_Type']
     results = {'Heading':Heading, 'TableData':RefinedData}
     #results={'TableData':TableData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-
+def Check_TestCase(TableData,RefinedData):
+    conn=GetConnection()
+    test_type=[u'automated',u'manual',u'performance']
+    type_selector=[]
+    for each in TableData:
+        type_selector=[]
+        data=[]
+        data.append(each[0])
+        data.append(each[1])
+        for item in test_type:
+            sQuery="select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='"+each[0]+"') and steptype='"+item+"'"
+            result=DB.GetData(conn, sQuery, False)
+            type_selector.append(result[0])
+        #a = type_selector[0]
+        b = type_selector[1]
+        c = type_selector[2]
+        if b[0]>0L:
+            data.append(test_type[1])
+            each=tuple(data)
+            RefinedData.append(each)
+        elif c[0]>0L:
+            #print "performance"
+            data.append(test_type[2])
+            each=tuple(data)
+            RefinedData.append(each)
+        else:
+            # print "automated"
+            data.append(test_type[0])
+            each=tuple(data)
+            RefinedData.append(each)
+            
 def Populate_info_div(request):
     conn=GetConnection()
     if request.method=='GET':
@@ -2973,6 +2976,7 @@ def TestStep_TestCases(request):
     Conn=GetConnection()
     fields=[u'stepfeature',u'driver',u'steptype']
     TableData=[]
+    RefinedData=[]
     if request.is_ajax():
         if request.method=="GET":
             search_query=request.GET.get(u'Query','')
@@ -2990,7 +2994,8 @@ def TestStep_TestCases(request):
             for each in TableData:
                 setData=set(resultData).intersection(set(each))
                 resultData=list(setData)
+            Check_TestCase(resultData, RefinedData)
         Heading = ['TestCase_ID', 'TestCase_Name','TestCase_Type']
-        results = {'Heading':Heading, 'TableData':resultData}
+        results = {'Heading':Heading, 'TableData':RefinedData}
         json=simplejson.dumps(results)
         return HttpResponse(json,mimetype='application/json')

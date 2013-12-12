@@ -305,10 +305,11 @@ function PerformSearch(){
 
                 $("#search_result").fadeIn(1000);
                 $("p:contains('Show/Hide Test Cases')").fadeIn(0);
+                //new modification
 
                 // add edit btn
                 var indx = 0;
-                $('#search_result tr>td:nth-child(2)').each(function(){
+                $('#search_result tr>td:nth-child(3)').each(function(){
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50"/>');
