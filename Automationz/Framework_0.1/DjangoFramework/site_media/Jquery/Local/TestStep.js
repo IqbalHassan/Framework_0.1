@@ -15,6 +15,7 @@ $(document).ready(function(){
         $("#search_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Search Test Step</p>");
         populate_search_div();
     });
+
 });
 
 function populate_info_div(){
@@ -183,7 +184,7 @@ function populate_footer_div(){
 
                 $("#search_result").fadeIn(1000);
                 $("p:contains('Show/Hide Test Cases')").fadeIn(0);
-
+                implementDropDown("#search_result");
                 // add edit btn
                 var indx = 0;
                 $('#search_result tr>td:nth-child(3)').each(function(){
@@ -310,7 +311,7 @@ function PerformSearch(){
                 $("#search_result").fadeIn(1000);
                 $("p:contains('Show/Hide Test Cases')").fadeIn(0);
                 //new modification
-
+                implementDropDown("#search_result");
                 // add edit btn
                 var indx = 0;
                 $('#search_result tr>td:nth-child(3)').each(function(){
@@ -338,6 +339,53 @@ function PerformSearch(){
         $(".delete").click(function(){
             $(this).parent().next().remove();
             $(this).remove();
+        });
+    });
+}
+function implementDropDown(wheretoplace){
+    $(wheretoplace+" tr td:nth-child(2)").css({'color' : '#000066','cursor' : 'pointer'});
+    $(wheretoplace+" tr td:nth-child(2)").each(function() {
+        $(this).live('click',function() {
+
+            var childrenCount = $(this).children().length
+            if (childrenCount == 0)
+            {
+                $(this).children().slideDown();
+            }
+            else
+            {
+                $(this).children().slideUp();
+                //childrenCount=0;
+                return;
+            }
+            var ClickedTC = $(this).text();
+            var RunID = $(this).closest('tr').find('td:nth-child(1)').text();
+            RunID = RunID.trim();
+
+            var $TC = $(this).text();
+            var TestSteps;
+            $.get("TestStepWithTypeInTable",{ClickedTC : ClickedTC,RunID: RunID},function(data) {
+                TestSteps = data['Result'];
+
+                $(".ui-widget tr td:nth-child(2)").each(function() {
+                    if (($(this).text()) == ClickedTC)
+                    {
+
+                        $(this).children().remove();
+                        for (eachitem in data['Result'])
+                        {
+
+                            $($(this)).append("<p id = 'TestCase_Steps'>"+ data['Result'][eachitem]																																				+ "</p>");
+                        }
+
+                    }
+
+                    $("p#TestCase_Steps").css({'color' : '#9999FF','cursor' : 'text'});
+                });
+
+            });
+            //$(this).children().slideToggle();
+
         });
     });
 }

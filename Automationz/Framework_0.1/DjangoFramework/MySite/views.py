@@ -371,7 +371,7 @@ def AutoCompleteTestStepSearch(request):
     if request.method == "GET":
         value = request.GET.get(u'term', '')
 
-        results = DB.GetData(Conn, "select stepname,data_required from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
+        results = DB.GetData(Conn, "select stepname,data_required,steptype from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -420,7 +420,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 break
 
 
-
+    RefinedData=[]
     TableData = []
     if len(TestIDList) > 0:
         for eachitem in TestIDList:
@@ -442,10 +442,11 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         TableData = DB.GetData(Conn, "select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc "
                         "where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query, False)
 
-    Heading = ['TestCase_ID', 'TestCase_Name']
+    Check_TestCase(TableData, RefinedData)
+    Heading = ['TestCase_ID', 'TestCase_Name','TestCase_Type']
 
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
-    results = {'Heading':Heading, 'TableData':TableData}
+    results = {'Heading':Heading, 'TableData':RefinedData}
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -641,13 +642,14 @@ def TestCase_TestSteps_SearchPage(request): #==================Returns Test Step
 #            for eachitem in TC_NameID:
 #                if TestCaseName in eachitem:
 #                    TC_ID = eachitem[1]
-
+            result=[]
             if RunID != '':
                 Result = DB.GetData(Conn, "Select stepname from test_steps tst,test_steps_list tsl where tst.step_id = tsl.step_id and tc_id  = '%s' order by teststepsequence" % RunID)
-
-    results = {'Result':Result
-
-               }
+            for each in Result:
+                query="select '"+each+"-'||steptype from test_steps_list where stepname='"+each+"'"
+                Result_type=DB.GetData(Conn, query)
+                result.append(Result_type[0])
+    results = {'Result':result}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -3008,3 +3010,22 @@ def TestStep_TestCases(request):
         results = {'Heading':Heading, 'TableData':RefinedData}
         json=simplejson.dumps(results)
         return HttpResponse(json,mimetype='application/json')
+def TestStepWithTypeInTable(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            #TestCaseName = request.GET.get('ClickedTC', '')
+            RunID = request.GET.get('RunID', '')
+            print RunID
+            RunID = str(RunID.strip())
+            RunID = str(RunID.replace(u'\xa0', u''))
+            result=[]
+            if RunID != '':
+                Result = DB.GetData(Conn, "Select stepname from test_steps tst,test_steps_list tsl where tst.step_id = tsl.step_id and tc_id  = '%s' order by teststepsequence" % RunID)
+            for each in Result:
+                query="select '"+each+"-'||steptype from test_steps_list where stepname='"+each+"'"
+                Result_type=DB.GetData(Conn, query)
+                result.append(Result_type[0])
+    results = {'Result':result}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')

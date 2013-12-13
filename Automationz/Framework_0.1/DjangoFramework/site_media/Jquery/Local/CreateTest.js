@@ -657,12 +657,13 @@ function RunTestAutocompleteSearch(Env, step) {
 					term : request.term
 				},
 				success : function(data) {
+                    console.log(data);
 					auto_complete_list = data;
 					
 					var just_names = []
 					
 					for(var i = 0; i < data.length; i++){
-						just_names.push(auto_complete_list[i][0]);
+						just_names.push(auto_complete_list[i][0]+' - '+auto_complete_list[i][2]);
 					}
 					
 					response(just_names);
@@ -673,8 +674,9 @@ function RunTestAutocompleteSearch(Env, step) {
 		// source : 'AutoCompleteTestStepSearch?Env = ' +Env,
 		select : function(event, ui) {
 
-			var value = ui.item.value
-
+			var values = ui.item.value.split(' -')
+            console.log(values);//console.log('in select'+ui.item.value);
+            var value=values[0];
 			if (value != "") {
 				this.value = value;
 				for(var i = 0; i < auto_complete_list.length; i++){
@@ -686,9 +688,8 @@ function RunTestAutocompleteSearch(Env, step) {
 				}
 
 			}
-			return false
-		},
-
+			return false;
+		}
 	});
 
 	$(".stepbox").keypress(function(event) {
