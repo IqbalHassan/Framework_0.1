@@ -5,6 +5,7 @@ $(document).ready(function(){
         $('#search').hide();
         $('#error').hide();
         $('#create_edit').hide();
+        $("#feature_driver").hide();
         $("#choice").append("<p style='font-size:1.5em;'><b>Action</b>: Create/Edit</p>");
         populate_info_div();
         populate_footer_div();
@@ -12,11 +13,54 @@ $(document).ready(function(){
     $("#search").click(function(){
         $("#choice_div").hide();
         $("#create_edit_div").hide();
+        $("#feature_driver").hide();
         $("#search_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Search Test Step</p>");
         populate_search_div();
     });
+    $("#feature_driver").click(function(){
+        $("#choice_div").hide();
+        $("#create_edit_div").hide();
+        $("#feature_driver_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Feature/Driver Options</p>");
+        populate_feature_driver_div();
+    });
 
 });
+
+function populate_feature_driver_div(){
+    $("#feature_driver_div").append('' +
+        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
+            '<label><b>Type:</b></label><br>' +
+        '</div>' +
+        '<div style="float: left;margin-right: 15px;margin-left: 15px">' +
+        '<select id="type_data" name="type_data">' +
+        '<option value="0" selected="selected">Select from list:</option>' +
+        '<option value="1">Feature</option>' +
+        '<option value="2">Driver</option>' +
+        '</select>' +
+        '</div>'+
+        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
+        '<label><b>Operation:</b></label><br>' +
+        '</div>' +
+        '<div style="float: left;margin-right: 15px;margin-left: 15px">' +
+        '<select id="op_name" name="op_name">' +
+        '<option value="0" selected="selected">Select from list:</option>' +
+        '<option value="1">Create</option>' +
+        '<option value="2">Rename</option>' +
+        '<option value="2">Delete</option>' +
+        '</select>' +
+        '</div>' +
+        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
+        '<label><b>Name:</b></label><br>' +
+        '</div>'+
+        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
+        '<input type="text" id="feature_driver_name" name="feature_driver_name"/>' +
+        '</div>' +
+        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
+        '<label id="no_label"><b>No operation is selected</b></label><br>' +
+        '</div>'
+
+    );
+}
 
 function populate_info_div(){
     $('#info_div').append('' +
