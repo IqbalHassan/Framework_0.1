@@ -17,14 +17,14 @@ $(document).ready(function(){
         $("#search_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Search Test Step</p>");
         populate_search_div();
     });
-    $("#feature_driver").click(function(){
+	$("#feature_driver").click(function(){
         $("#choice_div").hide();
         $("#create_edit_div").hide();
         $("#feature_driver_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Feature/Driver Options</p>");
         populate_feature_driver_div();
     });
-
 });
+
 
 function populate_feature_driver_div(){
     $("#feature_driver_div").append('' +
@@ -400,6 +400,7 @@ function implementDropDown(wheretoplace){
             {
                 $(this).children().slideUp();
                 //childrenCount=0;
+                $(this).children().remove();
                 return;
             }
             var ClickedTC = $(this).text();
@@ -412,7 +413,8 @@ function implementDropDown(wheretoplace){
                 TestSteps = data['Result'];
 
                 $(".ui-widget tr td:nth-child(2)").each(function() {
-                    if (($(this).text()) == ClickedTC)
+                    //if (($(this).text()) == ClickedTC)
+                    if($(this).closest('tr').find('td:nth-child(1)').text()==RunID)
                     {
 
                         $(this).children().remove();

@@ -206,8 +206,9 @@ function PerformSearch() {
 												$("p:contains('Show/Hide Test Cases')").fadeIn(0);	
 												
 												// add edit btn
+                                                implementDropDown("#RunTestResultTable");
 												var indx = 0;
-												$('#RunTestResultTable tr>td:nth-child(2)').each(function(){
+												$('#RunTestResultTable tr>td:nth-child(3)').each(function(){
 													var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 													
 													$(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/delete_tc.png" height="50" title="Delete the selected test case?" />');
@@ -234,4 +235,53 @@ function PerformSearch() {
 
 					});
 
+}
+function implementDropDown(wheretoplace){
+    $(wheretoplace+" tr td:nth-child(2)").css({'color' : '#000066','cursor' : 'pointer'});
+    $(wheretoplace+" tr td:nth-child(2)").each(function() {
+        $(this).live('click',function() {
+
+            var childrenCount = $(this).children().length
+            if (childrenCount == 0)
+            {
+                $(this).children().slideDown();
+            }
+            else
+            {
+                $(this).children().slideUp();
+                //childrenCount=0;
+                $(this).children().remove();
+                return;
+            }
+            var ClickedTC = $(this).text();
+            var RunID = $(this).closest('tr').find('td:nth-child(1)').text();
+            RunID = RunID.trim();
+
+            var $TC = $(this).text();
+            var TestSteps;
+            $.get("TestStepWithTypeInTable",{ClickedTC : ClickedTC,RunID: RunID},function(data) {
+                TestSteps = data['Result'];
+
+                $(".ui-widget tr td:nth-child(2)").each(function() {
+                    //if (($(this).text()) == ClickedTC)
+                    if($(this).closest('tr').find('td:nth-child(1)').text()==RunID)
+                    {
+
+                        $(this).children().remove();
+                        for (eachitem in data['Result'])
+                        {
+
+                            $($(this)).append("<p id = 'TestCase_Steps'>"+ data['Result'][eachitem]																																				+ "</p>");
+                        }
+
+                    }
+
+                    $("p#TestCase_Steps").css({'color' : '#9999FF','cursor' : 'text'});
+                });
+
+            });
+            //$(this).children().slideToggle();
+
+        });
+    });
 }

@@ -465,14 +465,18 @@ function PerformSearch() {
 													$(this).live('click',function() {
 														
 														var childrenCount = $(this).children().length
-														if (childrenCount == 0)
+														console.log(childrenCount);
+                                                        if (childrenCount == 0)
 														{
 															$(this).children().slideDown();
 														}
 														else
 														{
 															$(this).children().slideUp();
-															return;
+                                                            $(this).children().remove();
+                                                            return;
+                                                            console.log($(this).children());
+															//return;
 														}
 														var ClickedTC = $(this).text();
 														var RunID = $(this).closest('tr').find('td:nth-child(1)').text();
@@ -488,7 +492,7 @@ function PerformSearch() {
 																{
 																	
 																	$(this).children().remove();
-																  for (eachitem in data['Result']) 
+																  for (eachitem in data['Result'])
 																  {
 																	  
 																	$($(this)).append("<p id = 'TestCase_Steps'>"+ data['Result'][eachitem]																																				+ "</p>");
