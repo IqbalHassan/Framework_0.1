@@ -21,45 +21,165 @@ $(document).ready(function(){
         $("#choice_div").hide();
         $("#create_edit_div").hide();
         $("#feature_driver_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Feature/Driver Options</p>");
-        populate_feature_driver_div();
+        populate_feature_driver_info_div();
     });
+
 });
 
 
-function populate_feature_driver_div(){
-    $("#feature_driver_div").append('' +
-        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
-            '<label><b>Type:</b></label><br>' +
-        '</div>' +
-        '<div style="float: left;margin-right: 15px;margin-left: 15px">' +
-        '<select id="type_data" name="type_data">' +
-        '<option value="0" selected="selected">Select from list:</option>' +
-        '<option value="1">Feature</option>' +
-        '<option value="2">Driver</option>' +
-        '</select>' +
-        '</div>'+
-        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
-        '<label><b>Operation:</b></label><br>' +
-        '</div>' +
-        '<div style="float: left;margin-right: 15px;margin-left: 15px">' +
-        '<select id="op_name" name="op_name">' +
-        '<option value="0" selected="selected">Select from list:</option>' +
-        '<option value="1">Create</option>' +
-        '<option value="2">Rename</option>' +
-        '<option value="2">Delete</option>' +
-        '</select>' +
-        '</div>' +
-        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
-        '<label><b>Name:</b></label><br>' +
-        '</div>'+
-        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
-        '<input type="text" id="feature_driver_name" name="feature_driver_name"/>' +
-        '</div>' +
-        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
-        '<label id="no_label"><b>No operation is selected</b></label><br>' +
-        '</div>'
+function populate_feature_driver_info_div(){
+    $("#feature_driver_info_div").append('' +
+                '<div align="center">' +
+                    '<table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">' +
+                        '<tr>' +
+                            '<td align="center">' +
+                                '<div id="left">'+
+                                    '<label><b>Type:</b></label>' +
+                                    '<select id="type" name="type">' +
+                                        '<option selected value="">Select from list</option>' +
+                                        '<option value="feature">Feature</option>' +
+                                        '<option value="driver">Driver</option>' +
+                                    '</select>' +
+                                '</div>' +
+                            '</td>' +
+                            '<td align="center">' +
+                                '<div id="right">' +
+                                    '<label><b>Operation:</b></label>' +
+                                    '<select id="operation" name="operation">' +
+                                        '<option value="0"selected="selected">Select from list</option>' +
+                                        '<option value="1">Create</option>' +
+                                        '<option value="2">Rename</option>' +
+                                        '<option value="3">Delete</option>' +
+                                    '</select>' +
+                                '</div>' +
+                            '</td>' +
+                            '<td align="center">' +
+                                '<div id="center">' +
+                                    '<label><b id="name_variable">Name:</b></label>' +
+                                    "&nbsp;&nbsp;&nbsp;" +
+                                    "<input class=\"ui-corner-all\" id=\"input\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName' />" +
+                                '</div>' +
+                            '</td>' +
+                            '<td align="center">' +
+                                '<div id="renamebox">' +
+
+                                '</div>' +
+                            '</td>' +
+                            '<td align="center">' +
+                                '<div id="error">' +
+                                    '<p><b>No Operation is selected</b></p>' +
+                                '</div>' +
+                                '<div id="button_id" style="display: none">' +
+                                    '<input type=\'submit\' id=\"select_button\" name=\'submit_button\'/>' +
+                                '</div>' +
+                            '</td>' +
+                        '</tr>' +
+                    '</table>' +
+                '</div>'
 
     );
+
+    $("#operation").click(function(event){
+        var choice_value=$("#operation").val();
+        event.preventDefault();
+        console.log(choice_value);
+        if(choice_value == 2){
+            $("#name_variable").html("Old Name:");
+            $("#renamebox").html(
+                "<label><b>New Name:</b></label>"
+                    +"&nbsp;&nbsp;&nbsp;"
+                    +"<input class=\"ui-corner-all\" id=\"input2\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName2' />"
+            );
+            //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
+            $("#error").hide();
+            // console.log("choice_value:"+choice_value);
+            $("#select_button").val("Rename");
+            var value=$("#select_button").val();
+            //  console.log(value);
+            $("#button_id").show();
+            $("#input2").autocomplete({
+                source: function(request,response){
+                    if($("#type").val()=="feature"){
+                        data_type="feature";
+                    }
+                    if($("#type").val()=="driver"){
+                        data_type="driver"
+                    }
+                    $.ajax({
+                        url:"TestFeatureDriver_Auto",
+                        dataType:"json",
+                        data:{term:request.term,data_type:data_type},
+                        success:function(data){
+                            response(data);
+                        }
+                    });
+                },
+                select: function(request,ui){
+                    var tc_id_name = ui.item.value.split(" - ");
+                    var value = "";
+                    if (tc_id_name != null)
+                        value = tc_id_name[0];
+                    $("#input2").val(value);
+                    return false;
+                }
+            });
+        }
+        else{
+            $("#name_variable").html("Name:");
+            $("#renamebox").html("");
+            var button_value="";
+            if(choice_value==0){
+                button_value=0;
+                if(button_value==0){
+                    $("#select_button").val(button_value);
+                    $("#button_id").hide();
+                    $("#error").show();
+                }
+
+            }
+            else{
+                if(choice_value==1)
+                {
+                    button_value="Create";
+                }
+                if(choice_value==3){
+                    button_value="Delete";
+                }
+                console.log("choice_value:"+choice_value);
+                $("#error").hide();
+                $("#select_button").val(button_value);
+                console.log($("#select_button").val());
+                $("#button_id").show();
+                // $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
+            }
+        }
+    });
+    $("#input").autocomplete({
+        source: function(request,response){
+            if($("#type").val()=="feature"){
+                data_type="feature";
+            }
+            if($("#type").val()=="driver"){
+                data_type="driver"
+            }
+            $.ajax({
+                url:"TestFeatureDriver_Auto",
+                dataType:"json",
+                data:{term:request.term,data_type:data_type},
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select: function(request,ui){
+            var tc_id_name = ui.item.value.split(" - ");
+            var value = "";
+            if (tc_id_name != null)
+                value = tc_id_name[0];
+            $("#input").val(value);
+            return false;
+        }
+    });
 }
 
 function populate_info_div(){

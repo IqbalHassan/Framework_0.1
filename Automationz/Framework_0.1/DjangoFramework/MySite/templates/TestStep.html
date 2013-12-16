@@ -32,7 +32,15 @@
     <div id='feature_driver_choice'>
 
     </div>
+    <form action="{% url 'MySite.views.Process_TestStep'%}" method="post">  <!-- Process_FeatureDriver -->
+        {%csrf_token%}
+        <div id='feature_driver_info_div'>
+
+        </div>
+        <br>
+    </form>
 </div>
+
 {% if error_message %}
 <div id="error" align="center">
     <p><strong>{{error_message}}</strong></p>
