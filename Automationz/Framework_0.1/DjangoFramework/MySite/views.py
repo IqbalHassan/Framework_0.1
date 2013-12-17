@@ -2975,26 +2975,26 @@ def Process_TestStep(request):
 def Process_FeatureDriver(request):                    #minar09
     output="in the processing page"
     if request.method=='POST':
-        type=request.POST['type']
+        data_type=request.POST['type']
         operation=request.POST['operation']
-        input=request.POST['input']
-        input2=request.POST['input2']
-        if type!="" and operation!="" and input!="":
-            if type!="0":
+        input1=request.POST['inputName']
+        input2=request.POST['inputName2']
+        if data_type!="" and operation!="" and input1!="":
+            if data_type!="0":
                 conn=GetConnection()
                 if operation=="1":                                       
-                    query="SELECT count(*) FROM config_values where type='"+type+"' and value='"+input+"'"
+                    query="SELECT count(*) FROM config_values where type='"+data_type+"' and value='"+input1+"'"
                     count=DB.GetData(conn,query)
                     if(count[0]<1):
-                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type=type,value=input)
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type=data_type,value=input1)
                         if testrunenv==True:
-                            message="Feature/Driver with name '"+input+"' is created."
+                            message="Feature/Driver with name '"+input1+"' is created."
                             return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                         else:
-                            message="Feature/Driver with name '"+input+"' is not created. Please Try again."
+                            message="Feature/Driver with name '"+input1+"' is not created. Please Try again."
                             return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request)) 
                     else:
-                        message="Feature/Driver with name '"+input+"' is already created."
+                        message="Feature/Driver with name '"+input1+"' is already created."
                         return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                 if operation=="2":
                     if input2!="":
@@ -3002,55 +3002,55 @@ def Process_FeatureDriver(request):                    #minar09
                         error={'error_message':error_message}
                         return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
                     else:  
-                        query="SELECT count(*) FROM config_values where type='"+type+"' and value='"+input+"'"
+                        query="SELECT count(*) FROM config_values where type='"+data_type+"' and value='"+input1+"'"
                         count=DB.GetData(conn,query)
                         if(count[0]<1):
-                            message="Feature/Driver with name '"+input+"' is not found."
+                            message="Feature/Driver with name '"+input1+"' is not found."
                             return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))                            
                         else:
-                            srquery = "SELECT count(*) FROM test_steps_list where driver='"+input+"' or stepfeature='"+input+"'"
+                            srquery = "SELECT count(*) FROM test_steps_list where driver='"+input1+"' or stepfeature='"+input+"'"
                             searchCount = DB.GetData(Conn, srquery)
                             if (searchCount[0]<1):
-                                whereQuery = "where type='"+type+"' or value = '"+input+"' "
-                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,type=type,value=input2) 
+                                whereQuery = "where type='"+data_type+"' or value = '"+input1+"' "
+                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,type=data_type,value=input2) 
                                 if testrunenv==True:
-                                    message="Feature/Driver with name '"+input+"' is updated to '"+input2+"'."
+                                    message="Feature/Driver with name '"+input1+"' is updated to '"+input2+"'."
                                     return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                                 else:
-                                    message="Feature/Driver with name '"+input+"' is not updated. Please Try again."
+                                    message="Feature/Driver with name '"+input1+"' is not updated. Please Try again."
                                 return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                             else:  
-                                whereQuery = "where type='"+type+"' or value = '"+input+"' "
-                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,type=type,value=input2)                                                                                                                    
-                                whereQuery = "where driver='"+input+"'"
+                                whereQuery = "where type='"+data_type+"' and value = '"+input1+"' "
+                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,type=data_type,value=input2)                                                                                                                    
+                                whereQuery = "where driver='"+input1+"'"
                                 testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",whereQuery,driver=input2)
-                                whereQuery = "where stepfeature='"+input+"'"
+                                whereQuery = "where stepfeature='"+input1+"'"
                                 testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",whereQuery,stepfeature=input2)
                                 if testrunenv==True:
-                                    message="Feature/Driver with name '"+input+"' is updated to '"+input2+"'."
+                                    message="Feature/Driver with name '"+input1+"' is updated to '"+input2+"'."
                                     return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                                 else:
-                                    message="Feature/Driver with name '"+input+"' is not updated. Please Try again."
+                                    message="Feature/Driver with name '"+input1+"' is not updated. Please Try again."
                                     return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))                             
                 if operation=="3":  
-                    query="SELECT count(*) FROM config_values where type='"+type+"' and value='"+input+"'"
+                    query="SELECT count(*) FROM config_values where type='"+data_type+"' and value='"+input1+"'"
                     count=DB.GetData(conn,query)
                     if(count[0]<1):
-                        message="Feature/Driver with name '"+input+"' is not found. Please Try again."
+                        message="Feature/Driver with name '"+input1+"' is not found. Please Try again."
                         return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                     else:
-                        srquery = "SELECT count(*) FROM test_steps_list where driver='"+input+"' or stepfeature='"+input+"'"
+                        srquery = "SELECT count(*) FROM test_steps_list where driver='"+input1+"' or stepfeature='"+input1+"'"
                         searchCount = DB.GetData(Conn, srquery)
                         if (searchCount[0]<1):
-                            testrunenv=DB.DeleteRecord(conn, "config_values",type=type,value=input)
+                            testrunenv=DB.DeleteRecord(conn, "config_values",type=data_type,value=input1)
                             if testrunenv==True:
-                                message="Feature/Driver with name '"+input+"' is deleted."
+                                message="Feature/Driver with name '"+input1+"' is deleted."
                                 return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                             else:
-                                message="Feature/Driver with name '"+input+"' is not deleted. Please Try again."
+                                message="Feature/Driver with name '"+input1+"' is not deleted. Please Try again."
                                 return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))   
                         else:
-                            message="Feature/Driver with name '"+input+"' is being used by some test steps. Please try another."
+                            message="Feature/Driver with name '"+input1+"' is being used by some test steps. Please try another."
                             return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))                           
             else:
                 error_message="Input Fields are empty.Check the input fields"
