@@ -3011,8 +3011,8 @@ def Process_FeatureDriver(request):                    #minar09
                             srquery = "SELECT count(*) FROM test_steps_list where driver='"+input1+"' or stepfeature='"+input1+"'"
                             searchCount = DB.GetData(Conn, srquery)
                             if (searchCount[0]<1):
-                                whereQuery = "where type='"+data_type+"' or value = '"+input1+"' "
-                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,value=input2) 
+                                whereQuery = "where type='"+data_type+"' and value = '"+input1+"' "
+                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,value=input2,type=data_type) 
                                 if testrunenv==True:
                                     message="Feature/Driver with name '"+input1+"' is updated to '"+input2+"'."
                                     return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
@@ -3021,7 +3021,7 @@ def Process_FeatureDriver(request):                    #minar09
                                 return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                             else:  
                                 whereQuery = "where type='"+data_type+"' and value = '"+input1+"' "
-                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,value=input2)                                                                                                                    
+                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,value=input2,type=data_type)                                                                                                                    
                                 whereQuery = "where driver='"+input1+"'"
                                 testrunenv1=DB.UpdateRecordInTable(conn, "test_steps_list",whereQuery,driver=input2)
                                 whereQuery = "where stepfeature='"+input1+"'"

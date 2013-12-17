@@ -83,6 +83,7 @@ function populate_feature_driver_info_div(){
         var choice_value=$("#operation").val();
         event.preventDefault();
         console.log(choice_value);
+        console.log("choice_value:"+choice_value);
         if(choice_value == 2){
             $("#name_variable").html("Old Name:");
             $("#renamebox").html(
@@ -145,10 +146,10 @@ function populate_feature_driver_info_div(){
                 if(choice_value==3){
                     button_value="Delete";
                 }
-                console.log("choice_value:"+choice_value);
+                //console.log("choice_value:"+choice_value);
                 $("#error").hide();
                 $("#select_button").val(button_value);
-                console.log($("#select_button").val());
+               // console.log($("#select_button").val());
                 $("#button_id").show();
                 // $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
             }
