@@ -2563,7 +2563,7 @@ def TestFeatureDriver_Auto(request):               #minar09
     if request.method == "GET":
         value = request.GET.get(u'term', '')
         data_type=request.GET.get(u'data_type','')
-        results = DB.GetData(Conn, "select distinct value from config_values where value Ilike '%" + value + "%' and type='"+data_type+"'")
+        results = DB.GetData(Conn, "select distinct value,type from config_values where value Ilike '%" + value + "%' and type='"+data_type+"'",False)
         #if len(results)>0:
             #results.append("*Dev")
     json=simplejson.dumps(results)

@@ -115,15 +115,27 @@ function populate_feature_driver_info_div(){
                         }
                     });
                 },
-                select: function(request,ui){
+                /*select: function(request,ui){
                     var tc_id_name = ui.item.value.split(" - ");
                     var value = "";
                     if (tc_id_name != null)
                         value = tc_id_name[0];
                     $("#input2").val(value);
                     return false;
+                }*/
+                select: function(request,ui){
+                    var value = ui.item[0];
+                    if(value!=""){
+                        $("#input2").val(value);
+                        return false;
+                    }
                 }
-            });
+            }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                return $( "<li></li>" )
+                    .data( "ui-autocomplete-item", item )
+                    .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+                    .appendTo( ul );
+            };
         }
         else{
             $("#name_variable").html("Name:");
@@ -172,15 +184,27 @@ function populate_feature_driver_info_div(){
                 }
             });
         },
-        select: function(request,ui){
+        /*select: function(request,ui){
             var tc_id_name = ui.item.value.split(" - ");
             var value = "";
             if (tc_id_name != null)
                 value = tc_id_name[0];
             $("#input").val(value);
             return false;
+        }*/
+        select: function(request,ui){
+            var value = ui.item[0];
+            if(value!=""){
+                $("#input").val(value);
+                return false;
+            }
         }
-    });
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+            .appendTo( ul );
+    };
 }
 
 function populate_info_div(){
