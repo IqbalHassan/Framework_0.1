@@ -2977,8 +2977,7 @@ def Process_FeatureDriver(request):                    #minar09
     if request.method=='POST':
         data_type=request.POST['type']
         operation=request.POST['operation']
-        input1=request.POST['inputName']
-        input2=request.POST['inputName2']
+        input1=request.POST['inputName']        
         if data_type!="" and operation!="" and input1!="":
             if data_type!="0":
                 conn=GetConnection()
@@ -2997,7 +2996,8 @@ def Process_FeatureDriver(request):                    #minar09
                         message="Feature/Driver with name '"+input1+"' is already created."
                         return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                 if operation=="2":
-                    if input2!="":
+                    input2=request.POST['inputName2']
+                    if input2=="":
                         error_message="Input Fields are empty.Check the input fields"
                         error={'error_message':error_message}
                         return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
@@ -3008,11 +3008,11 @@ def Process_FeatureDriver(request):                    #minar09
                             message="Feature/Driver with name '"+input1+"' is not found."
                             return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))                            
                         else:
-                            srquery = "SELECT count(*) FROM test_steps_list where driver='"+input1+"' or stepfeature='"+input+"'"
+                            srquery = "SELECT count(*) FROM test_steps_list where driver='"+input1+"' or stepfeature='"+input1+"'"
                             searchCount = DB.GetData(Conn, srquery)
                             if (searchCount[0]<1):
                                 whereQuery = "where type='"+data_type+"' or value = '"+input1+"' "
-                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,type=data_type,value=input2) 
+                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,value=input2) 
                                 if testrunenv==True:
                                     message="Feature/Driver with name '"+input1+"' is updated to '"+input2+"'."
                                     return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
@@ -3021,12 +3021,12 @@ def Process_FeatureDriver(request):                    #minar09
                                 return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                             else:  
                                 whereQuery = "where type='"+data_type+"' and value = '"+input1+"' "
-                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,type=data_type,value=input2)                                                                                                                    
+                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,value=input2)                                                                                                                    
                                 whereQuery = "where driver='"+input1+"'"
-                                testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",whereQuery,driver=input2)
+                                testrunenv1=DB.UpdateRecordInTable(conn, "test_steps_list",whereQuery,driver=input2)
                                 whereQuery = "where stepfeature='"+input1+"'"
-                                testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",whereQuery,stepfeature=input2)
-                                if testrunenv==True:
+                                testrunenv2=DB.UpdateRecordInTable(conn, "test_steps_list",whereQuery,stepfeature=input2)
+                                if (testrunenv==True and testrunenv1==True) or (testrunenv==True and testrunenv2==True) or (testrunenv==True and testrunenv1==True and testrunenv2==True):
                                     message="Feature/Driver with name '"+input1+"' is updated to '"+input2+"'."
                                     return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
                                 else:
