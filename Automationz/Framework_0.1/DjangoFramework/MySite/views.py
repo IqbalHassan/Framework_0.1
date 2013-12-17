@@ -2556,6 +2556,19 @@ def TestSet_Auto(request):
             results.append("*Dev")
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+
+def TestFeatureDriver_Auto(request):               #minar09
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        data_type=request.GET.get(u'data_type','')
+        results = DB.GetData(Conn, "select distinct value from config_values where value Ilike '%" + value + "%' and type='"+data_type+"'")
+        #if len(results)>0:
+            #results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+
 def TestTag_Auto(request):
     Conn = GetConnection()
     results = []
@@ -2958,6 +2971,97 @@ def Process_TestStep(request):
                 error={'error_message':error_message}
                 return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
     return HttpResponse(output)
+
+def Process_FeatureDriver(request):                    #minar09
+    output="in the processing page"
+    if request.method=='POST':
+        type=request.POST['type']
+        operation=request.POST['operation']
+        input=request.POST['input']
+        input2=request.POST['input2']
+        if type!="" and operation!="" and input!="":
+            if type!="0":
+                conn=GetConnection()
+                if operation=="1":                                       
+                    query="SELECT count(*) FROM config_values where type='"+type+"' and value='"+input+"'"
+                    count=DB.GetData(conn,query)
+                    if(count[0]<1):
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type=type,value=input)
+                        if testrunenv==True:
+                            message="Feature/Driver with name '"+input+"' is created."
+                            return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                        else:
+                            message="Feature/Driver with name '"+input+"' is not created. Please Try again."
+                            return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request)) 
+                    else:
+                        message="Feature/Driver with name '"+input+"' is already created."
+                        return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                if operation=="2":
+                    if input2!="":
+                        error_message="Input Fields are empty.Check the input fields"
+                        error={'error_message':error_message}
+                        return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
+                    else:  
+                        query="SELECT count(*) FROM config_values where type='"+type+"' and value='"+input+"'"
+                        count=DB.GetData(conn,query)
+                        if(count[0]<1):
+                            message="Feature/Driver with name '"+input+"' is not found."
+                            return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))                            
+                        else:
+                            srquery = "SELECT count(*) FROM test_steps_list where driver='"+input+"' or stepfeature='"+input+"'"
+                            searchCount = DB.GetData(Conn, srquery)
+                            if (searchCount[0]<1):
+                                whereQuery = "where type='"+type+"' or value = '"+input+"' "
+                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,type=type,value=input2) 
+                                if testrunenv==True:
+                                    message="Feature/Driver with name '"+input+"' is updated to '"+input2+"'."
+                                    return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                                else:
+                                    message="Feature/Driver with name '"+input+"' is not updated. Please Try again."
+                                return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                            else:  
+                                whereQuery = "where type='"+type+"' or value = '"+input+"' "
+                                testrunenv=DB.UpdateRecordInTable(conn, "config_values",whereQuery,type=type,value=input2)                                                                                                                    
+                                whereQuery = "where driver='"+input+"'"
+                                testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",whereQuery,driver=input2)
+                                whereQuery = "where stepfeature='"+input+"'"
+                                testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",whereQuery,stepfeature=input2)
+                                if testrunenv==True:
+                                    message="Feature/Driver with name '"+input+"' is updated to '"+input2+"'."
+                                    return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                                else:
+                                    message="Feature/Driver with name '"+input+"' is not updated. Please Try again."
+                                    return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))                             
+                if operation=="3":  
+                    query="SELECT count(*) FROM config_values where type='"+type+"' and value='"+input+"'"
+                    count=DB.GetData(conn,query)
+                    if(count[0]<1):
+                        message="Feature/Driver with name '"+input+"' is not found. Please Try again."
+                        return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                    else:
+                        srquery = "SELECT count(*) FROM test_steps_list where driver='"+input+"' or stepfeature='"+input+"'"
+                        searchCount = DB.GetData(Conn, srquery)
+                        if (searchCount[0]<1):
+                            testrunenv=DB.DeleteRecord(conn, "config_values",type=type,value=input)
+                            if testrunenv==True:
+                                message="Feature/Driver with name '"+input+"' is deleted."
+                                return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+                            else:
+                                message="Feature/Driver with name '"+input+"' is not deleted. Please Try again."
+                                return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))   
+                        else:
+                            message="Feature/Driver with name '"+input+"' is being used by some test steps. Please try another."
+                            return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))                           
+            else:
+                error_message="Input Fields are empty.Check the input fields"
+                error={'error_message':error_message}
+                return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
+        else:
+                error_message="Input Fields are empty.Check the input fields"
+                error={'error_message':error_message}
+                return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
+    return HttpResponse(output)
+    
 
 def TestStepAutoComplete(request):
     Conn = GetConnection()
