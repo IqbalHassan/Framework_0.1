@@ -18,6 +18,8 @@ $(document).ready(function(){
         populate_search_div();
     });
 	$("#feature_driver").click(function(){
+        $('#error').hide();
+        $('#search').hide();
         $("#choice_div").hide();
         $("#create_edit_div").hide();
         $("#feature_driver_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Feature/Driver Options</p>");
