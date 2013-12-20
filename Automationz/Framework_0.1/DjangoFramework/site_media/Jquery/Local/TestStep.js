@@ -74,6 +74,9 @@ function populate_feature_driver_info_div(){
                                 '<div id="button_id" style="display: none">' +
                                     '<input type=\'submit\' id=\"select_button\" name=\'submit_button\'/>' +
                                 '</div>' +
+                                '<div id="button_del" style="display: none">' +
+                                    '<input type=\'button\' id=\"del_button\" name=\'del_button\'/>' +
+                                '</div>' +
                             '</td>' +
                         '</tr>' +
                     '</table>' +
@@ -95,6 +98,7 @@ function populate_feature_driver_info_div(){
             );
             //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
             $("#error").hide();
+            $("#button_del").hide();
             // console.log("choice_value:"+choice_value);
             $("#select_button").val("Rename");
             var value=$("#select_button").val();
@@ -148,6 +152,7 @@ function populate_feature_driver_info_div(){
                 if(button_value==0){
                     $("#select_button").val(button_value);
                     $("#button_id").hide();
+                    $("#button_del").hide();
                     $("#error").show();
                 }
 
@@ -156,15 +161,23 @@ function populate_feature_driver_info_div(){
                 if(choice_value==1)
                 {
                     button_value="Create";
+                    $("#error").hide();
+                    $("#button_del").hide();
+                    $("#select_button").val(button_value);
+                    $("#button_id").show();
                 }
                 if(choice_value==3){
                     button_value="Delete";
+                    $("#error").hide();
+                    $("#button_id").hide();
+                    $("#del_button").val(button_value);
+                    $("#button_del").show();
                 }
                 //console.log("choice_value:"+choice_value);
-                $("#error").hide();
-                $("#select_button").val(button_value);
+                //$("#error").hide();
+                //$("#select_button").val(button_value);
                // console.log($("#select_button").val());
-                $("#button_id").show();
+                //$("#button_id").show();
                 // $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
             }
         }
@@ -207,6 +220,71 @@ function populate_feature_driver_info_div(){
             .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
             .appendTo( ul );
     };
+
+    $("#del_button").click(function(){
+        var type = $("#type").val();
+        var inputName=$("#input").val();
+        console.log(inputName);
+        $.ajax({
+            url:"FeatureDriver_Delete",
+            dataType:"json",
+            data:{term:type,inputName:inputName},
+            //data:{term:inputName},
+            success:function(data){
+                var count=data[0];
+                console.log(count);
+                if(count>0){
+                    $("#delete_error").html("<p><b>This feature/driver can't be deleted. There are "+count+" test steps using this feature/driver '"+inputName+"'</b></p>");
+
+                    var UserText=$("#input").val();
+                    console.log(UserText);
+                    Env = "PC"
+                    $.get("TestSteps_Results",{Query: UserText, Env: Env},function(data) {
+
+                        if (data['TableData'].length == 0)
+                        {
+                            $('#search_result').children().remove();
+                            $('#search_result').append("<p class = 'Text'><b>Sorry There is No Test Steps For Selected Query!!!</b></p>");
+                            //$("#DepandencyCheckboxes").children().remove();
+                            //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
+                        }
+                        else
+                        {
+                            ResultTable('#search_result',data['Heading'],data['TableData'],"Test Steps");
+
+                            $("#search_result").fadeIn(1000);
+                            $("p:contains('Show/Hide Test Steps')").fadeIn(0);
+                            implementDropDown("#search_result");
+                            // add edit btn
+                            var indx = 0;
+                            $('#search_result tr>td:nth-child(3)').each(function(){
+                                var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+                                $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50"/>');
+                                $(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/edit_case.png" height="50"/>');
+
+                                indx++;
+                            });
+
+                            $(".editBtn").click(function (){
+                                window.location = '/Home/ManageTestCases/TestStep/'+ $(this).attr("id");
+                            });
+                            $(".templateBtn").click(function (){
+                                window.location = '/Home/ManageTestCases/TestStep/'+ $(this).attr("id");
+                            });
+                            //VerifyQueryProcess();
+                            //$(".Buttons[title='Verify Query']").fadeIn(2000);
+                            //$(".Buttons[title='Select User']").fadeOut();
+                        }
+
+                    });
+                }
+                if(count==0){
+                    window.location = '/Home/ManageTestCases/FeatureDriverDelete';
+                }
+            }
+        });
+    });
 }
 
 function populate_info_div(){

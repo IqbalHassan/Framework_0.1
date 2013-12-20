@@ -63,8 +63,11 @@ urlpatterns = patterns('',
     url(r'^Home/.*/TestDriver_Auto/$',TestDriver_Auto),
     url(r'^Home/.*/TestFeatureDriver_Auto/$',TestFeatureDriver_Auto),
     url(r'^Home/.*/TestCase_Results/$',TestCase_Results),
+    url(r'^Home/.*/TestSteps_Results/$',TestSteps_Results),
     url(r'^Home/.*/Populate_info_div/$',Populate_info_div),
     url(r'^Home/.*/TestStep_Delete/$',TestStep_Delete),
+    url(r'^Home/.*/FeatureDriver_Delete/$',FeatureDriver_Delete),
+    url(r'^Home/ManageTestCases/FeatureDriverDelete/$',FeatureDriverDelete),
     url(r'^Home/ManageTestCases/TestStepDelete/$',TestStepDelete),
     url(r'^Home/ManageTestCases/Process_TestStep/$',Process_TestStep),
     url(r'^Home/ManageTestCases/Process_FeatureDriver/$',Process_FeatureDriver),
@@ -102,6 +105,9 @@ urlpatterns = patterns('',
     #Execution Report Page
     url(r'^Home/ExecutionReport/$',ExecutionReport),
     url(r'^Home/.*/Execution_Report_Table/$', Execution_Report_Table),
+    
+    #Test Type Status Page                                #minar09
+    url(r'^Home/TestTypeStatus/$', TestTypeStatus),
     
     #Documentation Page
     url(r'^Home/Documentation/$',Documentation),
