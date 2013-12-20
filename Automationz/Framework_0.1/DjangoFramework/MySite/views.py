@@ -2859,10 +2859,10 @@ def TestSteps_Results(request):
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
-            sQuery="select step_id,stepname from test_steps_list where stepFeature='"+UserData+"' or driver='"+UserData+"'" 
+            sQuery="select stepname from test_steps_list where stepFeature='"+UserData+"' or driver='"+UserData+"'" 
             TableData=DB.GetData(conn, sQuery, False)
             #Check_TestCase(TableData, RefinedData)
-    Heading = ['TestStep_ID', 'TestStep_Name']
+    Heading = ['TestStep_Name']
     results = {'Heading':Heading, 'TableData':TableData}
     #results={'TableData':TableData}
     json = simplejson.dumps(results)
