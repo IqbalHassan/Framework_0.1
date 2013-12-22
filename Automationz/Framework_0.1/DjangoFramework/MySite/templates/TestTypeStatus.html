@@ -1,0 +1,75 @@
+
+{% extends "BaseTemplate.html" %}
+
+{% block title%} Test Type Status {% endblock %}
+
+{% block content %}
+
+<script type="text/javascript" src="/site_media/Jquery/Local/TestTypeStatus.js"></script>
+
+<article>
+
+    <header>Test Type Status</header>
+    <br/>
+    <div id = "TestTypeStatus" >
+
+
+        <!----------------------  Performance Flip Bars  ---------------------------->
+        <div id = "SectionSelect" style = "display:block">
+            <form action="get">
+
+                <div class="new_tc_form" style="text-align: center;">
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <span class="tc_form_required_field">*</span><b class="Text">Section:</b>
+                            </td>
+                            <td class="tc_form_input_col" id="sectiongroup" align="left">
+                                <select class="section" data-level="" id="1">
+                                    <option>Choose...</option>
+                                    <option>All</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </form>
+
+
+
+
+            <p class='flip' title = "Test Type Status"  style = "display: none; width: auto;"> Test Type Status Report </p>
+            <div id = "TestTypeStatusTable">
+
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+
+
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+
+
+
+</article>
+{% endblock %}
