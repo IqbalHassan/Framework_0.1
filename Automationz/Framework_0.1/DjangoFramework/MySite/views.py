@@ -3110,11 +3110,11 @@ def TestTypeStatus_Report(request):
         if request.method == 'GET':
             UserData = request.GET.get(u'choice', '')
             if UserData=="All":
-                sQuery="select section_path from product_sections"
+                sQuery="select section_path from product_sections order by section_path"
             else:
-                sQuery="select section_path from product_sections where section_path ~ '"+UserData+".*'" 
+                sQuery="select section_path from product_sections where section_path ~ '"+UserData+".*' order by section_path" 
         TableData=DB.GetData(Conn, sQuery, False)
-    Heading = ['Section']
+    Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Total']
     results = {'Heading':Heading, 'TableData':TableData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')

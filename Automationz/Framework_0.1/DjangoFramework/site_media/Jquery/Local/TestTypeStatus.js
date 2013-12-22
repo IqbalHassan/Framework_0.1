@@ -28,15 +28,9 @@ $(document).ready(function(){
             {
                 ResultTable(TestTypeStatusTable,data['Heading'],data['TableData'],"Test Type Status Report");
 
-                //Getting Test Case Name
-                var TestCaseName = $("#TestTypeStatusTable tr:nth-child(2)>td:nth-child(2)").text()
 
-                //Removing Test Case Name column
-                $(".ui-widget th:nth-child(2), .ui-widget td:nth-child(2)").remove()
-
-
-                $("p.flip[title =  'Test Cases Analysis']").text("Run History of (" + TestCaseName + ":" +Selected_TC_Analysis + ")" )
-                $("p.flip[title =  'Test Cases Analysis']").fadeIn(1000);
+                $("p.flip[title =  'Test Type Status']").text("Test type status report of (" +choice + ")" )
+                $("p.flip[title =  'Test Type Status']").fadeIn(1000);
                 AnalysisTableActions()
 
                 //Making Run ID blue color and clickable
@@ -60,15 +54,19 @@ $(document).ready(function(){
 
                     });
                 });
-
-
-
             });
-        }
-        else
-        {
         }
 
     });
 });
 
+
+function AnalysisTableActions()
+{
+
+    $("p.flip[title =  'Test Type Status']").click(function() {
+
+        $("#TestTypeStatusTable").slideToggle("slow");
+    });
+
+}
