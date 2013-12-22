@@ -3101,6 +3101,24 @@ def FeatureDriverDelete(request):
     error_message="Feature/Driver is deleted successfully"
     return TestStep(request,error_message)
 
+def TestTypeStatus_Report(request):
+    Conn = GetConnection()
+    results = []
+    TableData = []
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'choice', '')
+            if UserData=="All":
+                sQuery="select section_path from product_sections"
+            else:
+                sQuery="select section_path from product_sections where section_path ~ '"+UserData+".*'" 
+        TableData=DB.GetData(Conn, sQuery, False)
+    Heading = ['Section']
+    results = {'Heading':Heading, 'TableData':TableData}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def TestStepAutoComplete(request):
     Conn = GetConnection()
     results = []
