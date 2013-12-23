@@ -60,8 +60,12 @@ def UpdateEnvParametersToDatabase():
             elif eachitem == "Unassigned":
                 DBUtil.DeleteRecord(conn, "test_run_env", tester_id=testerid, status='Unassigned')
 
-
+        print "something"
         print "Adding parameters to the test_run_env Table! "
+        os_info=machine_os.split(' ')
+        os_name=os_info[0].strip()
+        os_version=os_info[1]
+        os_bit=os_info[3]
         test_run_env = DBUtil.InsertNewRecordInToTable(conn, "test_run_env",
 
                                         tester_id=testerid,
@@ -71,7 +75,10 @@ def UpdateEnvParametersToDatabase():
                                         client=client,
                                         status="Unassigned",
                                         data_type="Default",
-                                        last_updated_time=UpdatedTime
+                                        last_updated_time=UpdatedTime,
+                                        os_name=os_name,
+                                        os_version=os_version,
+                                        os_bit=os_bit
                                          )
         if test_run_env == True:
             conn.close()

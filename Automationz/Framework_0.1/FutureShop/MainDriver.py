@@ -92,6 +92,9 @@ def main():
                                   ",client"
                                   ",data_type"
                                   ",test_run_type"
+                                  ",os_name"
+                                  ",os_version"
+                                  ",os_bit"
                                   " From test_run_env"
                                   " Where tester_id = '%s' and (status = 'Submitted')" % Userid, False)
     if len(TestRunLists) > 0:

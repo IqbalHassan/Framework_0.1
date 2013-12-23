@@ -120,6 +120,7 @@ function SendingQueryAndDepandency()
 				{
 					var DepandencyName = "";
 					DepandencyName = data["DepandencyList"][Depand][0]
+                    console.log(DepandencyName);
 					DepandencyNameList.push(DepandencyName)
 				}
 			}
@@ -140,6 +141,7 @@ function SendingQueryAndDepandency()
 					for (i in DNL)
 					{	
 						temp = $("#DepandencyCheckboxes form#" +DNL[i]+ " input:checked").val();
+                        console.log(temp);
 						if(temp !== undefined)
 						{
 							Text += temp + ":";
@@ -150,8 +152,14 @@ function SendingQueryAndDepandency()
 					{
 						$(".Buttons[title='Select User']").fadeIn(2000)
 						$("#DepandencyCheckboxes").slideUp("slow");
-						$("#AutoSearchResult #DependencyText td").remove()
-						var DNL = DepandencyNameList
+                       // var place=$("#AutoSearchResult #DependencyText td").text();
+                        //console.log("before:"+place);
+						$("#AutoSearchResult #DependencyText td").remove();
+                        //place=$("#AutoSearchResult #DependencyText td").text();
+                        //console.log("after:"+place);
+
+                        var DNL = DepandencyNameList
+                       // console.log(DNL);
 						for (t in DNL)
 						{	
 							Depend = $("#DepandencyCheckboxes form#" +DNL[t]+ " input:checked").val();
@@ -366,9 +374,13 @@ function RunTestAutocompleteSearch(Env)
             select : function(event, ui) {
 
                 var tc_id_name = ui.item.value.split(" - ");
+                console.log(tc_id_name);
                 var value = "";
                 if (tc_id_name != null)
-                    value = tc_id_name[0];
+                    value = tc_id_name[0]
+                console.log(value);
+                var str=$("#AutoSearchTextBoxLabel").text()
+                console.log(str);
 
                 // Checking if Search Text box is for User Search
                 if ($("#AutoSearchTextBoxLabel").text().trim() === "*Select Test Machine:")
@@ -522,7 +534,7 @@ function PerformSearch() {
 
 function SelecteUserProcess() {
 	
-	$("#PlatformChose").remove()
+	$("#PlatformChose").remove();
 	$("#searchbox").autocomplete({
 
 		source : 'AutoCompleteUsersSearch',
@@ -595,14 +607,18 @@ function VerifyQueryProcess()
 				
 					for (Depand in data["DepandencyList"]) 
 					{
+                        console.log(Depand);
 						var content = ""
 						
 						DepandencyName = data["DepandencyList"][Depand][0]
+                        console.log(data["DepandencyList"][Depand]);
+                        console.log(DepandencyName);
 						content += "<form id = '" + DepandencyName + "'action=''>"
 						content += "<p style = 'margin:0'>" +DepandencyName+ "</p>"
 						lis = data["DepandencyList"][Depand]
-						lis.shift();
-						
+
+                        lis.shift();
+						console.log(lis);
 						for (items in lis) 
 						{
 								content += "<input class = 'ui-corner-all' type='radio' name =  '" +DepandencyName+ "'value = '"  + lis[items]  + "' />" + lis[items] + "<br>"
@@ -742,12 +758,14 @@ function RunTestProcess() {
 		//Getting Test Data Set text
 		var RunTestQuery = $(this).find("td").text();
 		RunTestQuery = RunTestQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        console.log(RunTestQuery);
 		
 		//Getting Selected Email ids
 		$("#AutoSearchResult #SelectedEmail").each( function() 
 		{
 			var Email= $(this).find("td").text();
 			EmailIds = Email.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+            console.log(EmailIds);
 		});
 		
 		//Getting Selected Dependency Text
@@ -755,11 +773,12 @@ function RunTestProcess() {
 		{
 			DependencyText= $(this).find("td").text();
 			DependencyText = DependencyText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+            console.log(DependencyText);
 		});
 		
 		//Getting Test Data Type Checkbox value
 		TestDataType = $("#TestDataTypeCheckboxes input:checked").val()
-		
+		console.log(TestDataType);
 		
 		//Getting Test Objective text
 		TestObjective =  $("input#TestObjective").val();
@@ -768,7 +787,7 @@ function RunTestProcess() {
 			MsgBox("Test Run Error","Test Objective field is empty")
 			
 			$("input#TestObjective").effect("highlight", {}, 30000000);
-			return
+			return;
 		}
 		
 		Env = Get_Selected_Env_Name()

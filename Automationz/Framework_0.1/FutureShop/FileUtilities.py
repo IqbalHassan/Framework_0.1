@@ -820,7 +820,9 @@ def getFileVersion_Win(fname):
         strInfo = {}
         for propName in propNames:
             strInfoPath = u'\\StringFileInfo\\%04X%04X\\%s' % (lang, codepage, propName)
-            ## print str_info
+            print strInfoPath
+            print fname
+            print win32api.GetFileVersionInfo(fname, strInfoPath)
             strInfo[propName] = win32api.GetFileVersionInfo(fname, strInfoPath)
 
         props['StringFileInfo'] = strInfo

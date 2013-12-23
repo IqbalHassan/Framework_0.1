@@ -1073,7 +1073,7 @@ def Table_Data_UserList(request): #==================Returns Available user list
 
             if UserData == "True":
 
-                tabledata = DB.GetData(Conn, "Select  tester_id,machine_os,client,last_updated_time,machine_ip from test_run_env where status = 'Unassigned' and machine_os ilike '%" + Environment + "%'", False)
+                tabledata = DB.GetData(Conn, "Select  tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,last_updated_time,machine_ip from test_run_env where status = 'Unassigned' and os_name ='" + Environment + "'", False)
                 Heading = ["Tester ID", "Machine OS", "Client", "Last Updated Time", "Machine IP"]
                 #Heading.reverse()
     results = {'Heading':Heading, 'TableData':tabledata}
@@ -1197,8 +1197,11 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
         #Checking if QuestyText has Client name. if yes geting client name and version from ClientInfo
         for iclient in ClientInfo:
+            print "eachitem:"+eachitem
+            print "iclient:"+iclient
             if eachitem in iclient:
                 eachitem = iclient
+                print "eachitem:"+eachitem
 
         if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid':
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
