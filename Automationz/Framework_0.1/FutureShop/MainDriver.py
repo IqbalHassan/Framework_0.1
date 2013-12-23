@@ -187,6 +187,8 @@ def main():
 
             #get the client name for this test case
             sClientName = TestRunID[4]
+            sClientName=(TestRunID[4].split("("))[0].strip()
+            print sClientName
 
             DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from test_case_datasets where tc_id='%s' and data_type='%s'" % (TCID, DataType), False) # Later we can add dataset tag like multilang here.
             if len(DataSetList) == 0:
