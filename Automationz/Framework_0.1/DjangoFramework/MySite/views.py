@@ -3107,20 +3107,38 @@ def FeatureDriverDelete(request):
 def TestTypeStatus_Report(request):
     Conn = GetConnection()
     results = []
-    TableData = []
+    sections = []
+    testCases = []
+    manual = []
+    totalCases = []
+    RefinedData = []
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'choice', '')
             if UserData=="All":
-                sQuery="select section_path from product_sections order by section_path"
+                sectionQuery="select product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
+                testCasesQuery="select test_case_tag.tc_id,product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
+                totalCaseQuery="select count(test_case_tag.tc_id) from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
             else:
-                sQuery="select section_path from product_sections where section_path ~ '"+UserData+".*' order by section_path" 
-        TableData=DB.GetData(Conn, sQuery, False)
-    Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Total']
+                sectionQuery="select product_sections.section_path from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
+                testCasesQuery="select test_case_tag.tc_id,product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
+                totalCaseQuery="select count(test_case_tag.tc_id) from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path" 
+        sections=DB.GetData(Conn, sectionQuery, False)
+        totalCases=DB.GetData(Conn, totalCaseQuery, False)
+        testCases=DB.GetData(Conn, testCasesQuery, False)
+    #Check_TestCase(TableData, RefinedData)    
+    TableData = zip(sections,totalCases)
+    Heading = ['Section','Manual','Manual in-progress','Automated','Automated in-progress','Total']
     results = {'Heading':Heading, 'TableData':TableData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+
+def Count_Per_Section(testCases,sections,caseCount):
+    caseCount = [0]
+    for each in testCases:
+        if each[1]==sections[0]:
+            ++caseCount[each]
 
 def TestStepAutoComplete(request):
     Conn = GetConnection()
