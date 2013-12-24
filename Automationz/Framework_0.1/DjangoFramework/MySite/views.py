@@ -3124,23 +3124,39 @@ def TestTypeStatus_Report(request):
             UserData = request.GET.get(u'choice', '')
             if UserData=="All":
                 sectionQuery="select product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
-                manualTestCasesQuery="select test_case_tag.tc_id,product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and test_case_tag.property!='Dev' group by test_case_tag.tc_id order by test_case_tag.tc_id"
+                testCasesQuery="select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and test_case_tag.property!='Dev' group by test_case_tag.tc_id, product_sections.section_path"
                 totalCaseQuery="select count(test_case_tag.tc_id) from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
             else:
                 sectionQuery="select product_sections.section_path from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
-                manualTestCasesQuery="select test_case_tag.tc_id,product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property='section_id' test_case_tag.property!='Dev' group by test_case_tag.tc_id order by test_case_tag.tc_id"
+                testCasesQuery="select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property!='Dev' group by test_case_tag.tc_id, product_sections.section_path"
                 totalCaseQuery="select count(test_case_tag.tc_id) from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path" 
         sections=DB.GetData(Conn, sectionQuery, False)        
         totalCases=DB.GetData(Conn, totalCaseQuery, False)
-        manualTestCases=DB.GetData(Conn, manualTestCasesQuery, False)
+        testCases=DB.GetData(Conn, testCasesQuery, False)
+        progress=DB.GetData(Conn, "select tc_id from test_case_tag where property='Dev'", False)
         
     Table = zip(sections,priority)
-    #Check_TestCase(manualTestCases, RefinedData)
+    Check_TestCase(testCases, RefinedData)
+    #manual 
+    """Data = []
+    for each in RefinedData:
+        if each[2] == 'Automated':
+            for x in progress:
+                this = True
+                if x == each[0]:
+                    this = False
+            if this==True:
+                Data.append(each)"""
+    Count_Per_Section(RefinedData,sections,manCount)  
+    Append_array(Table,manCount,Table1) 
+    Append_array(Table1,totalCases,TableData)
+    #Append_array(Table,totalCases,TableData)
+    #manual in progress
     #Count_Per_Section(RefinedData,sections,manCount)  
     #Append_array(Table,manCount,Table1) 
     #Append_array(Table1,totalCases,TableData)
-    Append_array(Table,totalCases,TableData)
-    Heading = ['Section','Priority', 'Total'] #'Manual','Manual in-progress','Automated','Automated in-progress','Total']
+    
+    Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Total']
     results = {'Heading':Heading, 'TableData':TableData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
