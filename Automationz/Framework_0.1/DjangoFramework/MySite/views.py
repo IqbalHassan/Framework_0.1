@@ -3138,6 +3138,7 @@ def TestTypeStatus_Report(request):
     #Check_TestCase(manualTestCases, RefinedData)
     #Count_Per_Section(RefinedData,sections,manCount)  
     #Append_array(Table,manCount,Table1) 
+    #Append_array(Table1,totalCases,TableData)
     Append_array(Table,totalCases,TableData)
     Heading = ['Section','Priority', 'Total'] #'Manual','Manual in-progress','Automated','Automated in-progress','Total']
     results = {'Heading':Heading, 'TableData':TableData}
