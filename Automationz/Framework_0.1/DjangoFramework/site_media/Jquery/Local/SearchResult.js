@@ -383,20 +383,23 @@ function WhenClickingOnCommonFailedTestStep() {
 					});
 
 }
-
+count=0;
 function TestCase_TestStep_Details_Table(sMainTableColumn) {
-
+    console.log(sMainTableColumn);
 	$(sMainTableColumn).css({
 		'color' : 'blue',
 		'cursor' : 'pointer'
 	});
 	$(sMainTableColumn).each(function() {
-        console.log("Text:"+$(this).text());
+        count=count+1;
+        console.log("Cycle:"+count);
+        //console.log("Text:"+$(this).text());
 		var ID = $(this).text().replace(/ /g, '').replace(/,/g, '');
-        console.log("ID:"+ID);
+        //console.log("ID:"+ID);
 		ID = ID.replace("(", "").replace(")", "").replace("&", "");
 		if (sMainTableColumn.search("PassTestCasesTable") == 1) {
 			ID = "Pass" + ID
+            //console.log(ID);
 		}
 		if (sMainTableColumn.search("FailTestCasesTable") == 1) {
 			ID = "Fail" + ID
@@ -410,10 +413,11 @@ function TestCase_TestStep_Details_Table(sMainTableColumn) {
 				$(this).live(
 						'click',
 						function() {
-
-							var TestCaseName = $(this).text().split("Test Step Name")[0]
-							var TestCaseId = $(this).closest('tr').find('td:nth-child(7)').text()
-							var RunID = $("#EnvironmentDetailsTable tr td:first-child").text()
+                            console.log("Before:"+$(this).text());
+							var TestCaseName = $(this).text().split("Test Step Name")[0];
+                            console.log("After:"+TestCaseName);
+							var TestCaseId = $(this).closest('tr').find('td:nth-child(7)').text();
+							var RunID = $("#EnvironmentDetailsTable tr td:first-child").text();
 							$(this).children().slideToggle("slow");
 
 							$.get("TestCase_Detail_Table/", {
