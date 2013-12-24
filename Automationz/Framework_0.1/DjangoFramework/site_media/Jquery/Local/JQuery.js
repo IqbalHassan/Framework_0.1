@@ -318,12 +318,13 @@ function RunIdTestCases(ClickedRunId)
 function All_Test_Cases_Data(All_Test_Cases, Columns)
 
 {
-	
+	console.log(All_Test_Cases);
 	$("p.flip[title =  'All Test Cases']").text("All Test Cases (" + All_Test_Cases.length + ")" )
 	$("p.flip[title =  'All Test Cases']").fadeIn(4000);
 	
 	if (All_Test_Cases.length > 0)
 		{
+            console.log(Columns);
 			ResultTable("#AllTestCasesTable", Columns ,All_Test_Cases,"");
 
 			$("p.flip[title =  'All Test Cases']").bind('click',function(){
@@ -339,7 +340,7 @@ function All_Test_Cases_Data(All_Test_Cases, Columns)
 		if (logPath != "")
 			{
 				$(this).html("<a href ='file:///"+logPath+"'>Log File</a>");
-				return;
+				//return;
 			}
 	
 	});

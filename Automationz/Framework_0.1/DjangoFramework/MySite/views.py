@@ -480,7 +480,7 @@ def Table_Data_TestResult(request):  #==================Returns Test Results Whe
                                     "tr.status,"
                                     "to_char(now() - tr.teststarttime,'HH24:MI:SS'), "
                                     "te.product_version,"
-                                    "te.machine_os,"
+                                    "te.os_name||' '||te.os_version||' - '||te.os_bit as machine_os,"
                                     "te.machine_ip, "
                                     "te.client "
                                     "from test_env_results tr, test_run_env te where tr.run_id = te.run_id and (tr.status = 'In-Progress' or tr.status = 'Submitted')  and (cast (now() AS timestamp without time zone)-teststarttime ) < interval '%s day' ORDER BY tr.teststarttime DESC)"
@@ -491,7 +491,7 @@ def Table_Data_TestResult(request):  #==================Returns Test Results Whe
                                     "tr.status,"
                                     "to_char(tr.duration,'HH24:MI:SS'), "
                                     "te.product_version,"
-                                    "te.machine_os,"
+                                    "te.os_name||' '||te.os_version||' - '||te.os_bit as machine_os,"
                                     "te.machine_ip, "
                                     "te.client "
                                     "from test_env_results tr, test_run_env te where tr.run_id = te.run_id and tr.status != 'In-Progress' ORDER BY tr.teststarttime DESC %s)" % (InProgress_Interval, limit)
@@ -675,7 +675,7 @@ def RunId_TestCases(request): #==================Returns Test Cases When User Cl
     failsteps_Col = ""
     FailsStepsWithCount = ""
     if request.is_ajax():
-         if request.method == 'GET':
+        if request.method == 'GET':
 
             #If User Click on Test Case ID 
             RunId = request.GET.get('ClickedRunId', '')
@@ -687,7 +687,7 @@ def RunId_TestCases(request): #==================Returns Test Cases When User Cl
                                                "run_id,"
                                                "tester_id, "
                                                "product_version, "
-                                               "machine_os, "
+                                               "os_name||' '||os_version||' - '||os_bit as machine_os, "
                                                "client, "
                                                "data_type "
                                                "from test_run_env "
@@ -736,7 +736,7 @@ def RunId_TestCases(request): #==================Returns Test Cases When User Cl
                                             "tr.logid, "
                                             "tc.tc_id "
                                             "from test_case_results tr, test_cases tc, test_case_tag tct "
-                                            "where tr.run_id = '%s' and tr.status = 'Passed' and "
+                                             "where tr.run_id = '%s' and tr.status = 'Passed' and "
                                             "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % (RunId), False)
 
 

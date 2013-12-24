@@ -9,16 +9,22 @@ $(document).ready(
 
 			var Type = window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1,
 					window.location.pathname.length)
+            console.log(window.location.pathname.lastIndexOf("/") + 1);
+            console.log(window.location.pathname.length);
+            console.log("path:"+window.location.pathname);
+            console.log("Sub Path:"+Type);
 			if (Type != "") {
 				RunIdTestCases(Type)
 				if (document.getElementById('LoadingText') != null)
 					document.getElementById('LoadingText').style.display = 'None';
 			} else {
+                console.log("index of runId:"+window.location.pathname.indexOf("RunID"));
 				if (window.location.pathname.indexOf("RunID") != -1) {
 					if (document.getElementById('LoadingText') != null)
 						document.getElementById('LoadingText').innerHTML = "You must provide a RunID in the URL!";
 				} else {
 					var ResultRequest = "Search";
+                    console.log('ResultRequest:'+ResultRequest);
 					Search_Result_Table(ResultRequest)
 				}
 			}
@@ -27,6 +33,7 @@ $(document).ready(
 function Search_Result_Table(ResultRequest)
 
 {
+    console.log("In search_result_table function:"+ResultRequest);
 	$.get("Table_Data_TestResult", {
 		ResultRequest : ResultRequest
 	}, function(data) {
@@ -101,10 +108,12 @@ function Make_RunID_Clickable()
 	$(".ui-widget tr td:first-child").click(function() {
 
 		$("p.flip[title =  'Show All']").remove()
-
+        console.log("children:"+$(this).children().text());
 		$(this).children().slideToggle("slow");
 		ClickedRunId = $(this).text();
+        console.log("clicked runId:"+ClickedRunId);
 		var $TC = $(this).text();
+        console.log("$TC:"+$TC);
 		var TestSteps;
 
 		$(".ui-widget tr td:first-child").each(function() {
@@ -374,18 +383,23 @@ function WhenClickingOnCommonFailedTestStep() {
 					});
 
 }
-
+count=0;
 function TestCase_TestStep_Details_Table(sMainTableColumn) {
-
+    console.log(sMainTableColumn);
 	$(sMainTableColumn).css({
 		'color' : 'blue',
 		'cursor' : 'pointer'
 	});
 	$(sMainTableColumn).each(function() {
+        count=count+1;
+        console.log("Cycle:"+count);
+        //console.log("Text:"+$(this).text());
 		var ID = $(this).text().replace(/ /g, '').replace(/,/g, '');
+        //console.log("ID:"+ID);
 		ID = ID.replace("(", "").replace(")", "").replace("&", "");
 		if (sMainTableColumn.search("PassTestCasesTable") == 1) {
 			ID = "Pass" + ID
+            //console.log(ID);
 		}
 		if (sMainTableColumn.search("FailTestCasesTable") == 1) {
 			ID = "Fail" + ID
@@ -399,10 +413,11 @@ function TestCase_TestStep_Details_Table(sMainTableColumn) {
 				$(this).live(
 						'click',
 						function() {
-
-							var TestCaseName = $(this).text().split("Test Step Name")[0]
-							var TestCaseId = $(this).closest('tr').find('td:nth-child(7)').text()
-							var RunID = $("#EnvironmentDetailsTable tr td:first-child").text()
+                            console.log("Before:"+$(this).text());
+							var TestCaseName = $(this).text().split("Test Step Name")[0];
+                            console.log("After:"+TestCaseName);
+							var TestCaseId = $(this).closest('tr').find('td:nth-child(7)').text();
+							var RunID = $("#EnvironmentDetailsTable tr td:first-child").text();
 							$(this).children().slideToggle("slow");
 
 							$.get("TestCase_Detail_Table/", {
