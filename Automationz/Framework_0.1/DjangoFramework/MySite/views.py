@@ -3305,3 +3305,48 @@ def Auto_OSName(request):
     message=[message]
     results=simplejson.dumps(message)
     return HttpResponse(results,mimetype='application/json')
+
+def Auto_VersionName(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            os_version=request.GET.get(u'Version','')
+            conn=GetConnection()
+            query="select sub_type,value from config_values where type='"+os_version+"'"
+            version_data=DB.GetData(conn, query, False)
+            message=""
+            for each in version_data:
+                print each[0]+" - "+each[1]
+                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
+    message=[message]
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+
+def Auto_Browser(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            browser=request.GET.get(u'Browser','')
+            conn=GetConnection()
+            query="select sub_type,value from config_values where type='"+browser+"'"
+            browser_data=DB.GetData(conn,query,False)
+            message=""
+            for each in browser_data:
+                print each[0]+" - "+each[1]
+                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
+    message=[message]
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+
+def Auto_BrowserVersion(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            browser_version=request.GET.get(u'Version','')
+            conn=GetConnection()
+            query="select sub_type,value from config_values where type='"+browser_version+"'"
+            browser_data=DB.GetData(conn,query,False)
+            message=""
+            for each in browser_data:
+                print each[0]+" - "+each[1]
+                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
+    message=[message]
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
