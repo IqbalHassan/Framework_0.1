@@ -3248,3 +3248,40 @@ def TestStepWithTypeInTable(request):
     results = {'Result':result}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+
+def Auto_MachineName(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            conn=GetConnection()
+            machine_name=request.GET.get(u'machine','')
+            print machine_name
+            query="select user_names from permitted_user_list where user_level is null and user_names Ilike '%"+machine_name+"%'"
+            machine_data=DB.GetData(conn, query)
+    json = simplejson.dumps(machine_data)
+    return HttpResponse(json, mimetype='application/json')
+
+def Check_ExistingMachine(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            conn=GetConnection()
+            check_machine=request.GET.get(u'machine','')
+            print check_machine
+            query="select count(*) from permitted_user_list where user_level is null and user_names ='"+check_machine+"'"
+            machine_exists=DB.GetData(conn, query, False)
+    json=simplejson.dumps(machine_exists)
+    return HttpResponse(json,mimetype='application/json')
+
+def Auto_OSName(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            conn=GetConnection()
+            os=request.GET.get(u'OSName','')
+            query="select sub_type,value from config_values where type='"+os+"'"
+            os_names=DB.GetData(conn, query, False)
+            message=""
+            for each in os_names:
+                print each[0]+" - "+each[1]
+                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
+    message=[message]
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')

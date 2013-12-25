@@ -188,7 +188,7 @@ function populate_feature_driver_info_div(){
                 data_type="feature";
             }
             if($("#type").val()=="driver"){
-                data_type="driver"
+                data_type="driver";
             }
             $.ajax({
                 url:"TestFeatureDriver_Auto",

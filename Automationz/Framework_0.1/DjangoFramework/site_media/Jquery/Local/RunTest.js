@@ -8,8 +8,9 @@ $(document).ready(function(){
 		//when use will click on PC flip bar
 		$(".flip[title='PC_Platform']").click(function(){ 
 			
-			$(".flip[title='Availeable Test Machine']").fadeIn(1000)
-			$("#Place_AutoComplete_Here").fadeIn(1000)
+			$(".flip[title='Availeable Test Machine']").fadeIn(1000);
+			$(".flip[title='Add Manual Test Machine']").fadeIn(1000);
+			$("#Place_AutoComplete_Here").fadeIn(1000);
 			
 			$(".flip[title='Mac_Platform']").css({'display':'none'})
 			$(".text[title='Choose']").text('Welcome to PC Environment Test Lab');
@@ -40,7 +41,13 @@ $(document).ready(function(){
 		});
 		
 		
-		
+		$(".flip[title='Add Manual Test Machine']").click(function(){
+            //console.log($(this).attr('title')+" has been clicked");
+            $("#AvailableTestMachine").css({'display':'none'});
+            $("#AddManualTestMachine").children().remove();
+            populate_manual_test_div();
+            $("#AddManualTestMachine").slideToggle("slow");
+        });
 			
 			AddAutoCompleteSearchBox("#Place_AutoComplete_Here","Search Test Cases Data By Keywords:");
 			
@@ -317,10 +324,8 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 function AvailebableTestMachineflipButton()
 {
 	$(".flip[title='Availeable Test Machine']").click(function(){
-		
-		Env = Get_Selected_Env_Name()
-		
-		
+		$("#AddManualTestMachine").css({'display':'none'});
+		Env = Get_Selected_Env_Name();
 		$("#AvailableTestMachine").slideToggle("slow");
 		var SearchUser = "True"
 		$.get("Table_Data_UserList",{UserListRequest : SearchUser, Env: Env},function(data) {
@@ -817,4 +822,74 @@ function Get_Selected_Env_Name()
 	   { Env = "PC" }
 	return Env
 		
+}
+
+function populate_manual_test_div(){
+    $("#AddManualTestMachine").css({'align':'left'});
+    $("#AddManualTestMachine").append('<div id="machine_div"></div>');
+    $("#machine_div").append('<label><b>Machine Name:</b></label>' +
+        '<input type="text" id="machine_name" placeholder="Enter the machine name.." style="margin-right: 20px;"/>' +
+        '<label><b>Operating System:</b></label>' +
+        '<select id="os_name"><option selected value="0">Select an OS</option></select>');
+    $("#machine_name").autocomplete({
+        source:function(request,response){
+            if($("#machine_name").val()!=""){
+                $("#machine_name").css({'background-color':'white'});
+                var machine=$("#machine_name").val();
+            }
+            //console.log(machine);
+            $.ajax({
+                url:"Auto_MachineName",
+                dataType:"json",
+                data:{machine:machine},
+                success:function(data){
+                    console.log(data);
+                    //var name=data[0];
+                    response(data);
+                }
+            });
+        },
+        select: function(request,ui){
+            //console.log(ui);
+            var value = ui.item.value;
+            if(value!=""){
+                console.log(value);
+                $("#machine_name").val(value);
+                //return false;
+                $.ajax({
+                    url:"Check_ExistingMachine",
+                    dataType:"json",
+                    data:{machine:value},
+                    success:function(data){
+                        console.log(data[0][0]);
+                        if(data[0][0]>0){
+                           $("#machine_name").css({'background-color':'#E77471'});
+                        }
+                    }
+                });
+            }
+        }
+    });
+    if($("#os_name option:selected").val()==0){
+        os_name();
+    }
+    $("#os_name").click(function(){
+        var value=0;
+        if($("#os_name option:selected").val()!=0){
+            value=$("#os_name option:selected").val();
+            console.log(value);
+        }
+    });
+
+}
+
+function os_name(){
+    var message="";
+    $.get("Auto_OSName",{OSName:"OS"},function(data){
+        console.log("GotData:"+data);
+        message=data[0];
+        console.log(message);
+        $("#os_name").append(message)
+        return;
+    });
 }

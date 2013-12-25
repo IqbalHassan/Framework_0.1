@@ -81,7 +81,9 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Run_Test/$', Run_Test),
     url(r'^Home/.*/ReRun_Fail_TestCases/$', ReRun_Fail_TestCases),
     url(r'^Home/.*/Table_Data_UserList/$', Table_Data_UserList), 
-    
+    url(r'^Home/.*/Auto_MachineName/$',Auto_MachineName),
+    url(r'^Home/.*/Check_ExistingMachine/$',Check_ExistingMachine),
+    url(r'^Home/.*/Auto_OSName/$',Auto_OSName),
     #Performance Page
     url(r'^Home/Performance/$',Performance),
     url(r'^Home/Performance/PerformanceResult/$',PerformanceResult), 
