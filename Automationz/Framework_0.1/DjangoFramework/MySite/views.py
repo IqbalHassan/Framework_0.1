@@ -3106,17 +3106,23 @@ def FeatureDriverDelete(request):
 
 def TestTypeStatus_Report(request):
     Conn = GetConnection()
-    results = []
     sections = []
     priority = ["Total","Total","Total","Total","Total","Total","Total","Total"]
     testCases = []
-    manual = []
     totalCases = []
     TableData = []
     manCount = []
+    manIPCount = []
+    autoCount = []
+    autoIPCount = []
     Table1 = []
     Table2 = []
-    Table3 = [] 
+    Table3 = []
+    Table4 = []
+    manTab = []
+    manIPTab = []
+    autoTab = []
+    autoIPTab = [] 
     RefinedData = []
     Conn = GetConnection()
     if request.is_ajax():
@@ -3138,23 +3144,37 @@ def TestTypeStatus_Report(request):
     Table = zip(sections,priority)
     Check_TestCase(testCases, RefinedData)
     #manual 
-    """Data = []
     for each in RefinedData:
-        if each[2] == 'Automated':
+        Data = []
+        Data.append(each[0])
+        Data.append(each[1])
+        if each[2] == 'manual':
             for x in progress:
                 this = True
                 if x == each[0]:
                     this = False
             if this==True:
-                Data.append(each)"""
-    Count_Per_Section(RefinedData,sections,manCount)  
+                manTab.append(tuple(Data))
+            if this==False:
+                manIPTab.append(tuple(Data))
+        if each[2] == 'automated':
+            for x in progress:
+                this = True
+                if x == each[0]:
+                    this = False
+            if this==True:
+                autoTab.append(tuple(Data))
+            if this==False:
+                autoIPTab.append(tuple(Data))
+    Count_Per_Section(manTab,sections,manCount)
+    Count_Per_Section(manIPTab,sections,manIPCount) 
+    Count_Per_Section(autoTab,sections,autoCount) 
+    Count_Per_Section(autoTab,sections,autoIPCount)
     Append_array(Table,manCount,Table1) 
-    Append_array(Table1,totalCases,TableData)
-    #Append_array(Table,totalCases,TableData)
-    #manual in progress
-    #Count_Per_Section(RefinedData,sections,manCount)  
-    #Append_array(Table,manCount,Table1) 
-    #Append_array(Table1,totalCases,TableData)
+    Append_array(Table1,manIPCount,Table2)
+    Append_array(Table2,autoCount,Table3)
+    Append_array(Table3,autoIPCount,Table4)
+    Append_array(Table4,totalCases,TableData)
     
     Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Total']
     results = {'Heading':Heading, 'TableData':TableData}
@@ -3165,9 +3185,9 @@ def Count_Per_Section(testCases,sections,caseCount):
     for each in sections:
         x=0
         for case in testCases:
-            if case[1] == each:
+            if each==case[1]:
                 ++x
-            caseCount.append(x)
+        caseCount.append(x)
             
 def Append_array(TableData,test_type,RefinedData):
     for each,x in zip(TableData,test_type):
