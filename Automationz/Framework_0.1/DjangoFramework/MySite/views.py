@@ -3367,14 +3367,19 @@ def AddManualTestMachine(request):
             client=values['Browser']+"("+values['BrowserVersion']+";"+values['OSBit']+"Bit)"
             print client
             oConn=GetConnection()
-            testrunenv2=DB.InsertNewRecordInToTable(oConn, "permitted_user_list",user_names=values['Machine'],email=values['Machine']+"@machine.com")
-            print testrunenv2
-            testrunenv=DB.InsertNewRecordInToTable(oConn, "test_run_env",tester_id=values['Machine'],status=status,machine_os=machine_os,client=client,data_type="Default",last_updated_time=updateTime,machine_ip=values['machineIP'],os_name=values['OSName'],os_version=values['OSVersion'],os_bit=values['OSBit'])
-            print testrunenv
-            if(testrunenv and testrunenv2):
-                message="Machine is created successfully"
+            query="select count(*) from permitted_user_list where user_names='"+values['Machine']+"'"
+            count=DB.GetData(oConn, query)
+            if count[0]<1:
+                testrunenv2=DB.InsertNewRecordInToTable(oConn, "permitted_user_list",user_names=values['Machine'],email=values['Machine']+"@machine.com")
+                print testrunenv2
+                testrunenv=DB.InsertNewRecordInToTable(oConn, "test_run_env",tester_id=values['Machine'],status=status,machine_os=machine_os,client=client,data_type="Default",last_updated_time=updateTime,machine_ip=values['machineIP'],os_name=values['OSName'],os_version=values['OSVersion'],os_bit=values['OSBit'])
+                print testrunenv
+                if(testrunenv and testrunenv2):
+                    message="Machine is created successfully"
+                else:
+                    message="Machine is not created successfully"
             else:
-                message="Machine is not created successfully"
+                message="Machine with the name '"+values['Machine']+"' exists"
     message=[message]
-    json=simplejson.dumps(message)
-    return HttpResponse(json,mimetype='application/json')
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')

@@ -832,7 +832,8 @@ function Get_Selected_Env_Name()
 
 function populate_manual_test_div(){
     $("#AddManualTestMachine").css({'align':'center'});
-    $("#AddManualTestMachine").append('<div id="machine_div"></div>');
+    //$("#AddManualTestMachine").children().remove();
+    $("#AddManualTestMachine").html('<div id="machine_div"></div>');
     $("#machine_div").append('<label><b>Machine Name:</b></label>' +
         '<input type="text" id="machine_name" placeholder="Machine name.." style="margin-right: 10px;"/>' +
         '<label><b>OS:</b></label>' +
@@ -855,7 +856,7 @@ function populate_manual_test_div(){
                 dataType:"json",
                 data:{machine:machine},
                 success:function(data){
-                    console.log(data);
+                    //console.log(data);
                     //var name=data[0];
                     response(data);
                 }
@@ -865,7 +866,7 @@ function populate_manual_test_div(){
             //console.log(ui);
             var value = ui.item.value;
             if(value!=""){
-                console.log(value);
+                //console.log(value);
                 $("#machine_name").val(value);
                 //return false;
                 $.ajax({
@@ -873,7 +874,7 @@ function populate_manual_test_div(){
                     dataType:"json",
                     data:{machine:value},
                     success:function(data){
-                        console.log(data[0][0]);
+                        //console.log(data[0][0]);
                         if(data[0][0]>0){
                            $("#machine_name").css({'background-color':'#E77471'});
                         }
@@ -891,7 +892,7 @@ function populate_manual_test_div(){
         $("#machine_div").find("#os_version").remove();
         if($("#os_name option:selected").val()!=0){
             osname =$("#os_name option:selected").text();
-            console.log(osname);
+            //console.log(osname);
             os_version(osname);
         }
     });
@@ -899,7 +900,7 @@ function populate_manual_test_div(){
         browser();
     }
     $("#create").click(function(){
-        console.log("it's been clicked for creation");
+        //console.log("it's been clicked for creation");
         var machine_name=$("#machine_name").val();
         var os_name=$("#os_name option:selected").text();
         var os_version=$("#os_version option:selected").text();
@@ -926,9 +927,10 @@ function populate_manual_test_div(){
             console.log("Machine IP:"+machine_ip);*/
             $.get("AddManualTestMachine",values,function(data){
                 console.log(data[0]);
-                message=data[0];
-                $("#machine_div").html("<b>" +message
+                var message=data[0];
+                $("#machine_div").html("<b>" +message+
                     "</b>");
+                $("#machine_div").css({'align':'center'});
             });
         }
     });
@@ -954,7 +956,7 @@ function browser_version(browser){
     $("#machine_div").append('<select id="browser_version"><option selected>Browser Version</select>');
     $("#browser_version").insertAfter("#browser");
     $.get("Auto_BrowserVersion",{Version:browser+" Version"},function(data){
-        console.log(data[0]);
+        //console.log(data[0]);
         $("#browser_version").append(data[0]);
     });
 }
