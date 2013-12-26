@@ -43,6 +43,9 @@ $(document).ready(function(){
 		
 		$(".flip[title='Add Manual Test Machine']").click(function(){
             //console.log($(this).attr('title')+" has been clicked");
+
+            $("#error").html("");
+            $("#error").insertBefore("#AvailableTestMachine");
             $("#AvailableTestMachine").css({'display':'none'});
             $("#AddManualTestMachine").children().remove();
             populate_manual_test_div();
@@ -324,6 +327,9 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 function AvailebableTestMachineflipButton()
 {
 	$(".flip[title='Availeable Test Machine']").click(function(){
+
+        $("#error").html("");
+        $("#error").insertBefore("#AvailableTestMachine");
 		$("#AddManualTestMachine").css({'display':'none'});
 		Env = Get_Selected_Env_Name();
 		$("#AvailableTestMachine").slideToggle("slow");
@@ -892,6 +898,40 @@ function populate_manual_test_div(){
     if($("#browser option:selected").val()==0){
         browser();
     }
+    $("#create").click(function(){
+        console.log("it's been clicked for creation");
+        var machine_name=$("#machine_name").val();
+        var os_name=$("#os_name option:selected").text();
+        var os_version=$("#os_version option:selected").text();
+        var os_bit=$("#os_bit option:selected").text();
+        var browser=$("#browser option:selected").text();
+        var browser_version=$("#browser_version option:selected").text();
+        var machine_ip=$("#machine_ip").val();
+        var bit=os_bit.split(" ");
+        os_bit=bit[0].trim();
+
+        if(machine_name==""||os_name=="OS"|| os_version=="OS Version"||os_bit=="OS bit"||browser=="Browser"||browser_version=="Browser Version"||machine_ip==""){
+            $("#error").html("<b>Some of the input fields are empty</b>");
+            $("#error").slideDown('slow');
+        }else{
+            $("#error").html("");
+            $("#error").css({'display':'none'});
+            values={'Machine':machine_name,'OSName':os_name,'OSVersion':os_version,'OSBit':os_bit,'Browser':browser,'BrowserVersion':browser_version,'machineIP':machine_ip};
+            /*console.log("Machine Name:"+machine_name);
+            console.log("OS Name:"+os_name);
+            console.log("OS Version:"+os_version);
+            console.log("OS bit:"+os_bit);
+            console.log("Browser:"+browser);
+            console.log("Browser Version:"+browser_version);
+            console.log("Machine IP:"+machine_ip);*/
+            $.get("AddManualTestMachine",values,function(data){
+                console.log(data[0]);
+                message=data[0];
+                $("#machine_div").html("<b>" +message
+                    "</b>");
+            });
+        }
+    });
 }
 function browser(){
     var message='';
@@ -911,7 +951,7 @@ function browser(){
     });
 }
 function browser_version(browser){
-    $("#machine_div").append('<select id="browser_version"><option selected>'+browser+' Version</select>');
+    $("#machine_div").append('<select id="browser_version"><option selected>Browser Version</select>');
     $("#browser_version").insertAfter("#browser");
     $.get("Auto_BrowserVersion",{Version:browser+" Version"},function(data){
         console.log(data[0]);
@@ -925,7 +965,7 @@ function os_bit(){
         '<option value="2">64 bit</option> ');
 }
 function os_version(osname){
-    $("#machine_div").append('<select id="os_version"><option selected value="0">'+osname+' Version</option></select>');
+    $("#machine_div").append('<select id="os_version"><option selected value="0">OS Version</option></select>');
     $("#os_version").insertAfter("#os_name");
     $.get("Auto_VersionName",{Version:osname+" Version"},function(data){
         //console.log(data[0]);
@@ -938,7 +978,6 @@ function os_version(osname){
             //console.log($("#os_version").val());
             os_bit();
         }
-
     });
 }
 function os_name(){
