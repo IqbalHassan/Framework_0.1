@@ -3130,11 +3130,11 @@ def TestTypeStatus_Report(request):
             UserData = request.GET.get(u'choice', '')
             if UserData=="All":
                 sectionQuery="select product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
-                testCasesQuery="select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and test_case_tag.property!='Dev' group by test_case_tag.tc_id, product_sections.section_path"
+                testCasesQuery="select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by test_case_tag.tc_id, product_sections.section_path"
                 totalCaseQuery="select count(test_case_tag.tc_id) from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
             else:
                 sectionQuery="select product_sections.section_path from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
-                testCasesQuery="select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property!='Dev' group by test_case_tag.tc_id, product_sections.section_path"
+                testCasesQuery="select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and product_sections.section_path ~ '"+UserData+".*' group by test_case_tag.tc_id, product_sections.section_path"
                 totalCaseQuery="select count(test_case_tag.tc_id) from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '"+UserData+".*' and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path" 
         sections=DB.GetData(Conn, sectionQuery, False)        
         totalCases=DB.GetData(Conn, totalCaseQuery, False)
@@ -3169,7 +3169,7 @@ def TestTypeStatus_Report(request):
     Count_Per_Section(manTab,sections,manCount)
     Count_Per_Section(manIPTab,sections,manIPCount) 
     Count_Per_Section(autoTab,sections,autoCount) 
-    Count_Per_Section(autoTab,sections,autoIPCount)
+    Count_Per_Section(autoIPTab,sections,autoIPCount)
     Append_array(Table,manCount,Table1) 
     Append_array(Table1,manIPCount,Table2)
     Append_array(Table2,autoCount,Table3)
