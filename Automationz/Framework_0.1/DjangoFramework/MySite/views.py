@@ -1214,6 +1214,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             TestSetName = TestSetName.strip()
             Dict = {'run_id':runid, 'rundescription': TestSetName , '%s' % (TagName) : '%s' % (eachitem)}
         Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , **Dict)
+    AddInfo(runid)
     Result = DB.UpdateRecordInTable(Conn, "test_run_env", query,
                                      email_notification=stEmailIds,
                                      test_objective=TestObjective,
@@ -1229,12 +1230,23 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
     EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query, test_objective = TestObjective  )
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , Status = 'Submitted' ) 
-
+    
     results = {'Result': Result }
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-
+def AddInfo(run_id):
+    conn=GetConnection()
+    query="select tc_id from test_run where run_id='"+run_id+"'"
+    TestCaseList=DB.GetData(conn, query)
+    for eachcase in TestCaseList:
+        print eachcase
+        print DB.InsertNewRecordInToTable(conn, "test_case_results",run_id=run_id,tc_id=eachcase)
+        TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % eachcase, False)
+        for eachstep in TestStepsList:
+            print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
+            Dict={'run_id':run_id,'tc_id':eachcase,'teststep_id':eachstep[0]}
+            print DB.InsertNewRecordInToTable(conn, "test_step_results",**Dict)
 def ReRun_Fail_TestCases(request):
     Conn = GetConnection()
     results = {}
