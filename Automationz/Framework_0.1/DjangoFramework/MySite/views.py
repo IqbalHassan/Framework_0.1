@@ -231,7 +231,7 @@ def MKSReport(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
-def Analysis(request):                                          #minar09
+def Analysis(request):                                          
     templ = get_template('Analysis.html')
     variables = Context({ })
     output = templ.render(variables)
@@ -3107,7 +3107,7 @@ def FeatureDriverDelete(request):
 def TestTypeStatus_Report(request):
     Conn = GetConnection()
     sections = []
-    priority = ["Total","Total","Total","Total","Total","Total","Total","Total"]
+    priority = ["Total","Total","Total","Total","Total","Total","Total","Total"] # ["P1","P2","P3","P4","Total"]
     testCases = []
     totalCases = []
     TableData = []
@@ -3149,22 +3149,22 @@ def TestTypeStatus_Report(request):
         Data.append(each[0])
         Data.append(each[1])
         if each[2] == 'manual':
+            this = True
             for x in progress:
-                this = True
-                if x == each[0]:
+                if x[0] == each[0]:
                     this = False
             if this==True:
                 manTab.append(tuple(Data))
-            if this==False:
+            elif this==False:
                 manIPTab.append(tuple(Data))
-        if each[2] == 'automated':
+        elif each[2] == 'automated':
+            this = True
             for x in progress:
-                this = True
-                if x == each[0]:
+                if x[0] == each[0]:
                     this = False
             if this==True:
                 autoTab.append(tuple(Data))
-            if this==False:
+            elif this==False:
                 autoIPTab.append(tuple(Data))
     Count_Per_Section(manTab,sections,manCount)
     Count_Per_Section(manIPTab,sections,manIPCount) 
@@ -3176,18 +3176,24 @@ def TestTypeStatus_Report(request):
     Append_array(Table3,autoIPCount,Table4)
     Append_array(Table4,totalCases,TableData)
     
+    
+    
     Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Total']
     results = {'Heading':Heading, 'TableData':TableData}
+    #results = {'Heading':Heading, 'TableData':RefinedData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
 def Count_Per_Section(testCases,sections,caseCount):
     for each in sections:
-        x=0
+        x = 0
+        z = each[0]
         for case in testCases:
-            if each==case[1]:
-                ++x
+            y = case[1]
+            if y==z:
+                x=x+1
         caseCount.append(x)
+    #caseCount = tuple(caseCount)
             
 def Append_array(TableData,test_type,RefinedData):
     for each,x in zip(TableData,test_type):
