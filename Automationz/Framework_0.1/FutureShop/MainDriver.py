@@ -171,9 +171,10 @@ def main():
             sTestCaseStartTime = str(now[0][0])
             iTestCaseStartTime = now[0][0]
 
-            cur.execute("insert into test_case_results (run_id,tc_id,status,teststarttime ) values ('%s','%s','In-Progress','%s')" % (sTestResultsRunId, TCID, sTestCaseStartTime))
-            conn.commit()
-
+            #cur.execute("insert into test_case_results (run_id,tc_id,status,teststarttime ) values ('%s','%s','In-Progress','%s')" % (sTestResultsRunId, TCID, sTestCaseStartTime))
+            #conn.commit()
+            condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"'"
+            print DBUtil.UpdateRecordInTable(conn,"test_case_results", condition,status='In-Progress',teststarttime=sTestCaseStartTime)
             #Get Test Case Index to be inserted to test_step_results table
             TestCaseResultIndex = DBUtil.GetData(conn, "Select id From test_case_results where run_id = '%s' and TC_ID = '%s' Order By id desc limit 1" % (sTestResultsRunId, TCID), False)
 
@@ -223,8 +224,11 @@ def main():
                     # Memory calculation at the beginning of test step
                     WinMemBegin = CommonUtil.PhysicalAvailableMemory()#MemoryManager.winmem() 
                     #update test_step_results table
-                    cur.execute("insert into test_step_results (run_id,tc_id,teststep_id,teststepsequence,status,stepstarttime,logid,start_memory,testcaseresulttindex ) values ('%s','%s','%d','%d','In-Progress','%s','%s', '%s', '%d')" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], sTestStepStartTime, Global.sTestStepExecLogId, WinMemBegin, TestCaseResultIndex[0][0]))
-                    conn.commit()
+                    #cur.execute("insert into test_step_results (run_id,tc_id,teststep_id,teststepsequence,status,stepstarttime,logid,start_memory,testcaseresulttindex ) values ('%s','%s','%d','%d','In-Progress','%s','%s', '%s', '%d')" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], sTestStepStartTime, Global.sTestStepExecLogId, WinMemBegin, TestCaseResultIndex[0][0]))
+                    #conn.commit()
+                    condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"' and teststep_id='"+str(TestStepsList[StepSeq - 1][0])+"'"
+                    Dict={'teststepsequence':TestStepsList[StepSeq - 1][2],'status':'In-Progress','stepstarttime':sTestStepStartTime,'logid':Global.sTestStepExecLogId,'start_memory':WinMemBegin,'testcaseresulttindex':TestCaseResultIndex[0][0]}
+                    DBUtil.UpdateRecordInTable(conn,"test_step_results",condition,**Dict)
                     try:
                         #while True:
                             #If threading is enabled
