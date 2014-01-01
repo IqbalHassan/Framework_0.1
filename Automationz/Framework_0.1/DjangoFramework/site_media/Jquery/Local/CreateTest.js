@@ -8,9 +8,14 @@ var isAtLowestSection = false;
 $(document).ready(function() {
 
 	var URL = window.location.pathname
-	indx = URL.indexOf("Create")
-	indx2 = URL.indexOf("Edit")
-	var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf("Create") != -1
+    console.log("url:"+URL);
+	indx = URL.indexOf("Create");
+    console.log("Create Index:"+indx);
+	indx2 = URL.indexOf("Edit");
+    console.log("Edit Index:"+indx2);
+	var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf("Create") != -1;
+    console.log("Url Length:"+URL.length);
+    console.log("Template:"+template);
 	if (indx != -1 || indx2 != -1) {
 		$('#add_test_step').click(function() {
 			addStep();
@@ -453,8 +458,9 @@ function addStep(){
 	step_num++;
 	step_num_data_num[step_num] = 0;
 	var id = AddAutoCompleteSearchBox("#stepbox", "Step " + step_num + ": ", step_num);
+    console.log("Step ID:"+id);
 	RunTestAutocompleteSearch(Env, step_num);
-	
+
 
 	$('#'+step_num+'.add_test_data').live("click", function (event) {
 		addDataToStep(this)
@@ -587,6 +593,14 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
 			"		<input class='ui-corner-all stepbox ui-autocomplete-input' id='searchbox" + stepNumber + "' type='text'"+
 			"		title='Please Type Keyword and Click On that to add to query' name='searchboxname" + stepNumber + "' autocomplete='off'"+
 			"		aria-autocomplete='list' aria-haspopup='true'>"+
+            "       <div id='searchbox"+stepNumber+"infotab' style='display:none; text-align: left;margin:10px'>" +
+            "       <legend class='Text' id='searchbox"+stepNumber+"step_type'><b>Type - </b></legend>" +
+
+            "       <legend class='Text'><b>Info Tab</b></legend>" +
+            "       <input class='ui-corner-all stepbox ui-autocomplete-input' id='searchbox" + stepNumber + "info' type='text'"+
+            "		title='Please type the purpose of the test step' name='searchboxname" + stepNumber + "' autocomplete='off'"+
+            "		aria-autocomplete='list' aria-haspopup='true'>" +
+            "       </div>"+
 			
 			"		<div id='searchbox"+stepNumber+"data' style='display:none; text-align: right;margin:10px'>"+
 			"			<a class='Text'>Test Data </a>"+
@@ -657,9 +671,9 @@ function RunTestAutocompleteSearch(Env, step) {
 					term : request.term
 				},
 				success : function(data) {
-                    console.log(data);
+                    //console.log(data);
 					auto_complete_list = data;
-					
+					//console.log(auto_complete_list[3]);
 					var just_names = []
 					
 					for(var i = 0; i < data.length; i++){
@@ -675,12 +689,32 @@ function RunTestAutocompleteSearch(Env, step) {
 		select : function(event, ui) {
 
 			var values = ui.item.value.split(' -')
-            console.log(values);//console.log('in select'+ui.item.value);
+            //console.log(values);
+            //console.log(this.id);//console.log('in select'+ui.item.value);
             var value=values[0];
+            var step_type=values[1].trim();
+            var colour="";
+            if(step_type=="automated"){
+                colour="green";
+            }
+            if(step_type=="manual"){
+                colour="red";
+            }
+            if(step_type=="performance"){
+                colour="blue";
+            }
 			if (value != "") {
 				this.value = value;
 				for(var i = 0; i < auto_complete_list.length; i++){
 					if(auto_complete_list[i][0] == value){
+                        //console.log(this.id);
+                        var position=this.id.indexOf("1");
+                        //console.log(position);
+                        var string=this.id.substring(position);
+                        //console.log(string);
+                        $("#" + this.id + "step_type").append("<b style='color:"+colour+"'>"+step_type+"</b>");
+                        $("#" + this.id + "info").val(auto_complete_list[i][3]);
+                        $("#" + this.id + "infotab").fadeIn(500);
 						if(auto_complete_list[i][1] === true){
 							$("#" + this.id + "data").fadeIn(500);
 						}

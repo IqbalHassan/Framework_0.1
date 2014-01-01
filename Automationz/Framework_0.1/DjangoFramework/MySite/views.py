@@ -377,7 +377,7 @@ def AutoCompleteTestStepSearch(request):
     if request.method == "GET":
         value = request.GET.get(u'term', '')
 
-        results = DB.GetData(Conn, "select stepname,data_required,steptype from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
+        results = DB.GetData(Conn, "select stepname,data_required,steptype,description from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
