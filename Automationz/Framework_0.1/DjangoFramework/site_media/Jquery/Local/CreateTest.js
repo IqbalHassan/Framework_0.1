@@ -207,8 +207,20 @@ $(document).ready(function() {
 				//test data
 				for(var step_indx in steps_and_data){
 					var id = addStep();
-					$('#' + id).val(steps_and_data[step_indx][0])
-					
+                    var colour="";
+                    var step_type=steps_and_data[step_indx][2];
+                    if(step_type=="automated"){
+                        colour="green";
+                    }
+                    if(step_type=="manual"){
+                        colour="red";
+                    }
+                    if(step_type=="performance"){
+                        colour="blue";
+                    }
+					$('#' + id).val(steps_and_data[step_indx][0]);
+					$('#' + id+'info').val(steps_and_data[step_indx][3]);
+                    $("#" + id + "step_type").html("<b style='color:"+colour+"'>"+step_type+"</b>");
 					//check if step has data
 					if(steps_and_data[step_indx][1].length > 0){
 						$("#" + id + "data").fadeIn(500);
@@ -376,6 +388,7 @@ $(document).ready(function() {
 			            Priority:priority,
 			            Steps_Data_List:stepDataSTR.join("|"),
 			            Steps_Name_List:stepName.join("|"),
+                        Steps_Description_List:stepDescription.join("|"),
 			            Status:"Dev"},function(data) {
 						alert(data);
 					});
@@ -467,7 +480,7 @@ function addStep(){
 	step_num++;
 	step_num_data_num[step_num] = 0;
 	var id = AddAutoCompleteSearchBox("#stepbox", "Step " + step_num + ": ", step_num);
-    console.log("Step ID:"+id);
+    //console.log("Step ID:"+id);
 	RunTestAutocompleteSearch(Env, step_num);
 
 
@@ -623,7 +636,7 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
             "      </div>" +
 
             "       <legend class='Text'><b style='color: #ff0000'>*</b><b>Description:</b></legend>" +
-            "       <input class='ui-corner-all stepbox ui-autocomplete-input' id='searchbox" + stepNumber + "info' type='text'"+
+            "       <input class='ui-corner-all  ui-autocomplete-input' id='searchbox" + stepNumber + "info' type='text'"+
             "		title='Please type the purpose of the test step' name='searchboxname" + stepNumber + "' autocomplete='off'"+
             "		aria-autocomplete='list' aria-haspopup='true'>" +
             "       </div>"+
@@ -738,7 +751,7 @@ function RunTestAutocompleteSearch(Env, step) {
                         //console.log(position);
                         var string=this.id.substring(position);
                         //console.log(string);
-                        $("#" + this.id + "step_type").append("<b style='color:"+colour+"'>"+step_type+"</b>");
+                        $("#" + this.id + "step_type").html("<b style='color:"+colour+"'>"+step_type+"</b>");
                        // $("#" + this.id + "info").val(auto_complete_list[i][3]);
                         $("#" + this.id + "infotab").fadeIn(500);
 						if(auto_complete_list[i][1] === true){
