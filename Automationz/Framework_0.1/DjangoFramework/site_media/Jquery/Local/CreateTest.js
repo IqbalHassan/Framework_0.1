@@ -1,3 +1,6 @@
+var indx=0;
+var indx2=0;
+var URL="";
 var step_num = 0;
 var step_num_data_num = new Array();
 var tag_list = new Array();
@@ -7,7 +10,7 @@ var isAtLowestSection = false;
 
 $(document).ready(function() {
 
-	var URL = window.location.pathname
+	URL = window.location.pathname
     console.log("url:"+URL);
 	indx = URL.indexOf("Create");
     console.log("Create Index:"+indx);
@@ -233,6 +236,10 @@ $(document).ready(function() {
 			
 			//Validate Data
 			for(var j = 1; j <= step_num; j++){
+                if($("#searchbox"+j+"info").val()==""){
+                    alert("No Test Step Description is filled for step number#"+j);
+                    return;
+                }
 				for(var i = 0; i < $("#searchbox"+j+"data textarea").length; i++){
 					if($("#searchbox"+j+"data textarea:eq("+i+")").attr("data-id") == 'edit'){
 						if(!validate_data($("#searchbox"+j+"data textarea:eq("+i+")").val())){
@@ -320,8 +327,10 @@ $(document).ready(function() {
 			
 			var stepName = [];
 			var stepData = [];
+            var stepDescription=[];
 			for(var j = 1; j <= step_num; j++){
 				stepName[j-1] = $("#searchbox" + j).val();
+				stepDescription[j-1] = $("#searchbox" + j+"info").val();
 				for(var i = 0; i < $("#searchbox"+j+"data textarea").length; i++){
 					if(stepData[j-1] === undefined){
 						stepData[j-1] = [];
@@ -473,7 +482,14 @@ function addStep(){
 			step_num_data_num[indx]--;
 		}
 	});
-	
+    $('#'+step_num+'step_desc').live("click",function(event){
+        //alert("clicked");
+        var name=$('#'+id).val();
+        $.get("AutoCompleteTestStepSearch/",{term:name},function(data){
+            MsgBox("Test Step Description","<b>"+data[0][3]+"</b>");
+        })
+
+    });
 	return id;
 }
 
@@ -585,6 +601,13 @@ function validate_data(str){
 }
 
 function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
+    var visibility="";
+    if(indx!=-1 && URL.length<30){
+        visibility="none";
+    }
+    else{
+        visibility="block";
+    }
 	$(WhereToPlaceId).append(
 			"<form id='AutoSearchResult" + stepNumber + "' class='new_tc_form'>" +
 
@@ -593,10 +616,13 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
 			"		<input class='ui-corner-all stepbox ui-autocomplete-input' id='searchbox" + stepNumber + "' type='text'"+
 			"		title='Please Type Keyword and Click On that to add to query' name='searchboxname" + stepNumber + "' autocomplete='off'"+
 			"		aria-autocomplete='list' aria-haspopup='true'>"+
-            "       <div id='searchbox"+stepNumber+"infotab' style='display:none; text-align: left;margin:10px'>" +
-            "       <legend class='Text' id='searchbox"+stepNumber+"step_type'><b>Type - </b></legend>" +
+            "       <div id='searchbox"+stepNumber+"infotab' style='display:"+visibility+"; text-align: left;margin:10px'>" +
+            "		<div style='text-align: right'>" +
+            "           <span class='Text'><b>Type - </b><span id='searchbox"+stepNumber+"step_type'></span></span>&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        "<img  class='buttonCustom' id='" + stepNumber + "step_desc' src='/site_media/info_button.jpg' style='background-color: transparent; width:20px; height:20px'>"+
+            "      </div>" +
 
-            "       <legend class='Text'><b>Info Tab</b></legend>" +
+            "       <legend class='Text'><b style='color: #ff0000'>*</b><b>Description:</b></legend>" +
             "       <input class='ui-corner-all stepbox ui-autocomplete-input' id='searchbox" + stepNumber + "info' type='text'"+
             "		title='Please type the purpose of the test step' name='searchboxname" + stepNumber + "' autocomplete='off'"+
             "		aria-autocomplete='list' aria-haspopup='true'>" +
@@ -713,7 +739,7 @@ function RunTestAutocompleteSearch(Env, step) {
                         var string=this.id.substring(position);
                         //console.log(string);
                         $("#" + this.id + "step_type").append("<b style='color:"+colour+"'>"+step_type+"</b>");
-                        $("#" + this.id + "info").val(auto_complete_list[i][3]);
+                       // $("#" + this.id + "info").val(auto_complete_list[i][3]);
                         $("#" + this.id + "infotab").fadeIn(500);
 						if(auto_complete_list[i][1] === true){
 							$("#" + this.id + "data").fadeIn(500);
