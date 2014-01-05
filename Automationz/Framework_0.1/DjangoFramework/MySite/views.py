@@ -2314,7 +2314,10 @@ def EditTestCase(request):
             Associated_Bugs_List = request.GET.get(u'Associated_Bugs_List', '')
             Requirement_ID_List = request.GET.get(u'Requirement_ID_List', '')
             Status = request.GET.get(u'Status', '')
-            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List)
+            Step_Description_List = request.GET.get(u'Steps_Description_List','')
+            print Step_Description_List
+            Step_Description_List=Step_Description_List.split('|')
+            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List,Step_Description_List)
             Section_Path = request.GET.get(u'Section_Path', '')
         #LogMessage(sModuleInfo,"TEST CASE Edit START:%s"%(TC_Name),4)
 

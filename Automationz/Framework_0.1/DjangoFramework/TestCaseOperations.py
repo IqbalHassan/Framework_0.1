@@ -556,6 +556,9 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
     #5 - Clean up all test steps
     cur.execute("delete from test_steps where tc_id = '%s'" % TC_Id)
     conn.commit()
+    #6- Clean up all the test  step description from master_data
+    cur.execute("delete from master_data where id Ilike '%s%%' and field='step' and value='description'" %TC_Id )
+    conn.commit()
 
     if EditFlag == False:
 
@@ -719,7 +722,7 @@ def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Depe
                 return err_msg
             else:
                 #first element of tuple should be a string and second element a list
-                if not isinstance(eachstepdata[0], basestring) and not isinstance(eachstepdata[1], list):
+                if not isinstance(eachstepdata[0], basestring) and not isinstance(eachstepdata[1], list) and not isinstance(eachstepdata[2],basestring):
                     print "Error. Test case steps format is incorrect for one of the step"
                     err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s." % eachstepdata, 4)
                     return err_msg

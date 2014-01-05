@@ -408,9 +408,10 @@ $(document).ready(function() {
 			            Dependency_List:applic_client.join("|"),
 			            Priority:priority,
 			            Steps_Data_List:stepDataSTR.join("|"),
-			            Steps_Name_List:stepName.join("|")},
+			            Steps_Name_List:stepName.join("|"),
+                        Steps_Description_List:stepDescription.join("|")},
 			            function(data) {
-			            	alert(data);
+			            	alert(data+" edited successfully");
 					});
 				}
 				
