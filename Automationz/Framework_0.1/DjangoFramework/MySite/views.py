@@ -877,7 +877,7 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                 TestCaseName = str(TestCaseName.strip())
                 TestStepName = str(TestStepName.strip())
                 TestStepSeqId = int(TestStepSeqId.strip())
-
+                StepSequence=str(TestStepSeqId)
                 TestCaseId = DB.GetData(Conn, "Select tc_id from test_cases where tc_name = '%s'" % TestCaseName)
                 TestCaseId = str(TestCaseId[0])
 
@@ -899,17 +899,60 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
 #                        TestStep_Details.remove(each)
 
                 TestStep_Col = ['Log Status', 'Module Name', 'Execution Log']
+                TestStep_Description_Col=['StepSequence','Description','Purpose']
+                TestStep_Description=[]
+                TestStep_Description.append(StepSequence)
+                query="select description,data_required from test_steps_list where stepname='"+TestStepName+"'"
+                step_desc=DB.GetData(Conn,query,False)
+                TestStep_Description.append(step_desc[0][0])
+                query="select tc_id from test_cases where tc_name='"+TestCaseName+"'"
+                tc_id=DB.GetData(Conn,query,False)
+                datasetid=tc_id[0][0]+"_s"+StepSequence
+                query="select description from master_data where id='"+datasetid+"' and field='step' and value='description'"
+                purpose=DB.GetData(Conn,query,False)
+                TestStep_Description.append(purpose[0][0])
+                TestStep_Description=tuple(TestStep_Description)
+                TestStep_Description=[TestStep_Description]
+                data_required=""
+                if step_desc[0][1]==True:
+                    data_required="yes"
+                else:
+                    data_required="no"
+                data_col=["DataSetId","Data"]
+                data_val=[]
+                data_val_comp=[]
+                if data_required=="yes":
+                    datasetid+='_d'
+                    query="select distinct id from master_data where id Ilike '"+datasetid+"%'"
+                    dataset=DB.GetData(Conn,query)
+                    for each in range(1,len(dataset)+1):
+                        datasetid_temp=""
+                        datasetid_temp+=datasetid
+                        datasetid_temp+=str(each)
+                        print datasetid_temp
+                        data_val.append((each,""))
+                        query="select field,value from master_data where id='"+datasetid_temp+"'"
+                        data_set_val=DB.GetData(Conn,query,False)
+                        data_val_comp.append(data_set_val)
+                    """data_val.append((1,""))
+                    query="select field,value from master_data where id='"+datasetid+"'"
+                    data_set_val=DB.GetData(Conn,query,False)"""
     results = {
-
                'TestStep_Details':TestStep_Details,
                'TestStep_Col':TestStep_Col,
-
+               'TestStep_Description_Col':TestStep_Description_Col,
+               'TestStep_Description':TestStep_Description,
+               'data_required':data_required,
+               'data_col':data_col,
+               'data_val':data_val,
+              # 'data_set_val':data_set_val,
+               'data_val_comp':data_val_comp,
+               'data_set_count':len(dataset)
                }
 
     JS = simplejson.dumps(results)
 #    return HttpResponse(json.dumps(results, encoding='utf-8', ensure_ascii=False), mimetype='application/json') 
     return HttpResponse(JS, mimetype='application/json')
-
 
 
 def FailStep_TestCases(request): #==================Returns Test Cases When User Click on Fail Step On Test Result Page===============================
