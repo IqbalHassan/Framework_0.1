@@ -522,9 +522,10 @@ function TestCaseDetailTable(TableID, TestCaseName) {
                     $("#Data").html("<b>Data is not required for this step</b>")
                 }
                 if(data['data_required']=="yes"){
-                    $("#Data").html("");
-                    ResultTable('#Data',data['data_col'], data['data_val'], "");
                     console.log(data['data_val_comp']);
+                    $("#Data").html("");
+                    ResultTable('#Data',data['data_col'],data['data_val'], "");
+                    /*console.log(data['data_val_comp']);
                     var currentrow=$("#Data tr:nth-child(2)");
                     console.log(currentrow.text());
                     for(var i=0;i<data['data_set_count'];i++){
@@ -533,7 +534,18 @@ function TestCaseDetailTable(TableID, TestCaseName) {
                         //currentrow+=currentrow.next("tr");
                         //console.log(currentrow.text());
                     }
-                    //ResultTable('#Data tr>td:nth-child(2)',['Field','value'],data['data_val_comp'][0],"");
+                    //ResultTable('#Data tr>td:nth-child(2)',['Field','value'],data['data_val_comp'][0],"");*/
+                    for(var i=0;i<data['data_val'].length;i++){
+                        var col= "row"+(i+2)+"col"+(i+2);
+                        $('#Data tr:nth-child('+(i+2)+')>td:nth-child(2)').attr({'id':col});
+                    }
+                    var dataset=data['data_val_comp'];
+                    for(var i=0;i<dataset.length;i++){
+                        var col= "#row"+(i+2)+"col"+(i+2);
+                        console.log(col);
+                        console.log(dataset[i]);
+                        ResultTable(col,["Field","Value"],dataset[i],"");
+                    }
                 }
 
 				$("#TestStep_Details").dialog({

@@ -864,7 +864,7 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
     Conn = GetConnection()
     results = {}
     if request.is_ajax():
-         if request.method == 'GET':
+        if request.method == 'GET':
 
             #If User Click on Fail Step 
             RunId = request.GET.get('RunID', '')
@@ -884,10 +884,10 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                 StepSeqId = DB.GetData(Conn, "Select tst.teststepsequence "
                                             " from test_steps tst,test_steps_list tsl "
                                             " where tc_id = '%s' and "
-                                            "tst.step_id = tsl.step_id "
-                                            "order by teststepsequence" % (TestCaseId)
+                                            "tst.step_id = tsl.step_id and "
+                                            "tsl.stepname='%s'" % (TestCaseId,TestStepName)
                                         )
-                TestStepSeqId = str(StepSeqId[TestStepSeqId - 1])
+                TestStepSeqId = str(StepSeqId[0])
                 TestStep_Details = DB.GetData(Conn, "Select  el.status, el.modulename, el.details "
                                         "from test_step_results tsr, execution_log el "
                                         "where run_id = '%s' and "
@@ -907,7 +907,20 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                 TestStep_Description.append(step_desc[0][0])
                 query="select tc_id from test_cases where tc_name='"+TestCaseName+"'"
                 tc_id=DB.GetData(Conn,query,False)
-                datasetid=tc_id[0][0]+"_s"+StepSequence
+                test_case_step_length=DB.GetData(Conn,"select count(*) from test_steps where tc_id='%s'" %(tc_id[0][0]),False)
+                datasetid=""
+                if int(StepSequence)<test_case_step_length[0][0]+1:
+                    datasetid=tc_id[0][0]+"_s"+StepSequence
+                else:
+                    query="select teststepsequence from test_steps where tc_id='%s'" %tc_id[0][0]
+                    test_sequence=DB.GetData(Conn,query)
+                    stepsequence=1
+                    for each in test_sequence:
+                        if StepSeqId[0]==each:
+                            break
+                        else:
+                            stepsequence+=1
+                    datasetid=tc_id[0][0]+"_s"+str(stepsequence)
                 query="select description from master_data where id='"+datasetid+"' and field='step' and value='description'"
                 purpose=DB.GetData(Conn,query,False)
                 TestStep_Description.append(purpose[0][0])
@@ -921,6 +934,7 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                 data_col=["DataSetId","Data"]
                 data_val=[]
                 data_val_comp=[]
+                dataset=""
                 if data_required=="yes":
                     datasetid+='_d'
                     query="select distinct id from master_data where id Ilike '"+datasetid+"%'"
@@ -931,7 +945,7 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                         datasetid_temp+=str(each)
                         print datasetid_temp
                         data_val.append((each,""))
-                        query="select field,value from master_data where id='"+datasetid_temp+"'"
+                        query="select field,value from master_data where id Ilike'"+datasetid_temp+"'"
                         data_set_val=DB.GetData(Conn,query,False)
                         data_val_comp.append(data_set_val)
                     """data_val.append((1,""))
