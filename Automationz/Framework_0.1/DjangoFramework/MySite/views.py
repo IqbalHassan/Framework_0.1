@@ -878,7 +878,8 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                 TestStepName = str(TestStepName.strip())
                 TestStepSeqId = int(TestStepSeqId.strip())
                 StepSequence=str(TestStepSeqId)
-                TestCaseId = DB.GetData(Conn, "Select tc_id from test_cases where tc_name = '%s'" % TestCaseName)
+                query="select tc_id from test_cases where tc_name='"+TestCaseName+"'"
+                TestCaseId = DB.GetData(Conn,query)
                 TestCaseId = str(TestCaseId[0])
 
                 StepSeqId = DB.GetData(Conn, "Select tst.teststepsequence "
@@ -909,7 +910,7 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                 tc_id=DB.GetData(Conn,query,False)
                 test_case_step_length=DB.GetData(Conn,"select count(*) from test_steps where tc_id='%s'" %(tc_id[0][0]),False)
                 datasetid=""
-                if int(StepSequence)<test_case_step_length[0][0]+1:
+                if int(StepSequence)<test_case_step_length[0][0]+int(1):
                     datasetid=tc_id[0][0]+"_s"+StepSequence
                 else:
                     query="select teststepsequence from test_steps where tc_id='%s'" %tc_id[0][0]
@@ -934,20 +935,22 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                 data_col=["DataSetId","Data"]
                 data_val=[]
                 data_val_comp=[]
-                dataset=""
+                dataset=[]
                 if data_required=="yes":
                     datasetid+='_d'
                     query="select distinct id from master_data where id Ilike '"+datasetid+"%'"
-                    dataset=DB.GetData(Conn,query)
-                    for each in range(1,len(dataset)+1):
-                        datasetid_temp=""
-                        datasetid_temp+=datasetid
-                        datasetid_temp+=str(each)
-                        print datasetid_temp
-                        data_val.append((each,""))
-                        query="select field,value from master_data where id Ilike'"+datasetid_temp+"'"
+                    dataset_temp=DB.GetData(Conn,query)
+                    for each in dataset_temp:
+                        if len(each)==14:
+                            dataset.append(each)
+                    count=1
+                    for each in dataset:
+                        data_val.append((count,""))
+                        count+=1
+                        print str(count)+" - "+each
+                        query="select field,value from master_data where id Ilike'"+each+"%' and field!=''"
                         data_set_val=DB.GetData(Conn,query,False)
-                        data_val_comp.append(data_set_val)
+                        data_val_comp.append(data_set_val)        
                     """data_val.append((1,""))
                     query="select field,value from master_data where id='"+datasetid+"'"
                     data_set_val=DB.GetData(Conn,query,False)"""
