@@ -3100,7 +3100,7 @@ def Process_FeatureDriver(request):                    #minar09
                 return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
     return HttpResponse(output)
     
-def FeatureDriver_Delete(request):
+def FeatureDriver_Delete(request):                              #minar09
     Conn = GetConnection()
     results = []
     if request.method == "GET":
@@ -3112,30 +3112,68 @@ def FeatureDriver_Delete(request):
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
 
-def FeatureDriverDelete(request):
+def FeatureDriverDelete(request):                               #minar09
     error_message="Feature/Driver is deleted successfully"
     return TestStep(request,error_message)
 
-def TestTypeStatus_Report(request):
+def TestTypeStatus_Report(request):                     #minar09
     Conn = GetConnection()
     sections = []
-    priority = ["Total","Total","Total","Total","Total","Total","Total","Total"] # ["P1","P2","P3","P4","Total"]
+    priority = ["P1","P2","P3","P4","Total"] #["Total","Total","Total","Total","Total","Total","Total"] 
     testCases = []
     totalCases = []
     TableData = []
     manCount = []
+    manP1Count = []
+    manP2Count = []
+    manP3Count = []
+    manP4Count = []
     manIPCount = []
+    manIPP1Count = []
+    manIPP2Count = []
+    manIPP3Count = []
+    manIPP4Count = []
     autoCount = []
+    autoP1Count = []
+    autoP2Count = []
+    autoP3Count = []
+    autoP4Count = []
     autoIPCount = []
+    autoIPP1Count = []
+    autoIPP2Count = []
+    autoIPP3Count = []
+    autoIPP4Count = []
+    Table = []
     Table1 = []
     Table2 = []
     Table3 = []
     Table4 = []
     manTab = []
+    manP1Tab = []
+    manP2Tab = []
+    manP3Tab = []
+    manP4Tab = []
     manIPTab = []
+    manIPP1Tab = []
+    manIPP2Tab = []
+    manIPP3Tab = []
+    manIPP4Tab = []
     autoTab = []
+    autoP1Tab = []
+    autoP2Tab = []
+    autoP3Tab = []
+    autoP4Tab = []
     autoIPTab = [] 
+    autoIPP1Tab = []
+    autoIPP2Tab = []
+    autoIPP3Tab = []
+    autoIPP4Tab = []
     RefinedData = []
+    totalP1Count = []
+    totalP2Count = []
+    totalP3Count = []
+    totalP4Count = []
+    totalCount = []
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
@@ -3152,8 +3190,20 @@ def TestTypeStatus_Report(request):
         totalCases=DB.GetData(Conn, totalCaseQuery, False)
         testCases=DB.GetData(Conn, testCasesQuery, False)
         progress=DB.GetData(Conn, "select tc_id from test_case_tag where property='Dev'", False)
+        p1Priority=DB.GetData(Conn, "select tc_id from test_case_tag where property='Priority' and name='P1'", False)
+        p2Priority=DB.GetData(Conn, "select tc_id from test_case_tag where property='Priority' and name='P2'", False)
+        p3Priority=DB.GetData(Conn, "select tc_id from test_case_tag where property='Priority' and name='P3'", False)
+        p4Priority=DB.GetData(Conn, "select tc_id from test_case_tag where property='Priority' and name='P4'", False)
         
-    Table = zip(sections,priority)
+    #sections.append('Summary Global')
+    for each in sections:     
+        for y in priority:
+            data=[]
+            data.append(each[0])
+            data.append(y)
+            Table.append(tuple(data))
+            
+    #Table = zip(sections,priority)
     Check_TestCase(testCases, RefinedData)
     #manual 
     for each in RefinedData:
@@ -3167,8 +3217,32 @@ def TestTypeStatus_Report(request):
                     this = False
             if this==True:
                 manTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0]==p1[0]:
+                        manP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0]==p2[0]:
+                        manP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0]==p3[0]:
+                        manP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0]==p4[0]:
+                        manP4Tab.append(tuple(Data))
             elif this==False:
                 manIPTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0]==p1[0]:
+                        manIPP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0]==p2[0]:
+                        manIPP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0]==p3[0]:
+                        manIPP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0]==p4[0]:
+                        manIPP4Tab.append(tuple(Data))
         elif each[2] == 'automated':
             this = True
             for x in progress:
@@ -3176,27 +3250,187 @@ def TestTypeStatus_Report(request):
                     this = False
             if this==True:
                 autoTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0]==p1[0]:
+                        autoP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0]==p2[0]:
+                        autoP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0]==p3[0]:
+                        autoP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0]==p4[0]:
+                        autoP4Tab.append(tuple(Data))
             elif this==False:
                 autoIPTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0]==p1[0]:
+                        autoIPP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0]==p2[0]:
+                        autoIPP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0]==p3[0]:
+                        autoIPP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0]==p4[0]:
+                        autoIPP4Tab.append(tuple(Data))
+                
     Count_Per_Section(manTab,sections,manCount)
+    Count_Per_Section(manP1Tab,sections,manP1Count)
+    Count_Per_Section(manP2Tab,sections,manP2Count)
+    Count_Per_Section(manP3Tab,sections,manP3Count)
+    Count_Per_Section(manP4Tab,sections,manP4Count)
     Count_Per_Section(manIPTab,sections,manIPCount) 
+    Count_Per_Section(manIPP1Tab,sections,manIPP1Count)
+    Count_Per_Section(manIPP2Tab,sections,manIPP2Count)
+    Count_Per_Section(manIPP3Tab,sections,manIPP3Count)
+    Count_Per_Section(manIPP4Tab,sections,manIPP4Count)
     Count_Per_Section(autoTab,sections,autoCount) 
+    Count_Per_Section(autoP1Tab,sections,autoP1Count)
+    Count_Per_Section(autoP2Tab,sections,autoP2Count)
+    Count_Per_Section(autoP3Tab,sections,autoP3Count)
+    Count_Per_Section(autoP4Tab,sections,autoP4Count)
     Count_Per_Section(autoIPTab,sections,autoIPCount)
-    Append_array(Table,manCount,Table1) 
-    Append_array(Table1,manIPCount,Table2)
-    Append_array(Table2,autoCount,Table3)
-    Append_array(Table3,autoIPCount,Table4)
-    Append_array(Table4,totalCases,TableData)
+    Count_Per_Section(autoIPP1Tab,sections,autoIPP1Count)
+    Count_Per_Section(autoIPP2Tab,sections,autoIPP2Count)
+    Count_Per_Section(autoIPP3Tab,sections,autoIPP3Count)
+    Count_Per_Section(autoIPP4Tab,sections,autoIPP4Count)
+    Append_array(Table,manP1Count,manP2Count,manP3Count,manP4Count,manCount,Table1) 
+    Append_array(Table1,manIPP1Count,manIPP2Count,manIPP3Count,manIPP4Count,manIPCount,Table2)
+    Append_array(Table2,autoP1Count,autoP2Count,autoP3Count,autoP4Count,autoCount,Table3)
+    Append_array(Table3,autoIPP1Count,autoIPP2Count,autoIPP3Count,autoIPP4Count,autoIPCount,Table4)
+    #Append_array(Table4,totalCases,TableData)
+    x=1
+    a=0
+    b=0
+    c=0
+    d=0
+    e=0   
+    for each in Table4:
+        data=[]
+        for y in each:
+            data.append(y)
+        if x==1:
+            count = manP1Count[a] + manIPP1Count[a] + autoP1Count[a] + autoIPP1Count[a]
+            a=a+1
+            data.append(count)
+            totalP1Count.append(count)
+        elif x==2:
+            count = manP2Count[b] + manIPP2Count[b] + autoP2Count[b] + autoIPP2Count[b]
+            b=b+1
+            data.append(count)
+            totalP2Count.append(count)
+        elif x==3:
+            count = manP3Count[c] + manIPP3Count[c] + autoP3Count[c] + autoIPP3Count[c]
+            c=c+1
+            data.append(count)
+            totalP3Count.append(count)
+        elif x==4:
+            count = manP4Count[d] + manIPP4Count[d] + autoP4Count[d] + autoIPP4Count[d]
+            d=d+1
+            data.append(count)
+            totalP4Count.append(count)
+        elif x==5:
+            count = manCount[e] + manIPCount[e] + autoCount[e] + autoIPCount[e]
+            e=e+1
+            data.append(count)
+            totalCount.append(count)
+        TableData.append(tuple(data))
+        if x==5:
+            x=1
+        elif x<5:
+            x=x+1
     
+    temp = []
+    temp.append("Summary")
+    temp.append("P1")
+    manP1Sum = count_Sum(manP1Count)
+    temp.append(manP1Sum)
+    manIPP1Sum = count_Sum(manIPP1Count)
+    temp.append(manIPP1Sum)
+    autoP1Sum = count_Sum(autoP1Count)
+    temp.append(autoP1Sum)
+    autoIPP1Sum = count_Sum(autoIPP1Count)
+    temp.append(autoIPP1Sum)
+    totalP1Sum = count_Sum(totalP1Count)
+    temp.append(totalP1Sum)
+    TableData.append(tuple(temp))
     
+    temp = []
+    temp.append("Summary")
+    temp.append("P2")
+    manP2Sum = count_Sum(manP2Count)
+    temp.append(manP2Sum)
+    manIPP2Sum = count_Sum(manIPP2Count)
+    temp.append(manIPP2Sum)
+    autoP2Sum = count_Sum(autoP2Count)
+    temp.append(autoP2Sum)
+    autoIPP2Sum = count_Sum(autoIPP2Count)
+    temp.append(autoIPP2Sum)
+    totalP2Sum = count_Sum(totalP2Count)
+    temp.append(totalP2Sum)
+    TableData.append(tuple(temp))
     
+    temp = []
+    temp.append("Summary")
+    temp.append("P3")
+    manP3Sum = count_Sum(manP3Count)
+    temp.append(manP3Sum)
+    manIPP3Sum = count_Sum(manIPP3Count)
+    temp.append(manIPP3Sum)
+    autoP3Sum = count_Sum(autoP3Count)
+    temp.append(autoP3Sum)
+    autoIPP3Sum = count_Sum(autoIPP3Count)
+    temp.append(autoIPP3Sum)
+    totalP3Sum = count_Sum(totalP3Count)
+    temp.append(totalP3Sum)
+    TableData.append(tuple(temp))
+    
+    temp = []
+    temp.append("Summary")
+    temp.append("P4")
+    manP4Sum = count_Sum(manP4Count)
+    temp.append(manP4Sum)
+    manIPP4Sum = count_Sum(manIPP4Count)
+    temp.append(manIPP4Sum)
+    autoP4Sum = count_Sum(autoP4Count)
+    temp.append(autoP4Sum)
+    autoIPP4Sum = count_Sum(autoIPP4Count)
+    temp.append(autoIPP4Sum)
+    totalP4Sum = count_Sum(totalP4Count)
+    temp.append(totalP4Sum)
+    TableData.append(tuple(temp))
+    
+    temp = []
+    temp.append("Summary")
+    temp.append("Total")
+    manSum = count_Sum(manCount)
+    temp.append(manSum)
+    manIPSum = count_Sum(manIPCount)
+    temp.append(manIPSum)
+    autoSum = count_Sum(autoCount)
+    temp.append(autoSum)
+    autoIPSum = count_Sum(autoIPCount)
+    temp.append(autoIPSum)
+    totalSum = count_Sum(totalCount)
+    temp.append(totalSum)
+    TableData.append(tuple(temp))
+        
     Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Total']
     results = {'Heading':Heading, 'TableData':TableData}
     #results = {'Heading':Heading, 'TableData':RefinedData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def Count_Per_Section(testCases,sections,caseCount):
+def count_Sum(caseCount):
+    count = 0
+    for each in caseCount:
+        count = count + each
+    return count
+
+def Count_Per_Section(testCases,sections,caseCount):                    #minar09
     for each in sections:
         x = 0
         z = each[0]
@@ -3205,15 +3439,38 @@ def Count_Per_Section(testCases,sections,caseCount):
             if y==z:
                 x=x+1
         caseCount.append(x)
-    #caseCount = tuple(caseCount)
             
-def Append_array(TableData,test_type,RefinedData):
-    for each,x in zip(TableData,test_type):
+def Append_array(TableData,P1,P2,P3,P4,Total,RefinedData):          #minar09
+    x=1
+    a=0
+    b=0
+    c=0
+    d=0
+    e=0                    
+    for each in TableData:
         data=[]
         for y in each:
             data.append(y)
-        data.append(x)
+        if x==1:
+            data.append(P1[a])
+            a=a+1
+        elif x==2:
+            data.append(P2[b])
+            b=b+1
+        elif x==3:
+            data.append(P3[c])
+            c=c+1
+        elif x==4:
+            data.append(P4[d])
+            d=d+1
+        elif x==5:
+            data.append(Total[e])
+            e=e+1
         RefinedData.append(tuple(data))
+        if x==5:
+            x=1
+        elif x<5:
+            x=x+1
 
 
 def TestStepAutoComplete(request):
