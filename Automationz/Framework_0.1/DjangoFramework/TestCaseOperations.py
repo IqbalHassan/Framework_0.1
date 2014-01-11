@@ -50,13 +50,13 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
     teststepsequencelist = []
     Step_Index = 1
     for eachStepData in Steps_Data_List:
-
         Step_Name = eachStepData[0]
         result = DBUtil.GetData(conn, "select step_id,data_required from test_steps_list where stepname = '%s'" % Step_Name, False)
         if len(result) > 0:
             Step_Id = result[0][0]
             Step_Data_Required = result[0][1]
             Step_Data_Set = eachStepData[1]
+            # Step_Description_Set=eachStepData[2]
 
         else:
             err_msg = LogMessage(sModuleInfo, "Incorrect step name: %s" % (Step_Name), 4)
@@ -79,6 +79,15 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                 if Step_Data_Required:
                     #Insert master_data - id, field, value
                     Data_Id_List = Insert_MasterData(conn, TC_Id, Step_Index, Step_Data_Set)
+                    #for eachitem in Data_Id_List:
+                    eachstep=Data_Id_List[0].split("_d")
+                    eachstep=eachstep[0].strip()
+                    print eachstep +"-"+eachStepData[2]
+                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                                                              id=eachstep,
+                                                              field="step",
+                                                              value="description",
+                                                              description=eachStepData[2])
                     if isinstance(Data_Id_List, list):
                         #Insert Container_Type_Data - dataid, curname
                         Container_Data_Id = Insert_ContainerTypeData(conn, TC_Id, Step_Index, Data_Id_List)
@@ -125,7 +134,14 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                         return err_msg
                 else:
                     LogMessage(sModuleInfo, "Added test step without data: %s" % (Step_Name), 4)
-
+                    #Add the test steps description to the datasets and steps
+                    Data_Id = "%s_s%s" %(TC_Id,Step_Index)
+                    print Data_Id +" - "+eachStepData[2]
+                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                                                              id=Data_Id,  
+                                                              field="step",
+                                                              value="description",
+                                                              description=eachStepData[2])
             else:
                 err_msg = LogMessage(sModuleInfo, "Step Sequence not found: %s" % (Step_Name), 4)
                 return err_msg
@@ -540,6 +556,9 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
     #5 - Clean up all test steps
     cur.execute("delete from test_steps where tc_id = '%s'" % TC_Id)
     conn.commit()
+    #6- Clean up all the test  step description from master_data
+    cur.execute("delete from master_data where id Ilike '%s%%' and field='step' and value='description'" %TC_Id )
+    conn.commit()
 
     if EditFlag == False:
 
@@ -703,7 +722,7 @@ def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Depe
                 return err_msg
             else:
                 #first element of tuple should be a string and second element a list
-                if not isinstance(eachstepdata[0], basestring) and not isinstance(eachstepdata[1], list):
+                if not isinstance(eachstepdata[0], basestring) and not isinstance(eachstepdata[1], list) and not isinstance(eachstepdata[2],basestring):
                     print "Error. Test case steps format is incorrect for one of the step"
                     err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s." % eachstepdata, 4)
                     return err_msg

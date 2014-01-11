@@ -377,7 +377,7 @@ def AutoCompleteTestStepSearch(request):
     if request.method == "GET":
         value = request.GET.get(u'term', '')
 
-        results = DB.GetData(Conn, "select stepname,data_required,steptype from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
+        results = DB.GetData(Conn, "select stepname,data_required,steptype,description from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -864,7 +864,7 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
     Conn = GetConnection()
     results = {}
     if request.is_ajax():
-         if request.method == 'GET':
+        if request.method == 'GET':
 
             #If User Click on Fail Step 
             RunId = request.GET.get('RunID', '')
@@ -877,17 +877,18 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                 TestCaseName = str(TestCaseName.strip())
                 TestStepName = str(TestStepName.strip())
                 TestStepSeqId = int(TestStepSeqId.strip())
-
-                TestCaseId = DB.GetData(Conn, "Select tc_id from test_cases where tc_name = '%s'" % TestCaseName)
+                StepSequence=str(TestStepSeqId)
+                query="select tc_id from test_cases where tc_name='"+TestCaseName+"'"
+                TestCaseId = DB.GetData(Conn,query)
                 TestCaseId = str(TestCaseId[0])
 
                 StepSeqId = DB.GetData(Conn, "Select tst.teststepsequence "
                                             " from test_steps tst,test_steps_list tsl "
                                             " where tc_id = '%s' and "
-                                            "tst.step_id = tsl.step_id "
-                                            "order by teststepsequence" % (TestCaseId)
+                                            "tst.step_id = tsl.step_id and "
+                                            "tsl.stepname='%s'" % (TestCaseId,TestStepName)
                                         )
-                TestStepSeqId = str(StepSeqId[TestStepSeqId - 1])
+                TestStepSeqId = str(StepSeqId[0])
                 TestStep_Details = DB.GetData(Conn, "Select  el.status, el.modulename, el.details "
                                         "from test_step_results tsr, execution_log el "
                                         "where run_id = '%s' and "
@@ -899,17 +900,76 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
 #                        TestStep_Details.remove(each)
 
                 TestStep_Col = ['Log Status', 'Module Name', 'Execution Log']
+                TestStep_Description_Col=['StepSequence','Description','Purpose']
+                TestStep_Description=[]
+                TestStep_Description.append(StepSequence)
+                query="select description,data_required from test_steps_list where stepname='"+TestStepName+"'"
+                step_desc=DB.GetData(Conn,query,False)
+                TestStep_Description.append(step_desc[0][0])
+                query="select tc_id from test_cases where tc_name='"+TestCaseName+"'"
+                tc_id=DB.GetData(Conn,query,False)
+                test_case_step_length=DB.GetData(Conn,"select count(*) from test_steps where tc_id='%s'" %(tc_id[0][0]),False)
+                datasetid=""
+                if int(StepSequence)<test_case_step_length[0][0]+int(1):
+                    datasetid=tc_id[0][0]+"_s"+StepSequence
+                else:
+                    query="select teststepsequence from test_steps where tc_id='%s'" %tc_id[0][0]
+                    test_sequence=DB.GetData(Conn,query)
+                    stepsequence=1
+                    for each in test_sequence:
+                        if StepSeqId[0]==each:
+                            break
+                        else:
+                            stepsequence+=1
+                    datasetid=tc_id[0][0]+"_s"+str(stepsequence)
+                query="select description from master_data where id='"+datasetid+"' and field='step' and value='description'"
+                purpose=DB.GetData(Conn,query,False)
+                TestStep_Description.append(purpose[0][0])
+                TestStep_Description=tuple(TestStep_Description)
+                TestStep_Description=[TestStep_Description]
+                data_required=""
+                if step_desc[0][1]==True:
+                    data_required="yes"
+                else:
+                    data_required="no"
+                data_col=["DataSetId","Data"]
+                data_val=[]
+                data_val_comp=[]
+                dataset=[]
+                if data_required=="yes":
+                    datasetid+='_d'
+                    query="select distinct id from master_data where id Ilike '"+datasetid+"%'"
+                    dataset_temp=DB.GetData(Conn,query)
+                    for each in dataset_temp:
+                        if len(each)==14:
+                            dataset.append(each)
+                    count=1
+                    for each in dataset:
+                        data_val.append((count,""))
+                        count+=1
+                        print str(count)+" - "+each
+                        query="select field,value from master_data where id Ilike'"+each+"%' and field!=''"
+                        data_set_val=DB.GetData(Conn,query,False)
+                        data_val_comp.append(data_set_val)        
+                    """data_val.append((1,""))
+                    query="select field,value from master_data where id='"+datasetid+"'"
+                    data_set_val=DB.GetData(Conn,query,False)"""
     results = {
-
                'TestStep_Details':TestStep_Details,
                'TestStep_Col':TestStep_Col,
-
+               'TestStep_Description_Col':TestStep_Description_Col,
+               'TestStep_Description':TestStep_Description,
+               'data_required':data_required,
+               'data_col':data_col,
+               'data_val':data_val,
+              # 'data_set_val':data_set_val,
+               'data_val_comp':data_val_comp,
+               'data_set_count':len(dataset)
                }
 
     JS = simplejson.dumps(results)
 #    return HttpResponse(json.dumps(results, encoding='utf-8', ensure_ascii=False), mimetype='application/json') 
     return HttpResponse(JS, mimetype='application/json')
-
 
 
 def FailStep_TestCases(request): #==================Returns Test Cases When User Click on Fail Step On Test Result Page===============================
@@ -1942,16 +2002,16 @@ def Execution_Report_Table(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def TestCase_ParseData(temp, Steps_Name_List):
+def TestCase_ParseData(temp, Steps_Name_List,Step_Description_List):
     Steps_Data_List = []
     # s = step # d = data # t = tuple # a = address
     d = 0
     index = -1
-    for name in Steps_Name_List:
+    for name in zip(Steps_Name_List,Step_Description_List):
         #init step array
-        Steps_Data_List.insert(d, (name.strip(), []))
+        Steps_Data_List.insert(d, (name[0].strip(), [],name[1].strip()))
 
-        index = Steps_Name_List.index(name, index + 1)
+        index = Steps_Name_List.index(name[0], index + 1)
         if index < len(temp):
             AllStepData = temp[index]
             if AllStepData == '%':
@@ -2080,7 +2140,10 @@ def Create_Submit_New_TestCase(request):
             Status = request.GET.get(u'Status', 'Dev')
             Is_Edit = request.GET.get(u'Is_Edit', 'create')
             Section_Path = request.GET.get(u'Section_Path', '')
-            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List)
+            Step_Description_List = request.GET.get(u'Steps_Description_List','')
+            print Step_Description_List
+            Step_Description_List=Step_Description_List.split('|')
+            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List,Step_Description_List)
 
         #1
         ##########Data Validation: Check if all required input fields have data
@@ -2224,15 +2287,25 @@ def ViewTestCase(TC_Id):
             else:
                 Section_Path = ''
 
-
+            
             #find all steps and data for the test case
             Steps_Data_List = []
-            test_case_step_details = DB.GetData(Conn, "select ts.step_id,stepname,teststepsequence,data_required from test_steps ts, test_steps_list tsl where ts.step_id = tsl.step_id and tc_id = '%s' order by teststepsequence" % TC_Id, False)
+            test_case_step_details = DB.GetData(Conn, "select ts.step_id,stepname,teststepsequence,data_required,steptype from test_steps ts, test_steps_list tsl where ts.step_id = tsl.step_id and tc_id = '%s' order by teststepsequence" % TC_Id, False)
+            Step_Iteration=1
             for each_test_step in test_case_step_details:
+                print "step %s - %s" %(Step_Iteration,each_test_step[1])
                 Step_Id = each_test_step[0]
                 Step_Name = each_test_step[1]
                 Step_Seq = each_test_step[2]
+                Step_Type=each_test_step[4]
                 Step_Data = []
+                query="select description from master_data where id Ilike '%s_s" % (TC_Id)
+                query+="%s"% (str(Step_Iteration))
+                query+="%' and field='step' and value='description'"
+                #query="select description from master_data where id Ilike '%s_s%s%' and field='step' and value='description'" %(TC_Id,str(Step_Iteration))
+                Step_Description=DB.GetData(Conn,query,False)
+                Step_Iteration=Step_Iteration+1
+                print Step_Description[0][0]
                 #is data required for this step
                 if each_test_step[3]:
                     #Is this a verify step
@@ -2261,7 +2334,7 @@ def ViewTestCase(TC_Id):
                             Step_Data.append(From_Data)
 
                 #append step name and data to send it back
-                Steps_Data_List.append((Step_Name, Step_Data))
+                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0]))
 
             #return values
             results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List}
@@ -2301,7 +2374,10 @@ def EditTestCase(request):
             Associated_Bugs_List = request.GET.get(u'Associated_Bugs_List', '')
             Requirement_ID_List = request.GET.get(u'Requirement_ID_List', '')
             Status = request.GET.get(u'Status', '')
-            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List)
+            Step_Description_List = request.GET.get(u'Steps_Description_List','')
+            print Step_Description_List
+            Step_Description_List=Step_Description_List.split('|')
+            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List,Step_Description_List)
             Section_Path = request.GET.get(u'Section_Path', '')
         #LogMessage(sModuleInfo,"TEST CASE Edit START:%s"%(TC_Name),4)
 

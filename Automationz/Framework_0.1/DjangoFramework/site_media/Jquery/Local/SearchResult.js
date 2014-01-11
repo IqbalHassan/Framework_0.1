@@ -9,22 +9,22 @@ $(document).ready(
 
 			var Type = window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1,
 					window.location.pathname.length)
-            console.log(window.location.pathname.lastIndexOf("/") + 1);
-            console.log(window.location.pathname.length);
-            console.log("path:"+window.location.pathname);
-            console.log("Sub Path:"+Type);
+            //console.log(window.location.pathname.lastIndexOf("/") + 1);
+            //console.log(window.location.pathname.length);
+            //console.log("path:"+window.location.pathname);
+            //console.log("Sub Path:"+Type);
 			if (Type != "") {
 				RunIdTestCases(Type)
 				if (document.getElementById('LoadingText') != null)
 					document.getElementById('LoadingText').style.display = 'None';
 			} else {
-                console.log("index of runId:"+window.location.pathname.indexOf("RunID"));
+                //console.log("index of runId:"+window.location.pathname.indexOf("RunID"));
 				if (window.location.pathname.indexOf("RunID") != -1) {
 					if (document.getElementById('LoadingText') != null)
 						document.getElementById('LoadingText').innerHTML = "You must provide a RunID in the URL!";
 				} else {
 					var ResultRequest = "Search";
-                    console.log('ResultRequest:'+ResultRequest);
+                    //console.log('ResultRequest:'+ResultRequest);
 					Search_Result_Table(ResultRequest)
 				}
 			}
@@ -33,7 +33,7 @@ $(document).ready(
 function Search_Result_Table(ResultRequest)
 
 {
-    console.log("In search_result_table function:"+ResultRequest);
+    //console.log("In search_result_table function:"+ResultRequest);
 	$.get("Table_Data_TestResult", {
 		ResultRequest : ResultRequest
 	}, function(data) {
@@ -108,12 +108,12 @@ function Make_RunID_Clickable()
 	$(".ui-widget tr td:first-child").click(function() {
 
 		$("p.flip[title =  'Show All']").remove()
-        console.log("children:"+$(this).children().text());
+        //console.log("children:"+$(this).children().text());
 		$(this).children().slideToggle("slow");
 		ClickedRunId = $(this).text();
-        console.log("clicked runId:"+ClickedRunId);
+        //console.log("clicked runId:"+ClickedRunId);
 		var $TC = $(this).text();
-        console.log("$TC:"+$TC);
+        //console.log("$TC:"+$TC);
 		var TestSteps;
 
 		$(".ui-widget tr td:first-child").each(function() {
@@ -383,7 +383,7 @@ function WhenClickingOnCommonFailedTestStep() {
 					});
 
 }
-count=0;
+//count=0;
 function TestCase_TestStep_Details_Table(sMainTableColumn) {
     console.log(sMainTableColumn);
 	$(sMainTableColumn).css({
@@ -391,8 +391,8 @@ function TestCase_TestStep_Details_Table(sMainTableColumn) {
 		'cursor' : 'pointer'
 	});
 	$(sMainTableColumn).each(function() {
-        count=count+1;
-        console.log("Cycle:"+count);
+        //count=count+1;
+        //console.log("Cycle:"+count);
         //console.log("Text:"+$(this).text());
 		var ID = $(this).text().replace(/ /g, '').replace(/,/g, '');
         //console.log("ID:"+ID);
@@ -413,9 +413,9 @@ function TestCase_TestStep_Details_Table(sMainTableColumn) {
 				$(this).live(
 						'click',
 						function() {
-                            console.log("Before:"+$(this).text());
+                            //console.log("Before:"+$(this).text());
 							var TestCaseName = $(this).text().split("Test Step Name")[0];
-                            console.log("After:"+TestCaseName);
+                            //console.log("After:"+TestCaseName);
 							var TestCaseId = $(this).closest('tr').find('td:nth-child(7)').text();
 							var RunID = $("#EnvironmentDetailsTable tr td:first-child").text();
 							$(this).children().slideToggle("slow");
@@ -476,13 +476,30 @@ function TestCaseDetailTable(TableID, TestCaseName) {
 	$("#" + TableID + " tr td:first-child").each(function() {
 
 		$(this).live('click', function(i) {
-
 			$("#" + TableID).append("<div id = 'TestStep_Details' title='" + $(this).text() + "'>" +
-
+                "<div id='' title='Execution Log'>" +
+                    "<div id='TestStep_ExecutionLog_Header' style='margin-bottom: 10px;'>" +
+                    "</div>" +
+                    "<div id='TestStep_ExecutionLog'>" +
+                    "</div>" +
+                "</div>" +
+                "<hr>" +
+                "<div id='' title='Step Data and Info'>" +
+                    "<div id='TestStep_InfoData_Header' style='margin-bottom: 10px;'>" +
+                    "</div>" +
+                    "<div id='TestStep_InfoData'>" +
+                    "</div>"+
+                "</div>" +
+                "<hr>" +
+                "<div id=''>" +
+                    "<div id='Data_Header' style='margin-bottom: 10px;'>"+
+                    "</div>" +
+                    "<div id='Data' align='center'>" +
+                    "</div>" +
+                "</div>"+
 			"</div>");
-
-			var RunID = $("#EnvironmentDetailsTable tr td:first-child").text()
-			var TestStepName = $(this).text()
+			var RunID = $("#EnvironmentDetailsTable tr td:first-child").text();
+			var TestStepName = $(this).text();
 			var TestStepSeqID = ($(this).parent().parent().children().index($(this).parent()));
 
 			$.get("TestStep_Detail_Table/", {
@@ -495,8 +512,42 @@ function TestCaseDetailTable(TableID, TestCaseName) {
 				// alert(data['TestCaseName']);
 				var TestStep_Table = data['TestStep_Details']
 				var TestStep_Col = data['TestStep_Col']
+                ResultTable("#TestStep_ExecutionLog_Header",["Execution Log"],"","");
+				ResultTable('#TestStep_ExecutionLog', data['TestStep_Col'], TestStep_Table, "");
+				ResultTable('#TestStep_InfoData_Header',["Description"], "", "");
+				ResultTable('#TestStep_InfoData',data['TestStep_Description_Col'], data['TestStep_Description'], "");
+				ResultTable('#Data_Header', ["Data"], "", "");
+                if(data['data_required']=="no"){
+                    $("#Data").html("");
+                    $("#Data").html("<b>Data is not required for this step</b>")
+                }
+                if(data['data_required']=="yes"){
+                    console.log(data['data_val_comp']);
+                    $("#Data").html("");
+                    ResultTable('#Data',data['data_col'],data['data_val'], "");
+                    /*console.log(data['data_val_comp']);
+                    var currentrow=$("#Data tr:nth-child(2)");
+                    console.log(currentrow.text());
+                    for(var i=0;i<data['data_set_count'];i++){
+                        //var temp=currentrow.find("td:nth-child(2)");
+                        ResultTable('#Data tr:nth-child('+(i+2)+')>td:nth-child(2)',['Field','value'],data['data_val_comp'][i],"");
+                        //currentrow+=currentrow.next("tr");
+                        //console.log(currentrow.text());
+                    }
+                    //ResultTable('#Data tr>td:nth-child(2)',['Field','value'],data['data_val_comp'][0],"");*/
+                    for(var i=0;i<data['data_val'].length;i++){
+                        var col= "row"+(i+2)+"col"+(i+2);
+                        $('#Data tr:nth-child('+(i+2)+')>td:nth-child(2)').attr({'id':col});
+                    }
+                    var dataset=data['data_val_comp'];
+                    for(var i=0;i<dataset.length;i++){
+                        var col= "#row"+(i+2)+"col"+(i+2);
+                        console.log(col);
+                        console.log(dataset[i]);
+                        ResultTable(col,["Field","Value"],dataset[i],"");
+                    }
+                }
 
-				ResultTable('#TestStep_Details', data['TestStep_Col'], TestStep_Table, "")
 				$("#TestStep_Details").dialog({
 					buttons : {
 						"OK" : function() {
@@ -510,8 +561,8 @@ function TestCaseDetailTable(TableID, TestCaseName) {
 					},
 
 					modal : true,
-					width : 570,
-					height : 600,
+					width : 600,
+					height : 780,
 
 				});
 

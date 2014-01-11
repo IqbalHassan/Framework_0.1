@@ -1,3 +1,6 @@
+var indx=0;
+var indx2=0;
+var URL="";
 var step_num = 0;
 var step_num_data_num = new Array();
 var tag_list = new Array();
@@ -7,10 +10,15 @@ var isAtLowestSection = false;
 
 $(document).ready(function() {
 
-	var URL = window.location.pathname
-	indx = URL.indexOf("Create")
-	indx2 = URL.indexOf("Edit")
-	var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf("Create") != -1
+	URL = window.location.pathname
+    console.log("url:"+URL);
+	indx = URL.indexOf("Create");
+    console.log("Create Index:"+indx);
+	indx2 = URL.indexOf("Edit");
+    console.log("Edit Index:"+indx2);
+	var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf("Create") != -1;
+    console.log("Url Length:"+URL.length);
+    console.log("Template:"+template);
 	if (indx != -1 || indx2 != -1) {
 		$('#add_test_step').click(function() {
 			addStep();
@@ -199,8 +207,20 @@ $(document).ready(function() {
 				//test data
 				for(var step_indx in steps_and_data){
 					var id = addStep();
-					$('#' + id).val(steps_and_data[step_indx][0])
-					
+                    var colour="";
+                    var step_type=steps_and_data[step_indx][2];
+                    if(step_type=="automated"){
+                        colour="green";
+                    }
+                    if(step_type=="manual"){
+                        colour="red";
+                    }
+                    if(step_type=="performance"){
+                        colour="blue";
+                    }
+					$('#' + id).val(steps_and_data[step_indx][0]);
+					$('#' + id+'info').val(steps_and_data[step_indx][3]);
+                    $("#" + id + "step_type").html("<b style='color:"+colour+"'>"+step_type+"</b>");
 					//check if step has data
 					if(steps_and_data[step_indx][1].length > 0){
 						$("#" + id + "data").fadeIn(500);
@@ -228,6 +248,10 @@ $(document).ready(function() {
 			
 			//Validate Data
 			for(var j = 1; j <= step_num; j++){
+                if($("#searchbox"+j+"info").val()==""){
+                    alert("No Test Step Description is filled for step number#"+j);
+                    return;
+                }
 				for(var i = 0; i < $("#searchbox"+j+"data textarea").length; i++){
 					if($("#searchbox"+j+"data textarea:eq("+i+")").attr("data-id") == 'edit'){
 						if(!validate_data($("#searchbox"+j+"data textarea:eq("+i+")").val())){
@@ -315,8 +339,10 @@ $(document).ready(function() {
 			
 			var stepName = [];
 			var stepData = [];
+            var stepDescription=[];
 			for(var j = 1; j <= step_num; j++){
 				stepName[j-1] = $("#searchbox" + j).val();
+				stepDescription[j-1] = $("#searchbox" + j+"info").val();
 				for(var i = 0; i < $("#searchbox"+j+"data textarea").length; i++){
 					if(stepData[j-1] === undefined){
 						stepData[j-1] = [];
@@ -362,6 +388,7 @@ $(document).ready(function() {
 			            Priority:priority,
 			            Steps_Data_List:stepDataSTR.join("|"),
 			            Steps_Name_List:stepName.join("|"),
+                        Steps_Description_List:stepDescription.join("|"),
 			            Status:"Dev"},function(data) {
 						alert(data);
 					});
@@ -381,9 +408,10 @@ $(document).ready(function() {
 			            Dependency_List:applic_client.join("|"),
 			            Priority:priority,
 			            Steps_Data_List:stepDataSTR.join("|"),
-			            Steps_Name_List:stepName.join("|")},
+			            Steps_Name_List:stepName.join("|"),
+                        Steps_Description_List:stepDescription.join("|")},
 			            function(data) {
-			            	alert(data);
+			            	alert(data+" edited successfully");
 					});
 				}
 				
@@ -453,8 +481,9 @@ function addStep(){
 	step_num++;
 	step_num_data_num[step_num] = 0;
 	var id = AddAutoCompleteSearchBox("#stepbox", "Step " + step_num + ": ", step_num);
+    //console.log("Step ID:"+id);
 	RunTestAutocompleteSearch(Env, step_num);
-	
+
 
 	$('#'+step_num+'.add_test_data').live("click", function (event) {
 		addDataToStep(this)
@@ -467,7 +496,14 @@ function addStep(){
 			step_num_data_num[indx]--;
 		}
 	});
-	
+    $('#'+step_num+'step_desc').live("click",function(event){
+        //alert("clicked");
+        var name=$('#'+id).val();
+        $.get("AutoCompleteTestStepSearch/",{term:name},function(data){
+            MsgBox("Test Step Description","<b>"+data[0][3]+"</b>");
+        })
+
+    });
 	return id;
 }
 
@@ -579,6 +615,13 @@ function validate_data(str){
 }
 
 function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
+    var visibility="";
+    if(indx!=-1 && URL.length<30){
+        visibility="none";
+    }
+    else{
+        visibility="block";
+    }
 	$(WhereToPlaceId).append(
 			"<form id='AutoSearchResult" + stepNumber + "' class='new_tc_form'>" +
 
@@ -587,6 +630,17 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
 			"		<input class='ui-corner-all stepbox ui-autocomplete-input' id='searchbox" + stepNumber + "' type='text'"+
 			"		title='Please Type Keyword and Click On that to add to query' name='searchboxname" + stepNumber + "' autocomplete='off'"+
 			"		aria-autocomplete='list' aria-haspopup='true'>"+
+            "       <div id='searchbox"+stepNumber+"infotab' style='display:"+visibility+"; text-align: left;margin:10px'>" +
+            "		<div style='text-align: right'>" +
+            "           <span class='Text'><b>Type - </b><span id='searchbox"+stepNumber+"step_type'></span></span>&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        "<img  class='buttonCustom' id='" + stepNumber + "step_desc' src='/site_media/info_button.jpg' style='background-color: transparent; width:20px; height:20px'>"+
+            "      </div>" +
+
+            "       <legend class='Text'><b style='color: #ff0000'>*</b><b>Description:</b></legend>" +
+            "       <input class='ui-corner-all  ui-autocomplete-input' id='searchbox" + stepNumber + "info' type='text'"+
+            "		title='Please type the purpose of the test step' name='searchboxname" + stepNumber + "' autocomplete='off'"+
+            "		aria-autocomplete='list' aria-haspopup='true'>" +
+            "       </div>"+
 			
 			"		<div id='searchbox"+stepNumber+"data' style='display:none; text-align: right;margin:10px'>"+
 			"			<a class='Text'>Test Data </a>"+
@@ -657,9 +711,9 @@ function RunTestAutocompleteSearch(Env, step) {
 					term : request.term
 				},
 				success : function(data) {
-                    console.log(data);
+                    //console.log(data);
 					auto_complete_list = data;
-					
+					//console.log(auto_complete_list[3]);
 					var just_names = []
 					
 					for(var i = 0; i < data.length; i++){
@@ -675,12 +729,32 @@ function RunTestAutocompleteSearch(Env, step) {
 		select : function(event, ui) {
 
 			var values = ui.item.value.split(' -')
-            console.log(values);//console.log('in select'+ui.item.value);
+            //console.log(values);
+            //console.log(this.id);//console.log('in select'+ui.item.value);
             var value=values[0];
+            var step_type=values[1].trim();
+            var colour="";
+            if(step_type=="automated"){
+                colour="green";
+            }
+            if(step_type=="manual"){
+                colour="red";
+            }
+            if(step_type=="performance"){
+                colour="blue";
+            }
 			if (value != "") {
 				this.value = value;
 				for(var i = 0; i < auto_complete_list.length; i++){
 					if(auto_complete_list[i][0] == value){
+                        //console.log(this.id);
+                        var position=this.id.indexOf("1");
+                        //console.log(position);
+                        var string=this.id.substring(position);
+                        //console.log(string);
+                        $("#" + this.id + "step_type").html("<b style='color:"+colour+"'>"+step_type+"</b>");
+                       // $("#" + this.id + "info").val(auto_complete_list[i][3]);
+                        $("#" + this.id + "infotab").fadeIn(500);
 						if(auto_complete_list[i][1] === true){
 							$("#" + this.id + "data").fadeIn(500);
 						}
