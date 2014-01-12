@@ -11,8 +11,11 @@
 
 
 			<!---------------- Main Result Table  ---------------------------->
-			<h1 id = 'LoadingText' style = "display: block" align="middle">  Loading. . . </h1>
-			
+			{%if error_message%}
+                <h1 id = 'LoadingText' style = "display: block" align="middle">{{error_message}}</h1>
+            {%else%}
+                <h1 id = 'LoadingText' style = "display: block" align="middle">  Loading. . . </h1>
+            {%endif%}
 			<div id = "Search_Result_Table" align="middle">
 		
 				<!--   <img src="/site_media/loading_animation.gif" height="300" width="300"/> --> 	
@@ -21,30 +24,30 @@
 			</div>
 
 			<!---------------- Environment Details Table ---------------------------->
-			<p class='flip' title = 'Environment Details'> Environment Details </p>
+			<!--<p class='flip' title = 'Environment Details'> Environment Details </p>
 				<div id = 'EnvironmentDetailsTable' style="display: none;">
 			
 				</div>
 				
-			
+			-->
 			<!---------------- All Test Cases Table ---------------------------->
-			<p>&nbsp; </p>
+			<!--<p>&nbsp; </p>
 			<p class='flip' title = 'All Test Cases'> All Test Cases </p>
 				<div id = 'AllTestCasesTable' style="display: none;">
 			
 				</div>
-			
+			-->
 			
 			<!---------------- Pass Test Cases Table ---------------------------->
-			<p>&nbsp; </p>	
+			<!--<p>&nbsp; </p>
 			<p class='flip' title = 'Passed Test Cases'>Passed Test Cases </p>
 				<div id = 'PassTestCasesTable' style="display: none;" >
 			
 				</div>
-			
+			-->
 			
 			<!---------------- Fail Test Cases Table ---------------------------->
-			<p>&nbsp; </p>
+			<!--<p>&nbsp; </p>
 			<p class='flip' title = 'Failed Test Cases'>Failed Test Cases </p>
 		
 				<div id = 'FailTestCasesTable' style="display: none;">
@@ -55,14 +58,14 @@
 			<p style ="font-size: small; width:250px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="FailedAndPending"> Re-Run Failed + Pending </p>		
 			
 			<!---------------- Failed Steps Table ---------------------------->
-			<p>&nbsp; </p>		
+			<!--<p>&nbsp; </p>
 			<p class='flip' title = 'Failed Steps' >Common Failed Steps</p>
 		
 			<div id = 'FailedStepsTable' style="display: none; ">
 	
 			</div>
 							
-		
+		-->
 		<!--  include "ResultTable.html" %}   -->
 		
 		
