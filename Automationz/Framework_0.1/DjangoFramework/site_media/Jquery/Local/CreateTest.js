@@ -57,7 +57,24 @@ $(document).ready(function() {
 			isAtLowestSection = false;
 			recursivelyAddSection(this);
 		});
-		
+
+        //Browsers
+        $.ajax({
+            url:'GetBrowsers/',
+            dataType : "json",
+            data : {
+                browser : ''
+            },
+            success: function( json ) {
+                if(json.length > 1)
+                    for(var i = 1; i < json.length; i++)
+                        json[i] = json[i][0].replace(/_/g,' ')
+                $.each(json, function(i, value) {
+
+                    $(".browser[data-level='']").append($('<option>').text(value).attr('value', value));
+                });
+            }
+        });
 		
 		// Make tags autofill
 		AddAutoCompleteToTag();

@@ -52,14 +52,18 @@ $(function() {
 					<td class="tc_form_input_col">
 						<table width="100%">
 							<tr>
-								<td width="50%">
+								<td width="33%">
 									<input id="Enable_radio" type="radio" name="Status" value="Production" style="width:auto"> 
 									<label for="Enable_radio">Enabled</label> &nbsp; &nbsp;
 								</td>
-								<td width="50%">
-									<input id="Disable_radio" type="radio" name="Status" value="Development" style="width:auto" checked="true"> 
+								<td width="33%">
+									<input id="Disable_radio" type="radio" name="Status" value="Development" style="width:auto">
 									<label for="Disable_radio">Disabled</label>
 								</td>
+                                <td width="33%">
+                                    <input id="Manual_radio" type="radio" name="Status" value="Forced-Manual" style="width:auto">
+                                    <label for="Manual_radio">Manual</label>
+                                </td>
 							</tr>
 						</table>
 					</td>
@@ -115,25 +119,9 @@ $(function() {
 						<label><span class="tc_form_required_field">*</span><b class="Text">Dependency:</b></label>
 					</td>
 					<td class="tc_form_input_col">
-						<table width="100%">
-
-							<tr>
-								<td width="50%">
-									<input id="Chrome" type="checkbox" name="dependancy" value="Chrome" style="width:auto">
-									<label for="BBX">Chrome</label>
-								</td>
-								<td width="50%">
-									<input id="Firefox" type="checkbox" name="dependancy" value="Firefox" style="width:auto">
-									<label for="Firefox">Firefox</label>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="2">
-									<input id="IE" type="checkbox" name="dependancy" value="IE" style="width:auto">
-									<label for="IE">Internet Explorer</label>
-								</td>
-							</tr>
-						</table>
+                        <select class="browser" data-level="" id="1">
+                            <option>Choose...</option>
+                        </select>
 					</td>
 			</table>
 		</form>
