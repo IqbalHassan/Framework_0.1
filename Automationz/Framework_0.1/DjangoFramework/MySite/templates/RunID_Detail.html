@@ -1,0 +1,126 @@
+{% extends "BaseTemplate.html" %}
+
+{% block title%}RunID Detail{% endblock %}
+
+{% block content %}
+<article>
+    <script type="text/javascript" src="RunID_Detail.js"></script>
+    <!---------------- Environment Details Table ---------------------------->
+    <p class='flip' title = 'Environment Details' style="display: block"> Environment Details </p>
+        <script type="text/javascript">console.log(len(Env_Details_Data))</script>
+        <div id = 'EnvironmentDetailsTable' style="display: block;">
+            {%if Env_length%}
+            <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <tr>
+                    {%for x in Env_Details_Col%}
+                    <th class='ui-widget-header' >{{x}}</th>
+                    {%endfor%}
+                </tr>
+                <tr>
+                    {%for x in Env_Details_Data%}
+                        {%for y in x%}
+                            <td class = 'ui-widget-content'>{{y}}</td>
+                        {%endfor%}
+                    {%endfor%}
+                </tr>
+            </table>
+            {%endif%}
+        </div>
+
+    <!---------------- All Test Cases Table ---------------------------->
+    <p>&nbsp; </p>
+    <p class='flip' title = 'All Test Cases' style="display: block"> All Test Cases </p>
+
+        <div id = 'AllTestCasesTable' style="display: block;">
+            {%if All_length%}
+            <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <tr>
+                    {%for x in Column%}
+                        <th class='ui-widget-header' >{{x}}</th>
+                    {%endfor%}
+                </tr>
+                <tr>
+                    {%for x in AllTestCases%}
+                        {%for y in x%}
+                            <td class = 'ui-widget-content'>{{y}}</td>
+                        {%endfor%}
+                    {%endfor%}
+                </tr>
+            </table>
+            {%endif%}
+        </div>
+
+
+    <!---------------- Pass Test Cases Table ---------------------------->
+    <p>&nbsp; </p>
+    <p class='flip' title = 'Passed Test Cases' style="display: block">Passed Test Cases </p>
+        <div id = 'PassTestCasesTable' style="display: none;" >
+            {%if Pass_length%}
+            <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <tr>
+                    {%for x in Column%}
+                    <th class='ui-widget-header' >{{x}}</th>
+                    {%endfor%}
+                </tr>
+                <tr>
+                    {%for x in Pass%}
+                    {%for y in x%}
+                    <td class = 'ui-widget-content'>{{y}}</td>
+                    {%endfor%}
+                    {%endfor%}
+                </tr>
+            </table>
+            {%endif%}
+        </div>
+
+    <!---------------- Fail Test Cases Table ---------------------------->
+    <p>&nbsp; </p>
+    <p class='flip' title = 'Failed Test Cases' style="display: block">Failed Test Cases </p>
+
+        <div id = 'FailTestCasesTable' style="display:none;">
+            {%if Fail_length%}
+            <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <tr>
+                    {%for x in Column%}
+                    <th class='ui-widget-header' >{{x}}</th>
+                    {%endfor%}
+                </tr>
+                <tr>
+                    {%for x in Fail%}
+                    {%for y in x%}
+                        <td class = 'ui-widget-content'>{{y}}</td>
+                    {%endfor%}
+                    {%endfor%}
+                </tr>
+            </table>
+            {%endif%}
+        </div>
+    <p style ="margin-left: 30px; font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="Failed"> Re-Run Failed </p>
+    <p style =" font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="Pending"> Re-Run Pending </p>
+    <p style ="font-size: small; width:250px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="FailedAndPending"> Re-Run Failed + Pending </p>
+
+    <!---------------- Failed Steps Table ---------------------------->
+    <p>&nbsp; </p>
+    <p class='flip' title = 'Failed Steps' style="display: block">Common Failed Steps</p>
+
+    <div id = 'FailedStepsTable' style="display: none; ">
+        {%if fail_length%}
+        <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+            <tr>
+                {%for x in failsteps_Col%}
+                <th class='ui-widget-header' >{{x}}</th>
+                {%endfor%}
+            </tr>
+            <tr>
+                {%for x in failsteps%}
+                {%for y in x%}
+                <td class = 'ui-widget-content'>{{y}}</td>
+                {%endfor%}
+                {%endfor%}
+            </tr>
+        </table>
+        {%endif%}
+    </div>
+
+</article>
+{%endblock%}

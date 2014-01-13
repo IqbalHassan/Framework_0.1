@@ -7,12 +7,15 @@ $(document).ready(
 			// var URL = window.location.pathname
 			// indx = URL.indexOf("Search")
 
-			var Type = window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1,
-					window.location.pathname.length)
-            //console.log(window.location.pathname.lastIndexOf("/") + 1);
+			var Type = window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 3,
+					window.location.pathname.length);
+            //console.log(window.location.pathname.lastIndexOf("ID/") + 1);
             //console.log(window.location.pathname.length);
             //console.log("path:"+window.location.pathname);
-            //console.log("Sub Path:"+Type);
+            //console.log("Sub Path:"+Type.trim());
+            /*var confirmation=window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1,
+                window.location.pathname.length);
+            console.log(confirmation);*/
 			if (Type != "") {
 				RunIdTestCases(Type)
 				if (document.getElementById('LoadingText') != null)
@@ -27,8 +30,10 @@ $(document).ready(
                     //console.log('ResultRequest:'+ResultRequest);
 					Search_Result_Table(ResultRequest)
 				}
-			}
-		});
+
+		}
+        }
+            );
 
 function Search_Result_Table(ResultRequest)
 
@@ -119,8 +124,10 @@ function Make_RunID_Clickable()
 		$(".ui-widget tr td:first-child").each(function() {
 			$(this).unbind('click');
 		});
-
-		RunIdTestCases(ClickedRunId); // Look in JQuery.js for this function
+        var location='/Home/Search/RunID/'+ClickedRunId+'/';
+        console.log(location);
+        window.location=location;
+		//RunIdTestCases(ClickedRunId); // Look in JQuery.js for this function
 	});
 
 }

@@ -93,13 +93,13 @@ def Search(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
-def Search2(request):
-    RunId = request.GET.get('ClickedRunId', '')
-    if RunId != "":
-        return RunId_TestCases(request)
-    else:
+def Search2(request,Run_Id):
+    #RunId = request.GET.get('ClickedRunId', '')
+    if Run_Id != "":
+        return RunId_TestCases(request,Run_Id)
+def ExceptionSearch(request):
         templ = get_template('SearchResults.html')
-        variables = Context({ })
+        variables = Context({'error_message':'You have not given a RunID' })
         output = templ.render(variables)
         return HttpResponse(output)
 
@@ -659,7 +659,7 @@ def TestCase_TestSteps_SearchPage(request): #==================Returns Test Step
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def RunId_TestCases(request): #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
+def RunId_TestCases(request,RunId): #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
 
     Conn = GetConnection()
     results = {}
@@ -674,7 +674,7 @@ def RunId_TestCases(request): #==================Returns Test Cases When User Cl
     FailStep_TestCases = ""
     failsteps_Col = ""
     FailsStepsWithCount = ""
-    if request.is_ajax():
+    """ if request.is_ajax():
         if request.method == 'GET':
 
             #If User Click on Test Case ID 
@@ -795,8 +795,126 @@ def RunId_TestCases(request): #==================Returns Test Cases When User Cl
                            'failsteps_Col':failsteps_Col
                            }
                 json = simplejson.dumps(results)
-                return HttpResponse(json, mimetype='application/json')
+                return HttpResponse(json, mimetype='application/json')"""
+    RunId = str(RunId.strip())
+                #"tr.duration",
+    Env_Details = DB.GetData(Conn, "Select DISTINCT "
+                                               "run_id,"
+                                               "tester_id, "
+                                               "product_version, "
+                                               "os_name||' '||os_version||' - '||os_bit as machine_os, "
+                                               "client, "
+                                               "data_type "
+                                               "from test_run_env "
+                                               "Where run_id = '%s'" % RunId, False
+                                            )
+    D = list(Env_Details[0])
+    for Dta in range(len(D)):
+        if D[Dta] == None:
+            D[Dta] = ""
+        Env_Details_Data = (D[0], D[1], D[2], D[3], D[4], D[5])
+        Env_Details_Data = [Env_Details_Data]
+        Env_Details_Col = [
+                                   "Run ID",
+                                   "Tester",
+                                   "Product",
+                                   "Machine OS",
+                                   "Client",
+                                   "Data Type"
 
+                                   ]
+        AllTestCases = DB.GetData(Conn, "(select "
+                                            "tct.name as MKSId, "
+                                            "tc.tc_name, "
+                                            "tr.status, "
+                                            "to_char(tr.duration,'HH24:MI:SS'), "
+                                            "tr.failreason, "
+                                            "tr.logid, "
+                                            "tc.tc_id "
+                                            "from test_case_results tr, test_cases tc, test_case_tag tct "
+                                            "where tr.run_id = '%s' and "
+                                            "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id) "
+                                            "union all "
+                                            "(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
+                                            "from test_run tr,test_cases tc, test_case_tag tct "
+                                            "where tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "
+                                            "tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )" % (RunId, RunId, RunId) , False)
+
+
+
+        Pass_TestCases = DB.GetData(Conn, "select "
+                                            "tct.name as mksid, "
+                                            "tc.tc_name, "
+                                            "tr.status, "
+                                            "to_char(tr.duration,'HH24:MI:SS'), "
+                                            "tr.failreason, "
+                                            "tr.logid, "
+                                            "tc.tc_id "
+                                            "from test_case_results tr, test_cases tc, test_case_tag tct "
+                                             "where tr.run_id = '%s' and tr.status = 'Passed' and "
+                                            "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % (RunId), False)
+
+
+
+        Fail_TestCases = DB.GetData(Conn, "select "
+                                            "tct.name as mksid, "
+                                            "tc.tc_name, "
+                                            "tr.status, "
+                                            "to_char(tr.duration,'HH24:MI:SS'), "
+                                            "tr.failreason, "
+                                            "tr.logid, "
+                                            "tc.tc_id "
+                                            "from test_case_results tr, test_cases tc, test_case_tag tct "
+                                            "where tr.run_id = '%s' and tr.status = 'Failed' and "
+                                            "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % RunId, False)
+
+
+
+        Col = ['MKS ID', 'Test Case', 'Status', 'Duration', 'Fail Reason', 'Test Log', 'Automation ID']
+
+
+        failsteps = DB.GetData(Conn, "select DISTINCT tsl.stepname from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
+
+                          "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id and tr.tc_id = tsr.tc_id "
+
+                           "and tsr.status = 'Critical' and tsr.teststep_id = tsl.step_id and tr.tc_id = tc.tc_id" % RunId, False
+                    )
+
+        #Adding Test Case Count with Fails Steps Name
+        FailsStepsWithCount = []
+        for eachstep in failsteps:
+            failstep = list(eachstep)[0]
+            FailStep_TestCases = DB.GetData(Conn, "select tc.tc_name from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
+                                                "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id "
+                                                "and tr.tc_id = tsr.tc_id and tsr.status in ('Critical') and tsr.teststep_id = tsl.step_id "
+                                                "and tr.tc_id = tc.tc_id and tsl.stepname = '%s' " % (RunId, failstep)
+                                            )
+            Count = len(FailStep_TestCases)
+            L = []
+            L.append("%s (%s)" % (failstep, Count))
+            FailsStepsWithCount.append(L)
+
+            failsteps_Col = ["Step Name"]
+
+
+
+
+            results = {
+                           'Env_Details_Data':Env_Details_Data,
+                           'Env_length':len(Env_Details_Data),
+                           'Env_Details_Col':Env_Details_Col,
+                           'Column':Col,
+                           'AllTestCases':AllTestCases,
+                           'All_length':len(AllTestCases),
+                           'Pass':Pass_TestCases,
+                           'Pass_length':len(Pass_TestCases),
+                           'Fail':Fail_TestCases,
+                           'Fail_length':len(Fail_TestCases),
+                           'failsteps':FailsStepsWithCount,
+                           'failsteps_length':len(FailsStepsWithCount),
+                           'failsteps_Col':failsteps_Col
+                           }
+    return render_to_response('RunID_Detail.html',results)        
 
 def TestCase_Detail_Table(request): #==================Returns Test Steps and Details Table When User Click on Test Case Name On Test Result Page========
     Conn = GetConnection()
@@ -805,7 +923,7 @@ def TestCase_Detail_Table(request): #==================Returns Test Steps and De
     TestCase_Detail_Data = []
     TestCase_Detail_Col = []
     if request.is_ajax():
-         if request.method == 'GET':
+        if request.method == 'GET':
 
             #If User Click on Fail Step 
             RunId = request.GET.get('RunID', '')
