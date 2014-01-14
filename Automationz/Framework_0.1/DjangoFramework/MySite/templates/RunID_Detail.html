@@ -3,11 +3,10 @@
 {% block title%}RunID Detail{% endblock %}
 
 {% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/RunID_Detail.js"></script>
 <article>
-    <script type="text/javascript" src="RunID_Detail.js"></script>
     <!---------------- Environment Details Table ---------------------------->
     <p class='flip' title = 'Environment Details' style="display: block"> Environment Details </p>
-        <script type="text/javascript">console.log(len(Env_Details_Data))</script>
         <div id = 'EnvironmentDetailsTable' style="display: block;">
             {%if Env_length%}
             <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
@@ -39,13 +38,14 @@
                         <th class='ui-widget-header' >{{x}}</th>
                     {%endfor%}
                 </tr>
+                {%for x in AllTestCases%}
                 <tr>
-                    {%for x in AllTestCases%}
-                        {%for y in x%}
-                            <td class = 'ui-widget-content'>{{y}}</td>
-                        {%endfor%}
+                    {%for y in x%}
+                        <td class = 'ui-widget-content'>{{y}}</td>
                     {%endfor%}
                 </tr>
+                {%endfor%}
+
             </table>
             {%endif%}
         </div>
@@ -62,13 +62,14 @@
                     <th class='ui-widget-header' >{{x}}</th>
                     {%endfor%}
                 </tr>
+                {%for x in Pass%}
                 <tr>
-                    {%for x in Pass%}
                     {%for y in x%}
                     <td class = 'ui-widget-content'>{{y}}</td>
                     {%endfor%}
-                    {%endfor%}
                 </tr>
+                {%endfor%}
+
             </table>
             {%endif%}
         </div>
@@ -82,23 +83,24 @@
             <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
                 <tr>
                     {%for x in Column%}
-                    <th class='ui-widget-header' >{{x}}</th>
+                        <th class='ui-widget-header' >{{x}}</th>
                     {%endfor%}
                 </tr>
+                {%for x in Fail%}
                 <tr>
-                    {%for x in Fail%}
                     {%for y in x%}
                         <td class = 'ui-widget-content'>{{y}}</td>
                     {%endfor%}
-                    {%endfor%}
                 </tr>
+                {%endfor%}
             </table>
             {%endif%}
         </div>
-    <p style ="margin-left: 30px; font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="Failed"> Re-Run Failed </p>
-    <p style =" font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="Pending"> Re-Run Pending </p>
-    <p style ="font-size: small; width:250px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="FailedAndPending"> Re-Run Failed + Pending </p>
-
+    <div style="float: left">
+        <p style ="margin-left: 30px; font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="Failed"> Re-Run Failed </p>
+        <p style =" font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="Pending"> Re-Run Pending </p>
+        <p style ="font-size: small; width:250px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="FailedAndPending"> Re-Run Failed + Pending </p>
+    </div>
     <!---------------- Failed Steps Table ---------------------------->
     <p>&nbsp; </p>
     <p class='flip' title = 'Failed Steps' style="display: block">Common Failed Steps</p>
@@ -107,17 +109,17 @@
         {%if fail_length%}
         <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
             <tr>
-                {%for x in failsteps_Col%}
+                {%for x in failsteps_col%}
                 <th class='ui-widget-header' >{{x}}</th>
                 {%endfor%}
             </tr>
+            {%for x in failsteps%}
             <tr>
-                {%for x in failsteps%}
                 {%for y in x%}
-                <td class = 'ui-widget-content'>{{y}}</td>
-                {%endfor%}
+                    <td class = 'ui-widget-content'>{{y}}</td>
                 {%endfor%}
             </tr>
+            {%endfor%}
         </table>
         {%endif%}
     </div>

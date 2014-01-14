@@ -16,6 +16,8 @@ $(document).ready(
             /*var confirmation=window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1,
                 window.location.pathname.length);
             console.log(confirmation);*/
+            console.log(Type);
+            console.log(window.location.pathname.indexOf("RunID"));
 			if (Type != "") {
 				RunIdTestCases(Type)
 				if (document.getElementById('LoadingText') != null)
@@ -124,7 +126,7 @@ function Make_RunID_Clickable()
 		$(".ui-widget tr td:first-child").each(function() {
 			$(this).unbind('click');
 		});
-        var location='/Home/Search/RunID/'+ClickedRunId+'/';
+        var location='/Home/RunID/'+ClickedRunId+'/';
         console.log(location);
         window.location=location;
 		//RunIdTestCases(ClickedRunId); // Look in JQuery.js for this function
