@@ -804,8 +804,6 @@ def TestCase_Detail_Table(request): #==================Returns Test Steps and De
     results = {
                'TestCase_Detail_Data':TestCase_Detail_Data,
                'TestCase_Detail_Col' :TestCase_Detail_Col,
-               'TestCase_Name':TestCaseName
-
                }
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -814,6 +812,15 @@ def TestCase_Detail_Table(request): #==================Returns Test Steps and De
 def TestStep_Detail_Table(request): #==================Returns Test Step Details Table When User Click on Test Step Name On Test Result Page=======
     Conn = GetConnection()
     results = {}
+    TestStep_Details=""
+    TestStep_Col=""
+    TestStep_Description_Col=""
+    TestStep_Description=""
+    data_col=""
+    data_val=""
+    data_val_comp=""
+    dataset=""
+    data_required=""
     if request.is_ajax():
         if request.method == 'GET':
 
@@ -832,7 +839,7 @@ def TestStep_Detail_Table(request): #==================Returns Test Step Details
                 query="select tc_id from test_cases where tc_name='"+TestCaseName+"'"
                 TestCaseId = DB.GetData(Conn,query)
                 TestCaseId = str(TestCaseId[0])
-
+                TestStep_Details=[]
                 StepSeqId = DB.GetData(Conn, "Select tst.teststepsequence "
                                             " from test_steps tst,test_steps_list tsl "
                                             " where tc_id = '%s' and "
@@ -3697,3 +3704,11 @@ def AddManualTestMachine(request):
     message=[message]
     results=simplejson.dumps(message)
     return HttpResponse(results,mimetype='application/json')
+
+def RunIDEditTestCases(request,Run_Id,TC_Id):
+    print Run_Id
+    print TC_Id
+    Conn=GetConnection()
+    query="select tc_name from test_cases where tc_id='%s'" %TC_Id
+    testcasename=DB.GetData(Conn, query, False)
+    return render_to_response('RunIDEditTestCases.html',{'runid':Run_Id,'testcaseid':TC_Id,'testcasename':testcasename[0][0]},context_instance=RequestContext(request))

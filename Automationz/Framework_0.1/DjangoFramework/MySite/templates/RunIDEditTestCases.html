@@ -1,0 +1,35 @@
+{% extends "BaseTemplate.html" %}
+
+{% block title%}Manual Edit{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/RunIDEditTestCases.js"></script>
+<article>
+    <div id="information" align="center">
+        <span><b style="color: blue;">RunID:</b></span><b id="runid">{{runid}}</b>&nbsp;&nbsp;&nbsp;
+        <span><b style="color:blue;">TestCaseName:</b></span><b id="testcasename">{{testcasename}}</b>
+        <span><b style="color:blue;">TestCaseID:</b></span><b id="testcaseid">{{testcaseid}}</b>
+    </div>
+    <div id="RunIDTestCaseHeader">
+        <p  class="flip" title = 'RunIDHeader' style="display: block">TestCase Run Detail</p>
+        <div id="RunIDTestCaseData">
+        </div>
+    </div>
+    <hr>
+    <div>
+        <p  class="flip" title = 'TestStepChange' id='changeStatus' style="display:block">ChangeStatus</p>
+        <p  class="flip" title = 'TestStepChange' id='passAll' style="display:block">Pass All Steps</p>
+        <div>
+            <form id="change_div" action="">
+
+            </form>
+        </div>
+    </div>
+    <p  class="flip" title = 'TestStepName' id='stepname' style="display:none;margin-top: 50px;"></p>
+    <div id="TestStepDetail" style="display: none">
+    </div>
+    <div align="left" style="margin-left: 0px; margin-top: 50px;">
+        <p  class="flip" title = 'BackPage' style="display: block"> Return to RunID Page </p>
+    </div>
+</article>
+{%endblock%}

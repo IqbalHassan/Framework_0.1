@@ -19,7 +19,7 @@ urlpatterns = patterns('',
     #Result Page
     url(r'^Home/Search/$',Search),
     url(r'^Home/RunID/(?P<Run_Id>[^/]*)/$',Search2),
-    url(r'^Home/RunID/(?P<Run_Id>[^/]*)/(?P<TC_Id>[^/]*)/$',ExceptionSearch),
+    url(r'^Home/RunID/(?P<Run_Id>[^/]*)/edit/(?P<TC_Id>[^/]*)/$',RunIDEditTestCases),
     url(r'^Home/RunID/$',ExceptionSearch),
     url(r'^Home/.*/AutoCompleteTestCasesSearch/$', AutoCompleteTestCasesSearch),
     url(r'^Home/.*/AutoCompleteUsersSearch/$', AutoCompleteUsersSearch),
