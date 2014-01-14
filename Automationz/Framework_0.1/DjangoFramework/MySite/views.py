@@ -2397,6 +2397,18 @@ def Get_Sections(request):  #==================Returns Abailable User Name in Li
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Get_Browsers(request):
+    Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        browser = request.GET.get(u'browser', '')
+        if browser == '':
+            results = DB.GetData(Conn, "select value from config_values where type = 'Browser'", False)
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def Bundle_Report(request):  #==================Returns Report data for a specific product version (eg 1.1.1.26 and platform 'PC'==============================
 
     Conn = GetConnection()
