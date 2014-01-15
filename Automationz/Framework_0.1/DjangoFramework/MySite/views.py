@@ -3705,10 +3705,67 @@ def AddManualTestMachine(request):
     results=simplejson.dumps(message)
     return HttpResponse(results,mimetype='application/json')
 
-def RunIDEditTestCases(request,Run_Id,TC_Id):
+def RunIDTestCases(request,Run_Id,TC_Id):
     print Run_Id
     print TC_Id
     Conn=GetConnection()
     query="select tc_name from test_cases where tc_id='%s'" %TC_Id
     testcasename=DB.GetData(Conn, query, False)
     return render_to_response('RunIDEditTestCases.html',{'runid':Run_Id,'testcaseid':TC_Id,'testcasename':testcasename[0][0]},context_instance=RequestContext(request))
+
+def RunIDEdit(request):
+    message=""
+    if request.is_ajax():
+        if request.method=='GET':
+            run_id=request.GET.get(u'run_id','').strip()
+            test_case_id=request.GET.get(u'test_case_id','').strip()
+            test_step_name=request.GET.get(u'test_step_name','').strip()
+            test_step_status=request.GET.get(u'test_step_status','').strip()
+            oConn=GetConnection()
+            if test_step_name=="all" and test_step_status=="Pass":
+                sWhereQuery="where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
+                Dict={'status':"Pass"}
+                result = DB.UpdateRecordInTable(oConn, "test_step_results", sWhereQuery,**Dict)
+                if result==True:
+                    message="true"
+            else:
+                sQuery="select step_id from test_steps_list where stepname='%s'" %test_step_name
+                step_id=DB.GetData(oConn, sQuery,False)
+                print step_id[0][0]
+                sWhereQuery="where run_id='%s' and tc_id='%s' and teststep_id='%d'" %(run_id,test_case_id,int(step_id[0][0]))
+                Dict={'status':test_step_status}
+                result = DB.UpdateRecordInTable(oConn, "test_step_results", sWhereQuery,**Dict)
+                if result==True:
+                    message="true"
+    message=message
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+def RunIDFailReason(request):
+    message=""
+    if request.is_ajax():
+        if request.method=='GET':
+            run_id=request.GET.get(u'run_id','')
+            test_case_id=request.GET.get(u'test_case_id','')
+            oConn=GetConnection()
+            query="select failreason from test_case_results where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
+            failReason=DB.GetData(oConn, query, False)
+            message=failReason[0][0]
+    message=message
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+def UpdateFailReason(request):
+    message=""
+    if request.is_ajax():
+        if request.method=='GET':
+            run_id=request.GET.get(u'run_id','')
+            test_case_id=request.GET.get(u'test_case_id','')
+            reason=request.GET.get(u'reason','')
+            oConn=GetConnection()
+            sQuery="where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
+            Dict={'failreason':reason}
+            message=DB.UpdateRecordInTable(oConn, "test_case_results",sQuery,**Dict)
+            if message==True:
+                message="true"
+    message=message
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')            

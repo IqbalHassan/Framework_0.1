@@ -10,39 +10,57 @@ $(document).ready(function(){
         $(this).css("display","inline-block")
     });
     $('#changeStatus').live('click',function(){
+        $('#change_div').html("");
         $(this).css({'display':'none'});
         $('#passAll').css({'display':'none'});
+        $('#failReason').css({'display':'none'});
         var message="";
         var count=0;
         $('#RunIDTestCaseData tr td:first-child').each(function(){
             count++;
             message+='<option value="'+count+'">'+$(this).text().trim()+'</option>'
         });
-        var runid=$("#runid").text().trim();
-        var testcaseid=$('#testcaseid').text().trim();
-        $('#change_div').html('' +
-            '<input name="runid" style="display: none" value="'+runid+'"/>' +
-            '<input name="testcaseid" style="display: none"value="'+testcaseid+'"/>' +
-            '<span><b>TestStepName:</b></span>' +
-            '<select id="teststeplist">' +
-            '   <option value="0">Select a step</option>' +
-            '</select>' +
-            '<span id="statusspan" style="display: none;"><b>Status:</b></span>' +
-            '<select id="status" name="status" style="display: none"></select>' +
-            '<input type="submit" name="submit_button" id="submit_button" style="display: none" value="Submit"> '
-
-        );
-        $('#teststeplist').append(message);
-        $('#teststeplist').live('change',function(){
+        $('#change_div').html('<table>' +
+            '<tr>' +
+            '   <td>' +
+            '       <span><b>Test Step Name:</b></span>' +
+            '       <select id="test_step_list">' +
+            '           <option value="0">Select a Step</option> ' +
+            '       </select>' +
+            '   </td>' +
+            '   <td>' +
+            '       <table>' +
+            '           <tr>' +
+            '               <td>' +
+            '                   <span id="status_label" style="display: none"><b>Status:</b></span>' +
+            '               </td>' +
+            '               <td>' +
+            '                   <select id="status" name="status" style="display: none"></select>' +
+            '               </td>' +
+            '           </tr>' +
+            '       </table>' +
+            '   </td>' +
+            '</tr>' +
+            '<tr>' +
+            '   <td colspan="2" align="center">' +
+            '       <input type="submit" name="submit_button" id="submit_button" value="Submit" style="display: none"/> ' +
+            '   </td>' +
+            '</tr>' +
+            '</table>' +
+            //'<input name="runid" style="display: none" value="'+runid+'"/>' +
+            //'<input name="testcaseid" style="display: none" value="'+testcaseid+'"/>' +
+            '<input name="step_name" id="step_name" value="" style="display: none"/>');
+        $('#test_step_list').append(message);
+        $('#test_step_list').live('change',function(){
             //console.log($('#teststeplist option:selected').val());
-            if($('#teststeplist option:selected').val()!=0){
+            if($('#test_step_list option:selected').val()!=0){
                 var statusMessage="";
-                var lineNumber=$('#teststeplist option:selected').val();
+                var lineNumber=$('#test_step_list option:selected').val();
                 lineNumber++;
                 var linestatus=$('#RunIDTestCaseData tr:nth-child('+lineNumber+') td:nth-child(2)').text().trim();
                 var linename=$('#RunIDTestCaseData tr:nth-child('+lineNumber+') td:nth-child(1)').text().trim();
-                $("#change_div").append('<input name="stepname" style="display: none" value="'+linename+'"/>')
-                console.log(linestatus+'-'+linename);
+                $('#step_name').val(linename);
+                //console.log(linestatus+'-'+linename);
                 var statusArray=['Pass','Failed','Critical','Skipped','null'];
                 for(var i=0;i<statusArray.length;i++){
                     if(statusArray[i]==linestatus){
@@ -54,13 +72,128 @@ $(document).ready(function(){
 
                 }
                 $('#status').html(statusMessage);
-                $('#statusspan').css({'display':'block'});
+                $('#status_label').css({'display':'block'});
                 $('#status').css({'display':'block'});
                 $('#submit_button').css({'display':'block'});
             }
         })
     })
+    $('#submit_button').live('click',function(){
+        updateStatus();
+    });
+    $('#passAll').live('click',function(){
+        var run_id=$('#runid').text().trim();
+        var test_case_id=$('#testcaseid').text().trim();
+        var test_step_name='all';
+        var test_step_status="Pass";
+        /*console.log(run_id);
+         console.log(test_case_id);
+         console.log(test_step_name);
+         console.log(test_step_status);*/
+        $.get("Edit/",{
+            'run_id':run_id,
+            'test_case_id':test_case_id,
+            'test_step_name':test_step_name,
+            'test_step_status':test_step_status
+        },function(data){
+            console.log(data);
+            if(data=="true"){
+                var message='/Home/RunID/'+run_id+'/TC/'+test_case_id+'/'
+                window.location=message;
+            }
+        });
+    });
+    $('#failReason').live('click',function(){
+        $('#change_div').html("");
+        $(this).css({'display':'none'});
+        $('#passAll').css({'display':'none'});
+        $('#changeStatus').css({'display':'none'});
+        var run_id=$('#runid').text().trim();
+        var test_case_id=$('#testcaseid').text().trim();
+        $('#change_div').html('<table>' +
+            '<tr>' +
+            '   <td>' +
+            '       <span><b>Previous Fail Reason:</b></span>' +
+            '   </td>' +
+            '   <td>' +
+            '       <input type="text" value="" id="old_reason" size="135" readonly="readonly"/>' +
+            '   </td>' +
+            '</tr>' +
+            '<tr>' +
+            '   <td>' +
+            '       <span><b>Modify Reason:</b></span>' +
+            '   </td>' +
+            '   <td>' +
+            '       <input type="text" value="" id="new_reason" size="135"/>' +
+            '   </td>' +
+            '</tr>' +
+            '<tr>' +
+            '   <td>' +
+            '       &nbsp;' +
+            '   </td>' +
+            '   <td>' +
+            '       <input type="button" value="Cancel" id="cancel_button"/>       ' +
+            '       <input type="button" value="Change" id="change_button"/>' +
+            '   </td>' +
+            '</tr>' +
+            '</table>');
+        $.get("RunIDFailReason",{
+            'run_id':run_id,
+            'test_case_id':test_case_id
+        },function(data){
+            console.log(data);
+            $('#old_reason').val(data);
+        });
+    });
+    $('#cancel_button').live('click',function(){
+        var run_id=$('#runid').text().trim();
+        var test_case_id=$('#testcaseid').text().trim();
+        var location='/Home/RunID/'+run_id+'/TC/'+test_case_id+'/';
+        window.location=location;
+    });
+    $('#change_button').live('click',function(){
+        var run_id=$('#runid').text().trim();
+        var test_case_id=$('#testcaseid').text().trim();
+        var reason=$('#new_reason').val().trim();
+        $.get("UpdateFailReason",{
+            'run_id':run_id,
+            'test_case_id':test_case_id,
+            'reason':reason
+        },function(data){
+            console.log(data);
+            if(data=="true"){
+                var location='/Home/RunID/'+run_id;
+                window.location=location;
+            }
+        });
+    });
+    $('.flip[title="BackPage"]').live('click',function(){
+        var runid=$('#runid').text().trim();
+        window.location='/Home/RunID/'+runid+'/';
+    });
 });
+function updateStatus(){
+    var run_id=$('#runid').text().trim();
+    var test_case_id=$('#testcaseid').text().trim();
+    var test_step_name=$('#step_name').val().trim();
+    var test_step_status=$('#status option:selected').text().trim();
+    /*console.log(run_id);
+     console.log(test_case_id);
+     console.log(test_step_name);
+     console.log(test_step_status);*/
+    $.get("Edit/",{
+        'run_id':run_id,
+        'test_case_id':test_case_id,
+        'test_step_name':test_step_name,
+        'test_step_status':test_step_status
+    },function(data){
+        console.log(data);
+        if(data=="true"){
+            var message='/Home/RunID/'+run_id+'/TC/'+test_case_id+'/'
+            window.location=message;
+        }
+    });
+}
 function DataFetch(){
     var RunID=$('#runid').text().trim();
     var TestCaseID=$('#testcaseid').text().trim();

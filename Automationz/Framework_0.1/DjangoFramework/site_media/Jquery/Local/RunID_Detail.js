@@ -45,7 +45,7 @@ $(document).ready(function(){
         TestCaseName=TestCaseName.split(":")[1].trim();
         var location=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
         console.log(location);
-        window.location='/Home/RunID/'+location+'/edit/'+TestCaseName+'/';
+        window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
     });
     When_Clicking_On_CommonFailedTestStep();
 });
@@ -63,8 +63,10 @@ function buttonPreparation(){
         });
         $("#FailTestCasesTable").slideToggle("slow");
     });
-    $(".flip[title='Failed Steps']").click(function(){
+    $(".flip[title='Failed Steps']").click(function(e){
+        e.stopPropagation();
         $("#FailedStepsTable").slideToggle("slow");
+
     });
 }
 function LoadAllTestCases(divname){
@@ -94,5 +96,27 @@ function When_Clicking_On_CommonFailedTestStep(){
         'color':'blue',
         'cursor':'pointer'
     });
+    $('#FailedStepsTable tr>td:nth-child(1)').each(function(){
+        var RunID=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+        var name=$(this).text().trim();
+        var stepName=name.split('(')[0].trim();
+        console.log(stepName);
+        $(this).append('<div id="'+stepName.split(' ').join('_')+'"></div>');
+        $.get("FailStep_TestCases",{
+            RunID : RunID,
+            FailedStep : stepName
+        },function(data){
+            var column=data['FailStep_TC_Col'];
+            var data_detail=data['FailStep_TestCases'];
+            ResultTable('#'+stepName.split(' ').join('_'),column,data_detail,"");
 
+            var div_name=stepName.split(' ').join('_');
+            //LoadAllTestCases(div_name);
+            connectLogFile(div_name);
+        });
+        $(this).live('click',function(e){
+            $('#'+stepName.split(' ').join('_')).slideToggle("slow");
+            e.stopPropagation();
+        });
+    });
  }
