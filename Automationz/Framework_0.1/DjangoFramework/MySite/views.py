@@ -3711,9 +3711,9 @@ def RunIDTestCases(request,Run_Id,TC_Id):
     Conn=GetConnection()
     query="select tc_name from test_cases where tc_id='%s'" %TC_Id
     testcasename=DB.GetData(Conn, query, False)
-    return render_to_response('RunIDEditTestCases.html',{'runid':Run_Id,'testcaseid':TC_Id,'testcasename':testcasename[0][0]},context_instance=RequestContext(request))
+    return render_to_response('RunIDEditTestCases.html',{'runid':Run_Id,'testcaseid':TC_Id,'testcasename':testcasename[0][0]})
 
-def RunIDEdit(request):
+"""def RunIDEdit(request):
     message=""
     if request.is_ajax():
         if request.method=='GET':
@@ -3768,4 +3768,129 @@ def UpdateFailReason(request):
                 message="true"
     message=message
     results=simplejson.dumps(message)
-    return HttpResponse(results,mimetype='application/json')            
+    return HttpResponse(results,mimetype='application/json')            """
+def DataFetchForTestCases(request):
+    #message="in the DataFetchForTestCases"
+    if request.is_ajax():
+        if request.method=='GET':
+            run_id=request.GET.get(u'run_id','').strip()
+            test_case_id=request.GET.get(u'test_case_id','').strip()
+            print run_id
+            print test_case_id
+            #Get the test steps from test_step_results
+            Conn=GetConnection()
+            query="select teststep_id from test_step_results where run_id='%s' and tc_id='%s' order by stepstarttime" %(run_id,test_case_id)
+            TestStepList=DB.GetData(Conn, query)
+            DataCollected=[]
+            Conn.close()
+            for each in range(0,len(TestStepList)):
+                Conn=GetConnection()
+                #Get the stepname fromt test_steps_list
+                query="select stepname,data_required from test_steps_list where step_id=%d" %TestStepList[each]
+                StepName=DB.GetData(Conn,query,False)
+                Temp_Data=[]
+                Temp_Data.append(each+1)
+                Temp_Data.append(StepName[0][0])
+                if StepName[0][1]==True:
+                    Temp_Data.append("true")
+                else:
+                    Temp_Data.append("false")
+                datasetid=test_case_id+"_s"+str((each+1))
+                print datasetid
+                #Get the expected result from the master_data
+                query="select description from master_data where id='%s' and field='step' and value='description'" %datasetid
+                step_description=DB.GetData(Conn,query,False)
+                Temp_Data.append(step_description[0][0])
+                #Get the failreson from the test_step_results
+                #Get the steps status from the test_step_results
+                query="select status,failreason from test_step_results where tc_id='%s' and run_id='%s' and teststep_id=%d" %(test_case_id,run_id,(TestStepList[each])) 
+                Status=DB.GetData(Conn,query,False) 
+                Temp_Data.append(Status[0][1]) #FailReason
+                Temp_Data.append(Status[0][0])
+                Conn.close()
+                print Temp_Data
+                Temp_Data=tuple(Temp_Data)
+                DataCollected.append(Temp_Data)
+    DataColumn=["StepNumber","StepName","DataRequired","Expected Results","FailReason","Status"]
+    print DataColumn
+    print DataCollected
+    message={
+             'data_column':DataColumn,
+             'data_collected':DataCollected
+             }
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+def TestDataFetch(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            data_set_id=request.GET.get(u'data_set_id','')
+            Conn=GetConnection()
+            query="select distinct id from master_data where id Ilike '%s" %data_set_id
+            query+="_%'"
+            data_set=DB.GetData(Conn,query)
+            temp_data=[]
+            for each in data_set:
+                if(len(each)==14):
+                    temp_data.append(each)
+            data_set=temp_data
+            row_array=[]
+            data_array=[]
+            count=0
+            for each in data_set:
+                count=count+1
+                row_array.append((count,""))
+                query="select field,value from master_data where id Ilike '%s" %each
+                query+="%%' and field!='step' and field!='' and value!='description'"
+                data=DB.GetData(Conn,query,False)
+                data_array.append(data)
+    results={
+             'data_array':data_array,
+             'row_array': row_array
+             }
+    results=simplejson.dumps(results)
+    return HttpResponse(results,mimetype='application/json')
+def UpdateData(request):
+    message=""
+    if request.is_ajax():
+        if request.method=='GET':
+            step_name=request.GET.get(u'step_name','').split("|")
+            step_status=request.GET.get(u'step_status','').split("|")
+            step_reason=request.GET.get(u'step_reason','').split("|")
+            run_id=request.GET.get(u'run_id','')
+            test_case_id=request.GET.get(u'test_case_id','')
+            if step_status[0]=="Pass":
+                message=UpdateAll(run_id,test_case_id,step_name,step_status,step_reason)
+            else:
+                message=UpdateSeparate(run_id,test_case_id,step_name,step_status,step_reason)
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def UpdateSeparate(run_id,test_case_id,step_name,step_status,step_reason):
+    message=""
+    for each in zip(step_name,step_status,step_reason):
+                Conn=GetConnection()
+                query="select step_id from test_steps_list where stepname='%s'" %(each[0].strip())
+                TestStepId=DB.GetData(Conn, query, False)
+                sWhereQuery="Where run_id='%s' and tc_id='%s' and teststep_id='%s'" %(run_id,test_case_id,TestStepId[0][0])
+                Dict={'failreason':each[2].strip(),'status':each[1].strip()}
+                testrunenv= DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
+                if testrunenv==True:
+                    message="true"
+                else:
+                    message="false"
+                    break 
+    return message  
+def UpdateAll(run_id,test_case_id,step_name,step_status,step_reason):
+    message=""
+    for each in zip(step_name,step_reason):
+                Conn=GetConnection()
+                query="select step_id from test_steps_list where stepname='%s'" %(each[0].strip())
+                TestStepId=DB.GetData(Conn, query, False)
+                sWhereQuery="Where run_id='%s' and tc_id='%s' and teststep_id='%s'" %(run_id,test_case_id,TestStepId[0][0])
+                Dict={'failreason':each[1].strip(),'status':step_status[0]}
+                testrunenv= DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
+                if testrunenv==True:
+                    message="true"
+                else:
+                    message="false"
+                    break 
+    return message  

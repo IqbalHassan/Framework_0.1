@@ -35,7 +35,9 @@ def UpdateEnvParametersToDatabase():
 
 
         testerid = (oLocalInfo.getLocalUser()).lower()
-		product_version = '1.01'        machine_os = oLocalInfo.getLocalOS()
+		#product_version = '1.01'        
+        product_version=""
+        machine_os = oLocalInfo.getLocalOS()
 
         #Client Info
         client = oLocalInfo.getInstalledClients()
