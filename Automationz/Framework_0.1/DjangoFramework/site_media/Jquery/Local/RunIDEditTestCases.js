@@ -350,7 +350,6 @@ $(document).ready(function(){
     });
 });
 function TestDataFetch(){
-    var test_case_id=$('#testcaseid').text().trim();
     $('#data_table tr td:nth-child(3)').each(function(){
         var value=$(this).text().trim();
         console.log(value);
@@ -364,69 +363,74 @@ function TestDataFetch(){
                     'color':'blue',
                     'cursor':'pointer'
                 });
-                $(this).live('click',function(e){
-                    var stepno=$(this).closest("tr").find("td:first-child").text().trim();
-                    var stepname=$(this).closest("tr").find("td:nth-child(2)").text().trim();
-                    var tc_id=$('#testcaseid').text().trim();
-                    var data_set_id=tc_id+"_s"+stepno;
-                    var message=messageBox(stepname,data_set_id);
-                    $(this).html(message);
-                    e.stopPropagation();
-                })
             }
         }
-    });
-}
-function messageBox(stepname,step_id){
-    var message="";
-    var div_name=step_id.split("-").join("_");
-    message+='<div id="'+div_name+'">';
-    $('#'+div_name).append('<div id="TestStepData" title="'+stepname+'"></div>');
-    $.get("TestDataFetch",{
-        data_set_id:step_id
-    },function(data){
-        console.log(data['row_array']);
-        console.log(data['data_array']);
-        var insideTable="";
-        insideTable+='<table id="data_table" class="ui-widget" style="font-size:small; border-collapse:collapse;" width="100%"><tr>';
-        insideTable+='<tr>';
-        var column=["DataSet","Data"];
-        for(var i=0;i<column.length;i++){
-            insideTable+='<th class="ui-widget-header">'+column[i]+'</th> '
-        }
-        insideTable+='</tr>';
-        for(var i=0;i<data['row_array'].length;i++){
-            insideTable+='<tr>';
-            for(var j=0;j<data['row_array'][i].length;j++){
-                insideTable+=('<td class="ui-widget-content">'+data['row_array'][i][j]+'</td>');
+        $(this).live('click',function(){
+            var data_required=$(this).text().trim();
+            if(data_required=="see data"){
+                var tc_id=$('#testcaseid').text().trim();
+                var step_no=$(this).closest("tr").find("td:first-child").text().trim();
+                var step_name=$(this).closest("tr").find("td:nth-child(2)").text().trim();
+                var datasetid=tc_id+"_s"+step_no;
+                $.get("TestDataFetch",{
+                    'data_set_id':datasetid.trim()
+                },function(data){
+                    console.log(data['row_array']);
+                    console.log(data['data_array']);
+                    var column=["DataSet","Data"];
+                    var message=draw_table(data['row_array'],column);
+                    $('#inside_back').html("");
+                    var div_name=step_name+"(Data Details)";
+                    $('#inside_back').append(message);
+                    $('#data_detail tr td:nth-child(2)').each(function(){
+                        if($(this).text().trim()!="Data"){
+                            var data_column=["Field","Value"];
+                            var data_detail=data['data_array'];
+                            var message=draw_table(data_detail[0],data_column);
+                            $(this).html(message);
+                            data['data_array'].shift();
+                        }
+                    });
+                    $("#inside_back").dialog({
+                        buttons : {
+                            "OK" : function() {
+                                $(this).dialog("close");
+                            }
+                        },
+
+                        show : {
+                            effect : 'drop',
+                            direction : "up"
+                        },
+
+                        modal : true,
+                        width : 500,
+                        height : 620,
+                        title:div_name
+
+                    });
+                });
             }
-            insideTable+='</tr>';
-        }
-        $('#TestStepData').append(insideTable);
-        $('#TestStepData tr td:nth-child(2)').each(function(){
-            var small_data=data['data_array'][0];
-            var column=["Field","Value"];
-            ResultTable($(this),column,small_data,"");
-            data['data_array'].shift();
         });
     });
-    $('#TestStepData').dialog({
-        buttons : {
-            "OK" : function() {
-                $(this).dialog("close");
-            }
-        },
+}
 
-        show : {
-            effect : 'drop',
-            direction : "up"
-        },
-
-        modal : true,
-        width : 600,
-        height : 780
-    });
-    message+='</div>';
+function draw_table(row,column){
+    var message=""
+    message+='<table id="data_detail" class="ui-widget" style="font-size:small; border-collapse:collapse;" width="100%">';
+    message+='<tr>';
+    for(var i=0;i<column.length;i++){
+        message+='<td class="ui-widget-header">'+column[i]+'</td>'
+    }
+    message+='</tr>';
+    for(var i=0;i<row.length;i++){
+        message+='<tr>';
+        for(var j=0;j<row[i].length;j++){
+            message+='<td class="ui-widget-content">'+row[i][j]+'</td>';
+        }
+        message+='</tr>';
+    }
+    message+='</table>';
     return message;
 }
 function DataFetch(){
@@ -448,6 +452,53 @@ function DataFetch(){
         TestDataFetch();
         MakeStatusSelectable();
         InputFailReason();
+        ExecutionLog();
+    });
+}
+function ExecutionLog(){
+    $('#data_table tr td:nth-child(7)').each(function(){
+       if($(this).text().trim()=="Log"){
+           $(this).html("see log");
+           $(this).css({
+               'color':'blue',
+               'cursor':'pointer'
+           });
+       }
+       $(this).live('click',function(e){
+           var run_id=$('#runid').text().trim();
+           var test_case_id=$('#testcaseid').text().trim();
+           var step_no=$(this).closest("tr").find("td:first-child").text().trim();
+           var step_name=$(this).closest("tr").find("td:nth-child(2)").text().trim();
+           var div_name=step_name+"(Execution Log)";
+           console.log(div_name+"-"+step_name);
+           $('#inside_back').html("");
+           $.get("LogFetch",{
+                run_id:run_id,
+                test_case_id:test_case_id,
+                step_name:step_name
+           },function(data){
+               ResultTable("#inside_back",data['column'],data['log'],"");
+               $("#inside_back").dialog({
+                   buttons : {
+                       "OK" : function() {
+                           $(this).dialog("close");
+                       }
+                   },
+
+                   show : {
+                       effect : 'drop',
+                       direction : "up"
+                   },
+
+                   modal : true,
+                   width : 500,
+                   height : 620,
+                   title:div_name
+
+               });
+           });
+           e.stopPropagation();
+       });
     });
 }
 function InputFailReason(){
@@ -521,4 +572,3 @@ function data_print(data){
     }
     return message;
 }
-

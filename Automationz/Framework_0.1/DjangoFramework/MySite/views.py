@@ -3809,9 +3809,10 @@ def DataFetchForTestCases(request):
                 Temp_Data.append(Status[0][0])
                 Conn.close()
                 print Temp_Data
+                Temp_Data.append("Log")
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
-    DataColumn=["StepNumber","StepName","DataRequired","Expected Results","FailReason","Status"]
+    DataColumn=["StepNumber","StepName","DataRequired","Expected Results","FailReason","Status","Execution Log"]
     print DataColumn
     print DataCollected
     message={
@@ -3858,7 +3859,7 @@ def UpdateData(request):
             step_reason=request.GET.get(u'step_reason','').split("|")
             run_id=request.GET.get(u'run_id','')
             test_case_id=request.GET.get(u'test_case_id','')
-            if step_status[0]=="Pass":
+            if len(step_status)==1 and step_status[0]=="Pass":
                 message=UpdateAll(run_id,test_case_id,step_name,step_status,step_reason)
             else:
                 message=UpdateSeparate(run_id,test_case_id,step_name,step_status,step_reason)
@@ -3894,3 +3895,24 @@ def UpdateAll(run_id,test_case_id,step_name,step_status,step_reason):
                     message="false"
                     break 
     return message  
+def LogFetch(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            run_id=request.GET.get(u'run_id','').strip()
+            test_case_id=request.GET.get(u'test_case_id','').strip()
+            step_name=request.GET.get(u'step_name','').strip()
+            print run_id
+            print test_case_id
+            print step_name
+            Conn=GetConnection()
+            query="select step_id from test_steps_list where stepname='%s'" %step_name
+            step_id=DB.GetData(Conn,query,False)
+            query="Select  el.status, el.modulename, el.details from test_step_results tsr, execution_log el where run_id = '%s' and tc_id = '%s' and teststep_id='%s' and tsr.logid = el.logid" % (run_id,test_case_id,str(step_id[0][0]))
+            log=DB.GetData(Conn,query,False)
+            column=["Status","ModuleName","Details"]
+    message={
+             'column':column,
+             'log':log
+             }
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
