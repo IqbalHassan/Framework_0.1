@@ -87,10 +87,15 @@ def RunTest(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
-def Search(request):
+"""def Search(request):
     templ = get_template('SearchResults.html')
     variables = Context({ })
     output = templ.render(variables)
+    return HttpResponse(output)"""
+def ResultPage(request):
+    template=get_template('Result.html')
+    variables=Context({ })
+    output=template.render(variables)
     return HttpResponse(output)
 
 def Search2(request,Run_Id):
@@ -3913,6 +3918,83 @@ def LogFetch(request):
     message={
              'column':column,
              'log':log
+             }
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def ResultTableFetch(request):
+    message=""
+    if request.is_ajax():
+        if request.method=='GET':
+            condition=request.GET.get(u'searchText','')
+            print condition
+            if condition=="limit":
+                limit="limit 20"
+                interval=1
+            if condition=="all":
+                limit=""
+                interval=7
+            print limit
+            print interval    
+            submitted_query="(select tre.run_id,tre.tester_id,ter.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name ||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status in ('In-Progress','Submitted') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)" %interval
+            completed_query="(select tre.run_id,tre.tester_id,ter.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name ||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and  ter.status!='In-Progress' order by ter.teststarttime desc %s)" %limit
+            query=submitted_query+" union all "+completed_query
+            Conn=GetConnection()
+            get_list=DB.GetData(Conn,query,False)
+            print get_list
+            refined_list=[]
+            for each in get_list:
+                temp=[]
+                #print temp
+                for eachitem in each:
+                    temp.append(eachitem)
+                temp.insert(2,"status")
+                temp=tuple(temp)
+                refined_list.append(temp)
+            Conn.close()
+            pass_list=[]
+            for each in refined_list:
+                #print each
+                run_id=each[0]
+                temp=[]
+                total_query="select count(*) from test_case_results where run_id='%s'" %run_id
+                pass_query="select count(*) from test_case_results where run_id='%s' and status='Passed'" %run_id
+                fail_query="select count(*) from test_case_results where run_id='%s' and status='Failed'" %run_id
+                progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
+                notrun_query="select count(*) from test_case_results where run_id='%s' and status is null" %run_id
+                Conn=GetConnection()
+                total=DB.GetData(Conn,total_query)
+                passed=DB.GetData(Conn,pass_query)
+                failed=DB.GetData(Conn,fail_query)
+                progress=DB.GetData(Conn,progress_query)
+                not_run=DB.GetData(Conn,notrun_query)
+                temp.append(total[0])
+                temp.append(passed[0])
+                temp.append(failed[0])
+                temp.append(progress[0])
+                temp.append(not_run[0])
+                temp=tuple(temp)
+                Conn.close()    
+                pass_list.append(temp)
+            Column=["Run ID","Tester ID","Report Status","Status","Duration","Product Version","Machine OS","Machine IP","Client"]
+    message={
+             'column':Column,
+             'data':refined_list,
+             'status_list':pass_list
+             }
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def RunIDStatus(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            runid=request.GET.get(u'run_id','')
+            print runid
+            message=[]
+            totalquery="select count(*) from test_case_results where run_id='%s'" %runid
+            Conn=GetConnection()
+            total=DB.GetData(Conn,totalquery)
+            message.append(total[0])
+    message={
+             'message':message
              }
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')

@@ -1,0 +1,25 @@
+{% extends "BaseTemplate.html" %}
+
+{% block title%}Results{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/Result.js"></script>
+<article>
+    <div>
+        <table align="center">
+            <tr>
+                <td>
+                    <p  class="flip" title = 'RunIDHeader' style="display: block">TestCase Run Detail</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="ResultPane">
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</article>
+{%endblock%}

@@ -17,13 +17,16 @@ urlpatterns = patterns('',
     
     
     #Result Page
-    url(r'^Home/Search/$',Search),
+    #url(r'^Home/Search/$',Search),
+    url(r'^Home/Results/$',ResultPage),
     url(r'^Home/RunID/(?P<Run_Id>[^/]*)/$',Search2),
     url(r'^Home/RunID/(?P<Run_Id>[^/]*)/TC/(?P<TC_Id>[^/]*)/$',RunIDTestCases),
     url(r'^Home/.*/DataFetchForTestCases/$',DataFetchForTestCases),
     url(r'^Home/.*/TestDataFetch/$',TestDataFetch),
     url(r'^Home/.*/UpdateData/$',UpdateData),
     url(r'^Home/.*/LogFetch/$',LogFetch),
+    url(r'^Home/.*/ResultTableFetch/$',ResultTableFetch),
+    url(r'^Home/.*/RunIDStatus/$',RunIDStatus),
     #url(r'^Home/.*/RunIDFailReason/$',RunIDFailReason),
     #url(r'^Home/.*/UpdateFailReason/$',UpdateFailReason),
     #url(r'^Home/.*/Edit/$',RunIDEdit),
