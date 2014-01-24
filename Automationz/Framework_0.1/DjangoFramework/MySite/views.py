@@ -3985,3 +3985,32 @@ def ResultTableFetch(request):
              }
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
+
+def RunIDStatus(request):
+    if request.is_ajax():
+        if request.method=='GET':
+                run_id=request.GET.get(u'run_id','')
+                temp=[]
+                total_query="select count(*) from test_run where run_id='%s'" %run_id
+                pass_query="select count(*) from test_case_results where run_id='%s' and status='Passed'" %run_id
+                fail_query="select count(*) from test_case_results where run_id='%s' and status='Failed'" %run_id
+                progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
+                notrun_query="select count(*) from test_case_results where run_id='%s' and status is null" %run_id
+                Conn=GetConnection()
+                total=DB.GetData(Conn,total_query)
+                passed=DB.GetData(Conn,pass_query)
+                failed=DB.GetData(Conn,fail_query)
+                progress=DB.GetData(Conn,progress_query)
+                not_run=DB.GetData(Conn,notrun_query)
+                pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
+                temp.append(total[0])
+                temp.append(passed[0])
+                temp.append(failed[0])
+                temp.append(progress[0])
+                temp.append(not_run[0])
+                temp.append(pending)
+    message={
+             'message':temp
+             }
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
