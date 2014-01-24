@@ -3956,7 +3956,7 @@ def ResultTableFetch(request):
                 #print each
                 run_id=each[0]
                 temp=[]
-                total_query="select count(*) from test_case_results where run_id='%s'" %run_id
+                total_query="select count(*) from test_run where run_id='%s'" %run_id
                 pass_query="select count(*) from test_case_results where run_id='%s' and status='Passed'" %run_id
                 fail_query="select count(*) from test_case_results where run_id='%s' and status='Failed'" %run_id
                 progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
@@ -3967,11 +3967,13 @@ def ResultTableFetch(request):
                 failed=DB.GetData(Conn,fail_query)
                 progress=DB.GetData(Conn,progress_query)
                 not_run=DB.GetData(Conn,notrun_query)
+                pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
                 temp.append(total[0])
                 temp.append(passed[0])
                 temp.append(failed[0])
                 temp.append(progress[0])
                 temp.append(not_run[0])
+                temp.append(pending)
                 temp=tuple(temp)
                 Conn.close()    
                 pass_list.append(temp)
@@ -3980,21 +3982,6 @@ def ResultTableFetch(request):
              'column':Column,
              'data':refined_list,
              'status_list':pass_list
-             }
-    result=simplejson.dumps(message)
-    return HttpResponse(result,mimetype='application/json')
-def RunIDStatus(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            runid=request.GET.get(u'run_id','')
-            print runid
-            message=[]
-            totalquery="select count(*) from test_case_results where run_id='%s'" %runid
-            Conn=GetConnection()
-            total=DB.GetData(Conn,totalquery)
-            message.append(total[0])
-    message={
-             'message':message
              }
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')

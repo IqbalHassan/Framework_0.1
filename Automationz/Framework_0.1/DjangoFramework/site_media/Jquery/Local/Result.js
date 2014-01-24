@@ -53,28 +53,35 @@ function show_Results(searchText){
         'searchText':searchText
     },function(data){
         var message=drawTable(data['column'],data['data']);
-        console.log(message);
+        //console.log(message);
         $('#ResultPane').html(message);
         for(var i=0;i<data['status_list'].length;i++){
             var array=data['status_list'][i];
             var message="";
-            message+='<table style="border-collapse:collapse"><tr>';
-            for(var j=0;j<array[0];j++)
-            {
-                var color="";
-                if(j<array[1]){
-                    color="green";
-                }
-                else if(j>=array[1] && j<(array[1]+array[2])){
-                    color="red";
-                }
-                else if(j>=(array[1]+array[2]) && j<(array[1]+array[2]+array[3])){
-                    color="blue";
-                }
-                else{
-                    color="silver";
-                }
-                message+='<td style="background-color:'+color+'">&nbsp;&nbsp;&nbsp;&nbsp;</td>';
+            pass=(array[1]/array[0])*100;
+            fail=(array[2]/array[0])*100;
+            progress=(array[3]/array[0])*100;
+            skip=(array[4]/array[0])*100;
+            pending=(array[5]/array[0])*100;
+            console.log(pass);
+            console.log(fail);
+            console.log(progress);
+            console.log(skip);
+            message+='<table style="border-collapse:collapse" width="100%" height="100%"><tr width="100%" height="100%">';
+            if(pass!=0){
+                message+='<td style="background-color: green;" width="'+pass+'%">&nbsp;</td>';
+            }
+            if(fail!=0){
+                message+='<td style="background-color: red;" width="'+fail+'%">&nbsp;</td>';
+            }
+            if(progress!=0){
+                message+='<td style="background-color: blue;" width="'+progress+'%">&nbsp;</td>';
+            }
+            if(skip!=0){
+                message+='<td style="background-color: silver;" width="'+skip+'%">&nbsp;</td>';
+            }
+            if(pending!=0){
+                message+='<td style="background-color: yellow;" width="'+pending+'%">&nbsp;</td>';
             }
             message+='</tr></table>';
             $('#status'+i).html(message);
