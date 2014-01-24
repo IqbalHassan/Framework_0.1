@@ -2,11 +2,19 @@
  * Created by lent400 on 1/22/14.
  */
 $(document).ready(function(){
+    $('.flip[title="SeeLess"]').css({'display':'none'});
     $('.flip[title="RunIDHeader"]').text("Show All");
     var searchText="limit";
     show_Results(searchText);
     $('.flip[title="RunIDHeader"]').live('click',function(){
         show_Results("all");
+        $(this).css({'display':'none'});
+        $('.flip[title="SeeLess"]').css({'display':'block'});
+    });
+    $('.flip[title="SeeLess"]').live('click',function(){
+        show_Results("limit");
+        $(this).css({'display':'none'});
+        $('.flip[title="RunIDHeader"]').css({'display':'block'});
     });
 });
 function Make_RunID_Click(){
