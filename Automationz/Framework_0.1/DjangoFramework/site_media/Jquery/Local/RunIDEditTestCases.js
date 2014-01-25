@@ -420,7 +420,7 @@ function draw_table(row,column){
     message+='<table id="data_detail" class="ui-widget" style="font-size:small; border-collapse:collapse;" width="100%">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+='<td class="ui-widget-header">'+column[i]+'</td>'
+        message+='<td class="ui-widget-header">'+column[i]+'</td>';
     }
     message+='</tr>';
     for(var i=0;i<row.length;i++){
@@ -461,7 +461,8 @@ function ExecutionLog(){
            $(this).html("see log");
            $(this).css({
                'color':'blue',
-               'cursor':'pointer'
+               'cursor':'pointer',
+               'text-align':'center'
            });
        }
        $(this).live('click',function(e){
@@ -509,7 +510,8 @@ function InputFailReason(){
         var step_id=tc_id+"_s"+step_no+"_reason";
         step_id=step_id.trim();
        if($(this).text().trim()!="FailReason"){
-           $(this).html('<input type="text" value="'+failreason+'" id="'+step_id+'" size="50"/>');
+           $(this).html('<textarea id="'+step_id+'" column="100" style="align:center"/></textarea>');
+           $('#'+step_id).val(failreason);
        }
     });
 }

@@ -60,7 +60,7 @@ function Clickable_RunID(){
 function make_table(array){
     console.log(array);
     var message="";
-    var column=["Legend","No of Cases","Percentage"];
+    var column=["Legend","Status","No of Cases","Percentage"];
     var tag=["Passed","Failed","In-Progress","Skipped","Pending"];
     var color=["green","red","blue","silver","yellow"];
     message+='<table class="ui-widget" style="font-size: small;border-collapse: collapse">';
@@ -71,20 +71,24 @@ function make_table(array){
     message+='</tr>';
     for(var i=0;i<color.length;i++){
         var percentage=(array[i+1]/array[0])*100;
+        if(percentage!=0){
+            percentage=percentage-0.01;
+        }
         percentage=percentage+"%";
         console.log(percentage);
         message+='<tr>';
         message+='<td width="40%" class="ui-widget-content"><table width="100%" height="100%"><tr><td style="background-color: '+color[i]+'">&nbsp;&nbsp;</td></tr></table></td>';
-        message+='<td class="ui-widget-content"  style="text-align: center" width="100%">'+array[i+1]+'</td>';
-        message+='<td class="ui-widget-content" style="text-align: center" width="100%">'+percentage+'</td>';
+        message+='<td width="30%" class="ui-widget-content" style="text-align:center;color:'+color[i]+'"><b>'+tag[i]+'</b></td>';
+        message+='<td class="ui-widget-content"  style="text-align: center;font-weight:bolder;color:'+color[i]+'" width="100%">'+array[i+1]+'</td>';
+        message+='<td class="ui-widget-content" style="text-align: center;font-weight:bolder;color:'+color[i]+'" width="100%">'+percentage+'</td>';
         message+='</tr>'
     }
     message+='<tr>';
-    message+='<td class="ui-widget-content" style="text-align: center">Total</td> ';
-    message+='<td class="ui-widget-content" style="text-align: center" colspan="2">'+array[0]+'</td> ';
+    message+='<td class="ui-widget-content" style="text-align: center"><b>Total</b></td> ';
+    message+='<td class="ui-widget-content" style="text-align: center" colspan="3"><b>'+array[0]+'</b></td> ';
     message+='</tr>'
     message+='</table> ';
-    message_inner=""
+    /*message_inner=""
     message_inner+='<br><br><br><br><br><br><div id="inner-right" align="right"><table class="ui-widget" style="font-size: small;border-collapse: collapse;">';
     message_inner+='<tr><th class="ui-widget-header" colspan="2">Legend Information</th></tr>'
     for(var i=0;i<color.length;i++){
@@ -94,7 +98,7 @@ function make_table(array){
         message_inner+='</tr>';
     }
     message_inner+='</table></div>';
-    message+=message_inner;
+    message+=message_inner;*/
     return message;
 }
 function Make_Detail_Status(){
