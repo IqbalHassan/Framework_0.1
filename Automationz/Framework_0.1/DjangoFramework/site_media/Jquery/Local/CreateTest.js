@@ -72,9 +72,15 @@ $(document).ready(function() {
                 $.each(json, function(i, value) {
 
                     //$(".browser[data-level='']").append($('<option>').text(value).attr('value', value));
-                    $('.browser').append('<td width="25%">' +
-                        '<input id=value type="checkbox" name="dependency" value=value style="width:auto">' +
-                        '<label for=value>' +
+                    $(".browser").append('<td width="25%">' +
+                        '<input id=' +
+                         value +
+                        ' type="checkbox" name="dependancy" value=' +
+                         value +
+                        '>' +
+                        '<label for=' +
+                         value +
+                        '>' +
                          value +
                         '</label>' +
                         '</td>');
