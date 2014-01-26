@@ -31,14 +31,15 @@ $(document).ready(function(){
 
                 $("p.flip[title =  'Test Type Status']").text("Test type status report of (" +choice + ")" )
                 $("p.flip[title =  'Test Type Status']").fadeIn(1000);
-                AnalysisTableActions()
+                AnalysisTableActions();
+                Customize_table();
 
                 //Making Run ID blue color and clickable
-                $(".ui-widget tr td:first-child").css({'color':'black', 'cursor' : 'pointer'});
+                $(".ui-widget tr td:first-child").css({'color':'blue', 'cursor' : 'pointer'});
 
 
                 //When user click on Run Id
-                $("#TestTypeStatusTable .ui-widget tr td:first-child").each(function(){
+                /*$("#TestTypeStatusTable .ui-widget tr td:first-child").each(function(){
                     $(this).live('click',function(){
 
 
@@ -53,7 +54,7 @@ $(document).ready(function(){
 
 
                     });
-                });
+                });*/
             });
         }
 
@@ -69,4 +70,11 @@ function AnalysisTableActions()
         $("#TestTypeStatusTable").slideToggle("slow");
     });
 
+}
+
+function Customize_table(){
+    $('#TestTypeStatusTable tr>td:first-child').css({
+        'color':'blue',
+        'cursor':'pointer'
+    });
 }
