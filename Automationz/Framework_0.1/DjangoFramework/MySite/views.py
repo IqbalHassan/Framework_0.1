@@ -3259,7 +3259,7 @@ def TestTypeStatus_Report(request):                     #minar09
     for each in sections:     
         for y in priority:
             data=[]
-            data.append(each[0])
+            data.append(each[0].replace(".","-"))
             data.append(y)
             Table.append(tuple(data))
             

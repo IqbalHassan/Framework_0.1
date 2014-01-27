@@ -37,18 +37,18 @@ $(document).ready(function(){
                 $("#TestTypeStatusTable").css({'text-align':'center', 'cursor' : 'pointer'});
 
 
-                //When user click on Run Id
+
                 $("#TestTypeStatusTable .ui-widget tr td:first-child").each(function(){
                     $(this).live('click',function(){
 
 
                         $("#TestTypeStatusTable").slideToggle("slow");
-                        ClickedRunId = $(this).text();
-                        var $TC = $(this).text();
-                        var TestSteps;
+                       // ClickedRunId = $(this).text();
+                        //var $TC = $(this).text();
+                        //var TestSteps;
 
                         //Following function exist in SearchResult.js file
-                        RunIdTestCases(ClickedRunId)
+                        //RunIdTestCases(ClickedRunId)
 
 
 
@@ -59,7 +59,7 @@ $(document).ready(function(){
                         //'font-weight' : 'bold'
                     });
                 });
-                $("#TestTypeStatusTable .ui-widget tr:nth-child(6)").css({
+                $("#TestTypeStatusTable .ui-widget tr:nth-child(5n+1)").css({
                     'color':'black',
                     'cursor':'pointer',
                     'font-weight' : 'bold'
