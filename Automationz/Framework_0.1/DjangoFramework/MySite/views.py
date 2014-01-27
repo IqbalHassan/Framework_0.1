@@ -2938,6 +2938,8 @@ def Check_TestCase(TableData,RefinedData):
     conn=GetConnection()
     test_type=[u'automated',u'manual',u'performance']
     type_selector=[]
+    query = "select tc_id from test_case_tag where name like '%Status%' and property='Forced'"
+    forced = DB.GetData(conn, query, False)
     for each in TableData:
         type_selector=[]
         data=[]
@@ -2961,7 +2963,14 @@ def Check_TestCase(TableData,RefinedData):
             RefinedData.append(each)
         else:
             # print "automated"
-            data.append(test_type[0])
+            man = 0
+            for f in forced:
+                if f[0]==each[0]:
+                    man = 1
+            if man==1:
+                data.append(test_type[1])
+            else:
+                data.append(test_type[0])
             each=tuple(data)
             RefinedData.append(each)
             

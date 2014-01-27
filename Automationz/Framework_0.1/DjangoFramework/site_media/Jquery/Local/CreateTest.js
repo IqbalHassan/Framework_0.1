@@ -189,8 +189,10 @@ $(document).ready(function() {
 				if(!template){
 					if(enabledStatus == "Ready")
 						$('input[value="Production"]').attr('checked', true);
-					else
+					else if(enabledStatus == "Dev")
 						$('input[value="Development"]').attr('checked', true);
+                    else if(enabledStatus == "Forced")
+                        $('input[value="Forced-Manual"]').attr('checked', true);
 					$('#tc_enable').css('display','block');
 				}
 				
@@ -335,8 +337,10 @@ $(document).ready(function() {
 			var status;
 			if($('input[value="Production"]').attr('checked') == "checked")
 				status = "Ready"
-			else
+			else if($('input[value="Development"]').attr('checked') == "checked")
 				status = "Dev"
+            else if($('input[value="Forced-Manual"]').attr('checked') == "checked")
+                status = "Forced"
 					
 			var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
 			var _TC_Id = $('#TC_Id').html().substring($('#TC_Id').html().indexOf(": ")+2,$('#TC_Id').html().indexOf("</b>"))

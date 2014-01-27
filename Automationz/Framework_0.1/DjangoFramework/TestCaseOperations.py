@@ -362,6 +362,8 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Ta
         Priority_Tag = 'Priority'
         Dependency_Tag = 'Dependency'
         Tag_List.append(('Status', Status))
+        if Status=="Forced":
+            Tag_List.append(('Status', 'Ready'))
     elif Platform.lower() == 'mac':
         Tag_List.append(('Mac', 'machine_os'))
         Section_Tag = 'MacSection'
@@ -371,6 +373,8 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Ta
         Priority_Tag = 'MacPriority'
         Dependency_Tag = 'MacDependency'
         Tag_List.append(('MacStatus', Status))
+        if Status=="Forced":
+            Tag_List.append(('Status', 'Ready'))
     else:
         err_msg = LogMessage(sModuleInfo, "Unknown platform value for the test case: %s" % (Platform), 4)
         return err_msg
