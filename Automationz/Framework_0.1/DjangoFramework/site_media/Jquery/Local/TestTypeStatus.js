@@ -46,16 +46,31 @@ $(document).ready(function(){
                     });
                     $(this).css({
                         'color':'blue',
-                        'cursor':'pointer'
-                        //'font-weight' : 'bold'
+                        'font-weight' : 'normal',
+                        'cursor':'pointer',
+                        'border' : '0px',
+                        'border-collapse' : 'collapse',
+                        'border-spacing': '0'
                     });
                 });
                 $("#TestTypeStatusTable .ui-widget tr:nth-child(5n+1)").css({
                     'color':'black',
                     'cursor':'pointer',
                     'font-weight' : 'bold',
-                    'border' : '2px solid green'
+                    'border' : '1px solid grey'
                 });
+                $("#TestTypeStatusTable tr:nth-child(5n-2) td:first-child").each(function(){
+                    var t = $(this);
+                    //var n = t.next();
+                    t.html(t.html()+ " ");
+                });
+                $("#TestTypeStatusTable tr:nth-child(5n-2) td:nth-child(1)").each(function(){
+                    $(this).html("");
+                });
+                $("#TestTypeStatusTable tr:nth-child(5n-3) td:nth-child(1)").each(function(){
+                    $(this).html("");
+                });
+
                 $("#TestTypeStatusTable tr:nth-child(5n+1) td:first-child").each(function(){
                     var t = $(this);
                     var n = t.next();
@@ -65,7 +80,8 @@ $(document).ready(function(){
                     $(this).html("");
                 });
 
-                /*$('#TestTypeStatusTable table').each(function () {
+
+                $('#TestTypeStatusTable table').each(function () {
 
                     var dimension_cells = new Array();
                     var dimension_col = null;
@@ -85,7 +101,7 @@ $(document).ready(function(){
                     $(this).find('tr').each(function () {
 
                         // find the td of the correct column (determined by the dimension_col set above)
-                        var dimension_td = $(this).find('td:nth-child(' + dimension_col + ')');
+                        var dimension_td = $(this).find('td:nth-child('+ dimension_col + ')');
 
                         if (first_instance == null) {
                             // must be the first row
@@ -102,7 +118,7 @@ $(document).ready(function(){
                         }
 
                     });
-                });*/
+                });
             });
         }
 
