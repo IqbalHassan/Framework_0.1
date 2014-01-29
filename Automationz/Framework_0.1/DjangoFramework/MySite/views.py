@@ -3477,9 +3477,26 @@ def TestTypeStatus_Report(request):                     #minar09
     totalSum = count_Sum(totalCount)
     temp.append(totalSum)
     TableData.append(tuple(temp))
+    
+    """FinalData = []
+    
+    for i in sections:
+        tempsect = []
+        tempsect.append(sections[i])
+        k = 5*i
+        while k<5*(i+1):
+            j = 1
+            temptuple = []
+            temptuple.append(TableData[k])
+            #for j in TableData:
+                #temptuple.append(TableData[k][j])
+            k = k+1
+        tempsect.append(tuple(temptuple))
+        FinalData.append(tuple(tempsect))"""
         
+    SubHeading = ['Section','']
     Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Total']
-    results = {'Heading':Heading, 'TableData':TableData}
+    results = {'Heading':Heading, 'TableData':TableData, 'SubHeading':SubHeading, 'Sections':sections}
     #results = {'Heading':Heading, 'TableData':RefinedData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
