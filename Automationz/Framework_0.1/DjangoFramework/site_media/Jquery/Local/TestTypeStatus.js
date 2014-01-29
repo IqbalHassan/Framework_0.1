@@ -31,7 +31,7 @@ $(document).ready(function(){
 
                 $("p.flip[title =  'Test Type Status']").text("Test type status report of (" +choice + ")" )
                 $("p.flip[title =  'Test Type Status']").fadeIn(1000);
-                AnalysisTableActions();
+                //AnalysisTableActions();
 
 
                 $("#TestTypeStatusTable").css({'text-align':'center', 'cursor' : 'pointer'});
@@ -39,11 +39,11 @@ $(document).ready(function(){
 
                 $("#TestTypeStatusTable .ui-widget tr td:first-child").each(function(){
 
-                    $(this).live('click',function(){
+                   /* $(this).live('click',function(){
 
                         $("#TestTypeStatusTable").slideToggle("slow");
 
-                    });
+                    });*/
                     $(this).css({
                         'color':'blue',
                         'font-weight' : 'normal',
@@ -58,6 +58,10 @@ $(document).ready(function(){
                     'cursor':'pointer',
                     'font-weight' : 'bold',
                     'border' : '1px solid grey'
+                });
+                $("#TestTypeStatusTable .ui-widget tr:last-child").css({
+                    'cursor':'pointer',
+                    'border' : '2px solid grey'
                 });
                 $("#TestTypeStatusTable tr:nth-child(5n-2) td:first-child").each(function(){
                     var t = $(this);
