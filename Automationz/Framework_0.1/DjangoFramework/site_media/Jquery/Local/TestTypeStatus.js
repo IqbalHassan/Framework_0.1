@@ -34,8 +34,16 @@ $(document).ready(function(){
                 //AnalysisTableActions();
 
 
-                $("#TestTypeStatusTable").css({'text-align':'center', 'cursor' : 'pointer'});
+                $("#TestTypeStatusTable").css({
+                    'text-align':'center',
+                    'cursor' : 'pointer',
+                    'border' : '1px solid grey'
+                });
 
+                $("#TestTypeStatusTable .ui-widget th").css({
+                    'cursor':'pointer',
+                    'background-color' : 'black'
+                });
 
                 $("#TestTypeStatusTable .ui-widget tr td:first-child").each(function(){
 
@@ -59,10 +67,7 @@ $(document).ready(function(){
                     'font-weight' : 'bold',
                     'border' : '1px solid grey'
                 });
-                $("#TestTypeStatusTable .ui-widget tr:last-child").css({
-                    'cursor':'pointer',
-                    'border' : '2px solid grey'
-                });
+
                 $("#TestTypeStatusTable tr:nth-child(5n-2) td:first-child").each(function(){
                     var t = $(this);
                     //var n = t.next();
@@ -70,7 +75,11 @@ $(document).ready(function(){
                 });
                 $("#TestTypeStatusTable tr:nth-child(5n-2) td:nth-child(1)").each(function(){
                     $(this).html("");
+                    $(this).css({
+                        bgColor : 'black'
+                    });
                 });
+
                 $("#TestTypeStatusTable tr:nth-child(5n-3) td:nth-child(1)").each(function(){
                     $(this).html("");
                 });
@@ -78,12 +87,33 @@ $(document).ready(function(){
                 $("#TestTypeStatusTable tr:nth-child(5n+1) td:first-child").each(function(){
                     var t = $(this);
                     var n = t.next();
-                    t.html(t.html() +" -> "+ n.html());
+                    t.html(" "+ n.html() + "       ");
+                    $(this).css({
+                        'text-indent' : '5cm'
+                    });
                 });
                 $("#TestTypeStatusTable tr:nth-child(5n+1) td:nth-child(2)").each(function(){
                     $(this).html("");
+
                 });
 
+                $("#TestTypeStatusTable tr:last-child td:first-child").each(function(){
+                    $(this).html("Grand Total   ");
+                    $(this).css({
+                        'color' : 'red',
+                        'font-weight' : 'bold'
+                    });
+                });
+
+                $("#TestTypeStatusTable tr:last-child td").css({
+                    'color' : 'red'
+                });
+                $("#TestTypeStatusTable tr:nth-child(5n-2) td").css({
+                    'color' : '#00CC33'
+                });
+                $("#TestTypeStatusTable tr:nth-child(5n) td").css({
+                    'color' : '#00CC33'
+                });
 
                 $('#TestTypeStatusTable table').each(function () {
 
