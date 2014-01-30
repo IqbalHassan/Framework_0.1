@@ -78,13 +78,17 @@ $(document).ready(function(){
 
                     });*/
                     $(this).css({
-                        'color':'blue',
-                        'font-weight' : 'normal',
+                        'color':'black',
+                        'font-weight' : 'bold',
+                        'font-size':'120%',
                         'cursor':'pointer',
                         'border' : '0px',
                         'border-collapse' : 'collapse',
                         'border-spacing': '0'
                     });
+                });
+                $("#TestTypeStatusTable .ui-widget tr td:nth-child(2)").css({
+                    'font-weight' : 'bold'
                 });
                 $("#TestTypeStatusTable .ui-widget tr:nth-child(5n+1) td").css({
                     'color':'black',
@@ -92,7 +96,7 @@ $(document).ready(function(){
                     'font-weight' : 'bold',
                     'border' : '1px solid grey',
                     'background' : '#CCFFCC',
-                    'font-size':'120%'
+                    'font-size':'110%'
                 });
 
                 $("#TestTypeStatusTable tr:nth-child(5n-2) td:first-child").each(function(){
