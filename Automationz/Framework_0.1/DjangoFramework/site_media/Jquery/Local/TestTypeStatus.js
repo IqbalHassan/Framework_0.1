@@ -91,7 +91,8 @@ $(document).ready(function(){
                     'cursor':'pointer',
                     'font-weight' : 'bold',
                     'border' : '1px solid grey',
-                    'background' : '#CCFFCC'
+                    'background' : '#CCFFCC',
+                    'font-size':'120%'
                 });
 
                 $("#TestTypeStatusTable tr:nth-child(5n-2) td:first-child").each(function(){
@@ -131,7 +132,8 @@ $(document).ready(function(){
                 });
 
                 $("#TestTypeStatusTable tr:last-child td").css({
-                    'color' : 'red'
+                    'color' : 'red',
+                    'font-size':'140%'
                 });
                 $("#TestTypeStatusTable tr:nth-child(5n-3) td").css({
                     'background' : '#CCFFFF'
@@ -146,7 +148,17 @@ $(document).ready(function(){
                 $("#TestTypeStatusTable tr:nth-child(5n-1) td:first-child").css({
                     'background' : 'white'
                 });
-
+                $("#TestTypeStatusTable tr td:last-child").css({
+                    'font-weight':'bold',
+                    'font-size':'120%'
+                });
+                $("#TestTypeStatusTable tr:nth-child(5n+1) td:last-child").css({
+                    'color' : 'red',
+                    'font-size':'140%'
+                });
+                $("#TestTypeStatusTable tr:last-child td:last-child").css({
+                    'font-size':'160%'
+                });
                 $('#TestTypeStatusTable table').each(function () {
 
                     var dimension_cells = new Array();
