@@ -28,6 +28,30 @@ $(document).ready(function(){
             {
                 ResultTable(TestTypeStatusTable,data['Heading'],data['TableData'],"Test Type Status Report");
 
+                /***************pie chart***********************
+                $.getScript( "https://www.google.com/jsapi", function(){
+                    google.load("visualization", "1", {packages:["corechart"]});
+                    google.setOnLoadCallback(drawChart);
+                    function drawChart() {
+                        var data = google.visualization.arrayToDataTable([
+                            ['Task', 'Hours per Day'],
+                            ['Work',     11],
+                            ['Eat',      2],
+                            ['Commute',  2],
+                            ['Watch TV', 2],
+                            ['Sleep',    7]
+                        ]);
+
+                        var options = {
+                            title: 'My Daily Activities'
+                        };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('TestTypeStatusChart'));
+                        chart.draw(data, options);
+                    }
+                });
+
+                /***************pie chart*********************/
 
                 $("p.flip[title =  'Test Type Status']").text("Test type status report of (" +choice + ")" )
                 $("p.flip[title =  'Test Type Status']").fadeIn(1000);
@@ -42,7 +66,8 @@ $(document).ready(function(){
 
                 $("#TestTypeStatusTable .ui-widget th").css({
                     'cursor':'pointer',
-                    'background-color' : 'black'
+                    'background' : 'black',
+                    'color' : 'white'
                 });
 
                 $("#TestTypeStatusTable .ui-widget tr td:first-child").each(function(){
@@ -61,11 +86,12 @@ $(document).ready(function(){
                         'border-spacing': '0'
                     });
                 });
-                $("#TestTypeStatusTable .ui-widget tr:nth-child(5n+1)").css({
+                $("#TestTypeStatusTable .ui-widget tr:nth-child(5n+1) td").css({
                     'color':'black',
                     'cursor':'pointer',
                     'font-weight' : 'bold',
-                    'border' : '1px solid grey'
+                    'border' : '1px solid grey',
+                    'background' : '#CCFFCC'
                 });
 
                 $("#TestTypeStatusTable tr:nth-child(5n-2) td:first-child").each(function(){
@@ -94,7 +120,6 @@ $(document).ready(function(){
                 });
                 $("#TestTypeStatusTable tr:nth-child(5n+1) td:nth-child(2)").each(function(){
                     $(this).html("");
-
                 });
 
                 $("#TestTypeStatusTable tr:last-child td:first-child").each(function(){
@@ -108,11 +133,18 @@ $(document).ready(function(){
                 $("#TestTypeStatusTable tr:last-child td").css({
                     'color' : 'red'
                 });
-                $("#TestTypeStatusTable tr:nth-child(5n-2) td").css({
-                    'color' : '#00CC33'
+                $("#TestTypeStatusTable tr:nth-child(5n-3) td").css({
+                    'background' : '#CCFFFF'
                 });
-                $("#TestTypeStatusTable tr:nth-child(5n) td").css({
-                    'color' : '#00CC33'
+
+                $("#TestTypeStatusTable tr:nth-child(5n-1) td").css({
+                    'background' : '#CCFFFF'
+                });
+                $("#TestTypeStatusTable tr:nth-child(5n-3) td:first-child").css({
+                    'background' : 'white'
+                });
+                $("#TestTypeStatusTable tr:nth-child(5n-1) td:first-child").css({
+                    'background' : 'white'
                 });
 
                 $('#TestTypeStatusTable table').each(function () {
