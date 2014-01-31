@@ -47,7 +47,11 @@ $(document).ready(function(){
                 ]);
 
                 var options = {
-                    title: 'Summary - ' + choice
+                    title: 'Summary - ' + choice,
+                    //width: 500,
+                    height: 400,
+                    fontSize: 13,
+                    titleTextStyle:{fontSize:17}
                 };
 
                 //var data = google.visualization.arrayToDataTable(jsonData);
