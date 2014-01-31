@@ -5,7 +5,32 @@
 
 {% block content %}
 
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="/site_media/Jquery/Local/TestTypeStatus.js"></script>
+<script type="text/javascript">
+    $.get("TestTypeStatus_Report",function(data)
+    {
+         google.load("visualization", "1", {packages:["corechart"]});
+         google.setOnLoadCallback(drawChart);
+         function drawChart() {
+         var data = google.visualization.arrayToDataTable([
+            ['Task', 'Hours per Day'],
+            ['Work',     11],
+            ['Eat',      2],
+            ['Commute',  2],
+            ['Watch TV', 2],
+            ['Sleep',    7]
+            ]);
+
+         var options = {
+            title: 'Test type status'
+         };
+
+         var chart = new google.visualization.PieChart(document.getElementById('TestTypeStatusChart'));
+            chart.draw(data, options);
+         }
+    });
+</script>
 
 <article>
 
@@ -41,6 +66,12 @@
 
             <p class='flip' title = "Test Type Status"  style = "display: none; width: auto;"> Test Type Status Report </p>
             <div id="TestTypeStatusTable">
+
+            </div>
+
+            <br/>
+
+            <div id="TestTypeStatusChart">
 
             </div>
 
