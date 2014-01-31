@@ -668,8 +668,8 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     Conn=GetConnection()
     RunId=RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID","Tester","Product","Machine OS","Client","Data Type"]
-    query="Select DISTINCT run_id,tester_id, product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,data_type from test_run_env Where run_id = '%s'" % RunId
+    Env_Details_Col = ["Run ID","Tester","Status","Product","Machine OS","Client","Data Type"]
+    query="Select DISTINCT run_id,tester_id,status,product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,data_type from test_run_env Where run_id = '%s'" % RunId
     Env_Details_Data=DB.GetData(Conn, query, False)
     AllTestCases = DB.GetData(Conn, "(select "
                                             "tct.name as MKSId, "
@@ -1194,7 +1194,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         TestCasesIDs = DB.GetData(Conn, "select distinct tct.tc_id from test_case_tag tct, test_cases tc "
                 "where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query)
-
+    #The Run ID and test case may be given a status of submitted here.    
     for eachitem in TestCasesIDs:
         Dict = {'run_id':runid, 'tc_id':str(eachitem)}
         Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
@@ -1264,11 +1264,11 @@ def AddInfo(run_id):
     TestCaseList=DB.GetData(conn, query)
     for eachcase in TestCaseList:
         print eachcase
-        print DB.InsertNewRecordInToTable(conn, "test_case_results",run_id=run_id,tc_id=eachcase)
+        print DB.InsertNewRecordInToTable(conn, "test_case_results",run_id=run_id,tc_id=eachcase,status="Submitted")
         TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % eachcase, False)
         for eachstep in TestStepsList:
             print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
-            Dict={'run_id':run_id,'tc_id':eachcase,'teststep_id':eachstep[0]}
+            Dict={'run_id':run_id,'tc_id':eachcase,'teststep_id':eachstep[0],'status':"Submitted"}
             print DB.InsertNewRecordInToTable(conn, "test_step_results",**Dict)
 def ReRun_Fail_TestCases(request):
     Conn = GetConnection()
@@ -3870,44 +3870,102 @@ def UpdateData(request):
         if request.method=='GET':
             step_name=request.GET.get(u'step_name','').split("|")
             step_status=request.GET.get(u'step_status','').split("|")
-            step_reason=request.GET.get(u'step_reason','').split("|")
+            step_fail_reason=request.GET.get(u'step_reason','').split("|")
             run_id=request.GET.get(u'run_id','')
             test_case_id=request.GET.get(u'test_case_id','')
-            if len(step_status)==1 and step_status[0]=="Pass":
-                message=UpdateAll(run_id,test_case_id,step_name,step_status,step_reason)
+            Dict=test_status(step_status)
+            print Dict
+            if Dict['status']=='Failed':
+                index=Dict['index']
+                message=test_step_failed(step_name,step_status,step_fail_reason,run_id,test_case_id,index)
+                print message
             else:
-                message=UpdateSeparate(run_id,test_case_id,step_name,step_status,step_reason)
+                if 'In-Progress' in step_status:
+                    test_case_status='In-Progress'
+                elif 'Passed' in step_status and 'Submitted' not in step_status:
+                    test_case_status='Passed'
+                elif 'Skipped' in step_status and 'Submitted' not in step_status:
+                    test_case_status='Skipped'
+                else:
+                    test_case_status='Submitted'
+                message= UpdateSeparate(run_id, test_case_id, step_name, step_status, step_fail_reason, test_case_status,"")
+    message=message
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
-def UpdateSeparate(run_id,test_case_id,step_name,step_status,step_reason):
+def test_step_failed(step_name,step_status,step_fail_reason,run_id,test_case_id,index):
+    for count in range(0,len(step_status)):
+        if count>index:
+            step_status[count]='Skipped'
+            step_fail_reason[count]=""
+            count+=1
+        else:
+            count+=1
+    tc_fail_reason=step_fail_reason[index]
+    tc_case_status='Failed'
+    return UpdateSeparate(run_id,test_case_id,step_name,step_status,step_fail_reason,tc_case_status,tc_fail_reason)
+    #print step_status
+    #print step_fail_reason
+def test_status(step_status):
+    status=""
+    count=0
+    for each in step_status:
+        if each.strip()=='Failed':
+            status='Failed'
+            count+=1
+            break
+        else:
+            count+=1
+    Dict={'status':status,'index':count-1}
+    return Dict
+def UpdateSeparate(run_id,test_case_id,step_name,step_status,step_reason,tc_case_status,tc_fail_reason):
     message=""
+    sWhereQuery="Where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
+    Dict={'failreason':tc_fail_reason.strip(),'status':tc_case_status.strip()}
+    Conn=GetConnection()
+    testrunenv=DB.UpdateRecordInTable(Conn,"test_case_results",sWhereQuery,**Dict)
+    Conn.close()
     for each in zip(step_name,step_status,step_reason):
-                Conn=GetConnection()
-                query="select step_id from test_steps_list where stepname='%s'" %(each[0].strip())
-                TestStepId=DB.GetData(Conn, query, False)
-                sWhereQuery="Where run_id='%s' and tc_id='%s' and teststep_id='%s'" %(run_id,test_case_id,TestStepId[0][0])
-                Dict={'failreason':each[2].strip(),'status':each[1].strip()}
-                testrunenv= DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
-                if testrunenv==True:
-                    message="true"
-                else:
-                    message="false"
-                    break 
+        Conn=GetConnection()
+        query="select step_id from test_steps_list where stepname='%s'" %(each[0].strip())
+        TestStepId=DB.GetData(Conn, query, False)
+        sWhereQuery="Where run_id='%s' and tc_id='%s' and teststep_id='%s'" %(run_id,test_case_id,TestStepId[0][0])
+        Dict={'failreason':each[2].strip(),'status':each[1].strip()}
+        testrunenv= DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
+        if testrunenv==True:
+            message="true"
+        else:
+            message="false"
+            break
+    Update_run_id_status(run_id)
     return message  
+def Update_run_id_status(run_id):
+    sQuery="select distinct status from test_case_results where run_id='%s'" %run_id 
+    Conn=GetConnection()
+    status_list=DB.GetData(Conn, sQuery)
+    if 'Submitted' in status_list and ('Passed','In-Progress','Failed') not in status_list:
+        status='Submitted'
+    elif 'In-Progress' in status_list:
+        status='In-Progress'
+    else:
+        status='Complete'
+    print status
+    sWhereQuery="Where run_id='%s'" %run_id
+    print DB.UpdateRecordInTable(Conn,"test_env_results", sWhereQuery,status=status)
+    print DB.UpdateRecordInTable(Conn,"test_run_env", sWhereQuery,status=status)
 def UpdateAll(run_id,test_case_id,step_name,step_status,step_reason):
     message=""
     for each in zip(step_name,step_reason):
-                Conn=GetConnection()
-                query="select step_id from test_steps_list where stepname='%s'" %(each[0].strip())
-                TestStepId=DB.GetData(Conn, query, False)
-                sWhereQuery="Where run_id='%s' and tc_id='%s' and teststep_id='%s'" %(run_id,test_case_id,TestStepId[0][0])
-                Dict={'failreason':each[1].strip(),'status':step_status[0]}
-                testrunenv= DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
-                if testrunenv==True:
-                    message="true"
-                else:
-                    message="false"
-                    break 
+        Conn=GetConnection()
+        query="select step_id from test_steps_list where stepname='%s'" %(each[0].strip())
+        TestStepId=DB.GetData(Conn, query, False)
+        sWhereQuery="Where run_id='%s' and tc_id='%s' and teststep_id='%s'" %(run_id,test_case_id,TestStepId[0][0])
+        Dict={'failreason':each[1].strip(),'status':step_status[0]}
+        testrunenv= DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
+        if testrunenv==True:
+            message="true"
+        else:
+            message="false"
+            break 
     return message  
 def LogFetch(request):
     if request.is_ajax():
@@ -3946,7 +4004,7 @@ def ResultTableFetch(request):
             print interval    
             submitted_query="(select tre.run_id,tre.tester_id,ter.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name ||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status in ('In-Progress','Submitted') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)" %interval
             completed_query="(select tre.run_id,tre.tester_id,ter.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name ||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and  ter.status!='In-Progress' order by ter.teststarttime desc %s)" %limit
-            query=submitted_query+" union all "+completed_query
+            query=submitted_query+" union all "+completed_query + limit
             Conn=GetConnection()
             get_list=DB.GetData(Conn,query,False)
             print get_list
