@@ -3890,22 +3890,25 @@ def UpdateData(request):
             step_fail_reason=request.GET.get(u'step_reason','').split("|")
             run_id=request.GET.get(u'run_id','')
             test_case_id=request.GET.get(u'test_case_id','')
-            Dict=test_status(step_status)
-            print Dict
-            if Dict['status']=='Failed':
-                index=Dict['index']
-                message=test_step_failed(step_name,step_status,step_fail_reason,run_id,test_case_id,index)
-                print message
+            if len(step_status)==1 and step_status[0]=="Passed":
+                message=UpdateAll(run_id, test_case_id, step_name, step_status, step_fail_reason)
             else:
-                if 'In-Progress' in step_status:
-                    test_case_status='In-Progress'
-                elif 'Passed' in step_status and 'Submitted' not in step_status:
-                    test_case_status='Passed'
-                elif 'Skipped' in step_status and 'Submitted' not in step_status:
-                    test_case_status='Skipped'
+                Dict=test_status(step_status)
+                print Dict
+                if Dict['status']=='Failed':
+                    index=Dict['index']
+                    message=test_step_failed(step_name,step_status,step_fail_reason,run_id,test_case_id,index)
+                    print message
                 else:
-                    test_case_status='Submitted'
-                message= UpdateSeparate(run_id, test_case_id, step_name, step_status, step_fail_reason, test_case_status,"")
+                    if 'In-Progress' in step_status:
+                        test_case_status='In-Progress'
+                    elif 'Passed' in step_status and 'Submitted' not in step_status:
+                        test_case_status='Passed'
+                    elif 'Skipped' in step_status and 'Submitted' not in step_status:
+                        test_case_status='Skipped'
+                    else:
+                        test_case_status='Submitted'
+                    message= UpdateSeparate(run_id, test_case_id, step_name, step_status, step_fail_reason, test_case_status,"")
     message=message
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
@@ -3982,7 +3985,10 @@ def UpdateAll(run_id,test_case_id,step_name,step_status,step_reason):
             message="true"
         else:
             message="false"
-            break 
+            break
+    sWhereQuery="Where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
+    print DB.UpdateRecordInTable(Conn,"test_case_results",sWhereQuery,status='Passed')
+    Update_run_id_status(run_id) 
     return message  
 def LogFetch(request):
     if request.is_ajax():

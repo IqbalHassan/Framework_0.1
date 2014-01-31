@@ -337,7 +337,7 @@ $(document).ready(function(){
         step_reason.shift();
         $.get("UpdateData",{
             step_name:step_name.join('|'),
-            step_status:"Pass",
+            step_status:"Passed",
             step_reason:step_reason.join('|'),
             run_id:run_id,
             test_case_id:test_case_id
