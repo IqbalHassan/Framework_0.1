@@ -298,6 +298,11 @@ $(document).ready(function(){
             step_reason.push(reason);
         });
         step_reason.shift();
+        console.log(step_name);
+        console.log(step_status);
+        console.log(step_reason);
+        console.log(run_id);
+        console.log(test_case_id);
         $.get("UpdateData",{
             step_name:step_name.join('|'),
             step_status:step_status.join('|'),
@@ -332,7 +337,7 @@ $(document).ready(function(){
         step_reason.shift();
         $.get("UpdateData",{
             step_name:step_name.join('|'),
-            step_status:"Pass",
+            step_status:"Passed",
             step_reason:step_reason.join('|'),
             run_id:run_id,
             test_case_id:test_case_id
@@ -525,12 +530,12 @@ function MakeStatusSelectable(){
         console.log(value);
         if(value!="Status"){
             $(this).html('<select id="'+step_id+'" style="align:center">' +
-                '<option value="Pass">Pass</option>' +
+                '<option value="Passed">Passed</option>' +
                 '<option value="Failed">Failed</option>' +
-                '<option value="Blocked">Blocked</option>' +
+                /*'<option value="Blocked">Blocked</option>' +*/
                 '<option value="Skipped">Skipped</option>' +
-                '<option value="Warning">Warning</option>' +
-                '<option value="Critical">Critical</option>' +
+                //'<option value="Warning">Warning</option>' +
+                '<option value="Submitted">Submitted</option>' +
                 '<option value="In-Progress">In-Progress</option>' +
                 '</select>'
             );
