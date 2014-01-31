@@ -3494,9 +3494,8 @@ def TestTypeStatus_Report(request):                     #minar09
         tempsect.append(tuple(temptuple))
         FinalData.append(tuple(tempsect))"""
         
-    SubHeading = ['Section','']
     Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Total']
-    results = {'Heading':Heading, 'TableData':TableData, 'SubHeading':SubHeading, 'Sections':sections}
+    results = {'Heading':Heading, 'TableData':TableData, 'Summary':tuple(temp)}
     #results = {'Heading':Heading, 'TableData':RefinedData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
