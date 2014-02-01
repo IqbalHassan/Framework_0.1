@@ -251,6 +251,7 @@ $(document).ready(function() {
                     }
 					$('#' + id).val(steps_and_data[step_indx][0]);
 					$('#' + id+'info').val(steps_and_data[step_indx][3]);
+					$('#' + id+'expected').val(steps_and_data[step_indx][4]);
                     $("#" + id + "step_type").html("<b style='color:"+colour+"'>"+step_type+"</b>");
 					//check if step has data
 					if(steps_and_data[step_indx][1].length > 0){
@@ -279,8 +280,8 @@ $(document).ready(function() {
 			
 			//Validate Data
 			for(var j = 1; j <= step_num; j++){
-                if($("#searchbox"+j+"info").val()==""){
-                    alert("No Test Step Description is filled for step number#"+j);
+                if($("#searchbox"+j+"info").val()=="" || $("#searchbox"+j+"expected").val()==""){
+                    alert("No Test Step Description or Expected Results is filled for step number#"+j);
                     return;
                 }
 				for(var i = 0; i < $("#searchbox"+j+"data textarea").length; i++){
@@ -373,9 +374,11 @@ $(document).ready(function() {
 			var stepName = [];
 			var stepData = [];
             var stepDescription=[];
+            var stepExpected=[];
 			for(var j = 1; j <= step_num; j++){
 				stepName[j-1] = $("#searchbox" + j).val();
 				stepDescription[j-1] = $("#searchbox" + j+"info").val();
+				stepExpected[j-1] = $("#searchbox" + j+"expected").val();
 				for(var i = 0; i < $("#searchbox"+j+"data textarea").length; i++){
 					if(stepData[j-1] === undefined){
 						stepData[j-1] = [];
@@ -422,6 +425,7 @@ $(document).ready(function() {
 			            Steps_Data_List:stepDataSTR.join("|"),
 			            Steps_Name_List:stepName.join("|"),
                         Steps_Description_List:stepDescription.join("|"),
+                        Steps_Expected_List:stepExpected.join("|"),
 			            Status:"Dev"},function(data) {
 						alert(data);
 					});
@@ -442,7 +446,8 @@ $(document).ready(function() {
 			            Priority:priority,
 			            Steps_Data_List:stepDataSTR.join("|"),
 			            Steps_Name_List:stepName.join("|"),
-                        Steps_Description_List:stepDescription.join("|")},
+                        Steps_Description_List:stepDescription.join("|"),
+                        Steps_Expected_List:stepExpected.join("|")},
 			            function(data) {
 			            	alert(data+" edited successfully");
 					});
@@ -670,10 +675,15 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
             "      </div>" +
 
             "       <legend class='Text'><b style='color: #ff0000'>*</b><b>Description:</b></legend>" +
-            "       <input class='ui-corner-all  ui-autocomplete-input' id='searchbox" + stepNumber + "info' type='text'"+
-            "		title='Please type the purpose of the test step' name='searchboxname" + stepNumber + "' autocomplete='off'"+
-            "		aria-autocomplete='list' aria-haspopup='true'>" +
-            "       </div>"+
+            "       <textarea class='ui-corner-all  ui-autocomplete-input' id='searchbox" + stepNumber + "info' type='text'"+
+            "		title='Please type the purpose of the test step' rows=\"3\" cols=\"60\"  name='searchboxname" + stepNumber + "' autocomplete='off'"+
+            "		aria-autocomplete='list' aria-haspopup='true'></textarea>" +
+
+                "       <legend class='Text'><b style='color: #ff0000'>*</b><b>Expected:</b></legend>" +
+                "       <textarea class='ui-corner-all  ui-autocomplete-input' id='searchbox" + stepNumber + "expected' type='text'"+
+                "		title='Please type the purpose of the test step' rows=\"3\" cols=\"60\"name='searchboxname" + stepNumber + "' autocomplete='off'"+
+                "		aria-autocomplete='list' aria-haspopup='true'></textarea>" +
+                "       </div>"+
 			
 			"		<div id='searchbox"+stepNumber+"data' style='display:none; text-align: right;margin:10px'>"+
 			"			<a class='Text'>Test Data </a>"+
@@ -791,6 +801,9 @@ function RunTestAutocompleteSearch(Env, step) {
 						if(auto_complete_list[i][1] === true){
 							$("#" + this.id + "data").fadeIn(500);
 						}
+                        else{
+                            $("#" + this.id + "data").fadeOut(500);
+                        }
 					}
 				}
 

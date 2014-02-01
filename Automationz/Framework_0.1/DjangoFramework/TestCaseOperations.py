@@ -88,6 +88,11 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                                                               field="step",
                                                               value="description",
                                                               description=eachStepData[2])
+                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                                                              id=eachstep,  
+                                                              field="expected",
+                                                              value="result",
+                                                              description=eachStepData[3])
                     if isinstance(Data_Id_List, list):
                         #Insert Container_Type_Data - dataid, curname
                         Container_Data_Id = Insert_ContainerTypeData(conn, TC_Id, Step_Index, Data_Id_List)
@@ -142,6 +147,11 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                                                               field="step",
                                                               value="description",
                                                               description=eachStepData[2])
+                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                                                              id=Data_Id,  
+                                                              field="expected",
+                                                              value="result",
+                                                              description=eachStepData[3])
             else:
                 err_msg = LogMessage(sModuleInfo, "Step Sequence not found: %s" % (Step_Name), 4)
                 return err_msg
