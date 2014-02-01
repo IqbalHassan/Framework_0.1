@@ -6,10 +6,25 @@
 <script type="text/javascript" src="/site_media/Jquery/Local/RunIDEditTestCases.js"></script>
 <article>
     <div id="information" align="center">
-        <span><b style="color: blue;">RunID:</b></span><b id="runid">{{runid}}</b>&nbsp;&nbsp;&nbsp;
+        <!--<span><b style="color: blue;">RunID:</b></span><b id="runid">{{runid}}</b>&nbsp;&nbsp;&nbsp;
         <span><b style="color:blue;">TestCaseName:</b></span><b id="testcasename">{{testcasename}}</b>
-        <span><b style="color:blue;">TestCaseID:</b></span><b id="testcaseid">{{testcaseid}}</b>
+        <span><b style="color:blue;">TestCaseID:</b></span><b id="testcaseid">{{testcaseid}}</b>-->
+        <p  class="flip" title = 'IndividualTestCaseInfo' style="display: block">Individual Test Case Info</p>
+        <table class="ui-widget" style="font-size:small; border-collapse:collapse;" width="100%">
+            <tr>
+                <th class="ui-widget-header" style="text-align: center"><b>RunID</b></th>
+                <th class="ui-widget-header" style="text-align: center"><b>Test Case Name</b></th>
+                <th class="ui-widget-header" style="text-align: center"><b>Test Case ID</b></th>
+            </tr>
+            <tr>
+                <td id="runid" class="ui-widget-content" style="text-align: center">{{runid}}</td>
+                <td id="testcasename" class="ui-widget-content" style="text-align: center">{{testcasename}}</td>
+                <td id="testcaseid" class="ui-widget-content" style="text-align: center">{{testcaseid}}</td>
+            </tr>
+        </table>
     </div>
+    <br>
+    <hr>
     <div id="RunIDTestCaseHeader">
         <p  class="flip" title = 'RunIDHeader' style="display: block">TestCase Run Detail</p>
         <div id="RunIDTestCaseData">
