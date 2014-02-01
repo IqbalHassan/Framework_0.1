@@ -28,34 +28,44 @@ $(document).ready(function(){
             {
                 ResultTable(TestTypeStatusTable,data['Heading'],data['TableData'],"Test Type Status Report");
 
-                /***************pie chart***********************
-                $.getScript( "https://www.google.com/jsapi", function(){
-                    google.load("visualization", "1", {packages:["corechart"]});
-                    google.setOnLoadCallback(drawChart);
-                    function drawChart() {
-                        var data = google.visualization.arrayToDataTable([
-                            ['Task', 'Hours per Day'],
-                            ['Work',     11],
-                            ['Eat',      2],
-                            ['Commute',  2],
-                            ['Watch TV', 2],
-                            ['Sleep',    7]
-                        ]);
+                /***************pie chart***********************/
+                 google.load("visualization", "1", {packages:["corechart"], callback:drawChart});
 
-                        var options = {
-                            title: 'My Daily Activities'
-                        };
+                 function drawChart() {
+                    /*var jsonData = $.ajax({
+                        url: "TestTypeStatus_Report",
+                        dataType:"json",
+                        async: false
+                    }).responseText;*/
 
-                        var chart = new google.visualization.PieChart(document.getElementById('TestTypeStatusChart'));
-                        chart.draw(data, options);
-                    }
-                });
+                var piedata = google.visualization.arrayToDataTable([
+                    ['Test Type', 'Total Case Number'],
+                    ['Manual',     data['Summary'][2]],
+                    ['Manual in-progress',      data['Summary'][3]],
+                    ['Automated',  data['Summary'][4]],
+                    ['Automated in-progress', data['Summary'][5]]
+                ]);
+
+                var options = {
+                    title: 'Summary - ' + choice,
+                    //width: 500,
+                    height: 400,
+                    fontSize: 13,
+                    titleTextStyle:{fontSize:17}
+                };
+
+                //var data = google.visualization.arrayToDataTable(jsonData);
+
+                var chart = new google.visualization.PieChart(document.getElementById('TestTypeStatusChart'));
+                chart.draw(piedata, options);
+            }
 
                 /***************pie chart*********************/
 
+
                 $("p.flip[title =  'Test Type Status']").text("Test type status report of (" +choice + ")" )
                 $("p.flip[title =  'Test Type Status']").fadeIn(1000);
-                //AnalysisTableActions();
+                AnalysisTableActions();
 
 
                 $("#TestTypeStatusTable").css({
