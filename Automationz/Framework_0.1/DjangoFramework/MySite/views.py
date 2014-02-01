@@ -2717,7 +2717,7 @@ def general_work(request,data_type):
             if(temp>0):
                 output="Test "+data_type+" with name '"+request.POST['inputName']+"' is already in the database"
                 return TestSet(request,output)
-        if operation=="3" and command=="Edit":
+        """if operation=="3" and command=="Edit":
             temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']
@@ -2725,9 +2725,9 @@ def general_work(request,data_type):
                     return edit(request,name,data_type)
                 else:
                     output="Name field is empty"
-                    return TestSet(request,output)    
+                    return TestSet(request,output)   """ 
             # output+=edit(name)
-        if operation=="4" and command=="Delete":
+        if operation=="3" and command=="Delete":
             temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']

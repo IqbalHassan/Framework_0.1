@@ -297,36 +297,38 @@ function populate_info_div(){
     $('#info_div').append('' +
         '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
             '<label><b>Test Step Name:</b></label><br>' +
-            '<input type="text" placeholder="Enter the test set name" id="step_name" name="step_name"/>' +
+            '<input type="text" placeholder="Enter the test set name" id="step_name" class="textbox" name="step_name"/>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
             '<label><b>Test Step Description:</b></label><br>' +
-            '<textarea rows="2" cols="35" id="step_desc" name="step_desc" placeholder="Describe the test step(within 180 letters)"></textarea>' +
+            '<textarea rows="5" cols="35" id="step_desc" name="step_desc" class="textbox" style="height:35px"  placeholder="Describe the test step(within 180 letters)"></textarea>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
             '<label><b>Feature:</b></label><br>' +
-            '<input type="text" id="step_feature" name="step_feature" placeholder="Enter the feature"/>' +
+            '<input type="text" id="step_feature" class="textbox" name="step_feature" placeholder="Enter the feature"/>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
-            '<label><b>Data Requirement:<b></label><br>' +
-                '<select id="step_data" name="step_data">' +
-                    '<option value="0" selected="selected">Select from the below choices:</option>' +
-                    '<option value="1">True</option>' +
-                    '<option value="2">False</option> ' +
-                '</select>' +
+        '<label><b>Driver:</b></label><br>' +
+        '<input type="text" id="step_driver" class="textbox" name="step_driver" placeholder="Enter the driver">' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
+        '<br/>' +
             '<label><b>Test Step Type:</b></label><br>' +
-                '<select id="step_type" name="step_type">' +
-                    '<option value="0" selected="selected">Select from the below choices:</option>' +
+                '<select id="step_type" class="wrapper-dropdown-3" name="step_type">' +
+                    '<option value="0" selected="selected">Select from list:</option>' +
                     '<option value="1">Automated</option> ' +
                     '<option value="2">Manual</option>' +
                     '<option value="3">Performance</option> ' +
                 '</select>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
-            '<label><b>Driver:</b></label><br>' +
-            '<input type="text" id="step_driver" name="step_driver" placeholder="Enter the driver">' +
+        '<br/>' +
+        '<label><b>Data Requirement:<b></label><br>' +
+        '<select id="step_data" class="wrapper-dropdown-3" name="step_data">' +
+        '<option value="0" selected="selected">Select from list:</option>' +
+        '<option value="1">True</option>' +
+        '<option value="2">False</option> ' +
+        '</select>' +
         '</div><br>'
     );
     $("#step_name").autocomplete({
@@ -435,9 +437,9 @@ function populate_info_div(){
 function populate_footer_div(){
     $('#footer_div').append('' +
         '<div>' +
-            '<input type="button" id="delete_button" value="Delete"/>' +
-            '<input type="button" id="get_cases" value="Get Test Cases"/>' +
-            '<input type="submit" id="submit_button" name="submit_button" value="Submit">' +
+            '<input type="button" id="delete_button" class="buttonCustom" value="Delete"/>' +
+            '<input type="button" id="get_cases" class="buttonCustom" value="Get Test Cases"/>' +
+            '<input type="submit" id="submit_button" class="buttonCustom" name="submit_button" value="Submit">' +
         '</div>'
     );
     $("#get_cases").click(function(){

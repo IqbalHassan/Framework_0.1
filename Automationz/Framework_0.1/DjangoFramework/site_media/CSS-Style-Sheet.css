@@ -236,7 +236,7 @@ p.flip:ACTIVE,p.flip:HOVER {
 	font-family: monospace;
 	font-size: 20px;
 	color: black;
-	/*text-shadow: 5px 5px 8px gray;*/
+	//text-shadow: 5px 5px 8px gray;
 }
 
 /* =================== Loading Text ========================*/
@@ -285,13 +285,14 @@ p.flip:ACTIVE,p.flip:HOVER {
 	background-color: #666;
 	padding: 5px;
 	border: 1px #000 solid;
+    font-family: "Segoe UI",Helvetica,Arial,sans-serif;
 }
 
 .buttonCustom:HOVER {
 	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
 	opacity: 0.8;
 	cursor: pointer;
-	cursor: hand
+	cursor: hand;
 }
 
 .m-btn {

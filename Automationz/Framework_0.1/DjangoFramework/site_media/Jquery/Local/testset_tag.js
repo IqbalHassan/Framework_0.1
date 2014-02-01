@@ -63,9 +63,6 @@ $(document).ready(function(){
                    button_value="Create";
                }
                if(choice_value==3){
-                   button_value="Edit";
-               }
-               if(choice_value==4){
                    button_value="Delete";
                }
                console.log("choice_value:"+choice_value);
