@@ -307,6 +307,7 @@ body{
 header.main_header{
 	margin-top: 10px;
 	margin-left: 40px;
+    text-shadow: 1px 1px #000000;
 }
 
 /*=========== Side nav ===========*/
@@ -372,7 +373,7 @@ section{
 }
 
 section header{
-	
+    text-shadow: 1px 1px #000000
 }
 
 article{
@@ -385,6 +386,7 @@ article{
 article header{
 	font-size: 150%;
 	font-weight: bold;
+    text-shadow: 1px 1px #000000
 }
 
 /*=========home page============*/
@@ -397,12 +399,14 @@ article header{
 {
 	margin-right: auto;
 	margin-bottom: 10px;
+    text-shadow: 1px 1px #000000
 }
 
 /*========create product sections========*/
 #section_names
 {
 	margin-right: auto;
+    text-shadow: 1px 1px #000000
 }
 
 
