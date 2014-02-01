@@ -1965,14 +1965,14 @@ def Execution_Report_Table(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def TestCase_ParseData(temp, Steps_Name_List,Step_Description_List,Step_Expected_List):
+def TestCase_ParseData(temp, Steps_Name_List,Step_Description_List):
     Steps_Data_List = []
     # s = step # d = data # t = tuple # a = address
     d = 0
     index = -1
-    for name in zip(Steps_Name_List,Step_Description_List,Step_Expected_List):
+    for name in zip(Steps_Name_List,Step_Description_List):
         #init step array
-        Steps_Data_List.insert(d, (name[0].strip(), [],name[1].strip(),name[2].strip()))
+        Steps_Data_List.insert(d, (name[0].strip(), [],name[1].strip()))
 
         index = Steps_Name_List.index(name[0], index + 1)
         if index < len(temp):
@@ -2106,8 +2106,7 @@ def Create_Submit_New_TestCase(request):
             Step_Description_List = request.GET.get(u'Steps_Description_List','')
             print Step_Description_List
             Step_Description_List=Step_Description_List.split('|')
-            Step_Expected_List=request.GET.get(u'Steps_Expected_List').split('|')
-            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List,Step_Description_List,Step_Expected_List)
+            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List,Step_Description_List)
 
         #1
         ##########Data Validation: Check if all required input fields have data
@@ -2268,16 +2267,8 @@ def ViewTestCase(TC_Id):
                 query+="%' and field='step' and value='description'"
                 #query="select description from master_data where id Ilike '%s_s%s%' and field='step' and value='description'" %(TC_Id,str(Step_Iteration))
                 Step_Description=DB.GetData(Conn,query,False)
-                
-                #print Step_Description[0][0]
-                query="select description from master_data where id Ilike '%s_s" % (TC_Id)
-                query+="%s"% (str(Step_Iteration))
-                query+="%' and field='expected' and value='result'"
-                #query="select description from master_data where id Ilike '%s_s%s%' and field='step' and value='description'" %(TC_Id,str(Step_Iteration))
-                Step_Expected=DB.GetData(Conn,query,False)
                 Step_Iteration=Step_Iteration+1
-                #print Step_Description[0][0]
-                
+                print Step_Description[0][0]
                 #is data required for this step
                 if each_test_step[3]:
                     #Is this a verify step
@@ -2306,7 +2297,7 @@ def ViewTestCase(TC_Id):
                             Step_Data.append(From_Data)
 
                 #append step name and data to send it back
-                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0],Step_Expected[0][0]))
+                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0]))
 
             #return values
             results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List}
@@ -3840,9 +3831,6 @@ def DataFetchForTestCases(request):
                 query="select description from master_data where id='%s' and field='step' and value='description'" %datasetid
                 step_description=DB.GetData(Conn,query,False)
                 Temp_Data.append(step_description[0][0])
-                query="select description from master_data where id='%s' and field='expected' and value='result'" %datasetid
-                step_expected=DB.GetData(Conn,query,False)
-                Temp_Data.append(step_expected[0][0])
                 #Get the failreson from the test_step_results
                 #Get the steps status from the test_step_results
                 query="select status,failreason from test_step_results where tc_id='%s' and run_id='%s' and teststep_id=%d" %(test_case_id,run_id,(TestStepList[each])) 
@@ -3854,7 +3842,7 @@ def DataFetchForTestCases(request):
                 Temp_Data.append("Log")
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
-    DataColumn=["StepNumber","StepName","DataRequired","Description","Expected Results","FailReason","Status","Execution Log"]
+    DataColumn=["StepNumber","StepName","DataRequired","Expected Results","FailReason","Status","Execution Log"]
     print DataColumn
     print DataCollected
     message={

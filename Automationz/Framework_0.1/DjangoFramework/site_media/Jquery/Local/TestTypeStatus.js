@@ -49,10 +49,10 @@ $(document).ready(function(){
                 var options = {
                     title: 'Summary - ' + choice,
                     //width: 500,
-                    height: 400,
+                    height: 500,
                     fontSize: 13,
-                    titleTextStyle:{fontSize:17},
-                    legend:{ textStyle: {fontSize: 15}}
+                    titleTextStyle:{fontSize:20},
+                    legend:{ textStyle: {fontSize: 17}}
                 };
 
                 //var data = google.visualization.arrayToDataTable(jsonData);
