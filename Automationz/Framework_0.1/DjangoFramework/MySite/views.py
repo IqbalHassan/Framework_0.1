@@ -687,7 +687,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "from test_run tr,test_cases tc, test_case_tag tct "
                                             "where tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "
                                             "tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )" % (RunId, RunId, RunId) , False)
-    Col = ['MKS ID', 'Test Case', 'Status', 'Duration', 'Fail Reason', 'Test Log', 'Automation ID']
+    Col = ['Test Case ID', 'Test Case', 'Status', 'Duration', 'Fail Reason', 'Test Log', 'Automation ID']
     Pass_TestCases = DB.GetData(Conn, "select "
                                             "tct.name as mksid, "
                                             "tc.tc_name, "
@@ -970,7 +970,7 @@ def FailStep_TestCases(request): #==================Returns Test Cases When User
 #                                "and tr.tc_id = tsr.tc_id and tsr.status in ('Critical') and tsr.teststep_id = tsl.step_id " 
 #                                "and tr.tc_id = tc.tc_id and tsl.stepname = '%s' " % (RunId,FailStep), False
 #                            )
-                FailStep_TC_Col = ['MKS ID', 'Failed Test Case', 'Status', 'Duration', 'Fail Reason', 'Test Log', 'Autmation ID']
+                FailStep_TC_Col = ['Test Case ID', 'Failed Test Case', 'Status', 'Duration', 'Fail Reason', 'Test Log', 'Autmation ID']
     results = {
                'FailStep_TestCases':FailStep_TestCases,
                'FailStep_TC_Col': FailStep_TC_Col

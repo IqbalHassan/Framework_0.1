@@ -51,7 +51,8 @@ $(document).ready(function(){
                     //width: 500,
                     height: 400,
                     fontSize: 13,
-                    titleTextStyle:{fontSize:17}
+                    titleTextStyle:{fontSize:17},
+                    legend:{ textStyle: {fontSize: 15}}
                 };
 
                 //var data = google.visualization.arrayToDataTable(jsonData);
@@ -220,11 +221,9 @@ $(document).ready(function(){
 
 function AnalysisTableActions()
 {
-
     $("p.flip[title =  'Test Type Status']").click(function() {
 
         $("#TestTypeStatusTable").slideToggle("slow");
     });
-
 }
 
