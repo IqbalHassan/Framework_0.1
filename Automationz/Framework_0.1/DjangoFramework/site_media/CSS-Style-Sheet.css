@@ -214,6 +214,23 @@ p.flip:ACTIVE,p.flip:HOVER {
 	font-family: Arial, Verdana, Helvetica, Sans-Serife;
 }
 
+.wrapper-dropdown-3 {
+    position: relative;
+    width: 180px;
+    margin: 0 auto;
+    padding: 10px;
+    background: #fff;
+    border-radius: 7px;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 2px 2px 1px rgba(50,50,50,0.1);
+    cursor: pointer;
+    outline: none;
+    font-weight: bold;
+    color: black;
+    font-family: 'Lato', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
 /* =================== Text Class ========================*/
 .Text {
 	font-family: monospace;
@@ -277,6 +294,45 @@ p.flip:ACTIVE,p.flip:HOVER {
 	cursor: hand
 }
 
+.m-btn {
+    position: relative;
+    display: inline-block;
+    overflow: visible;
+    margin: 0;
+    padding: 10px 14px;
+    margin-top: 8px;
+    cursor: pointer;
+    outline: 0;
+    border: 0;
+    background: #35aa47;
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee',endColorstr='#eeeeee',GradientType=0);
+    -webkit-background-clip: padding;
+    -moz-background-clip: padding;
+    background-clip: padding;
+    zoom: 1;
+    z-index: 1;
+    font-family: "Segoe UI",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 14px;
+    color: #ffffff;
+    min-width: 42px;
+    text-shadow: #fff 0 0px 0;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    vertical-align: inherit;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.m-btn:HOVER {
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
+    opacity: 0.9;
+    cursor: pointer;
+    cursor: hand
+}
 /* =====================Create Product Sections============================ */
 #section_names{
 	text-align: left;
@@ -307,7 +363,7 @@ body{
 header.main_header{
 	margin-top: 10px;
 	margin-left: 40px;
-    text-shadow: 1px 1px #000000;
+    text-shadow: 2px 1px grey;
 }
 
 /*=========== Side nav ===========*/
@@ -373,7 +429,7 @@ section{
 }
 
 section header{
-    text-shadow: 1px 1px #000000
+    text-shadow: 2px 1px grey
 }
 
 article{
@@ -386,7 +442,7 @@ article{
 article header{
 	font-size: 150%;
 	font-weight: bold;
-    text-shadow: 1px 1px #000000
+    text-shadow: 2px 1px grey
 }
 
 /*=========home page============*/
@@ -399,18 +455,39 @@ article header{
 {
 	margin-right: auto;
 	margin-bottom: 10px;
-    text-shadow: 1px 1px #000000
+    text-shadow: 2px 1px grey
 }
 
 /*========create product sections========*/
 #section_names
 {
 	margin-right: auto;
-    text-shadow: 1px 1px #000000
+    text-shadow: 2px 1px grey
 }
 
+/*========Text Box========*/
 
+.textbox {
+    border: 1px solid #c4c4c4;
+    height: 25px;
+    width: 200px;
+    font-size: 13px;
+    padding: 4px 4px 4px 4px;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    box-shadow: 1px 0px 8px #d9d9d9;
+    -moz-box-shadow: 0px 0px 8px #d9d9d9;
+    -webkit-box-shadow: 0px 0px 8px #d9d9d9;
+}
 
+.textbox:focus {
+    outline: none;
+    border: 1px solid #7bc1f7;
+    box-shadow: 0px 0px 8px #7bc1f7;
+    -moz-box-shadow: 0px 0px 8px #7bc1f7;
+    -webkit-box-shadow: 0px 0px 8px #7bc1f7;
+}
 
 
 

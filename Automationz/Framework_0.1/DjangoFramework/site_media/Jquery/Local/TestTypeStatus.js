@@ -28,6 +28,7 @@ $(document).ready(function(){
             {
                 ResultTable(TestTypeStatusTable,data['Heading'],data['TableData'],"Test Type Status Report");
 
+
                 /***************pie chart***********************/
                  google.load("visualization", "1", {packages:["corechart"], callback:drawChart});
 
@@ -59,6 +60,8 @@ $(document).ready(function(){
 
                 var chart = new google.visualization.PieChart(document.getElementById('TestTypeStatusChart'));
                 chart.draw(piedata, options);
+
+                //image = '<a href="' + chart.getImageURI() + '">Printable version</a>';
             }
 
                 /***************pie chart*********************/

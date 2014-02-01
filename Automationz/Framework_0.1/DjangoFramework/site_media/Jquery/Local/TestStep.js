@@ -37,7 +37,8 @@ function populate_feature_driver_info_div(){
                             '<td align="center">' +
                                 '<div id="left">'+
                                     '<label><b>Type:</b></label>' +
-                                    '<select id="type" name="type">' +
+        "&nbsp;&nbsp;&nbsp;" +
+                                    '<select id="type" class="wrapper-dropdown-3" name="type">' +
                                         '<option selected value="">Select from list</option>' +
                                         '<option value="feature">Feature</option>' +
                                         '<option value="driver">Driver</option>' +
@@ -47,7 +48,8 @@ function populate_feature_driver_info_div(){
                             '<td align="center">' +
                                 '<div id="right">' +
                                     '<label><b>Operation:</b></label>' +
-                                    '<select id="operation" name="operation">' +
+        "&nbsp;&nbsp;&nbsp;" +
+                                    '<select id="operation" class="wrapper-dropdown-3" name="operation">' +
                                         '<option value="0"selected="selected">Select from list</option>' +
                                         '<option value="1">Create</option>' +
                                         '<option value="2">Rename</option>' +
@@ -59,7 +61,7 @@ function populate_feature_driver_info_div(){
                                 '<div id="center">' +
                                     '<label><b id="name_variable">Name:</b></label>' +
                                     "&nbsp;&nbsp;&nbsp;" +
-                                    "<input class=\"ui-corner-all\" id=\"input\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName' />" +
+                                    "<input class=\"ui-corner-all textbox\" id=\"input\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName' />" +
                                 '</div>' +
                             '</td>' +
                             '<td align="center">' +
@@ -71,11 +73,14 @@ function populate_feature_driver_info_div(){
                                 '<div id="error">' +
                                     '<p><b>No Operation is selected</b></p>' +
                                 '</div>' +
+                            '</td>' +
+                            '<td align="center">' +
+        '<br/>' +
                                 '<div id="button_id" style="display: none">' +
-                                    '<input type=\'submit\' id=\"select_button\" name=\'submit_button\'/>' +
+                                    '<input type=\'submit\' id=\"select_button\" class=\"buttonCustom\" name=\'submit_button\'/>' +
                                 '</div>' +
                                 '<div id="button_del" style="display: none">' +
-                                    '<input type=\'button\' id=\"del_button\" name=\'del_button\'/>' +
+                                    '<input type=\'button\' id=\"del_button\" class=\"buttonCustom\" name=\'del_button\'/>' +
                                 '</div>' +
                             '</td>' +
                         '</tr>' +
@@ -94,7 +99,7 @@ function populate_feature_driver_info_div(){
             $("#renamebox").html(
                 "<label><b>New Name:</b></label>"
                     +"&nbsp;&nbsp;&nbsp;"
-                    +"<input class=\"ui-corner-all\" id=\"input2\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName2' />"
+                    +"<input class=\"ui-corner-all textbox\" id=\"input2\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName2' />"
             );
             //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
             $("#error").hide();
@@ -504,7 +509,7 @@ function populate_search_div(){
     $('#search_div').append('' +
         '<div>' +
             '<label><b>Search for the Test Steps:</b></label>' +
-            '<input type="text" id="search_query" name="search_query" placeholder="enter the keywords"/>' +
+            '<input type="text" id="search_query" class="textbox" name="search_query" placeholder="Enter the keywords"/>' +
         '</div>' +
         '<div>' +
             '<table id = "AutoSearchResult" >'

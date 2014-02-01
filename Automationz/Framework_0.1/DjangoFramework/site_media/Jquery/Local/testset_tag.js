@@ -8,7 +8,7 @@ $(document).ready(function(){
            $("#renamebox").html(
                "<label><b>New Name:</b></label>"
                    +"&nbsp;&nbsp;&nbsp;"
-                   +"<input class=\"ui-corner-all\" id=\"input2\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName2' />"
+                   +"<input class=\"ui-corner-all textbox\" id=\"input2\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName2' />"
            );
            //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
            $("#error").hide();
