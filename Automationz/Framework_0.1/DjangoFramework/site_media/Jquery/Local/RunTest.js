@@ -274,7 +274,7 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 								+ "<label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'>"
 								+ Label
 								+ " </b></label>"
-								+ "<input class = 'ui-corner-all' id='searchbox' style = 'margin-left:-2%' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' />"
+								+ "<input class = 'ui-corner-all textbox' id='searchbox' style = 'margin-left:-2%' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' />"
 							+ "</td>"
 						+ "</tr>"
 						
@@ -843,7 +843,7 @@ function populate_manual_test_div(){
         '<label style="margin-left: 10px;"><b>Machine IP:</b></label>' +
         '<input type="text" id="machine_ip" placeholder="Machine IP..."/>' +
         '<br>' +
-        '<div align="center" style="margin-top: 10px;"><input type="button" id="create" value="Create Machine"/></div>');
+        '<div align="center" style="margin-top: 10px;"><input type="button" class="buttonCustom" id="create" value="Create Machine"/></div>');
     $("#machine_name").autocomplete({
         source:function(request,response){
             if($("#machine_name").val()!=""){

@@ -69,7 +69,7 @@ $(document).ready(function(){
 
                 $("p.flip[title =  'Test Type Status']").text("Test type status report of (" +choice + ")" )
                 $("p.flip[title =  'Test Type Status']").fadeIn(1000);
-                AnalysisTableActions();
+                //AnalysisTableActions();
 
 
                 $("#TestTypeStatusTable").css({
