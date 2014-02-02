@@ -3918,10 +3918,14 @@ def DataFetchForTestCases(request):
                     Temp_Data.append("false")
                 datasetid=test_case_id+"_s"+str((each+1))
                 print datasetid
-                #Get the expected result from the master_data
+                #Get the description from the master_data
                 query="select description from master_data where id='%s' and field='step' and value='description'" %datasetid
                 step_description=DB.GetData(Conn,query,False)
                 Temp_Data.append(step_description[0][0])
+                query="select description from master_data where id='%s' and field='expected' and value='result'" %datasetid
+                step_expected=DB.GetData(Conn,query,False)
+                Temp_Data.append(step_expected[0][0])
+                #Get the expected Result from the master data
                 #Get the failreson from the test_step_results
                 #Get the steps status from the test_step_results
                 query="select status,failreason from test_step_results where tc_id='%s' and run_id='%s' and teststep_id=%d" %(test_case_id,run_id,(TestStepList[each])) 
@@ -3933,7 +3937,7 @@ def DataFetchForTestCases(request):
                 Temp_Data.append("Log")
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
-    DataColumn=["StepNumber","StepName","DataRequired","Expected Results","FailReason","Status","Execution Log"]
+    DataColumn=["StepNumber","StepName","DataRequired","Description","Expected Results","FailReason","Status","Execution Log"]
     print DataColumn
     print DataCollected
     message={
