@@ -3179,7 +3179,7 @@ def FeatureDriverDelete(request):                               #minar09
 def TestTypeStatus_Report(request):                     #minar09
     Conn = GetConnection()
     sections = []
-    priority = ["P1","P2","P3","P4","Total"] #["Total","Total","Total","Total","Total","Total","Total"] 
+    priority = ["P1","P2","P3","P4","Total"]
     testCases = []
     totalCases = []
     TableData = []
@@ -3203,11 +3203,23 @@ def TestTypeStatus_Report(request):                     #minar09
     autoIPP2Count = []
     autoIPP3Count = []
     autoIPP4Count = []
+    perCount = []
+    perP1Count = []
+    perP2Count = []
+    perP3Count = []
+    perP4Count = []
+    perIPCount = []
+    perIPP1Count = []
+    perIPP2Count = []
+    perIPP3Count = []
+    perIPP4Count = []
     Table = []
     Table1 = []
     Table2 = []
     Table3 = []
     Table4 = []
+    Table5 = []
+    Table6 = []
     manTab = []
     manP1Tab = []
     manP2Tab = []
@@ -3228,6 +3240,16 @@ def TestTypeStatus_Report(request):                     #minar09
     autoIPP2Tab = []
     autoIPP3Tab = []
     autoIPP4Tab = []
+    perTab = []
+    perP1Tab = []
+    perP2Tab = []
+    perP3Tab = []
+    perP4Tab = []
+    perIPTab = []
+    perIPP1Tab = []
+    perIPP2Tab = []
+    perIPP3Tab = []
+    perIPP4Tab = []
     RefinedData = []
     totalP1Count = []
     totalP2Count = []
@@ -3336,6 +3358,39 @@ def TestTypeStatus_Report(request):                     #minar09
                 for p4 in p4Priority:
                     if each[0]==p4[0]:
                         autoIPP4Tab.append(tuple(Data))
+        elif each[2] == 'performance':
+            this = True
+            for x in progress:
+                if x[0] == each[0]:
+                    this = False
+            if this==True:
+                perTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0]==p1[0]:
+                        perP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0]==p2[0]:
+                        perP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0]==p3[0]:
+                        perP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0]==p4[0]:
+                        perP4Tab.append(tuple(Data))
+            elif this==False:
+                perIPTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0]==p1[0]:
+                        perIPP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0]==p2[0]:
+                        perIPP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0]==p3[0]:
+                        perIPP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0]==p4[0]:
+                        perIPP4Tab.append(tuple(Data))
                 
     Count_Per_Section(manTab,sections,manCount)
     Count_Per_Section(manP1Tab,sections,manP1Count)
@@ -3357,10 +3412,22 @@ def TestTypeStatus_Report(request):                     #minar09
     Count_Per_Section(autoIPP2Tab,sections,autoIPP2Count)
     Count_Per_Section(autoIPP3Tab,sections,autoIPP3Count)
     Count_Per_Section(autoIPP4Tab,sections,autoIPP4Count)
+    Count_Per_Section(perTab,sections,perCount) 
+    Count_Per_Section(perP1Tab,sections,perP1Count)
+    Count_Per_Section(perP2Tab,sections,perP2Count)
+    Count_Per_Section(perP3Tab,sections,perP3Count)
+    Count_Per_Section(perP4Tab,sections,perP4Count)
+    Count_Per_Section(perIPTab,sections,perIPCount)
+    Count_Per_Section(perIPP1Tab,sections,perIPP1Count)
+    Count_Per_Section(perIPP2Tab,sections,perIPP2Count)
+    Count_Per_Section(perIPP3Tab,sections,perIPP3Count)
+    Count_Per_Section(perIPP4Tab,sections,perIPP4Count)
     Append_array(Table,manP1Count,manP2Count,manP3Count,manP4Count,manCount,Table1) 
     Append_array(Table1,manIPP1Count,manIPP2Count,manIPP3Count,manIPP4Count,manIPCount,Table2)
     Append_array(Table2,autoP1Count,autoP2Count,autoP3Count,autoP4Count,autoCount,Table3)
     Append_array(Table3,autoIPP1Count,autoIPP2Count,autoIPP3Count,autoIPP4Count,autoIPCount,Table4)
+    Append_array(Table4,perP1Count,perP2Count,perP3Count,perP4Count,perCount,Table5)
+    Append_array(Table5,perIPP1Count,perIPP2Count,perIPP3Count,perIPP4Count,perIPCount,Table6)
     #Append_array(Table4,totalCases,TableData)
     x=1
     a=0
@@ -3368,32 +3435,32 @@ def TestTypeStatus_Report(request):                     #minar09
     c=0
     d=0
     e=0   
-    for each in Table4:
+    for each in Table6:
         data=[]
         for y in each:
             data.append(y)
         if x==1:
-            count = manP1Count[a] + manIPP1Count[a] + autoP1Count[a] + autoIPP1Count[a]
+            count = manP1Count[a] + manIPP1Count[a] + autoP1Count[a] + autoIPP1Count[a] + perP1Count[a] + perIPP1Count[a]
             a=a+1
             data.append(count)
             totalP1Count.append(count)
         elif x==2:
-            count = manP2Count[b] + manIPP2Count[b] + autoP2Count[b] + autoIPP2Count[b]
+            count = manP2Count[b] + manIPP2Count[b] + autoP2Count[b] + autoIPP2Count[b] + perP2Count[b] + perIPP2Count[b]
             b=b+1
             data.append(count)
             totalP2Count.append(count)
         elif x==3:
-            count = manP3Count[c] + manIPP3Count[c] + autoP3Count[c] + autoIPP3Count[c]
+            count = manP3Count[c] + manIPP3Count[c] + autoP3Count[c] + autoIPP3Count[c] + perP3Count[c] + perIPP3Count[c]
             c=c+1
             data.append(count)
             totalP3Count.append(count)
         elif x==4:
-            count = manP4Count[d] + manIPP4Count[d] + autoP4Count[d] + autoIPP4Count[d]
+            count = manP4Count[d] + manIPP4Count[d] + autoP4Count[d] + autoIPP4Count[d] + perP4Count[d] + perIPP4Count[d]
             d=d+1
             data.append(count)
             totalP4Count.append(count)
         elif x==5:
-            count = manCount[e] + manIPCount[e] + autoCount[e] + autoIPCount[e]
+            count = manCount[e] + manIPCount[e] + autoCount[e] + autoIPCount[e] + perCount[e] + perIPCount[e]
             e=e+1
             data.append(count)
             totalCount.append(count)
@@ -3414,6 +3481,10 @@ def TestTypeStatus_Report(request):                     #minar09
     temp.append(autoP1Sum)
     autoIPP1Sum = count_Sum(autoIPP1Count)
     temp.append(autoIPP1Sum)
+    perP1Sum = count_Sum(perP1Count)
+    temp.append(perP1Sum)
+    perIPP1Sum = count_Sum(perIPP1Count)
+    temp.append(perIPP1Sum)
     totalP1Sum = count_Sum(totalP1Count)
     temp.append(totalP1Sum)
     TableData.append(tuple(temp))
@@ -3429,6 +3500,10 @@ def TestTypeStatus_Report(request):                     #minar09
     temp.append(autoP2Sum)
     autoIPP2Sum = count_Sum(autoIPP2Count)
     temp.append(autoIPP2Sum)
+    perP2Sum = count_Sum(perP2Count)
+    temp.append(perP2Sum)
+    perIPP2Sum = count_Sum(perIPP2Count)
+    temp.append(perIPP2Sum)
     totalP2Sum = count_Sum(totalP2Count)
     temp.append(totalP2Sum)
     TableData.append(tuple(temp))
@@ -3444,6 +3519,10 @@ def TestTypeStatus_Report(request):                     #minar09
     temp.append(autoP3Sum)
     autoIPP3Sum = count_Sum(autoIPP3Count)
     temp.append(autoIPP3Sum)
+    perP3Sum = count_Sum(perP3Count)
+    temp.append(perP3Sum)
+    perIPP3Sum = count_Sum(perIPP3Count)
+    temp.append(perIPP3Sum)
     totalP3Sum = count_Sum(totalP3Count)
     temp.append(totalP3Sum)
     TableData.append(tuple(temp))
@@ -3459,6 +3538,10 @@ def TestTypeStatus_Report(request):                     #minar09
     temp.append(autoP4Sum)
     autoIPP4Sum = count_Sum(autoIPP4Count)
     temp.append(autoIPP4Sum)
+    perP4Sum = count_Sum(perP4Count)
+    temp.append(perP4Sum)
+    perIPP4Sum = count_Sum(perIPP4Count)
+    temp.append(perIPP4Sum)
     totalP4Sum = count_Sum(totalP4Count)
     temp.append(totalP4Sum)
     TableData.append(tuple(temp))
@@ -3474,6 +3557,10 @@ def TestTypeStatus_Report(request):                     #minar09
     temp.append(autoSum)
     autoIPSum = count_Sum(autoIPCount)
     temp.append(autoIPSum)
+    perSum = count_Sum(perCount)
+    temp.append(perSum)
+    perIPSum = count_Sum(perIPCount)
+    temp.append(perIPSum)
     totalSum = count_Sum(totalCount)
     temp.append(totalSum)
     TableData.append(tuple(temp))
@@ -3494,7 +3581,7 @@ def TestTypeStatus_Report(request):                     #minar09
         tempsect.append(tuple(temptuple))
         FinalData.append(tuple(tempsect))"""
         
-    Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Total']
+    Heading = ['Section','Priority','Manual','Manual in-progress','Automated','Automated in-progress','Performance','Performance in-progress','Total']
     results = {'Heading':Heading, 'TableData':TableData, 'Summary':tuple(temp)}
     #results = {'Heading':Heading, 'TableData':RefinedData}
     json = simplejson.dumps(results)

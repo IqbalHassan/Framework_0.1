@@ -44,7 +44,9 @@ $(document).ready(function(){
                     ['Manual',     data['Summary'][2]],
                     ['Manual in-progress',      data['Summary'][3]],
                     ['Automated',  data['Summary'][4]],
-                    ['Automated in-progress', data['Summary'][5]]
+                    ['Automated in-progress', data['Summary'][5]],
+                    ['Performance',  data['Summary'][6]],
+                    ['Performance in-progress', data['Summary'][7]]
                 ]);
 
                 var options = {
@@ -145,7 +147,8 @@ $(document).ready(function(){
                     $(this).html("Grand Total   ");
                     $(this).css({
                         'color' : 'red',
-                        'font-weight' : 'bold'
+                        'font-weight' : 'bold',
+                        'text-align' : 'right'
                     });
                 });
 
