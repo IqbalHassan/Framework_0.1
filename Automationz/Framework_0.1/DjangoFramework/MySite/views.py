@@ -2952,13 +2952,17 @@ def Check_TestCase(TableData,RefinedData):
         #a = type_selector[0]
         b = type_selector[1]
         c = type_selector[2]
-        if b[0]>0L:
+        if b[0]>0L and c[0]==0L:
             data.append(test_type[1])
             each=tuple(data)
             RefinedData.append(each)
-        elif c[0]>0L:
+        elif c[0]>0L and b[0]==0L:
             #print "performance"
             data.append(test_type[2])
+            each=tuple(data)
+            RefinedData.append(each)
+        elif b[0]>0L and c[0]>0L:
+            data.append(test_type[1])
             each=tuple(data)
             RefinedData.append(each)
         else:
