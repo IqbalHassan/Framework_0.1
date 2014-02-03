@@ -2,10 +2,10 @@ $(document).ready(function(){
 
 	
 	//For PC
-	$("p.flip[title =  'GeneratePCReport']").click(function(){ 
+	/*$("p.flip[title =  'GeneratePCReport']").click(function(){
 		
 		GenerateReport("SCM");
-	});
+	});*/
 	
 	/*$("p.flip[title =  'Daily Tachyon Build Result']").click(function(){ 
 		

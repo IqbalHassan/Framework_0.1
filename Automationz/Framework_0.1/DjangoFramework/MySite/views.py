@@ -2430,6 +2430,18 @@ def Get_Browsers(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Get_Versions(request):
+    Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        browser = request.GET.get(u'version', '')
+        if browser == '':
+            results = DB.GetData(Conn, "select product_version from performance_results", False)
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def Bundle_Report(request):  #==================Returns Report data for a specific product version (eg 1.1.1.26 and platform 'PC'==============================
 
     Conn = GetConnection()
@@ -2601,6 +2613,12 @@ def Bundle_Report(request):  #==================Returns Report data for a specif
     results = {'ReportTable':ReportTable, 'DefectTable': DefectTable}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+
+def BundleReport(request):
+    templ = get_template('BundleReport.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
 
 def DeleteExistingTestCase(TC_Ids):
     conn = Conn
