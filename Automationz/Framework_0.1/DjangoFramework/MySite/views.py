@@ -2437,8 +2437,34 @@ def Get_Versions(request):
     if request.method == "GET":
         browser = request.GET.get(u'version', '')
         if browser == '':
-            results = DB.GetData(Conn, "select product_version from performance_results", False)
+            results = DB.GetData(Conn, "select distinct product_version from test_run_env order by product_version", False)
 
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def BundleReport_Table(request):
+    
+    env_details = []
+    os_query = "select distinct machine_os from test_run_env order by machine_os"
+    browser_query = "select distinct client from test_run_env order by client"
+    
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            version = request.GET.get(u'version', '')
+            OS = DB.GetData(Conn, os_query, False)
+            browsers = DB.GetData(Conn, browser_query, False)
+            
+    for each in OS:
+        Data = []
+        for item in browsers:
+            Data.append(each[0])
+            Data.append(item[0])
+        env_details.append(tuple(Data))
+            
+    
+    Heading = ['Section','Passed','Failed','Blocked','Never run','Total']
+    results = {'Heading':Heading, 'env':env_details}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 

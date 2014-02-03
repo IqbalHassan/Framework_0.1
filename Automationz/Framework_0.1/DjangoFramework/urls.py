@@ -60,7 +60,7 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTestCases/Create/Submit_New_TestCase/$', Create_Submit_New_TestCase),
     url(r'^Home/.*/GetSections/$', Get_Sections),
     url(r'^Home/.*/GetBrowsers/$', Get_Browsers),
-    url(r'^Home/.*/GetBrowsers/$', Get_Versions),
+    url(r'^Home/.*/GetVersions/$', Get_Versions),
     url(r'^Home/ManageTestCases/DeleteExisting/$', DeleteExisting),
     #Test Set Management Section
     url(r'^Home/ManageTestCases/TestSet/$', TestSet),
