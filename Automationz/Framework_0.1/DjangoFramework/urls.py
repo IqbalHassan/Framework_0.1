@@ -60,6 +60,7 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTestCases/Create/Submit_New_TestCase/$', Create_Submit_New_TestCase),
     url(r'^Home/.*/GetSections/$', Get_Sections),
     url(r'^Home/.*/GetBrowsers/$', Get_Browsers),
+    url(r'^Home/.*/GetBrowsers/$', Get_Versions),
     url(r'^Home/ManageTestCases/DeleteExisting/$', DeleteExisting),
     #Test Set Management Section
     url(r'^Home/ManageTestCases/TestSet/$', TestSet),
@@ -80,7 +81,6 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Populate_info_div/$',Populate_info_div),
     url(r'^Home/.*/TestStep_Delete/$',TestStep_Delete),
     url(r'^Home/.*/FeatureDriver_Delete/$',FeatureDriver_Delete),
-    url(r'^Home/.*/TestTypeStatus_Report/$',TestTypeStatus_Report),
     url(r'^Home/ManageTestCases/FeatureDriverDelete/$',FeatureDriverDelete),
     url(r'^Home/ManageTestCases/TestStepDelete/$',TestStepDelete),
     url(r'^Home/ManageTestCases/Process_TestStep/$',Process_TestStep),
@@ -128,6 +128,10 @@ urlpatterns = patterns('',
     
     #Test Type Status Page                                #minar09
     url(r'^Home/TestTypeStatus/$', TestTypeStatus),
+    url(r'^Home/.*/TestTypeStatus_Report/$',TestTypeStatus_Report),
+    
+    #Bundle Report Page                                #minar09
+    url(r'^Home/BundleReport/$', BundleReport),
     
     #Documentation Page
     url(r'^Home/Documentation/$',Documentation),
