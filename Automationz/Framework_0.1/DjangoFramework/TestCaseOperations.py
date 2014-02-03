@@ -573,7 +573,9 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
     #6- Clean up all the test  step description from master_data
     cur.execute("delete from master_data where id Ilike '%s%%' and field='step' and value='description'" %TC_Id )
     conn.commit()
-
+    
+    #7-Clean up all the test expected result from master_data
+    cur.execute("delete from master_data where id Ilike '%s%%' and field='expected' and value='result'" %TC_Id)
     if EditFlag == False:
 
         #6 - Clean up all test step results

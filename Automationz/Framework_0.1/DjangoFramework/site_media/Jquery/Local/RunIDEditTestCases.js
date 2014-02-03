@@ -268,9 +268,7 @@ function MakeStatusSelectable(){
             $(this).html('<select id="'+step_id+'" style="align:center">' +
                 '<option value="Passed">Passed</option>' +
                 '<option value="Failed">Failed</option>' +
-                /*'<option value="Blocked">Blocked</option>' +*/
                 '<option value="Skipped">Skipped</option>' +
-                //'<option value="Warning">Warning</option>' +
                 '<option value="Submitted">Submitted</option>' +
                 '<option value="In-Progress">In-Progress</option>' +
                 '</select>'

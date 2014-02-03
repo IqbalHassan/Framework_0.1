@@ -1965,14 +1965,15 @@ def Execution_Report_Table(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def TestCase_ParseData(temp, Steps_Name_List,Step_Description_List):
+def TestCase_ParseData(temp, Steps_Name_List,Step_Description_List,Step_Expected):
+    print Step_Expected
     Steps_Data_List = []
     # s = step # d = data # t = tuple # a = address
     d = 0
     index = -1
-    for name in zip(Steps_Name_List,Step_Description_List):
+    for name in zip(Steps_Name_List,Step_Description_List,Step_Expected):
         #init step array
-        Steps_Data_List.insert(d, (name[0].strip(), [],name[1].strip()))
+        Steps_Data_List.insert(d, (name[0].strip(), [],name[1].strip(),name[2].strip()))
 
         index = Steps_Name_List.index(name[0], index + 1)
         if index < len(temp):
@@ -2106,7 +2107,8 @@ def Create_Submit_New_TestCase(request):
             Step_Description_List = request.GET.get(u'Steps_Description_List','')
             print Step_Description_List
             Step_Description_List=Step_Description_List.split('|')
-            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List,Step_Description_List)
+            Step_Expected_Result=request.GET.get(u'Steps_Expected_List','').split('|')
+            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List,Step_Description_List,Step_Expected_Result)
 
         #1
         ##########Data Validation: Check if all required input fields have data
@@ -2267,8 +2269,14 @@ def ViewTestCase(TC_Id):
                 query+="%' and field='step' and value='description'"
                 #query="select description from master_data where id Ilike '%s_s%s%' and field='step' and value='description'" %(TC_Id,str(Step_Iteration))
                 Step_Description=DB.GetData(Conn,query,False)
-                Step_Iteration=Step_Iteration+1
                 print Step_Description[0][0]
+                #select expected Result from the master data
+                query="select description from master_data where id Ilike '%s_s" % (TC_Id)
+                query+="%s"% (str(Step_Iteration))
+                query+="%' and field='expected' and value='result'"
+                Step_Expected=DB.GetData(Conn,query,False)
+                print Step_Expected[0][0]
+                Step_Iteration=Step_Iteration+1
                 #is data required for this step
                 if each_test_step[3]:
                     #Is this a verify step
@@ -2297,7 +2305,7 @@ def ViewTestCase(TC_Id):
                             Step_Data.append(From_Data)
 
                 #append step name and data to send it back
-                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0]))
+                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0],Step_Expected[0][0]))
 
             #return values
             results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List}
@@ -2340,7 +2348,8 @@ def EditTestCase(request):
             Step_Description_List = request.GET.get(u'Steps_Description_List','')
             print Step_Description_List
             Step_Description_List=Step_Description_List.split('|')
-            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List,Step_Description_List)
+            Step_Expected_Result=request.GET.get(u'Steps_Expected_List','')
+            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List,Step_Description_List,Step_Expected_Result)
             Section_Path = request.GET.get(u'Section_Path', '')
         #LogMessage(sModuleInfo,"TEST CASE Edit START:%s"%(TC_Name),4)
 
