@@ -93,6 +93,11 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                                                               field="expected",
                                                               value="result",
                                                               description=eachStepData[3])
+                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                                                              id=eachstep,  
+                                                              field="verification",
+                                                              value="point",
+                                                              description=eachStepData[4])
                     if isinstance(Data_Id_List, list):
                         #Insert Container_Type_Data - dataid, curname
                         Container_Data_Id = Insert_ContainerTypeData(conn, TC_Id, Step_Index, Data_Id_List)
@@ -152,6 +157,11 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                                                               field="expected",
                                                               value="result",
                                                               description=eachStepData[3])
+                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                                                              id=Data_Id,  
+                                                              field="verification",
+                                                              value="point",
+                                                              description=eachStepData[4])
             else:
                 err_msg = LogMessage(sModuleInfo, "Step Sequence not found: %s" % (Step_Name), 4)
                 return err_msg
@@ -576,6 +586,11 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
     
     #7-Clean up all the test expected result from master_data
     cur.execute("delete from master_data where id Ilike '%s%%' and field='expected' and value='result'" %TC_Id)
+    conn.commit()
+    
+    #8-Clean up all the test verification points in master_data
+    cur.execute("delete from master_data where id Ilike '%s%%' and field='verification' and value='point'" %TC_Id)
+    conn.commit()
     if EditFlag == False:
 
         #6 - Clean up all test step results
@@ -738,7 +753,7 @@ def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Depe
                 return err_msg
             else:
                 #first element of tuple should be a string and second element a list
-                if not isinstance(eachstepdata[0], basestring) and not isinstance(eachstepdata[1], list) and not isinstance(eachstepdata[2],basestring):
+                if not isinstance(eachstepdata[0], basestring) and not isinstance(eachstepdata[1], list) and not isinstance(eachstepdata[2],basestring) and not isinstance(eachstepdata[3],basestring) and not isinstance(eachstepdata[4],basestring):
                     print "Error. Test case steps format is incorrect for one of the step"
                     err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format for one of the step:%s." % eachstepdata, 4)
                     return err_msg

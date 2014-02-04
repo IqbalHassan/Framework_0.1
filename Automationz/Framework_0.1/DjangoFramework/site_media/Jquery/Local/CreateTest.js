@@ -252,6 +252,9 @@ $(document).ready(function() {
 					$('#' + id).val(steps_and_data[step_indx][0]);
 					$('#' + id+'info').val(steps_and_data[step_indx][3]);
 					$('#' + id+'expected').val(steps_and_data[step_indx][4]);
+                    if(steps_and_data[step_indx][5]=="yes"){
+                        $('#'+id+'verify').attr('checked',true);
+                    }
                     $("#" + id + "step_type").html("<b style='color:"+colour+"'>"+step_type+"</b>");
 					//check if step has data
 					if(steps_and_data[step_indx][1].length > 0){
@@ -352,17 +355,29 @@ $(document).ready(function() {
 			var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
 			var _TC_Id = $('#TC_Id').html().substring($('#TC_Id').html().indexOf(": ")+2,$('#TC_Id').html().indexOf("</b>"))
 			var title = $("#title_txtbox").val();
-			var platform = $("input[name=platform]:checked").val();
-			
+			var platform="";
+            platform = $("input[name=platform]:checked").val();
+			if(platform!="PC" && platform!="MAC"){
+                alert("Test Case Platform is not selected");
+                return;
+            }
 			var applic_client = []
 			$("input[name=dependancy]:checked").each(function() {
 				applic_client.push($(this).val())
 			});
+            if(applic_client.length==0){
+                alert("Test Case Dependency is not given");
+                return;
+            }
 			//for(var i = 0; i < $("input[name=dependancy]:checked").length; i++)
-			var type = []
+			var type = [];
 			$("input[name=type]:checked").each(function() {
 				type.push($(this).val())
 			});
+            if(type.length==0){
+                alert("Test Case type is not given");
+                return;
+            }
 			
 			var priority = 'P' + $("#priotiy_select").val();
 			
@@ -375,10 +390,17 @@ $(document).ready(function() {
 			var stepData = [];
             var stepDescription=[];
             var stepExpected=[];
+            var stepVerify=[];
 			for(var j = 1; j <= step_num; j++){
 				stepName[j-1] = $("#searchbox" + j).val();
 				stepDescription[j-1] = $("#searchbox" + j+"info").val();
 				stepExpected[j-1] = $("#searchbox" + j+"expected").val();
+                if($('#searchbox'+j+'verify').attr('checked')=='checked'){
+                    stepVerify[j-1]="yes";
+                }
+                else{
+                    stepVerify[j-1]="no";
+                }
 				for(var i = 0; i < $("#searchbox"+j+"data textarea").length; i++){
 					if(stepData[j-1] === undefined){
 						stepData[j-1] = [];
@@ -426,6 +448,7 @@ $(document).ready(function() {
 			            Steps_Name_List:stepName.join("|"),
                         Steps_Description_List:stepDescription.join("|"),
                         Steps_Expected_List:stepExpected.join("|"),
+                        Steps_Verify_List:stepVerify.join("|"),
 			            Status:"Dev"},function(data) {
 						alert(data);
 					});
@@ -447,8 +470,10 @@ $(document).ready(function() {
 			            Steps_Data_List:stepDataSTR.join("|"),
 			            Steps_Name_List:stepName.join("|"),
                         Steps_Description_List:stepDescription.join("|"),
-                        Steps_Expected_List:stepExpected.join("|")},
-			            function(data) {
+                        Steps_Expected_List:stepExpected.join("|"),
+                        Steps_Verify_List:stepVerify.join("|")
+                        },
+                        function(data) {
 			            	alert(data+" edited successfully");
 					});
 				}
@@ -667,13 +692,16 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
 		  	"		<legend class='Text'><b>" + Label + "</b></legend>"+
 			"		<input class='ui-corner-all stepbox ui-autocomplete-input' id='searchbox" + stepNumber + "' type='text'"+
 			"		title='Please Type Keyword and Click On that to add to query' name='searchboxname" + stepNumber + "' autocomplete='off'"+
-			"		aria-autocomplete='list' aria-haspopup='true'>"+
-            "       <div id='searchbox"+stepNumber+"infotab' style='display:"+visibility+"; text-align: left;margin:10px'>" +
-            "		<div style='text-align: right'>" +
-            "           <span class='Text'><b>Type - </b><span id='searchbox"+stepNumber+"step_type'></span></span>&nbsp;&nbsp;&nbsp;&nbsp;" +
-                        "<img  class='buttonCustom' id='" + stepNumber + "step_desc' src='/site_media/info_button.jpg' style='background-color: transparent; width:20px; height:20px'>"+
-            "      </div>" +
+			"		aria-autocomplete='list' aria-haspopup='true'>" +
 
+                "<div id='searchbox"+stepNumber+"infotab' style='display:"+visibility+"'>"+
+                "<br><table  width='100%'>" +
+                    "<tr width='100%'>" +
+                        "<td width='20%' align='left'><img  class='Text' id='" + stepNumber + "step_desc' src='/site_media/info_button.jpg' style='background-color: transparent; width:20px; height:20px'/> </td>" +
+                        "<td width='40%' align='left'><span class='Text'><b>Type:</b><span id='searchbox"+stepNumber+"step_type'></span></span></td>" +
+                        "<td width='40%' align='right'><span style='color: darkslateblue'><b>Verification Point:</b></span><input type='checkbox' id='searchbox"+stepNumber+"verify' value='yes'/></td>" +
+                "</tr>" +
+                "</table><br>"+
             "       <legend class='Text'><b style='color: #ff0000'>*</b><b>Description:</b></legend>" +
             "       <textarea class='ui-corner-all  ui-autocomplete-input' id='searchbox" + stepNumber + "info' type='text'"+
             "		title='Please type the purpose of the test step' rows=\"3\" cols=\"60\"  name='searchboxname" + stepNumber + "' autocomplete='off'"+
