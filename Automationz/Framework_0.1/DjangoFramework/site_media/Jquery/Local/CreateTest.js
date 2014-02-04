@@ -425,10 +425,11 @@ $(document).ready(function() {
 						}else{
 							tempSTR[j] = stepData[i][j];
 						}
-						
+						console.log(tempSTR);
 					}
 					stepDataSTR[i] = tempSTR.join("%");
 				}
+                console.log(stepDataSTR[i]);
 			}
 			var query = indx != -1?"c":(indx2 != -1?"e":"o")
 				if(query == "c"){
