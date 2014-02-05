@@ -3959,7 +3959,7 @@ def DataFetchForTestCases(request):
             print test_case_id
             #Get the test steps from test_step_results
             Conn=GetConnection()
-            query="select teststep_id from test_step_results where run_id='%s' and tc_id='%s' order by stepstarttime" %(run_id,test_case_id)
+            query="select test_steps.step_id from test_step_results,test_steps where test_step_results.tc_id=test_steps.tc_id and test_step_results.teststep_id=test_steps.step_id and test_step_results.tc_id='%s' and test_step_results.run_id='%s' order by test_steps.teststepsequence;"%(test_case_id,run_id)
             TestStepList=DB.GetData(Conn, query)
             DataCollected=[]
             Conn.close()
@@ -4034,7 +4034,9 @@ def TestDataFetch(request):
              }
     results=simplejson.dumps(results)
     return HttpResponse(results,mimetype='application/json')
-def UpdateData(request):
+
+
+"""def UpdateData(request):
     message=""
     if request.is_ajax():
         if request.method=='GET':
@@ -4143,6 +4145,7 @@ def UpdateAll(run_id,test_case_id,step_name,step_status,step_reason):
     print DB.UpdateRecordInTable(Conn,"test_case_results",sWhereQuery,status='Passed')
     Update_run_id_status(run_id) 
     return message  
+"""
 def LogFetch(request):
     if request.is_ajax():
         if request.method=='GET':
@@ -4255,5 +4258,159 @@ def RunIDStatus(request):
     message={
              'message':temp
              }
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def Make_List(step_name,step_reason,step_status,test_case_id):
+    ListAll=[]
+    if  isinstance(step_status, list):
+        for name in zip(step_name,step_reason,step_status):
+            ListAll.append((name[0].strip(),name[1].strip(),name[2].strip()))
+    if isinstance(step_status,basestring):
+        for name in zip(step_name,step_reason,step_status):
+            ListAll.append((name[0].strip(),name[1].strip(),step_status))
+    print ListAll
+    Conn=GetConnection()
+    query="select step_id from test_steps where tc_id='%s'" %test_case_id
+    test_step_sequence_list=DB.GetData(Conn,query)
+    print test_step_sequence_list
+    Refined_List=[]
+    for each in test_step_sequence_list:
+        query="select stepname from test_steps_list where step_id='%s'" %each
+        stepName=DB.GetData(Conn,query,False)
+        for each in ListAll:
+            if each[0]==stepName[0][0]:
+                Refined_List.append(each)
+                break
+    return Refined_List
+
+def update_runid(run_id,test_case_id):
+    oConn=GetConnection()
+    squery="select distinct status from test_case_results where tc_id='%s'and run_id='%s'" %(test_case_id,run_id)
+    run_id_status=DB.GetData(oConn, squery)
+    submit_count=0
+    count=0
+    progress=0
+    for each in run_id_status:
+        if each=='Submitted':
+            submit_count+=1
+        elif each=='In-Progress':
+            progress+=1
+        else:
+            count+=1
+    if progress==0 and submit_count==0 and count==len(run_id_status):
+        status='Complete'
+    elif progress>0:
+        status='In-Progress'
+    else:
+        if count==0 and progress==0 and submit_count==len(run_id_status):
+            status='Submitted'
+    sWhereQuery="where run_id='%s'" %run_id
+    Dict={}
+    Dict.update({'status':status})
+    print DB.UpdateRecordInTable(oConn, "test_run_env", sWhereQuery,**Dict)
+    print DB.UpdateRecordInTable(oConn, "test_env_results", sWhereQuery,**Dict)
+def UpdateTestStepStatus(List,run_id,test_case_id,test_case_status,failReason):
+    for each in List:
+        print each
+        query="select step_id from test_steps_list where stepname='%s'" %each[0].strip()
+        Conn=GetConnection()
+        step_id=DB.GetData(Conn, query, False)
+        query="where run_id='%s' and tc_id='%s' and teststep_id='%d'"%(run_id,test_case_id,step_id[0][0])
+        Dict={}
+        Dict.update({'status':each[2],'failreason':each[1]})
+        print DB.UpdateRecordInTable(Conn, "test_step_results", query,**Dict)
+    query="where run_id='%s' and tc_id='%s'"%(run_id,test_case_id)
+    Dict={}
+    Dict.update({'status':test_case_status,'failreason':failReason})
+    print DB.UpdateRecordInTable(Conn,"test_case_results",query,**Dict)
+    update_runid(run_id,test_case_id)
+    return "true"    
+def UpdateData(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            step_name=request.GET.get(u'step_name','').split("|")
+            step_status=request.GET.get(u'step_status','').split("|")
+            step_reason=request.GET.get(u'step_reason','').split("|")
+            run_id=request.GET.get(u'run_id','')
+            test_case_id=request.GET.get(u'test_case_id','')
+            if(len(step_status)==1):
+                Refined_List=Make_List(step_name, step_reason, step_status[0], test_case_id)
+            else:
+                Refined_List=Make_List(step_name, step_reason, step_status, test_case_id)
+            print step_name
+            print step_reason
+            print step_status
+            print run_id
+            print test_case_id
+            step_sequence=[]
+            FailReason=[]
+            for each in Refined_List:
+                step_sequence.append(each[2])
+                FailReason.append(each[1])
+            print step_sequence
+            failReason=""
+            found="No-Status"
+            index=1
+            for each in step_sequence:
+                if each=='In-Progress' or each=='Submitted' or each=='Failed':
+                    found=each
+                    break
+                else:
+                    index+=1
+            if found=="No-Status":
+                pass_count=0
+                skipped_count=0
+                for each in step_sequence:
+                    if each=='Passed':
+                        pass_count+=1
+                    if each=='Skipped':
+                        skipped_count+=1
+                if (pass_count+skipped_count)==len(step_sequence) or skipped_count==0:
+                    test_case_status='Passed'
+                    #failReason=""
+                if skipped_count==len(step_sequence) and pass_count==0:
+                    test_case_status='Skipped'
+            else:
+                if found!='Submitted':
+                    test_case_status=found
+                    if found!='Failed':
+                        rest_step_status='Submitted'
+                        #failReason=""
+                    else:
+                        rest_step_status='Skipped'
+                        failReason=Refined_List[index-1][1]
+                else:
+                    if found=='Submitted' and index==1:
+                        test_case_status='Submitted'
+                        rest_step_status='Submitted'
+                    else:
+                        test_case_status='In-Progress'
+                        rest_step_status='Submitted'
+            print test_case_status
+            if test_case_status=='Failed':
+                datasetid=test_case_id+'_s'+str(index)
+                query="select description from master_data where field='verification' and value='point' and id='%s'"%datasetid
+                Conn=GetConnection()
+                verification=DB.GetData(Conn,query,False)
+                if verification[0][0]=="no":
+                    test_case_status='Blocked'
+                else:
+                    test_case_status='Failed'
+                print test_case_status
+            for each in range(index,len(step_sequence)):
+                step_sequence[each]=rest_step_status
+                FailReason[each]=""
+                print step_sequence
+            index=0
+            Final_List=[]
+            for each in zip(step_sequence,FailReason):
+                temp=list(Refined_List[index])
+                temp[2]=each[0]
+                temp[1]=each[1]
+                temp=tuple(temp)
+                Final_List.append(temp)
+                index+=1
+            print Final_List
+            message=UpdateTestStepStatus(Final_List,run_id,test_case_id,test_case_status,failReason)
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
