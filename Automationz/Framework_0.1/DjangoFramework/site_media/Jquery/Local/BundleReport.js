@@ -5,7 +5,6 @@
 
 $(document).ready(function(){
 
-    //Versions
     $.ajax({
         url:'GetVersions/',
         dataType : "json",
@@ -25,26 +24,18 @@ $(document).ready(function(){
 
     $(".version").click(function(event)
     {
-        var choice = $(".version").val();
-        if(choice != 0)
+        var platform = $(".platform").val();
+        var version = $(".version").val();
+        if(version != 0)
         {
-            $.get("BundleReport_Table",{choice : choice},function(data)
+            $.get("BundleReport_Table",{version : version},function(data)
             {
                 ResultTable(BundleReportTable,data['Heading'],data['env'],"Bundle Report");
-
-
-
-
-
-                $("p.flip[title =  'Bundle Report']").text("Bundle Report of (" +choice + ")" )
-                $("p.flip[title =  'Bundle Report']").fadeIn(1000);
-                //AnalysisTableActions();
-
-
             });
 
         }
     });
+
 });
 
 
