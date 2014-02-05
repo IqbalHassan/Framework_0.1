@@ -26,7 +26,6 @@ from models import GetData, GetColumnNames, GetQueryData, GetConnection
 import DataBaseUtilities as DB
 
 from CommonUtil import TimeStamp
-import itertools, operator
 #import DjangoConstants
 import TestCaseOperations
 import re
