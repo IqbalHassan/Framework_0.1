@@ -1,0 +1,73 @@
+
+{% extends "BaseTemplate.html" %}
+
+{% block title%} Bundle Report {% endblock %}
+
+{% block content %}
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="/site_media/Jquery/Local/BundleReport.js"></script>
+
+
+<article>
+
+    <header>Bundle Report</header>
+    <br/>
+    <div id = "BundleReport" >
+
+
+        <!----------------------  Performance Flip Bars  ---------------------------->
+        <div id = "VersionSelect" style = "display:block">
+            <form action="get">
+
+                <div class="new_tc_form" style="text-align: center;">
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <span class="tc_form_required_field">*</span><b class="Text">Product Version:</b>
+                            </td>
+                            <td class="tc_form_input_col" id="versiongroup" align="left">
+                                <select class="version wrapper-dropdown-3" data-level="" id="1">
+                                    <option value="0">Choose...</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </form>
+
+
+            <p class='flip' title = "Bundle Report"  style = "display: none; width: auto;"> Bundle Report </p>
+            <div id="BundleReportTable">
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+
+
+
+
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+    <p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+
+
+
+</article>
+{% endblock %}
