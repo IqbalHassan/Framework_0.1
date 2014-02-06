@@ -2450,26 +2450,26 @@ def Get_Versions(request):
 def BundleReport_Table(request):
     
     env_details = []
-    os_query = "select distinct machine_os from test_run_env order by machine_os"
-    browser_query = "select distinct client from test_run_env order by client"
-    
+
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             version = request.GET.get(u'version', '')
+            platform = request.GET.get(u'platform', '')
+            os_query = "select distinct machine_os from test_run_env where machine_os ~ '"+platform+".*' and product_version ~ '"+version+"' order by machine_os"
+            browser_query = "select distinct client from test_run_env where machine_os ~ '"+platform+".*' and product_version ~ '"+version+"' order by client"
+            section_query = "select distinct subpath(section_path,0,1) from product_sections"
             OS = DB.GetData(Conn, os_query, False)
             browsers = DB.GetData(Conn, browser_query, False)
             
     for each in OS:
-        Data = []
+        temp = []
         for item in browsers:
-            Data.append(each[0])
-            Data.append(item[0])
-        env_details.append(tuple(Data))
-            
-    
+            temp.append(each[0])
+            temp.append(item[0])
+                    
     Heading = ['Section','Passed','Failed','Blocked','Never run','Total']
-    results = {'Heading':Heading, 'env':env_details}
+    results = {'Heading':Heading, 'browsers':browsers}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -2775,7 +2775,7 @@ def general_work(request,data_type):
             if(temp>0):
                 output="Test "+data_type+" with name '"+request.POST['inputName']+"' is already in the database"
                 return TestSet(request,output)
-        """if operation=="3" and command=="Edit":
+        if operation=="3" and command=="Edit":
             temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']
@@ -2783,9 +2783,9 @@ def general_work(request,data_type):
                     return edit(request,name,data_type)
                 else:
                     output="Name field is empty"
-                    return TestSet(request,output)   """ 
+                    return TestSet(request,output)   
             # output+=edit(name)
-        if operation=="3" and command=="Delete":
+        if operation=="4" and command=="Delete":
             temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']
