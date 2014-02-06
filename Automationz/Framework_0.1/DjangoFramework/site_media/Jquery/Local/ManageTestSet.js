@@ -141,7 +141,9 @@ function PerformSearch(){
             }
             else
             {
-                ResultTable('#right_div',data['Heading'],data['TableData'],"Test Cases");
+                console.log(data);
+
+                /*ResultTable('#right_div',data['Heading'],data['TableData'],"Test Cases");
 
                 $("#right_div").fadeIn(1000);
                 $("p:contains('Show/Hide Test Cases')").fadeIn(0);
@@ -168,6 +170,23 @@ function PerformSearch(){
                 //VerifyQueryProcess();
                 //$(".Buttons[title='Verify Query']").fadeIn(2000);
                 //$(".Buttons[title='Select User']").fadeOut();
+                var message="";
+                message+='<table class="ui-widget" style="border-collapse: collapse"><tr>';
+                for(var i=0;i<data['Heading'].length;i++){
+                    message+='<th class="ui-widget-header" align="center" style="font-weight: bold;padding: 2px;">'+data['Heading'][i]+'</th>';
+                }
+                message+='<th class="ui-widget-header" align="center">&nbsp</th>';
+                message+='</tr>';
+                for(var i=0;i<data['TableData'].length;i++){
+                    message+='<tr>';
+                    for(var j=0;j<(data['TableData'][i]).length;j++){
+                        message+='<td class="ui-widget-content">'+data['TableData'][i][j]+'</td> ';
+                    }
+                    message+='<td class="ui-widget-content"><input id="'+data['TableData'][i][0]+'" value="'+data['TableData'][i][0]+'" name="selectTCAdd" type="checkbox" /></td> '
+                    message+='</tr>';
+                }
+                message+='</table>';
+                $('#right_div').html(message);
                 $(".delete").click(function(){
                    $(this).parent().next().remove();
                    $(this).remove();
