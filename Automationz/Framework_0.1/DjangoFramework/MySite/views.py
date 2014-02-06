@@ -373,7 +373,8 @@ def AutoCompleteTagSearch(request):
         results = DB.GetData(Conn, "select distinct name from test_case_tag where name Ilike '%" + value + "%' "
                                     + "and property in ('" + CustomTag + "') order by name")
 
-        mastertags = DB.GetData(Conn, "select distinct value from config_values where type = 'tag' order by value")
+        query="select distinct value from config_values where type='tag' order by value"
+        mastertags = DB.GetData(Conn,query)
 
         results = list(set(results + mastertags))
 
@@ -2817,7 +2818,8 @@ def general_work(request,data_type):
     #return output
 def TestCases_InSet(name,data_type):
     conn=GetConnection()
-    result=DB.GetData(conn,"select tc_id,tc_name from test_cases where tc_id in (select tc_id from test_case_tag where name='"+name+"' and property='"+data_type+"')",False)
+    query="select tc_id,tc_name from test_cases where tc_id in (select tc_id from test_case_tag where name='"+name+"' and property='"+data_type+"')"
+    result=DB.GetData(conn,query,False)
     ex_tc_ids=[]
     ex_tc_names=[]
     for x in result:
@@ -3908,62 +3910,6 @@ def RunIDTestCases(request,Run_Id,TC_Id):
     testcasename=DB.GetData(Conn, query, False)
     return render_to_response('RunIDEditTestCases.html',{'runid':Run_Id,'testcaseid':TC_Id,'testcasename':testcasename[0][0]})
 
-"""def RunIDEdit(request):
-    message=""
-    if request.is_ajax():
-        if request.method=='GET':
-            run_id=request.GET.get(u'run_id','').strip()
-            test_case_id=request.GET.get(u'test_case_id','').strip()
-            test_step_name=request.GET.get(u'test_step_name','').strip()
-            test_step_status=request.GET.get(u'test_step_status','').strip()
-            oConn=GetConnection()
-            if test_step_name=="all" and test_step_status=="Pass":
-                sWhereQuery="where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
-                Dict={'status':"Pass"}
-                result = DB.UpdateRecordInTable(oConn, "test_step_results", sWhereQuery,**Dict)
-                if result==True:
-                    message="true"
-            else:
-                sQuery="select step_id from test_steps_list where stepname='%s'" %test_step_name
-                step_id=DB.GetData(oConn, sQuery,False)
-                print step_id[0][0]
-                sWhereQuery="where run_id='%s' and tc_id='%s' and teststep_id='%d'" %(run_id,test_case_id,int(step_id[0][0]))
-                Dict={'status':test_step_status}
-                result = DB.UpdateRecordInTable(oConn, "test_step_results", sWhereQuery,**Dict)
-                if result==True:
-                    message="true"
-    message=message
-    results=simplejson.dumps(message)
-    return HttpResponse(results,mimetype='application/json')
-def RunIDFailReason(request):
-    message=""
-    if request.is_ajax():
-        if request.method=='GET':
-            run_id=request.GET.get(u'run_id','')
-            test_case_id=request.GET.get(u'test_case_id','')
-            oConn=GetConnection()
-            query="select failreason from test_case_results where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
-            failReason=DB.GetData(oConn, query, False)
-            message=failReason[0][0]
-    message=message
-    results=simplejson.dumps(message)
-    return HttpResponse(results,mimetype='application/json')
-def UpdateFailReason(request):
-    message=""
-    if request.is_ajax():
-        if request.method=='GET':
-            run_id=request.GET.get(u'run_id','')
-            test_case_id=request.GET.get(u'test_case_id','')
-            reason=request.GET.get(u'reason','')
-            oConn=GetConnection()
-            sQuery="where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
-            Dict={'failreason':reason}
-            message=DB.UpdateRecordInTable(oConn, "test_case_results",sQuery,**Dict)
-            if message==True:
-                message="true"
-    message=message
-    results=simplejson.dumps(message)
-    return HttpResponse(results,mimetype='application/json')            """
 def DataFetchForTestCases(request):
     #message="in the DataFetchForTestCases"
     if request.is_ajax():
@@ -4055,116 +4001,6 @@ def TestDataFetch(request):
     return HttpResponse(results,mimetype='application/json')
 
 
-"""def UpdateData(request):
-    message=""
-    if request.is_ajax():
-        if request.method=='GET':
-            step_name=request.GET.get(u'step_name','').split("|")
-            step_status=request.GET.get(u'step_status','').split("|")
-            step_fail_reason=request.GET.get(u'step_reason','').split("|")
-            run_id=request.GET.get(u'run_id','')
-            test_case_id=request.GET.get(u'test_case_id','')
-            if len(step_status)==1 and step_status[0]=="Passed":
-                message=UpdateAll(run_id, test_case_id, step_name, step_status, step_fail_reason)
-            else:
-                Dict=test_status(step_status)
-                print Dict
-                if Dict['status']=='Failed':
-                    index=Dict['index']
-                    message=test_step_failed(step_name,step_status,step_fail_reason,run_id,test_case_id,index)
-                    print message
-                else:
-                    if 'In-Progress' in step_status:
-                        test_case_status='In-Progress'
-                    elif 'Passed' in step_status and 'Submitted' not in step_status:
-                        test_case_status='Passed'
-                    elif 'Skipped' in step_status and 'Submitted' not in step_status:
-                        test_case_status='Skipped'
-                    else:
-                        test_case_status='Submitted'
-                    message= UpdateSeparate(run_id, test_case_id, step_name, step_status, step_fail_reason, test_case_status,"")
-    message=message
-    result=simplejson.dumps(message)
-    return HttpResponse(result,mimetype='application/json')
-def test_step_failed(step_name,step_status,step_fail_reason,run_id,test_case_id,index):
-    for count in range(0,len(step_status)):
-        if count>index:
-            step_status[count]='Skipped'
-            step_fail_reason[count]=""
-            count+=1
-        else:
-            count+=1
-    tc_fail_reason=step_fail_reason[index]
-    tc_case_status='Failed'
-    return UpdateSeparate(run_id,test_case_id,step_name,step_status,step_fail_reason,tc_case_status,tc_fail_reason)
-    #print step_status
-    #print step_fail_reason
-def test_status(step_status):
-    status=""
-    count=0
-    for each in step_status:
-        if each.strip()=='Failed':
-            status='Failed'
-            count+=1
-            break
-        else:
-            count+=1
-    Dict={'status':status,'index':count-1}
-    return Dict
-def UpdateSeparate(run_id,test_case_id,step_name,step_status,step_reason,tc_case_status,tc_fail_reason):
-    message=""
-    sWhereQuery="Where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
-    Dict={'failreason':tc_fail_reason.strip(),'status':tc_case_status.strip()}
-    Conn=GetConnection()
-    testrunenv=DB.UpdateRecordInTable(Conn,"test_case_results",sWhereQuery,**Dict)
-    Conn.close()
-    for each in zip(step_name,step_status,step_reason):
-        Conn=GetConnection()
-        query="select step_id from test_steps_list where stepname='%s'" %(each[0].strip())
-        TestStepId=DB.GetData(Conn, query, False)
-        sWhereQuery="Where run_id='%s' and tc_id='%s' and teststep_id='%s'" %(run_id,test_case_id,TestStepId[0][0])
-        Dict={'failreason':each[2].strip(),'status':each[1].strip()}
-        testrunenv= DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
-        if testrunenv==True:
-            message="true"
-        else:
-            message="false"
-            break
-    Update_run_id_status(run_id)
-    return message  
-def Update_run_id_status(run_id):
-    sQuery="select distinct status from test_case_results where run_id='%s'" %run_id 
-    Conn=GetConnection()
-    status_list=DB.GetData(Conn, sQuery)
-    if 'Submitted' in status_list and ('Passed','In-Progress','Failed') not in status_list:
-        status='Submitted'
-    elif 'In-Progress' in status_list:
-        status='In-Progress'
-    else:
-        status='Complete'
-    print status
-    sWhereQuery="Where run_id='%s'" %run_id
-    print DB.UpdateRecordInTable(Conn,"test_env_results", sWhereQuery,status=status)
-    print DB.UpdateRecordInTable(Conn,"test_run_env", sWhereQuery,status=status)
-def UpdateAll(run_id,test_case_id,step_name,step_status,step_reason):
-    message=""
-    for each in zip(step_name,step_reason):
-        Conn=GetConnection()
-        query="select step_id from test_steps_list where stepname='%s'" %(each[0].strip())
-        TestStepId=DB.GetData(Conn, query, False)
-        sWhereQuery="Where run_id='%s' and tc_id='%s' and teststep_id='%s'" %(run_id,test_case_id,TestStepId[0][0])
-        Dict={'failreason':each[1].strip(),'status':step_status[0]}
-        testrunenv= DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
-        if testrunenv==True:
-            message="true"
-        else:
-            message="false"
-            break
-    sWhereQuery="Where run_id='%s' and tc_id='%s'" %(run_id,test_case_id)
-    print DB.UpdateRecordInTable(Conn,"test_case_results",sWhereQuery,status='Passed')
-    Update_run_id_status(run_id) 
-    return message  
-"""
 def LogFetch(request):
     if request.is_ajax():
         if request.method=='GET':

@@ -234,7 +234,7 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 							
 							
 							//Test Data Type CheckBoxes
-							+"<td style='position:relative;left:700px;'>"	 
+							/*+"<td style='position:relative;left:700px;'>"
 								+"<p  class='flip' id = 'TestDataTypeCheckboxes' title='TestDataTypeCheckBox' style='color: black; width: 160%  ;display:none; margin-top: -94px;'>Test Data Type</p>"
 								+"<div id = 'TestDataTypeCheckboxes' class = 'Text'  style= 'display:none; color: black;'>"
 								+"<form  action =''>"
@@ -244,7 +244,7 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 								+"</form>"
 								+" </div>"
 							+"</td>"
-						+ "</tr>"
+						+ "</tr>"*/
 						
 						
 						+"<tr>"
@@ -704,8 +704,15 @@ function DeleteSearchQueryText()
 		
 		if ($("#AutoSearchTextBoxLabel").text().trim() != "*Select Test Machine:") //If user is on select user page, do not allow him to delete the Test Data Set
 		{
+            console.log("clicked");
+            console.log($(this).text());
 			$(this).parent().next().remove();
 			$(this).remove();
+            if($('#AutoSearchResult #searchedtext td').text()==""){
+                $('#DepandencyCheckboxes').css('display','none');
+                $('.flip[title="DepandencyCheckBox"]').css('display','none');
+                $('#RunTestResultTable').css('display','none');
+            }
 			$("#AutoSearchResult #searchedtext").each(function() {
 				var UserText = $(this).find("td").text();
 				if (UserText.length == 0)
@@ -720,7 +727,7 @@ function DeleteSearchQueryText()
 		
 		else 
 		{
-			
+
 			$(".delete").css('cursor','default');
 		}
 
