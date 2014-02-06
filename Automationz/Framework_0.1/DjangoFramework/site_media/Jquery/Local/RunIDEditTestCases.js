@@ -189,6 +189,7 @@ function DataFetch(){
         var datacolumn=data['data_column'];
         var message=table_message(datacolumn,datatable);
         //console.log(message);
+        $('#testcasestatus').html(data['test_case_status']);
         $('#RunIDTestCaseData').html(message);
         TestDataFetch();
         MakeStatusSelectable();

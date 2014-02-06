@@ -68,6 +68,9 @@ $(document).ready(function(){
                if(choice_value==4){
                    button_value="Delete";
                }
+               if(choice_value==3){
+                   button_value='Edit';
+               }
                console.log("choice_value:"+choice_value);
                $("#error").hide();
                $("#select_button").val(button_value);

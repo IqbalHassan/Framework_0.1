@@ -251,9 +251,15 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 							//Search Email Input Box
 							+"<td>"
 								+"<label  class = 'Text SearchEmail' style = 'display:none' > <b> Select Name for Email: </b></label>"
-								+"<input  id = 'EmailSearchBox' class='SearchEmail ui-corner-all' style = 'display:none' type='text' title = 'Please Select Email by Keyword' />"
+								+"<input  id = 'EmailSearchBox' class='SearchEmail ui-corner-all' style = 'display:none' size='42'type='text' title = 'Please Select Email by Keyword' />"
 							+ "</td>"
 						+"</tr>"
+                        +"<tr>" +
+                            "<td>" +
+                                "<label class='Text SearchEmail' style='display:none'><b>*Select a Tester:</b></label></td>" +
+                                "<td><input id='TesterSearchBox' class='SearchEmail ui-corner-all' style=' display: none;margin-left: -102%' size='42' type='text' title='Please Select a tester'>" +
+                            "</td>" +
+                        "</tr>"
 						
 						+"<tr>"
 						
@@ -262,7 +268,7 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 								+"</td>"
 							
 								+"<td>"
-									+"<input class = 'ui-corner-all' id = 'TestObjective' style = 'display:none; margin-left: -58%'  size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
+									+"<input class = 'ui-corner-all' id = 'TestObjective' style = 'display:none; margin-left: -102%'  size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
 								+"</td>"
 						+"</tr>"		
 								
@@ -316,6 +322,14 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 					    + "</tr>"
 				    + "</tbody>"	
 				+ "</table>"
+                +"<table id = 'AutoSearchResult' >"
+                    + "<tbody>"
+                        + "<tr id = 'AssignedTester' class='SearchEmail' style='display:None'>"
+
+                        + "<th class = 'Text' style= 'display:None ; text-align: left'>Selected Tester:&nbsp;&nbsp;&nbsp; </th>"
+                        + "</tr>"
+                    + "</tbody>"
+                + "</table>"
 	  + "</form>"
 			
 			
@@ -584,7 +598,7 @@ function SelecteUserProcess() {
 			$(".Buttons[title='Search Test Cases']").fadeOut(1000);
 			
 			$(".delete").css('cursor','default');
-			
+
 			$(".SearchEmail").fadeIn(1000);
 			$("P:contains('Dependency')").fadeOut(100);
 			$("P:contains('Test Data Type')").fadeOut(100);
@@ -752,7 +766,38 @@ function SelectEmail()
 		$(this).remove();
 		
 	});
-	
+    $("#TesterSearchBox").autocomplete({
+
+        source : 'AutoCompleteTesterSearch',
+        select : function(event, ui) {
+
+            var value = ui.item.value
+            $("#AutoSearchResult #AssignedTester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/deletebutton.png" /></td>'
+                + '<td class="Text">'
+                + value
+                + ":&nbsp"
+                + '</td>');
+
+            $("#AssignedTester th").css('display', 'block');
+
+            $("#TesterSearchBox").val("");
+            return false;
+
+        }
+    });
+    $("#TesterSearchBox").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteTester").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
 
 }
 
@@ -761,6 +806,7 @@ var EmailIds = '';
 var DependencyText = '';
 var TestObjective = '';
 var TestDataType = '';
+var TesterIds='';
 function RunTestProcess() {
 
 	$("#AutoSearchResult #searchedtext").each( function()
@@ -786,7 +832,13 @@ function RunTestProcess() {
 			DependencyText = DependencyText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
             console.log(DependencyText);
 		});
-		
+        //Getting the selected Tester
+        $("#AutoSearchResult #AssignedTester").each( function()
+        {
+            var Tester= $(this).find("td").text();
+            TesterIds = Tester.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+            console.log(TesterIds);
+        });
 		//Getting Test Data Type Checkbox value
 		TestDataType = $("#TestDataTypeCheckboxes input:checked").val()
 		console.log(TestDataType);
@@ -802,7 +854,7 @@ function RunTestProcess() {
 		}
 		
 		Env = Get_Selected_Env_Name()
-		$.get("Run_Test", {RunTestQuery : RunTestQuery,EmailIds:EmailIds, DependencyText:DependencyText, TestDataType:TestDataType, TestObjective:TestObjective, Env: Env}, function(data) 
+		$.get("Run_Test", {RunTestQuery : RunTestQuery,TesterIds:TesterIds,EmailIds:EmailIds, DependencyText:DependencyText, TestDataType:TestDataType, TestObjective:TestObjective, Env: Env}, function(data)
 		{
 			
 			MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);
