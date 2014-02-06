@@ -22,18 +22,32 @@ $(document).ready(function(){
         }
     });
 
+    /*$(".platform").click(function(event)
+    {
+        $(".version").selectedOptions("0");
+    });*/
     $(".version").click(function(event)
     {
+        $('#BundleReportTable').empty();
         var platform = $(".platform").val();
         var version = $(".version").val();
         if(version != 0)
         {
-            $.get("Bundle_Report",{Platform : platform, Product_Version : version},function(data)
+            $.get("BundleReport_Table",{Platform : platform, Product_Version : version},function(data)
             {
-                ResultTable(BundleReportTable,data['Heading'], data['ReportTable'],"Bundle Report");
+                //ResultTable(BundleReportTable,data['Heading'], data['Env'],"Bundle Report");
+                for(var i=0;i<data['Env'].length;i++)
+                {
+                    $("#BundleReportTable").append(
+                        '<a>'+data['Env'][i][0]+'</a>' +
+                        '<hr/>');
+                    $("#BundleReportTable").append(''+
+                    '<div id="env'+i+'"></div>');
+                    ResultTable("#env"+i+"",data['Heading'], data['Env'],"");
+                }
             });
-
         }
+        //event.stopPropagation();
     });
 
 });
