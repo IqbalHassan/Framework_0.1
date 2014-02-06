@@ -2494,6 +2494,7 @@ def BundleReport_Table(request):
     
     env_details = []
     ReportTable = []
+    sections = []
 
     Conn = GetConnection()
     if request.is_ajax():
@@ -2507,10 +2508,12 @@ def BundleReport_Table(request):
             os_query = "select distinct machine_os from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by machine_os"
             browser_query = "select distinct client from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by client"
             section_query = "select distinct subpath(section_path,0,1) from product_sections"
+            sect_sub_q = "select product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
             OS_client_query = "select distinct machine_os,client from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by machine_os"
             OS = DB.GetData(Conn, os_query, False)
             browsers = DB.GetData(Conn, browser_query, False)
             env_details = DB.GetData(Conn, OS_client_query, False)
+            sections = DB.GetData(Conn, sect_sub_q, False)
             
     """for each in OS:
         for item in browsers:
@@ -2519,8 +2522,33 @@ def BundleReport_Table(request):
             temp.append(item[0])
             env_details.append(tuple(temp))"""
                     
+    #Heading = ['Section','Passed','Failed','Blocked','Never run','Defected','Total']
+    results = {'Env':env_details}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Single_Env(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            version = request.GET.get(u'Product_Version', '')
+            platform = request.GET.get(u'Platform', '')
+            if platform == 'PC':
+                OSName = 'Win'
+            else:
+                OSName = 'Darwin'
+            os_query = "select distinct machine_os from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by machine_os"
+            browser_query = "select distinct client from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by client"
+            section_query = "select distinct subpath(section_path,0,1) from product_sections"
+            sect_sub_q = "select product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
+            OS_client_query = "select distinct machine_os,client from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by machine_os"
+            OS = DB.GetData(Conn, os_query, False)
+            browsers = DB.GetData(Conn, browser_query, False)
+            env_details = DB.GetData(Conn, OS_client_query, False)
+            sections = DB.GetData(Conn, sect_sub_q, False)
+    
     Heading = ['Section','Passed','Failed','Blocked','Never run','Defected','Total']
-    results = {'Heading':Heading, 'Env':env_details}
+    results = {'Heading':Heading}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
