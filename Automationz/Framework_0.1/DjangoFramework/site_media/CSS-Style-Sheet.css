@@ -236,7 +236,7 @@ p.flip:ACTIVE,p.flip:HOVER {
 	font-family: monospace;
 	font-size: 20px;
 	color: black;
-	text-shadow: 1px 0px 0px gray;
+	//text-shadow: 1px 0px 0px gray;
 }
 
 /* =================== Loading Text ========================*/

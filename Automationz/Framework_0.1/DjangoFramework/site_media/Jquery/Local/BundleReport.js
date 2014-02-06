@@ -28,9 +28,9 @@ $(document).ready(function(){
         var version = $(".version").val();
         if(version != 0)
         {
-            $.get("BundleReport_Table",{version : version},function(data)
+            $.get("BundleReport_Table",{platform : platform, version : version},function(data)
             {
-                ResultTable(BundleReportTable,data['Heading'],data['env'],"Bundle Report");
+                ResultTable(BundleReportTable,data['Heading'],data['browsers'],"Bundle Report");
             });
 
         }
