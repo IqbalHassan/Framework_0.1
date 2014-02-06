@@ -2526,8 +2526,8 @@ def BundleReport_Table(request):
             env_details = DB.GetData(Conn, OS_client_query, False)
             sections = DB.GetData(Conn, sect_sub_q, False)
             #env_details.append("Total")
-            Total = ["Total"]
-            sections.append(Total)
+            #Total = ["Total"]
+            #sections.append(Total)
             
     """for each in OS:
         for item in browsers:
@@ -2543,10 +2543,45 @@ def BundleReport_Table(request):
             temp.append(s[0])
             #selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
             passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'" , False)
-            count = len(passed_cases)
-            temp.append(count)
+            pass_count = len(passed_cases)
+            temp.append(pass_count)
+            failed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Failed'" , False)
+            same = 0
+            for j in failed_cases:
+                for k in passed_cases:
+                    if j[0]==k[0]:
+                        same = same+1
+            fail_count = len(failed_cases)
+            temp.append(fail_count - same)
+            blocked_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Blocked'" , False)
+            same1 = 0
+            for j in blocked_cases:
+                for k in passed_cases:
+                    if j[0]==k[0]:
+                        same1 = same1 + 1
+                for h in failed_cases:
+                    if j[0]==h[0]:
+                        same1 = same1 + 1                        
+            block_count = len(blocked_cases)
+            temp.append(block_count - same1)
+            notrun_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and (tcr.status = 'In-Progress' or tcr.status = 'Skipped' or tcr.status = 'Submitted')" , False)
+            notrun_count = len(notrun_cases)
+            temp.append(notrun_count)
+            defected_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tct.property = 'JiraId' and tct.name != ''" , False)
+            defect_count = len(defected_cases)
+            temp.append(defect_count)
+            temp.append(pass_count + fail_count - same + block_count - same1 + notrun_count + defect_count)
             
             Data.append(tuple(temp))
+        sum = []
+        Total = ["Total"]
+        sum.append(Total)
+        for y in range(1,len(temp)):
+            huda = 0
+            for z in range(len(sections)):
+                huda = huda + Data[z][y]
+            sum.append(huda)
+        Data.append(sum)
         ReportTable.append(tuple(Data))
       
                     
