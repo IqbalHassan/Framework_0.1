@@ -43,7 +43,7 @@ $(document).ready(function(){
                         '<hr/>' +
                         '<h4>'+data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]+'</h4>' +
                     '<div id="env'+i+'"></div>');
-                    ResultTable("#env"+i+"", data['Heading'],"");
+                    ResultTable("#env"+i+"", data['Heading'],data['ReportTable'][i],"");
                     /*$.get("Single_Env",{Platform : platform, Product_Version : version,OS : data['Env'][i][0], Client : data['Env'][i][1]},function(env_data)
                     {
                         ResultTable("#env"+i+"", env_data['Heading'],"");

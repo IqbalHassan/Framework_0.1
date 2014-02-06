@@ -2503,6 +2503,7 @@ def BundleReport_Table(request):
     env_details = []
     ReportTable = []
     sections = []
+    passed_cases = []
 
     Conn = GetConnection()
     if request.is_ajax():
@@ -2525,7 +2526,8 @@ def BundleReport_Table(request):
             env_details = DB.GetData(Conn, OS_client_query, False)
             sections = DB.GetData(Conn, sect_sub_q, False)
             #env_details.append("Total")
-            sections.append("Total")
+            Total = ["Total"]
+            sections.append(Total)
             
     """for each in OS:
         for item in browsers:
@@ -2540,12 +2542,16 @@ def BundleReport_Table(request):
             temp = []
             temp.append(s[0])
             #selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
-            passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'" , False)
+            passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'" , False)
+            count = len(passed_cases)
+            temp.append(count)
             
+            Data.append(tuple(temp))
+        ReportTable.append(tuple(Data))
       
                     
     Heading = ['Section','Passed','Failed','Blocked','Not run','Defected','Total']
-    results = {'Heading':Heading,'Env':env_details}
+    results = {'Heading':Heading,'Env':env_details, 'ReportTable':ReportTable}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
