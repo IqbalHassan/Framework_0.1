@@ -347,7 +347,13 @@ def AutoCompleteEmailSearch(request):  #==================Returns Abailable Emai
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-
+def AutoCompleteTesterSearch(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            value=request.GET.get(u'term','')
+            results=DB.GetData(Conn, "Select  DISTINCT user_names from permitted_user_list where user_names Ilike '%" + value + "%' and user_level = 'assigned_tester'")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
 def AutoCompleteTagSearch(request):
     Conn = GetConnection()
     results = []
@@ -449,6 +455,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
+        query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name "+Query
         TableData = DB.GetData(Conn, "select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc "
                         "where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query, False)
 
@@ -1116,7 +1123,10 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
             EmailIds = request.GET.get('EmailIds', '')
             EmailIds = str(EmailIds.replace(u'\xa0', u''))
-
+            
+            TesterIds = request.GET.get('TesterIds', '')
+            TesterIds = str(TesterIds.replace(u'\xa0', u''))
+            
             DependencyText = request.GET.get('DependencyText', '')
             DependencyText = str(DependencyText.replace(u'\xa0', u''))
 
@@ -1144,6 +1154,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             UserText = UserData.split(":");
             EmailIds = EmailIds.split(":")
             DependencyText = DependencyText.split(":")
+            TesterIds=TesterIds.split(":")
             Emails = []
             for eachitem in EmailIds :
                 if eachitem != "":
@@ -1153,7 +1164,11 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
 
             stEmailIds = ','.join(Emails)
-
+            Testers=[]
+            for each in TesterIds:
+                if each !="" and each !=":":
+                    Testers.append(each)
+            Testers=','.join(Testers)
             for eachitem in UserText:
                 if len(eachitem) != 0 and  len(eachitem) != 1:
                     QueryText.append(str(eachitem.strip()))
@@ -1239,6 +1254,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
     AddInfo(runid)
     Result = DB.UpdateRecordInTable(Conn, "test_run_env", query,
                                      email_notification=stEmailIds,
+                                     assigned_tester=Testers,
                                      test_objective=TestObjective,
                                      Status='Submitted',
                                      data_type=TestDataType
@@ -2100,7 +2116,7 @@ def Create_Submit_New_TestCase(request):
             Steps_Name_List = request.GET.get(u'Steps_Name_List', '').split('|')
             Associated_Bugs_List = request.GET.get(u'Associated_Bugs_List', '').split(',')
             Requirement_ID_List = request.GET.get(u'Requirement_ID_List', '').split(',')
-            Status = request.GET.get(u'Status', 'Dev')
+            Status = request.GET.get(u'Status', '')
             Is_Edit = request.GET.get(u'Is_Edit', 'create')
             Section_Path = request.GET.get(u'Section_Path', '')
             Step_Description_List = request.GET.get(u'Steps_Description_List','')
@@ -2775,7 +2791,7 @@ def general_work(request,data_type):
             if(temp>0):
                 output="Test "+data_type+" with name '"+request.POST['inputName']+"' is already in the database"
                 return TestSet(request,output)
-        """if operation=="3" and command=="Edit":
+        if operation=="3" and command=="Edit":
             temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']
@@ -2783,9 +2799,9 @@ def general_work(request,data_type):
                     return edit(request,name,data_type)
                 else:
                     output="Name field is empty"
-                    return TestSet(request,output)   """ 
+                    return TestSet(request,output)
             # output+=edit(name)
-        if operation=="3" and command=="Delete":
+        if operation=="4" and command=="Delete":
             temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']
@@ -3996,11 +4012,15 @@ def DataFetchForTestCases(request):
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
     DataColumn=["StepNumber","StepName","DataRequired","Description","Expected Results","FailReason","Status","Execution Log"]
+    query="select status from test_case_results where tc_id='%s' and run_id='%s'" %(test_case_id,run_id)
+    Conn=GetConnection()
+    test_case_status=DB.GetData(Conn,query,False)
     print DataColumn
     print DataCollected
     message={
              'data_column':DataColumn,
-             'data_collected':DataCollected
+             'data_collected':DataCollected,
+             'test_case_status':test_case_status[0][0]
              }
     results=simplejson.dumps(message)
     return HttpResponse(results,mimetype='application/json')

@@ -749,7 +749,7 @@ function AddAutoCompleteToTag() {
 			if (value != "") {
 				AddToListTag(value);
 			}
-			return false
+			return false;
 		},
 	});
 	$("#tag_txtbox").keypress(function(event) {
