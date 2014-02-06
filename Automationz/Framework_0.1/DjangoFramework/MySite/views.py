@@ -2524,6 +2524,8 @@ def BundleReport_Table(request):
             browsers = DB.GetData(Conn, browser_query, False)
             env_details = DB.GetData(Conn, OS_client_query, False)
             sections = DB.GetData(Conn, sect_sub_q, False)
+            #env_details.append("Total")
+            sections.append("Total")
             
     """for each in OS:
         for item in browsers:
@@ -2532,9 +2534,14 @@ def BundleReport_Table(request):
             temp.append(item[0])
             env_details.append(tuple(temp))"""
     for i in env_details:
-        selected_cases_q = "select distinct tcr.run_id, tcr.tc_id, tcr.status from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = 'Futureshop.Filters'"
-        sel_cases = DB.GetData(Conn, selected_cases_q, False)
         #CountPerSection(sections,sel_cases,ReportTable)
+        Data = []
+        for s in sections:
+            temp = []
+            temp.append(s[0])
+            #selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
+            passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'" , False)
+            
       
                     
     Heading = ['Section','Passed','Failed','Blocked','Not run','Defected','Total']
