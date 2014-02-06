@@ -39,13 +39,15 @@ $(document).ready(function(){
                 for(var i=0;i<data['Env'].length;i++)
                 {
                     $("#BundleReportTable").append(''+
-                        '<h3>'+data['Env'][i][0]+'  +  '+data['Env'][i][1]+'</h3>' +
+                        '<br/>' +
                         '<hr/>' +
+                        '<h4>'+data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]+'</h4>' +
                     '<div id="env'+i+'"></div>');
-                    $.get("Single_Env",{Platform : platform, Product_Version : version,OS : data['Env'][i][0], Client : data['Env'][i][1]},function(env_data)
+                    ResultTable("#env"+i+"", data['Heading'],"");
+                    /*$.get("Single_Env",{Platform : platform, Product_Version : version,OS : data['Env'][i][0], Client : data['Env'][i][1]},function(env_data)
                     {
                         ResultTable("#env"+i+"", env_data['Heading'],"");
-                    });
+                    });*/
                 }
             });
         }

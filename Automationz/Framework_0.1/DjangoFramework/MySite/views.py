@@ -2485,9 +2485,17 @@ def Get_Versions(request):
     if request.method == "GET":
         browser = request.GET.get(u'version', '')
         if browser == '':
-            results = DB.GetData(Conn, "select distinct product_version from test_run_env order by product_version", False)
+            versions = DB.GetData(Conn, "select distinct product_version from test_run_env order by product_version", False)
+        
+        for i in versions:
+            if i[0] == " ":
+                Nil = ['Nil']
+                results.append(Nil) 
+            else:
+                results.append(i)
+            
 
-    json = simplejson.dumps(results)
+    json = simplejson.dumps(tuple(results))
     return HttpResponse(json, mimetype='application/json')
 
 def BundleReport_Table(request):
@@ -2500,6 +2508,8 @@ def BundleReport_Table(request):
     if request.is_ajax():
         if request.method == 'GET':
             version = request.GET.get(u'Product_Version', '')
+            if version == 'Nil':
+                version = " "
             platform = request.GET.get(u'Platform', '')
             if platform == 'PC':
                 OSName = 'Win'
@@ -2521,13 +2531,18 @@ def BundleReport_Table(request):
             temp.append(each[0])
             temp.append(item[0])
             env_details.append(tuple(temp))"""
+    for i in env_details:
+        selected_cases_q = "select distinct tcr.run_id, tcr.tc_id, tcr.status from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = 'Futureshop.Filters'"
+        sel_cases = DB.GetData(Conn, selected_cases_q, False)
+        #CountPerSection(sections,sel_cases,ReportTable)
+      
                     
-    #Heading = ['Section','Passed','Failed','Blocked','Never run','Defected','Total']
-    results = {'Env':env_details}
+    Heading = ['Section','Passed','Failed','Blocked','Not run','Defected','Total']
+    results = {'Heading':Heading,'Env':env_details}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def Single_Env(request):
+"""def Single_Env(request):
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
@@ -2547,10 +2562,10 @@ def Single_Env(request):
             env_details = DB.GetData(Conn, OS_client_query, False)
             sections = DB.GetData(Conn, sect_sub_q, False)
     
-    Heading = ['Section','Passed','Failed','Blocked','Never run','Defected','Total']
+    Heading = ['Section','Passed','Failed','Blocked','Not run','Defected','Total']
     results = {'Heading':Heading}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, mimetype='application/json')"""
 
 def Bundle_Report(request):  #==================Returns Report data for a specific product version (eg 1.1.1.26 and platform 'PC'==============================
 
