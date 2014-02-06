@@ -26,7 +26,7 @@ $(document).ready(function(){
     {
         $(".version").selectedOptions("0");
     });*/
-    $(".version").click(function(event)
+    $(".generate").click(function(event)
     {
         $('#BundleReportTable').empty();
         var platform = $(".platform").val();
@@ -38,12 +38,14 @@ $(document).ready(function(){
                 //ResultTable(BundleReportTable,data['Heading'], data['Env'],"Bundle Report");
                 for(var i=0;i<data['Env'].length;i++)
                 {
-                    $("#BundleReportTable").append(
-                        '<a>'+data['Env'][i][0]+'</a>' +
-                        '<hr/>');
                     $("#BundleReportTable").append(''+
+                        '<h3>'+data['Env'][i][0]+'  +  '+data['Env'][i][1]+'</h3>' +
+                        '<hr/>' +
                     '<div id="env'+i+'"></div>');
-                    ResultTable("#env"+i+"",data['Heading'], data['Env'],"");
+                    $.get("Single_Env",{Platform : platform, Product_Version : version,OS : data['Env'][i][0], Client : data['Env'][i][1]},function(env_data)
+                    {
+                        ResultTable("#env"+i+"", env_data['Heading'],"");
+                    });
                 }
             });
         }
