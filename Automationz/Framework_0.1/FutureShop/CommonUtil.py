@@ -49,7 +49,7 @@ def ExecLog(sModuleInfo, sDetails, iLogLevel=1, sStatus="",):
     sDetails = to_unicode(sDetails)
     if iLogLevel == 1:
         logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Pass", loglevel=iLogLevel)
+        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Passed", loglevel=iLogLevel)
 
     elif iLogLevel == 2:
         logger.warning(sModuleInfo + ' - ' + sDetails + '' + sStatus)
@@ -1295,7 +1295,7 @@ class LocalInfo():
 def FindTestCaseFailedReason(conn, run_id, tc_id):
     sqlQuery = ("select details from execution_log el, test_step_results tsr"
                  " where el.logid = tsr.logid"
-                 " and tsr.run_id = '%s' and tsr.tc_id = '%s' and tsr.status = 'Critical' and el.loglevel = 3" % (run_id, tc_id))
+                 " and tsr.run_id = '%s' and tsr.tc_id = '%s' and tsr.status = 'Failed' and el.loglevel = 3" % (run_id, tc_id))
     DataQuery = DB.GetData(conn, sqlQuery, False)
     IgnoreKeywordList = ['Test Case', 'Test Step', 'Test Set']
     Reason = []
@@ -1364,7 +1364,7 @@ def Get_ListDifferences(List1, List2):
                 editlist.append(edititem)
         return editlist
     except Exception, e:
-        return LogCriticalException(sModuleInfo, e)
+        return LogFailedException(sModuleInfo, e)
 
 
 
@@ -1394,8 +1394,8 @@ def NormalizeTimeInputs(tupleList):
                         returnList.append(NormalizeTime(tupleList[i]))
 
                     else:
-                        print "Critical failure occurred normalizing time value of %s" % (tupleList[i])
-                        ExecLog(sModuleInfo, "Critical failure occurred normalizing time value of %s" % (tupleList[i], 4))
+                        print "Failed failure occurred normalizing time value of %s" % (tupleList[i])
+                        ExecLog(sModuleInfo, "Failed failure occurred normalizing time value of %s" % (tupleList[i], 4))
                         return tupleList
 
                 else:
@@ -1463,10 +1463,10 @@ def NormalizeTime(tuple):
 
     return newTuple
 
-def LogCriticalException(sModuleInfo, e):
+def LogFailedException(sModuleInfo, e):
     print "%s > Exception happened:%s" % (sModuleInfo, e)
     ExecLog(sModuleInfo, "Exception:%s" % e, 2)
     ExecLog(sModuleInfo, "Framework Error", 3)
-    return "Critical"
+    return "Failed"
 
 

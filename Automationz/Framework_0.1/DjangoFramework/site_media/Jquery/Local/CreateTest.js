@@ -220,7 +220,7 @@ $(document).ready(function() {
 					else if(dependancy_list[dependancy] == 'iTunes') $('input[value="iTunes"]').attr('checked', true);
 					else if(dependancy_list[dependancy] == 'iPhoto') $('input[value="iPhoto"]').attr('checked', true);
 					else if(dependancy_list[dependancy] == 'Chrome') $('input[value="Chrome"]').attr('checked', true);
-					else if(dependancy_list[dependancy] == 'Firefox') $('input[value="Firefox"]').attr('checked', true);
+					else if(dependancy_list[dependancy] == 'FireFox') $('input[value="FireFox"]').attr('checked', true);
 					else if(dependancy_list[dependancy] == 'IE') $('input[value="IE"]').attr('checked', true);
 				}
 				//Type

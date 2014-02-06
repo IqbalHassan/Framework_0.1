@@ -469,7 +469,7 @@ function PerformSearch() {
 											if (data['TableData'].length == 0)
 											{
 												$('#RunTestResultTable').children().remove();
-												$('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+												$//('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
 												$("#DepandencyCheckboxes").children().remove();
 												//$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
 											} 
@@ -586,7 +586,7 @@ function SelecteUserProcess() {
 		{
 			$("#AutoSearchTextBoxLabel").html("<b>*Select Test Machine:&nbsp;&nbsp;</b>");
 			$('#RunTestResultTable').children().remove();
-			$('#RunTestResultTable').append('<p class = "Text"><b>Sorry There is No Availaable User To Run The Test!!!</b></p>');
+			//$('#RunTestResultTable').append('<p class = "Text"><b>Sorry There is No Availaable User To Run The Test!!!</b></p>');
 		}
 		
 		else 
@@ -812,7 +812,7 @@ function SelectEmail()
 var EmailIds = '';
 var DependencyText = '';
 var TestObjective = '';
-var TestDataType = '';
+//var TestDataType = '';
 var TesterIds='';
 function RunTestProcess() {
 
@@ -861,7 +861,7 @@ function RunTestProcess() {
 		}
 		
 		Env = Get_Selected_Env_Name()
-		$.get("Run_Test", {RunTestQuery : RunTestQuery,TesterIds:TesterIds,EmailIds:EmailIds, DependencyText:DependencyText, TestDataType:TestDataType, TestObjective:TestObjective, Env: Env}, function(data)
+		$.get("Run_Test", {RunTestQuery : RunTestQuery,TesterIds:TesterIds,EmailIds:EmailIds, DependencyText:DependencyText, FTestObjective:TestObjective, Env: Env}, function(data)
 		{
 			
 			MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);

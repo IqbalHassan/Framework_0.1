@@ -54,7 +54,7 @@ def main():
             print "Unknown test step : ", CurrentStep
             CommonUtil.ExecLog(sModuleInfo, "Unknown test step : %s" % CurrentStep , 2)
         except Exception, e:
-            return CommonUtil.LogCriticalException(sModuleInfo, e)
+            return CommonUtil.LogFailedException(sModuleInfo, e)
 
         #Put the return value into Queue to send it back to main thread
         q.put(sTestStepReturnStatus)
@@ -269,7 +269,7 @@ def main():
                                     print "Test Step Thread Ended.."
                                 except Queue.Empty:
                                     print "Test Step did not return after default timeout (secs) : ", Global.DefaultTestStepTimeout
-                                    sStepResult = "Critical"
+                                    sStepResult = "Failed"
 
                                     #Clean up
                                     if stepThread.isAlive():
@@ -286,7 +286,7 @@ def main():
                     except Exception, e:
                         print "Exception occurred in test step : ", e
                         CommonUtil.ExecLog(sModuleInfo, "Exception occurred in test step : %s" % e, 3)
-                        sStepResult = "Critical"
+                        sStepResult = "Failed"
 
                     #Check if the db connection is alive or timed out
                     if DBUtil.IsDBConnectionGood(conn) == False:
@@ -330,26 +330,26 @@ def main():
 
 
 
-                    #add result of each step to a list; for a test case to pass all steps should be pass; atleast one Critical makes it 'Fail' else 'Warning' or 'Blocked'
+                    #add result of each step to a list; for a test case to pass all steps should be pass; atleast one Failed makes it 'Fail' else 'Warning' or 'Blocked'
                     if sStepResult:
                         sTestStepResultList.append(sStepResult.upper())
                     else:
-                        sTestStepResultList.append("CRITICAL")
+                        sTestStepResultList.append("FAILED")
                         print "sStepResult : ", sStepResult
                         CommonUtil.ExecLog(sModuleInfo, "sStepResult : %s" % sStepResult, 1)
-                        sStepResult = "Critical"
+                        sStepResult = "Failed"
 
                     #Take ScreenShot
                     CommonUtil.TakeScreenShot(sStepResult + "_" + TestStepsList[StepSeq - 1][1])
 
                     #Update Results
-                    if sStepResult.upper() == "PASS":
+                    if sStepResult.upper() == "PASSED":
                         #Step Passed
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Passed"
                         CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Passed" % TestStepsList[StepSeq - 1][1], 1)
                         #Update Test Step Results table
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
-                                                   status='Pass',
+                                                   status='Passed',
                                                    stependtime='%s' % (sTestStepEndTime),
                                                    end_memory='%s' % (WinMemEnd),
                                                    duration='%s' % (TestStepDuration),
@@ -367,17 +367,16 @@ def main():
                                                    duration='%s' % (TestStepDuration),
                                                    memory_consumed='%s' % (TestStepMemConsumed)
                                                    )
-                    elif sStepResult.upper() == "CRITICAL":
+                    elif sStepResult.upper() == "FAILED":
                         #Step has a Critial failure, fail the test step and test case. go to next test case
-                        print TestStepsList[StepSeq - 1][1] + ": Test Step Critical Failure"
-                        CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Critical Failure" % TestStepsList[StepSeq - 1][1], 3)
+                        print TestStepsList[StepSeq - 1][1] + ": Test Step Failed Failure"
+                        CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Failed Failure" % TestStepsList[StepSeq - 1][1], 3)
                         #Update Test Step Results table
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
-                                                   status='Critical',
+                                                   status='Failed',
                                                    stependtime='%s' % (sTestStepEndTime),
                                                    end_memory='%s' % (WinMemEnd),
                                                    duration='%s' % (TestStepDuration),
-                                                   memory_consumed='%s' % (TestStepMemConsumed)
                                                    )
                         #Discontinue this test case
                         break
@@ -424,15 +423,28 @@ def main():
                 print "Test Case Blocked"
                 CommonUtil.ExecLog(sModuleInfo, "Test Case Blocked", 3)
                 sTestCaseStatus = "Blocked"
-            elif 'CRITICAL' in sTestStepResultList:
+            elif 'FAILED' in sTestStepResultList:
                 print "Test Case Failed"
-                CommonUtil.ExecLog(sModuleInfo, "Test Case Failed", 3)
-                sTestCaseStatus = "Failed"
+                step_index=1
+                for each in sTestStepResultList:
+                    if each=='FAILED':
+                        break
+                    else:
+                        step_index+=1
+                datasetid=TestCaseID[0]+'_s'+str(step_index)
+                query="select description from master_data where field='verification' and value='point' and id='%s'"%datasetid
+                #Conn=GetConnection()
+                status=DBUtil.GetData(conn,query,False)
+                if status[0][0]=="yes":
+                    sTestCaseStatus='Failed'
+                else:
+                    sTestCaseStatus='Blocked'
+                CommonUtil.ExecLog(sModuleInfo, "Test Case "+sTestCaseStatus, 3)
             elif 'WARNING' in sTestStepResultList:
                 print "Test Case Contain Warning(s)"
                 CommonUtil.ExecLog(sModuleInfo, "Test Case Contain Warning(s)", 2)
                 sTestCaseStatus = "Failed"
-            elif 'PASS' in sTestStepResultList:
+            elif 'PASSED' in sTestStepResultList:
                 print "Test Case Passed"
                 CommonUtil.ExecLog(sModuleInfo, "Test Case Passed", 1)
                 sTestCaseStatus = "Passed"

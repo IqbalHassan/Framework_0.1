@@ -288,10 +288,12 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             Priority = "Priority"
             TCStatusName = "Status"
             CustomTag = "CustomTag"
+            CustomSet="set"
+            Tag='tag'
 
         results = DB.GetData(Conn, "select distinct name from test_case_tag "
                                    "where name Ilike '%" + value + "%' "
-                                     "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') "
+                                     "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') "
                                      "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
                                      )
 
@@ -416,7 +418,8 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 Priority = "Priority"
                 TCStatusName = "Status"
                 CustomTag = "CustomTag"
-                #CustomSet="set"
+                CustomSet="set"
+                Tag='tag'
             QueryText = []
             for eachitem in UserText:
                 if len(eachitem) != 0 and  len(eachitem) != 1:
@@ -450,10 +453,10 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         count = 1
         for eachitem in QueryText:
             if count == 1:
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name "+Query
@@ -670,13 +673,32 @@ def TestCase_TestSteps_SearchPage(request): #==================Returns Test Step
     results = {'Result':result}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-
+def GetRunIDStatus(RunId):
+    run_status=""
+    query="select status from test_case_results where run_id='%s'" %RunId
+    Conn=GetConnection()
+    status_list=DB.GetData(Conn, query)
+    for each in status_list:
+        if each!='Submitted':
+            run_status='Not Submitted'
+            break
+    if run_status=='Not Submitted':
+        if 'In-Progress' in status_list:
+            run_status='In-Progress'
+        elif 'Submitted' in status_list:
+            run_status='In-Progress'
+        else:
+            run_status='Complete'
+    else:
+        run_status='Submitted'
+    return run_status
 def RunId_TestCases(request,RunId): #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
     Conn=GetConnection()
     RunId=RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID","Tester","Status","Product","Machine OS","Client","Data Type"]
-    query="Select DISTINCT run_id,tester_id,status,product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,data_type from test_run_env Where run_id = '%s'" % RunId
+    Env_Details_Col = ["Run ID","Tester","Status","Product","Machine OS","Client","Machine IP"]
+    run_id_status=GetRunIDStatus(RunId)
+    query="Select DISTINCT run_id,tester_id,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip from test_run_env Where run_id = '%s'" % RunId
     Env_Details_Data=DB.GetData(Conn, query, False)
     AllTestCases = DB.GetData(Conn, "(select "
                                             "tct.name as MKSId, "
@@ -1010,6 +1032,8 @@ def Verify_Query(request):  #==================Returns Message if Depandency is 
                 Env_Dependency = "Dependency"
                 TCStatusName = "Status"
                 CustomTag = "CustomTag"
+                CustomSet='set'
+                Tag='tag'
 
             QueryText = []
             for eachitem in UserText:
@@ -1056,10 +1080,10 @@ def Verify_Query(request):  #==================Returns Message if Depandency is 
         count = 1
         for eachitem in QueryText:
             if count == 1:
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
         Query = Query + "AND COUNT(CASE WHEN name = '" + TCStatusName + "' and property = '" + propertyValue + "' THEN 1 END) > 0 "
         Query = Query + "AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0 "
         DepandencyNamesValues = DB.GetData(Conn, "Select distinct t1. property,t2. property from test_case_tag t1, test_case_tag t2 "
@@ -1131,8 +1155,8 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             DependencyText = request.GET.get('DependencyText', '')
             DependencyText = str(DependencyText.replace(u'\xa0', u''))
 
-            TestDataType = request.GET.get('TestDataType', '')
-            TestDataType = str(TestDataType.replace(u'\xa0', u''))
+            """TestDataType = request.GET.get('TestDataType', '')
+            TestDataType = str(TestDataType.replace(u'\xa0', u''))"""
 
             TestObjective = request.GET.get('TestObjective', '')
             TestObjective = str(TestObjective.replace(u'\xa0', u''))
@@ -1151,6 +1175,8 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                 Priority = "Priority"
                 TCStatusName = "Status"
                 CustomTag = "CustomTag"
+                CustomSet='set'
+                Tag='tag'
 
             UserText = UserData.split(":");
             EmailIds = EmailIds.split(":")
@@ -1200,11 +1226,11 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         for eachitem in QueryText:
             if count == 1:
                 #Query = "HAVING COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
                 #Query = Query + "AND COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0" % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         TestCasesIDs = DB.GetData(Conn, "select distinct tct.tc_id from test_case_tag tct, test_cases tc "
@@ -1215,7 +1241,8 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
 
     #Finding Client info from TestRenEnv for selected machine
-    ClientInfo = DB.GetData(Conn, "Select client from test_run_env Where  tester_id = '%s' and status = 'Unassigned' " % TesterId)
+    query="Select client from test_run_env Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
+    ClientInfo = DB.GetData(Conn, query)
     ClientInfo = ClientInfo[0].split(",")
     #Adding tag values to "testrunevn" table columns
     for each in DependencyText:
@@ -1241,7 +1268,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                 eachitem = iclient
                 print "eachitem:"+eachitem
 
-        if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid':
+        if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid' or TagName==CustomSet or TagName==Tag:
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
             TestSetName = TestSetName + " " + eachitem
             TestSetName = TestSetName.strip()
@@ -1258,7 +1285,6 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                                      assigned_tester=Testers,
                                      test_objective=TestObjective,
                                      Status='Submitted',
-                                     data_type=TestDataType
                                      )
     #NJ-Insert into run env results to display submitted runs
     now = DB.GetData(Conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -2888,10 +2914,10 @@ def AddTestCasesToSet(request):
         test_set_name=request.POST['set_name']
         test_type=request.POST['set_type']
         if(len(selected_tc)==0):
-            ex_lst=TestCases_InSet(test_set_name)
+            ex_lst=TestCases_InSet(test_set_name,test_type)
             output={}
             output.update({'ex_lst':ex_lst})
-            output.update({'error_message':"No check box selected",'name':test_set_name,'type':test_type})
+            output.update({'error_message':"No check box selected",'name':test_set_name,'data_type':test_type})
             return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
         else:
             conn=GetConnection()
@@ -2920,10 +2946,10 @@ def DeleteTestCasesFromSet(request):
         test_set_name=request.POST['set_name']
         test_type=request.POST['set_type']
         if(len(selected_tc)==0):
-            ex_lst=TestCases_InSet(test_set_name)
+            ex_lst=TestCases_InSet(test_set_name,test_type)
             output={}
             output.update({'ex_lst':ex_lst})
-            output.update({'error_message':"No check box selected",'name':test_set_name,'type':test_type})
+            output.update({'error_message':"No check box selected",'name':test_set_name,'data_type':test_type})
             return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
         else:
             conn=GetConnection()

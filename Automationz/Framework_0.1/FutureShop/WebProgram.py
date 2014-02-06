@@ -28,27 +28,27 @@ def BrowserSelection(browser):
             sBrowser = webdriver.Chrome()
             print "Started Chrome Browser"
             CommonUtil.ExecLog(sModuleInfo, "Started Chrome Browser", 1)
-            return "PASS"
+            return "PASSED"
         elif browser == 'FireFox':
             sBrowser = webdriver.Firefox()
             CommonUtil.ExecLog(sModuleInfo, "Started Firefox Browser", 1)
             print "Started Firefox Browser"
-            return "PASS"
+            return "PASSED"
         elif "IE" in browser:
             sBrowser = webdriver.Ie()
             CommonUtil.ExecLog(sModuleInfo, "Started Internet Explorer Browser", 1)
             print "Started Internet Explorer Browser"
-            return "PASS"
+            return "PASSED"
         else:
             print "You did not select a valid browser: %s" % browser
             CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser: %s" % browser, 3)
-            return "Critical"
+            return "Failed"
     except Exception, e:
         print "Exception : ", e
         print "Unable to start WebDriver"
         CommonUtil.ExecLog(sModuleInfo, "Unable to start WebDriver", 3)
 
-        return "Critical"
+        return "Failed"
 
 def OpenLink(link):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -58,13 +58,13 @@ def OpenLink(link):
         CommonUtil.ExecLog(sModuleInfo, "Successfully opened your link: %s" % link, 1)
         print "Successfully opened your link: " + link
         CommonUtil.TakeScreenShot("Demo")
-        return "PASS"
+        return "PASSED"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Failed to open your link: %s" % link, 3)
         print "Failed to open your link: %s" % link
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
 
 def SelectFirstLevelMenu(menu_name_1):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -75,31 +75,31 @@ def SelectFirstLevelMenu(menu_name_1):
             print "Unable to find your main menu object"
             CommonUtil.ExecLog(sModuleInfo, "Unable to find your main menu object: %s" % menu_name_1, 3)
             CommonUtil.TakeScreenShot("Demo")
-            return "Critical"
+            return "Failed"
         for element in allElements:
             if menu_name_1 == element.text:
                 CommonUtil.ExecLog(sModuleInfo, "Found your main menu item: %s" % element.text, 1)
                 print "Found the Main Menu: " + element.text
                 result = HoeverOver(element)
                 CommonUtil.ExecLog(sModuleInfo, "Hovering over to your main menu: %s" % menu_name_1, 1)
-                if result != "PASS":
+                if result != "PASSED":
                     CommonUtil.ExecLog(sModuleInfo, "Unable to hover over your main menu: %s" % menu_name_1, 3)
                     CommonUtil.TakeScreenShot("Demo")
-                    return "Critical"
+                    return "Failed"
                 else:
                     CommonUtil.ExecLog(sModuleInfo, "Successfully hovered over your main menu: %s" % menu_name_1, 1)
                     CommonUtil.TakeScreenShot("Demo")
-                    return "PASS"
+                    return "PASSED"
         print "Unable to find your element: " + menu_name_1
         CommonUtil.ExecLog(sModuleInfo, "Unable to find your main menu object: %s" % menu_name_1, 3)
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Error trying to select the main menu: %s" % menu_name_1, 3)
         print "Error trying to select the main menu"
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
 
 
 def SelectSecondLevelMenu(menu_name_2):
@@ -111,31 +111,31 @@ def SelectSecondLevelMenu(menu_name_2):
             print "Unable to find your second level menu object"
             CommonUtil.ExecLog(sModuleInfo, "Unable to find your second level menu object: %s" % menu_name_2, 3)
             CommonUtil.TakeScreenShot("Demo")
-            return "Critical"
+            return "Failed"
         for element in allElements:
             if menu_name_2 == element.text:
                 print "Found the second level menu: " + element.text
                 CommonUtil.ExecLog(sModuleInfo, "Found the second level menu:  %s" % menu_name_2, 3)
                 CommonUtil.ExecLog(sModuleInfo, "Hovering over to your second level menu: %s" % menu_name_2, 1)
                 result = HoeverOver(element)
-                if result != "PASS":
+                if result != "PASSED":
                     CommonUtil.ExecLog(sModuleInfo, "Unable to hover over your second level element: %s" % menu_name_2, 3)
                     CommonUtil.TakeScreenShot("Demo")
-                    return "Critical"
+                    return "Failed"
                 else:
                     CommonUtil.ExecLog(sModuleInfo, "Successfully hovered over your second level menu: %s" % menu_name_2, 1)
                     CommonUtil.TakeScreenShot("Demo")
-                    return "PASS"
+                    return "PASSED"
         print "Unable to find your element: " + menu_name_2
         CommonUtil.ExecLog(sModuleInfo, "Unable to find second level menu item: %s" % menu_name_2, 3)
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Error trying to select the second level menu: %s" % menu_name_2, 3)
         print "Error trying to select the second level menu"
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
 
 #def SelectThirdLevelMenu(menu_name_3):
 #    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -151,12 +151,12 @@ def SelectSecondLevelMenu(menu_name_2):
 #                return "PASS"
 #        print "Unable to find your item to click: " + menu_name_3
 #        CommonUtil.ExecLog(sModuleInfo, "Unable to find your item to click: %s" % menu_name_3, 3)
-#        return "Critical"
+#        return "Failed"
 #    except Exception, e:
 #        print "Exception : ", e
 #        CommonUtil.ExecLog(sModuleInfo, "Error trying to select the 3rd level menu: %s" % menu_name_3, 3)
 #        print "Error trying to select the 3rd level menu"
-#        return "Critical"
+#        return "Failed"
 
 def SelectThirdLevelMenu(menu_name_3):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -171,17 +171,17 @@ def SelectThirdLevelMenu(menu_name_3):
                 print "Successfully clicked your item: " + menu_name_3
                 CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your item: %s" % menu_name_3, 1)
                 CommonUtil.TakeScreenShot("Demo")
-                return "PASS"
+                return "PASSED"
         print "Unable to find your item to click: " + menu_name_3
         CommonUtil.ExecLog(sModuleInfo, "Unable to find your item to click: %s" % menu_name_3, 3)
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Error trying to select the 3rd level menu: %s" % menu_name_3, 3)
         print "Error trying to select the 3rd level menu"
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
 
 def HoeverOver(element):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -193,10 +193,10 @@ def HoeverOver(element):
         print "Hovering over to the element " + (element.text)
         hov = ActionChains(sBrowser).move_to_element(element)
         hov.perform()
-        return "PASS"
+        return "PASSED"
     except:
         print "Unable to hover over the element"
-        return "Critical"
+        return "Failed"
 
 def FilterBySelection(check_box_name):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -222,7 +222,7 @@ def FilterBySelection(check_box_name):
                     print "Your check box: %s is now checked" % check_box_name
                     CommonUtil.ExecLog(sModuleInfo, "Your check box: %s is now checked" % check_box_name, 3)
                     CommonUtil.TakeScreenShot("Demo")
-                    return "PASS"
+                    return "PASSED"
         '''
         Verify if check box was already checked
         '''
@@ -231,24 +231,24 @@ def FilterBySelection(check_box_name):
             print "your check box was already selected"
             CommonUtil.ExecLog(sModuleInfo, "Your check box %s was already selected." % check_box_name, 3)
             CommonUtil.TakeScreenShot("Demo")
-            return "PASS"
+            return "PASSED"
         print "Unable to locate your check box: %s" % check_box_name
         CommonUtil.ExecLog(sModuleInfo, "Unable to locate your check box: %s" % check_box_name, 3)
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
 
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Unable to select your check box: %s" % check_box_name, 3)
         print "Unable to select your check box: %s" % check_box_name
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
 
 
 def RemoveFilter(check_box_name):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     print 'checkbox'
-    return "PASS"
+    return "PASSED"
 
 
 def CloseBrowser():
@@ -258,12 +258,12 @@ def CloseBrowser():
         sBrowser.close()
         print "Successfully closed your browser"
         CommonUtil.TakeScreenShot("Demo")
-        return "PASS"
+        return "PASSED"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "No open browser to close", 3)
         print "No open browser to close"
-        return "Critical"
+        return "Failed"
     
 
 def GetFilterCount(check_box_name):
@@ -299,7 +299,7 @@ def GetFilterCount(check_box_name):
     except:
         print "Unable to find the check box"
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
 
 def SearchItem(search_text, search_box="Search products, articles & help topics", search_button_id="ctl00_MasterPageHeader_GlobalSearchUC_BtnSubmitSearch"):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -328,26 +328,26 @@ def SearchItem(search_text, search_box="Search products, articles & help topics"
                     CommonUtil.ExecLog(sModuleInfo, "Timed out waiting over 30 seconds for the page to load", 3)
                     print "Timed out waiting over 30 seconds for the page to load"
                     CommonUtil.TakeScreenShot("Demo")
-                    return "Critical"
+                    return "Failed"
                 print "Waited for browser to load"
                 CommonUtil.ExecLog(sModuleInfo, "Waited for browser to fully load: %s" % search_text, 1)
                 CommonUtil.TakeScreenShot("Demo")
-                return "PASS"
+                return "PASSED"
             else:
                 print "Search button was not found"
                 CommonUtil.ExecLog(sModuleInfo, "Search button was not found: %s" % search_text, 3)
                 CommonUtil.TakeScreenShot("Demo")
-                return "Critical"
+                return "Failed"
         print "Unable to find search box"
         CommonUtil.ExecLog(sModuleInfo, "Unable to find search box: %s" % search_text, 3)
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Framework error with searching your item: %s" % search_text, 3)
         print "Framework error with searching your item: %s" % search_text
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
 
 def GetItemDetail():
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -467,7 +467,7 @@ def GetItemDetail():
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Framework error with searching your item: %s" % e, 3)
         CommonUtil.TakeScreenShot("Demo")
-        return "Critical"
+        return "Failed"
 
 
 

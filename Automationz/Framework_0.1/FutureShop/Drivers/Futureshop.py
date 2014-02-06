@@ -104,7 +104,7 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
             CommonUtil.ExecLog(sModuleInfo, "Opening futureshop site", 1)
             link = "http://www.futureshop.ca"
             sTestStepReturnStatus = WebProgram.OpenLink(link)
-            sTestStepReturnStatus = "Pass"
+            sTestStepReturnStatus = "Passed"
 
         elif CurrentStep == "Select Main Menu":
             DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
@@ -126,7 +126,7 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
             for eachData in DataSet:
                 check_box_name = eachData[2]
                 sTestStepReturnStatus = WebProgram.FilterBySelection(check_box_name)
-                if sTestStepReturnStatus != "Pass":
+                if sTestStepReturnStatus != "Passed":
                     return sTestStepReturnStatus
 
         elif CurrentStep == "Search For An Item":
@@ -142,10 +142,10 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
 
             objCompare = Compare.Compare()
             retValue = objCompare.FieldCompare(ExpDataList, ActDataList, [], [])
-            if retValue == "Pass":
-                sTestStepReturnStatus = "Pass"
+            if retValue == "Passed":
+                sTestStepReturnStatus = "Passed"
             else:
-                sTestStepReturnStatus = "Critical"
+                sTestStepReturnStatus = "Failed"
 
         elif CurrentStep == "Verify Product Details":
             DataSet = DBUtil.GetData(conn, exp_SQLQuery, False)
@@ -182,17 +182,17 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
             #Get actual data
             ActDataList = []
             ActItemDetail = WebProgram.GetItemDetail()
-            if ActItemDetail == "Critical":
+            if ActItemDetail == "Failed":
                 CommonUtil.ExecLog(sModuleInfo, "Error in getting Product Details", 3)
-                sTestStepReturnStatus = "Critical"
+                sTestStepReturnStatus = "Failed"
             else:
                 ActDataList.append(ActItemDetail)
                 objCompare = Compare.Compare()
                 retValue = objCompare.FieldCompare(ExpDataList, ActDataList, [], ['Web ID'])
-                if retValue == "Pass":
-                    sTestStepReturnStatus = "Pass"
+                if retValue == "Passed":
+                    sTestStepReturnStatus = "Passed"
                 else:
-                    sTestStepReturnStatus = "Critical"
+                    sTestStepReturnStatus = "Failed"
 
 
         else:
@@ -203,7 +203,7 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Exception : %s" % e , 3)
-        sTestStepReturnStatus = "Critical"
+        sTestStepReturnStatus = "Failed"
 
     #Put the return value into Queue to send it back to main thread
     q.put(sTestStepReturnStatus)
