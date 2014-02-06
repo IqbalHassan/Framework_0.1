@@ -2470,8 +2470,8 @@ def BundleReport_Table(request):
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
-            version = request.GET.get(u'version', '')
-            platform = request.GET.get(u'platform', '')
+            version = request.GET.get(u'Product_Version', '')
+            platform = request.GET.get(u'Platform', '')
             os_query = "select distinct machine_os from test_run_env where machine_os ~ '"+platform+".*' and product_version ~ '"+version+"' order by machine_os"
             browser_query = "select distinct client from test_run_env where machine_os ~ '"+platform+".*' and product_version ~ '"+version+"' order by client"
             section_query = "select distinct subpath(section_path,0,1) from product_sections"
@@ -2657,7 +2657,8 @@ def Bundle_Report(request):  #==================Returns Report data for a specif
                     #DefectTable.append((eachDefect[0],eachDefect[1],FormattedSectionName))
                     DefectTable.append((eachDefect[0], FormattedSectionName))
 
-    results = {'ReportTable':ReportTable, 'DefectTable': DefectTable}
+    Heading = ['Section','Passed','Failed','Blocked','Never run','Total']
+    results = {'Heading':Heading, 'ReportTable':ReportTable, 'DefectTable': DefectTable}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 

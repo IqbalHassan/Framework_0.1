@@ -134,6 +134,7 @@ urlpatterns = patterns('',
     #Bundle Report Page                                #minar09
     url(r'^Home/BundleReport/$', BundleReport),
     url(r'^Home/.*/BundleReport_Table/$',BundleReport_Table),
+    url(r'^Home/.*/Bundle_Report/$',Bundle_Report),
     
     #Documentation Page
     url(r'^Home/Documentation/$',Documentation),
