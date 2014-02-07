@@ -47,6 +47,20 @@ $(document).ready(function(){
         console.log(location);
         window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
     });
+    /*$("#AllTestCasesTable tr>td:nth-child(3)").each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor' : 'pointer'
+        });
+        var nth = $(this).index() + 1;
+        $(this).live('click',function(){
+            var TestCaseName=$("#AllTestCasesTable tr:nth-child(nth)>td:first-child").attr("id");
+            TestCaseName=TestCaseName.split(":")[1].trim();
+            var location=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+            console.log(location);
+            window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
+        });
+    });*/
     When_Clicking_On_CommonFailedTestStep();
 });
 function buttonPreparation(){
@@ -83,6 +97,22 @@ function LoadAllTestCases(divname){
             '<img class="expand_button '+divname+'" id="expand:'+name+ '" src="/site_media/add_step.png" style="margin-left:30px;background-color: transparent; width:10px; height:10px;text-align: right"/>'
         +'<img class="collapse_button '+divname+'" id="collapse:'+name+ '" src="/site_media/minus.png" style="margin-left:10px;background-color: transparent; width:10px; height:10px;text-align: right"/></div>');
     });
+    /////// To change status on clicking the status
+    $('#'+divname+' tr td:nth-child(3)').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor' : 'pointer'
+        });
+        var nth = $(this).index('tr');
+        $(this).live('click',function(){
+            var TestCaseName=$("#"+divname+" tr:nth-child(nth)>td:first-child").attr("id");
+            TestCaseName=TestCaseName.split(":")[1].trim();
+            var location=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+            console.log(location);
+            window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
+        });
+    });
+    ////////////**********************\\\\\\\\\\\\\\\
 }
 function connectLogFile(ID){
     $("#"+ID+" tr td:nth-child(6)").each(function(){
