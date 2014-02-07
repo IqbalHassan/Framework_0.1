@@ -291,22 +291,22 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             CustomSet="set"
             Tag='tag'
 
-        results = DB.GetData(Conn, "select distinct name from test_case_tag "
+        results = DB.GetData(Conn, "select distinct name,property from test_case_tag "
                                    "where name Ilike '%" + value + "%' "
                                      "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') "
-                                     "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
+                                     "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) ",False
                                      )
 
-        tcidresults = DB.GetData(Conn, "select distinct name || ' - ' || tc_name from test_case_tag tct,test_cases tc "
+        tcidresults = DB.GetData(Conn, "select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc "
                                    "where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%" + value + "%' or tc.tc_name Ilike '%" + value + "%')"
                                      "and property in('tcid') "
-                                     "and tct.tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
+                                     "and tct.tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) ",False
                                      )
 
         results = list(set(results + tcidresults))
 
         if len(results) > 0:
-            results.append("*Dev")
+            results.append(("*Dev","Status"))
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -329,10 +329,33 @@ def AutoCompleteUsersSearch(request):  #==================Returns Abailable User
 #            t = TimeDiff(MachineTime)
 #            if t > 3:
 #                DB.DeleteRecord(Conn, "test_run_env", id=str(eachMachineID[0]))
-
-        results = DB.GetData(Conn, "Select  DISTINCT tester_id from test_run_env where status = 'Unassigned' and tester_id Ilike '%" + value + "%'")
-
-    json = simplejson.dumps(results)
+        #query="Select  DISTINCT tester_id,status from test_run_env where status = 'Unassigned' and tester_id Ilike '%" + value + "%'"
+        """query= "(select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Manual','Automation')) union all (select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tre.status!='In-Progress' and pul.user_level in('Manual'))"
+        results = DB.GetData(Conn, query,False)"""
+        
+        Env = request.GET.get(u'Env', '')
+        if Env == u"PC": Environment = "Windows"
+        if Env == u"Mac": Environment = "Darwin"
+        Usable_Machine=[]
+        query= "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Automation')" 
+        Automation_Machine=DB.GetData(Conn,query,False)
+        for each in Automation_Machine:
+            Usable_Machine.append(each)
+        query="select distinct user_names,user_level from permitted_user_list where user_level='Manual' and user_names Ilike '%"+value+"%'"
+        print query
+        Manual_Machine=DB.GetData(Conn,query,False)
+        for each in Manual_Machine:
+            query="select distinct status from test_run_env where tester_id='%s'" %each[0].strip()
+            machine_status=DB.GetData(Conn,query)
+            if len(machine_status)==0:
+                Usable_Machine.append(each)
+            else:
+                if 'In-Progress' in machine_status or 'Submitted' in machine_status:
+                    continue
+                else:
+                    Usable_Machine.append(each)
+        
+    json = simplejson.dumps(Usable_Machine)
     return HttpResponse(json, mimetype='application/json')
 
 
@@ -1124,13 +1147,35 @@ def Table_Data_UserList(request): #==================Returns Available user list
             Env = request.GET.get(u'Env', '')
             if Env == u"PC": Environment = "Windows"
             if Env == u"Mac": Environment = "Darwin"
-
+            Machine_List=[]
+            Usable_Machine=[]
             if UserData == "True":
-
-                tabledata = DB.GetData(Conn, "Select  tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,last_updated_time,machine_ip from test_run_env where status = 'Unassigned' and os_name ='" + Environment + "'", False)
+                query= "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Automation')" 
+                Automation_Machine=DB.GetData(Conn,query,False)
+                for each in Automation_Machine:
+                    Usable_Machine.append(each)
+                query="select distinct user_names,user_level from permitted_user_list where user_level='Manual'"
+                Manual_Machine=DB.GetData(Conn,query,False)
+                for each in Manual_Machine:
+                    query="select distinct status from test_run_env where tester_id='%s'" %each[0].strip()
+                    machine_status=DB.GetData(Conn,query)
+                    if len(machine_status)==0:
+                        Usable_Machine.append(each)
+                    else:
+                        if 'In-Progress' in machine_status or 'Submitted' in machine_status:
+                            continue
+                        else:
+                            Usable_Machine.append(each)
+                for each in Usable_Machine:
+                    query="Select  distinct tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,last_updated_time,machine_ip from test_run_env where tester_id='"+each[0]+"' and os_name ='" + Environment + "'"
+                    tabledata = DB.GetData(Conn, query, False)
+                    if len(tabledata)==0:
+                        continue
+                    else:
+                        Machine_List.append(tabledata[0])
                 Heading = ["Tester ID", "Machine OS", "Client", "Last Updated Time", "Machine IP"]
                 #Heading.reverse()
-    results = {'Heading':Heading, 'TableData':tabledata}
+    results = {'Heading':Heading, 'TableData':Machine_List}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -1205,7 +1250,26 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         propertyValue = "Dev"
 
     TesterId = QueryText.pop() # pop function will remove last item of the list (userid) and will assign to Testerid
-
+    #Add the manual Test Machine to the test_run_env table
+    TesterId=TesterId.strip()
+    query="select user_level from permitted_user_list where user_names='%s'" %TesterId
+    Machine_Status=DB.GetData(Conn,query,False)
+    if Machine_Status[0][0]=='Manual':
+        query="select * from test_run_env where tester_id='%s'"%TesterId
+        Machine_Detail=DB.GetData(Conn, query,False)
+        print Machine_Detail[0]
+        each=Machine_Detail[0]
+        status="Unassigned"
+        updateTime=TimeStamp("integer")
+        print status
+        print updateTime
+        machine_os=(each[15]+" "+each[14]+" - "+each[16]).strip()
+        print machine_os
+        client=each[7].strip()
+        print client
+        ip=each[11]
+        Dict={'tester_id':TesterId,'status':status,'machine_ip':ip,'last_updated_time':updateTime,'machine_os':machine_os,'client':client,'os_name':each[15],'os_version':each[14],'os_bit':each[16]}
+        print DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)    
     #Creating Runid and assigning test cases to it in "testrun" table
     runid = TimeStamp("string")
     TestIDList = []
@@ -3918,8 +3982,8 @@ def Auto_MachineName(request):
             conn=GetConnection()
             machine_name=request.GET.get(u'machine','')
             print machine_name
-            query="select user_names from permitted_user_list where user_level is null and user_names Ilike '%"+machine_name+"%'"
-            machine_data=DB.GetData(conn, query)
+            query="select user_names,user_level from permitted_user_list where user_level='Manual' and user_names Ilike '%"+machine_name+"%'"
+            machine_data=DB.GetData(conn, query,False)
     json = simplejson.dumps(machine_data)
     return HttpResponse(json, mimetype='application/json')
 
@@ -3929,7 +3993,7 @@ def Check_ExistingMachine(request):
             conn=GetConnection()
             check_machine=request.GET.get(u'machine','')
             print check_machine
-            query="select count(*) from permitted_user_list where user_level is null and user_names ='"+check_machine+"'"
+            query="select count(*) from permitted_user_list where user_level='Manual' and user_names ='"+check_machine+"'"
             machine_exists=DB.GetData(conn, query, False)
     json=simplejson.dumps(machine_exists)
     return HttpResponse(json,mimetype='application/json')
@@ -4002,7 +4066,7 @@ def AddManualTestMachine(request):
                 values[each]=request.GET.get(each,'')
                 print each+" - "+values[each]
             status="Unassigned"
-            updateTime=TimeStamp("string")
+            updateTime=TimeStamp("integer")
             print status
             print updateTime
             machine_os=values['OSName']+" "+values['OSVersion']+" - "+values['OSBit']
@@ -4013,7 +4077,7 @@ def AddManualTestMachine(request):
             query="select count(*) from permitted_user_list where user_names='"+values['Machine']+"'"
             count=DB.GetData(oConn, query)
             if count[0]<1:
-                testrunenv2=DB.InsertNewRecordInToTable(oConn, "permitted_user_list",user_names=values['Machine'],email=values['Machine']+"@machine.com")
+                testrunenv2=DB.InsertNewRecordInToTable(oConn, "permitted_user_list",user_names=values['Machine'],email=values['Machine']+"@machine.com",user_level='Manual')
                 print testrunenv2
                 testrunenv=DB.InsertNewRecordInToTable(oConn, "test_run_env",tester_id=values['Machine'],status=status,machine_os=machine_os,client=client,data_type="Default",last_updated_time=updateTime,machine_ip=values['machineIP'],os_name=values['OSName'],os_version=values['OSVersion'],os_bit=values['OSBit'])
                 print testrunenv

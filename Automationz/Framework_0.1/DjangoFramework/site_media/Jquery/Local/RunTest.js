@@ -398,7 +398,7 @@ function RunTestAutocompleteSearch(Env)
             //source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
             select : function(event, ui) {
 
-                var tc_id_name = ui.item.value.split(" - ");
+                var tc_id_name = ui.item[0].split(" - ");
                 console.log(tc_id_name);
                 var value = "";
                 if (tc_id_name != null)
@@ -436,10 +436,14 @@ function RunTestAutocompleteSearch(Env)
                     }
                 }
                 $("#searchbox").val("");
-                return false
-            },
-
-        });
+                return false;
+            }
+        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
 
     $("#searchbox").keypress(function(event) {
         if (event.which == 13) {
@@ -560,9 +564,21 @@ function PerformSearch() {
 function SelecteUserProcess() {
 	
 	$("#PlatformChose").remove();
+    Env = Get_Selected_Env_Name();
 	$("#searchbox").autocomplete({
 
-		source : 'AutoCompleteUsersSearch',
+		//source : 'AutoCompleteUsersSearch',
+
+        source : function(request, response) {
+            $.ajax({
+                url:"AutoCompleteUsersSearch",
+                dataType: "json",
+                data:{ term: request.term, Env: Env },
+                success: function( data ) {
+                    response( data );
+                }
+            });
+        }
 	});
 	var SearchUser = "True"
 	$(".flip[title='DepandencyCheckBox'], #DepandencyCheckboxes").css('display','None');
@@ -586,7 +602,7 @@ function SelecteUserProcess() {
 		{
 			$("#AutoSearchTextBoxLabel").html("<b>*Select Test Machine:&nbsp;&nbsp;</b>");
 			$('#RunTestResultTable').children().remove();
-			//$('#RunTestResultTable').append('<p class = "Text"><b>Sorry There is No Availaable User To Run The Test!!!</b></p>');
+			$('#RunTestResultTable').append('<p class = "Text"><b>Sorry There is No Availaable User To Run The Test!!!</b></p>');
 		}
 		
 		else 
@@ -923,7 +939,7 @@ function populate_manual_test_div(){
         },
         select: function(request,ui){
             //console.log(ui);
-            var value = ui.item.value;
+            var value = (ui.item[0].split("-"))[0].trim();
             if(value!=""){
                 //console.log(value);
                 $("#machine_name").val(value);
@@ -935,13 +951,19 @@ function populate_manual_test_div(){
                     success:function(data){
                         //console.log(data[0][0]);
                         if(data[0][0]>0){
-                           $("#machine_name").css({'background-color':'#E77471'});
+                            $("#machine_name").css({'background-color':'#E77471'});
+                            $('#machine_name').val(value);
                         }
                     }
                 });
             }
         }
-    });
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+            .appendTo( ul );
+    };
     if($("#os_name option:selected").val()==0){
         os_name();
     }
