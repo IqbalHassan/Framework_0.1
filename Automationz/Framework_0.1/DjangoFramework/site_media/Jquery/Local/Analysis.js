@@ -25,7 +25,7 @@ function Analysis()
 		source : 'TestCaseSearch',
 		select : function(event, ui) 
 		{
-			var Selected_TC_Analysis = ui.item.value
+			var Selected_TC_Analysis = ui.item[0].split("-");
 			$.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : Selected_TC_Analysis},function(data) 
 			{
 				ResultTable(TestAnalysisTable,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result");
@@ -81,7 +81,12 @@ function Analysis()
 			$("#searchbox").val("");
 			return false
 		}
-	});
+	}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };;
 
 }
 	
