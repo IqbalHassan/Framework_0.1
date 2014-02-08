@@ -744,14 +744,19 @@ function AddAutoCompleteToTag() {
 		// source : 'AutoCompleteTagSearch?Env = ' +Env,
 		select : function(event, ui) {
 
-			var value = ui.item.value
+			var value = ui.item[0].split("-");
 
 			if (value != "") {
 				AddToListTag(value);
 			}
 			return false;
-		},
-	});
+		}
+	}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };;
 	$("#tag_txtbox").keypress(function(event) {
 		if (event.which == 13) {
 			event.preventDefault();

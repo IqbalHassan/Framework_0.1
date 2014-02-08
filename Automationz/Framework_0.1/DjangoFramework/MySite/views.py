@@ -348,7 +348,7 @@ def AutoCompleteUsersSearch(request):  #==================Returns Abailable User
             query="select distinct status from test_run_env where tester_id='%s'" %each[0].strip()
             machine_status=DB.GetData(Conn,query)
             if len(machine_status)==0:
-                Usable_Machine.append(each)
+                continue
             else:
                 if 'In-Progress' in machine_status or 'Submitted' in machine_status:
                     continue
@@ -395,15 +395,15 @@ def AutoCompleteTagSearch(request):
             CustomTag = "CustomTag"
 
 
-        results = DB.GetData(Conn, "select distinct name from test_case_tag where name Ilike '%" + value + "%' "
-                                    + "and property in ('" + CustomTag + "') order by name")
+        #results = DB.GetData(Conn, "select distinct name,property from test_case_tag where name Ilike '%" + value + "%' "
+        #                           + "and property in ('" + CustomTag + "') order by name",False)
 
-        query="select distinct value from config_values where type='tag' order by value"
-        mastertags = DB.GetData(Conn,query)
+        query="select distinct value,type from config_values where type='tag' order by value"
+        mastertags = DB.GetData(Conn,query,False)
 
-        results = list(set(results + mastertags))
+        #results = list(set(results + mastertags))
 
-    json = simplejson.dumps(results)
+    json = simplejson.dumps(mastertags)
     return HttpResponse(json, mimetype='application/json')
 
 def AutoCompleteTestStepSearch(request):
@@ -1994,7 +1994,7 @@ def TestCaseSearch(request):
         #if len(value) > 1:
         #results = DB.GetData(Conn,"Select DISTINCT name from test_case_tag where name != 'Dependency' and name Ilike '%" + value + "%'")
         results = DB.GetData(Conn, "Select DISTINCT tc_id from test_cases")
-        results = DB.GetData(Conn, "Select  DISTINCT tc_id from test_cases where tc_id Ilike '%" + value + "%'")
+        results = DB.GetData(Conn, "Select  DISTINCT tc_id,'Test Case' from test_cases where tc_id Ilike '%" + value + "%'",False)
 
 
     json = simplejson.dumps(results)
@@ -2909,11 +2909,11 @@ def TestSet_Auto(request):
     if request.method == "GET":
         value = request.GET.get(u'term', '')
         data_type=request.GET.get(u'data_type','')
-        results = DB.GetData(Conn, "select  value from config_values where value Ilike '%" + value + "%' and type='"+data_type+"'")
+        results = DB.GetData(Conn, "select  value,type from config_values where value Ilike '%" + value + "%' and type='"+data_type+"'",False)
         #test_tag=DB.GetData(Conn,"")
         #results=list(set(results+test_tag))
-        if len(results) > 0:
-            results.append("*Dev")
+        #if len(results) > 0:
+         #   results.append("*Dev")
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 

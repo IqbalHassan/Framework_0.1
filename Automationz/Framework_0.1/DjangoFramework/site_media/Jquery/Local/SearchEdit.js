@@ -132,7 +132,7 @@ function RunTestAutocompleteSearch(Env)
 				//source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
 				select : function(event, ui) {
 
-						var tc_id_name = ui.item.value.split(" - ");
+						var tc_id_name = ui.item[0].split(" - ");
 						var value = "";
 						if (tc_id_name != null)
 							value = tc_id_name[0];
@@ -154,7 +154,12 @@ function RunTestAutocompleteSearch(Env)
 							return false;
 						},
 
-		});
+		}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };;
 
 	$("#searchbox").keypress(function(event) {
 		if (event.which == 13) {

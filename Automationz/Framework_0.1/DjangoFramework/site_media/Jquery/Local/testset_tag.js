@@ -95,14 +95,19 @@ $(document).ready(function(){
            });
        },
        select: function(request,ui){
-           var tc_id_name = ui.item.value.split(" - ");
+           var tc_id_name = ui.item[0].split(" - ");
            var value = "";
            if (tc_id_name != null)
                value = tc_id_name[0];
            $("#input").val(value);
            return false;
        }
-   });
+   }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+       return $( "<li></li>" )
+           .data( "ui-autocomplete-item", item )
+           .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+           .appendTo( ul );
+   };
    /* $("#input2").autocomplete({
         source: function(request,response){
             $.ajax({
