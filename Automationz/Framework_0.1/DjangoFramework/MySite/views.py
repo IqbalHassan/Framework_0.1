@@ -2569,12 +2569,17 @@ def Get_Versions(request):
         if browser == '':
             versions = DB.GetData(Conn, "select distinct product_version from test_run_env order by product_version", False)
         
+        flag = 0
         for i in versions:
-            if i[0] == " ":
-                Nil = ['Nil']
-                results.append(Nil) 
+            if i[0] == None:
+                flag = 1 
+            elif i[0] == ' ':
+                flag = 1
             else:
                 results.append(i)
+        if flag==1:
+            Nil = ['Nil']
+            results.append(Nil)
             
 
     json = simplejson.dumps(tuple(results))
