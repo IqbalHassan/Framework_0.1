@@ -4259,6 +4259,8 @@ def ResultTableFetch(request):
                 temp=tuple(temp)
                 refined_list.append(temp)
             Conn.close()
+            
+            #For the manual Recent Part
             pass_list=[]
             for each in refined_list:
                 #print each
@@ -4359,18 +4361,26 @@ def update_runid(run_id,test_case_id):
             progress+=1
         else:
             count+=1
+    Dict={}
+    Dict1={}
     if progress==0 and submit_count==0 and count==len(run_id_status):
         status='Complete'
+        endtime=DB.GetData(oConn,"select current_timestamp",False)
+        Dict.update({'testendtime':str(endtime[0][0])})
     elif progress>0:
         status='In-Progress'
     else:
         if count==0 and progress==0 and submit_count==len(run_id_status):
             status='Submitted'
+            starttime=DB.GetData(oConn,"select current_timestamp",False)
+            endtime=""
+            Dict.update({'testendtime':endtime,'teststartime':str(starttime[0][0])})
     sWhereQuery="where run_id='%s'" %run_id
-    Dict={}
-    Dict.update({'status':status})
-    print DB.UpdateRecordInTable(oConn, "test_run_env", sWhereQuery,**Dict)
+
+    Dict1.update({'status':status})
+    print DB.UpdateRecordInTable(oConn, "test_run_env", sWhereQuery,**Dict1)
     print DB.UpdateRecordInTable(oConn, "test_env_results", sWhereQuery,**Dict)
+    print DB.UpdateRecordInTable(oConn, "test_env_results", sWhereQuery,**Dict1)
 def UpdateTestStepStatus(List,run_id,test_case_id,test_case_status,failReason):
     for each in List:
         print each
