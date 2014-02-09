@@ -640,7 +640,7 @@ article header{
     position: absolute;
     top: 15.75%;
     left: 48%;
-    margin-left: -30em; /* 30 480 */
+    margin-left: -48%; /* 30 480 */
 }
 #nav a{
     text-decoration: none;
