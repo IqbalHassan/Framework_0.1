@@ -364,7 +364,7 @@ body{
 header.main_header{
 	margin-top: 10px;
 	margin-left: 40px;
-    text-shadow: 2px 1px grey;
+    //text-shadow: 2px 1px grey;
 }
 
 /*=========== Side nav ===========*/
@@ -430,7 +430,7 @@ section{
 }
 
 section header{
-    text-shadow: 2px 1px grey
+    //text-shadow: 2px 1px grey
 }
 
 article{
@@ -443,7 +443,7 @@ article{
 article header{
 	font-size: 150%;
 	font-weight: bold;
-    text-shadow: 2px 1px grey
+    //text-shadow: 2px 1px grey
 }
 
 /*=========home page============*/
@@ -456,14 +456,14 @@ article header{
 {
 	margin-right: auto;
 	margin-bottom: 10px;
-    text-shadow: 2px 1px grey
+    //text-shadow: 2px 1px grey
 }
 
 /*========create product sections========*/
 #section_names
 {
 	margin-right: auto;
-    text-shadow: 2px 1px grey
+    //text-shadow: 2px 1px grey
 }
 
 /*========Text Box========*/
@@ -490,5 +490,21 @@ article header{
     -webkit-box-shadow: 0px 0px 8px #7bc1f7;
 }
 
+
+.go-top {
+    position: fixed;
+    bottom: 2em;
+    right: 2em;
+    text-decoration: none;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.3);
+    font-size: 12px;
+    padding: 1em;
+    display: none;
+}
+
+.go-top:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
 
 

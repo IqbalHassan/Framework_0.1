@@ -2569,12 +2569,27 @@ def Get_Versions(request):
         if browser == '':
             versions = DB.GetData(Conn, "select distinct product_version from test_run_env order by product_version", False)
         
+        flag1 = 0
+        flag2 = 0
+        flag3 = 0
         for i in versions:
-            if i[0] == " ":
-                Nil = ['Nil']
-                results.append(Nil) 
+            if i[0] == '':
+                flag1 = 1
+            elif i[0] == ' ':
+                flag3 = 3
+            elif i[0] == None:
+                flag2 = 2
             else:
                 results.append(i)
+        if flag1==1:
+            Nil = ['Nil']
+            results.append(Nil)
+        if flag2==2:
+            Nil = ['Nil(None)']
+            results.append(Nil)
+        if flag3==3:
+            Nil = ['Nil(Space)']
+            results.append(Nil)
             
 
     json = simplejson.dumps(tuple(results))
@@ -2592,7 +2607,11 @@ def BundleReport_Table(request):
         if request.method == 'GET':
             version = request.GET.get(u'Product_Version', '')
             if version == 'Nil':
-                version = " "
+                version = ''
+            elif version == 'Nil(None)':
+                version = None
+            elif version == 'Nil(Space)':
+                version = ' '
             platform = request.GET.get(u'Platform', '')
             if platform == 'PC':
                 OSName = 'Win'
