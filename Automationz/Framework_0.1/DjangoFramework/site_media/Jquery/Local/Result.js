@@ -92,6 +92,7 @@ function make_table(array){
 }
 function Make_Detail_Status(){
     $('#ResultPane tr td:nth-child(5)').each(function(){
+        $(this).closest("tr").find("td:nth-child(2)").css({'textAlign':'left'});
         if($(this).text().trim()!="Report Status"){
             $(this).css({
                 'cursor':'pointer'

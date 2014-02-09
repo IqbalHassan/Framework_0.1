@@ -91,7 +91,8 @@ $(document).ready(function(){
     });
 });
 function TestDataFetch(){
-    $('#data_table tr td:nth-child(3)').each(function(){
+    $('#data_table tr td:nth-child(4)').each(function(){
+        $(this).css({'textAlign':'center'});
         var value=$(this).text().trim();
         console.log(value);
         if(value!="DataRequired"){
@@ -198,7 +199,9 @@ function DataFetch(){
     });
 }
 function ExecutionLog(){
-    $('#data_table tr td:nth-child(8)').each(function(){
+    $('#data_table tr td:nth-child(9)').each(function(){
+       $(this).closest("tr").find("td:first-child").css({'textAlign':'center'});
+       $(this).closest("tr").find("td:nth-child(3)").css({'textAlign':'center'});
        if($(this).text().trim()=="Log"){
            $(this).html("see log");
            $(this).css({
@@ -245,7 +248,8 @@ function ExecutionLog(){
     });
 }
 function InputFailReason(){
-    $('#data_table tr td:nth-child(6)').each(function(){
+    $('#data_table tr td:nth-child(7)').each(function(){
+        $(this).css({'textAlign':'center'});
         var failreason=$(this).text().trim();
         var step_no=$(this).closest("tr").find("td:first-child").text().trim();
         var tc_id=$('#testcaseid').text().trim();
@@ -258,7 +262,8 @@ function InputFailReason(){
     });
 }
 function MakeStatusSelectable(){
-    $('#data_table tr td:nth-child(7)').each(function(){
+    $('#data_table tr td:nth-child(8)').each(function(){
+        $(this).css({'textAlign':'center'});
         var value=$(this).text().trim();
         var step_no=$(this).closest("tr").find("td:first-child").text().trim();
         var tc_id=$('#testcaseid').text().trim();
@@ -294,7 +299,7 @@ function header_print(column){
     var message="";
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+=('<td class="ui-widget-header">'+column[i]+'</td> ')
+        message+=('<td class="ui-widget-header" style="text-align: center">'+column[i]+'</td> ')
     }
     message+='</tr>';
     return message;

@@ -726,6 +726,18 @@ def GetRunIDStatus(RunId):
         run_status='Submitted'
     return run_status
 def RunId_TestCases(request,RunId): #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
+    def Modify(AllTestCases1):
+        AllTestCases=[]
+        AllTestCases2=[]
+        Check_TestCase(AllTestCases1, AllTestCases2)
+        for each in zip(AllTestCases1,AllTestCases2):
+            temp=[]
+            for eachitem in each[0]:
+                temp.append(eachitem)
+            temp.insert(2,each[1][2])
+            temp=tuple(temp)
+            AllTestCases.append(temp)
+        return AllTestCases
     Conn=GetConnection()
     RunId=RunId.strip()
     print RunId
@@ -733,7 +745,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     run_id_status=GetRunIDStatus(RunId)
     query="Select DISTINCT run_id,tester_id,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip from test_run_env Where run_id = '%s'" % RunId
     Env_Details_Data=DB.GetData(Conn, query, False)
-    AllTestCases = DB.GetData(Conn, "(select "
+    AllTestCases1 = DB.GetData(Conn, "(select "
                                             "tct.name as MKSId, "
                                             "tc.tc_name, "
                                             "tr.status, "
@@ -749,8 +761,9 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "from test_run tr,test_cases tc, test_case_tag tct "
                                             "where tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "
                                             "tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )" % (RunId, RunId, RunId) , False)
-    Col = ['Test Case ID', 'Test Case', 'Status', 'Duration', 'Fail Reason', 'Test Log', 'Automation ID']
-    Pass_TestCases = DB.GetData(Conn, "select "
+    Col = ['Test Case ID', 'Test Case','Test Case Type', 'Status', 'Duration', 'Fail Reason', 'Test Log', 'Automation ID']
+    AllTestCases=Modify(AllTestCases1)
+    Pass_TestCases1 = DB.GetData(Conn, "select "
                                             "tct.name as mksid, "
                                             "tc.tc_name, "
                                             "tr.status, "
@@ -763,8 +776,8 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % (RunId), False)
 
 
-
-    Fail_TestCases = DB.GetData(Conn, "select "
+    Pass_TestCases=Modify(Pass_TestCases1)
+    Fail_TestCases1= DB.GetData(Conn, "select "
                                             "tct.name as mksid, "
                                             "tc.tc_name, "
                                             "tr.status, "
@@ -775,6 +788,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "from test_case_results tr, test_cases tc, test_case_tag tct "
                                             "where tr.run_id = '%s' and tr.status = 'Failed' and "
                                             "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % RunId, False)
+    Fail_TestCases=Modify(Fail_TestCases1)
     failsteps = DB.GetData(Conn, "select DISTINCT tsl.stepname from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
 
                           "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id and tr.tc_id = tsr.tc_id "
@@ -4163,12 +4177,13 @@ def DataFetchForTestCases(request):
             for each in range(0,len(TestStepList)):
                 Conn=GetConnection()
                 #Get the stepname fromt test_steps_list
-                query="select stepname,data_required from test_steps_list where step_id=%d" %TestStepList[each]
+                query="select stepname,steptype,data_required from test_steps_list where step_id=%d" %TestStepList[each]
                 StepName=DB.GetData(Conn,query,False)
                 Temp_Data=[]
                 Temp_Data.append(each+1)
                 Temp_Data.append(StepName[0][0])
-                if StepName[0][1]==True:
+                Temp_Data.append(StepName[0][1])
+                if StepName[0][2]==True:
                     Temp_Data.append("true")
                 else:
                     Temp_Data.append("false")
@@ -4193,7 +4208,7 @@ def DataFetchForTestCases(request):
                 Temp_Data.append("Log")
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
-    DataColumn=["StepNumber","StepName","DataRequired","Description","Expected Results","FailReason","Status","Execution Log"]
+    DataColumn=["#","StepName","StepType","DataRequired","Description","Expected Results","FailReason","Status","Execution Log"]
     query="select status from test_case_results where tc_id='%s' and run_id='%s'" %(test_case_id,run_id)
     Conn=GetConnection()
     test_case_status=DB.GetData(Conn,query,False)
@@ -4272,8 +4287,8 @@ def ResultTableFetch(request):
                 interval=7
             print limit
             print interval    
-            progress_query="(select ter.run_id,tre.test_objective,tre.tester_id,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
-            completed_query="(select ter.run_id,tre.test_objective,tre.tester_id,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
+            progress_query="(select ter.run_id,tre.test_objective,tre.test_run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
+            completed_query="(select ter.run_id,tre.test_objective,tre.test_run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
             query=progress_query+" union all "+completed_query + limit
             Conn=GetConnection()
             get_list=DB.GetData(Conn,query,False)
@@ -4318,7 +4333,7 @@ def ResultTableFetch(request):
                 temp=tuple(temp)
                 Conn.close()    
                 pass_list.append(temp)
-            Column=["Run ID","Test Objective","Machine ID","Assigned Tester","Report Status","Status","Duration","Product Version","Machine OS","Machine IP","Client"]
+            Column=["Run ID","Test Objective","Run Type","Assigned Tester","Report Status","Status","Duration","Product Version","Client"]
     message={
              'column':Column,
              'data':refined_list,

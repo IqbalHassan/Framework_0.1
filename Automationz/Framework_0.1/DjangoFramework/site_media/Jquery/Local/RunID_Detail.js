@@ -40,27 +40,7 @@ $(document).ready(function(){
         $("#"+div_name+" #"+TestCaseName+"detail").slideUp("slow");
         e.stopPropagation();
     });
-    $(".edit_button").live('click',function(){
-        var TestCaseName=$(this).attr("id");
-        TestCaseName=TestCaseName.split(":")[1].trim();
-        var location=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
-        console.log(location);
-        window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
-    });
-    /*$("#AllTestCasesTable tr>td:nth-child(3)").each(function(){
-        $(this).css({
-            'color':'blue',
-            'cursor' : 'pointer'
-        });
-        var nth = $(this).index() + 1;
-        $(this).live('click',function(){
-            var TestCaseName=$("#AllTestCasesTable tr:nth-child(nth)>td:first-child").attr("id");
-            TestCaseName=TestCaseName.split(":")[1].trim();
-            var location=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
-            console.log(location);
-            window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
-        });
-    });*/
+
     When_Clicking_On_CommonFailedTestStep();
 });
 function buttonPreparation(){
@@ -86,27 +66,25 @@ function buttonPreparation(){
 function LoadAllTestCases(divname){
     $('#'+divname+' tr td:nth-child(2)').css({
         'color':'blue',
-        'cursor':'pointer'
+        'textAlign':'left'
     });
     $('#'+divname+' tr td:nth-child(2)').each(function(){
         var name=$(this).closest("tr").find("td:nth-child(7)").text().trim();
         console.log(name);
         $(this).append('' +
             '<div align="right" style="padding-right: 3px;">' +
-            '<img class="edit_button '+divname+'" id="edit:'+name+ '" src="/site_media/edit_case.png" style="margin-left:50px;background-color: transparent; width:10px; height:10px;text-align: right"/>' +
+            //'<img class="edit_button '+divname+'" id="edit:'+name+ '" src="/site_media/edit_case.png" style="margin-left:50px;background-color: transparent; width:10px; height:10px;text-align: right"/>' +
             '<img class="expand_button '+divname+'" id="expand:'+name+ '" src="/site_media/add_step.png" style="margin-left:30px;background-color: transparent; width:10px; height:10px;text-align: right"/>'
         +'<img class="collapse_button '+divname+'" id="collapse:'+name+ '" src="/site_media/minus.png" style="margin-left:10px;background-color: transparent; width:10px; height:10px;text-align: right"/></div>');
     });
     /////// To change status on clicking the status
-    $('#'+divname+' tr td:nth-child(3)').each(function(){
+    $('#'+divname+' tr td:nth-child(4)').each(function(){
         $(this).css({
             'color':'blue',
             'cursor' : 'pointer'
         });
-        var nth = $(this).index('tr');
         $(this).live('click',function(){
-            var TestCaseName=$("#"+divname+" tr:nth-child(nth)>td:first-child").attr("id");
-            TestCaseName=TestCaseName.split(":")[1].trim();
+            var TestCaseName=$(this).closest("tr").find("td:first-child").text().trim();
             var location=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
             console.log(location);
             window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
@@ -115,7 +93,7 @@ function LoadAllTestCases(divname){
     ////////////**********************\\\\\\\\\\\\\\\
 }
 function connectLogFile(ID){
-    $("#"+ID+" tr td:nth-child(6)").each(function(){
+    $("#"+ID+" tr td:nth-child(7)").each(function(){
         var location=$(this).text();
         var message='<a href="file:///'+location+'">Log File</a>';
         $(this).html(message);
