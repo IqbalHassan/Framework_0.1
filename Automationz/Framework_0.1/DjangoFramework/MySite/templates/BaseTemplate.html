@@ -45,7 +45,7 @@
 				</a>
 			</header>
 			<div id="outer_wrap">
-				<nav id="nav" role="navigation">
+				<!--nav id="nav" role="navigation">
 					<ul>
     				<li><a href = "/Home/"  class = 'MainManu'>Home</a></li>
     				<li>
@@ -57,13 +57,14 @@
                             <li><a href="/Home/ManageTestCases/TestSet/">Manage Set and Tag</a></li>
                             <li><a href="/Home/ManageTestCases/TestStep/">Manage Test Steps</a></li>
                             <li><a href="/Home/ManageTestCases/DeleteExisting/">Delete Test Cases</a></li>
+                            <li><a href="/Home/ManageTestCases/CreateNew/">Create New Test Case (Under Development)</a></li>
                         </ul>
                     </li>
     				<li><a href = "/Home/RunTest/" class = 'MainManu'>Run</a></li>
 	    			<li><a href = "/Home/Results/" class = 'MainManu'>Result</a></li>
     		 		<li><a href = "/Home/Performance/" class = 'MainManu'>Performance</a></li>
     				<!-- <li><a href = "/Home/Documentation/" class = 'MainManu'>Documentation</a> </li>-->
-    				<li>
+    				<!--li>
                         <a href = "/Home/ExecutionReport/" class = 'MainManu'>Reports</a>
                         <ul>
                             <li><a href="/Home/BundleReport/">Bundle Report</a></li>
@@ -74,7 +75,41 @@
                         </ul>
                     </li>
 					</ul>
-				</nav>
+				</nav-->
+
+                <nav id="nav" role="navigation">
+                    <a href="#nav" title="Show navigation">Show navigation</a>
+                    <a href="#" title="Hide navigation">Hide navigation</a>
+                    <ul>
+                        <li><a href="/Home/">Home</a></li>
+                        <li>
+                            <a href="/Home/ManageTestCases/" aria-haspopup="true">Manage Test</a>
+                            <ul>
+                                <li><a href="/Home/ManageTestCases/Create/">Create New</a></li>
+                                <li><a href="/Home/ManageTestCases/SearchEdit/">Copy or Edit</a></li>
+                                <li><a href="/Home/ManageTestCases/CreateProductSections/">Manage Sections</a></li>
+                                <li><a href="/Home/ManageTestCases/TestSet/">Manage Set & Tag</a></li>
+                                <li><a href="/Home/ManageTestCases/TestStep/">Manage Test Steps</a></li>
+                                <li><a href="/Home/ManageTestCases/DeleteExisting/">Delete Test Cases</a></li>
+                                <li><a href="/Home/ManageTestCases/CreateNew/">Create New Test Case (Under Development)</a></li>
+                            </ul>
+                        </li>
+                        <li><a href = "/Home/RunTest/">Run</a></li>
+                        <li><a href = "/Home/Results/">Result</a></li>
+                        <li><a href = "/Home/Performance/">Performance</a></li>
+                        <li>
+                            <a href="/Home/ExecutionReport/" aria-haspopup="true">Reports</a>
+                            <ul>
+                                <li><a href="/Home/BundleReport/">Bundle Report</a></li>
+                                <li><a href="/Home/MKS-Report/">MKS Report</a></li>
+                                <li><a href="/Home/Analysis/">Test Case History</a></li>
+                                <li><a href="/Home/DailyBuildResults/">Automated Build History</a></li>
+                                <li><a href="/Home/TestTypeStatus/">Test Type Status</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+
 				<section>			
 					{% block content %} {% endblock %}			
 				</section>
@@ -108,11 +143,8 @@
 
                     $('html, body').animate({scrollTop: 0}, 300);
                 })
-                //$( '#nav li:has(ul)').doubleTapToGo();
-                $( function()
-                {
-                    $( '#nav li:has(ul)' ).doubleTapToGo();
-                });
+
+                $( '#nav li:has(ul)').doubleTapToGo();
             });
         </script>
 

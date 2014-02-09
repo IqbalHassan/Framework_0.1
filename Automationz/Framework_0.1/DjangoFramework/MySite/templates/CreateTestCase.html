@@ -8,4 +8,24 @@
     <a>Please enter the test case details.</a>
 </p>
 
-        
+
+<label id="TC_Id" class="new_tc_form Text" style="display:none; text-align: center;"></label>
+
+<div class="tc_title">
+    <form id="tc_title" class="new_tc_form">
+        <table>
+            <tr>
+                <td class="tc_form_label_col">
+                    <span class="tc_form_required_field">*</span><b class="Text">Title:</b>
+                </td>
+                <td class="tc_form_input_col">
+                    <input class="ui-corner-all ui-autocomplete-input" id="title_txtbox" type="text"
+                           title="Enter the reference MKS/JIRA id" name="searchboxname" autocomplete="off">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+
+{% endblock %}

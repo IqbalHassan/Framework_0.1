@@ -116,6 +116,16 @@ def Create(request):
         variables = Context({ })
         output = templ.render(variables)
         return HttpResponse(output)
+    
+def CreateNew(request):
+    TC_Id = request.GET.get('TC_Id', '')
+    if TC_Id != "":
+        return ViewTestCase(TC_Id)
+    else:
+        templ = get_template('CreateTestCase.html')
+        variables = Context({ })
+        output = templ.render(variables)
+        return HttpResponse(output)
 
 def ManageTestCases(request):
     templ = get_template('ManageTestCases.html')
