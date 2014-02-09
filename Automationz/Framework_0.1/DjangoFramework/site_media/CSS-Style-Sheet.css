@@ -534,7 +534,6 @@ article header{
 #nav ul li ul {
     display:none;
     position: absolute;
-    float: none;
 }
 #nav ul li:hover ul {
     display:block;
