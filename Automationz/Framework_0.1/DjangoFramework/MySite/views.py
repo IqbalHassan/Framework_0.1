@@ -4262,9 +4262,9 @@ def ResultTableFetch(request):
                 interval=7
             print limit
             print interval    
-            submitted_query="(select tre.run_id,tre.tester_id,ter.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name ||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status in ('In-Progress','Submitted') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)" %interval
-            completed_query="(select tre.run_id,tre.tester_id,ter.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name ||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and  ter.status!='In-Progress' order by ter.teststarttime desc %s)" %limit
-            query=submitted_query+" union all "+completed_query + limit
+            progress_query="(select ter.run_id,tre.test_objective,tre.tester_id,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
+            completed_query="(select ter.run_id,tre.test_objective,tre.tester_id,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.os_name||' '||tre.os_version||' - '||tre.os_bit as machine_os,tre.machine_ip,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
+            query=progress_query+" union all "+completed_query + limit
             Conn=GetConnection()
             get_list=DB.GetData(Conn,query,False)
             print get_list
@@ -4274,7 +4274,7 @@ def ResultTableFetch(request):
                 #print temp
                 for eachitem in each:
                     temp.append(eachitem)
-                temp.insert(2,"status")
+                temp.insert(4,"status")
                 temp=tuple(temp)
                 refined_list.append(temp)
             Conn.close()
@@ -4288,25 +4288,27 @@ def ResultTableFetch(request):
                 total_query="select count(*) from test_run where run_id='%s'" %run_id
                 pass_query="select count(*) from test_case_results where run_id='%s' and status='Passed'" %run_id
                 fail_query="select count(*) from test_case_results where run_id='%s' and status='Failed'" %run_id
+                blocked_query="select count(*) from test_case_results where run_id='%s' and status='Blocked'"%run_id
                 progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
-                notrun_query="select count(*) from test_case_results where run_id='%s' and status is null" %run_id
+                notrun_query="select count(*) from test_case_results where run_id='%s' and status='Submitted'" %run_id
                 Conn=GetConnection()
                 total=DB.GetData(Conn,total_query)
                 passed=DB.GetData(Conn,pass_query)
                 failed=DB.GetData(Conn,fail_query)
+                blocked=DB.GetData(Conn,blocked_query)
                 progress=DB.GetData(Conn,progress_query)
-                not_run=DB.GetData(Conn,notrun_query)
-                pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
+                submitted=DB.GetData(Conn,notrun_query)
+                #pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
                 temp.append(total[0])
                 temp.append(passed[0])
                 temp.append(failed[0])
+                temp.append(blocked[0])
                 temp.append(progress[0])
-                temp.append(not_run[0])
-                temp.append(pending)
+                temp.append(submitted[0])
                 temp=tuple(temp)
                 Conn.close()    
                 pass_list.append(temp)
-            Column=["Run ID","Tester ID","Report Status","Status","Duration","Product Version","Machine OS","Machine IP","Client"]
+            Column=["Run ID","Test Objective","Tester ID","Assigned Tester","Report Status","Status","Duration","Product Version","Machine OS","Machine IP","Client"]
     message={
              'column':Column,
              'data':refined_list,
@@ -4323,21 +4325,23 @@ def RunIDStatus(request):
                 total_query="select count(*) from test_run where run_id='%s'" %run_id
                 pass_query="select count(*) from test_case_results where run_id='%s' and status='Passed'" %run_id
                 fail_query="select count(*) from test_case_results where run_id='%s' and status='Failed'" %run_id
+                blocked_query="select count(*) from test_case_results where run_id='%s' and status='Blocked'"%run_id
                 progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
-                notrun_query="select count(*) from test_case_results where run_id='%s' and status is null" %run_id
+                submitted_query="select count(*) from test_case_results where run_id='%s' and status='Submitted'" %run_id
                 Conn=GetConnection()
                 total=DB.GetData(Conn,total_query)
                 passed=DB.GetData(Conn,pass_query)
                 failed=DB.GetData(Conn,fail_query)
+                blocked=DB.GetData(Conn,blocked_query)
                 progress=DB.GetData(Conn,progress_query)
-                not_run=DB.GetData(Conn,notrun_query)
-                pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
+                submitted=DB.GetData(Conn,submitted_query)
+                #pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
                 temp.append(total[0])
                 temp.append(passed[0])
                 temp.append(failed[0])
+                temp.append(blocked[0])
                 temp.append(progress[0])
-                temp.append(not_run[0])
-                temp.append(pending)
+                temp.append(submitted[0])
     message={
              'message':temp
              }

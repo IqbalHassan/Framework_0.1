@@ -22,7 +22,7 @@ function drawTable(column,row){
     message+='<table id="data_table" class="ui-widget" style="font-size:small; border-collapse:collapse;" width="100%">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+='<td class="ui-widget-header">'+column[i]+'</td> ';
+        message+='<td class="ui-widget-header" style="text-align: center">'+column[i]+'</td> ';
     }
     message+='</tr>';
     for(var i=0;i<row.length;i++){
@@ -32,7 +32,7 @@ function drawTable(column,row){
                 message+='<td class="ui-widget-content status-table" id="status'+i+'"></td>'
             }
             else{
-                message+='<td class="ui-widget-content">'+row[i][j]+'</td> ';
+                message+='<td class="ui-widget-content" style="text-align: center">'+row[i][j]+'</td> ';
             }
         }
     }
@@ -61,8 +61,8 @@ function make_table(array){
     console.log(array);
     var message="";
     var column=["Legend","Status","No of Cases","Percentage"];
-    var tag=["Passed","Failed","In-Progress","Skipped","Pending"];
-    var color=["green","red","blue","silver","yellow"];
+    var tag=["Passed","Failed","Blocked","In-Progress","Submitted"];
+    var color=["green","red","orange","blue","silver"];
     message+='<table class="ui-widget" style="font-size: small;border-collapse: collapse">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
@@ -88,21 +88,10 @@ function make_table(array){
     message+='<td class="ui-widget-content" style="text-align: center" colspan="3"><b>'+array[0]+'</b></td> ';
     message+='</tr>'
     message+='</table> ';
-    /*message_inner=""
-    message_inner+='<br><br><br><br><br><br><div id="inner-right" align="right"><table class="ui-widget" style="font-size: small;border-collapse: collapse;">';
-    message_inner+='<tr><th class="ui-widget-header" colspan="2">Legend Information</th></tr>'
-    for(var i=0;i<color.length;i++){
-        message_inner+='<tr>';
-        message_inner+='<td class="ui-widget-content" width="50%"><table width="100%" height="100%"><tr><td style="background-color: '+color[i]+'">&nbsp;&nbsp;</td></tr></table></td>';
-        message_inner+='<td class="ui-widget-content" width="50%" style="text-align: center">'+tag[i]+'</td>';
-        message_inner+='</tr>';
-    }
-    message_inner+='</table></div>';
-    message+=message_inner;*/
     return message;
 }
 function Make_Detail_Status(){
-    $('#ResultPane tr td:nth-child(3)').each(function(){
+    $('#ResultPane tr td:nth-child(5)').each(function(){
         if($(this).text().trim()!="Report Status"){
             $(this).css({
                 'cursor':'pointer'
@@ -151,13 +140,9 @@ function show_Results(searchText){
             var message="";
             pass=(array[1]/array[0])*100;
             fail=(array[2]/array[0])*100;
-            progress=(array[3]/array[0])*100;
-            skip=(array[4]/array[0])*100;
-            pending=(array[5]/array[0])*100;
-            console.log(pass);
-            console.log(fail);
-            console.log(progress);
-            console.log(skip);
+            blocked=(array[3]/array[0])*100;
+            progress=(array[4]/array[0])*100;
+            submitted=(array[5]/array[0])*100;
             message+='<table style="border-collapse:collapse" width="100%" height="100%"><tr width="100%" height="100%">';
             if(pass!=0){
                 message+='<td style="background-color: green;" width="'+pass+'%">&nbsp;</td>';
@@ -165,14 +150,14 @@ function show_Results(searchText){
             if(fail!=0){
                 message+='<td style="background-color: red;" width="'+fail+'%">&nbsp;</td>';
             }
+            if(blocked!=0){
+                message+='<td style="background-color: orange;" width="'+blocked+'%">&nbsp;</td>';
+            }
             if(progress!=0){
                 message+='<td style="background-color: blue;" width="'+progress+'%">&nbsp;</td>';
             }
-            if(skip!=0){
-                message+='<td style="background-color: silver;" width="'+skip+'%">&nbsp;</td>';
-            }
-            if(pending!=0){
-                message+='<td style="background-color: yellow;" width="'+pending+'%">&nbsp;</td>';
+            if(submitted!=0){
+                message+='<td style="background-color: #c0c0c0;" width="'+submitted+'%">&nbsp;</td>';
             }
             message+='</tr></table>';
             $('#status'+i).html(message+'Total:'+array[0]);
