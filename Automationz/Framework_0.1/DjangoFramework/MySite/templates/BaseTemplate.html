@@ -94,7 +94,14 @@
                                 <li><a href="/Home/ManageTestCases/CreateNew/">Create New Test Case (Under Development)</a></li>
                             </ul>
                         </li>
-                        <li><a href = "/Home/RunTest/">Run</a></li>
+                        <li>
+                            <a href = "/Home/RunTest/"><span>Run</span></a>
+                            <ul>
+                                <li><a href="/Home/RunTest/">PC</a></li>
+                                <li><a href="/Home/RunTest/">MAC</a></li>
+                            </ul>
+                        </li>
+
                         <li><a href = "/Home/Results/">Result</a></li>
                         <li>
                             <a href="/Home/ExecutionReport/" aria-haspopup="true"><span>Reports</span></a>
@@ -144,7 +151,7 @@
                     $('html, body').animate({scrollTop: 0}, 300);
                 })
 
-                $( '#nav ul:has(li)' ).doubleTapToGo();
+                //$( '#nav li:has(ul)' ).doubleTapToGo();
             });
         </script>
 
