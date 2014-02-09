@@ -868,16 +868,14 @@ function RunTestProcess() {
 		
 		//Getting Test Objective text
 		TestObjective =  $("input#TestObjective").val();
-		if (TestObjective === "")
-		{
-			MsgBox("Test Run Error","Test Objective field is empty")
-			
-			$("input#TestObjective").effect("highlight", {}, 30000000);
-			return;
-		}
-		
+		if(TesterIds === "" || TestObjective===""){
+            message="Fields are not filled properly";
+            MsgBox("Test Run Error",message);
+            message="";
+            return;
+        }
 		Env = Get_Selected_Env_Name()
-		$.get("Run_Test", {RunTestQuery : RunTestQuery,TesterIds:TesterIds,EmailIds:EmailIds, DependencyText:DependencyText, FTestObjective:TestObjective, Env: Env}, function(data)
+		$.get("Run_Test", {RunTestQuery : RunTestQuery,TesterIds:TesterIds,EmailIds:EmailIds, DependencyText:DependencyText, TestObjective:TestObjective, Env: Env}, function(data)
 		{
 			
 			MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);
