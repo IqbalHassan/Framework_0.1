@@ -638,7 +638,7 @@ article header{
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
     position: absolute;
-    top: 15.75%;
+    /*top: 15.75%;*/
     left: 48%;
     margin-left: -48%; /* 30 480 */
 }
