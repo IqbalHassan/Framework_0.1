@@ -45,15 +45,34 @@
 				</a>
 			</header>
 			<div id="outer_wrap">
-				<nav id="topnav">
+				<nav id="nav" role="navigation">
 					<ul>
     				<li><a href = "/Home/"  class = 'MainManu'>Home</a></li>
-    				<li><a href = "/Home/ManageTestCases/"  class = 'MainManu'>Manage Test Case</a></li>
+    				<li>
+                        <a href = "/Home/ManageTestCases/"  class = 'MainManu'>Manage Test Case</a>
+                        <ul>
+                            <li><a href="/Home/ManageTestCases/Create/">Create New Test Case</a></li>
+                            <li><a href="/Home/ManageTestCases/SearchEdit/">Copy or Edit Test Case</a></li>
+                            <li><a href="/Home/ManageTestCases/CreateProductSections/">Manage Product Sections</a></li>
+                            <li><a href="/Home/ManageTestCases/TestSet/">Manage Set and Tag</a></li>
+                            <li><a href="/Home/ManageTestCases/TestStep/">Manage Test Steps</a></li>
+                            <li><a href="/Home/ManageTestCases/DeleteExisting/">Delete Test Cases</a></li>
+                        </ul>
+                    </li>
     				<li><a href = "/Home/RunTest/" class = 'MainManu'>Run</a></li>
 	    			<li><a href = "/Home/Results/" class = 'MainManu'>Result</a></li>
     		 		<li><a href = "/Home/Performance/" class = 'MainManu'>Performance</a></li>
     				<!-- <li><a href = "/Home/Documentation/" class = 'MainManu'>Documentation</a> </li>-->
-    				<li><a href = "/Home/ExecutionReport/" class = 'MainManu'>Reports</a></li>
+    				<li>
+                        <a href = "/Home/ExecutionReport/" class = 'MainManu'>Reports</a>
+                        <ul>
+                            <li><a href="/Home/BundleReport/">Bundle Report</a></li>
+                            <li><a href="/Home/MKS-Report/">MKS Report</a></li>
+                            <li><a href="/Home/Analysis/">Test Case History</a></li>
+                            <li><a href="/Home/DailyBuildResults/">Automated Build History</a></li>
+                            <li><a href="/Home/TestTypeStatus/">Test Type Status</a></li>
+                        </ul>
+                    </li>
 					</ul>
 				</nav>
 				<section>			
@@ -70,6 +89,8 @@
 			</div>
 		</div>
 
+        <script src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.js"></script>
+        <script src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.min.js"></script>
         <script>
             $(document).ready(function() {
                 // Show or hide the sticky footer button
@@ -87,6 +108,11 @@
 
                     $('html, body').animate({scrollTop: 0}, 300);
                 })
+                //$( '#nav li:has(ul)').doubleTapToGo();
+                $( function()
+                {
+                    $( '#nav li:has(ul)' ).doubleTapToGo();
+                });
             });
         </script>
 
