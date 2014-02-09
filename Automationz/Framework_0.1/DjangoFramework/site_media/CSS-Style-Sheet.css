@@ -634,7 +634,7 @@ article header{
 
 #nav
 {
-    width: 60em; /* 1000 */
+    width: 100%; /* 1000 */
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
     position: absolute;
