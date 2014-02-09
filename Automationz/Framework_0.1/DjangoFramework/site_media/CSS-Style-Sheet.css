@@ -638,14 +638,23 @@ article header{
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
     position: absolute;
-    top: 13%;
+    top: 16%;
     left: 50%;
     margin-left: -30em; /* 30 480 */
-}
 
+}
+#nav a{
+    text-decoration: none;
+}
+#nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
 #nav > a
 {
     display: none;
+    text-decoration: none;
 }
 
 #nav li
@@ -662,6 +671,10 @@ article header{
     background-color: #c00 !important;
 }
 
+#nav li ul li a
+{
+    padding-left: 10px;
+}
 #nav span:after
 {
     width: 0;
@@ -685,7 +698,7 @@ article header{
 }
 #nav > ul > li
 {
-    width: 16%;
+    width: 20%;
     height: 100%;
     float: left;
     position: relative;
