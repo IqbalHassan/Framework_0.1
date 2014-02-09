@@ -83,7 +83,7 @@
                     <ul>
                         <li><a href="/Home/">Home</a></li>
                         <li>
-                            <a href="/Home/ManageTestCases/" aria-haspopup="true">Manage Test</a>
+                            <a href="/Home/ManageTestCases/" aria-haspopup="true"><span>Manage Test</span></a>
                             <ul>
                                 <li><a href="/Home/ManageTestCases/Create/">Create New</a></li>
                                 <li><a href="/Home/ManageTestCases/SearchEdit/">Copy or Edit</a></li>
@@ -97,7 +97,7 @@
                         <li><a href = "/Home/RunTest/">Run</a></li>
                         <li><a href = "/Home/Results/">Result</a></li>
                         <li>
-                            <a href="/Home/ExecutionReport/" aria-haspopup="true">Reports</a>
+                            <a href="/Home/ExecutionReport/" aria-haspopup="true"><span>Reports</span></a>
                             <ul>
                                 <li><a href="/Home/BundleReport/">Bundle Report</a></li>
                                 <li><a href="/Home/MKS-Report/">MKS Report</a></li>
@@ -144,6 +144,7 @@
                     $('html, body').animate({scrollTop: 0}, 300);
                 })
 
+                $( '#nav ul:has(li)' ).doubleTapToGo();
             });
         </script>
 
