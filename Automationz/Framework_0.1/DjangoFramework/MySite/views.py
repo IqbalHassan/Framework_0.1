@@ -4308,7 +4308,7 @@ def ResultTableFetch(request):
                 temp=tuple(temp)
                 Conn.close()    
                 pass_list.append(temp)
-            Column=["Run ID","Test Objective","Tester ID","Assigned Tester","Report Status","Status","Duration","Product Version","Machine OS","Machine IP","Client"]
+            Column=["Run ID","Test Objective","Machine ID","Assigned Tester","Report Status","Status","Duration","Product Version","Machine OS","Machine IP","Client"]
     message={
              'column':Column,
              'data':refined_list,
