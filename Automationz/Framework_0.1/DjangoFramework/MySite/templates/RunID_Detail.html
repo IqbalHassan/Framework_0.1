@@ -101,6 +101,29 @@
         <p style =" font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="Pending"> Re-Run Pending </p>
         <p style ="font-size: small; width:250px; height: 15px ; " class = 'flip' title = 'Rerun' data-id="FailedAndPending"> Re-Run Failed + Pending </p>
     </div>
+    <!---------------- Submitted Test Cases Table ---------------------------->
+    <p>&nbsp; </p>
+    <p class='flip' title = 'Submitted Test Cases' style="display: block">Submitted Test Cases </p>
+    <div id = 'SubmittedTestCasesTable' style="display: none;" >
+        {%if submitted_length%}
+        <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+            <tr>
+                {%for x in Column%}
+                <th class='ui-widget-header' style="text-align: center">{{x}}</th>
+                {%endfor%}
+            </tr>
+            {%for x in Submitted%}
+            <tr>
+                {%for y in x%}
+                <td class = 'ui-widget-content' style="text-align: center">{{y}}</td>
+                {%endfor%}
+            </tr>
+            {%endfor%}
+
+        </table>
+        {%endif%}
+    </div>
+
     <!---------------- Failed Steps Table ---------------------------->
     <p>&nbsp; </p>
     <p class='flip' title = 'Failed Steps' style="display: block">Common Failed Steps</p>

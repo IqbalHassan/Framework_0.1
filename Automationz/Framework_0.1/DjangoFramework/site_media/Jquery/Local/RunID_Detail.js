@@ -8,6 +8,8 @@ $(document).ready(function(){
     connectLogFile("PassTestCasesTable");
     LoadAllTestCases("FailTestCasesTable");
     connectLogFile("FailTestCasesTable");
+    LoadAllTestCases("SubmittedTestCasesTable");
+    connectLogFile("SubmittedTestCasesTable");
     buttonPreparation();
     When_Clicking_On_CommonFailedTestStep();
 });
@@ -17,6 +19,9 @@ function buttonPreparation(){
     });
     $(".flip[title='Passed Test Cases']").click(function(){
         $("#PassTestCasesTable").slideToggle("slow");
+    });
+    $(".flip[title='Submitted Test Cases']").click(function(){
+        $("#SubmittedTestCasesTable").slideToggle("slow");
     });
     $(".flip[title='Failed Test Cases']").click(function(){
         $("p.flip[title =  'Rerun']").slideToggle('slow');

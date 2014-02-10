@@ -9,6 +9,7 @@ import Global, CommonUtil
 from Drivers import Futureshop 
 #import FSDriver
 import Performance
+from distutils.tests.test_check import CheckTestCase
 
 if os.name == 'nt':
     location = "X:\\Actions\\Common Tasks\\PythonScripts\\"
@@ -137,6 +138,64 @@ def main():
         #This step will remain here for now, just to make sure test case is added in the previous one
         #Find all test cases added in the test_run table for the current run id
         TestCaseLists = DBUtil.GetData(conn, "Select TC_ID From test_run Where run_id = '%s'" % TestRunID[0], False)
+        #HYBRID RUN IMPLEMENTED HERE
+        AutomationList=[]
+        run_type=""
+        for each in TestCaseLists:
+            print each
+            test_case_id=each[0]
+            #check if its forced or not
+            query="select property from test_case_tag where tc_id='%s' and name='Status'"%test_case_id
+            forced=DBUtil.GetData(conn,query)
+            if forced[0]=='Forced':
+                continue
+            else:
+                temp=[]
+                temp.append(test_case_id)
+                temp=tuple(temp)
+                AutomationList.append(temp)
+        AutomationListWithType=[]
+        for each in AutomationList:
+            query="select tsl.steptype from test_cases tc,test_steps_list tsl,test_steps ts where tc.tc_id=ts.tc_id and tsl.step_id=ts.step_id and tc.tc_id='%s' order by ts.teststepsequence"%each[0]
+            status_list=DBUtil.GetData(conn,query)
+            for eachstatus in status_list:
+                if eachstatus=='manual':
+                    test_case_type='manual'
+                    break
+                else:
+                    test_case_type='automation'
+            temp=[]
+            temp.append(each[0])
+            temp.append(test_case_type)
+            temp=tuple(temp)
+            AutomationListWithType.append(temp)
+        Automation=[]
+        automation_count=0
+        manual_count=0
+        for each in AutomationListWithType:
+            if each[1]=='automation':
+                automation_count+=1
+                temp=[]
+                temp.append(each[0])
+                temp=tuple(temp)
+                Automation.append(temp)
+            else:
+                manual_count+=1
+                continue
+        if len(TestCaseLists)>0:
+            forced_count=len(TestCaseLists)-(automation_count+manual_count)
+            if automation_count>0 and automation_count==len(TestCaseLists)and (forced_count==0 and manual_count==0):
+                run_type="Automation"
+            elif (forced_count>0 or manual_count>0) and automation_count>0:
+                run_type="Hybrid"
+            else:
+                run_type="Manual"
+        Dict={}
+        Dict.update({'run_type':run_type})
+        sWhereQuery="where run_id='%s'" %TestRunID[0]
+        print DBUtil.UpdateRecordInTable(conn,"test_run_env",sWhereQuery,**Dict)
+        TestCaseLists=[]
+        TestCaseLists=Automation
         if len(TestCaseLists) > 0:
             print "Running Test cases from list : ", TestCaseLists[0:len(TestCaseLists)]
             CommonUtil.ExecLog(sModuleInfo, "Running Test cases from list : %s" % TestCaseLists[0:len(TestCaseLists)], 1)

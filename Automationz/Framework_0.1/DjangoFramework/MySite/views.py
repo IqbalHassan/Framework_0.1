@@ -789,6 +789,18 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "where tr.run_id = '%s' and tr.status in('Failed','Blocked') and "
                                             "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % RunId, False)
     Fail_TestCases=Modify(Fail_TestCases1)
+    Submitted_TestCases1=DB.GetData(Conn,"select "
+                                            "tct.name as mksid, "
+                                            "tc.tc_name, "
+                                            "tr.status, "
+                                            "to_char(tr.duration,'HH24:MI:SS'), "
+                                            "tr.failreason, "
+                                            "tr.logid, "
+                                            "tc.tc_id "
+                                            "from test_case_results tr, test_cases tc, test_case_tag tct "
+                                            "where tr.run_id = '%s' and tr.status ='Submitted' and "
+                                            "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % RunId, False)
+    Submitted_TestCases=Modify(Submitted_TestCases1)
     failsteps = DB.GetData(Conn, "select DISTINCT tsl.stepname from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
 
                           "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id and tr.tc_id = tsr.tc_id "
@@ -823,6 +835,8 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
              'Pass':Pass_TestCases,
              'Fail_length':len(Fail_TestCases),
              'Fail':Fail_TestCases,
+             'Submitted':Submitted_TestCases,
+             'submitted_length':len(Submitted_TestCases),
              'failsteps':FailsStepsWithCount,
              'failsteps_col':failsteps_Col,
              'fail_length':len(FailsStepsWithCount)
@@ -1374,6 +1388,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                                      assigned_tester=Testers,
                                      test_objective=TestObjective,
                                      Status='Submitted',
+                                     run_type='Manual'
                                      )
     #NJ-Insert into run env results to display submitted runs
     now = DB.GetData(Conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -4288,8 +4303,8 @@ def ResultTableFetch(request):
                 interval=7
             print limit
             print interval    
-            progress_query="(select ter.run_id,tre.test_objective,tre.test_run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
-            completed_query="(select ter.run_id,tre.test_objective,tre.test_run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
+            progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
+            completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
             query=progress_query+" union all "+completed_query + limit
             Conn=GetConnection()
             get_list=DB.GetData(Conn,query,False)
