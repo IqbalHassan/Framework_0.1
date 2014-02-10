@@ -4,4 +4,11 @@
 
 $(document).ready(function(){
 
+      //RESPONSIVEUI.responsiveTabs();
+
 });
+
+
+
+
+

@@ -923,85 +923,114 @@ article header{
     box-sizing: border-box;
 }
 
-/**********css-tabs*************/
-ul.mctabs
-{
-    /*height:30px; /* height #1 */
-    text-align:left; /*set to left, center, or right to align the tabs as desired*/
-    font-size:0;
-    margin:0;padding:0;
-    list-style-type:none;
+/**********css-tabs**************/
+
+
+/* REQUIRED for core functionality */
+
+.responsive-tabs__heading { display: none;}
+.responsive-tabs__list__item { display: inline; cursor:pointer;}
+
+
+@media (max-width: 767px) {
+    .responsive-tabs__list { display: none;}
+    .responsive-tabs__heading { display: block; cursor: pointer; }
+    .responsive-tabs__panel--closed-accordion-only { display: none;}
 }
 
-ul.mctabs li
-{
-    display:inline;
-    margin:0;padding:0;
-    margin-right:3px; /*distance between tabs*/
+@media (min-width: 768px) {
+    .responsive-tabs__panel--closed-accordion-only { display: block !important;}
 }
 
-ul.mctabs li a
-{
-    padding:0 16px; /* edit 16px for different tab width */
-    display:inline-block;
-    font:normal 12px Verdana;
-    line-height:30px;/* height #1 */
-    text-decoration: none;
-    color:#222;
-    border:1px solid #CCC; /*This color can be different from color #2 */
-    border-bottom:none;
-    background:#F0F0F0 url(tabbg.gif) 0 0 repeat-x;
-    outline:none;
-    border-radius:3px 3px 0 0;
-    position:relative;
+/* END - Required for core functionality */
+
+
+/* OPTIONAL - Basic Skin */
+
+.responsive-tabs-wrapper {
+    clear: both;
+    zoom: 1;
+}
+.responsive-tabs-wrapper:before,
+.responsive-tabs-wrapper:after {
+    content: "";
+    display: table;
+}
+.responsive-tabs-wrapper:after {
+    clear: both;
 }
 
-ul.mctabs li a:link, ul.mctabs li a:visited
-{
-    color:#222;
+.responsive-tabs__heading:focus,
+.responsive-tabs__list__item:focus { outline: 1px solid #ccc;  }
+
+.responsive-tabs__heading--active:focus,
+.responsive-tabs__list__item--active:focus { outline: none !important;}
+
+.responsive-tabs__list { font-size: 1.2em; margin: 2em 0 0 0; padding: 0;border-bottom: 1px solid #ddd; padding-bottom:11px; line-height: 1em;}
+.responsive-tabs__list__item { background: #eee; padding: 10px 20px;  margin-right: 1em; border-top-left-radius: 5px; border-top-right-radius: 5px;border: 1px solid #ddd; }
+.responsive-tabs__list__item:hover {background: #efefef }
+.responsive-tabs__list__item--active,
+.responsive-tabs__list__item--active:hover {  background: #fff; border-bottom-color: #fff;}
+
+.responsive-tabs__panel { margin-bottom: 50px;}
+
+@media (max-width: 767px) {
+    .responsive-tabs__heading {
+        padding: 0.5em; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0px 2px 3px rgba(0,0,0,0.4);
+        background: #ddd;
+        position: relative;
+    }
+
+    .responsive-tabs__heading:after {
+        content:"";
+        display: block;
+        position: absolute;
+        right: 20px;
+        top: 40%;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid #000;
+    }
+    .responsive-tabs__heading:hover,
+    .responsive-tabs__heading--active:hover { background-color: #efefef}
+    .responsive-tabs__heading--active { background: #fff;}
+    .responsive-tabs__heading--active:after {
+        border-bottom: 10px solid #000;
+        border-top:0;
+    }
 }
 
-ul.mctabs li a:hover
-{
-    border-color: #DDD; /*color #1*/
-    background:#F0F0F0 url(tabbg.gif) 0 -36px repeat-x;
+/* END - Optional - Basic Skin */
+
+
+
+/********add step table************/
+
+.one-column-emphasis {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 12px;
+    width: 90%;
+    text-align: left;
+    border-collapse: collapse;
+    margin: 20px;
+}
+.one-column-emphasis colgroup {
+    display: table-column-group;
+}
+.one-column-emphasis col {
+    display: table-column;
+}
+.one-column-emphasis th {
+    font-size: 14px;
+    font-weight: normal;
+    color: #039;
+    padding: 12px 15px;
 }
 
-/*selected tab style */
-ul.mctabs li.selected a
-{
-    color:#000;
-    font-weight:normal;
-    border-color:#DDD; /*color #1*/
-    background:white; /*color #2*/
-    z-index:3;
+.one-column-emphasis td {
+    color: #669;
+    border-top: 1px solid #e8edff;
+    padding: 10px 15px;
 }
-
-/*selected tab style on hover */
-ul.mctabs li.selected a:hover
-{
-    text-decoration:none;
-}
-
-/* container of content panels */
-div.panel-container
-{
-    border:1px solid #DDD; /*color #1*/
-    border-radius:0 4px 4px 4px;
-    background-color:white; /*color #2*/
-    position:relative;
-    padding:0px; margin:0px;
-}
-
-/* content panel */
-div.panel-container > div
-{
-    padding:30px 26px;
-
-    /* The two settings below should not be changed. */
-    display: block;
-    margin:0px;
-}
-
-/* loading image before ajax content is retrieved. Only applicable when Ajax is used.*/
-div.ajaxLoading {background:transparent url(loading.gif) no-repeat center center; height:150px; font-size:0;padding:0; margin:0; }
