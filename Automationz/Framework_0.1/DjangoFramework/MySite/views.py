@@ -725,8 +725,7 @@ def GetRunIDStatus(RunId):
     else:
         run_status='Submitted'
     return run_status
-def RunId_TestCases(request,RunId): #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
-    def Modify(AllTestCases1):
+def Modify(AllTestCases1):
         AllTestCases=[]
         AllTestCases2=[]
         Check_TestCase(AllTestCases1, AllTestCases2)
@@ -738,6 +737,8 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
             temp=tuple(temp)
             AllTestCases.append(temp)
         return AllTestCases
+    
+def RunId_TestCases(request,RunId): #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
     Conn=GetConnection()
     RunId=RunId.strip()
     print RunId
@@ -805,7 +806,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
 
                           "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id and tr.tc_id = tsr.tc_id "
 
-                           "and tsr.status = 'Critical' and tsr.teststep_id = tsl.step_id and tr.tc_id = tc.tc_id" % RunId, False
+                           "and tsr.status = 'Failed' and tsr.teststep_id = tsl.step_id and tr.tc_id = tc.tc_id" % RunId, False
                     )
 
     #Adding Test Case Count with Fails Steps Name
@@ -814,7 +815,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
         failstep = list(eachstep)[0]
         FailStep_TestCases = DB.GetData(Conn, "select tc.tc_name from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
                                                 "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id "
-                                                "and tr.tc_id = tsr.tc_id and tsr.status in ('Critical') and tsr.teststep_id = tsl.step_id "
+                                                "and tr.tc_id = tsr.tc_id and tsr.status in ('Failed') and tsr.teststep_id = tsl.step_id "
                                                 "and tr.tc_id = tc.tc_id and tsl.stepname = '%s' " % (RunId, failstep)
                                             )
         Count = len(FailStep_TestCases)
@@ -1046,23 +1047,14 @@ def FailStep_TestCases(request): #==================Returns Test Cases When User
                                                  "tc.tc_id "
                                                  "from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc, test_case_tag tct "
                                                  "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id "
-                                                 "and tr.tc_id = tsr.tc_id and tsr.status in ('Critical') and tsr.teststep_id = tsl.step_id "
+                                                 "and tr.tc_id = tsr.tc_id and tsr.status in ('Failed') and tsr.teststep_id = tsl.step_id "
                                                  "and tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tsl.stepname = '%s' "
                                                  "order by tr.id " % (RunId, FailStep), False
                                                  )
-
-#                DB.GetData(Conn,"select tc.tc_name, "
-#                                                      "tr.status, "
-#                                                      "to_char(tr.duration,'HH24:MI:SS'), "
-#                                                      "tr.failreason, "
-#                                                      "tr.logid from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
-#                                "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id " 
-#                                "and tr.tc_id = tsr.tc_id and tsr.status in ('Critical') and tsr.teststep_id = tsl.step_id " 
-#                                "and tr.tc_id = tc.tc_id and tsl.stepname = '%s' " % (RunId,FailStep), False
-#                            )
-                FailStep_TC_Col = ['Test Case ID', 'Failed Test Case', 'Status', 'Duration', 'Fail Reason', 'Test Log', 'Autmation ID']
+                FailStep_TestCases1=Modify(FailStep_TestCases)
+                FailStep_TC_Col = ['Test Case ID', 'Failed Test Case','Test Case Type','Status', 'Duration', 'Fail Reason', 'Test Log', 'Autmation ID']
     results = {
-               'FailStep_TestCases':FailStep_TestCases,
+               'FailStep_TestCases':FailStep_TestCases1,
                'FailStep_TC_Col': FailStep_TC_Col
                }
     json = simplejson.dumps(results)

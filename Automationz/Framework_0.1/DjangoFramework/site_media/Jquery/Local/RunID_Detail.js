@@ -82,26 +82,24 @@ function When_Clicking_On_CommonFailedTestStep(){
         'color':'blue',
         'cursor':'pointer'
     });
-    $('#FailedStepsTable tr>td:nth-child(1)').each(function(){
+    $('#FailedStepsTable tr td:nth-child(1)').each(function(){
         var RunID=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
         var name=$(this).text().trim();
         var stepName=name.split('(')[0].trim();
-        console.log(stepName);
-        $(this).append('<div id="'+stepName.split(' ').join('_')+'"></div>');
+        var div_name=name.split('(')[0].trim().split(' ').join('_');
+        $(this).append('<div id="'+div_name+'" style="display:none"></div>');
         $.get("FailStep_TestCases",{
             RunID : RunID,
             FailedStep : stepName
         },function(data){
             var column=data['FailStep_TC_Col'];
             var data_detail=data['FailStep_TestCases'];
-            ResultTable('#'+stepName.split(' ').join('_'),column,data_detail,"");
-
-            var div_name=stepName.split(' ').join('_');
+            ResultTable('#'+div_name,column,data_detail,"");
             //LoadAllTestCases(div_name);
             connectLogFile(div_name);
         });
         $(this).live('click',function(e){
-            $('#'+stepName.split(' ').join('_')).slideToggle("slow");
+            $('#FailedStepsTable #'+div_name).slideToggle("slow");
             e.stopPropagation();
         });
     });
