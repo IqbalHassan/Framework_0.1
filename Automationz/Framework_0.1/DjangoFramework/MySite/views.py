@@ -786,7 +786,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "tr.logid, "
                                             "tc.tc_id "
                                             "from test_case_results tr, test_cases tc, test_case_tag tct "
-                                            "where tr.run_id = '%s' and tr.status = 'Failed' and "
+                                            "where tr.run_id = '%s' and tr.status in('Failed','Blocked') and "
                                             "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % RunId, False)
     Fail_TestCases=Modify(Fail_TestCases1)
     failsteps = DB.GetData(Conn, "select DISTINCT tsl.stepname from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
@@ -853,7 +853,7 @@ def TestCase_Detail_Table(request): #==================Returns Test Steps and De
                 RunId = str(RunId.strip())
 
 
-                TestCase_Detail_Data = DB.GetData(Conn, "(select "
+                """TestCase_Detail_Data = DB.GetData(Conn, "(select "
                                                    " tl.stepname as stepname,"
                                                    " tr.status as status,"
                                                    " to_char(tr.duration,'HH24:MI:SS') as duration,"
@@ -868,7 +868,7 @@ def TestCase_Detail_Table(request): #==================Returns Test Steps and De
                                                    "where ts.tc_id = '%s' and ts.step_id = tl.step_id and ts.teststepsequence > (select max(teststepsequence) "
                                                    " from test_step_results tr where tr.run_id = '%s' and tr.tc_id = '%s') "
                                                    "order by ts.teststepsequence)" % (RunId, TC_ID, TC_ID, RunId, TC_ID), False)
-
+"""
 #                DB.GetData(Conn,"Select    "
 #                                                        "tl.stepname,"
 #                                                        " tr.status, "
@@ -878,7 +878,8 @@ def TestCase_Detail_Table(request): #==================Returns Test Steps and De
 #                                   "and tc.tc_id = tr.tc_id and tr.teststep_id = tl.step_id " 
 #                                   "ORDER BY tr.stepstarttime ASC" % (RunId, TC_ID),False
 #                              )
-
+                query="select tsl.stepname, tsr.status,to_char(tsr.duration,'HH24:MI:SS') as duration,tsr.memory_consumed as MemoryUsage from test_step_results tsr,test_steps_list tsl where tsr.teststep_id=tsl.step_id and tsr.run_id='%s' and tsr.tc_id='%s' order by tsr.id"%(RunId,TC_ID)
+                TestCase_Detail_Data=DB.GetData(Conn, query, False)
                 TestCase_Detail_Col = ['Test Step Name', 'Status', 'Duration', 'Memory Usage']
 
     results = {
@@ -1275,6 +1276,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
     TesterId = QueryText.pop() # pop function will remove last item of the list (userid) and will assign to Testerid
     #Add the manual Test Machine to the test_run_env table
     TesterId=TesterId.strip()
+    runid = TimeStamp("string")
     query="select user_level from permitted_user_list where user_names='%s'" %TesterId
     Machine_Status=DB.GetData(Conn,query,False)
     if Machine_Status[0][0]=='Manual':
@@ -1283,7 +1285,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         print Machine_Detail[0]
         each=Machine_Detail[0]
         status="Unassigned"
-        updateTime=TimeStamp("integer")
+        updateTime=TimeStamp("string")
         print status
         print updateTime
         machine_os=(each[15]+" "+each[14]+" - "+each[16]).strip()
@@ -1291,10 +1293,10 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         client=each[7].strip()
         print client
         ip=each[11]
-        Dict={'tester_id':TesterId,'status':status,'machine_ip':ip,'last_updated_time':updateTime,'machine_os':machine_os,'client':client,'os_name':each[15],'os_version':each[14],'os_bit':each[16]}
-        print DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)    
+        Dict={'run_id':runid,'status':status,'machine_ip':ip,'last_updated_time':updateTime,'machine_os':machine_os,'client':client,'os_name':each[15],'os_version':each[14],'os_bit':each[16],'test_objective':TestObjective}
+        sWhereQuery="where tester_id='%s'" %TesterId
+        print DB.UpdateRecordInTable(Conn,"test_run_env",sWhereQuery,**Dict)    
     #Creating Runid and assigning test cases to it in "testrun" table
-    runid = TimeStamp("string")
     TestIDList = []
     for eachitem in QueryText:
         TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
@@ -4396,7 +4398,7 @@ def Make_List(step_name,step_reason,step_status,test_case_id):
 
 def update_runid(run_id,test_case_id):
     oConn=GetConnection()
-    squery="select distinct status from test_case_results where tc_id='%s'and run_id='%s'" %(test_case_id,run_id)
+    squery="select distinct status from test_case_results where run_id='%s'" %run_id
     run_id_status=DB.GetData(oConn, squery)
     submit_count=0
     count=0
@@ -4414,8 +4416,9 @@ def update_runid(run_id,test_case_id):
         status='Complete'
         endtime=DB.GetData(oConn,"select current_timestamp",False)
         Dict.update({'testendtime':str(endtime[0][0])})
-    elif progress>0:
+    elif progress>0 or submit_count>0:
         status='In-Progress'
+        Dict.update({'status':status})
     else:
         if count==0 and progress==0 and submit_count==len(run_id_status):
             status='Submitted'
