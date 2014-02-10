@@ -3,6 +3,9 @@
 {% block content %}
 
 
+<script type="text/javascript" src="/site_media/Jquery/Local/CreateTestCase.js"></script>
+
+<article>
 
 <p class='text' id="question_text" style="color: black; display: block; font-family: Arial, sans-serif; font-size: 25px; font-weight: 900; text-align: center">
     <a>Please enter the test case details.</a>
@@ -19,7 +22,7 @@
                     <span class="tc_form_required_field">*</span><b class="Text">Title:</b>
                 </td>
                 <td class="tc_form_input_col">
-                    <input class="ui-corner-all ui-autocomplete-input" id="title_txtbox" type="text"
+                    <input class="ui-corner-all ui-autocomplete-input textbox" id="title_txtbox" type="text"
                            title="Enter the reference MKS/JIRA id" name="searchboxname" autocomplete="off">
                 </td>
             </tr>
@@ -27,5 +30,21 @@
     </form>
 </div>
 
+<!----------Github tabs --------------->
+<div class="container">
 
+    <ul class="dashboard-tabs">
+        <li><a href="#" class="js-selected-navigation-item selected" data-selected-links=" /">Data</a></li>
+        <li><a href="#" class="js-selected-navigation-item " data-selected-links=" /dashboard/pulls">Pull Requests</a></li>
+        <li><a href="#">Issues</a></li>
+        <li><a href="#" class="js-selected-navigation-item " data-selected-links="/stars /stars">Stars</a></li>
+    </ul>
+
+
+</div>
+
+    <!--------jquery mobile - tabs---->
+
+
+</article>
 {% endblock %}
