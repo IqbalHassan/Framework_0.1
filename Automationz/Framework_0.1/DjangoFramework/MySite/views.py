@@ -2618,7 +2618,7 @@ def Get_Versions(request):
             elif i[0] == ' ':
                 flag3 = 3
             elif i[0] == None:
-                flag2 = 2
+                flag2 = 1     #2
             else:
                 results.append(i)
         if flag1==1:
