@@ -837,7 +837,6 @@ def TestCase_Detail_Table(request): #==================Returns Test Steps and De
     TestCase_Detail_Col = []
     if request.is_ajax():
         if request.method == 'GET':
-
             #If User Click on Fail Step 
             RunId = request.GET.get('RunID', '')
             TestCaseName = request.GET.get('TestCaseName', '')
