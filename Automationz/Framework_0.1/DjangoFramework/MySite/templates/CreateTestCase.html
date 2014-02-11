@@ -45,7 +45,9 @@
 
 
     <!--------jquery mobile - tabs---->
-
+<table>
+    <tr>
+    <td>
     <div class="responsive-tabs">
 
         <h2>Properties</h2>
@@ -252,33 +254,42 @@
 
         </div>
 
-        <h2>Steps</h2>
+        <h2><!--link rel="shortcut icon" href="/site_media/step.ico"-->Steps</h2>
         <div>
             <table class="one-column-emphasis" summary="Add test steps">
                 <colgroup><col>
                 </colgroup><thead>
             <tr>
-                <th scope="col">Company</th>
-                <th scope="col">Q1</th>
-                <th scope="col">Q2</th>
-                <th scope="col">Q3</th>
-                <th scope="col">Q4</th>
+                <th scope="col">#</th>
+                <th scope="col">Step</th>
+                <th scope="col">Data</th>
+                <th scope="col">Description</th>
+                <th scope="col">Expected</th>
+                <th scope="col">Verification Point</th>
+                <th scope="col">Type</th>
+                <th scope="col">Step Info</th>
             </tr>
             </thead>
                 <tbody>
                 <tr>
-                    <td>Microsoft</td>
-                    <td>20.3</td>
+                    <td>1</td>
+                    <td>4.3</td>
                     <td>30.5</td>
+                    <td><textarea style="width: 80%"></textarea></td>
+                    <td><textarea style="width: 80%"></textarea></td>
+                    <td><input type="checkbox"></td>
                     <td>23.5</td>
                     <td>40.3</td>
                 </tr>
                 <tr>
-                    <td>Google</td>
+                    <td>2</td>
                     <td>50.2</td>
                     <td>40.63</td>
-                    <td>45.23</td>
-                    <td>39.3</td>
+                    <td><textarea style="width: 80%"></textarea></td>
+                    <td><textarea style="width: 80%"></textarea></td>
+                    <td><input type="checkbox"></td>
+                    <td>23.5</td>
+                    <td>40.3</td>
                 </tr>
 
                 </tbody>
@@ -286,7 +297,57 @@
         </div>
 
 
-    </div>
+    </td>
+
+    <td>
+        <div class="repository-sidebar">
+
+
+            <div class="sunken-menu vertical-right repo-nav js-repo-nav js-repository-container-pjax js-octicon-loaders">
+                <div class="sunken-menu-contents">
+                    <ul class="sunken-menu-group">
+                        <li class="tooltipped leftwards" original-title="Create Step">
+                            <a href="/Home/ManageTestCases/TestStep/" aria-label="Create Step" class="js-selected-navigation-item sunken-menu-item">
+                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/plus.png" width="16" title="Create New Step">
+                            </a>      </li>
+
+                        <li class="tooltipped leftwards" original-title="Edit Step">
+                            <a href="/Home/ManageTestCases/TestStep/" aria-label="Edit Step" class="js-selected-navigation-item sunken-menu-item js-disable-pjax">
+                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit.png" width="16" title="Edit Test Step">
+                            </a>        </li>
+
+                        <li class="tooltipped leftwards" original-title="Manage Set & Tag">
+                            <a href="/Home/ManageTestCases/TestSet/" aria-label="Tag" class="js-selected-navigation-item sunken-menu-item">
+                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/tag.png" width="16" title="Manage Set & Tag">
+                            </a>      </li>
+
+                    </ul>
+
+                    <div class="sunken-menu-separator"></div>
+
+                    <ul class="sunken-menu-group">
+
+                        <li class="tooltipped leftwards" original-title="Bundle Report">
+                            <a href="/Home/BundleReport/" aria-label="Bundle Report" class="js-selected-navigation-item sunken-menu-item">
+                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report.png" width="16" title="Bundle Report">
+                            </a>      </li>
+
+                        <li class="tooltipped leftwards" original-title="Test Type Status">
+                            <a href="/Home/TestTypeStatus/" aria-label="Test Type Status" class="js-selected-navigation-item sunken-menu-item">
+                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/status.png" width="16" title="Test Type Status">
+                            </a>      </li>
+                    </ul>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </td>
+    </tr>
+
+</table>
 
 </div>
 <p class="new_tc_form buttonCustom" id="submit" style="width:150px;">

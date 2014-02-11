@@ -10,7 +10,6 @@ $(document).ready(function(){
                    +"&nbsp;&nbsp;&nbsp;"
                    +"<input class=\"ui-corner-all textbox\" id=\"input2\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName2' />"
            );
-           $("#renamebox").selectmenu('refresh', true);
            //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
            $("#error").hide();
           // console.log("choice_value:"+choice_value);
@@ -77,7 +76,7 @@ $(document).ready(function(){
               // $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
            }
        }
-       $("#select_button").selectmenu('refresh', true);
+
    });
    $("#input").autocomplete({
        source: function(request,response){

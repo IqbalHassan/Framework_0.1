@@ -1010,7 +1010,7 @@ article header{
 
 .one-column-emphasis {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-    font-size: 12px;
+    font-size: 13px;
     width: 90%;
     text-align: left;
     border-collapse: collapse;
@@ -1023,7 +1023,7 @@ article header{
     display: table-column;
 }
 .one-column-emphasis th {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: normal;
     color: #039;
     padding: 12px 15px;
@@ -1037,4 +1037,57 @@ article header{
 .one-column-emphasis tr:hover td {
     color: #339;
     background: #eff2ff;
+}
+
+/**********create test side bar***********/
+
+.repository-with-sidebar .repository-sidebar {
+    float: right;
+    width: 38px;
+    overflow: hidden;
+    transition: width 0.1s ease-in-out;
+}
+.sunken-menu.vertical-right {
+    max-width: 250px;
+}
+.sunken-menu.vertical-right .sunken-menu-contents {
+    padding: 12px 0 15px;
+    box-shadow: inset 1px 0 0 #eee;
+    background-image: -webkit-linear-gradient(left, #f6f6f6 0%, #fff 8px);
+    background-image: -moz-linear-gradient(left, #f6f6f6 0%, #fff 8px);
+    background-image: linear-gradient(to right, #f6f6f6 0%, #fff 8px);
+}
+.sunken-menu .sunken-menu-group {
+    list-style-type: none;
+}
+.sunken-menu .sunken-menu-contents, .sunken-menu .sunken-menu-item, .sunken-menu .sunken-menu-separator {
+    position: relative;
+}
+.sunken-menu .sunken-menu-item {
+    padding: 8px 10px;
+    display: block;
+    text-shadow: 0 1px 0 #fff;
+    text-decoration: none;
+    border: 1px solid transparent;
+    outline: 0;
+}
+.sunken-menu.vertical-right .sunken-menu-item {
+    margin: 5px 0;
+}
+.sunken-menu.vertical-right .sunken-menu-separator {
+    margin: 8px 0 6px 1px;
+    height: 5px;
+    background-image: -webkit-radial-gradient(left top, farthest-side, #f4f4f4, rgba(244,244,244,0));
+    background-image: -moz-radial-gradient(left top, farthest-side, #f4f4f4, rgba(244,244,244,0));
+    background-image: radial-gradient(farthest-side at left top, #f4f4f4, rgba(244,244,244,0));
+}
+.sunken-menu .sunken-menu-contents:before, .sunken-menu .sunken-menu-contents:after, .sunken-menu .sunken-menu-item.selected:after, .sunken-menu .sunken-menu-separator:before {
+    content: "";
+    position: absolute;
+}
+.sunken-menu.vertical-right .sunken-menu-contents:before, .sunken-menu.vertical-right .sunken-menu-contents:after {
+    height: 15px;
+    width: 100%;
+    left: 0;
+    background-color: transparent;
 }
