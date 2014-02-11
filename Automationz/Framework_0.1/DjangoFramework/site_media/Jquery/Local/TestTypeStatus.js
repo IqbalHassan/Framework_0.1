@@ -221,6 +221,9 @@ $(document).ready(function(){
             });
         }
 
+        $("#TestTypeStatusChart").selectmenu('refresh', true);
+        $("#TestTypeStatusTable").selectmenu('refresh', true);
+
     });
 });
 

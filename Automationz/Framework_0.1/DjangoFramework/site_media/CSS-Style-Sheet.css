@@ -1034,3 +1034,7 @@ article header{
     border-top: 1px solid #e8edff;
     padding: 10px 15px;
 }
+.one-column-emphasis tr:hover td {
+    color: #339;
+    background: #eff2ff;
+}
