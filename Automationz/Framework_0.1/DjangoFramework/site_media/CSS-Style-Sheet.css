@@ -857,6 +857,7 @@ article header{
         position: static;
         padding: 1.25em; /* 20 */
         padding-top: 0;
+        z-index:999999;
     }
 }
 
@@ -927,7 +928,9 @@ article header{
 
 
 /* REQUIRED for core functionality */
-
+.responsive-tabs {
+    width: 100%;
+}
 .responsive-tabs__heading { display: none;}
 .responsive-tabs__list__item { display: inline; cursor:pointer;}
 
@@ -1048,7 +1051,7 @@ article header{
     transition: width 0.1s ease-in-out;
 }
 .sunken-menu.vertical-right {
-    max-width: 250px;
+    max-width: 100px;
 }
 .sunken-menu.vertical-right .sunken-menu-contents {
     padding: 12px 0 15px;
@@ -1087,7 +1090,7 @@ article header{
 }
 .sunken-menu.vertical-right .sunken-menu-contents:before, .sunken-menu.vertical-right .sunken-menu-contents:after {
     height: 15px;
-    width: 100%;
+    width: 50%;
     left: 0;
     background-color: transparent;
 }
