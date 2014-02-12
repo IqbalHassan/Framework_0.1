@@ -2,6 +2,7 @@
  * Created by lent400 on 1/13/14.
  */
 $(document).ready(function(){
+    RESPONSIVEUI.responsiveTabs();
     LoadAllTestCases("AllTestCasesTable");
     connectLogFile("AllTestCasesTable");
     LoadAllTestCases("PassTestCasesTable");

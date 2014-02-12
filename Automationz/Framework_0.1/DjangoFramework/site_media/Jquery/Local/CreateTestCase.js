@@ -4,7 +4,7 @@
 
 $(document).ready(function(){
 
-      //RESPONSIVEUI.responsiveTabs();
+      RESPONSIVEUI.responsiveTabs();
 
 });
 
