@@ -19,7 +19,7 @@ $(document).ready(function(){
         }
     });
 
-    $(".section").click(function(event)
+    $(".generate").click(function(event)
     {
         var choice = $(".section").val();
         if(choice != 0)

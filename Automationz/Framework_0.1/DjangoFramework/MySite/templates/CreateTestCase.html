@@ -51,8 +51,8 @@
     <td width="94%">
     <div class="responsive-tabs">
 
-        <h2>Properties</h2>
-        <div class="tabs-div" style="margin: 30px">
+        <h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/properties.png" width="16"> Properties</h2>
+        <div class="tabs-div" style="margin: 30px" align="center">
             <form id="tc_enable" class="new_tc_form">
                 <table>
                     <tr>
@@ -81,7 +81,7 @@
                 </table>
             </form>
 
-            <div class="new_tc_form" style="text-align: center;">
+            <form class="new_tc_form">
                 <table>
                     <tr>
                         <td class="tc_form_label_col">
@@ -94,7 +94,7 @@
                         </td>
                     </tr>
                 </table>
-            </div>
+            </form>
             <HR class="tc_form_divider"/>
 
             <form id="tc_platform" class="new_tc_form">
@@ -255,8 +255,8 @@
 
         </div>
 
-        <h2><!--link rel="shortcut icon" href="/site_media/step.ico"-->Steps</h2>
-        <div class="tabs-div">
+        <h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Steps</h2>
+        <div class="tabs-div" align="center">
             <table class="one-column-emphasis" summary="Add test steps">
                 <colgroup><col>
                 </colgroup><thead>
@@ -274,8 +274,12 @@
                 <tbody>
                 <tr>
                     <td>1</td>
-                    <td>4.3</td>
-                    <td>30.5</td>
+                    <td><a class="notification-indicator tooltipped downwards" data-gotokey="n" original-title="You have no unread notifications">
+                        <span class="mail-status all-read"></span>
+                    </a></td>
+                    <td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n" title="You have unread notifications in this repository">
+                        <span class="mail-status unread"></span>
+                    </a></td>
                     <td><textarea style="width: 80%"></textarea></td>
                     <td><textarea style="width: 80%"></textarea></td>
                     <td><input type="checkbox"></td>
