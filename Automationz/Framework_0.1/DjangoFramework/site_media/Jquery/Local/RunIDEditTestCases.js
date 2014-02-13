@@ -86,10 +86,6 @@ $(document).ready(function(){
         });
         event.stopPropagation();
     });
-    $('.flip[title="BackPage"]').live('click',function(){
-        var runid=$('#runid').text().trim();
-        window.location='/Home/RunID/'+runid+'/';
-    });
 });
 function TestDataFetch(){
     $('#data_table tr td:nth-child(4)').each(function(){

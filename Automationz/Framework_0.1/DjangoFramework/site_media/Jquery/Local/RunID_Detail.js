@@ -13,6 +13,11 @@ $(document).ready(function(){
     connectLogFile("SubmittedTestCasesTable");
     //buttonPreparation();
     When_Clicking_On_CommonFailedTestStep();
+    var RunID=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+    $('#run_id').text(RunID.trim());
+    $('#run_id').live('click',function(){
+        window.location='/Home/RunID/'+RunID.trim();
+    });
 });
 /*function buttonPreparation(){
     $(".flip[title='All Test Cases']").click(function(){

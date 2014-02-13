@@ -2,7 +2,9 @@ var environment='';
 var browserdata='';
 
 $(document).ready(function(){
-	
+    RESPONSIVEUI.responsiveTabs();
+    AvailebableTestMachineflipButton();
+    //populate_manual_test_div();
 	var Env = ""
 	var URL = window.location.pathname
 	indx = URL.indexOf("Run")
@@ -23,11 +25,11 @@ $(document).ready(function(){
 	{
 		//when use will click on PC flip bar
 		$(".flip[title='PC_Platform']").click(function(){ 
-			
-			$(".flip[title='Availeable Test Machine']").fadeIn(1000);
-			$(".flip[title='Add Manual Test Machine']").fadeIn(1000);
+			$('#list').fadeIn(1000);
+			//$(".flip[title='Availeable Test Machine']").fadeIn(1000);
+			//$(".flip[title='Add Manual Test Machine']").fadeIn(1000);
+            $('#PlatformChose').css({'display':'none'});
 			$("#Place_AutoComplete_Here").fadeIn(1000);
-			
 			$(".flip[title='Mac_Platform']").css({'display':'none'})
 			$(".text[title='Choose']").text('Welcome to PC Environment Test Lab');
 			//$(".flip[title='PC_Platform']").text('Welcome to PC Environment Test Lab');
@@ -43,9 +45,10 @@ $(document).ready(function(){
 		//when user will click on Mac flip bar
 		$(".flip[title='Mac_Platform']").click(function(){ 
 			
-			$(".flip[title='Availeable Test Machine']").fadeIn(1000)
-			$("#Place_AutoComplete_Here").fadeIn(1000)
-			
+			//$(".flip[title='Availeable Test Machine']").fadeIn(1000)
+			$("#Place_AutoComplete_Here").fadeIn(1000);
+            $('#PlatformChose').css({'display':'none'});
+			$('#list').fadeIn(1000);
 			$(".flip[title='PC_Platform']").css({'display':'none'})
 			$(".text[title='Choose']").text('Welcome to Mac Environment Test Lab');
 			//$(".flip[title='Mac_Platform']").text('Welcome to Mac Environment Test Lab');
@@ -55,22 +58,12 @@ $(document).ready(function(){
 			Env = "Mac"
 			RunTestAutocompleteSearch(Env);
 		});
-		
-		
-		$(".flip[title='Add Manual Test Machine']").click(function(){
-            //console.log($(this).attr('title')+" has been clicked");
 
-            $("#error").html("");
-            $("#error").insertBefore("#AvailableTestMachine");
-            $("#AvailableTestMachine").css({'display':'none'});
-            $("#AddManualTestMachine").children().remove();
-            populate_manual_test_div();
-            $("#AddManualTestMachine").slideToggle("slow");
-        });
-			
+            //populate_manual_test_div();
+
 			AddAutoCompleteSearchBox("#Place_AutoComplete_Here","Search Test Cases Data By Keywords:");
 			
-			AvailebableTestMachineflipButton(Env);
+			//AvailebableTestMachineflipButton();
 			
 			
 			
@@ -357,32 +350,11 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 
 function AvailebableTestMachineflipButton()
 {
-	$(".flip[title='Availeable Test Machine']").click(function(){
-
-        $("#error").html("");
-        $("#error").insertBefore("#AvailableTestMachine");
-		$("#AddManualTestMachine").css({'display':'none'});
-		Env = Get_Selected_Env_Name();
-		$("#AvailableTestMachine").slideToggle("slow");
+        Env = Get_Selected_Env_Name();
 		var SearchUser = "True"
 		$.get("Table_Data_UserList",{UserListRequest : SearchUser, Env: Env},function(data) {
 		ResultTable('#AvailableTestMachine', data['Heading'],data['TableData'], "Available User/s");
-		
-		//Removing Unnecessary columns
-		//$("#AvailableTestMachine .ui-widget th:nth-child(1), .ui-widget td:nth-child(1)").remove()
-		//$("#AvailableTestMachine .ui-widget th:nth-child(2), .ui-widget td:nth-child(2)").remove()
-		//$("#AvailableTestMachine .ui-widget th:nth-child(3), .ui-widget td:nth-child(3)").remove()
-		//$("#AvailableTestMachine .ui-widget th:nth-child(6), .ui-widget td:nth-child(6)").remove()
-		//$("#AvailableTestMachine .ui-widget th:nth-child(9), .ui-widget td:nth-child(9)").remove()
-		//$("#AvailableTestMachine .ui-widget th:nth-child(12), .ui-widget td:nth-child(12)").remove()
-		//$("#AvailableTestMachine .ui-widget th:nth-child(15), .ui-widget td:nth-child(15)").remove()
-		//$("#AvailableTestMachine .ui-widget th:nth-child(16), .ui-widget td:nth-child(16)").remove()
-		
-		
-		
-		});
-	}); 
-	
+	});
 }
 function RunTestAutocompleteSearch(Env)
 
@@ -606,15 +578,14 @@ function SelecteUserProcess() {
 	$.get("Table_Data_UserList",{UserListRequest : SearchUser, Env: Env},function(data) {
 
 		//When User Clicks on Availebable Test Machine flip image
-		$(".flip[title='Availeable Test Machine']").click(function(){
+		/*$(".flip[title='Availeable Test Machine']").click(function(){
 			
 			//$("#AvailableTestMachine").slideToggle("slow");
 			ResultTable('#AvailableTestMachine', data['Heading'],data['TableData'], "Available User/s");
 			
 		}); //End Of Code
-		
-		
-		
+
+		*/
 		if (data['TableData'].length == 0) 
 		{
 			$("#AutoSearchTextBoxLabel").html("<b>*Select Test Machine:&nbsp;&nbsp;</b>");
@@ -919,7 +890,7 @@ function Get_Selected_Env_Name()
 	return Env
 		
 }
-function populate_manual_test_div(){
+/*function populate_manual_test_div(){
     var message="";
     message+='<div align="right">' +
         '<div id="error_message" align="center" style="display: none"></div>' +
@@ -962,8 +933,8 @@ function populate_manual_test_div(){
 
         '</div>';
     $('#AddManualTestMachine').html(message);
-    check_value();
-    buttons();
+    //check_value();
+    //buttons();
 }
 function buttons(){
     $("#machine_name").autocomplete({
@@ -1152,7 +1123,6 @@ function populate_os(){
     }
     $('#os_name').append(message);
 }
-/*
 function populate_manual_test_div(){
     $("#AddManualTestMachine").css({'align':'center'});
     //$("#AddManualTestMachine").children().remove();
