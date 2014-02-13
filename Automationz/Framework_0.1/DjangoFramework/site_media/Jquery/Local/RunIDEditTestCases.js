@@ -4,6 +4,7 @@
 
 var test_case_name=$('#testcasename').text().trim();
 $(document).ready(function(){
+    RESPONSIVEUI.responsiveTabs();
     DataFetch();
     $('#changeStatus').live('click',function(event){
         var run_id=$('#runid').text().trim();
