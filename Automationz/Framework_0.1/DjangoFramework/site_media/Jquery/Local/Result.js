@@ -2,6 +2,7 @@
  * Created by lent400 on 1/22/14.
  */
 $(document).ready(function(){
+    RESPONSIVEUI.responsiveTabs();
     $('.flip[title="SeeLess"]').css({'display':'none'});
     $('.flip[title="RunIDHeader"]').text("Show All");
     var searchText="limit";
