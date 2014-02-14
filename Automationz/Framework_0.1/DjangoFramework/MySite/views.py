@@ -2927,6 +2927,12 @@ def BundleReport(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
+def Admin(request):
+    templ = get_template('Admin.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
+
 def DeleteExistingTestCase(TC_Ids):
     conn = Conn
     is_string = False

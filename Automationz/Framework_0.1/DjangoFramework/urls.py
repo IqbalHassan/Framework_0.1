@@ -143,6 +143,9 @@ urlpatterns = patterns('',
     #Documentation Page
     url(r'^Home/Documentation/$',Documentation),
     
+    #Admin Page
+    url(r'^Home/Admin/$',Admin),
+    
     
     
     
