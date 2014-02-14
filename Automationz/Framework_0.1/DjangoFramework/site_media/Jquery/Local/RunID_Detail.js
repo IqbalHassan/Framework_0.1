@@ -11,10 +11,10 @@ $(document).ready(function(){
     connectLogFile("FailTestCasesTable");
     LoadAllTestCases("SubmittedTestCasesTable");
     connectLogFile("SubmittedTestCasesTable");
-    //buttonPreparation();
+    buttonPreparation();
     When_Clicking_On_CommonFailedTestStep();
 });
-/*function buttonPreparation(){
+function buttonPreparation(){
     $(".flip[title='All Test Cases']").click(function(){
         $("#AllTestCasesTable").slideToggle("slow");
     });
@@ -36,7 +36,7 @@ $(document).ready(function(){
         $("#FailedStepsTable").slideToggle("slow");
 
     });
-}*/
+}
 function LoadAllTestCases(divname){
 
     $('#'+divname+' tr td:nth-child(2)').each(function(){

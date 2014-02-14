@@ -2959,7 +2959,7 @@ def TestSet_Auto(request):
         #test_tag=DB.GetData(Conn,"")
         #results=list(set(results+test_tag))
         #if len(results) > 0:
-        #   results.append("*Dev")
+         #   results.append("*Dev")
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -4048,69 +4048,116 @@ def TestStepWithTypeInTable(request):
 def Auto_MachineName(request):
     if request.is_ajax():
         if request.method=='GET':
-            machine_name=request.GET.get(u'term','')
-            Conn=GetConnection()
-            query="select user_names,user_level from permitted_user_list where user_names Ilike '%%%s%%' and user_level='Manual'"%machine_name
-            machine_list=DB.GetData(Conn,query,False)
-    result=simplejson.dumps(machine_list)
-    return HttpResponse(result,mimetype='application/json')
-
-def AddManualTestMachine(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            machine_name=request.GET.get(u'machine_name','').strip()
-            os_name=request.GET.get(u'os_name','').strip()
-            os_version=request.GET.get(u'os_version','').strip()
-            os_bit=request.GET.get(u'os_bit','').strip()
-            browser=request.GET.get(u'browser','').strip()
-            browser_version=request.GET.get(u'browser_version','').strip()
-            machine_ip=request.GET.get(u'machine_ip','').strip()
+            conn=GetConnection()
+            machine_name=request.GET.get(u'machine','')
             print machine_name
-            print os_name
-            print os_version
-            print os_bit
-            print browser
-            print browser_version
-            print machine_ip
-            Conn=GetConnection()
-            query="select count(*) from permitted_user_list where user_names='%s' and user_level='Manual'"%machine_name
-            count=DB.GetData(Conn,query)
-            if count[0]>0:
-                print "yes"
-            else:
-                print "none"
-def GetOS(request):
+            query="select user_names,user_level from permitted_user_list where user_level='Manual' and user_names Ilike '%"+machine_name+"%'"
+            machine_data=DB.GetData(conn, query,False)
+    json = simplejson.dumps(machine_data)
+    return HttpResponse(json, mimetype='application/json')
+
+def Check_ExistingMachine(request):
     if request.is_ajax():
         if request.method=='GET':
-            Conn=GetConnection()
-            name=request.GET.get(u'os','')
-            refined_list=[]
-            ostype='OS'
-            if name=='':
-                query="select distinct value from config_values where type='%s'" %ostype
-                os_list=DB.GetData(Conn,query,False)
-            for each in os_list:
-                query="select distinct value from config_values where type='%s Version'"%each[0]
-                os_verison=DB.GetData(Conn,query)
-                temp=[]
-                temp.append(each[0])
-                temp.append(os_verison)
-                temp=tuple(temp)
-                refined_list.append(temp)
-            browser_data=[]
-            browsertype='Browser'
-            query="select value from config_values where type='%s'" %browsertype
-            browser_list=DB.GetData(Conn,query)
-            for each in browser_list:
-                temp=[]
-                query="select value from config_values where type='%s Version'"%each
-                browser=DB.GetData(Conn,query)
-                temp.append(each)
-                temp.append(browser)
-                temp=tuple(temp)
-                browser_data.append(temp)
-    results={'os':refined_list,'browser':browser_data}
-    results=simplejson.dumps(results)
+            conn=GetConnection()
+            check_machine=request.GET.get(u'machine','')
+            print check_machine
+            query="select count(*) from permitted_user_list where user_level='Manual' and user_names ='"+check_machine+"'"
+            machine_exists=DB.GetData(conn, query, False)
+    json=simplejson.dumps(machine_exists)
+    return HttpResponse(json,mimetype='application/json')
+
+def Auto_OSName(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            conn=GetConnection()
+            os=request.GET.get(u'OSName','')
+            query="select sub_type,value from config_values where type='"+os+"'"
+            os_names=DB.GetData(conn, query, False)
+            message=""
+            for each in os_names:
+                print each[0]+" - "+each[1]
+                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
+    message=[message]
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+
+def Auto_VersionName(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            os_version=request.GET.get(u'Version','')
+            conn=GetConnection()
+            query="select sub_type,value from config_values where type='"+os_version+"'"
+            version_data=DB.GetData(conn, query, False)
+            message=""
+            for each in version_data:
+                print each[0]+" - "+each[1]
+                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
+    message=[message]
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+
+def Auto_Browser(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            browser=request.GET.get(u'Browser','')
+            conn=GetConnection()
+            query="select sub_type,value from config_values where type='"+browser+"'"
+            browser_data=DB.GetData(conn,query,False)
+            message=""
+            for each in browser_data:
+                print each[0]+" - "+each[1]
+                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
+    message=[message]
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+
+def Auto_BrowserVersion(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            browser_version=request.GET.get(u'Version','')
+            conn=GetConnection()
+            query="select sub_type,value from config_values where type='"+browser_version+"'"
+            browser_data=DB.GetData(conn,query,False)
+            message=""
+            for each in browser_data:
+                print each[0]+" - "+each[1]
+                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
+    message=[message]
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+def AddManualTestMachine(request):
+    message=""
+    if request.is_ajax():
+        if request.method=='GET':
+            values={}
+            for each in request.GET:
+                values[each]=request.GET.get(each,'')
+                print each+" - "+values[each]
+            status="Unassigned"
+            updateTime=TimeStamp("integer")
+            print status
+            print updateTime
+            machine_os=values['OSName']+" "+values['OSVersion']+" - "+values['OSBit']
+            print machine_os
+            client=values['Browser']+"("+values['BrowserVersion']+";"+values['OSBit']+"Bit)"
+            print client
+            oConn=GetConnection()
+            query="select count(*) from permitted_user_list where user_names='"+values['Machine']+"'"
+            count=DB.GetData(oConn, query)
+            if count[0]<1:
+                testrunenv2=DB.InsertNewRecordInToTable(oConn, "permitted_user_list",user_names=values['Machine'],email=values['Machine']+"@machine.com",user_level='Manual')
+                print testrunenv2
+                testrunenv=DB.InsertNewRecordInToTable(oConn, "test_run_env",tester_id=values['Machine'],status=status,machine_os=machine_os,client=client,data_type="Default",last_updated_time=updateTime,machine_ip=values['machineIP'],os_name=values['OSName'],os_version=values['OSVersion'],os_bit=values['OSBit'])
+                print testrunenv
+                if(testrunenv and testrunenv2):
+                    message="Machine is created successfully"
+                else:
+                    message="Machine is not created successfully"
+            else:
+                message="Machine with the name '"+values['Machine']+"' exists"
+    message=[message]
+    results=simplejson.dumps(message)
     return HttpResponse(results,mimetype='application/json')
 
 def RunIDTestCases(request,Run_Id,TC_Id):

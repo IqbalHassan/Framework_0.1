@@ -756,7 +756,7 @@ function AddAutoCompleteToTag() {
             .data( "ui-autocomplete-item", item )
             .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
             .appendTo( ul );
-    };
+    };;
 	$("#tag_txtbox").keypress(function(event) {
 		if (event.which == 13) {
 			event.preventDefault();
