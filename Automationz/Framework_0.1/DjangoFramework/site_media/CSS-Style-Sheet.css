@@ -759,7 +759,7 @@ article header{
     width: 100%; /* 1000 */
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
-    font-size: 13px;
+    font-size: 14px;
     position: absolute;
     /*top: 15.75%;*/
     left: 48%;
@@ -777,6 +777,19 @@ article header{
     text-decoration: none;
     color: #555;
 }
+#nav .mini-loader {
+    font: normal normal 16px octicons;
+    line-height: 1;
+    display: inline-block;
+    text-decoration: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+.mini-loader:before {
+    content: '\f037';
+}
+.mini-loader:hover {color: #fff}
+
 #nav ul {
     list-style-type: none;
     margin: 0;
@@ -844,7 +857,7 @@ article header{
 
 #nav > ul
 {
-    height: 1.75em; /* 60 */
+    height: 35px; /* 60 */
     /*background-color: #e15a1f;*/
     color: #000;
     background-color: #CCCCCC;
@@ -862,10 +875,12 @@ article header{
 #nav > ul > li > a
 {
     /*color: #01230f;*/
+    font: Helvetica, arial, freesans, clean, sans-serif;
     height: 100%;
     font-size: 1em; /* 24 */
-    line-height: 2em; /* 60 (24) */
+    /*line-height: 2em; /* 60 (24) */
     text-align: center;
+    font-weight: bold;
 }
 #nav > ul > li:not( :last-child ) > a
 {
@@ -876,8 +891,8 @@ article header{
 {
     /* background-color: #cc470d;*/
     /*color: #fff;
-    background-color: #999999;*/
-    border-top-color: navy;
+    background-color: #999999;
+    border-top-color: navy;*/
 }
 
 
@@ -908,13 +923,30 @@ article header{
     /*border-top: 1px solid #e15a1f;*/
     border-top: 1px solid #CCCCCC;
     padding: 0em; /* 15 (20) */
+    color: #333;
+}
+#nav .mini-loader li {
+    float: left;
+    margin-top: 1px;
+    margin-left: -23px;
+    color: #555 !important;
+    -webkit-font-smoothing: antialiased;
+}
+#nav .mini-loader li:before {
+    content: '\f037';
+}
+#nav .mini-loader li:hover {
+    color: #fff !important;
 }
 #nav li ul li a:hover,
 #nav li ul:not( :hover ) li.active a
 {
     /*background-color: #e15a1f;
     background-color: #698761;
-    border-top-color: green;*/
+    border-top-color: green; */
+    background-color: #4183c4;
+    color: #fff;
+    img.mini-loader { filter: grayscale(100%); }
 }
 
 
@@ -997,6 +1029,7 @@ article header{
         height: auto;
         text-align: left;
         padding: 0 0.833em; /* 20 (24) */
+        z-index:999999;
     }
     #nav > ul > li:not( :last-child ) > a
     {
