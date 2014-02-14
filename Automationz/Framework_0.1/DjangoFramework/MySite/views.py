@@ -4652,3 +4652,33 @@ def AddManualTestMachine(request):
                     message="Machine is not registered successfully"
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')    
+def chartDraw(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            run_id=request.GET.get(u'runid','')
+            print run_id
+            Conn=GetConnection()
+            list=[]
+            total_query="select count(*) from test_case_results where run_id='%s'"%run_id
+            total=DB.GetData(Conn,total_query)
+            list.append(total[0])
+            pass_query="select count(*) from test_case_results where run_id='%s' and status='Passed'"%run_id
+            passed=DB.GetData(Conn,pass_query)
+            list.append(passed[0])
+            fail_query="select count(*) from test_case_results where run_id='%s' and status='Failed'"%run_id
+            fail=DB.GetData(Conn,fail_query)
+            list.append(fail[0])
+            blocked_query="select count(*) from test_case_results where run_id='%s' and status='Blocked'"%run_id
+            blocked=DB.GetData(Conn,blocked_query)
+            list.append(blocked[0])
+            progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'"%run_id
+            progress=DB.GetData(Conn,progress_query)
+            list.append(progress[0])
+            submitted_query="select count(*) from test_case_results where run_id='%s' and status='Submitted'"%run_id
+            submitted=DB.GetData(Conn,submitted_query)
+            list.append(submitted[0])
+            skipped_query="select count(*) from test_case_results where run_id='%s' and status='Skipped'"%run_id
+            skipped=DB.GetData(Conn,skipped_query)
+            list.append(skipped[0])
+    result=simplejson.dumps(list)
+    return HttpResponse(result,mimetype='application/json')

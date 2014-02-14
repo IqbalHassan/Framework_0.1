@@ -19,6 +19,7 @@ $(document).ready(function(){
     $('#run_id').live('click',function(){
         window.location='/Home/RunID/'+RunID.trim();
     });
+    drawGraph(RunID);
 });/*
 function buttonPreparation(){
     $(".flip[title='All Test Cases']").click(function(){
@@ -43,6 +44,39 @@ function buttonPreparation(){
 
     });
 }*/
+function drawGraph(RunID){
+    $.get("chartDraw",
+        {
+            runid:RunID
+        },
+        function(data){
+            console.log(data);
+            /***************pie chart***********************/
+            google.load("visualization", "1", {packages:["corechart"], callback:drawChart});
+
+            function drawChart() {
+                var piedata = google.visualization.arrayToDataTable([
+                    ['Run Status', 'Total Case Number'],
+                    ['Passed',     data[1]],
+                    ['Failed',      data[2]],
+                    ['Blocked',  data[3]],
+                    ['In-Progress', data[4]],
+                    ['Submitted',  data[5]],
+                    ['Skipped', data[6]]
+                ]);
+                var options = {
+                    title: 'Summary - ' + RunID,
+                    //width: 500,
+                    height: 500,
+                    fontSize: 13,
+                    titleTextStyle:{fontSize:20},
+                    legend:{ textStyle: {fontSize: 17}}
+                };
+                var chart = new google.visualization.PieChart(document.getElementById('chart'));
+                chart.draw(piedata, options);
+            }
+        });
+}
 function LoadAllTestCases(divname){
 
     $('#'+divname+' tr td:nth-child(2)').each(function(){
@@ -73,7 +107,7 @@ function LoadAllTestCases(divname){
                         test_case_id:TestCaseName,
                         step_name:$(this).text().trim()
                     },function(data){
-                        var step_name=data['step'];
+                        var stepname=data['step'];
                         ResultTable("#inside_back",data['column'],data['log'],"");
                         $("#inside_back").dialog({
                             buttons : {
@@ -90,7 +124,7 @@ function LoadAllTestCases(divname){
                             modal : true,
                             width : 500,
                             height : 620,
-                            title:step_name
+                            title:stepname
 
                         });
                     });
