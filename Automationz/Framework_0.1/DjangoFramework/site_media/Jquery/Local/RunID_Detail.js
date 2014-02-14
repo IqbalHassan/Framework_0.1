@@ -11,9 +11,15 @@ $(document).ready(function(){
     connectLogFile("FailTestCasesTable");
     LoadAllTestCases("SubmittedTestCasesTable");
     connectLogFile("SubmittedTestCasesTable");
-    buttonPreparation();
-    When_Clicking_On_CommonFailedTestStep();
-});
+    //buttonPreparation();
+    When_Clicking_On_CommonFailedTestStep()
+    var RunID=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+    $('#run_id').text(RunID.trim());
+    //drawChart(RunID);
+    $('#run_id').live('click',function(){
+        window.location='/Home/RunID/'+RunID.trim();
+    });
+});/*
 function buttonPreparation(){
     $(".flip[title='All Test Cases']").click(function(){
         $("#AllTestCasesTable").slideToggle("slow");
@@ -36,7 +42,7 @@ function buttonPreparation(){
         $("#FailedStepsTable").slideToggle("slow");
 
     });
-}
+}*/
 function LoadAllTestCases(divname){
 
     $('#'+divname+' tr td:nth-child(2)').each(function(){
@@ -45,14 +51,52 @@ function LoadAllTestCases(divname){
             'cursor':'pointer',
             'textAlign':'left'
         });
+        var name=$(this).text().trim();
         var TestCaseName=$(this).closest("tr").find("td:nth-child(8)").text().trim();
         var RunID=$('#EnvironmentDetailsTable tr td:first-child').text().trim();
-        $(this).append('<div id="'+TestCaseName+'detail" style="display:none"></div>')
+        $(this).html('<div id="'+TestCaseName+'name">'+name+'</div><div id="'+TestCaseName+'detail" style="display:none"></div>')
         $.get("TestCase_Detail_Table",{'RunID':RunID,'TestCaseName':TestCaseName},function(data){
             ResultTable('#'+divname+' #'+TestCaseName+'detail',data['TestCase_Detail_Col'],data['TestCase_Detail_Data'],"");
         })
-        $(this).live('click',function(){
+        $('#'+divname+' #'+TestCaseName+'name').live('click',function(){
             var TestCaseName=$(this).closest("tr").find("td:nth-child(8)").text().trim();
+            $('#'+divname+' #'+TestCaseName+'detail tr td:first-child').each(function(){
+                $(this).css({
+                    'color':'blue',
+                    'cursor':'pointer'
+                });
+                $(this).live('click',function(){
+                    $('#inside_back').html("");
+                    //alert(RunID+" "+TestCaseName+" "+$(this).text().trim());
+                    $.get("LogFetch",{
+                        run_id:RunID,
+                        test_case_id:TestCaseName,
+                        step_name:$(this).text().trim()
+                    },function(data){
+                        var step_name=data['step'];
+                        ResultTable("#inside_back",data['column'],data['log'],"");
+                        $("#inside_back").dialog({
+                            buttons : {
+                                "OK" : function() {
+                                    $(this).dialog("close");
+                                }
+                            },
+
+                            show : {
+                                effect : 'drop',
+                                direction : "up"
+                            },
+
+                            modal : true,
+                            width : 500,
+                            height : 620,
+                            title:step_name
+
+                        });
+                    });
+                    e.stopPropagation();
+                });
+            });
             $('#'+divname+' #'+TestCaseName+'detail').slideToggle("slow");
         });
     });

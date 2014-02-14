@@ -4213,10 +4213,10 @@ def DataFetchForTestCases(request):
                 Temp_Data.append(Status[0][0])
                 Conn.close()
                 print Temp_Data
-                Temp_Data.append("Log")
+                #Temp_Data.append("Log")
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
-    DataColumn=["#","StepName","StepType","DataRequired","Description","Expected Results","FailReason","Status","Execution Log"]
+    DataColumn=["#","StepName","StepType","DataRequired","Description","Expected Results","FailReason","Status"]
     query="select status from test_case_results where tc_id='%s' and run_id='%s'" %(test_case_id,run_id)
     Conn=GetConnection()
     test_case_status=DB.GetData(Conn,query,False)
@@ -4277,7 +4277,8 @@ def LogFetch(request):
             column=["Status","ModuleName","Details"]
     message={
              'column':column,
-             'log':log
+             'log':log,
+             'step':step_name
              }
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
