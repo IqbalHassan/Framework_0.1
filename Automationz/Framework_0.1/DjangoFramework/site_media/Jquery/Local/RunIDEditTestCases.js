@@ -208,7 +208,7 @@ function ExecutionLog(){
                 var test_case_id=$('#testcaseid').text().trim();
                 var step_no=$(this).closest("tr").find("td:first-child").text().trim();
                 var step_name=$(this).closest("tr").find("td:nth-child(2)").text().trim();
-                var div_name=step_name+"(Execution Log)";
+                var div_name=step_name;
                 console.log(div_name+"-"+step_name);
                 $('#inside_back').html("");
                 $.get("LogFetch",{
