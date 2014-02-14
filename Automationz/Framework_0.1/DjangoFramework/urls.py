@@ -108,6 +108,7 @@ urlpatterns = patterns('',
     #url(r'^Home/.*/Auto_BrowserVersion/$',Auto_BrowserVersion),
     url(r'^Home/.*/AddManualTestMachine/$',AddManualTestMachine),
     url(r'^Home/.*/CheckMachine/$',CheckMachine),
+    url(r'^Home/.*/chartDraw/$',chartDraw),
     #Performance Page
     url(r'^Home/Performance/$',Performance),
     url(r'^Home/Performance/PerformanceResult/$',PerformanceResult), 

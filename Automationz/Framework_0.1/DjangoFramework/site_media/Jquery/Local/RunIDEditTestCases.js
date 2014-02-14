@@ -196,52 +196,49 @@ function DataFetch(){
     });
 }
 function ExecutionLog(){
-    $('#data_table tr td:nth-child(9)').each(function(){
-       $(this).closest("tr").find("td:first-child").css({'textAlign':'center'});
-       $(this).closest("tr").find("td:nth-child(3)").css({'textAlign':'center'});
-       if($(this).text().trim()=="Log"){
-           $(this).html("see log");
-           $(this).css({
-               'color':'blue',
-               'cursor':'pointer',
-               'text-align':'center'
-           });
-       }
-       $(this).live('click',function(e){
-           var run_id=$('#runid').text().trim();
-           var test_case_id=$('#testcaseid').text().trim();
-           var step_no=$(this).closest("tr").find("td:first-child").text().trim();
-           var step_name=$(this).closest("tr").find("td:nth-child(2)").text().trim();
-           var div_name=step_name+"(Execution Log)";
-           console.log(div_name+"-"+step_name);
-           $('#inside_back').html("");
-           $.get("LogFetch",{
-                run_id:run_id,
-                test_case_id:test_case_id,
-                step_name:step_name
-           },function(data){
-               ResultTable("#inside_back",data['column'],data['log'],"");
-               $("#inside_back").dialog({
-                   buttons : {
-                       "OK" : function() {
-                           $(this).dialog("close");
-                       }
-                   },
+    $('#data_table tr td:nth-child(2)').each(function(){
+        if($(this).text().trim()!='StepName'){
+            $(this).css({
+                'color':'blue',
+                'cursor':'pointer',
+                'text-align':'center'
+            });
+            $(this).live('click',function(e){
+                var run_id=$('#runid').text().trim();
+                var test_case_id=$('#testcaseid').text().trim();
+                var step_no=$(this).closest("tr").find("td:first-child").text().trim();
+                var step_name=$(this).closest("tr").find("td:nth-child(2)").text().trim();
+                var div_name=step_name+"(Execution Log)";
+                console.log(div_name+"-"+step_name);
+                $('#inside_back').html("");
+                $.get("LogFetch",{
+                    run_id:run_id,
+                    test_case_id:test_case_id,
+                    step_name:step_name
+                },function(data){
+                    ResultTable("#inside_back",data['column'],data['log'],"");
+                    $("#inside_back").dialog({
+                        buttons : {
+                            "OK" : function() {
+                                $(this).dialog("close");
+                            }
+                        },
 
-                   show : {
-                       effect : 'drop',
-                       direction : "up"
-                   },
+                        show : {
+                            effect : 'drop',
+                            direction : "up"
+                        },
 
-                   modal : true,
-                   width : 500,
-                   height : 620,
-                   title:div_name
+                        modal : true,
+                        width : 500,
+                        height : 620,
+                        title:div_name
 
-               });
-           });
-           e.stopPropagation();
-       });
+                    });
+                });
+                e.stopPropagation();
+            });
+        }
     });
 }
 function InputFailReason(){
