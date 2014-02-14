@@ -329,6 +329,15 @@ function populate_info_div(){
         '<option value="1">True</option>' +
         '<option value="2">False</option> ' +
         '</select>' +
+        '</div><br>'+
+        '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
+        '<br/>' +
+        '<label><b>Step Enable<b></label><br>' +
+        '<select id="step_enable" class="wrapper-dropdown-3" name="step_enable">' +
+        '<option value="0" selected="selected">Select from list:</option>' +
+        '<option value="1">True</option>' +
+        '<option value="2">False</option> ' +
+        '</select>' +
         '</div><br>'
     );
     $("#step_name").autocomplete({
@@ -355,6 +364,15 @@ function populate_info_div(){
                         var row=data[0];
                         $("#step_desc").val(row[2]);
                         $("#step_driver").val(row[3]);
+                        if(row[7]==null){
+                            $("#step_enable").val(2);
+                        }
+                        if(row[7]==false){
+                            $("#step_enable").val(2);
+                        }
+                        if(row[7]==true){
+                            $("#step_enable").val(1);
+                        }
                         if(row[5]==null){
                             $("#step_data").val(2);
                         }

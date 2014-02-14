@@ -206,6 +206,7 @@ def main():
             return False
         #TestCaseLists = list(TestCaseLists[0])
         for TestCaseID in TestCaseLists:
+            testcasecontinue="yes"
             Global.sTestStepExecLogId = "MainDriver"
             StepSeq = 1
             TCID = list(TestCaseID)[0]
@@ -239,7 +240,7 @@ def main():
 
             #get the test case steps for this test case
             #TestStepsList = DBUtil.GetData(conn,"Select teststepname From TestSteps where TC_ID = '%s' Order By teststepsequence" %TCID,False)
-            TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % TCID, False)
+            TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' Order By teststepsequence" % TCID, False)
             Stepscount = len(TestStepsList)
             sTestStepResultList = []
 
@@ -438,7 +439,12 @@ def main():
                                                    duration='%s' % (TestStepDuration),
                                                    )
                         #Discontinue this test case
-                        break
+                        #break
+                        #for continuing the test cases if failed
+                        if testcasecontinue=='yes':
+                            testcasecontinue='false'
+                        else:
+                            break
                     elif sStepResult.upper() == "BLOCKED":
                         #Step is Blocked, Block the test step and test case. go to next test case
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Blocked"
@@ -452,7 +458,12 @@ def main():
                                                    memory_consumed='%s' % (TestStepMemConsumed)
                                                    )
                         #Discontinue this test case
-                        break
+                        #break
+                        #for continuing the test cases if failed
+                        if testcasecontinue=='yes':
+                            testcasecontinue='false'
+                        else:
+                            break
                     #End Test Step
                     #increment step counter
                     StepSeq = StepSeq + 1
