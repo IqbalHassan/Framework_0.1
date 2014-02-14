@@ -11,25 +11,136 @@
 
     <div class="responsive-tabs" width="100%">
 
-        <h3>All</h3>
+        <h3>Run Test</h3>
         <div>
 
             <!--Put your code here-->
+            <table id="PlatformChose" style="margin-left:500px">
+
+                <tr>
+                    <p class = 'text' style="color: inherit; display:block; margin-left: 20; font-family: Arial, Gadget, sans-serif; font-size: 20px;" title='Choose'><a>Please select the platform to run test cases.</a></p>
+                    <div id = 'Choose' style='display:none'></div>
+                    <td style="height:150px; width:150px">
+
+                        <!-- Following Code is for PC Platform Flip button  -->
+                        <p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30%'' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/PC.png">  PC </p>
+                        <div id = 'PC_Platform' style='display:none'></div>
+                        <!-- *********************** <img style = 'width : 200%'  src="/site_media/PC.png">-->
+                    </td>
+
+
+                    <td style="height:150px; width:150px">
+
+                        <!-- Following Code is for Mac Platform Flip button  -->
+                        <p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30% ' title='Mac_Platform'> <img style = 'width : 220%'  src="/site_media/Mac.png">   Mac </p>
+                        <div id = 'Mac_Platform' style='display:none'></div>
+                        <!-- *********************** <img style = 'width : 320%'  src="/site_media/Mac.png">-->
+
+                    </td>
+                </tr>
+            </table>
+            <!-- AutoComplete Search Box -->
+            <div id = "Place_AutoComplete_Here" style='display:none' >
+
+            </div>
+
+            <!-- *********************** -->
+            <table>
+
+
+
+                <tbody>
+
+
+                <tr>
+
+                    <td>
+                        <img class = "Buttons" alt="" title = "Select User" src="/site_media/add_user.png" style="display:none;">
+                    </td>
+
+                    <td>
+                        <img class = "Buttons" alt="" title = "Run Test" src="/site_media/runtest.png" style="display:none;">
+                    </td>
+
+                </tr>
+
+
+
+                </tbody>
+            </table>
+            <!-- *********************** -->
+
+
+
+            <!-- Following code is for Result Table -->
+            <p> </p>
+
+            <p class='flip'>Test Cases</p>
+
+            <div id = "RunTestResultTable" style="display: none;" >
+
+            </div>
+
+
+            <div id = "RunTestSubTable" style="display: none;">
+
+            </div>
+            <!-- *********************** -->
 
         </div>
 
-        <h3>Passed</h3>
+        <h3>AvailableTestMachine</h3>
         <div>
-
+            <div id = 'AvailableTestMachine' style='display:block'></div>
             <!--Put your code here-->
-
         </div>
 
-        <h3>Failed/Blocked</h3>
+        <h3>AddManualTestMachine</h3>
         <div>
+            <!-- Add Manual Test Machine -->
+            <div id='AddManualTestMachine' style='display: block'>
+                <p>&nbsp;</p>
+                <div align="center" id="error_message" style="display: none">
 
-            <!--Put your code here-->
+                </div>
+                <div align="center">
+                    <fieldset>
+                        <legend><b>Manual Test Machine Information</b></legend>
+                        <label><b>Machine Name:</b></label>
+                        <input type="text" id="machine_name" value="" placeholder="Machine Name..."/>
+                        <label><b>OS:</b></label>
+                        <select id="os_name">
+                            <option selected value="">OS</option>
+                        </select>
+                        <div id="version_bit" style="display: none">
+                            <label><b>Version</b></label>
+                            <select id="os_version">
+                                <option>Version</option>
+                            </select>
+                            <label><b>Bit:</b></label>
+                            <select id="os_bit">
+                                <option value="32">32 Bit</option>
+                                <option value="64">64 Bit</option>
+                            </select>
+                        </div>
+                        <label><b>Browser:</b></label>
+                        <select id="browser">
+                            <option selected value="">Browser</option>
+                        </select>
+                        <div id="b_version" style="display: none">
+                            <label><b>Browser version:</b></label>
+                            <select id="browser_version">
 
+                            </select>
+                        </div>
+                        <label><b>Machine IP:</b></label>
+                        <input type="text" id="machine_ip" placeholder="Machine IP.."/>
+                        <input type="button" value="Submit" id="submit_button"/>
+                    </fieldset>
+                </div>
+
+            </div>
+            <!-- ************************ -->
         </div>
 
 
@@ -38,33 +149,10 @@
 
 
 
-    <table id="PlatformChose" style="margin-left:500px">
-	
-		<tr>
-		<p class = 'text' style="color: inherit; display:block; margin-left: 20; font-family: Arial, Gadget, sans-serif; font-size: 20px;" title='Choose'><a>Please select the platform to run test cases.</a></p>
-		<div id = 'Choose' style='display:none'></div>
-			<td style="height:150px; width:150px">
 
-				<!-- Following Code is for PC Platform Flip button  -->
-				<p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30%'' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/PC.png">  PC </p>      
-				<div id = 'PC_Platform' style='display:none'></div>
-				<!-- *********************** <img style = 'width : 200%'  src="/site_media/PC.png">-->
-			</td>
-			
-				
-			<td style="height:150px; width:150px">
-	
-				<!-- Following Code is for Mac Platform Flip button  -->
-				<p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30% ' title='Mac_Platform'> <img style = 'width : 220%'  src="/site_media/Mac.png">   Mac </p>
-				<div id = 'Mac_Platform' style='display:none'></div>
-				<!-- *********************** <img style = 'width : 320%'  src="/site_media/Mac.png">-->
-		
-		   </td>
-		</tr>
-	</table>
 	
 	
-		<!-- Following Code is for Available Test Machine Flip button  -->
+		<!-- Following Code is for Available Test Machine Flip button
         <div align="center" id="error" style="display: none">
 
         </div>
@@ -74,64 +162,14 @@
             <p class='flip' style='color: black;display: none;' title='Add Manual Test Machine'>Add Manual Test Machine</p>
         </div>
 
-		<div id = 'AvailableTestMachine' style='display:none'></div>
 		<!-- *********************** -->
 
-	    <!-- Add Manual Test Machine -->
-        <div id='AddManualTestMachine' style='display: none'></div>
-	    <!-- ************************ -->
+
 		
-		<!-- AutoComplete Search Box -->
-		<div id = "Place_AutoComplete_Here" style='display:none' >
-		
-		</div>
-		
-		<!-- *********************** -->
-		
+
 		
 		<!-- Following Table Is For Selecte User and Run Test Button -->
-		<table>
-		
-				
-				
-		  <tbody>
-		       
-				
-		       <tr> 
-				
-					<td>
-						<img class = "Buttons" alt="" title = "Select User" src="/site_media/add_user.png" style="display:none;">
-					</td>
-					
-					<td>
-						<img class = "Buttons" alt="" title = "Run Test" src="/site_media/runtest.png" style="display:none;">
-					</td>
-				
-				</tr>
-				
-				
-		  
-		  </tbody>
-		</table> 
-		<!-- *********************** -->
-		
-		
 
-		<!-- Following code is for Result Table -->
-		<p> </p>
-		
-		<p class='flip'>Test Cases</p>
-		
-		<div id = "RunTestResultTable" style="display: none;" >
-			
-		</div>
-		
-		
-		<div id = "RunTestSubTable" style="display: none;">
-	
-		</div>
-		<!-- *********************** -->
-		
 		
 		
 		<!-- {% include "ResultTable.html" %}  -->

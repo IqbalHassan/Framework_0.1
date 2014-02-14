@@ -1,17 +1,27 @@
 $(document).ready(function(){
 	
-	var Env = ""
-	var URL = window.location.pathname
-	indx = URL.indexOf("Run")
+	var Env = "";
+	var URL = window.location.pathname;
+	indx = URL.indexOf("Run");
+    machine_div();
+    $.get("GetOS",
+        {
+            os:''
+        },
+        function(data){
+            console.log(data['os']);
+            console.log(data['browser']);
+            populate_manual_test_div(data['os'],data['browser']);
+        });
 	if (indx != -1)
 	{
 		//when use will click on PC flip bar
 		$(".flip[title='PC_Platform']").click(function(){ 
 			
-			$(".flip[title='Availeable Test Machine']").fadeIn(1000);
-			$(".flip[title='Add Manual Test Machine']").fadeIn(1000);
+			//$(".flip[title='Availeable Test Machine']").fadeIn(1000);
+			//$(".flip[title='Add Manual Test Machine']").fadeIn(1000);
 			$("#Place_AutoComplete_Here").fadeIn(1000);
-			
+			$('#PlatformChose').css({'display':'none'});
 			$(".flip[title='Mac_Platform']").css({'display':'none'})
 			$(".text[title='Choose']").text('Welcome to PC Environment Test Lab');
 			//$(".flip[title='PC_Platform']").text('Welcome to PC Environment Test Lab');
@@ -27,8 +37,9 @@ $(document).ready(function(){
 		//when user will click on Mac flip bar
 		$(".flip[title='Mac_Platform']").click(function(){ 
 			
-			$(".flip[title='Availeable Test Machine']").fadeIn(1000)
-			$("#Place_AutoComplete_Here").fadeIn(1000)
+			//$(".flip[title='Availeable Test Machine']").fadeIn(1000)
+			$("#Place_AutoComplete_Here").fadeIn(1000);
+            $('#PlatformChose').css({'display':'none'});
 			
 			$(".flip[title='PC_Platform']").css({'display':'none'})
 			$(".text[title='Choose']").text('Welcome to Mac Environment Test Lab');
@@ -41,7 +52,7 @@ $(document).ready(function(){
 		});
 		
 		
-		$(".flip[title='Add Manual Test Machine']").click(function(){
+		/*$(".flip[title='Add Manual Test Machine']").click(function(){
             //console.log($(this).attr('title')+" has been clicked");
 
             $("#error").html("");
@@ -50,11 +61,11 @@ $(document).ready(function(){
             $("#AddManualTestMachine").children().remove();
             populate_manual_test_div();
             $("#AddManualTestMachine").slideToggle("slow");
-        });
+        });*/
 			
 			AddAutoCompleteSearchBox("#Place_AutoComplete_Here","Search Test Cases Data By Keywords:");
 			
-			AvailebableTestMachineflipButton(Env);
+			//AvailebableTestMachineflipButton(Env);
 			
 			
 			
@@ -108,8 +119,194 @@ $(document).ready(function(){
 	
 });
 
+function machine_div(){
+    Env = Get_Selected_Env_Name();
+    //$("#AvailableTestMachine").slideToggle("slow");
+    var SearchUser = "True"
+    $.get("Table_Data_UserList",{UserListRequest : SearchUser, Env: Env},function(data) {
+        ResultTable('#AvailableTestMachine', data['Heading'],data['TableData'], "Available User/s");
+    });
+}
+function populate_manual_test_div(environment,browserdata){
+    //populate the os names
+    var message="";
+    console.log(environment);
+    for(var i=0;i<environment.length;i++){
+        //console.log(message);
+        message+='<option value="'+environment[i][0].trim()+'">'+environment[i][0]+'</option>';
+    }
+    $('#os_name').append(message);
+    message="";
+    for(var i=0;i<browserdata.length;i++){
+        message+='<option value="'+browserdata[i][0].trim()+'">'+browserdata[i][0]+'</option>'
+    }
+    $('#browser').append(message);
 
- var DepandencyNameList = [];
+    $('#os_name').live('change',function(){
+        if($('#os_name').val()!=''){
+            console.log($(this).val());
+            var message="";
+            for(var i=0;i<environment.length;i++){
+                if($(this).val()==environment[i][0].trim()){
+                    console.log(environment[i][1]);
+                    var os_version=environment[i][1];
+                    for(var j=0;j<os_version.length;j++){
+                        message+='<option value="'+os_version[j]+'">'+os_version[j]+'</option>'
+                    }
+                }
+            }
+            $('#os_version').html(message);
+            $('#version_bit').css({'display':'inline-block'});
+        }
+        else{
+            $('#os_version').html("");
+            $('#version_bit').css({'display':'none'});
+        }
+    });
+    $('#browser').live('change',function(){
+        if($('#browser').val()!=''){
+            var message="";
+            for(var i=0;i<browserdata.length;i++){
+                if($(this).val()==browserdata[i][0].trim()){
+                    browser_version=browserdata[i][1];
+                    for(var j=0;j<browser_version.length;j++){
+                        message+='<option value="'+browser_version[j].trim()+'">'+browser_version[j].trim()+'</option> '
+                    }
+                }
+            }
+            $('#browser_version').html(message);
+            $('#b_version').css({'display':'inline-block'});
+        }
+        else{
+            $('#browser_version').html("");
+            $('#b_version').css({'display':'none'});
+        }
+    });
+    AutoCompletionButton(environment,browserdata);
+}
+function AutoCompletionButton(environment,browserdata){
+    //console.log('into the AutoCompleteing');
+    $("#machine_name").autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"Auto_MachineName",
+                dataType:"json",
+                data:{term:request.term},
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select: function(request,ui){
+            var value = ui.item[0];
+            console.log(value);
+            if(value!=""){
+                $("#machine_name").val(value);
+                $.get("CheckMachine",{name:value},function(data){
+                    console.log(data[0]);
+                    var list=data[0];
+                    $('#os_name').val(list[0]);
+                    for(var i=0;i<environment.length;i++){
+                        var message="";
+                        if($('#os_name').val()==environment[i][0]){
+                            for(var j=0;j<environment[i][1].length;j++){
+                                message+='<option value="'+environment[i][1][j].trim()+'">'+environment[i][1][j]+'</option> '
+                            }
+                            $('#os_version').html(message);
+                            break;
+                        }
+                    }
+                    $('#os_version').val(list[1]);
+                    $('#os_bit').val(list[2]);
+                    $('#version_bit').css({'display':'inline-block'});
+                    $('#machine_ip').val(list[3]);
+                    var browsers=list[4].split(";")[0].split("(");
+                    for(var i=0;i<browserdata.length;i++){
+                        var message="";
+                        if(browsers[0].trim()==browserdata[i][0]){
+                            var browser_version=browserdata[i][1];
+                            for(var j=0;j<browser_version.length;j++){
+                                message+='<option value="'+browser_version[j].trim()+'">'+browser_version[j]+'</option> ';
+                            }
+                            $('#browser_version').html(message);
+                            $('#browser_version').val(browsers[1]);
+                            break;
+                        }
+                    }
+                    $('#b_version').css({'display':'inline-block'});
+                    $('#browser').val(browsers[0].trim());
+                    console.log(browsers);
+                })
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+            .appendTo( ul );
+    };
+    $('#machine_name').live('click',function(){
+        $('#error_message').slideUp("slow");
+        $('#error_message').html("");
+    });
+    $('#os_name').live('change',function(){
+        $('#error_message').slideUp("slow");
+        $('#error_message').html("");
+    });
+    $('#os_version').live('change',function(){
+        $('#error_message').slideUp("slow");
+        $('#error_message').html("");
+    });
+    $('#os_bit').live('change',function(){
+        $('#error_message').slideUp("slow");
+        $('#error_message').html("");
+    });
+    $('#machine_ip').live('click',function(){
+        $('#error_message').slideUp("slow");
+        $('#error_message').html("");
+    });
+    $('#browser').live('change',function(){
+        $('#error_message').slideUp("slow");
+        $('#error_message').html("");
+
+    });
+    $('#browser_version').live('change',function(){
+        $('#error_message').slideUp("slow");
+        $('#error_message').html("");
+    });
+    $('#submit_button').live('click',function(){
+        var machine_name=$('#machine_name').val();
+        var os_name=$('#os_name option:selected').val();
+        var os_version=$('#os_version option:selected').val();
+        var os_bit=$('#os_bit option:selected').val();
+        var browser=$('#browser option:selected').val();
+        var browser_version=$('#browser_version option:selected').val();
+        var machine_ip=$('#machine_ip').val();
+        if(machine_name==''||os_name==''||browser==''||machine_ip==''){
+            var error_message="<b style='color: #ff0000'>Fields are empty</b>";
+            $('#error_message').html(error_message);
+            $('#error_message').css({'display':'block'});
+        }
+        else{
+            $.get("AddManualTestMachine",{
+                machine_name:machine_name,
+                os_name:os_name,
+                os_version:os_version,
+                os_bit:os_bit,
+                browser:browser,
+                browser_version:browser_version,
+                machine_ip:machine_ip
+            },function(data){
+                //console.log(data);
+                $('#error_message').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                $('#error_message').slideDown('slow');
+                setTimeout(function(){window.location='/Home/RunTest/';},4000);
+            });
+        }
+    });
+}
+var DepandencyNameList = [];
 
 function SendingQueryAndDepandency()
 {
@@ -901,174 +1098,4 @@ function Get_Selected_Env_Name()
 	   { Env = "PC" }
 	return Env
 		
-}
-
-function populate_manual_test_div(){
-    $("#AddManualTestMachine").css({'align':'center'});
-    //$("#AddManualTestMachine").children().remove();
-    $("#AddManualTestMachine").html('<div id="machine_div"></div>');
-    $("#machine_div").append('<label><b>Machine Name:</b></label>' +
-        '<input type="text" id="machine_name" placeholder="Machine name.." style="margin-right: 10px;"/>' +
-        '<label><b>OS:</b></label>' +
-        '<select id="os_name"><option selected value="0">OS</option></select>' +
-        '<label style="margin-left: 10px;"><b>Browser:</b></label>' +
-        '<select id="browser"><option selected value="0">Browser</option> </select>' +
-        '<label style="margin-left: 10px;"><b>Machine IP:</b></label>' +
-        '<input type="text" id="machine_ip" placeholder="Machine IP..."/>' +
-        '<br>' +
-        '<div align="center" style="margin-top: 10px;"><input type="button" class="buttonCustom" id="create" value="Create Machine"/></div>');
-    $("#machine_name").autocomplete({
-        source:function(request,response){
-            if($("#machine_name").val()!=""){
-                $("#machine_name").css({'background-color':'white'});
-                var machine=$("#machine_name").val();
-            }
-            //console.log(machine);
-            $.ajax({
-                url:"Auto_MachineName",
-                dataType:"json",
-                data:{machine:machine},
-                success:function(data){
-                    //console.log(data);
-                    //var name=data[0];
-                    response(data);
-                }
-            });
-        },
-        select: function(request,ui){
-            //console.log(ui);
-            var value = (ui.item[0].split("-"))[0].trim();
-            if(value!=""){
-                //console.log(value);
-                $("#machine_name").val(value);
-                //return false;
-                $.ajax({
-                    url:"Check_ExistingMachine",
-                    dataType:"json",
-                    data:{machine:value},
-                    success:function(data){
-                        //console.log(data[0][0]);
-                        if(data[0][0]>0){
-                            $("#machine_name").css({'background-color':'#E77471'});
-                            $('#machine_name').val(value);
-                        }
-                    }
-                });
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
-            .appendTo( ul );
-    };
-    if($("#os_name option:selected").val()==0){
-        os_name();
-    }
-    $("#os_name").click(function(){
-        var value=0;
-        $("#machine_div").find("#os_bit").remove();
-        $("#machine_div").find("#os_version").remove();
-        if($("#os_name option:selected").val()!=0){
-            osname =$("#os_name option:selected").text();
-            //console.log(osname);
-            os_version(osname);
-        }
-    });
-    if($("#browser option:selected").val()==0){
-        browser();
-    }
-    $("#create").click(function(){
-        //console.log("it's been clicked for creation");
-        var machine_name=$("#machine_name").val();
-        var os_name=$("#os_name option:selected").text();
-        var os_version=$("#os_version option:selected").text();
-        var os_bit=$("#os_bit option:selected").text();
-        var browser=$("#browser option:selected").text();
-        var browser_version=$("#browser_version option:selected").text();
-        var machine_ip=$("#machine_ip").val();
-        var bit=os_bit.split(" ");
-        os_bit=bit[0].trim();
-
-        if(machine_name==""||os_name=="OS"|| os_version=="OS Version"||os_bit=="OS bit"||browser=="Browser"||browser_version=="Browser Version"||machine_ip==""){
-            $("#error").html("<b>Some of the input fields are empty</b>");
-            $("#error").slideDown('slow');
-        }else{
-            $("#error").html("");
-            $("#error").css({'display':'none'});
-            values={'Machine':machine_name,'OSName':os_name,'OSVersion':os_version,'OSBit':os_bit,'Browser':browser,'BrowserVersion':browser_version,'machineIP':machine_ip};
-            /*console.log("Machine Name:"+machine_name);
-            console.log("OS Name:"+os_name);
-            console.log("OS Version:"+os_version);
-            console.log("OS bit:"+os_bit);
-            console.log("Browser:"+browser);
-            console.log("Browser Version:"+browser_version);
-            console.log("Machine IP:"+machine_ip);*/
-            $.get("AddManualTestMachine",values,function(data){
-                console.log(data[0]);
-                var message=data[0];
-                $("#machine_div").html("<b>" +message+
-                    "</b>");
-                $("#machine_div").css({'align':'center'});
-            });
-        }
-    });
-}
-function browser(){
-    var message='';
-    $.get("Auto_Browser",{Browser:"Browser"},function(data){
-        //console.log(data[0]);
-        message=data[0];
-        $("#browser").append(message);
-    });
-    $("#browser").click(function(){
-        $("#machine_div").find("#browser_version").remove();
-        var browser_name=$("#browser option:selected").text();
-        if(browser_name!='Select Browser'){
-            //console.log(browser_name);
-            browser_version(browser_name);
-        }
-
-    });
-}
-function browser_version(browser){
-    $("#machine_div").append('<select id="browser_version"><option selected>Browser Version</select>');
-    $("#browser_version").insertAfter("#browser");
-    $.get("Auto_BrowserVersion",{Version:browser+" Version"},function(data){
-        //console.log(data[0]);
-        $("#browser_version").append(data[0]);
-    });
-}
-function os_bit(){
-    $("#machine_div").append('<select id="os_bit"><option selected value="0">OS bit</option></select>');
-    $("#os_bit").insertAfter("#os_version");
-    $("#os_bit").append('<option value="1">32 bit</option>' +
-        '<option value="2">64 bit</option> ');
-}
-function os_version(osname){
-    $("#machine_div").append('<select id="os_version"><option selected value="0">OS Version</option></select>');
-    $("#os_version").insertAfter("#os_name");
-    $.get("Auto_VersionName",{Version:osname+" Version"},function(data){
-        //console.log(data[0]);
-        message=data[0];
-        $("#os_version").append(message);
-    });
-    $("#os_version").click(function(){
-        $("#machine_div").find("#os_bit").remove();
-        if($("#os_version").val()!="0"){
-            //console.log($("#os_version").val());
-            os_bit();
-        }
-    });
-}
-function os_name(){
-    var message="";
-    $("#machine_div").find("#os_version").remove();
-    $.get("Auto_OSName",{OSName:"OS"},function(data){
-        //console.log("GotData:"+data);
-        message=data[0];
-        //console.log(message);
-        $("#os_name").append(message)
-        //return;
-    });
 }
