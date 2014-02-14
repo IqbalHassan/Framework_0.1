@@ -4098,7 +4098,7 @@ def AddManualTestMachine(request):
                     elif eachitem == "Unassigned":
                         DB.DeleteRecord(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
                 machine_os=os_name+' '+os_version+' - '+os_bit
-                Client=browser+'('+browser_version+';'+os_bit+' Bit)'
+                Client=browser+'('+browser_version+';'+os_bit+' bit)'
                 updated_time=TimeStamp("string")
                 Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
                 tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
@@ -4108,7 +4108,7 @@ def AddManualTestMachine(request):
                 print "none"
                 #new Entry will be inserted.
                 machine_os=os_name+' '+os_version+' - '+os_bit
-                Client=browser+'('+browser_version+';'+os_bit+' Bit)'
+                Client=browser+'('+browser_version+';'+os_bit+' bit)'
                 updated_time=TimeStamp("string")
                 Dict={'user_names':machine_name.strip(),'user_level':'Manual','email':machine_name+'@machine.com'}
                 tes1= DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
@@ -4207,10 +4207,10 @@ def DataFetchForTestCases(request):
                 Temp_Data.append(Status[0][0])
                 Conn.close()
                 print Temp_Data
-                #Temp_Data.append("Log")
+                Temp_Data.append("Log")
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
-    DataColumn=["#","StepName","StepType","DataRequired","Description","Expected Results","FailReason","Status"]
+    DataColumn=["#","StepName","StepType","DataRequired","Description","Expected Results","FailReason","Status","Execution Log"]
     query="select status from test_case_results where tc_id='%s' and run_id='%s'" %(test_case_id,run_id)
     Conn=GetConnection()
     test_case_status=DB.GetData(Conn,query,False)
@@ -4271,8 +4271,7 @@ def LogFetch(request):
             column=["Status","ModuleName","Details"]
     message={
              'column':column,
-             'log':log,
-             'step':step_name
+             'log':log
              }
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
@@ -4537,34 +4536,4 @@ def UpdateData(request):
             print Final_List
             message=UpdateTestStepStatus(Final_List,run_id,test_case_id,test_case_status,failReason)
     result=simplejson.dumps(message)
-    return HttpResponse(result,mimetype='application/json')
-def chartDraw(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            run_id=request.GET.get(u'runid','')
-            print run_id
-            Conn=GetConnection()
-            list=[]
-            total_query="select count(*) from test_case_results where run_id='%s'"%run_id
-            total=DB.GetData(Conn,total_query)
-            list.append(total[0])
-            pass_query="select count(*) from test_case_results where run_id='%s' and status='Passed'"%run_id
-            passed=DB.GetData(Conn,pass_query)
-            list.append(passed[0])
-            fail_query="select count(*) from test_case_results where run_id='%s' and status='Failed'"%run_id
-            fail=DB.GetData(Conn,fail_query)
-            list.append(fail[0])
-            blocked_query="select count(*) from test_case_results where run_id='%s' and status='Blocked'"%run_id
-            blocked=DB.GetData(Conn,blocked_query)
-            list.append(blocked[0])
-            progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'"%run_id
-            progress=DB.GetData(Conn,progress_query)
-            list.append(progress[0])
-            submitted_query="select count(*) from test_case_results where run_id='%s' and status='Submitted'"%run_id
-            submitted=DB.GetData(Conn,submitted_query)
-            list.append(submitted[0])
-            skipped_query="select count(*) from test_case_results where run_id='%s' and status='Skipped'"%run_id
-            skipped=DB.GetData(Conn,skipped_query)
-            list.append(skipped[0])
-    result=simplejson.dumps(list)
     return HttpResponse(result,mimetype='application/json')
