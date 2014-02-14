@@ -4,106 +4,101 @@
  {% block title%} Run Test {% endblock%}
 
  {% block content %}
-<script>
-    // ResponsiveTabs.js | Version:1.10 | Author:Pete Love | www.petelove.com
-    var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
-</script>
-
 <article>
+	<table id="PlatformChose" style="margin-left:500px">
+	
+		<tr>
+		<p class = 'text' style="color: inherit; display:block; margin-left: 20; font-family: Arial, Gadget, sans-serif; font-size: 20px;" title='Choose'><a>Please select the platform to run test cases.</a></p>
+		<div id = 'Choose' style='display:none'></div>
+			<td style="height:150px; width:150px">
 
-	<div id="list" style="display: block;">
-        <div class="responsive-tabs" width="100%">
-            <h3 width="16%">RunTest</h3>
-            <div>
-                <table id="PlatformChose" style="margin-left:500px">
+				<!-- Following Code is for PC Platform Flip button  -->
+				<p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30%'' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/PC.png">  PC </p>      
+				<div id = 'PC_Platform' style='display:none'></div>
+				<!-- *********************** <img style = 'width : 200%'  src="/site_media/PC.png">-->
+			</td>
+			
+				
+			<td style="height:150px; width:150px">
+	
+				<!-- Following Code is for Mac Platform Flip button  -->
+				<p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30% ' title='Mac_Platform'> <img style = 'width : 220%'  src="/site_media/Mac.png">   Mac </p>
+				<div id = 'Mac_Platform' style='display:none'></div>
+				<!-- *********************** <img style = 'width : 320%'  src="/site_media/Mac.png">-->
+		
+		   </td>
+		</tr>
+	</table>
+	
+	
+		<!-- Following Code is for Available Test Machine Flip button  -->
+        <div align="center" id="error" style="display: none">
 
-                    <tr>
-                        <p class = 'text' style="color: inherit; display:block; margin-left: 20; font-family: Arial, Gadget, sans-serif; font-size: 20px;" title='Choose'><a>Please select the platform to run test cases.</a></p>
-                        <div id = 'Choose' style='display:none'></div>
-                        <td style="height:150px; width:150px">
-
-                            <!-- Following Code is for PC Platform Flip button  -->
-                            <p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30%'' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/PC.png">  PC </p>
-                            <div id = 'PC_Platform' style='display:none'></div>
-                            <!-- *********************** <img style = 'width : 200%'  src="/site_media/PC.png">-->
-                        </td>
-
-
-                        <td style="height:150px; width:150px">
-
-                            <!-- Following Code is for Mac Platform Flip button  -->
-                            <p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30% ' title='Mac_Platform'> <img style = 'width : 220%'  src="/site_media/Mac.png">   Mac </p>
-                            <div id = 'Mac_Platform' style='display:none'></div>
-                            <!-- *********************** <img style = 'width : 320%'  src="/site_media/Mac.png">-->
-
-                        </td>
-                    </tr>
-                </table>
-                <!-- AutoComplete Search Box -->
-                <div id = "Place_AutoComplete_Here" style='display:none' >
-
-                </div>
-                <!-- *********************** -->
-
-
-                <!-- Following Table Is For Selecte User and Run Test Button -->
-                <table>
-
-
-
-                    <tbody>
-
-
-                    <tr>
-
-                        <td>
-                            <img class = "Buttons" alt="" title = "Select User" src="/site_media/add_user.png" style="display:none;">
-                        </td>
-
-                        <td>
-                            <img class = "Buttons" alt="" title = "Run Test" src="/site_media/runtest.png" style="display:none;">
-                        </td>
-
-                    </tr>
-
-
-
-                    </tbody>
-                </table>
-                <!-- *********************** -->
-
-
-
-                <!-- Following code is for Result Table -->
-                <p> </p>
-
-                <p class='flip'>Test Cases</p>
-
-                <div id = "RunTestResultTable" style="display: none;" >
-
-                </div>
-
-
-                <div id = "RunTestSubTable" style="display: none;">
-
-                </div>
-
-            </div>
-            <h3 width="16%">Available Test Machine</h3>
-            <div>
-                <div id = 'AvailableTestMachine' style='display:block'></div>
-            </div>
-            <h3 width="16%">Add Manual Machine</h3>
-            <div>
-                <!-- Add Manual Test Machine -->
-                <div align="center" id="error" style="display: none">
-
-                </div>
-                <div id='AddManualTestMachine' style='display: block'></div>
-
-            </div>
         </div>
-	</div>
+        <div align='center'>
+            <p class='flip' style='color: black; display:none; margin-top: -150px;' title='Availeable Test Machine'>Available Test Machine</p>
+
+            <p class='flip' style='color: black;display: none;' title='Add Manual Test Machine'>Add Manual Test Machine</p>
+        </div>
+
+		<div id = 'AvailableTestMachine' style='display:none'></div>
+		<!-- *********************** -->
+
+	    <!-- Add Manual Test Machine -->
+        <div id='AddManualTestMachine' style='display: none'></div>
+	    <!-- ************************ -->
+		
+		<!-- AutoComplete Search Box -->
+		<div id = "Place_AutoComplete_Here" style='display:none' >
+		
+		</div>
+		
+		<!-- *********************** -->
+		
+		
+		<!-- Following Table Is For Selecte User and Run Test Button -->
+		<table>
+		
+				
+				
+		  <tbody>
+		       
+				
+		       <tr> 
+				
+					<td>
+						<img class = "Buttons" alt="" title = "Select User" src="/site_media/add_user.png" style="display:none;">
+					</td>
+					
+					<td>
+						<img class = "Buttons" alt="" title = "Run Test" src="/site_media/runtest.png" style="display:none;">
+					</td>
+				
+				</tr>
+				
+				
+		  
+		  </tbody>
+		</table> 
+		<!-- *********************** -->
+		
+		
+
+		<!-- Following code is for Result Table -->
+		<p> </p>
+		
+		<p class='flip'>Test Cases</p>
+		
+		<div id = "RunTestResultTable" style="display: none;" >
+			
+		</div>
+		
+		
+		<div id = "RunTestSubTable" style="display: none;">
+	
+		</div>
+		<!-- *********************** -->
+		
 		
 		
 		<!-- {% include "ResultTable.html" %}  -->
