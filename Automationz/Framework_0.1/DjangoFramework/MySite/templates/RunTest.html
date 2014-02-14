@@ -96,10 +96,49 @@
             <h3 width="16%">Add Manual Machine</h3>
             <div>
                 <!-- Add Manual Test Machine -->
-                <div align="center" id="error" style="display: none">
+
+                <div id='AddManualTestMachine' style='display: block'>
+                    <p>&nbsp;</p>
+                    <div align="center" id="error_message" style="display: none">
+
+                    </div>
+                    <div align="center">
+                        <fieldset>
+                            <legend><b>Manual Test Machine Information</b></legend>
+                            <label><b>Machine Name:</b></label>
+                            <input type="text" id="machine_name" value="" placeholder="Machine Name..."/>
+                            <label><b>OS:</b></label>
+                            <select id="os_name">
+                                <option selected value="">OS</option>
+                            </select>
+                            <div id="version_bit" style="display: none">
+                                <label><b>Version</b></label>
+                                <select id="os_version">
+                                    <option>Version</option>
+                                </select>
+                                <label><b>Bit:</b></label>
+                                <select id="os_bit">
+                                    <option value="32">32 bit</option>
+                                    <option value="64">64 bit</option>
+                                </select>
+                            </div>
+                            <label><b>Browser:</b></label>
+                            <select id="browser">
+                                <option selected value="">Browser</option>
+                            </select>
+                            <div id="b_version" style="display: none">
+                                <label><b>Browser version:</b></label>
+                                <select id="browser_version">
+
+                                </select>
+                            </div>
+                            <label><b>Machine IP:</b></label>
+                            <input type="text" id="machine_ip" placeholder="Machine IP.."/>
+                            <input type="button" value="Submit" id="submit_button"/>
+                        </fieldset>
+                    </div>
 
                 </div>
-                <div id='AddManualTestMachine' style='display: block'></div>
 
             </div>
         </div>
