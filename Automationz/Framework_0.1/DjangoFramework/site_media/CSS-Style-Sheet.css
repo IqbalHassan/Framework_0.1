@@ -461,13 +461,9 @@ p.flip:ACTIVE,p.flip:HOVER {
 
 /*** General Styles ***/
 body{
-	/*background-color: white;
-	font-family: "Open Sans";*/
+	background-color: white;
 	margin: 0px;
-    color: #333333;
-    background-color: #fff;
-    font: 13px Helvetica, arial, freesans, clean, sans-serif;
-    line-height: 1.4;
+	font-family: "Open Sans";
 }
 
 #master_wrap{ 
@@ -481,9 +477,7 @@ header.main_header{
 
 	margin-top: 10px;
 	margin-left: 40px;
-    text-shadow: 0 1px 0 #fff;
-    border-bottom: 1px solid #e5e5e5;
-    min-width: 1000px;
+    //text-shadow: 2px 1px grey;
 }
 
 /*=========== Side nav ===========*/
@@ -756,13 +750,13 @@ article header{
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
     font-size: 13px;
+    color: #555;
     position: absolute;
     /*top: 15.75%;*/
     left: 48%;
     margin-left: -48%; /* 30 480 */
     line-height: 1;
     background-repeat: repeat-x;
-    background-image: -webkit-linear-gradient(#fafafa, #eaeaea);
     background-image: linear-gradient(#fafafa, #eaeaea);
     border: 1px solid #d5d5d5;
     border-top-left-radius: 4px;
@@ -770,7 +764,6 @@ article header{
 }
 #nav a{
     text-decoration: none;
-    color: #555;
 }
 #nav ul {
     list-style-type: none;
