@@ -47,310 +47,310 @@
 
     <!--------jquery mobile - tabs---->
 <table width="100%">
-    <tr>
-    <td width="94%">
-    <div class="responsive-tabs">
+<tr>
+<td width="94%">
+<div class="responsive-tabs">
 
-        <h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/properties.png" width="16"> Properties</h2>
-        <div class="tabs-div" style="margin: 30px" align="center">
-            <form id="tc_enable" class="new_tc_form">
-                <table>
+<h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/properties.png" width="16"> Properties</h2>
+<div class="tabs-div" style="margin: 30px" align="center">
+<form id="tc_enable" class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <b class="Text">Status:</b>
+            </td>
+            <td class="tc_form_input_col">
+                <table width="100%">
                     <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Status:</b>
+                        <td width="33%">
+                            <input id="Enable_radio" type="radio" name="Status" value="Production" style="width:auto">
+                            <label for="Enable_radio">Enabled</label> &nbsp; &nbsp;
                         </td>
-                        <td class="tc_form_input_col">
-                            <table width="100%">
-                                <tr>
-                                    <td width="33%">
-                                        <input id="Enable_radio" type="radio" name="Status" value="Production" style="width:auto">
-                                        <label for="Enable_radio">Enabled</label> &nbsp; &nbsp;
-                                    </td>
-                                    <td width="33%">
-                                        <input id="Disable_radio" type="radio" name="Status" value="Development" style="width:auto">
-                                        <label for="Disable_radio">Disabled</label>
-                                    </td>
-                                    <td width="33%">
-                                        <input id="Manual_radio" type="radio" name="Status" value="Forced-Manual" style="width:auto">
-                                        <label for="Manual_radio">Manual</label>
-                                    </td>
-                                </tr>
-                            </table>
+                        <td width="33%">
+                            <input id="Disable_radio" type="radio" name="Status" value="Development" style="width:auto">
+                            <label for="Disable_radio">Disabled</label>
+                        </td>
+                        <td width="33%">
+                            <input id="Manual_radio" type="radio" name="Status" value="Forced-Manual" style="width:auto">
+                            <label for="Manual_radio">Manual</label>
                         </td>
                     </tr>
                 </table>
-            </form>
+            </td>
+        </tr>
+    </table>
+</form>
 
-            <form class="new_tc_form">
-                <table>
+<form class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <span class="tc_form_required_field">*</span><b class="Text">Section:</b>
+            </td>
+            <td class="tc_form_input_col" id="sectiongroup" align="left">
+                <select class="section" data-level="" id="1">
+                    <option>Choose...</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+</form>
+<HR class="tc_form_divider"/>
+
+<form id="tc_platform" class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <label><span class="tc_form_required_field">*</span><b class="Text">Platform:</b></label>
+            </td>
+            <td class="tc_form_input_col">
+                <table width="100%">
                     <tr>
-                        <td class="tc_form_label_col">
-                            <span class="tc_form_required_field">*</span><b class="Text">Section:</b>
+                        <td width="50%">
+                            <input id="PC_radio" type="checkbox" name="platform" value="PC" style="width:auto">
+                            <label for="PC_radio">PC</label>
                         </td>
-                        <td class="tc_form_input_col" id="sectiongroup" align="left">
-                            <select class="section" data-level="" id="1">
-                                <option>Choose...</option>
-                            </select>
+                        <td width="50%">
+                            <input id="MAC_radio" type="checkbox" name="platform" value="MAC" style="width:auto">
+                            <label for="MAC_radio">Mac</label>
                         </td>
                     </tr>
                 </table>
-            </form>
-            <HR class="tc_form_divider"/>
+            </td>
+        </tr>
+    </table>
+</form>
 
-            <form id="tc_platform" class="new_tc_form">
-                <table>
+<form id="tc_applicable_client" class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <label><span class="tc_form_required_field">*</span><b class="Text">Dependency:</b></label>
+            </td>
+            <td class="tc_form_input_col">
+                <!-- select class="browser" multiple="multiple" data-level="" id="1">
+                    <option>Choose...</option>
+                </select -->
+                <table class="browser" width="100%">
+
+                </table>
+            </td>
+    </table>
+</form>
+
+<form id="tc_type" class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <span class="tc_form_required_field">*</span><b class="Text">Type:</b>
+            </td>
+            <td class="tc_form_input_col">
+                <table width="100%">
                     <tr>
-                        <td class="tc_form_label_col">
-                            <label><span class="tc_form_required_field">*</span><b class="Text">Platform:</b></label>
+                        <td width="50%">
+                            <input id="smoke_check" type="checkbox" name="type" value="smoke" style="width:auto" />
+                            <label for="smoke_check">Smoke</label>
                         </td>
-                        <td class="tc_form_input_col">
-                            <table width="100%">
-                                <tr>
-                                    <td width="50%">
-                                        <input id="PC_radio" type="checkbox" name="platform" value="PC" style="width:auto">
-                                        <label for="PC_radio">PC</label>
-                                    </td>
-                                    <td width="50%">
-                                        <input id="MAC_radio" type="checkbox" name="platform" value="MAC" style="width:auto">
-                                        <label for="MAC_radio">Mac</label>
-                                    </td>
-                                </tr>
-                            </table>
+                        <td width="50%">
+                            <input id="si_check" type="checkbox" name="type" value="si" style="width:auto" />
+                            <label for="si_check">SI</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50%">
+                            <input id="svv_check" type="checkbox" name="type" value="svv" style="width:auto" />
+                            <label for="svv_check">SVV</label>
                         </td>
                     </tr>
                 </table>
-            </form>
+            </td>
+        <tr>
+    </table>
+</form>
 
-            <form id="tc_applicable_client" class="new_tc_form">
-                <table>
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <label><span class="tc_form_required_field">*</span><b class="Text">Dependency:</b></label>
-                        </td>
-                        <td class="tc_form_input_col">
-                            <!-- select class="browser" multiple="multiple" data-level="" id="1">
-                                <option>Choose...</option>
-                            </select -->
-                            <table class="browser" width="100%">
+<form id="tc_tag" class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <b class="Text">Tag(s):</b> <br>
+            </td>
+            <td class="tc_form_input_col">
+                <input class="ui-corner-all ui-autocomplete-input" id="tag_txtbox" type="text"
+                       name="searchboxname" autocomplete="off">
+        </tr>
+    </table>
+</form>
 
-                            </table>
-                        </td>
-                </table>
-            </form>
+<HR class="tc_form_divider"/>
 
-            <form id="tc_type" class="new_tc_form">
-                <table>
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <span class="tc_form_required_field">*</span><b class="Text">Type:</b>
-                        </td>
-                        <td class="tc_form_input_col">
-                            <table width="100%">
-                                <tr>
-                                    <td width="50%">
-                                        <input id="smoke_check" type="checkbox" name="type" value="smoke" style="width:auto" />
-                                        <label for="smoke_check">Smoke</label>
-                                    </td>
-                                    <td width="50%">
-                                        <input id="si_check" type="checkbox" name="type" value="si" style="width:auto" />
-                                        <label for="si_check">SI</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td width="50%">
-                                        <input id="svv_check" type="checkbox" name="type" value="svv" style="width:auto" />
-                                        <label for="svv_check">SVV</label>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    <tr>
-                </table>
-            </form>
-
-            <form id="tc_tag" class="new_tc_form">
-                <table>
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Tag(s):</b> <br>
-                        </td>
-                        <td class="tc_form_input_col">
-                            <input class="ui-corner-all ui-autocomplete-input" id="tag_txtbox" type="text"
-                                   name="searchboxname" autocomplete="off">
-                    </tr>
-                </table>
-            </form>
-
-            <HR class="tc_form_divider"/>
-
-            <form id="tc_priority" class="new_tc_form">
-                <table>
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <span class="tc_form_required_field">*</span><b class="Text">Priority:</b> <br>
-                        </td>
-                        <td class="tc_form_input_col">
-                            <div style="text-align: center;">
-                                <select id="priotiy_select" name="priority" style="width:100%">
-                                    <option value="1">1 (Highest)</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <!--option value="5">5</option-->
-                                </select>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </form>
-
-            <form id="tc_assoc" class="new_tc_form">
-                <table>
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Defect ID(s):</b>
-                        </td>
-                        <td class="tc_form_input_col">
-                            <input class="ui-corner-all ui-autocomplete-input" id="defectid_txtbox" type="text"
-                                   name="searchboxname" autocomplete="off">
-                        </td>
-                    </tr>
-                </table>
-            </form>
-
-            <form id="tc_id" class="new_tc_form">
-                <table>
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Test Case ID(s):</b>
-                        </td>
-                        <td class="tc_form_input_col">
-                            <input class="ui-corner-all ui-autocomplete-input" id="id_txtbox" type="text"
-                                   name="searchboxname" autocomplete="off">
-                    </tr>
-                </table>
-            </form>
-
-            <form id="req_id" class="new_tc_form">
-                <table>
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Requirement ID(s):</b>
-                        </td>
-                        <td class="tc_form_input_col">
-                            <input class="ui-corner-all ui-autocomplete-input" id="reqid_txtbox" type="text"
-                                   name="searchboxname" autocomplete="off">
-                    </tr>
-                </table>
-            </form>
-
-            <table class="new_tc_form" style="width: 300px">
-                <tbody>
-                <tr>
-                    <td id="searchedtag"></td>
-                </tr>
-                </tbody>
-            </table>
-
-
-        </div>
-
-        <h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Steps</h2>
-        <div class="tabs-div" align="center">
-            <table class="one-column-emphasis" summary="Add test steps">
-                <colgroup><col>
-                </colgroup><thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Step</th>
-                <th scope="col">Data</th>
-                <th scope="col">Description</th>
-                <th scope="col">Expected</th>
-                <th scope="col">Verification Point</th>
-                <th scope="col">Type</th>
-                <th scope="col">Step Info</th>
-            </tr>
-            </thead>
-                <tbody>
-                <tr>
-                    <td>1</td>
-                    <td><a class="notification-indicator tooltipped downwards" data-gotokey="n" original-title="You have no unread notifications">
-                        <span class="mail-status all-read"></span>
-                    </a></td>
-                    <td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n" title="You have unread notifications in this repository">
-                        <span class="mail-status unread"></span>
-                    </a></td>
-                    <td><textarea style="width: 80%"></textarea></td>
-                    <td><textarea style="width: 80%"></textarea></td>
-                    <td><input type="checkbox"></td>
-                    <td>23.5</td>
-                    <td>40.3</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>50.2</td>
-                    <td>40.63</td>
-                    <td><textarea style="width: 80%"></textarea></td>
-                    <td><textarea style="width: 80%"></textarea></td>
-                    <td><input type="checkbox"></td>
-                    <td>23.5</td>
-                    <td>40.3</td>
-                </tr>
-
-                </tbody>
-            </table>
-        </div>
-      </div>
-
-    </td>
-
-    <td width="6%">
-        <div class="repository-sidebar">
-
-
-            <div class="sunken-menu vertical-right repo-nav js-repo-nav js-repository-container-pjax js-octicon-loaders">
-                <div class="sunken-menu-contents">
-                    <ul class="sunken-menu-group">
-                        <li class="tooltipped leftwards" original-title="Create Step">
-                            <a href="/Home/ManageTestCases/TestStep/" aria-label="Create Step" class="js-selected-navigation-item sunken-menu-item">
-                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/plus.png" width="16" title="Create New Step">
-                            </a>      </li>
-
-                        <li class="tooltipped leftwards" original-title="Edit Step">
-                            <a href="/Home/ManageTestCases/TestStep/" aria-label="Edit Step" class="js-selected-navigation-item sunken-menu-item js-disable-pjax">
-                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit.png" width="16" title="Edit Test Step">
-                            </a>        </li>
-
-                        <li class="tooltipped leftwards" original-title="Manage Set & Tag">
-                            <a href="/Home/ManageTestCases/TestSet/" aria-label="Tag" class="js-selected-navigation-item sunken-menu-item">
-                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/tag.png" width="16" title="Manage Set & Tag">
-                            </a>      </li>
-
-                    </ul>
-
-                    <div class="sunken-menu-separator"></div>
-
-                    <ul class="sunken-menu-group">
-
-                        <li class="tooltipped leftwards" original-title="Bundle Report">
-                            <a href="/Home/BundleReport/" aria-label="Bundle Report" class="js-selected-navigation-item sunken-menu-item">
-                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report.png" width="16" title="Bundle Report">
-                            </a>      </li>
-
-                        <li class="tooltipped leftwards" original-title="Test Type Status">
-                            <a href="/Home/TestTypeStatus/" aria-label="Test Type Status" class="js-selected-navigation-item sunken-menu-item">
-                                <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/status.png" width="16" title="Test Type Status">
-                            </a>      </li>
-                    </ul>
-
-
+<form id="tc_priority" class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <span class="tc_form_required_field">*</span><b class="Text">Priority:</b> <br>
+            </td>
+            <td class="tc_form_input_col">
+                <div style="text-align: center;">
+                    <select id="priotiy_select" name="priority" style="width:100%">
+                        <option value="1">1 (Highest)</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <!--option value="5">5</option-->
+                    </select>
                 </div>
-            </div>
+            </td>
+        </tr>
+    </table>
+</form>
 
+<form id="tc_assoc" class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <b class="Text">Defect ID(s):</b>
+            </td>
+            <td class="tc_form_input_col">
+                <input class="ui-corner-all ui-autocomplete-input" id="defectid_txtbox" type="text"
+                       name="searchboxname" autocomplete="off">
+            </td>
+        </tr>
+    </table>
+</form>
 
-        </div>
-    </td>
+<form id="tc_id" class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <b class="Text">Test Case ID(s):</b>
+            </td>
+            <td class="tc_form_input_col">
+                <input class="ui-corner-all ui-autocomplete-input" id="id_txtbox" type="text"
+                       name="searchboxname" autocomplete="off">
+        </tr>
+    </table>
+</form>
+
+<form id="req_id" class="new_tc_form">
+    <table>
+        <tr>
+            <td class="tc_form_label_col">
+                <b class="Text">Requirement ID(s):</b>
+            </td>
+            <td class="tc_form_input_col">
+                <input class="ui-corner-all ui-autocomplete-input" id="reqid_txtbox" type="text"
+                       name="searchboxname" autocomplete="off">
+        </tr>
+    </table>
+</form>
+
+<table class="new_tc_form" style="width: 300px">
+    <tbody>
+    <tr>
+        <td id="searchedtag"></td>
     </tr>
+    </tbody>
+</table>
+
+
+</div>
+
+<h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Steps</h2>
+<div class="tabs-div" align="center">
+    <table class="one-column-emphasis" summary="Add test steps">
+        <colgroup><col>
+        </colgroup><thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Step</th>
+        <th scope="col">Data</th>
+        <th scope="col">Description</th>
+        <th scope="col">Expected</th>
+        <th scope="col">Verification Point</th>
+        <th scope="col">Type</th>
+        <th scope="col">Step Info</th>
+    </tr>
+    </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td><a class="notification-indicator tooltipped downwards" data-gotokey="n" original-title="You have no unread notifications">
+                <span class="mail-status all-read"></span>
+            </a></td>
+            <td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n" title="You have unread notifications in this repository">
+                <span class="mail-status unread"></span>
+            </a></td>
+            <td><textarea style="width: 80%"></textarea></td>
+            <td><textarea style="width: 80%"></textarea></td>
+            <td><input type="checkbox"></td>
+            <td>23.5</td>
+            <td>40.3</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>50.2</td>
+            <td>40.63</td>
+            <td><textarea style="width: 80%"></textarea></td>
+            <td><textarea style="width: 80%"></textarea></td>
+            <td><input type="checkbox"></td>
+            <td>23.5</td>
+            <td>40.3</td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+</div>
+
+</td>
+
+<td width="6%">
+    <div class="repository-sidebar">
+
+
+        <div class="sunken-menu vertical-right repo-nav js-repo-nav js-repository-container-pjax js-octicon-loaders">
+            <div class="sunken-menu-contents">
+                <ul class="sunken-menu-group">
+                    <li class="tooltipped leftwards" original-title="Create Step">
+                        <a href="/Home/ManageTestCases/TestStep/" aria-label="Create Step" class="js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/plus.png" width="16" title="Create New Step">
+                        </a>      </li>
+
+                    <li class="tooltipped leftwards" original-title="Edit Step">
+                        <a href="/Home/ManageTestCases/TestStep/" aria-label="Edit Step" class="js-selected-navigation-item sunken-menu-item js-disable-pjax">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit.png" width="16" title="Edit Test Step">
+                        </a>        </li>
+
+                    <li class="tooltipped leftwards" original-title="Manage Set & Tag">
+                        <a href="/Home/ManageTestCases/TestSet/" aria-label="Tag" class="js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/tag.png" width="16" title="Manage Set & Tag">
+                        </a>      </li>
+
+                </ul>
+
+                <div class="sunken-menu-separator"></div>
+
+                <ul class="sunken-menu-group">
+
+                    <li class="tooltipped leftwards" original-title="Bundle Report">
+                        <a href="/Home/BundleReport/" aria-label="Bundle Report" class="js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report.png" width="16" title="Bundle Report">
+                        </a>      </li>
+
+                    <li class="tooltipped leftwards" original-title="Test Type Status">
+                        <a href="/Home/TestTypeStatus/" aria-label="Test Type Status" class="js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/status.png" width="16" title="Test Type Status">
+                        </a>      </li>
+                </ul>
+
+
+            </div>
+        </div>
+
+
+    </div>
+</td>
+</tr>
 
 </table>
 
@@ -359,14 +359,15 @@
     <img style="" src="/site_media/check.png" width="20px"> <br>Save
 </p>
 
-    <script>
-        var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
-    </script>
-    <!--script>
-        $(document).ready(function() {
-            RESPONSIVEUI.responsiveTabs();
-        })
-    </script-->
+<script>
+    var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
+</script>
+<!--script>
+    $(document).ready(function() {
+        RESPONSIVEUI.responsiveTabs();
+    })
+</script-->
+
 
 </article>
 {% endblock %}
