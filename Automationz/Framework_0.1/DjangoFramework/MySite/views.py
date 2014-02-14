@@ -1197,7 +1197,7 @@ def Table_Data_UserList(request): #==================Returns Available user list
                         else:
                             Usable_Machine.append(each)
                 for each in Usable_Machine:
-                    query="Select  distinct tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,last_updated_time,machine_ip from test_run_env where tester_id='"+each[0]+"' and os_name ='" + Environment + "' order by last_updated_time desc limit 1"
+                    query="Select  distinct tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,last_updated_time,machine_ip from test_run_env where tester_id='"+each[0]+"' and os_name ='" + Environment + "'"
                     tabledata = DB.GetData(Conn, query, False)
                     if len(tabledata)==0:
                         continue
@@ -4054,17 +4054,7 @@ def Auto_MachineName(request):
             machine_list=DB.GetData(Conn,query,False)
     result=simplejson.dumps(machine_list)
     return HttpResponse(result,mimetype='application/json')
-def CheckMachine(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            name=request.GET.get(u'name','')
-            print name
-            Conn=GetConnection()
-            query="select os_name,os_version,os_bit,machine_ip,client from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s' and status='Unassigned'"%name
-            machine_info=DB.GetData(Conn,query,False)
-            print machine_info
-    result=simplejson.dumps(machine_info)
-    return HttpResponse(result,mimetype='application/json')
+
 def AddManualTestMachine(request):
     if request.is_ajax():
         if request.method=='GET':
@@ -4086,40 +4076,9 @@ def AddManualTestMachine(request):
             query="select count(*) from permitted_user_list where user_names='%s' and user_level='Manual'"%machine_name
             count=DB.GetData(Conn,query)
             if count[0]>0:
-                #update will go here.
                 print "yes"
-                status = DB.GetData(Conn, "Select status from test_run_env where tester_id = '%s'" % machine_name)
-                for eachitem in status:
-                    if eachitem == "In-Progress":
-                        DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
-                        DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
-                    elif eachitem == "Submitted":
-                        DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % machine_name, status="Cancelled")
-                    elif eachitem == "Unassigned":
-                        DB.DeleteRecord(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
-                machine_os=os_name+' '+os_version+' - '+os_bit
-                Client=browser+'('+browser_version+';'+os_bit+' bit)'
-                updated_time=TimeStamp("string")
-                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
-                tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
-                if tes2==True:
-                    message="Machine is updated successfully"
             else:
                 print "none"
-                #new Entry will be inserted.
-                machine_os=os_name+' '+os_version+' - '+os_bit
-                Client=browser+'('+browser_version+';'+os_bit+' bit)'
-                updated_time=TimeStamp("string")
-                Dict={'user_names':machine_name.strip(),'user_level':'Manual','email':machine_name+'@machine.com'}
-                tes1= DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
-                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
-                tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
-                if(tes1==True and tes2==True):
-                    message="Machine Successfully Registered"
-                else:
-                    message="Machine is not registered successfully"
-    result=simplejson.dumps(message)
-    return HttpResponse(result,mimetype='application/json')    
 def GetOS(request):
     if request.is_ajax():
         if request.method=='GET':
