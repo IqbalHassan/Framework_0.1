@@ -342,12 +342,12 @@ def AutoCompleteUsersSearch(request):  #==================Returns Abailable User
         #query="Select  DISTINCT tester_id,status from test_run_env where status = 'Unassigned' and tester_id Ilike '%" + value + "%'"
         """query= "(select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Manual','Automation')) union all (select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tre.status!='In-Progress' and pul.user_level in('Manual'))"
         results = DB.GetData(Conn, query,False)"""
-        
+        print value
         Env = request.GET.get(u'Env', '')
         if Env == u"PC": Environment = "Windows"
         if Env == u"Mac": Environment = "Darwin"
         Usable_Machine=[]
-        query= "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Automation')" 
+        query= "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id Ilike '%"+value+"%' and tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Automation')" 
         Automation_Machine=DB.GetData(Conn,query,False)
         for each in Automation_Machine:
             Usable_Machine.append(each)
@@ -4051,7 +4051,7 @@ def TestStepWithTypeInTable(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def Auto_MachineName(request):
+"""def Auto_MachineName(request):
     if request.is_ajax():
         if request.method=='GET':
             conn=GetConnection()
@@ -4165,7 +4165,7 @@ def AddManualTestMachine(request):
     message=[message]
     results=simplejson.dumps(message)
     return HttpResponse(results,mimetype='application/json')
-
+"""
 def RunIDTestCases(request,Run_Id,TC_Id):
     print Run_Id
     print TC_Id
@@ -4219,10 +4219,10 @@ def DataFetchForTestCases(request):
                 Temp_Data.append(Status[0][0])
                 Conn.close()
                 print Temp_Data
-                Temp_Data.append("Log")
+                #Temp_Data.append("Log")
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
-    DataColumn=["#","StepName","StepType","DataRequired","Description","Expected Results","FailReason","Status","Execution Log"]
+    DataColumn=["#","StepName","StepType","DataRequired","Description","Expected Results","FailReason","Status"]
     query="select status from test_case_results where tc_id='%s' and run_id='%s'" %(test_case_id,run_id)
     Conn=GetConnection()
     test_case_status=DB.GetData(Conn,query,False)
@@ -4283,7 +4283,8 @@ def LogFetch(request):
             column=["Status","ModuleName","Details"]
     message={
              'column':column,
-             'log':log
+             'log':log,
+             'step':step_name
              }
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
@@ -4549,3 +4550,111 @@ def UpdateData(request):
             message=UpdateTestStepStatus(Final_List,run_id,test_case_id,test_case_status,failReason)
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
+def GetOS(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            Conn=GetConnection()
+            name=request.GET.get(u'os','')
+            refined_list=[]
+            ostype='OS'
+            if name=='':
+                query="select distinct value from config_values where type='%s'" %ostype
+                os_list=DB.GetData(Conn,query,False)
+            for each in os_list:
+                query="select distinct value from config_values where type='%s Version'"%each[0]
+                os_verison=DB.GetData(Conn,query)
+                temp=[]
+                temp.append(each[0])
+                temp.append(os_verison)
+                temp=tuple(temp)
+                refined_list.append(temp)
+            browser_data=[]
+            browsertype='Browser'
+            query="select value from config_values where type='%s'" %browsertype
+            browser_list=DB.GetData(Conn,query)
+            for each in browser_list:
+                temp=[]
+                query="select value from config_values where type='%s Version'"%each
+                browser=DB.GetData(Conn,query)
+                temp.append(each)
+                temp.append(browser)
+                temp=tuple(temp)
+                browser_data.append(temp)
+    results={'os':refined_list,'browser':browser_data}
+    results=simplejson.dumps(results)
+    return HttpResponse(results,mimetype='application/json')
+def Auto_MachineName(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            machine_name=request.GET.get(u'term','')
+            Conn=GetConnection()
+            query="select user_names,user_level from permitted_user_list where user_names Ilike '%%%s%%' and user_level='Manual'"%machine_name
+            machine_list=DB.GetData(Conn,query,False)
+    result=simplejson.dumps(machine_list)
+    return HttpResponse(result,mimetype='application/json')
+def CheckMachine(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            name=request.GET.get(u'name','')
+            print name
+            Conn=GetConnection()
+            query="select os_name,os_version,os_bit,machine_ip,client from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s' and status='Unassigned'"%name
+            machine_info=DB.GetData(Conn,query,False)
+            print machine_info
+    result=simplejson.dumps(machine_info)
+    return HttpResponse(result,mimetype='application/json')
+def AddManualTestMachine(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            machine_name=request.GET.get(u'machine_name','').strip()
+            os_name=request.GET.get(u'os_name','').strip()
+            os_version=request.GET.get(u'os_version','').strip()
+            os_bit=request.GET.get(u'os_bit','').strip()
+            browser=request.GET.get(u'browser','').strip()
+            browser_version=request.GET.get(u'browser_version','').strip()
+            machine_ip=request.GET.get(u'machine_ip','').strip()
+            print machine_name
+            print os_name
+            print os_version
+            print os_bit
+            print browser
+            print browser_version
+            print machine_ip
+            Conn=GetConnection()
+            query="select count(*) from permitted_user_list where user_names='%s' and user_level='Manual'"%machine_name
+            count=DB.GetData(Conn,query)
+            if count[0]>0:
+                #update will go here.
+                print "yes"
+                status = DB.GetData(Conn, "Select status from test_run_env where tester_id = '%s'" % machine_name)
+                for eachitem in status:
+                    if eachitem == "In-Progress":
+                        DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
+                        DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
+                    elif eachitem == "Submitted":
+                        DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % machine_name, status="Cancelled")
+                    elif eachitem == "Unassigned":
+                        DB.DeleteRecord(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
+                machine_os=os_name+' '+os_version+' - '+os_bit
+                Client=browser+'('+browser_version+';'+os_bit+' Bit)'
+                updated_time=TimeStamp("string")
+                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
+                tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
+                if tes2==True:
+                    message="Machine is updated successfully"
+            else:
+                print "none"
+                #new Entry will be inserted.
+                machine_os=os_name+' '+os_version+' - '+os_bit
+                Client=browser+'('+browser_version+';'+os_bit+' Bit)'
+                updated_time=TimeStamp("string")
+                Dict={'user_names':machine_name.strip(),'user_level':'Manual','email':machine_name+'@machine.com'}
+                tes1= DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
+                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
+                tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
+                if(tes1==True and tes2==True):
+                    message="Machine Successfully Registered"
+                else:
+                    message="Machine is not registered successfully"
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')    
