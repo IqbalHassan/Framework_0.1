@@ -2940,11 +2940,11 @@ def Process_Git(request):
     if request.method == "GET":
         command = request.GET.get(u'command', '')
         if command == 'Pull':
-            message = GitApi.pull_latest_git()
-            #message = 'git pulled'
+            GitApi.pull_latest_git()
+            message = 'git pull'
         elif command == 'Log':
-            message = GitApi.git_log(-10)
-            #message = 'git log'
+            GitApi.git_log(-10)
+            message = 'git log'
 
     return render_to_response('Admin.html',{'error_message':message},context_instance=RequestContext(request))
 

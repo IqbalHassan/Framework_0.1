@@ -1149,10 +1149,10 @@ article header{
 .one-column-emphasis {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 13px;
-    width: 90%;
-    text-align: left;
+    width: 99%;
+    text-align: center;
     border-collapse: collapse;
-    margin: 20px;
+    margin: 5px;
 }
 .one-column-emphasis colgroup {
     display: table-column-group;
@@ -1170,7 +1170,7 @@ article header{
 .one-column-emphasis td {
     color: #669;
     border-top: 1px solid #e8edff;
-    padding: 10px 15px;
+    padding: 5px 7px;
 }
 .one-column-emphasis tr:hover td {
     color: #339;
