@@ -2933,6 +2933,19 @@ def Admin(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
+def Process_Git(request):
+    #Conn = GetConnection()
+    import GitApi
+    #if request.is_ajax():
+    if request.method == "GET":
+        command = request.GET.get(u'command', '')
+        if command == 'Pull':
+            message = GitApi.pull_latest_git()
+        elif command == 'Log':
+            message = GitApi.git_log(-10)
+
+    return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+
 def DeleteExistingTestCase(TC_Ids):
     conn = Conn
     is_string = False

@@ -143,6 +143,7 @@ urlpatterns = patterns('',
     
     #Admin Page
     url(r'^Home/Admin/$',Admin),
+    url(r'^Home/.*/Process_Git/$',Process_Git),
     
     
     

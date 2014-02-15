@@ -804,10 +804,9 @@ article header{
 #nav li
 {
     position: relative;
-    background-color: #eaeaea;
+    background-color: #fff;
     background-repeat: repeat-x;
-    background-image: -webkit-linear-gradient(#fafafa 0%, #eaeaea 68%,#eaeaea 100%);
-    background-image: linear-gradient(#fafafa 0%, #eaeaea 68%,#eaeaea 100%);
+    box-shadow: 1px 1px 1px #eaeaea;
 }
 #nav li a
 {
@@ -844,8 +843,7 @@ article header{
     height: 0;
     border: 0.313em solid transparent; /* 5 */
     border-bottom: none;
-    /*border-top-color: #efa585;*/
-    border-top-color: #669000;
+    border-top-color: #afafaf;
     content: '';
     vertical-align: middle;
     display: inline-block;
@@ -871,6 +869,8 @@ article header{
     height: 100%;
     float: left;
     position: relative;
+    background-image: -webkit-linear-gradient(#fafafa 0%, #eaeaea 68%,#eaeaea 100%);
+    background-image: linear-gradient(#fafafa 0%, #eaeaea 68%,#eaeaea 100%);
 }
 #nav > ul > li > a
 {
@@ -900,12 +900,17 @@ article header{
 
 #nav li ul
 {
-    /*background-color: #cc470d;*/
-    background-color: #999999;
+    /*background-color: #cc470d;
+    background-color: #999999;*/
     display: none;
     position: absolute;
     top: 100%;
     z-index:999999;
+    background-color: #fff;
+    background-clip: padding-box;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    /*border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 5px;*/
 }
 #nav li:hover ul
 {
@@ -921,9 +926,11 @@ article header{
 {
     font-size: 1em; /* 20 */
     /*border-top: 1px solid #e15a1f;*/
-    border-top: 1px solid #CCCCCC;
+    /*border-top: 1px solid #CCCCCC;*/
     padding: 0em; /* 15 (20) */
     color: #333;
+    /*box-shadow: 1px 1px 1px #eaeaea;*/
+
 }
 #nav .mini-loader li {
     float: left;
@@ -938,6 +945,8 @@ article header{
 #nav .mini-loader li:hover {
     color: #fff !important;
 }
+.mini-loader { filter: grayscale(100%)}
+
 #nav li ul li a:hover,
 #nav li ul:not( :hover ) li.active a
 {
@@ -946,8 +955,9 @@ article header{
     border-top-color: green; */
     background-color: #4183c4;
     color: #fff;
-    img.mini-loader { filter: grayscale(100%); }
 }
+
+
 
 
 @media only screen and ( max-width: 62.5em ) /* 1000 */
