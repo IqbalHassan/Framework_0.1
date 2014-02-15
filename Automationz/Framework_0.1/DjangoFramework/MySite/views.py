@@ -2941,10 +2941,12 @@ def Process_Git(request):
         command = request.GET.get(u'command', '')
         if command == 'Pull':
             message = GitApi.pull_latest_git()
+            #message = 'git pulled'
         elif command == 'Log':
             message = GitApi.git_log(-10)
+            #message = 'git log'
 
-    return render_to_response('TestStep.html',{'error_message':message},context_instance=RequestContext(request))
+    return render_to_response('Admin.html',{'error_message':message},context_instance=RequestContext(request))
 
 def DeleteExistingTestCase(TC_Ids):
     conn = Conn

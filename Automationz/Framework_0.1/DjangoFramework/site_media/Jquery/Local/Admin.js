@@ -8,10 +8,15 @@ $(document).ready(function(){
         var command = 'Pull';
         if(command != 0)
         {
-            $.get("Process_Git",{command : command},function(data)
-            {
-                //ResultTable(git_result, data['Heading'],data['TableData'],"Git Pull");
-
+            $.ajax({
+                url:'Process_Git/',
+                dataType : "json",
+                data : {
+                    command : command
+                },
+                success: function( json ) {
+                    $("#error").html("<p><b> Git  '"+command+"'</b></p>");
+                }
             });
         }
     });
@@ -20,10 +25,15 @@ $(document).ready(function(){
         var command = 'Log';
         if(command != 0)
         {
-            $.get("Process_Git",{command : command},function(data)
-            {
-                //ResultTable(git_result, data['Heading'],data['TableData'],"Git Pull");
-
+            $.ajax({
+                url:'Process_Git/',
+                dataType : "json",
+                data : {
+                    command : command
+                },
+                success: function( json ) {
+                    $("#error").html("<p><b> Git  '"+command+"'</b></p>");
+                }
             });
         }
     });
