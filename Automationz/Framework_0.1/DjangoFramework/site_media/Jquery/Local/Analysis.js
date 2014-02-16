@@ -25,7 +25,8 @@ function Analysis()
 		source : 'TestCaseSearch',
 		select : function(event, ui) 
 		{
-			var Selected_TC_Analysis = ui.item[0].split("-");
+			var Selected_TC_Analysis = ui.item[0].split("-").join("-").trim();
+            console.log(Selected_TC_Analysis);
 			$.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : Selected_TC_Analysis},function(data) 
 			{
 				ResultTable(TestAnalysisTable,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result");
@@ -57,16 +58,23 @@ function Analysis()
 				
 				//When user click on Run Id
 				$("#TestAnalysisTable .ui-widget tr td:first-child").each(function(){
+                    $(this).css({
+                       'color':'blue',
+                        'cursor':'pointer'
+                    });
 					$(this).live('click',function(){
 						
 						
 							$("#TestAnalysisTable").slideToggle("slow");
 							ClickedRunId = $(this).text();
+                            console.log(ClickedRunId);
 							var $TC = $(this).text();
 							var TestSteps;
 							
 							//Following function exist in SearchResult.js file
-							RunIdTestCases(ClickedRunId)
+							//RunIdTestCases(ClickedRunId)
+                            var location='/Home/RunID/'+ClickedRunId.trim()+'/';
+                            window.location=location;
 			
 
 
