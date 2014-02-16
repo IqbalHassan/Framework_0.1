@@ -159,16 +159,16 @@ function TestDataFetch(){
 
 function draw_table(row,column){
     var message=""
-    message+='<table id="data_detail" class="ui-widget" style="font-size:small; border-collapse:collapse;" width="100%">';
+    message+='<table id="data_detail" class="one-column-emphasis" style="font-size:small; border-collapse:collapse;" width="100%">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+='<td class="ui-widget-header">'+column[i]+'</td>';
+        message+='<td>'+column[i]+'</td>';
     }
     message+='</tr>';
     for(var i=0;i<row.length;i++){
         message+='<tr>';
         for(var j=0;j<row[i].length;j++){
-            message+='<td class="ui-widget-content">'+row[i][j]+'</td>';
+            message+='<td>'+row[i][j]+'</td>';
         }
         message+='</tr>';
     }
@@ -286,7 +286,7 @@ function MakeStatusSelectable(){
 }
 function table_message(column,tabledata){
     var message="";
-    message+='<table id="data_table" class="ui-widget" style="font-size:small; border-collapse:collapse;" width="100%">';
+    message+='<table id="data_table" class="one-column-emphasis" style="font-size:small; border-collapse:collapse;" width="100%">';
     var header_message=header_print(column);
     message+=header_message;
     var data_message=data_print(tabledata);
@@ -299,7 +299,7 @@ function header_print(column){
     var message="";
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+=('<td class="ui-widget-header" style="text-align: center">'+column[i]+'</td> ')
+        message+=('<td style="text-align: center">'+column[i]+'</td> ')
     }
     message+='</tr>';
     return message;
@@ -313,7 +313,7 @@ function data_print(data){
             if(value==null){
                 value="&nbsp;";
             }
-            message+=('<td class="ui-widget-content">'+value+'</td>')
+            message+=('<td>'+value+'</td>')
         }
         message+='</tr>';
     }
