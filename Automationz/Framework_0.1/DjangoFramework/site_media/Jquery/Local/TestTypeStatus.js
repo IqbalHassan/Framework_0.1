@@ -75,13 +75,13 @@ $(document).ready(function(){
 
 
                 $("#TestTypeStatusTable").css({
-                    'text-align':'center',
-                    'cursor' : 'pointer',
-                    'border' : '1px solid grey'
+                    'text-align':'center'
+                   // 'cursor' : 'pointer',
+                    //'border' : '1px solid grey'
                 });
 
                 $("#TestTypeStatusTable .ui-widget th").css({
-                    'cursor':'pointer',
+                    //'cursor':'pointer',
                     'background' : 'black',
                     'color' : 'white'
                 });
@@ -97,10 +97,10 @@ $(document).ready(function(){
                         'color':'black',
                         'font-weight' : 'bold',
                         'font-size':'120%',
-                        'cursor':'pointer',
-                        'border' : '0px',
-                        'border-collapse' : 'collapse',
-                        'border-spacing': '0'
+                        //'cursor':'pointer',
+                        //'border' : '0px',
+                       // 'border-collapse' : 'collapse',
+                        //'border-spacing': '0'
                     });
                 });
                 $("#TestTypeStatusTable .ui-widget tr td:nth-child(2)").css({
@@ -108,9 +108,9 @@ $(document).ready(function(){
                 });
                 $("#TestTypeStatusTable .ui-widget tr:nth-child(5n+1) td").css({
                     'color':'black',
-                    'cursor':'pointer',
+                    //'cursor':'pointer',
                     'font-weight' : 'bold',
-                    'border' : '1px solid grey',
+                    //'border' : '1px solid grey',
                     'background' : '#CCFFCC',
                     'font-size':'110%'
                 });
@@ -138,6 +138,13 @@ $(document).ready(function(){
                     $(this).css({
                         'text-indent' : '5cm'
                     });
+                });
+
+                $("#TestTypeStatusTable tr:nth-child(5n+1)>td").each(function(){
+                    $(this).append('' +
+                    '<br/>' +
+                        '<hr/>' +
+                        '<br/>' )
                 });
                 $("#TestTypeStatusTable tr:nth-child(5n+1) td:nth-child(2)").each(function(){
                     $(this).html("");
