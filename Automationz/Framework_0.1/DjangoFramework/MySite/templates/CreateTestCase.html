@@ -257,10 +257,19 @@
 
 <h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Steps</h2>
 <div class="tabs-div" align="center">
+
+    <div class="new_tc_form" style="text-align: center">
+        <input id="add_test_step" class="buttonCustom new_tc_form" type='image'
+               src='/site_media/plus.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
+        <input id="remove_test_step" class="buttonCustom new_tc_form" type='image'
+               src='/site_media/minus.png' name='Remove Step' style="background-color: transparent; width:30px; height:30px">
+    </div>
+
     <table class="one-column-emphasis" summary="Add test steps">
         <colgroup><col>
         </colgroup><thead>
     <tr>
+        <th scope="col"></th>
         <th scope="col">#</th>
         <th scope="col">Step</th>
         <th scope="col">Data</th>
@@ -273,6 +282,8 @@
     </thead>
         <tbody>
         <tr>
+            <td><input id="remove_step" class="buttonCustom new_tc_form" type='image'
+                       src='/site_media/minus.png' name='Remove Step' style="background-color: transparent; width:18px; height:18px"></td>
             <td>1</td>
             <td><a class="notification-indicator tooltipped downwards" data-gotokey="n" original-title="You have no unread notifications">
                 <span class="mail-status all-read"></span>
@@ -280,16 +291,6 @@
             <td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n" title="You have unread notifications in this repository">
                 <span class="mail-status unread"></span>
             </a></td>
-            <td><textarea style="width: 80%"></textarea></td>
-            <td><textarea style="width: 80%"></textarea></td>
-            <td><input type="checkbox"></td>
-            <td>23.5</td>
-            <td>40.3</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>50.2</td>
-            <td>40.63</td>
             <td><textarea style="width: 80%"></textarea></td>
             <td><textarea style="width: 80%"></textarea></td>
             <td><input type="checkbox"></td>
