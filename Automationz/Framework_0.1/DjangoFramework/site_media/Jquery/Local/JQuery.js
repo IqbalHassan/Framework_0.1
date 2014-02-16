@@ -54,13 +54,13 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	}
 	
 	
-	content += "<table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>";
+	content += "<table class='one-column-emphasis' style='font-size:small; border-collapse:collapse;'  width='100%'>";
 
 	content += '<tr>';
 	head = []
 	for (head in Heading) {
 
-		content += "<th class='ui-widget-header' >" + Heading[head] + '</th>';
+		content += "<th >" + Heading[head] + '</th>';
 	}
 	content += '</tr>'
 
@@ -75,12 +75,12 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 			var mStr = table_item[data];
 			if ((String(mStr).indexOf("[") !== -1) == false)
 			{
-				content += "<td class = 'ui-widget-content'>" + table_item[data]
+				content += "<td >" + table_item[data]
 				+ '</font></td>';
 			}
 		else
 			{
-				var mCont = "<table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'>";
+				var mCont = "<table class='one-column-emphasis' style='font-size:small; border-collapse:collapse;'>";
 //				if ((String(mStr).indexOf(":") !== -1) == true)
 //					{
 //						mStr = mStr.split(":")[1];
@@ -118,7 +118,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 						for (e in mItems)
 						{	
 							mItems[e] = mItems[e].replace(/]/g,"");
-							mCont += "<td class = 'ui-widget-content' width='50%'>" + mItems[e]
+							mCont += "<td width='50%'>" + mItems[e]
 									+ '</td><tr>';
 							
 						}
@@ -138,7 +138,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 						for (each in mAddfreeData)
 							{
 								mAddfreeData[each] = mAddfreeData[each].replace(/[)]/g,"").replace(/]/g,"").replace(/'/g,"").replace("[","");
-								mCont += "<td class = 'ui-widget-content' width='50%'>" + mAddfreeData[each]
+								mCont += "<td  width='50%'>" + mAddfreeData[each]
 								+ '</td>';
 								
 								if (each%mCol != 0)
@@ -154,19 +154,19 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 						if (mNewData.length >= 2)
 							{
 								mNewData[1] = mNewData[1].split('),')
-								var mInsideTable = "<table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'>";
+								var mInsideTable = "<table class='one-column-emphasis' style='font-size:small; border-collapse:collapse;'>";
 								for (eachinsiderow in mNewData[1])
 									{
 										mInsideTable += "<tr>";
 										insidecoldata = mNewData[1][eachinsiderow].split(',')
 										for (eachinsidecol in insidecoldata){
-											mInsideTable += "<td class = 'ui-widget-content' width='50%'>" + insidecoldata[eachinsidecol] + "</td>"
+											mInsideTable += "<td  width='50%'>" + insidecoldata[eachinsidecol] + "</td>"
 										}
 										mInsideTable += "</tr>";
 									}
 								mInsideTable += "</table>";
 								//mNewData[1] = mNewData[1].replace(/[)]/g,"").replace(/]/g,"").replace("[","");
-								mCont += "<td class = 'ui-widget-content' width='50%'>" + mInsideTable //mNewData[1]
+								mCont += "<td width='50%'>" + mInsideTable //mNewData[1]
 									+ '</td><tr>';
 										
 								for(var i = 1;i<mAddData.length;i++)
@@ -175,7 +175,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 										for(var e = 1;e<mRestData.length;e++)
 											{
 												mRestData[e] = mRestData[e].replace(/[)]/g,"").replace(/]/g,"").replace(/'/g,"").replace("[","");
-												mCont += "<td class = 'ui-widget-content' width='50%'>" + mRestData[e]
+												mCont += "<td width='50%'>" + mRestData[e]
 												+ '</td>';
 												
 												if (e%mCol == 0)
@@ -201,7 +201,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 						for (each in mFieldPart)
 							{
 								mFieldPart[each] = mFieldPart[each].replace(/[)]/g,"").replace(/]/g,"").replace(/'/g,"").replace("[","");
-								mCont += "<td class = 'ui-widget-content' width='50%'>" + mFieldPart[each]
+								mCont += "<td width='50%'>" + mFieldPart[each]
 										+ '</td>';
 								
 							}
@@ -209,7 +209,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 						for (e in mTaskAddress)
 							{
 								mTaskAddress[e] = mTaskAddress[e].replace(/[)]/g,"").replace(/]/g,"").replace(/'/g,"").replace("[","");
-								mCont += "<td class = 'ui-widget-content' width='50%'>" + mTaskAddress[e]
+								mCont += "<td width='50%'>" + mTaskAddress[e]
 										+ '</td>';
 								i = i+1
 							}
@@ -230,7 +230,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 							for (e in mItems)
 								{
 									mItems[e] = mItems[e].replace(/[)]/g,"").replace(/]/g,"").replace(/'/g,"").replace("[","");
-									mCont += "<td class = 'ui-widget-content' width='50%'>" + mItems[e]
+									mCont += "<td  width='50%'>" + mItems[e]
 											+ '</td>';
 									i = i+1
 									if (i >= mCol)
@@ -248,7 +248,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 						
 					}
 				mCont += '</table>';
-				content += "<td class = 'ui-widget-content'>" + mCont
+				content += "<td >" + mCont
 				+ '</font></td>';
 			}
 			

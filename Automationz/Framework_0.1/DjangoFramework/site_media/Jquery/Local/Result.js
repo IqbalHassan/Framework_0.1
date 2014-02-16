@@ -19,20 +19,20 @@ $(document).ready(function(){
 });
 function drawTable(column,row){
     var message="";
-    message+='<table id="data_table" class="ui-widget" style="font-size:small; border-collapse:collapse;" width="100%">';
+    message+='<table id="data_table" class="one-column-emphasis" style="font-size:small; border-collapse:collapse;" width="100%">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+='<td class="ui-widget-header" style="text-align: center">'+column[i]+'</td> ';
+        message+='<td style="text-align: center">'+column[i]+'</td> ';
     }
     message+='</tr>';
     for(var i=0;i<row.length;i++){
         message+='<tr>';
         for(var j=0;j<row[i].length;j++){
             if(row[i][j]=="status"){
-                message+='<td class="ui-widget-content status-table" id="status'+i+'"></td>'
+                message+='<td  id="status'+i+'"></td>'
             }
             else{
-                message+='<td class="ui-widget-content" style="text-align: center">'+row[i][j]+'</td> ';
+                message+='<td style="text-align: center">'+row[i][j]+'</td> ';
             }
         }
     }
@@ -63,10 +63,10 @@ function make_table(array){
     var column=["Legend","Status","No of Cases","Percentage"];
     var tag=["Passed","Failed","Blocked","In-Progress","Submitted"];
     var color=["green","red","orange","blue","silver"];
-    message+='<table class="ui-widget" style="font-size: small;border-collapse: collapse">';
+    message+='<table class="one-column-emphasis" style="font-size: small;border-collapse: collapse">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+='<td class="ui-widget-header" style="text-align: center">'+column[i]+'</td>';
+        message+='<td style="text-align: center">'+column[i]+'</td>';
     }
     message+='</tr>';
     for(var i=0;i<color.length;i++){
@@ -77,15 +77,15 @@ function make_table(array){
         percentage=percentage+"%";
         console.log(percentage);
         message+='<tr>';
-        message+='<td width="40%" class="ui-widget-content"><table width="100%" height="100%"><tr><td style="background-color: '+color[i]+'">&nbsp;&nbsp;</td></tr></table></td>';
-        message+='<td width="30%" class="ui-widget-content" style="text-align:center;color:'+color[i]+'"><b>'+tag[i]+'</b></td>';
-        message+='<td class="ui-widget-content"  style="text-align: center;font-weight:bolder;color:'+color[i]+'" width="100%">'+array[i+1]+'</td>';
-        message+='<td class="ui-widget-content" style="text-align: center;font-weight:bolder;color:'+color[i]+'" width="100%">'+percentage+'</td>';
+        message+='<td width="40%"><table width="100%" height="100%"><tr><td style="background-color: '+color[i]+'">&nbsp;&nbsp;</td></tr></table></td>';
+        message+='<td width="30%" style="text-align:center;color:'+color[i]+'"><b>'+tag[i]+'</b></td>';
+        message+='<td style="text-align: center;font-weight:bolder;color:'+color[i]+'" width="100%">'+array[i+1]+'</td>';
+        message+='<td style="text-align: center;font-weight:bolder;color:'+color[i]+'" width="100%">'+percentage+'</td>';
         message+='</tr>'
     }
     message+='<tr>';
-    message+='<td class="ui-widget-content" style="text-align: center"><b>Total</b></td> ';
-    message+='<td class="ui-widget-content" style="text-align: center" colspan="3"><b>'+array[0]+'</b></td> ';
+    message+='<td style="text-align: center"><b>Total</b></td> ';
+    message+='<td style="text-align: center" colspan="3"><b>'+array[0]+'</b></td> ';
     message+='</tr>'
     message+='</table> ';
     return message;

@@ -22,16 +22,16 @@
             <p>&nbsp; </p>
             <div id = 'AllTestCasesTable' style="display: block;">
                 {%if All_length%}
-                <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
                     <tr>
                         {%for x in Column%}
-                        <th class='ui-widget-header' style="text-align: center">{{x}}</th>
+                        <th  style="text-align: center">{{x}}</th>
                         {%endfor%}
                     </tr>
                     {%for x in AllTestCases%}
                     <tr>
                         {%for y in x%}
-                        <td class = 'ui-widget-content' style="text-align: center">{{y}}</td>
+                        <td  style="text-align: center">{{y}}</td>
                         {%endfor%}
                     </tr>
                     {%endfor%}
@@ -50,16 +50,16 @@
             <p>&nbsp; </p>
             <div id = 'PassTestCasesTable' style="display: block;" >
                 {%if Pass_length%}
-                <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
                     <tr>
                         {%for x in Column%}
-                        <th class='ui-widget-header' style="text-align: center">{{x}}</th>
+                        <th  style="text-align: center">{{x}}</th>
                         {%endfor%}
                     </tr>
                     {%for x in Pass%}
                     <tr>
                         {%for y in x%}
-                        <td class = 'ui-widget-content' style="text-align: center">{{y}}</td>
+                        <td style="text-align: center">{{y}}</td>
                         {%endfor%}
                     </tr>
                     {%endfor%}
@@ -76,16 +76,16 @@
             <p>&nbsp; </p>
             <div id = 'FailTestCasesTable' style="display:block;">
                 {%if Fail_length%}
-                <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
                     <tr>
                         {%for x in Column%}
-                        <th class='ui-widget-header' style="text-align: center">{{x}}</th>
+                        <th style="text-align: center">{{x}}</th>
                         {%endfor%}
                     </tr>
                     {%for x in Fail%}
                     <tr>
                         {%for y in x%}
-                        <td class = 'ui-widget-content' style="text-align: center">{{y}}</td>
+                        <td style="text-align: center">{{y}}</td>
                         {%endfor%}
                     </tr>
                     {%endfor%}
@@ -105,16 +105,16 @@
             <p>&nbsp; </p>
             <div id = 'SubmittedTestCasesTable' style="display: block;" >
                 {%if submitted_length%}
-                <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
                     <tr>
                         {%for x in Column%}
-                        <th class='ui-widget-header' style="text-align: center">{{x}}</th>
+                        <th style="text-align: center">{{x}}</th>
                         {%endfor%}
                     </tr>
                     {%for x in Submitted%}
                     <tr>
                         {%for y in x%}
-                        <td class = 'ui-widget-content' style="text-align: center">{{y}}</td>
+                        <td style="text-align: center">{{y}}</td>
                         {%endfor%}
                     </tr>
                     {%endfor%}
@@ -134,16 +134,16 @@
 
             <div id = 'FailedStepsTable' style="display: block; ">
                 {%if fail_length%}
-                <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
                     <tr>
                         {%for x in failsteps_col%}
-                        <th class='ui-widget-header' style="text-align: center">{{x}}</th>
+                        <th style="text-align: center">{{x}}</th>
                         {%endfor%}
                     </tr>
                     {%for x in failsteps%}
                     <tr>
                         {%for y in x%}
-                        <td class = 'ui-widget-content' style="text-align: center">{{y}}</td>
+                        <td style="text-align: center">{{y}}</td>
                         {%endfor%}
                     </tr>
                     {%endfor%}
@@ -160,16 +160,16 @@
             <p>&nbsp;</p>
             <div id = 'EnvironmentDetailsTable' style="display: block;">
                 {%if Env_length%}
-                <table class = 'ui-widget' style='font-size:small; border-collapse:collapse;'  width='100%'>
+                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
                     <tr>
                         {%for x in Env_Details_Col%}
-                        <th class='ui-widget-header' style="text-align: center">{{x}}</th>
+                        <th style="text-align: center">{{x}}</th>
                         {%endfor%}
                     </tr>
                     <tr>
                         {%for x in Env_Details_Data%}
                         {%for y in x%}
-                        <td class = 'ui-widget-content' style="text-align: center">{{y}}</td>
+                        <td style="text-align: center">{{y}}</td>
                         {%endfor%}
                         {%endfor%}
                     </tr>
@@ -184,7 +184,7 @@
         </div>
         <h3 width="16%">Graph</h3>
         <div>
-            <div id="chart" width="100%" align="center">
+            <div id="chart">
 
             </div>
         </div>
