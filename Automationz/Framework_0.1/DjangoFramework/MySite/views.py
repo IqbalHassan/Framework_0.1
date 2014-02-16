@@ -2025,8 +2025,8 @@ def TestCaseSearch(request):
         #Ignore queries shorter than length 3
         #if len(value) > 1:
         #results = DB.GetData(Conn,"Select DISTINCT name from test_case_tag where name != 'Dependency' and name Ilike '%" + value + "%'")
-        results = DB.GetData(Conn, "Select DISTINCT tc_id from test_cases")
-        results = DB.GetData(Conn, "Select  DISTINCT tc_id,'Test Case' from test_cases where tc_id Ilike '%" + value + "%'",False)
+        #results = DB.GetData(Conn, "Select DISTINCT tc_id from test_cases")
+        results = DB.GetData(Conn, "Select  DISTINCT tc_id,tc_name,'Test Case' from test_cases where tc_id Ilike '%" + value + "%'",False)
 
 
     json = simplejson.dumps(results)
