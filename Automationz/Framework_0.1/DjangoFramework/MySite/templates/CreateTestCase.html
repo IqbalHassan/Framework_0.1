@@ -109,12 +109,33 @@
         </tr>
     </table>
 </form>
+
+    <form id="tc_priority" class="new_tc_form">
+        <table>
+            <tr>
+                <td class="tc_form_label_col">
+                    <span class="tc_form_required_field">*</span><b class="Text">Priority:</b> <br>
+                </td>
+                <td class="tc_form_input_col">
+                    <div style="text-align: center;">
+                        <select id="priotiy_select" name="priority" style="width:100%">
+                            <option value="1">1 (Highest)</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <!--option value="5">5</option-->
+                        </select>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+
 </div>
 
 
-<h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/pc5.png" width="16"> Platform</h2>
-<div class="tabs-div" align="center">
-    <br/>
+<h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/pc5.png" width="16"> Parameters</h2>
+<div class="tabs-div" style="margin: 30px" align="center">
 <form id="tc_platform" class="new_tc_form">
     <table>
         <tr>
@@ -143,7 +164,7 @@
     <table>
         <tr>
             <td class="tc_form_label_col">
-                <label><span class="tc_form_required_field">*</span><b class="Text">Dependency:</b></label>
+                <label><span class="tc_form_required_field">*</span><b class="Text">Browser:</b></label>
             </td>
             <td class="tc_form_input_col">
                 <!-- select class="browser" multiple="multiple" data-level="" id="1">
@@ -188,30 +209,8 @@
 </div>
 <!--HR class="tc_form_divider"/-->
 
-<h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/other.png" width="16"> Other</h2>
-<div class="tabs-div" align="center">
-    <br/>
-<form id="tc_priority" class="new_tc_form">
-    <table>
-        <tr>
-            <td class="tc_form_label_col">
-                <span class="tc_form_required_field">*</span><b class="Text">Priority:</b> <br>
-            </td>
-            <td class="tc_form_input_col">
-                <div style="text-align: center;">
-                    <select id="priotiy_select" name="priority" style="width:100%">
-                        <option value="1">1 (Highest)</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <!--option value="5">5</option-->
-                    </select>
-                </div>
-            </td>
-        </tr>
-    </table>
-</form>
-
+<h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/other.png" width="16"> Related Items</h2>
+<div class="tabs-div" style="margin: 30px" align="center">
 <form id="tc_assoc" class="new_tc_form">
     <table>
         <tr>
@@ -365,7 +364,7 @@
 
 </table>
 
-</div>
+<!--/div-->
 <p class="new_tc_form buttonCustom" id="submit" style="width:150px;">
     <img style="" src="/site_media/check.png" width="20px"> <br>Save
 </p>
