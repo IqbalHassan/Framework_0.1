@@ -148,6 +148,13 @@ function LoadAllTestCases(divname){
         });
     });
     ////////////**********************\\\\\\\\\\\\\\\
+    //////////////// To change the textbox in fail reason
+    $('#'+divname+' tr td:nth-child(6)').each(function(){
+        var data=$(this).text().trim();
+        console.log(data);
+        $(this).html('<textarea rows="4" cols="30" readonly="readonly">'+data+'</textarea>');
+    });
+    /////////////////////////////////////////////////////
 }
 function connectLogFile(ID){
     $("#"+ID+" tr td:nth-child(7)").each(function(){
