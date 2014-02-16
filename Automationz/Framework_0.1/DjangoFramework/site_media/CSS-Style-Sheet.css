@@ -1024,15 +1024,18 @@ article header{
         position: absolute;
         left: 0;
         right: 0;
+        z-index : 999999;
     }
     #nav:target > ul
     {
         display: block;
+        z-index : 999999;
     }
     #nav > ul > li
     {
         width: 100%;
         float: none;
+        z-index : 999999;
     }
     #nav > ul > li > a
     {
@@ -1053,10 +1056,10 @@ article header{
 
     #nav li ul
     {
+        z-index : 999999;
         position: static;
         padding: 1.25em; /* 20 */
         padding-top: 0;
-        z-index:999999;
     }
 }
 
