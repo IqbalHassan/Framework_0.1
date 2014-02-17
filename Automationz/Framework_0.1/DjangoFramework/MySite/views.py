@@ -123,12 +123,16 @@ def make_status_array(refined_list):
         progress=DB.GetData(Conn,progress_query)
         submitted=DB.GetData(Conn,notrun_query)
         #pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
-        temp.append(total[0])
-        temp.append(passed[0])
-        temp.append(failed[0])
-        temp.append(blocked[0])
-        temp.append(progress[0])
-        temp.append(submitted[0])
+        pass_percent = str((passed[0]*100/total[0]))+'%'
+        fail=str((failed[0]*100/total[0]))+'%'
+        block=str((blocked[0]*100/total[0]))+'%'
+        progress=str((progress[0]*100/total[0]))+'%'
+        submitted=str((submitted[0]*100/total[0]))+'%'
+        temp.append(pass_percent)
+        temp.append(fail)
+        temp.append(block)
+        temp.append(progress)
+        temp.append(submitted)
         temp=tuple(temp)
         Conn.close()    
         pass_list.append(temp)

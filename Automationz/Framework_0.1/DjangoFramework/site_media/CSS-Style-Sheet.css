@@ -1378,4 +1378,31 @@ article header{
     background-image: linear-gradient(#8dcf16, #65bd10);
     background-repeat: repeat-x;
 }
+
+.repository-lang-stats-graph {
+    display: block;
+    width: 100%;
+    height: auto;
+    line-height: 12px;
+    white-space: nowrap;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.repository-lang-stats-graph .language-color {
+    height: auto;
+    line-height: 12px;
+    vertical-align: top;
+}
+.repository-lang-stats-graph span {
+    display: inline-block;
+    height: 8px;
+    background: #ccc;
+    text-indent: -9999px;
+}
+.repository-lang-stats-graph .language-color:first-child {
+    border-bottom-left-radius: 0px;
+}
+.language-color {
+    background-color: #ccc;
+}
 /***************************/

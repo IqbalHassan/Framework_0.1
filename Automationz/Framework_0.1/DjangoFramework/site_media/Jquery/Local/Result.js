@@ -1,16 +1,18 @@
 $(document).ready(function(){
-    make_pagination('#allPage','#allRun','.paginated');
+    /*make_pagination('#allPage','#allRun','.paginated');
     make_pagination('#completePage','#completeRun','.paginated');
     make_pagination('#cancelledPage','#cancelledRun','.paginated');
     make_pagination('#progressPage','#cancelledRun','.paginated');
     make_pagination('#submittedPage','#submittedRun','.paginated');
+    */
     make_clickable('#allRun');
     make_clickable('#completeRun');
     make_clickable('#cancelledRun');
     make_clickable('#progressRun');
     make_clickable('#submittedRun');
-    drawGraph('#allRun');
+    //drawGraph('#allRun');
 });
+/*
 function drawGraph(divname){
     $(divname+' tr>td:nth-child(5)').each(function(){
         var text=$(this).text().trim();
@@ -21,22 +23,12 @@ function drawGraph(divname){
             var each=text[i].trim().split('L')[0].trim();
             status_array.push(each);
         }
-        drawTable(status_array);
+        /*var message=drawTable(status_array);
+        console.log(message);
+        $(this).html(message);
     });
 }
-function drawTable(status_array){
-    var pass=(status_array[1]/status_array[0])*100;
-    var fail=(status_array[2]/status_array[0])*100;
-    var block=(status_array[3]/status_array[0])*100;
-    var progress=(status_array[4]/status_array[0])*100;
-    var submitted=(status_array[5]/status_array[0])*100;
-    pass+='%';
-    fail+='%';
-    block+='%';
-    progress+='%';
-    submitted+='%';
-    var message="";
-}
+*/
 function make_clickable(divname){
     $(divname+' tr>td:first-child').each(function(){
        $(this).css({
@@ -49,6 +41,7 @@ function make_clickable(divname){
        });
     });
 }
+/*
 function make_pagination(pagediv,divname,classname){
     var itemsOnPage = 5;
     $(pagediv).pagination({
@@ -74,3 +67,4 @@ function make_pagination(pagediv,divname,classname){
         }
     });
 }
+    */
