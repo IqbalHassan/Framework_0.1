@@ -17,7 +17,7 @@ $(document).ready(function() {
 
     $("#steps_table").append('' +
         '<tr id="step_'+step_num+'">' +
-        '<td><input id="'+step_num+'" class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+        '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>'+step_num+'</td>' +
         '<td><a class="notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status all-read"></span>' +
@@ -59,12 +59,14 @@ $(document).ready(function() {
                 step_num--;
             }
         });
-        /*$("#" + step_num).click(function() {
-                var table = document.getElementById("steps_table");
+        $(".remove_img").click(function() {
+            var table = document.getElementById("steps_table");
+            var step = $(this).attr('id')
 
-                table.deleteRow(rowCount -1);
-                step_num--;
-        });*/
+            table.deleteRow(step-1);
+            //table.deleteRow("+step+");
+            //step_num--;
+        });
 
         $("input[name=platform]").change(function () {
             Env = $(this).val();
