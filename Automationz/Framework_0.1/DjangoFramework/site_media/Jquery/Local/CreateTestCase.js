@@ -6,7 +6,7 @@
 var indx=0;
 var indx2=0;
 var URL="";
-var step_num = 0;
+var step_num = 1;
 var step_num_data_num = new Array();
 var tag_list = new Array();
 var Env = "PC"
@@ -14,6 +14,24 @@ var lowest_section = 0;
 var isAtLowestSection = false;
 
 $(document).ready(function() {
+
+    $("#steps_table").append('' +
+        '<tr id="step_'+step_num+'">' +
+        '<td><input id="'+step_num+'" class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+        '<td>'+step_num+'</td>' +
+        '<td><a class="notification-indicator tooltipped downwards" data-gotokey="n">' +
+        '<span class="mail-status all-read"></span>' +
+        '</a></td>' +
+        '<td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n">' +
+        '<span class="mail-status unread"></span>' +
+        '</a></td>' +
+        '<td><textarea style="width: 80%"></textarea></td>' +
+        '<td><textarea style="width: 80%"></textarea></td>' +
+        '<td><input type="checkbox"></td>' +
+        '<td>23.5</td>' +
+        '<td><input id=\"step_info\" class=\"new_tc_form\" type=\'image\' src=\'/site_media/info_button.jpg\' name=\'Step Info\' style="background-color: transparent; width:18px; height:18px"></td></td>' +
+        '</tr>'
+    );
 
     URL = window.location.pathname
     console.log("url:"+URL);
@@ -31,11 +49,22 @@ $(document).ready(function() {
 
         $('#remove_test_step').click(function() {
             if (step_num > 0) {
-                $('#AutoSearchResult' + step_num).fadeOut().remove();
+                /*$('#AutoSearchResult' + step_num).fadeOut().remove();
                 step_num--;
-                RunTestAutocompleteSearch(Env, step_num);
+                 RunTestAutocompleteSearch(Env, step_num);*/
+                var table = document.getElementById("steps_table");
+                var rowCount = table.rows.length;
+
+                table.deleteRow(rowCount -1);
+                step_num--;
             }
         });
+        /*$("#" + step_num).click(function() {
+                var table = document.getElementById("steps_table");
+
+                table.deleteRow(rowCount -1);
+                step_num--;
+        });*/
 
         $("input[name=platform]").change(function () {
             Env = $(this).val();
@@ -549,7 +578,7 @@ function recursivelyAddSection(_this){
 function addStep(){
     step_num++;
     step_num_data_num[step_num] = 0;
-    var id = AddAutoCompleteSearchBox("#stepbox", "Step " + step_num + ": ", step_num);
+    /*var id = AddAutoCompleteSearchBox("#stepbox", "Step " + step_num + ": ", step_num);
     //console.log("Step ID:"+id);
     RunTestAutocompleteSearch(Env, step_num);
 
@@ -573,7 +602,25 @@ function addStep(){
         })
 
     });
-    return id;
+    return id;*/
+    $("#steps_table").append('' +
+        '<tr>' +
+            '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+                '<td>'+step_num+'</td>' +
+                '<td><a class="notification-indicator tooltipped downwards" data-gotokey="n">' +
+                    '<span class="mail-status all-read"></span>' +
+                '</a></td>' +
+                '<td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n">' +
+                    '<span class="mail-status unread"></span>' +
+                '</a></td>' +
+                '<td><textarea style="width: 80%"></textarea></td>' +
+                '<td><textarea style="width: 80%"></textarea></td>' +
+                '<td><input type="checkbox"></td>' +
+                    '<td>23.5</td>' +
+                    '<td><input id=\"step_info\" class=\"new_tc_form\" type=\'image\' src=\'/site_media/info_button.jpg\' name=\'Step Info\' style="background-color: transparent; width:18px; height:18px"></td></td>' +
+        '</tr>'
+    );
+
 }
 
 function dataArrayToString(array){
