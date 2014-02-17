@@ -103,6 +103,37 @@ def make_array(get_list):
         refined_list.append(temp)
     print refined_list
     return refined_list        
+def make_status_array(refined_list):
+    pass_list=[]
+    for each in refined_list:
+        #print each
+        run_id=each[0]
+        temp=[]
+        total_query="select count(*) from test_run where run_id='%s'" %run_id
+        pass_query="select count(*) from test_case_results where run_id='%s' and status='Passed'" %run_id
+        fail_query="select count(*) from test_case_results where run_id='%s' and status='Failed'" %run_id
+        blocked_query="select count(*) from test_case_results where run_id='%s' and status='Blocked'"%run_id
+        progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
+        notrun_query="select count(*) from test_case_results where run_id='%s' and status='Submitted'" %run_id
+        Conn=GetConnection()
+        total=DB.GetData(Conn,total_query)
+        passed=DB.GetData(Conn,pass_query)
+        failed=DB.GetData(Conn,fail_query)
+        blocked=DB.GetData(Conn,blocked_query)
+        progress=DB.GetData(Conn,progress_query)
+        submitted=DB.GetData(Conn,notrun_query)
+        #pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
+        temp.append(total[0])
+        temp.append(passed[0])
+        temp.append(failed[0])
+        temp.append(blocked[0])
+        temp.append(progress[0])
+        temp.append(submitted[0])
+        temp=tuple(temp)
+        Conn.close()    
+        pass_list.append(temp)
+    print pass_list
+    return pass_list
 def ResultTableFetch():
     Conn=GetConnection()
     interval="1"
@@ -126,21 +157,51 @@ def ResultTableFetch():
     submitted_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Submitted' and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc"%interval
     submitted_list=DB.GetData(Conn,submitted_query,False)
     submitted_run=make_array(submitted_list)
-    data={'total':total_run,'complete':complete_run,'cancelled':cancelled_run,'progress':progress_run,'submitted':submitted_run}
+    all_status=make_status_array(total_run)
+    complete_status=make_status_array(complete_run)
+    cancelled_status=make_status_array(cancelled_run)
+    progress_status=make_status_array(progress_run)
+    submitted_status=make_status_array(submitted_run)
+    data={
+          'total':total_run,
+          'complete':complete_run,
+          'cancelled':cancelled_run,
+          'progress':progress_run,
+          'submitted':submitted_run,
+          'all_status':all_status,
+          'complete_status':complete_status,
+          'progress_status':progress_status,
+          'cancelled_status':cancelled_status,
+          'submitted_status':submitted_status
+          }
+    return data
+def zipdata(data_array,status_array):
+    data=[]
+    for each in zip(data_array,status_array):
+        temp=[]
+        temp.append(each[0])
+        temp.append(each[1])
+        temp=tuple(temp)
+        data.append(temp)
     return data
 def ResultPage(request):
     data=ResultTableFetch()
     print data
     Column=["Run ID","Test Objective","Run Type","Assigned Tester","Report Status","Status","Duration","Product Version","Client"]
     template=get_template('Result.html')
+    all_data=zipdata(data['total'], data['all_status'])
+    complete_data=zipdata(data['complete'],data['complete_status'])
+    progress_data=zipdata(data['progress'],data['progress_status'])
+    cancelled_data=zipdata(data['cancelled'],data['cancelled_status'])
+    submitted_data=zipdata(data['submitted'],data['submitted_status'])
     Dict={
-          'total':data['total'],
-          'complete':data['complete'],
-          'cancelled':data['cancelled'],
-          'progress':data['progress'],
-          'submitted':data['submitted'],
-          'column':Column,
-          }
+        'column':Column,
+        'all':all_data,
+        'complete':complete_data,
+        'progress':progress_data,
+        'cancelled':cancelled_data,
+        'submitted':submitted_data
+        }
     variables=Context(Dict)
     output=template.render(variables)
     return HttpResponse(output)

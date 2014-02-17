@@ -14,18 +14,18 @@
         <h3>All</h3>
         <div align="center">
             <div id="allRun" width="100%">
-                {%if total %}
+                {%if all %}
                 <table class="one-column-emphasis"  width='100%'>
                     <tr class="paginated">
                         {%for x in column%}
                         <th style="text-align: center">{{x}}</th>
                         {%endfor%}
                     </tr>
-                    {%for x in total%}
+                    {%for x in all%}
                     <tr class="paginated">
-                        {%for y in x%}
+                        {%for y in x.0%}
                         {% if y == 'status' %}
-                            <td style="text-align: center">nothing</td>
+                            <td style="text-align: center">{{x.1}}</td>
                         {% else %}
                             <td style="text-align: center">{{y}}</td>
                         {% endif %}
@@ -70,9 +70,9 @@
                     </tr>
                     {%for x in complete%}
                     <tr class="paginated">
-                        {%for y in x%}
+                        {%for y in x.0%}
                         {% if y == 'status' %}
-                        <td style="text-align: center">nothing</td>
+                        <td style="text-align: center">{{x.1}}</td>
                         {% else %}
                         <td style="text-align: center">{{y}}</td>
                         {% endif %}
@@ -81,7 +81,7 @@
                     {%endfor%}
                 </table>
                 {%else%}
-                <b>No Data Available</b>
+                    <b>No Data Available</b>
                 {%endif%}
             </div>
             <div id="completePage">
@@ -103,9 +103,9 @@
                     </tr>
                     {%for x in progress%}
                     <tr class="paginated">
-                        {%for y in x%}
+                        {%for y in x.0%}
                         {% if y == 'status' %}
-                        <td style="text-align: center">nothing</td>
+                        <td style="text-align: center">{{x.1}}</td>
                         {% else %}
                         <td style="text-align: center">{{y}}</td>
                         {% endif %}
@@ -135,9 +135,9 @@
                     </tr>
                     {%for x in submitted%}
                     <tr class="paginated">
-                        {%for y in x%}
+                        {%for y in x.0%}
                         {% if y == 'status' %}
-                        <td style="text-align: center">nothing</td>
+                        <td style="text-align: center">{{x.1}}</td>
                         {% else %}
                         <td style="text-align: center">{{y}}</td>
                         {% endif %}
@@ -167,9 +167,9 @@
                     </tr>
                     {%for x in cancelled%}
                     <tr class="paginated">
-                        {%for y in x%}
+                        {%for y in x.0%}
                         {% if y == 'status' %}
-                        <td style="text-align: center">nothing</td>
+                        <td style="text-align: center">{{x.1}}</td>
                         {% else %}
                         <td style="text-align: center">{{y}}</td>
                         {% endif %}
@@ -204,6 +204,14 @@
         <div id="inner">
 
         </div>
+    </div>
+    <div>
+        <a href="#" class="repository-lang-stats-graph js-toggle-lang-stats tooltipped downwards" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
+            <span class="language-color" style="width:66.4%; background-color:#3581ba;" itemprop="keywords">Python</span>
+            <span class="language-color" style="width:28.6%; background-color:#f15501;" itemprop="keywords">JavaScript</span>
+            <span class="language-color" style="width:4.0%; background-color:#1f085e;" itemprop="keywords">CSS</span>
+            <span class="language-color" style="width:1.0%; background-color:#ccc;" itemprop="keywords">Other</span>
+        </a>
     </div>
 </article>
 {%endblock%}
