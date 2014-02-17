@@ -3,6 +3,7 @@
 {% block title%}Results{% endblock %}
 
 {% block content %}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="/site_media/Jquery/Local/Result.js"></script>
 <article>
     <!--**********Tabs***************-->
@@ -25,34 +26,39 @@
                         {% if y == 'status' %}
 								<td style="text-align: center">
                                     <div>
-                                        <a href="#" class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
+                                        <div class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
             <span class="language-color" style="width:{{x.1.0}};
             background-color: #65bd10;
             background-image: -moz-linear-gradient(#8dcf16, #65bd10);
             background-image: -webkit-linear-gradient(#8dcf16, #65bd10);
             background-image: linear-gradient(#8dcf16, #65bd10);
             float:left" itemprop="keywords">PASS</span>
-            <span class="language-color" style="width:{{x.1.1}}; background-color:#f15501;
-            background-image: -moz-linear-gradient(#ff6e40, #f15501);
-            background-image: -webkit-linear-gradient(#ff6e40, #f15501);
-            background-image: linear-gradient(#ff6e40, #f15501);
+            <span class="language-color" style="width:{{x.1.1}}; background-color:#FD0006;
+            background-image: -moz-linear-gradient(#FE4044, #FD0006);
+            background-image: -webkit-linear-gradient(#FE4044, #FD0006);
+            background-image: linear-gradient(#FE4044, #FD0006);
             float:left" itemprop="keywords">JavaScript</span>
-            <span class="language-color" style="width:{{x.1.2}}; background-color:orange;
-            background-image: -moz-linear-gradient(#ffbc40, #ffa500);
-            background-image: -webkit-linear-gradient(#ffbc40, #ffa500);
-            background-image: linear-gradient(#ffbc40, #ffa500);
+            <span class="language-color" style="width:{{x.1.2}}; background-color:#FF9e00;
+            background-image: -moz-linear-gradient(#ffb640, #FF9e00);
+            background-image: -webkit-linear-gradient(#ffb640, #FF9e00);
+            background-image: linear-gradient(#ffb640, #FF9e00);
             float:left" itemprop="keywords">CSS</span>
             <span class="language-color" style="width:{{x.1.3}}; background-color:blue;
             background-image: -moz-linear-gradient(#7373ff, #0000ff);
             background-image: -webkit-linear-gradient(#7373ff, #0000ff);
             background-image: linear-gradient(#7373ff, #0000ff);
             float:left" itemprop="keywords">Other</span>
-            <span class="language-color" style="width:{{x.1.4}}; background-color:#88a388;
+            <span class="language-color" style="width:{{x.1.4}}; background-color:#FFFC00;
+            background-image: -moz-linear-gradient(#FFFD73, #FFFC00);
+            background-image: -webkit-linear-gradient(#FFFD73, #FFFC00);
+            background-image: linear-gradient(#FFFD73, #FFFC00);
+            float:left" itemprop="keywords">defgd</span>
+            <span class="language-color" style="width:{{x.1.5}}; background-color:#88a388;
             background-image: -moz-linear-gradient(#b7d1b7, #88a388);
             background-image: -webkit-linear-gradient(#b7d1b7, #88a388);
             background-image: linear-gradient(#b7d1b7, #88a388);
             float:left" itemprop="keywords">defgd</span>
-                                        </a>
+                                        </div>
                                     </div>
                                 </td>
                         {% else %}
@@ -104,35 +110,39 @@
                         {% if y == 'status' %}
                             <td style="text-align: center">
                                 <div>
-                                    <a href="#" class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
+                                    <a class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
             <span class="language-color" style="width:{{x.1.0}};
             background-color: #65bd10;
             background-image: -moz-linear-gradient(#8dcf16, #65bd10);
             background-image: -webkit-linear-gradient(#8dcf16, #65bd10);
             background-image: linear-gradient(#8dcf16, #65bd10);
             float:left" itemprop="keywords">PASS</span>
-            <span class="language-color" style="width:{{x.1.1}}; background-color:#f15501;
-            background-image: -moz-linear-gradient(#ff6e40, #f15501);
-            background-image: -webkit-linear-gradient(#ff6e40, #f15501);
-            background-image: linear-gradient(#ff6e40, #f15501);
+            <span class="language-color" style="width:{{x.1.1}}; background-color:#FD0006;
+            background-image: -moz-linear-gradient(#FE4044, #FD0006);
+            background-image: -webkit-linear-gradient(#FE4044, #FD0006);
+            background-image: linear-gradient(#FE4044, #FD0006);
             float:left" itemprop="keywords">JavaScript</span>
-            <span class="language-color" style="width:{{x.1.2}}; background-color:orange;
-            background-image: -moz-linear-gradient(#ffbc40, #ffa500);
-            background-image: -webkit-linear-gradient(#ffbc40, #ffa500);
-            background-image: linear-gradient(#ffbc40, #ffa500);
+            <span class="language-color" style="width:{{x.1.2}}; background-color:#FF9e00;
+            background-image: -moz-linear-gradient(#ffb640, #FF9e00);
+            background-image: -webkit-linear-gradient(#ffb640, #FF9e00);
+            background-image: linear-gradient(#ffb640, #FF9e00);
             float:left" itemprop="keywords">CSS</span>
             <span class="language-color" style="width:{{x.1.3}}; background-color:blue;
             background-image: -moz-linear-gradient(#7373ff, #0000ff);
             background-image: -webkit-linear-gradient(#7373ff, #0000ff);
             background-image: linear-gradient(#7373ff, #0000ff);
             float:left" itemprop="keywords">Other</span>
-            <span class="language-color" style="width:{{x.1.4}}; background-color:#88a388;
+            <span class="language-color" style="width:{{x.1.4}}; background-color:#FFFC00;
+            background-image: -moz-linear-gradient(#FFFD73, #FFFC00);
+            background-image: -webkit-linear-gradient(#FFFD73, #FFFC00);
+            background-image: linear-gradient(#FFFD73, #FFFC00);
+            float:left" itemprop="keywords">defgd</span>
+            <span class="language-color" style="width:{{x.1.5}}; background-color:#88a388;
             background-image: -moz-linear-gradient(#b7d1b7, #88a388);
             background-image: -webkit-linear-gradient(#b7d1b7, #88a388);
             background-image: linear-gradient(#b7d1b7, #88a388);
             float:left" itemprop="keywords">defgd</span>
-                                    </a>
-                                </div>
+                                    </a</div>
                             </td>
                         {% else %}
                         <td>{{y}}</td>
@@ -168,35 +178,39 @@
                         {% if y == 'status' %}
                         <td style="text-align: center">
                             <div>
-                                <a href="#" class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
+                                <a class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
             <span class="language-color" style="width:{{x.1.0}};
             background-color: #65bd10;
             background-image: -moz-linear-gradient(#8dcf16, #65bd10);
             background-image: -webkit-linear-gradient(#8dcf16, #65bd10);
             background-image: linear-gradient(#8dcf16, #65bd10);
             float:left" itemprop="keywords">PASS</span>
-            <span class="language-color" style="width:{{x.1.1}}; background-color:#f15501;
-            background-image: -moz-linear-gradient(#ff6e40, #f15501);
-            background-image: -webkit-linear-gradient(#ff6e40, #f15501);
-            background-image: linear-gradient(#ff6e40, #f15501);
+            <span class="language-color" style="width:{{x.1.1}}; background-color:#FD0006;
+            background-image: -moz-linear-gradient(#FE4044, #FD0006);
+            background-image: -webkit-linear-gradient(#FE4044, #FD0006);
+            background-image: linear-gradient(#FE4044, #FD0006);
             float:left" itemprop="keywords">JavaScript</span>
-            <span class="language-color" style="width:{{x.1.2}}; background-color:orange;
-            background-image: -moz-linear-gradient(#ffbc40, #ffa500);
-            background-image: -webkit-linear-gradient(#ffbc40, #ffa500);
-            background-image: linear-gradient(#ffbc40, #ffa500);
+            <span class="language-color" style="width:{{x.1.2}}; background-color:#FF9e00;
+            background-image: -moz-linear-gradient(#ffb640, #FF9e00);
+            background-image: -webkit-linear-gradient(#ffb640, #FF9e00);
+            background-image: linear-gradient(#ffb640, #FF9e00);
             float:left" itemprop="keywords">CSS</span>
             <span class="language-color" style="width:{{x.1.3}}; background-color:blue;
             background-image: -moz-linear-gradient(#7373ff, #0000ff);
             background-image: -webkit-linear-gradient(#7373ff, #0000ff);
             background-image: linear-gradient(#7373ff, #0000ff);
             float:left" itemprop="keywords">Other</span>
-            <span class="language-color" style="width:{{x.1.4}}; background-color:#88a388;
+            <span class="language-color" style="width:{{x.1.4}}; background-color:#FFFC00;
+            background-image: -moz-linear-gradient(#FFFD73, #FFFC00);
+            background-image: -webkit-linear-gradient(#FFFD73, #FFFC00);
+            background-image: linear-gradient(#FFFD73, #FFFC00);
+            float:left" itemprop="keywords">defgd</span>
+            <span class="language-color" style="width:{{x.1.5}}; background-color:#88a388;
             background-image: -moz-linear-gradient(#b7d1b7, #88a388);
             background-image: -webkit-linear-gradient(#b7d1b7, #88a388);
             background-image: linear-gradient(#b7d1b7, #88a388);
             float:left" itemprop="keywords">defgd</span>
-                                </a>
-                            </div>
+                                </a</div>
                         </td>
                         {% else %}
                         <td>{{y}}</td>
@@ -232,35 +246,39 @@
                         {% if y == 'status' %}
                         <td style="text-align: center">
                             <div>
-                                <a href="#" class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
+                                <a class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
             <span class="language-color" style="width:{{x.1.0}};
             background-color: #65bd10;
             background-image: -moz-linear-gradient(#8dcf16, #65bd10);
             background-image: -webkit-linear-gradient(#8dcf16, #65bd10);
             background-image: linear-gradient(#8dcf16, #65bd10);
             float:left" itemprop="keywords">PASS</span>
-            <span class="language-color" style="width:{{x.1.1}}; background-color:#f15501;
-            background-image: -moz-linear-gradient(#ff6e40, #f15501);
-            background-image: -webkit-linear-gradient(#ff6e40, #f15501);
-            background-image: linear-gradient(#ff6e40, #f15501);
+            <span class="language-color" style="width:{{x.1.1}}; background-color:#FD0006;
+            background-image: -moz-linear-gradient(#FE4044, #FD0006);
+            background-image: -webkit-linear-gradient(#FE4044, #FD0006);
+            background-image: linear-gradient(#FE4044, #FD0006);
             float:left" itemprop="keywords">JavaScript</span>
-            <span class="language-color" style="width:{{x.1.2}}; background-color:orange;
-            background-image: -moz-linear-gradient(#ffbc40, #ffa500);
-            background-image: -webkit-linear-gradient(#ffbc40, #ffa500);
-            background-image: linear-gradient(#ffbc40, #ffa500);
+            <span class="language-color" style="width:{{x.1.2}}; background-color:#FF9e00;
+            background-image: -moz-linear-gradient(#ffb640, #FF9e00);
+            background-image: -webkit-linear-gradient(#ffb640, #FF9e00);
+            background-image: linear-gradient(#ffb640, #FF9e00);
             float:left" itemprop="keywords">CSS</span>
             <span class="language-color" style="width:{{x.1.3}}; background-color:blue;
             background-image: -moz-linear-gradient(#7373ff, #0000ff);
             background-image: -webkit-linear-gradient(#7373ff, #0000ff);
             background-image: linear-gradient(#7373ff, #0000ff);
             float:left" itemprop="keywords">Other</span>
-            <span class="language-color" style="width:{{x.1.4}}; background-color:#88a388;
+            <span class="language-color" style="width:{{x.1.4}}; background-color:#FFFC00;
+            background-image: -moz-linear-gradient(#FFFD73, #FFFC00);
+            background-image: -webkit-linear-gradient(#FFFD73, #FFFC00);
+            background-image: linear-gradient(#FFFD73, #FFFC00);
+            float:left" itemprop="keywords">defgd</span>
+            <span class="language-color" style="width:{{x.1.5}}; background-color:#88a388;
             background-image: -moz-linear-gradient(#b7d1b7, #88a388);
             background-image: -webkit-linear-gradient(#b7d1b7, #88a388);
             background-image: linear-gradient(#b7d1b7, #88a388);
             float:left" itemprop="keywords">defgd</span>
-                                </a>
-                            </div>
+                                </a</div>
                         </td>
                         {% else %}
                         <td>{{y}}</td>
@@ -295,35 +313,39 @@
                         {% if y == 'status' %}
                         <td style="text-align: center">
                             <div>
-                                <a href="#" class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
+                                <a class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">
             <span class="language-color" style="width:{{x.1.0}};
             background-color: #65bd10;
             background-image: -moz-linear-gradient(#8dcf16, #65bd10);
             background-image: -webkit-linear-gradient(#8dcf16, #65bd10);
             background-image: linear-gradient(#8dcf16, #65bd10);
             float:left" itemprop="keywords">PASS</span>
-            <span class="language-color" style="width:{{x.1.1}}; background-color:#f15501;
-            background-image: -moz-linear-gradient(#ff6e40, #f15501);
-            background-image: -webkit-linear-gradient(#ff6e40, #f15501);
-            background-image: linear-gradient(#ff6e40, #f15501);
+            <span class="language-color" style="width:{{x.1.1}}; background-color:#FD0006;
+            background-image: -moz-linear-gradient(#FE4044, #FD0006);
+            background-image: -webkit-linear-gradient(#FE4044, #FD0006);
+            background-image: linear-gradient(#FE4044, #FD0006);
             float:left" itemprop="keywords">JavaScript</span>
-            <span class="language-color" style="width:{{x.1.2}}; background-color:orange;
-            background-image: -moz-linear-gradient(#ffbc40, #ffa500);
-            background-image: -webkit-linear-gradient(#ffbc40, #ffa500);
-            background-image: linear-gradient(#ffbc40, #ffa500);
+            <span class="language-color" style="width:{{x.1.2}}; background-color:#FF9e00;
+            background-image: -moz-linear-gradient(#ffb640, #FF9e00);
+            background-image: -webkit-linear-gradient(#ffb640, #FF9e00);
+            background-image: linear-gradient(#ffb640, #FF9e00);
             float:left" itemprop="keywords">CSS</span>
             <span class="language-color" style="width:{{x.1.3}}; background-color:blue;
             background-image: -moz-linear-gradient(#7373ff, #0000ff);
             background-image: -webkit-linear-gradient(#7373ff, #0000ff);
             background-image: linear-gradient(#7373ff, #0000ff);
             float:left" itemprop="keywords">Other</span>
-            <span class="language-color" style="width:{{x.1.4}}; background-color:#88a388;
+            <span class="language-color" style="width:{{x.1.4}}; background-color:#FFFC00;
+            background-image: -moz-linear-gradient(#FFFD73, #FFFC00);
+            background-image: -webkit-linear-gradient(#FFFD73, #FFFC00);
+            background-image: linear-gradient(#FFFD73, #FFFC00);
+            float:left" itemprop="keywords">defgd</span>
+            <span class="language-color" style="width:{{x.1.5}}; background-color:#88a388;
             background-image: -moz-linear-gradient(#b7d1b7, #88a388);
             background-image: -webkit-linear-gradient(#b7d1b7, #88a388);
             background-image: linear-gradient(#b7d1b7, #88a388);
             float:left" itemprop="keywords">defgd</span>
-                                </a>
-                            </div>
+                                </a</div>
                         </td>
                         {% else %}
                         <td>{{y}}</td>
@@ -343,7 +365,13 @@
 
 
     </div>
+    <div id="floatouter" width="100%" align="center">
+        <div id="inner">
+            <div id="chart">
 
+            </div>
+        </div>
+    </div>
     <script>
         // ResponsiveTabs.js | Version:1.10 | Author:Pete Love | www.petelove.com
         var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
@@ -355,11 +383,7 @@
         })
     </script>
 
-    <div id="floatouter">
-        <div id="inner">
 
-        </div>
-    </div>
     <script type="text/javascript">
         (function($,window,document,undefined){var name="jPages",instance=null,defaults={containerID:"",first:false,previous:"← previous",next:"next →",last:false,links:"numeric",startPage:1,perPage:10,midRange:5,startRange:1,endRange:1,keyBrowse:false,scrollBrowse:false,pause:0,clickStop:false,delay:50,direction:"forward",animation:"",fallback:400,minHeight:true,callback:undefined};function Plugin(element,options){this.options=$.extend({},defaults,options);this._container=$("#"+this.options.containerID);if(!this._container.length)return;this.jQwindow=$(window);this.jQdocument=$(document);this._holder=$(element);this._nav={};this._first=$(this.options.first);this._previous=$(this.options.previous);this._next=$(this.options.next);this._last=$(this.options.last);this._items=this._container.children(":visible");this._itemsShowing=$([]);this._itemsHiding=$([]);this._numPages=Math.ceil(this._items.length/this.options.perPage);this._currentPageNum=this.options.startPage;this._clicked=false;this._cssAnimSupport=this.getCSSAnimationSupport();this.init();}Plugin.prototype={constructor:Plugin,getCSSAnimationSupport:function(){var animation=false,animationstring='animation',keyframeprefix='',domPrefixes='Webkit Moz O ms Khtml'.split(' '),pfx='',elm=this._container.get(0);if(elm.style.animationName)animation=true;if(animation===false){for(var i=0;i<domPrefixes.length;i++){if(elm.style[domPrefixes[i]+'AnimationName']!==undefined){pfx=domPrefixes[i];animationstring=pfx+'Animation';keyframeprefix='-'+pfx.toLowerCase()+'-';animation=true;break;}}}return animation;},init:function(){this.setStyles();this.setNav();this.paginate(this._currentPageNum);this.setMinHeight();},setStyles:function(){var requiredStyles="<style>"+".jp-invisible { visibility: hidden !important; } "+".jp-hidden { display: none !important; }"+"</style>";$(requiredStyles).appendTo("head");if(this._cssAnimSupport&&this.options.animation.length)this._items.addClass("animated jp-hidden");else this._items.hide();},setNav:function(){var navhtml=this.writeNav();this._holder.each(this.bind(function(index,element){var holder=$(element);holder.html(navhtml);this.cacheNavElements(holder,index);this.bindNavHandlers(index);this.disableNavSelection(element);},this));if(this.options.keyBrowse)this.bindNavKeyBrowse();if(this.options.scrollBrowse)this.bindNavScrollBrowse();},writeNav:function(){var i=1,navhtml;navhtml=this.writeBtn("first")+this.writeBtn("previous");for(;i<=this._numPages;i++){if(i===1&&this.options.startRange===0)navhtml+="<span>...</span>";if(i>this.options.startRange&&i<=this._numPages-this.options.endRange)navhtml+="<a href='#' class='jp-hidden'>";else
             navhtml+="<a>";switch(this.options.links){case"numeric":navhtml+=i;break;case"blank":break;case"title":var title=this._items.eq(i-1).attr("data-title");navhtml+=title!==undefined?title:"";break;}navhtml+="</a>";if(i===this.options.startRange||i===this._numPages-this.options.endRange)navhtml+="<span>...</span>";}navhtml+=this.writeBtn("next")+this.writeBtn("last")+"</div>";return navhtml;},writeBtn:function(which){return this.options[which]!==false&&!$(this["_"+which]).length?"<a class='jp-"+which+"'>"+this.options[which]+"</a>":"";},cacheNavElements:function(holder,index){this._nav[index]={};this._nav[index].holder=holder;this._nav[index].first=this._first.length?this._first:this._nav[index].holder.find("a.jp-first");this._nav[index].previous=this._previous.length?this._previous:this._nav[index].holder.find("a.jp-previous");this._nav[index].next=this._next.length?this._next:this._nav[index].holder.find("a.jp-next");this._nav[index].last=this._last.length?this._last:this._nav[index].holder.find("a.jp-last");this._nav[index].fstBreak=this._nav[index].holder.find("span:first");this._nav[index].lstBreak=this._nav[index].holder.find("span:last");this._nav[index].pages=this._nav[index].holder.find("a").not(".jp-first, .jp-previous, .jp-next, .jp-last");this._nav[index].permPages=this._nav[index].pages.slice(0,this.options.startRange).add(this._nav[index].pages.slice(this._numPages-this.options.endRange,this._numPages));this._nav[index].pagesShowing=$([]);this._nav[index].currentPage=$([]);},bindNavHandlers:function(index){var nav=this._nav[index];nav.holder.bind("click.jPages",this.bind(function(evt){var newPage=this.getNewPage(nav,$(evt.target));if(this.validNewPage(newPage)){this._clicked=true;this.paginate(newPage);}evt.preventDefault();},this));if(this._first.length){this._first.bind("click.jPages",this.bind(function(){if(this.validNewPage(1)){this._clicked=true;this.paginate(1);}},this));}if(this._previous.length){this._previous.bind("click.jPages",this.bind(function(){var newPage=this._currentPageNum-1;if(this.validNewPage(newPage)){this._clicked=true;this.paginate(newPage);}},this));}if(this._next.length){this._next.bind("click.jPages",this.bind(function(){var newPage=this._currentPageNum+1;if(this.validNewPage(newPage)){this._clicked=true;this.paginate(newPage);}},this));}if(this._last.length){this._last.bind("click.jPages",this.bind(function(){if(this.validNewPage(this._numPages)){this._clicked=true;this.paginate(this._numPages);}},this));}},disableNavSelection:function(element){if(typeof element.onselectstart!="undefined")element.onselectstart=function(){return false;};else if(typeof element.style.MozUserSelect!="undefined")element.style.MozUserSelect="none";else

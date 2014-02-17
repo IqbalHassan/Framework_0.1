@@ -115,6 +115,7 @@ def make_status_array(refined_list):
         blocked_query="select count(*) from test_case_results where run_id='%s' and status='Blocked'"%run_id
         progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
         notrun_query="select count(*) from test_case_results where run_id='%s' and status='Submitted'" %run_id
+        skipped_query="select count(*) from test_case_results where run_id='%s' and status='Skipped'" %run_id
         Conn=GetConnection()
         total=DB.GetData(Conn,total_query)
         passed=DB.GetData(Conn,pass_query)
@@ -122,17 +123,19 @@ def make_status_array(refined_list):
         blocked=DB.GetData(Conn,blocked_query)
         progress=DB.GetData(Conn,progress_query)
         submitted=DB.GetData(Conn,notrun_query)
-        #pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
+        skipped=DB.GetData(Conn,skipped_query)
         pass_percent = str((passed[0]*100/total[0]))+'%'
         fail=str((failed[0]*100/total[0]))+'%'
         block=str((blocked[0]*100/total[0]))+'%'
         progress=str((progress[0]*100/total[0]))+'%'
         submitted=str((submitted[0]*100/total[0]))+'%'
+        pending=str((skipped[0]*100/total[0]))+'%'
         temp.append(pass_percent)
         temp.append(fail)
         temp.append(block)
         temp.append(progress)
         temp.append(submitted)
+        temp.append(pending)
         temp=tuple(temp)
         Conn.close()    
         pass_list.append(temp)
@@ -1310,13 +1313,17 @@ def Table_Data_UserList(request): #==================Returns Available user list
                         else:
                             Usable_Machine.append(each)
                 for each in Usable_Machine:
-                    query="Select  distinct tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,last_updated_time,machine_ip from test_run_env where tester_id='"+each[0]+"' and os_name ='" + Environment + "'"
+                    query="Select  distinct tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,to_char(now()-last_updated_time,'HH24:MI:SS') as Duration,machine_ip from test_run_env where tester_id='"+each[0]+"' and os_name ='" + Environment + "'"
                     tabledata = DB.GetData(Conn, query, False)
                     if len(tabledata)==0:
                         continue
                     else:
-                        Machine_List.append(tabledata[0])
-                Heading = ["Tester ID", "Machine OS", "Client", "Last Updated Time", "Machine IP"]
+                        temp=[]
+                        for eachitem in tabledata[0]:
+                            temp.append(eachitem)
+                        temp.insert(1, each[1])
+                        Machine_List.append(temp)
+                Heading = ["Machine Name", "Machine Type","Machine OS", "Client", "Last Updated Time", "Machine IP"]
                 #Heading.reverse()
     results = {'Heading':Heading, 'TableData':Machine_List}
     json = simplejson.dumps(results)

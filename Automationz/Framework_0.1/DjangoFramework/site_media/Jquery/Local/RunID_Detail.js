@@ -70,7 +70,8 @@ function drawGraph(RunID){
                     height: 500,
                     fontSize: 13,
                     titleTextStyle:{fontSize:16},
-                    legend:{ textStyle: {fontSize: 17}}
+                    legend:{ textStyle: {fontSize: 17}},
+                    colors:['#65bd10','#FD0006','#FF9e00','blue','#FFFC00','#88a388']
                 };
                 var chart = new google.visualization.PieChart(document.getElementById('chart'));
                 chart.draw(piedata, options);

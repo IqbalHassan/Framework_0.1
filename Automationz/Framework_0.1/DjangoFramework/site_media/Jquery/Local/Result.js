@@ -1,34 +1,15 @@
 $(document).ready(function(){
-    /*make_pagination('#allPage','#allRun','.paginated');
-    make_pagination('#completePage','#completeRun','.paginated');
-    make_pagination('#cancelledPage','#cancelledRun','.paginated');
-    make_pagination('#progressPage','#cancelledRun','.paginated');
-    make_pagination('#submittedPage','#submittedRun','.paginated');
-    */
     make_clickable('#allRun');
     make_clickable('#completeRun');
     make_clickable('#cancelledRun');
     make_clickable('#progressRun');
     make_clickable('#submittedRun');
-    //drawGraph('#allRun');
+    make_bar_clickable('#allRun');
+    make_bar_clickable('#completeRun');
+    make_bar_clickable('#cancelledRun');
+    make_bar_clickable('#progressRun');
+    make_bar_clickable('#submittedRun');
 });
-/*
-function drawGraph(divname){
-    $(divname+' tr>td:nth-child(5)').each(function(){
-        var text=$(this).text().trim();
-        text=text.split(')');
-        text=text[0].split("(")[1].split(",");
-        var status_array=[];
-        for(var i=0;i<text.length;i++){
-            var each=text[i].trim().split('L')[0].trim();
-            status_array.push(each);
-        }
-        /*var message=drawTable(status_array);
-        console.log(message);
-        $(this).html(message);
-    });
-}
-*/
 function make_clickable(divname){
     $(divname+' tr>td:first-child').each(function(){
        $(this).css({
@@ -41,30 +22,67 @@ function make_clickable(divname){
        });
     });
 }
-/*
-function make_pagination(pagediv,divname,classname){
-    var itemsOnPage = 5;
-    $(pagediv).pagination({
-        items: $(divname+' '+classname).length,
-        itemsOnPage: itemsOnPage,
-        cssStyle: 'light-theme',
-        onPageClick: function (pageNumber, event) {
-            var pageN = pageNumber != 0 ? (pageNumber - 1) : pageNumber;
-            var from = (pageN * itemsOnPage) + 1;
-            var to = (pageNumber * itemsOnPage);
-            //console.log('page :'+pageNumber+' from: ' + from + ' to :' + to);
-            $(divname+' '+classname).css({ 'display': 'none' });
-            for (var i = from; i <= to ; i++) {
-              //  console.log('loop :'+i);
-                $(divname+' '+classname+':eq(' + (i-1) + ')').css({ 'display': 'block' });
-            }
-        },
-        onInit: function () {
-            $(divname+' '+classname).css({ 'display': 'none' });
-            for (var i = 0; i <itemsOnPage; ++i) {
-                $(divname+' '+classname+':eq('+i+')').css({ 'display': 'block' });
-            }
-        }
+function make_bar_clickable(divname){
+    $(divname+' tr>td:nth-child(5)').each(function(){
+        $(this).css({
+            'cursor':'pointer'
+        });
+        $(this).live('click',function(){
+            var RunID=$(this).closest('tr').find('td:first-child').text().trim();
+            $.get("chartDraw",
+                {
+                    runid:RunID
+                },
+                function(data){
+                    console.log(data);
+                    /***************pie chart***********************/
+                    google.load("visualization", "1", {packages:["corechart"], callback:drawChart});
+
+                    function drawChart() {
+                        var piedata = google.visualization.arrayToDataTable([
+                            ['Run Status', 'Total Case Number'],
+                            ['Passed',     data[1]],
+                            ['Failed',      data[2]],
+                            ['Blocked',  data[3]],
+                            ['In-Progress', data[4]],
+                            ['Submitted',  data[5]],
+                            ['Skipped', data[6]]
+                        ]);
+                        var options = {
+                            title:RunID,
+                            is3D:true,
+                            width: 500,
+                            height: 500,
+                            fontSize: 13,
+                            titleTextStyle:{fontSize:16},
+                            legend:{ textStyle: {fontSize: 17}},
+                            colors:['#65bd10','#FD0006','#FF9e00','blue','#FFFC00','#88a388']
+                        };
+                        var chart = new google.visualization.PieChart(document.getElementById('chart'));
+                        chart.draw(piedata, options);
+                        $("#inner").dialog({
+                            buttons : {
+                                "OK" : function() {
+                                    $(this).dialog("close");
+                                }
+                            },
+
+                            show : {
+                                effect : 'drop',
+                                direction : "up"
+                            },
+
+                            modal : true,
+                            width : 620,
+                            height : 620,
+                            align:'center',
+                            title:"Summary"
+
+                        });
+                    }
+                });
+
+        });
+
     });
 }
-    */
