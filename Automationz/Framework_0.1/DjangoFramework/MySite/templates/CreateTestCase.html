@@ -104,8 +104,8 @@
                 <b class="Text">Tag(s):</b> <br>
             </td>
             <td class="tc_form_input_col">
-                <input class="ui-corner-all ui-autocomplete-input" id="tag_txtbox" type="text"
-                       name="searchboxname" autocomplete="off">
+                <input class="ui-corner-all ui-autocomplete-input textbox" id="tag_txtbox" type="text"
+                       name="searchboxname" autocomplete="off" placeholder="Tag(s)">
         </tr>
     </table>
 </form>
@@ -218,8 +218,8 @@
                 <b class="Text">Defect ID(s):</b>
             </td>
             <td class="tc_form_input_col">
-                <input class="ui-corner-all ui-autocomplete-input" id="defectid_txtbox" type="text"
-                       name="searchboxname" autocomplete="off">
+                <input class="ui-corner-all ui-autocomplete-input textbox" id="defectid_txtbox" type="text"
+                       name="searchboxname" autocomplete="off" placeholder="Defect ID(s)">
             </td>
         </tr>
     </table>
@@ -232,8 +232,8 @@
                 <b class="Text">Test Case ID(s):</b>
             </td>
             <td class="tc_form_input_col">
-                <input class="ui-corner-all ui-autocomplete-input" id="id_txtbox" type="text"
-                       name="searchboxname" autocomplete="off">
+                <input class="ui-corner-all ui-autocomplete-input textbox" id="id_txtbox" type="text"
+                       name="searchboxname" autocomplete="off" placeholder="Test Case ID(s)">
         </tr>
     </table>
 </form>
@@ -245,8 +245,8 @@
                 <b class="Text">Requirement ID(s):</b>
             </td>
             <td class="tc_form_input_col">
-                <input class="ui-corner-all ui-autocomplete-input" id="reqid_txtbox" type="text"
-                       name="searchboxname" autocomplete="off">
+                <input class="ui-corner-all ui-autocomplete-input textbox" id="reqid_txtbox" type="text"
+                       name="searchboxname" autocomplete="off" placeholder="Requirement ID(s)">
         </tr>
     </table>
 </form>
@@ -280,8 +280,8 @@
         <th scope="col">Step Info</th>
     </tr>
     </thead>
-        <tbody>
-        <tr>
+        <tbody id="steps_table">
+        <!--tr>
             <td><input id="remove_step" class="new_tc_form" type='image'
                        src='/site_media/minus2.png' name='Remove Step' style="background-color: transparent; width:18px; height:18px"></td>
             <td>1</td>
@@ -297,16 +297,16 @@
             <td>23.5</td>
             <td><input id="step_info" class="new_tc_form" type='image'
                        src='/site_media/info_button.jpg' name='Step Info' style="background-color: transparent; width:18px; height:18px"></td></td>
-        </tr>
+        </tr-->
 
         </tbody>
     </table>
 
     <div class="new_tc_form" style="text-align: center">
         <input id="add_test_step" class="buttonCustom new_tc_form" type='image'
-               src='/site_media/plus1.png' name='Add Step' style="background-color: transparent; width:30px; height:30px">
+               src='/site_media/plus1.png' name='Add Step' style="background-color: transparent; width:22px; height:22px">
         <input id="remove_test_step" class="buttonCustom new_tc_form" type='image'
-               src='/site_media/minus1.png' name='Remove Step' style="background-color: transparent; width:30px; height:30px">
+               src='/site_media/minus1.png' name='Remove Step' style="background-color: transparent; width:22px; height:22px">
     </div>
 
 </div>
