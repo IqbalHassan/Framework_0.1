@@ -61,7 +61,7 @@ function populate_feature_driver_info_div(){
                                 '<div id="center">' +
                                     '<label><b id="name_variable">Name:</b></label>' +
                                     "&nbsp;&nbsp;&nbsp;" +
-                                    "<input class=\"ui-corner-all textbox\" id=\"input\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName' />" +
+                                    "<input class=\"ui-corner-all textbox\" id=\"input\" style=\"margin: 5px; width:auto;\" type='text' title = 'Please Type Keyword' name='inputName' />" +
                                 '</div>' +
                             '</td>' +
                             '<td align="center">' +
@@ -99,7 +99,7 @@ function populate_feature_driver_info_div(){
             $("#renamebox").html(
                 "<label><b>New Name:</b></label>"
                     +"&nbsp;&nbsp;&nbsp;"
-                    +"<input class=\"ui-corner-all textbox\" id=\"input2\" style=\"margin-left: -2%\" type='text' title = 'Please Type Keyword' name='inputName2' />"
+                    +"<input class=\"ui-corner-all textbox\" id=\"input2\" style=\"margin: 5px; width:auto;\" type='text' title = 'Please Type Keyword' name='inputName2' />"
             );
             //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
             $("#error").hide();
