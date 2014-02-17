@@ -11,27 +11,34 @@
 
     <div class="responsive-tabs" width="100%">
 
-        <h3>All</h3>
+        <h2>All</h2>
         <div align="center">
-            <div id="allRun" width="100%">
+            <div id="allRun">
                 {%if total %}
-                <table class="one-column-emphasis"  width='100%'>
+                <table class="one-column-emphasis">
+                    <colgroup><col>
+                    </colgroup><thead>
                     <tr class="paginated">
                         {%for x in column%}
-                        <th style="text-align: center">{{x}}</th>
+                        <th scope="col">{{x}}</th>
                         {%endfor%}
                     </tr>
+                    </thead>
+                    <tbody>
                     {%for x in total%}
                     <tr class="paginated">
                         {%for y in x%}
                         {% if y == 'status' %}
-                            <td style="text-align: center">nothing</td>
+                            <td>
+                                <span class="progress-bar" width="100%"><span class="progress" style="width: 60%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
+                            </td>
                         {% else %}
-                            <td style="text-align: center">{{y}}</td>
+                            <td>{{y}}</td>
                         {% endif %}
                         {%endfor%}
                     </tr>
                     {%endfor%}
+                    </tbody>
                 </table>
                 {%else%}
                     <b>No Data Available</b>
@@ -56,25 +63,25 @@
             </div>
         </div>
 
-        <h3>Completed</h3>
+        <h2>Completed</h2>
         <div>
 
             <!--Put your code here-->
-            <div id="completeRun" width="100%">
+            <div id="completeRun">
                 {%if complete %}
-                <table class="one-column-emphasis"  width='100%'>
+                <table class="one-column-emphasis">
                     <tr class="paginated">
                         {%for x in column%}
-                        <th style="text-align: center">{{x}}</th>
+                        <th>{{x}}</th>
                         {%endfor%}
                     </tr>
                     {%for x in complete%}
                     <tr class="paginated">
                         {%for y in x%}
                         {% if y == 'status' %}
-                        <td style="text-align: center">nothing</td>
+                        <td>nothing</td>
                         {% else %}
-                        <td style="text-align: center">{{y}}</td>
+                        <td>{{y}}</td>
                         {% endif %}
                         {%endfor%}
                     </tr>
@@ -89,25 +96,25 @@
             </div>
         </div>
 
-        <h3>In-Progress</h3>
+        <h2>In-Progress</h2>
         <div>
 
             <!--Put your code here-->
-            <div id="progressRun" width="100%">
+            <div id="progressRun">
                 {%if progress %}
-                <table class="one-column-emphasis"  width='100%'>
+                <table class="one-column-emphasis">
                     <tr class="paginated">
                         {%for x in column%}
-                        <th style="text-align: center">{{x}}</th>
+                        <th>{{x}}</th>
                         {%endfor%}
                     </tr>
                     {%for x in progress%}
                     <tr class="paginated">
                         {%for y in x%}
                         {% if y == 'status' %}
-                        <td style="text-align: center">nothing</td>
+                        <td>nothing</td>
                         {% else %}
-                        <td style="text-align: center">{{y}}</td>
+                        <td>{{y}}</td>
                         {% endif %}
                         {%endfor%}
                     </tr>
@@ -121,25 +128,26 @@
 
             </div>
         </div>
-        <h3>Submitted</h3>
+
+        <h2>Submitted</h2>
         <div>
 
             <!--Put your code here-->
-            <div id="submittedRun" width="100%">
+            <div id="submittedRun">
                 {%if submitted %}
-                <table class="one-column-emphasis"  width='100%'>
+                <table class="one-column-emphasis">
                     <tr class="paginated">
                         {%for x in column%}
-                        <th style="text-align: center">{{x}}</th>
+                        <th>{{x}}</th>
                         {%endfor%}
                     </tr>
                     {%for x in submitted%}
                     <tr class="paginated">
                         {%for y in x%}
                         {% if y == 'status' %}
-                        <td style="text-align: center">nothing</td>
+                        <td>nothing</td>
                         {% else %}
-                        <td style="text-align: center">{{y}}</td>
+                        <td>{{y}}</td>
                         {% endif %}
                         {%endfor%}
                     </tr>
@@ -153,25 +161,25 @@
 
             </div>
         </div>
-        <h3>Cancelled</h3>
+        <h2>Cancelled</h2>
         <div>
 
             <!--Put your code here-->
-            <div id="cancelledRun" width="100%">
+            <div id="cancelledRun">
                 {%if cancelled %}
-                <table class="one-column-emphasis"  width='100%'>
+                <table class="one-column-emphasis">
                     <tr class="paginated">
                         {%for x in column%}
-                        <th style="text-align: center">{{x}}</th>
+                        <th>{{x}}</th>
                         {%endfor%}
                     </tr>
                     {%for x in cancelled%}
                     <tr class="paginated">
                         {%for y in x%}
                         {% if y == 'status' %}
-                        <td style="text-align: center">nothing</td>
+                        <td>nothing</td>
                         {% else %}
-                        <td style="text-align: center">{{y}}</td>
+                        <td>{{y}}</td>
                         {% endif %}
                         {%endfor%}
                     </tr>
