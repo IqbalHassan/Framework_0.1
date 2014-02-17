@@ -3,6 +3,8 @@
 {% block title%}Results{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="/site_media/Jquery/css/smoothness/simplePagination.css"/>
+<script type="text/javascript" src="/site_media/Jquery/js/jquery.simplePagination.js"></script>
 <script type="text/javascript" src="/site_media/Jquery/Local/Result.js"></script>
 <article>
     <!--**********Tabs***************-->
@@ -10,50 +12,168 @@
     <div class="responsive-tabs" width="100%">
 
         <h3>All</h3>
-        <div>
-
+        <div align="center">
+            <div id="allRun" width="100%">
+                {%if total %}
+                <table class="one-column-emphasis"  width='100%'>
+                    <tr class="paginated">
+                        {%for x in column%}
+                        <th style="text-align: center">{{x}}</th>
+                        {%endfor%}
+                    </tr>
+                    {%for x in total%}
+                    <tr class="paginated">
+                        {%for y in x%}
+                        {% if y == 'status' %}
+                            <td style="text-align: center">nothing</td>
+                        {% else %}
+                            <td style="text-align: center">{{y}}</td>
+                        {% endif %}
+                        {%endfor%}
+                    </tr>
+                    {%endfor%}
+                </table>
+                {%endif%}
+            </div>
             <!--Put your code here-->
-            <table align="center">
-                <tr>
+            <!--<table align="center">
+                /*<tr>
                     <td>
                         <p  class="flip" title = 'RunIDHeader' style="display: block">TestCase Run Detail</p>
                         <p  class="flip" title = 'SeeLess' style="display: block">See Less</p>
                     </td>
-                </tr>
+                </tr>*/
                 <tr>
                     <td>
-                        <div id="ResultPane">
 
-                        </div>
                     </td>
                 </tr>
-            </table>
+            </table>-->
+            <div id="allPage" align="center">
+
+            </div>
         </div>
 
         <h3>Completed</h3>
         <div>
 
             <!--Put your code here-->
+            <div id="completeRun" width="100%">
+                {%if complete %}
+                <table class="one-column-emphasis"  width='100%'>
+                    <tr class="paginated">
+                        {%for x in column%}
+                        <th style="text-align: center">{{x}}</th>
+                        {%endfor%}
+                    </tr>
+                    {%for x in complete%}
+                    <tr class="paginated">
+                        {%for y in x%}
+                        {% if y == 'status' %}
+                        <td style="text-align: center">nothing</td>
+                        {% else %}
+                        <td style="text-align: center">{{y}}</td>
+                        {% endif %}
+                        {%endfor%}
+                    </tr>
+                    {%endfor%}
+                </table>
+                {%endif%}
+            </div>
+            <div id="completePage">
 
+            </div>
         </div>
 
         <h3>In-Progress</h3>
         <div>
 
             <!--Put your code here-->
+            <div id="progressRun" width="100%">
+                {%if progress %}
+                <table class="one-column-emphasis"  width='100%'>
+                    <tr class="paginated">
+                        {%for x in column%}
+                        <th style="text-align: center">{{x}}</th>
+                        {%endfor%}
+                    </tr>
+                    {%for x in progress%}
+                    <tr class="paginated">
+                        {%for y in x%}
+                        {% if y == 'status' %}
+                        <td style="text-align: center">nothing</td>
+                        {% else %}
+                        <td style="text-align: center">{{y}}</td>
+                        {% endif %}
+                        {%endfor%}
+                    </tr>
+                    {%endfor%}
+                </table>
+                {%endif%}
+            </div>
+            <div id="progressPage">
 
+            </div>
         </div>
         <h3>Submitted</h3>
         <div>
 
             <!--Put your code here-->
+            <div id="submittedRun" width="100%">
+                {%if progress %}
+                <table class="one-column-emphasis"  width='100%'>
+                    <tr class="paginated">
+                        {%for x in column%}
+                        <th style="text-align: center">{{x}}</th>
+                        {%endfor%}
+                    </tr>
+                    {%for x in submitted%}
+                    <tr class="paginated">
+                        {%for y in x%}
+                        {% if y == 'status' %}
+                        <td style="text-align: center">nothing</td>
+                        {% else %}
+                        <td style="text-align: center">{{y}}</td>
+                        {% endif %}
+                        {%endfor%}
+                    </tr>
+                    {%endfor%}
+                </table>
+                {%endif%}
+            </div>
+            <div id="submittedPage">
 
+            </div>
         </div>
         <h3>Cancelled</h3>
         <div>
 
             <!--Put your code here-->
+            <div id="cancelledRun" width="100%">
+                {%if cancelled %}
+                <table class="one-column-emphasis"  width='100%'>
+                    <tr class="paginated">
+                        {%for x in column%}
+                        <th style="text-align: center">{{x}}</th>
+                        {%endfor%}
+                    </tr>
+                    {%for x in cancelled%}
+                    <tr class="paginated">
+                        {%for y in x%}
+                        {% if y == 'status' %}
+                        <td style="text-align: center">nothing</td>
+                        {% else %}
+                        <td style="text-align: center">{{y}}</td>
+                        {% endif %}
+                        {%endfor%}
+                    </tr>
+                    {%endfor%}
+                </table>
+                {%endif%}
+            </div>
+            <div id="cancelledPage">
 
+            </div>
         </div>
 
 

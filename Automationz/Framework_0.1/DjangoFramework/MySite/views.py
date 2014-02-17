@@ -91,9 +91,57 @@ def RunTest(request):
     variables = Context({ })
     output = templ.render(variables)
     return HttpResponse(output)"""
+def make_array(get_list):
+    refined_list=[]
+    for each in get_list:
+        temp=[]
+        #print temp
+        for eachitem in each:
+            temp.append(eachitem)
+        temp.insert(4,"status")
+        temp=tuple(temp)
+        refined_list.append(temp)
+    print refined_list
+    return refined_list        
+def ResultTableFetch():
+    Conn=GetConnection()
+    interval="1"
+    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
+    completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
+    total_query=progress_query+' union all '+completed_query
+    get_list=DB.GetData(Conn,total_query,False)
+    total_run=make_array(get_list)
+    print total_run
+    completed_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Complete' order by ter.teststarttime desc"
+    complete_list=DB.GetData(Conn,completed_query,False)
+    complete_run=make_array(complete_list)
+    cancelled_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Cancelled' order by ter.teststarttime desc"
+    cancelled_list=DB.GetData(Conn,cancelled_query,False)
+    cancelled_run=make_array(cancelled_list)
+    interval="7"
+    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='In-Progress' and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
+    progress_list=DB.GetData(Conn,progress_query,False)
+    progress_run=make_array(progress_list)
+    interval="7"
+    submitted_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Submitted' and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc"%interval
+    submitted_list=DB.GetData(Conn,submitted_query,False)
+    submitted_run=make_array(submitted_list)
+    data={'total':total_run,'complete':complete_run,'cancelled':cancelled_run,'progress':progress_run,'submitted':submitted_run}
+    return data
 def ResultPage(request):
+    data=ResultTableFetch()
+    print data
+    Column=["Run ID","Test Objective","Run Type","Assigned Tester","Report Status","Status","Duration","Product Version","Client"]
     template=get_template('Result.html')
-    variables=Context({ })
+    Dict={
+          'total':data['total'],
+          'complete':data['complete'],
+          'cancelled':data['cancelled'],
+          'progress':data['progress'],
+          'submitted':data['submitted'],
+          'column':Column,
+          }
+    variables=Context(Dict)
     output=template.render(variables)
     return HttpResponse(output)
 
@@ -4076,121 +4124,6 @@ def TestStepWithTypeInTable(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-"""def Auto_MachineName(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            conn=GetConnection()
-            machine_name=request.GET.get(u'machine','')
-            print machine_name
-            query="select user_names,user_level from permitted_user_list where user_level='Manual' and user_names Ilike '%"+machine_name+"%'"
-            machine_data=DB.GetData(conn, query,False)
-    json = simplejson.dumps(machine_data)
-    return HttpResponse(json, mimetype='application/json')
-
-def Check_ExistingMachine(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            conn=GetConnection()
-            check_machine=request.GET.get(u'machine','')
-            print check_machine
-            query="select count(*) from permitted_user_list where user_level='Manual' and user_names ='"+check_machine+"'"
-            machine_exists=DB.GetData(conn, query, False)
-    json=simplejson.dumps(machine_exists)
-    return HttpResponse(json,mimetype='application/json')
-
-def Auto_OSName(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            conn=GetConnection()
-            os=request.GET.get(u'OSName','')
-            query="select sub_type,value from config_values where type='"+os+"'"
-            os_names=DB.GetData(conn, query, False)
-            message=""
-            for each in os_names:
-                print each[0]+" - "+each[1]
-                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
-    message=[message]
-    results=simplejson.dumps(message)
-    return HttpResponse(results,mimetype='application/json')
-
-def Auto_VersionName(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            os_version=request.GET.get(u'Version','')
-            conn=GetConnection()
-            query="select sub_type,value from config_values where type='"+os_version+"'"
-            version_data=DB.GetData(conn, query, False)
-            message=""
-            for each in version_data:
-                print each[0]+" - "+each[1]
-                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
-    message=[message]
-    results=simplejson.dumps(message)
-    return HttpResponse(results,mimetype='application/json')
-
-def Auto_Browser(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            browser=request.GET.get(u'Browser','')
-            conn=GetConnection()
-            query="select sub_type,value from config_values where type='"+browser+"'"
-            browser_data=DB.GetData(conn,query,False)
-            message=""
-            for each in browser_data:
-                print each[0]+" - "+each[1]
-                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
-    message=[message]
-    results=simplejson.dumps(message)
-    return HttpResponse(results,mimetype='application/json')
-
-def Auto_BrowserVersion(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            browser_version=request.GET.get(u'Version','')
-            conn=GetConnection()
-            query="select sub_type,value from config_values where type='"+browser_version+"'"
-            browser_data=DB.GetData(conn,query,False)
-            message=""
-            for each in browser_data:
-                print each[0]+" - "+each[1]
-                message+="<option value=\""+each[0]+"\">"+each[1]+"</option>"
-    message=[message]
-    results=simplejson.dumps(message)
-    return HttpResponse(results,mimetype='application/json')
-def AddManualTestMachine(request):
-    message=""
-    if request.is_ajax():
-        if request.method=='GET':
-            values={}
-            for each in request.GET:
-                values[each]=request.GET.get(each,'')
-                print each+" - "+values[each]
-            status="Unassigned"
-            updateTime=TimeStamp("integer")
-            print status
-            print updateTime
-            machine_os=values['OSName']+" "+values['OSVersion']+" - "+values['OSBit']
-            print machine_os
-            client=values['Browser']+"("+values['BrowserVersion']+";"+values['OSBit']+"Bit)"
-            print client
-            oConn=GetConnection()
-            query="select count(*) from permitted_user_list where user_names='"+values['Machine']+"'"
-            count=DB.GetData(oConn, query)
-            if count[0]<1:
-                testrunenv2=DB.InsertNewRecordInToTable(oConn, "permitted_user_list",user_names=values['Machine'],email=values['Machine']+"@machine.com",user_level='Manual')
-                print testrunenv2
-                testrunenv=DB.InsertNewRecordInToTable(oConn, "test_run_env",tester_id=values['Machine'],status=status,machine_os=machine_os,client=client,data_type="Default",last_updated_time=updateTime,machine_ip=values['machineIP'],os_name=values['OSName'],os_version=values['OSVersion'],os_bit=values['OSBit'])
-                print testrunenv
-                if(testrunenv and testrunenv2):
-                    message="Machine is created successfully"
-                else:
-                    message="Machine is not created successfully"
-            else:
-                message="Machine with the name '"+values['Machine']+"' exists"
-    message=[message]
-    results=simplejson.dumps(message)
-    return HttpResponse(results,mimetype='application/json')
-"""
 def RunIDTestCases(request,Run_Id,TC_Id):
     print Run_Id
     print TC_Id
@@ -4313,75 +4246,6 @@ def LogFetch(request):
              }
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
-def ResultTableFetch(request):
-    message=""
-    if request.is_ajax():
-        if request.method=='GET':
-            condition=request.GET.get(u'searchText','')
-            print condition
-            if condition=="limit":
-                limit="limit 20"
-                interval=1
-            if condition=="all":
-                limit=""
-                interval=7
-            print limit
-            print interval    
-            progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
-            completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
-            query=progress_query+" union all "+completed_query + limit
-            Conn=GetConnection()
-            get_list=DB.GetData(Conn,query,False)
-            print get_list
-            refined_list=[]
-            for each in get_list:
-                temp=[]
-                #print temp
-                for eachitem in each:
-                    temp.append(eachitem)
-                temp.insert(4,"status")
-                temp=tuple(temp)
-                refined_list.append(temp)
-            Conn.close()
-            
-            #For the manual Recent Part
-            pass_list=[]
-            for each in refined_list:
-                #print each
-                run_id=each[0]
-                temp=[]
-                total_query="select count(*) from test_run where run_id='%s'" %run_id
-                pass_query="select count(*) from test_case_results where run_id='%s' and status='Passed'" %run_id
-                fail_query="select count(*) from test_case_results where run_id='%s' and status='Failed'" %run_id
-                blocked_query="select count(*) from test_case_results where run_id='%s' and status='Blocked'"%run_id
-                progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
-                notrun_query="select count(*) from test_case_results where run_id='%s' and status='Submitted'" %run_id
-                Conn=GetConnection()
-                total=DB.GetData(Conn,total_query)
-                passed=DB.GetData(Conn,pass_query)
-                failed=DB.GetData(Conn,fail_query)
-                blocked=DB.GetData(Conn,blocked_query)
-                progress=DB.GetData(Conn,progress_query)
-                submitted=DB.GetData(Conn,notrun_query)
-                #pending=total[0]-(passed[0]+failed[0]+progress[0]+not_run[0])
-                temp.append(total[0])
-                temp.append(passed[0])
-                temp.append(failed[0])
-                temp.append(blocked[0])
-                temp.append(progress[0])
-                temp.append(submitted[0])
-                temp=tuple(temp)
-                Conn.close()    
-                pass_list.append(temp)
-            Column=["Run ID","Test Objective","Run Type","Assigned Tester","Report Status","Status","Duration","Product Version","Client"]
-    message={
-             'column':Column,
-             'data':refined_list,
-             'status_list':pass_list
-             }
-    result=simplejson.dumps(message)
-    return HttpResponse(result,mimetype='application/json')
-
 def RunIDStatus(request):
     if request.is_ajax():
         if request.method=='GET':

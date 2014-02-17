@@ -1,32 +1,19 @@
 /**
  * Created by lent400 on 1/22/14.
- */
+ *//*
 $(document).ready(function(){
-    $('.flip[title="SeeLess"]').css({'display':'none'});
-    $('.flip[title="RunIDHeader"]').text("Show All");
-    var searchText="limit";
-    show_Results(searchText);
-    $('.flip[title="RunIDHeader"]').live('click',function(){
-        show_Results("all");
-        $(this).css({'display':'none'});
-        $('.flip[title="SeeLess"]').css({'display':'block'});
-    });
-    $('.flip[title="SeeLess"]').live('click',function(){
-        show_Results("limit");
-        $(this).css({'display':'none'});
-        $('.flip[title="RunIDHeader"]').css({'display':'block'});
-    });
+    show_Results("all");
 });
 function drawTable(column,row){
     var message="";
     message+='<table id="data_table" class="one-column-emphasis" style="font-size:small; border-collapse:collapse;" width="100%">';
-    message+='<tr>';
+    message+='<tr class="paginated" width="100%" style="display: none">';
     for(var i=0;i<column.length;i++){
         message+='<td style="text-align: center">'+column[i]+'</td> ';
     }
     message+='</tr>';
     for(var i=0;i<row.length;i++){
-        message+='<tr>';
+        message+='<tr class="paginated" width="100%" style="display: none">';
         for(var j=0;j<row[i].length;j++){
             if(row[i][j]=="status"){
                 message+='<td  id="status'+i+'"></td>'
@@ -129,6 +116,31 @@ function Make_Detail_Status(){
         }
     });
 }
+function make_pagination(pagediv,divname,classname){
+    var itemsOnPage = 5;
+    $(pagediv).pagination({
+        items: $(divname+' '+classname).length,
+        itemsOnPage: itemsOnPage,
+        cssStyle: 'light-theme',
+        onPageClick: function (pageNumber, event) {
+            var pageN = pageNumber != 0 ? (pageNumber - 1) : pageNumber;
+            var from = (pageN * itemsOnPage) + 1;
+            var to = (pageNumber * itemsOnPage);
+            console.log('page :'+pageNumber+' from: ' + from + ' to :' + to);
+            $(divname+' '+classname).css({ 'display': 'none' });
+            for (var i = from; i <= to ; i++) {
+                console.log('loop :'+i);
+                $(divname+' '+classname+':eq(' + (i-1) + ')').css({ 'display': 'block' });
+            }
+        },
+        onInit: function () {
+            $(divname+' '+classname).css({ 'display': 'none' });
+            for (var i = 0; i <itemsOnPage; ++i) {
+                $(divname+' '+classname+':eq('+i+')').css({ 'display': 'block' });
+            }
+        }
+    });
+}
 function show_Results(searchText){
     $.get("ResultTableFetch",{
         'searchText':searchText
@@ -165,5 +177,58 @@ function show_Results(searchText){
         }
         Make_Detail_Status();
         Clickable_RunID();
+        make_pagination('#allPage','#ResultPane','.paginated');
+
+    });
+}
+
+*/
+$(document).ready(function(){
+    make_pagination('#allPage','#allRun','.paginated');
+    make_pagination('#completePage','#completeRun','.paginated');
+    make_pagination('#cancelledPage','#cancelledRun','.paginated');
+    make_pagination('#progressPage','#cancelledRun','.paginated');
+    make_pagination('#submittedPage','#submittedRun','.paginated');
+    make_clickable('#allRun');
+    make_clickable('#completeRun');
+    make_clickable('#cancelledRun');
+    make_clickable('#progressRun');
+    make_clickable('#submittedRun');
+});
+function make_clickable(divname){
+    $(divname+' tr>td:first-child').each(function(){
+       $(this).css({
+           'color':'blue',
+           'cursor':'pointer'
+       }) ;
+       $(this).click(function(){
+           var location='/Home/RunID/'+$(this).text().trim()+'/';
+            window.location=location;
+       });
+    });
+}
+function make_pagination(pagediv,divname,classname){
+    var itemsOnPage = 5;
+    $(pagediv).pagination({
+        items: $(divname+' '+classname).length,
+        itemsOnPage: itemsOnPage,
+        cssStyle: 'light-theme',
+        onPageClick: function (pageNumber, event) {
+            var pageN = pageNumber != 0 ? (pageNumber - 1) : pageNumber;
+            var from = (pageN * itemsOnPage) + 1;
+            var to = (pageNumber * itemsOnPage);
+            console.log('page :'+pageNumber+' from: ' + from + ' to :' + to);
+            $(divname+' '+classname).css({ 'display': 'none' });
+            for (var i = from; i <= to ; i++) {
+                console.log('loop :'+i);
+                $(divname+' '+classname+':eq(' + (i-1) + ')').css({ 'display': 'block' });
+            }
+        },
+        onInit: function () {
+            $(divname+' '+classname).css({ 'display': 'none' });
+            for (var i = 0; i <itemsOnPage; ++i) {
+                $(divname+' '+classname+':eq('+i+')').css({ 'display': 'block' });
+            }
+        }
     });
 }
