@@ -169,7 +169,7 @@
                     <tr>
                         {%for x in Env_Details_Data%}
                         {%for y in x%}
-                        <td style="text-align: center">{{y}}</td>
+                            <td style="text-align: center">{{y}}</td>
                         {%endfor%}
                         {%endfor%}
                     </tr>
@@ -180,7 +180,66 @@
         </div>
         <h3 width="16%">ReRun</h3>
         <div>
+            <div class="columns browser">
+                <div class="columns sidebar issues-list-sidebar browser">
+                    <ul class="filter-list">
+                        <li><a href="#" class="filter-item selected">Re Run</a></li>
+                        <li><a class="filter-item ">ReRun Failed</a></li>
+                        <li><a class="filter-item ">ReRun Failed+Pending</a></li>
+                        <li><a class="filter-item ">ReRun Pending</a></li>
+                    </ul>
+                    <div class="rule">
 
+                    </div>
+                </div>
+                <div class="column main">
+                    <div class="chromed-list-browser">
+                        <div align="center" style="margin-top: 20px;" >
+                            <div id="rerun">
+                            {% if rerun_list %}
+                                <table class="one-column-emphasis">
+                                    <tr>
+                                        <th>Select</th>
+                                        {% for x in rerun_col%}
+                                            <th>{{x}}</th>
+                                        {% endfor %}
+                                    </tr>
+                                    {% for x in rerun_list %}
+                                    <tr>
+                                        <td><input type="checkbox" name="checklist" value="{{x.0}}"/></td>
+                                        {% for y in x %}
+                                            <td>{{y}}</td>
+                                        {%endfor%}
+                                    </tr>
+                                    {% endfor%}
+                                </table>
+                            {%endif%}
+                            </div>
+                            <div class="rule"></div>
+                            <div style="display: none">
+                                {% for x in Env_Details_Data%}
+                                <input name="machine" value="{{x.1}}"/>
+                                <input name="tester" value="{{x.2}}"/>
+                                <input name="os" value="{{x.5}}"/>
+                                <input name="client" value="{{x.6}}"/>
+                                <input name="email" value="{{x.8}}"/>
+                                {% endfor %}
+                            </div>
+                            <div>
+                            <div align="right">
+                                <input type="text" class="textbox" id="test_objective" val="" placeholder="Enter the Test Objective"/>
+                            </div>
+                            </div>
+                            <div align="left" style="margin-top: 20px;">
+                                <a class=" minibutton blue flash-action" id="selectall">Select All</a>
+                            </div>
+                            <div align="right" style="margin-top: -40px;">
+                                <a type="submit" class="button minibutton primary" id="submit_button">Submit</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <h3 width="16%">Graph</h3>
         <div>

@@ -20,30 +20,106 @@ $(document).ready(function(){
         window.location='/Home/RunID/'+RunID.trim();
     });
     drawGraph(RunID);
-});/*
-function buttonPreparation(){
-    $(".flip[title='All Test Cases']").click(function(){
-        $("#AllTestCasesTable").slideToggle("slow");
-    });
-    $(".flip[title='Passed Test Cases']").click(function(){
-        $("#PassTestCasesTable").slideToggle("slow");
-    });
-    $(".flip[title='Submitted Test Cases']").click(function(){
-        $("#SubmittedTestCasesTable").slideToggle("slow");
-    });
-    $(".flip[title='Failed Test Cases']").click(function(){
-        $("p.flip[title =  'Rerun']").slideToggle('slow');
-        $("p.flip[title =  'Rerun']").each(function(){
-            $(this).css("display","inline-block")
+    ReRunTab();
+});
+function ReRunTab(){
+    $('#rerun tr>td:nth-child(3)').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor':'pointer'
+        }) ;
+        var test_case_id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
+        var name=$(this).text().trim();
+        $(this).html('<div id="'+test_case_id+'">'+name+'</div><div id="'+test_case_id+'detail" style="display:none"></div>');
+        var name=$(this).closest('tr').find('td:nth-child(2)').text().trim();
+        $.get('TestStepWithTypeInTable',{RunID:name},function(data){
+            console.log(data);
+            var column=data['column'];
+            var resultdata=data['Result'];
+            var message="";
+            message+='<table class="one-column-emphasis">';
+            message+='<tr>';
+            for(var i=0;i<column.length;i++){
+                message+=('<th align="left">'+column[i]+'</th>');
+            }
+            message+='</tr>';
+            for(var i=0;i<resultdata.length;i++){
+                message+='<tr>';
+                for(var j=0;j<resultdata[i].length;j++){
+                    message+=('<td align="left">'+resultdata[i][j]+'</td>');
+                }
+                message+='</tr>';
+            }
+            message+='</table> ';
+            console.log(message);
+            $('#rerun '+'#'+test_case_id+'detail').html(message);
         });
-        $("#FailTestCasesTable").slideToggle("slow");
+        $('#rerun '+'#'+test_case_id).live('click',function(){
+            $('#rerun '+'#'+test_case_id+'detail').fadeToggle(500);
+        })
     });
-    $(".flip[title='Failed Steps']").click(function(e){
-        e.stopPropagation();
-        $("#FailedStepsTable").slideToggle("slow");
+    $('#selectall').live('click',function(){
+       $('input[name="checklist"]').attr('checked','true');
+    });
+    $('#submit_button').live('click',function(){
+        var tc_list=[];
+        $('input[name="checklist"]:checked').each(function(){
+            tc_list.push($(this).val());
+        });
+        console.log(tc_list);
+        var machine=$('input[name="machine"]').val();
+        var tester=$('input[name="tester"]').val();
+        var client=$('input[name="client"]').val();
+        var email=$('input[name="email"]').val();
+        var os=$('input[name="os"]').val();
+        var objective=$('#test_objective').val();
+        os=os.split("-")[0].trim();
+        os=os.split(" ")[0].trim();
+        var environment="";
+        if(os=='Windows'){
+            environment="PC";
+        }
+        else{
+            environment="Mac";
+        }
+        console.log(os);
+        objective=objective.trim();
+        var queryText="";
+        for(var i=0;i<tc_list.length;i++){
+            queryText+=tc_list[i].trim();
+            queryText+=": ";
+        }
+        queryText+=((machine.trim())+':');
+        console.log(queryText);
+        var testerText="";
+        tester=tester.split(",");
+        for(var i=0;i<tester.length;i++){
+            testerText+=tester[i];
+            testerText+=": ";
+        }
+        console.log(testerText);
+        var emailText="";
+        email=email.split(",");
+        for(var i=0;i<email.length;i++){
+            emailText+=email[i];
+            emailText+=": ";
+        }
+        console.log(emailText);
+        var dependencyText="";
+        dependencyText+=(client+": ");
+        console.log(dependencyText);
+        $.get("Run_Test",{
+            RunTestQuery:queryText,
+            EmailIds:emailText,
+            TesterIds:testerText,
+            DependencyText:dependencyText,
+            TestObjective:objective,
+            Env:environment
+        },function(){
 
+        });
     });
-}*/
+}
 function drawGraph(RunID){
     $.get("chartDraw",
         {

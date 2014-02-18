@@ -448,13 +448,13 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 							//Search Email Input Box
 							+"<td>"
 								+"<label  class = 'Text SearchEmail' style = 'display:none' > <b> Select Name for Email: </b></label>"
-								+"<input  id = 'EmailSearchBox' class='SearchEmail ui-corner-all' style = 'display:none' size='42'type='text' title = 'Please Select Email by Keyword' />"
+								+"<input  id = 'EmailSearchBox' class='SearchEmail ui-corner-all textbox' style = 'display:none;margin-left: -.5%' size='42'type='text' title = 'Please Select Email by Keyword' />"
 							+ "</td>"
 						+"</tr>"
                         +"<tr>" +
                             "<td>" +
                                 "<label class='Text SearchEmail' style='display:none'><b>*Select a Tester:</b></label></td>" +
-                                "<td><input id='TesterSearchBox' class='SearchEmail ui-corner-all' style=' display: none;margin-left: -102%' size='42' type='text' title='Please Select a tester'>" +
+                                "<td><input id='TesterSearchBox' class='SearchEmail ui-corner-all textbox' style=' display: none;margin-left: -104%' size='42' type='text' title='Please Select a tester'>" +
                             "</td>" +
                         "</tr>"
 						
@@ -465,7 +465,7 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 								+"</td>"
 							
 								+"<td>"
-									+"<input class = 'ui-corner-all' id = 'TestObjective' style = 'display:none; margin-left: -102%'  size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
+									+"<input class = 'ui-corner-all textbox' id = 'TestObjective' style = 'display:none;margin-left: -104%'  size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
 								+"</td>"
 						+"</tr>"		
 								

@@ -148,22 +148,23 @@ def ResultTableFetch():
     completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
     total_query=progress_query+' union all '+completed_query
     get_list=DB.GetData(Conn,total_query,False)
+    get_list=set(get_list)
     total_run=make_array(get_list)
     print total_run
-    completed_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Complete' order by ter.teststarttime desc"
+    completed_query="select  ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Complete' order by ter.teststarttime desc"
     complete_list=DB.GetData(Conn,completed_query,False)
-    complete_run=make_array(complete_list)
+    complete_run=make_array(set(complete_list))
     cancelled_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Cancelled' order by ter.teststarttime desc"
     cancelled_list=DB.GetData(Conn,cancelled_query,False)
-    cancelled_run=make_array(cancelled_list)
+    cancelled_run=make_array(set(cancelled_list))
     interval="7"
     progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='In-Progress' and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
     progress_list=DB.GetData(Conn,progress_query,False)
-    progress_run=make_array(progress_list)
+    progress_run=make_array(set(progress_list))
     interval="7"
     submitted_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Submitted' and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc"%interval
     submitted_list=DB.GetData(Conn,submitted_query,False)
-    submitted_run=make_array(submitted_list)
+    submitted_run=make_array(set(submitted_list))
     all_status=make_status_array(total_run)
     complete_status=make_status_array(complete_run)
     cancelled_status=make_status_array(cancelled_run)
@@ -858,10 +859,34 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     Conn=GetConnection()
     RunId=RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID","Tester","Status","Product","Machine OS","Client","Machine IP"]
+    Env_Details_Col = ["Run ID","Mahchine","Assigned Tester","Status","Product","Machine OS","Client","Machine IP","Email Notification"]
     run_id_status=GetRunIDStatus(RunId)
-    query="Select DISTINCT run_id,tester_id,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip from test_run_env Where run_id = '%s'" % RunId
+    query="Select DISTINCT run_id,tester_id,assigned_tester,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip from test_run_env Where run_id = '%s'" % RunId
     Env_Details_Data=DB.GetData(Conn, query, False)
+    #code for fetching email notification
+    email_query= "select email_notification from test_run_env where run_id='%s'"%RunId
+    email_list=DB.GetData(Conn,email_query,False)
+    print email_list
+    emails=email_list[0][0]
+    email_list=emails.split(",")
+    email_list=list(set(email_list))
+    print email_list
+    email_receiver=[]
+    for each in email_list:
+        query="select user_names from permitted_user_list where user_level='email' and email='%s'"%each
+        name=DB.GetData(Conn,query)
+        email_receiver.append(name[0])
+    print email_receiver
+    email_name=",".join(email_receiver)
+    temp=[]
+    for each in Env_Details_Data[0]:
+        temp.append(each)
+    temp.append(email_name)
+    temp=tuple(temp)
+    Env_Details_Data=[]
+    Env_Details_Data.append(temp)
+    print Env_Details_Data
+    #####################################
     AllTestCases1 = DB.GetData(Conn, "(select "
                                             "tct.name as MKSId, "
                                             "tc.tc_name, "
@@ -940,7 +965,10 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
         FailsStepsWithCount.append(L)
 
     failsteps_Col = ["Step Name"]
-
+    ReRunColumn=['Test Case ID','Test Case Name','Type','Status']
+    query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and tcr.run_id='%s'"%RunId
+    ReRunList=DB.GetData(Conn,query,False)
+    ReRun=Modify(ReRunList)
     results={
              'Env_Details_Col':Env_Details_Col,
              'Env_Details_Data':Env_Details_Data,
@@ -956,7 +984,9 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
              'submitted_length':len(Submitted_TestCases),
              'failsteps':FailsStepsWithCount,
              'failsteps_col':failsteps_Col,
-             'fail_length':len(FailsStepsWithCount)
+             'fail_length':len(FailsStepsWithCount),
+             'rerun_col':ReRunColumn,
+             'rerun_list':ReRun
              }
     return render_to_response('RunID_Detail.html',results)
 
@@ -1313,7 +1343,7 @@ def Table_Data_UserList(request): #==================Returns Available user list
                         else:
                             Usable_Machine.append(each)
                 for each in Usable_Machine:
-                    query="Select  distinct tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,to_char(now()-last_updated_time,'HH24:MI:SS') as Duration,machine_ip from test_run_env where tester_id='"+each[0]+"' and os_name ='" + Environment + "'"
+                    query="Select  distinct tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,last_updated_time,machine_ip from test_run_env where tester_id='"+each[0]+"' and os_name ='" + Environment + "'"
                     tabledata = DB.GetData(Conn, query, False)
                     if len(tabledata)==0:
                         continue
@@ -4189,10 +4219,11 @@ def TestStepWithTypeInTable(request):
             if RunID != '':
                 Result = DB.GetData(Conn, "Select stepname from test_steps tst,test_steps_list tsl where tst.step_id = tsl.step_id and tc_id  = '%s' order by teststepsequence" % RunID)
             for each in Result:
-                query="select '"+each+"-'||steptype from test_steps_list where stepname='"+each+"'"
+                query="select steptype from test_steps_list where stepname='"+each+"'"
                 Result_type=DB.GetData(Conn, query)
-                result.append(Result_type[0])
-    results = {'Result':result}
+                result.append((each,Result_type[0]))
+    column=['Step Name','Step Type']
+    results = {'Result':result,'column':column}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -4559,7 +4590,7 @@ def CheckMachine(request):
             name=request.GET.get(u'name','')
             print name
             Conn=GetConnection()
-            query="select os_name,os_version,os_bit,machine_ip,client from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s' and status='Unassigned'"%name
+            query="select os_name,os_version,os_bit,machine_ip,client from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s'"%name
             machine_info=DB.GetData(Conn,query,False)
             print machine_info
     result=simplejson.dumps(machine_info)
@@ -4649,3 +4680,7 @@ def chartDraw(request):
             list.append(skipped[0])
     result=simplejson.dumps(list)
     return HttpResponse(result,mimetype='application/json')
+
+def ReRun(request):
+    if request.method=='GET':
+        print request.GET
