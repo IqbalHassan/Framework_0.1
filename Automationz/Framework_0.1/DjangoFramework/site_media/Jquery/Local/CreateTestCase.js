@@ -19,9 +19,10 @@ $(document).ready(function() {
         '<tr id="step_'+step_num+'">' +
         '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>'+step_num+'</td>' +
-        '<td><a class="notification-indicator tooltipped downwards" data-gotokey="n">' +
+        /*'<td><a class="notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status all-read"></span>' +
-        '</a></td>' +
+        '</a></td>' +*/
+        '<td><input class="ui-autocomplete-input textbox" style="width: auto;"></td>' +
         '<td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n">' +
         '<span class="mail-status unread"></span>' +
         '</a></td>' +
@@ -611,9 +612,10 @@ function addStep(){
         '<tr id="step_'+step_num+'">' +
             '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
                 '<td>'+step_num+'</td>' +
-                '<td><a class="notification-indicator tooltipped downwards" data-gotokey="n">' +
+                /*'<td><a class="notification-indicator tooltipped downwards" data-gotokey="n">' +
                     '<span class="mail-status all-read"></span>' +
-                '</a></td>' +
+                '</a></td>' +*/
+                '<td><input class="ui-autocomplete-input textbox" style="width: auto;"></td>' +
                 '<td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n">' +
                     '<span class="mail-status unread"></span>' +
                 '</a></td>' +
