@@ -141,6 +141,9 @@ function TestDataFetch(){
                             data['data_array'].shift();
                         }
                     });
+                    $('#data_detail tr>td:first-child:eq(0)').each(function(){
+                        $(this).css({'textAlign':'center'});
+                    })
                     $("#inside_back").dialog({
                         buttons : {
                             "OK" : function() {
@@ -167,16 +170,16 @@ function TestDataFetch(){
 
 function draw_table(row,column){
     var message=""
-    message+='<table id="data_detail" class="one-column-emphasis" style="font-size:small; border-collapse:collapse;" width="100%">';
+    message+='<table id="data_detail" class="one-column-emphasis" width="100%">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+='<td>'+column[i]+'</td>';
+        message+='<th>'+column[i]+'</th>';
     }
     message+='</tr>';
     for(var i=0;i<row.length;i++){
         message+='<tr>';
         for(var j=0;j<row[i].length;j++){
-            message+='<td>'+row[i][j]+'</td>';
+            message+='<td style="text-align: left">'+row[i][j]+'</td>';
         }
         message+='</tr>';
     }

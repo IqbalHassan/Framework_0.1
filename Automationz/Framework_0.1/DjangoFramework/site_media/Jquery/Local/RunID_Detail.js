@@ -22,7 +22,7 @@ $(document).ready(function(){
     drawGraph(RunID);
     ReRunTab();
 });
-function ReRunTab(){
+function MakingReRunClickable(){
     $('#rerun tr>td:nth-child(3)').each(function(){
         $(this).css({
             'color':'blue',
@@ -56,8 +56,48 @@ function ReRunTab(){
         });
         $('#rerun '+'#'+test_case_id).live('click',function(){
             $('#rerun '+'#'+test_case_id+'detail').fadeToggle(500);
-        })
+        });
     });
+}
+function ReRunTab(){
+    $('.filter-item').click(function(){
+        $('.filter-item').removeClass('selected');
+        $(this).addClass('selected');
+        $.get('ReRun',{
+            status:$(this).attr('data-id').trim(),
+            RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim()
+        },function(data){
+            var column=data['col'];
+            var data_list=data['list'];
+            if(data_list.length==0){
+                $('#rerun').css({'marginTop':'20%'});
+                $('#rerun').html('<b style="color:#ccc;font-size:400%;font-weight:bolder;">No Test Cases</b>');
+                $('#additional_data').fadeOut(100);
+            }
+            else{
+                var message="";
+                message+='<table class="one-column-emphasis"><tr><th>Select</th>';
+                for(var i=0;i<column.length;i++){
+                    message+='<th>'+column[i]+'</th>';
+                }
+                message+='</tr>';
+                for(var i=0;i<data_list.length;i++){
+                    message+='<tr><td><input type="checkbox" name="checklist" value="'+data_list[i][0]+'"/></td>';
+                    for(var j=0;j<data_list[i].length;j++){
+                        message+='<td>'+data_list[i][j]+'</td>';
+                    }
+                    message+='</tr>';
+                }
+                message+='</table>';
+                $('#rerun').css({'marginTop':'0%'});
+                $('#rerun').html(message);
+                MakingReRunClickable();
+                $('input[name="checklist"]').attr('checked','true');
+                $('#additional_data').fadeIn(500);
+            }
+        });
+    });
+    MakingReRunClickable();
     $('#selectall').live('click',function(){
        $('input[name="checklist"]').attr('checked','true');
     });
@@ -66,7 +106,11 @@ function ReRunTab(){
         $('input[name="checklist"]:checked').each(function(){
             tc_list.push($(this).val());
         });
-        console.log(tc_list);
+        if(tc_list.length==0){
+            alert('Test Cases are not selected');
+            return false;
+        }
+        //console.log(tc_list);
         var machine=$('input[name="machine"]').val();
         var tester=$('input[name="tester"]').val();
         var client=$('input[name="client"]').val();
@@ -82,41 +126,50 @@ function ReRunTab(){
         else{
             environment="Mac";
         }
-        console.log(os);
+        //console.log(os);
         objective=objective.trim();
+        if(objective==""){
+            alert("TestObjective is empty");
+            return false;
+        }
         var queryText="";
         for(var i=0;i<tc_list.length;i++){
             queryText+=tc_list[i].trim();
             queryText+=": ";
         }
         queryText+=((machine.trim())+':');
-        console.log(queryText);
+        //console.log(queryText);
         var testerText="";
         tester=tester.split(",");
         for(var i=0;i<tester.length;i++){
             testerText+=tester[i];
             testerText+=": ";
         }
-        console.log(testerText);
+        //console.log(testerText);
         var emailText="";
         email=email.split(",");
         for(var i=0;i<email.length;i++){
             emailText+=email[i];
             emailText+=": ";
         }
-        console.log(emailText);
+        //console.log(emailText);
         var dependencyText="";
         dependencyText+=(client+": ");
-        console.log(dependencyText);
+        //console.log(dependencyText);
         $.get("Run_Test",{
             RunTestQuery:queryText,
             EmailIds:emailText,
             TesterIds:testerText,
             DependencyText:dependencyText,
             TestObjective:objective,
-            Env:environment
-        },function(){
-
+            Env:environment,
+            ReRun:"rerun",
+            RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim()
+        },function(data){
+            if(data['Result']){
+                var location='/Home/RunID/'+data['runid']+'/';
+                window.location=location;
+            }
         });
     });
 }

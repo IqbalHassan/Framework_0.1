@@ -183,10 +183,10 @@
             <div class="columns browser">
                 <div class="columns sidebar issues-list-sidebar browser">
                     <ul class="filter-list">
-                        <li><a href="#" class="filter-item selected">Re Run</a></li>
-                        <li><a class="filter-item ">ReRun Failed</a></li>
-                        <li><a class="filter-item ">ReRun Failed+Pending</a></li>
-                        <li><a class="filter-item ">ReRun Pending</a></li>
+                        <li><a class="filter-item selected" data-id='all'>Re Run</a></li>
+                        <li><a class="filter-item " data-id="failed">ReRun Failed</a></li>
+                        <li><a class="filter-item " data-id="failed+pending">ReRun Failed+Pending</a></li>
+                        <li><a class="filter-item " data-id="pending">ReRun Pending</a></li>
                     </ul>
                     <div class="rule">
 
@@ -215,26 +215,28 @@
                                 </table>
                             {%endif%}
                             </div>
+                            <div id="additional_data">
                             <div class="rule"></div>
-                            <div style="display: none">
-                                {% for x in Env_Details_Data%}
-                                <input name="machine" value="{{x.1}}"/>
-                                <input name="tester" value="{{x.2}}"/>
-                                <input name="os" value="{{x.5}}"/>
-                                <input name="client" value="{{x.6}}"/>
-                                <input name="email" value="{{x.8}}"/>
-                                {% endfor %}
-                            </div>
-                            <div>
-                            <div align="right">
-                                <input type="text" class="textbox" id="test_objective" val="" placeholder="Enter the Test Objective"/>
-                            </div>
-                            </div>
-                            <div align="left" style="margin-top: 20px;">
-                                <a class=" minibutton blue flash-action" id="selectall">Select All</a>
-                            </div>
-                            <div align="right" style="margin-top: -40px;">
-                                <a type="submit" class="button minibutton primary" id="submit_button">Submit</a>
+                                <div style="display: none">
+                                    {% for x in Env_Details_Data%}
+                                    <input name="machine" value="{{x.1}}"/>
+                                    <input name="tester" value="{{x.2}}"/>
+                                    <input name="os" value="{{x.5}}"/>
+                                    <input name="client" value="{{x.6}}"/>
+                                    <input name="email" value="{{x.8}}"/>
+                                    {% endfor %}
+                                </div>
+                                <div>
+                                <div align="right">
+                                    <input type="text" class="textbox" id="test_objective" val="" placeholder="Enter the Test Objective"/>
+                                </div>
+                                </div>
+                                <div align="left" style="margin-top: 20px;">
+                                    <a class=" minibutton blue flash-action" id="selectall">Select All</a>
+                                </div>
+                                <div align="right" style="margin-top: -40px;">
+                                    <a type="submit" class="button minibutton primary" id="submit_button">Submit</a>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1385,8 +1385,9 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
             TestObjective = request.GET.get('TestObjective', '')
             TestObjective = str(TestObjective.replace(u'\xa0', u''))
-
-            Environment = request.GET.get(u'Env', '')
+            is_rerun=request.GET.get(u'ReRun','')
+            previous_run=request.GET.get('RunID','')    
+            Environment = request.GET.get('Env', '')
             if Environment == "Mac":
                 Section = "MacSection"
                 Test_Run_Type = "Mac_test_run_type"
@@ -1420,7 +1421,14 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             for each in TesterIds:
                 if each !="" and each !=":":
                     Testers.append(each)
-            Testers=','.join(Testers)
+            if is_rerun=='rerun':
+                Testers.remove(" ")
+                if len(Testers)==1:
+                    Testers=Testers[0]
+                else:
+                    Testers=','.join(Testers)
+            else:
+                Testers=','.join(Testers)
             for eachitem in UserText:
                 if len(eachitem) != 0 and  len(eachitem) != 1:
                     QueryText.append(str(eachitem.strip()))
@@ -1431,8 +1439,29 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
     TesterId = QueryText.pop() # pop function will remove last item of the list (userid) and will assign to Testerid
     #Add the manual Test Machine to the test_run_env table
+    if is_rerun=='rerun':
+        sWhereQuery={'tester_id':TesterId,'status':'Unassigned'}
+        print DB.DeleteRecord(Conn, "test_run_env",**sWhereQuery)
     TesterId=TesterId.strip()
     runid = TimeStamp("string")
+    #Changing for the ReRun
+    if is_rerun=='rerun':
+        query="select * from test_run_env where tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
+        Machine_Detail=DB.GetData(Conn, query,False)
+        print Machine_Detail[0]
+        each=Machine_Detail[0]
+        status="Unassigned"
+        updateTime=TimeStamp("string")
+        print status
+        print updateTime
+        machine_os=(each[15]+" "+each[14]+" - "+each[16]).strip()
+        print machine_os
+        client=each[7].strip()
+        print client
+        ip=each[11]
+        Dict={'run_id':runid,'tester_id':TesterId,'status':status,'machine_ip':ip,'last_updated_time':updateTime,'machine_os':machine_os,'client':client,'os_name':each[15],'os_version':each[14],'os_bit':each[16],'test_objective':TestObjective}
+        #sWhereQuery="where tester_id='%s'" %TesterId
+        print DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
     query="select user_level from permitted_user_list where user_names='%s'" %TesterId
     Machine_Status=DB.GetData(Conn,query,False)
     if Machine_Status[0][0]=='Manual':
@@ -1486,10 +1515,19 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
 
     #Finding Client info from TestRenEnv for selected machine
+    #if is_rerun=='rerun':
+     #   query="select client from test_run_env where tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
+    #else:
     query="Select client from test_run_env Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
     ClientInfo = DB.GetData(Conn, query)
     ClientInfo = ClientInfo[0].split(",")
     #Adding tag values to "testrunevn" table columns
+    if is_rerun=='rerun':
+        tempdependency=[]
+        for each in DependencyText:
+            temp=each.split('(')
+            tempdependency.append(temp[0].strip())
+        DependencyText=tempdependency
     for each in DependencyText:
         QueryText.append(each.strip())
     QueryText.remove("")
@@ -1515,17 +1553,32 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
         if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid' or TagName==CustomSet or TagName==Tag:
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
+            if is_rerun=='rerun':
+                query="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
+            
             TestSetName = TestSetName + " " + eachitem
             TestSetName = TestSetName.strip()
             Dict = {'run_id':runid, 'rundescription': TestSetName}
         else:
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
+            if is_rerun=='rerun':
+                query="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
+    
             TestSetName = TestSetName + " " + eachitem
             TestSetName = TestSetName.strip()
             Dict = {'run_id':runid, 'rundescription': TestSetName , '%s' % (TagName) : '%s' % (eachitem)}
         Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , **Dict)
     AddInfo(runid)
+    if is_rerun=='rerun':
+        query="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
     Result = DB.UpdateRecordInTable(Conn, "test_run_env", query,
+                                     email_notification=stEmailIds,
+                                     assigned_tester=Testers,
+                                     test_objective=TestObjective,
+                                     Status='Submitted',
+                                     run_type='Manual'
+                                     )
+    print DB.UpdateRecordInTable(Conn, "test_run_env", query,
                                      email_notification=stEmailIds,
                                      assigned_tester=Testers,
                                      test_objective=TestObjective,
@@ -1542,7 +1595,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query, test_objective = TestObjective  )
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , Status = 'Submitted' ) 
     
-    results = {'Result': Result }
+    results = {'Result': Result,'runid':runid}
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -4682,5 +4735,41 @@ def chartDraw(request):
     return HttpResponse(result,mimetype='application/json')
 
 def ReRun(request):
-    if request.method=='GET':
-        print request.GET
+    if request.is_ajax():
+        if request.method=='GET':
+            run_id=request.GET.get(u'RunID','')
+            status_name=request.GET.get(u'status','')
+            print run_id
+            print status_name
+            status=[]
+            if status_name=='failed':
+                status.append('Failed')
+            elif status_name=='failed+pending':
+                status.append('Failed')
+                status.append('Submitted')
+            elif status_name=='pending':
+                status.append('Submitted')
+            else:
+                status=[]
+            Conn=GetConnection()
+            if len(status)==0:
+                query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and run_id='%s'"%run_id
+                tc_list=DB.GetData(Conn, query,False)
+                test_case_list=Modify(tc_list)
+                print test_case_list
+            else:
+                tc_list=[]
+                for each in status:
+                    query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and tcr.run_id='%s' and tcr.status='%s'"%(run_id,each)
+                    get_list=DB.GetData(Conn,query,False)
+                    for eachitem in get_list:
+                        tc_list.append(eachitem)
+                print tc_list
+                tc_list=list(set(tc_list))
+                test_case_list=Modify(tc_list)
+                print test_case_list
+            print test_case_list    
+            Column=['Test Case ID','Test Case Name','Type','Status']
+    result={'col':Column,'list':test_case_list}
+    result=simplejson.dumps(result)
+    return HttpResponse(result,mimetype='application/json')        
