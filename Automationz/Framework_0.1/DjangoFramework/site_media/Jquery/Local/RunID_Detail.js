@@ -141,8 +141,8 @@ function drawGraph(RunID){
                     ['Skipped', data[6]]
                 ]);
                 var options = {
-                    title: 'Summary - ' + RunID,
-                    //width: 500,
+                    title: 'Run-ID Summary : ' + RunID,
+                    width: 500,
                     height: 500,
                     fontSize: 13,
                     titleTextStyle:{fontSize:16},
@@ -174,7 +174,8 @@ function LoadAllTestCases(divname){
             $('#'+divname+' #'+TestCaseName+'detail tr td:first-child').each(function(){
                 $(this).css({
                     'color':'blue',
-                    'cursor':'pointer'
+                    'cursor':'pointer',
+                    'textAlign':'left'
                 });
                 $(this).live('click',function(){
                     $('#inside_back').html("");
@@ -223,6 +224,9 @@ function LoadAllTestCases(divname){
             console.log(location);
             window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
         });
+    });
+    $('#'+divname+' tr td:nth-child(3)').each(function(){
+        $(this).css({'textAlign':'center'});
     });
     ////////////**********************\\\\\\\\\\\\\\\
     //////////////// To change the textbox in fail reason

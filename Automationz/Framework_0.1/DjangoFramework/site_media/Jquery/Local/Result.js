@@ -14,12 +14,33 @@ function make_clickable(divname){
     $(divname+' tr>td:first-child').each(function(){
        $(this).css({
            'color':'blue',
-           'cursor':'pointer'
+           'cursor':'pointer',
+           'textAlign':'left'
        }) ;
        $(this).click(function(){
            var location='/Home/RunID/'+$(this).text().trim()+'/';
             window.location=location;
        });
+    });
+    $(divname+' tr>td:nth-child(2)').each(function(){
+        $(this).css({
+            'textAlign':'left'
+        }) ;
+    });
+    $(divname+' tr>td:nth-child(3)').each(function(){
+        $(this).css({
+            'textAlign':'left'
+        }) ;
+    });
+    $(divname+' tr>td:nth-child(6)').each(function(){
+        $(this).css({
+            'textAlign':'left'
+        });
+    });
+    $(divname+' tr>td:nth-child(9)').each(function(){
+        $(this).css({
+            'textAlign':'left'
+        }) ;
     });
 }
 function make_bar_clickable(divname){
@@ -49,8 +70,7 @@ function make_bar_clickable(divname){
                             ['Skipped', data[6]]
                         ]);
                         var options = {
-                            title:RunID,
-                            is3D:true,
+                            title:'Run-ID: '+RunID,
                             width: 500,
                             height: 500,
                             fontSize: 13,

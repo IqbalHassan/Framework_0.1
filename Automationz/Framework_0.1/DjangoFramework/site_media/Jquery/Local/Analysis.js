@@ -57,10 +57,11 @@ function Analysis()
 				
 				
 				//When user click on Run Id
-				$("#TestAnalysisTable .ui-widget tr td:first-child").each(function(){
+				$("#TestAnalysisTable tr td:first-child").each(function(){
                     $(this).css({
                        'color':'blue',
-                        'cursor':'pointer'
+                        'cursor':'pointer',
+                        'textAlign':'left'
                     });
 					$(this).live('click',function(){
 						

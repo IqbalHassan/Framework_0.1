@@ -85,11 +85,19 @@ $(document).ready(function(){
         });
         event.stopPropagation();
     });
-    /*$('.flip[title="BackPage"]').live('click',function(){
-        var runid=$('#runid').text().trim();
-        window.location='/Home/RunID/'+runid+'/';
-    });*/
 });
+function UIChange(){
+    $('#data_table tr td:nth-child(5)').each(function(){
+       $(this).css({
+           'textAlign':'left'
+       })
+    });
+    $('#data_table tr td:nth-child(6)').each(function(){
+        $(this).css({
+            'textAlign':'left'
+        })
+    });
+}
 function TestDataFetch(){
     $('#data_table tr td:nth-child(4)').each(function(){
         $(this).css({'textAlign':'center'});
@@ -196,6 +204,7 @@ function DataFetch(){
         MakeStatusSelectable();
         InputFailReason();
         ExecutionLog();
+        UIChange();
     });
 }
 function ExecutionLog(){
@@ -204,7 +213,7 @@ function ExecutionLog(){
             $(this).css({
                 'color':'blue',
                 'cursor':'pointer',
-                'text-align':'center'
+                'text-align':'left'
             });
             $(this).live('click',function(e){
                 var run_id=$('#runid').text().trim();
@@ -244,7 +253,7 @@ function ExecutionLog(){
         }
     });
     $('#data_table tr td:nth-child(3)').each(function(){
-        $(this).css({'text-align':'center'});
+        $(this).css({'text-align':'left'});
     })
 }
 function InputFailReason(){
