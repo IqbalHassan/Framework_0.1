@@ -15,24 +15,8 @@ var isAtLowestSection = false;
 
 $(document).ready(function() {
 
-    $("#steps_table").append('' +
-        '<tr id="step_'+step_num+'">' +
-        '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
-        '<td>'+step_num+'</td>' +
-        /*'<td><a class="notification-indicator tooltipped downwards" data-gotokey="n">' +
-        '<span class="mail-status all-read"></span>' +
-        '</a></td>' +*/
-        '<td><input class="ui-autocomplete-input textbox" style="width: auto;"></td>' +
-        '<td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n">' +
-        '<span class="mail-status unread"></span>' +
-        '</a></td>' +
-        '<td><textarea style="width: 80%"></textarea></td>' +
-        '<td><textarea style="width: 80%"></textarea></td>' +
-        '<td><input type="checkbox"></td>' +
-        '<td>23.5</td>' +
-        '<td><input id=\"step_info\" class=\"new_tc_form\" type=\'image\' src=\'/site_media/info_button.jpg\' name=\'Step Info\' style="background-color: transparent; width:18px; height:18px"></td></td>' +
-        '</tr>'
-    );
+    add_step_teble_row();
+    show_data_dialog();
 
     URL = window.location.pathname
     console.log("url:"+URL);
@@ -68,7 +52,7 @@ $(document).ready(function() {
             //table.deleteRow(step-1);
             //table.deleteRow("step_" + step);
             $("#step_"+step).fadeOut().remove();
-            //step_num--;
+            step_num--;
         });
 
         $("input[name=platform]").change(function () {
@@ -583,7 +567,7 @@ function recursivelyAddSection(_this){
 function addStep(){
     step_num++;
     step_num_data_num[step_num] = 0;
-    /*var id = AddAutoCompleteSearchBox("#stepbox", "Step " + step_num + ": ", step_num);
+    var id = AddAutoCompleteSearchBox("#stepbox", "Step " + step_num + ": ", step_num);
     //console.log("Step ID:"+id);
     RunTestAutocompleteSearch(Env, step_num);
 
@@ -607,26 +591,52 @@ function addStep(){
         })
 
     });
-    return id;*/
+
+    /*return id;*/
+
+    add_step_teble_row();
+
+}
+
+function add_step_teble_row()
+{
     $("#steps_table").append('' +
         '<tr id="step_'+step_num+'">' +
-            '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
-                '<td>'+step_num+'</td>' +
-                /*'<td><a class="notification-indicator tooltipped downwards" data-gotokey="n">' +
-                    '<span class="mail-status all-read"></span>' +
-                '</a></td>' +*/
-                '<td><input class="ui-autocomplete-input textbox" style="width: auto;"></td>' +
-                '<td><a class="notification-indicator tooltipped downwards contextually-unread" data-gotokey="n">' +
-                    '<span class="mail-status unread"></span>' +
-                '</a></td>' +
-                '<td><textarea style="width: 80%"></textarea></td>' +
-                '<td><textarea style="width: 80%"></textarea></td>' +
-                '<td><input type="checkbox"></td>' +
-                    '<td>23.5</td>' +
-                    '<td><input id=\"step_info\" class=\"new_tc_form\" type=\'image\' src=\'/site_media/info_button.jpg\' name=\'Step Info\' style="background-color: transparent; width:18px; height:18px"></td></td>' +
+        '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+        '<td>'+step_num+'</td>' +
+        '<td><textarea id="seachbox" class="stepbox ui-corner-all ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td><a id="searchbox '+step_num+' data" class="notification-indicator tooltipped downwards" data-gotokey="n">' +
+        '<span class="mail-status"></span>' +
+        '</a></td>' +
+        '<td><textarea id="searchbox '+step_num+' info" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td><textarea id="searchbox '+step_num+' expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
+        '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
+        '<td><input id="'+step_num+' step_desc" class=\"new_tc_form\" type=\'image\' src=\'/site_media/info_button.jpg\' name=\'Step Info\' style="background-color: transparent; width:18px; height:18px"></td></td>' +
         '</tr>'
     );
+}
+function show_data_dialog(){
+    $(".notification-indicator").click(function(){
+        $(this).dialog({
+            buttons : {
+                "OK" : function() {
+                    $(this).dialog("close");
+                }
+            },
 
+            show : {
+                effect : 'drop',
+                direction : "up"
+            },
+
+            modal : true,
+            width : 500,
+            height : 620,
+            title: "Data"
+
+        });
+    });
 }
 
 function dataArrayToString(array){
