@@ -541,6 +541,17 @@ header.main_header{
     min-width: 1000px;
 }
 
+h3 a {
+    color: #4183c4;
+    white-space: nowrap;
+    text-decoration: none;
+    font-size: 19px;
+    font-weight: normal;
+    line-height: 28px;
+}
+h3 a:hover {
+    text-decoration: underline;
+}
 /*=========== Side nav ===========*/
 /*
 aside{

@@ -3,7 +3,7 @@
 {% block content %}
 
 
-<script type="text/javascript" src="/site_media/Jquery/Local/CreateTestCase.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/Local/CreateTestCase.js" xmlns="http://www.w3.org/1999/html"></script>
 
 <article>
 
@@ -195,17 +195,15 @@
             <td class="tc_form_input_col">
                 <table width="100%">
                     <tr>
-                        <td width="50%">
+                        <td width="33%">
                             <input id="smoke_check" type="checkbox" name="type" value="smoke" style="width:auto" />
                             <label for="smoke_check">Smoke</label>
                         </td>
-                        <td width="50%">
+                        <td width="33%">
                             <input id="si_check" type="checkbox" name="type" value="si" style="width:auto" />
                             <label for="si_check">SI</label>
                         </td>
-                    </tr>
-                    <tr>
-                        <td width="50%">
+                        <td width="33%">
                             <input id="svv_check" type="checkbox" name="type" value="svv" style="width:auto" />
                             <label for="svv_check">SVV</label>
                         </td>
@@ -215,6 +213,7 @@
         <tr>
     </table>
 </form>
+    <br/>
 </div>
 <!--HR class="tc_form_divider"/-->
 
@@ -365,16 +364,17 @@
 
 </table>
 
-<div align="center">
-<p class="new_tc_form button minibutton primary" id="submit"  style="width:15%; text-align:center;">
-    <img style="" src="/site_media/check.png" width="20%"> <br><strong style="font-size: 150%">Save</strong>
-</p>
-    </div>
-
 <div id="outer-data">
     <div id="inner-data">
 
     </div>
+
+
+<div align="center">
+    <input type='button' id='submit' class="new_tc_form button minibutton primary" value="Save" style="width: 10%; font-size: 18px; font-weight: bold"/>
+    </div>
+
+
 </div>
 <script>
     var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);

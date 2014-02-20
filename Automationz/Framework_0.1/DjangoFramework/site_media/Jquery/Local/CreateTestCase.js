@@ -607,7 +607,7 @@ function add_step_teble_row()
         '<tr id="step_'+step_num+'">' +
         '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>'+step_num+'</td>' +
-        '<td><textarea id="seachbox" class="stepbox ui-corner-all ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td></td>' +
         '<td><a id="searchbox '+step_num+' data" class="notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status"></span>' +
         '</a></td>' +
@@ -615,17 +615,17 @@ function add_step_teble_row()
         '<td><textarea id="searchbox '+step_num+' expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
         '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
         '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-        '<td><input id="'+step_num+' step_desc" class=\"new_tc_form\" type=\'image\' src=\'/site_media/info_button.jpg\' name=\'Step Info\' style="background-color: transparent; width:18px; height:18px"></td></td>' +
+        '<td><a id="'+step_num+' step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
         '</tr>'
     );
 }
 function show_data_dialog(){
-    $("#steps_table tr>td:nth-child(4)").each(function(){
+    $(".one-column-emphasis tr>td:nth-child(4)").each(function(){
         $(this).css({
             'curosr':'pointer'
         });
     });
-    $(".notification-indicator").each(function(){
+    $("#steps_table .notification-indicator").each(function(){
         $(this).click(function(){
             $("#inner-data").dialog({
                 buttons : {

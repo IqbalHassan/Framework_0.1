@@ -41,7 +41,7 @@ $(document).ready(function(){
                     $("#BundleReportTable").append(''+
                         '<br/>' +
                         '<hr/>' +
-                        '<h4>'+data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]+'</h4>' +
+                        '<h4 class="Text" style="text-align: center;font-weight: normal; line-height: 1.1;font-size: 25px;">'+data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]+'</h4>' +
                     '<div id="env'+i+'"></div>');
                     ResultTable("#env"+i+"", data['Heading'],data['ReportTable'][i],"");
                     /*$.get("Single_Env",{Platform : platform, Product_Version : version,OS : data['Env'][i][0], Client : data['Env'][i][1]},function(env_data)
