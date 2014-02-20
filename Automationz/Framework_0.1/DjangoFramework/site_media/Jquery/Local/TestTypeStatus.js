@@ -68,6 +68,10 @@ $(document).ready(function(){
 
                 /***************pie chart*********************/
 
+                /***************export pdf********************/
+               /* $("#download").append('<br/>' +
+                    '<a class="button minibutton" href="myview" download="Test_Type_Status_Report.pdf" style="text-decoration: none">Download PDF</a>'
+                );*/
 
                 $("p.flip[title =  'Test Type Status']").text("Test type status report of (" +choice + ")" )
                 $("p.flip[title =  'Test Type Status']").fadeIn(1000);

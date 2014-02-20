@@ -44,15 +44,18 @@ $(document).ready(function() {
                 step_num--;
             }
         });
-        $(".remove_img").click(function() {
-            var table = document.getElementById("steps_table");
-            //var step = $(this).attr('id')
-            var step = $(this).prop('id');
+        $(".remove_img").each(function(){
+            $(this).click(function() {
+                var table = document.getElementById("steps_table");
+                //var step = $(this).attr('id')
+                var step = $(this).prop('id');
 
-            //table.deleteRow(step-1);
-            //table.deleteRow("step_" + step);
-            $("#step_"+step).fadeOut().remove();
-            step_num--;
+                console.log(step);
+                //table.deleteRow(step-1);
+                //table.deleteRow("step_" + step);
+                $("#step_"+step).fadeOut().remove();
+                step_num--;
+            });
         });
 
         $("input[name=platform]").change(function () {
@@ -617,26 +620,34 @@ function add_step_teble_row()
     );
 }
 function show_data_dialog(){
-    $(".notification-indicator").click(function(){
-        $(this).dialog({
-            buttons : {
-                "OK" : function() {
-                    $(this).dialog("close");
-                }
-            },
-
-            show : {
-                effect : 'drop',
-                direction : "up"
-            },
-
-            modal : true,
-            width : 500,
-            height : 620,
-            title: "Data"
-
+    $("#steps_table tr>td:nth-child(4)").each(function(){
+        $(this).css({
+            'curosr':'pointer'
         });
     });
+    $(".notification-indicator").each(function(){
+        $(this).click(function(){
+            $("#inner-data").dialog({
+                buttons : {
+                    "OK" : function() {
+                        $(this).dialog("close");
+                    }
+                },
+
+                show : {
+                    effect : 'drop',
+                    direction : "up"
+                },
+
+                modal : true,
+                width : 500,
+                height : 500,
+                title: "Data"
+
+            });
+        });
+    });
+
 }
 
 function dataArrayToString(array){

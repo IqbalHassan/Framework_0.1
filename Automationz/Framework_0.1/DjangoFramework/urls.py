@@ -146,6 +146,8 @@ urlpatterns = patterns('',
     url(r'^Home/Admin/$',Admin),
     url(r'^Home/.*/Process_Git/$',Process_Git),
     
+    url(r'^Home/.*/myview/$',myview), 
+    
     
     
     
