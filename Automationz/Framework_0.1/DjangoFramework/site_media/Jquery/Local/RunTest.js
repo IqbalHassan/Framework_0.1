@@ -670,7 +670,7 @@ function PerformSearch() {
 											if (data['TableData'].length == 0)
 											{
 												$('#RunTestResultTable').children().remove();
-												$//('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+												$('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
 												$("#DepandencyCheckboxes").children().remove();
 												//$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
 											} 
@@ -685,7 +685,7 @@ function PerformSearch() {
 												// td or each tr (i.e Test Case
 												// ID) Click able
 												//Making MKS link to MKS ID
-												$("#RunTestResultTable tr>td:nth-child(1)").each(function(){
+												/*$("#RunTestResultTable tr>td:nth-child(1)").each(function(){
 													
 													MKS_ID = $(this).text();
 													if (MKS_ID != "")
@@ -695,10 +695,10 @@ function PerformSearch() {
 														}
 												
 												});		
-												
+												*/
 											//	TestCase_TestStep_Details_Table('#RunTestResultTable tr>td:nth-child(2)');
 
-												$(".ui-widget tr td:nth-child(2)").css({'color' : 'skyblue','cursor' : 'pointer'});
+												/*$(".ui-widget tr td:nth-child(2)").css({'color' : 'skyblue','cursor' : 'pointer'});
 												$(".ui-widget tr td:nth-child(2)").each(function() {
 													$(this).live('click',function() {
 														
@@ -744,8 +744,9 @@ function PerformSearch() {
 														});
 																											
 													});
-												});
+												});*/
 
+                                                implementDropDown('#RunTestResultTable');
 												VerifyQueryProcess();
 												//$(".Buttons[title='Verify Query']").fadeIn(2000);
 												$(".Buttons[title='Select User']").fadeOut();
@@ -756,7 +757,25 @@ function PerformSearch() {
 					});
 
 }
-
+function implementDropDown(wheretoplace){
+    $(wheretoplace+" tr td:nth-child(2)").css({'color' : 'blue','cursor' : 'pointer'});
+    $(wheretoplace+" tr td:nth-child(2)").each(function() {
+        var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+        var name=$(this).text().trim();
+        $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+        $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+            var data_list=data['Result'];
+            var column=data['column'];
+            ResultTable('#'+ID+'detail',column,data_list,"");
+            $('#'+ID+'detail tr').each(function(){
+                $(this).css({'textAlign':'left'});
+            });
+        });
+        $(this).live('click',function(){
+            $('#'+ID+'detail').slideToggle("slow");
+        });
+    });
+}
 
 function SelecteUserProcess() {
 	

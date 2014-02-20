@@ -408,7 +408,8 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             Priority = "MacPriority"
             TCStatusName = "MacStatus"
             CustomTag = "MacCustomTag"
-
+            CustomSet="set"
+            Tag='tag'
         if Environment == "PC":
             Section = "Section"
             Test_Run_Type = "test_run_type"
@@ -434,6 +435,44 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
 
         if len(results) > 0:
             results.append(("*Dev","Status"))
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+def AutoCompleteTestCasesSearchOtherPages(request):#===============Returns Available Test Case in other page without the platform =========================#
+    if request.is_ajax():
+        if request.method=='GET':
+            final_results=[]
+            value=request.GET.get(u'term','')
+            platform=["PC","Mac"]
+            for Environment in platform:
+                if Environment == "Mac":
+                    Section = "MacSection"
+                    Test_Run_Type = "Mac_test_run_type"
+                    Priority = "MacPriority"
+                    TCStatusName = "MacStatus"
+                    CustomTag = "MacCustomTag"
+
+                if Environment == "PC":
+                    Section = "Section"
+                    Test_Run_Type = "test_run_type"
+                    Priority = "Priority"
+                    TCStatusName = "Status"
+                    CustomTag = "CustomTag"
+                    CustomSet="set"
+                    Tag='tag'
+                Client='client'
+                tag_query="select distinct name,property from test_case_tag where name Ilike '%" + value + "%' and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
+                id_query="select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%" + value + "%' or tc.tc_name Ilike '%" + value + "%') and property in('tcid') and tct.tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "            
+                Conn=GetConnection()
+                results=DB.GetData(Conn, tag_query, False)
+                tcidresults=DB.GetData(Conn,id_query,False)
+                results=list(set(results+tcidresults))
+                for eachitem in results:
+                    final_results.append(eachitem)
+            final_results=list(set(final_results))
+            results=final_results
+            if len(results) > 0:
+                results.append(("*Dev","Status"))
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -561,7 +600,8 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 Priority = "MacPriority"
                 TCStatusName = "MacStatus"
                 CustomTag = "MacCustomTag"
-
+                CustomSet="set"
+                Tag='tag'
             if Environment == "PC":
                 Section = "Section"
                 Test_Run_Type = "test_run_type"
@@ -612,16 +652,25 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name "+Query
         TableData = DB.GetData(Conn, "select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc "
                         "where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query, False)
-
+    TempTableData=[]
     Check_TestCase(TableData, RefinedData)
-    Heading = ['TestCase_ID', 'TestCase_Name','TestCase_Type']
+    for each in RefinedData:
+        temp=[]
+        for eachitem in each:
+            temp.append(eachitem)
+        query="select name from test_case_tag where tc_id='%s' and property='machine_os'"%each[0]
+        platform=DB.GetData(Conn,query)
+        temp.append(platform[0])
+        temp=tuple(temp)
+        TempTableData.append(temp)
+    RefinedData=TempTableData
+    Heading = ['TestCase_ID', 'TestCase_Name','TestCase_Type','Platform']
 
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
     results = {'Heading':Heading, 'TableData':RefinedData}
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-
 
 def Table_Data_TestResult(request):  #==================Returns Test Results When User Launch Test Result Page===============================
     Conn = GetConnection()

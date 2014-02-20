@@ -1,12 +1,12 @@
 $(document).ready(function(){
-	var Env = "PC"
+	//var Env = "PC"
 	var URL = window.location.pathname
 	indx = URL.indexOf("Run")
 
 			AddAutoCompleteSearchBox("#Place_AutoComplete_Here","Search Test Cases Data By Keywords:");
 			
 			AvailebableTestMachineflipButton("PC");
-			RunTestAutocompleteSearch("PC");
+			RunTestAutocompleteSearch();
 			
 			
 			// Calling DeleteSearchQueryText for Deleting query text after clicking on delete button
@@ -120,7 +120,7 @@ function RunTestAutocompleteSearch(Env)
 
 				source : function(request, response) {
 				    									$.ajax({
-				    											url:"AutoCompleteTestCasesSearch",
+				    											url:"AutoCompleteTestCasesSearchOtherPages",
 				    											dataType: "json",
 				    											data:{ term: request.term, Env: Env },
 				    											success: function( data ) {
@@ -201,7 +201,7 @@ function PerformSearch() {
 												implementDropDown("#RunTestResultTable");
 												// add edit btn
 												var indx = 0;
-												$('#RunTestResultTable tr>td:nth-child(3)').each(function(){
+												$('#RunTestResultTable tr>td:nth-child(4)').each(function(){
 													var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 													
 													$(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50"/>');
@@ -227,51 +227,21 @@ function PerformSearch() {
 
 }
 function implementDropDown(wheretoplace){
-    $(wheretoplace+" tr td:nth-child(2)").css({'color' : '#000066','cursor' : 'pointer'});
+    $(wheretoplace+" tr td:nth-child(2)").css({'color' : 'blue','cursor' : 'pointer'});
     $(wheretoplace+" tr td:nth-child(2)").each(function() {
-        $(this).live('click',function() {
-
-            var childrenCount = $(this).children().length
-            if (childrenCount == 0)
-            {
-                $(this).children().slideDown();
-            }
-            else
-            {
-                $(this).children().slideUp();
-                //childrenCount=0;
-                $(this).children().remove();
-                return;
-            }
-            var ClickedTC = $(this).text();
-            var RunID = $(this).closest('tr').find('td:nth-child(1)').text();
-            RunID = RunID.trim();
-
-            var $TC = $(this).text();
-            var TestSteps;
-            $.get("TestStepWithTypeInTable",{ClickedTC : ClickedTC,RunID: RunID},function(data) {
-                TestSteps = data['Result'];
-
-                $(".ui-widget tr td:nth-child(2)").each(function() {
-                    //if (($(this).text()) == ClickedTC)
-                    if($(this).closest('tr').find('td:nth-child(1)').text()==RunID)
-                    {
-
-                        $(this).children().remove();
-                        for (eachitem in data['Result'])
-                        {
-
-                            $($(this)).append("<p id = 'TestCase_Steps'>"+ data['Result'][eachitem]																																				+ "</p>");
-                        }
-
-                    }
-
-                    $("p#TestCase_Steps").css({'color' : '#9999FF','cursor' : 'text'});
-                });
-
+        var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+        var name=$(this).text().trim();
+        $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+        $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+            var data_list=data['Result'];
+            var column=data['column'];
+            ResultTable('#'+ID+'detail',column,data_list,"");
+            $('#'+ID+'detail tr').each(function(){
+               $(this).css({'textAlign':'left'});
             });
-            //$(this).children().slideToggle();
-
+        });
+        $(this).live('click',function(){
+           $('#'+ID+'detail').slideToggle("slow");
         });
     });
 }
