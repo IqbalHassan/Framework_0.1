@@ -1563,3 +1563,22 @@ ul.filter-list.pjax-active .filter-item.pjax-active{color:#fff;background:#4183c
 .select-menu-item .select-menu-item-icon.is-shown{color:inherit}
 .select-menu-item.navigation-focus,.select-menu-item.navigation-focus.selected,.select-menu-item.navigation-focus.select-menu-action{background-color:#4183c4;color:#fff}
 .select-menu-item.navigation-focus>.octicon,.select-menu-item.navigation-focus.selected>.octicon,.select-menu-item.navigation-focus.select-menu-action>.octicon{color:#fff}.select-menu-item.navigation-focus .description,.select-menu-item.navigation-focus.selected .description,.select-menu-item.navigation-focus.select-menu-action .description{color:white}.select-menu-item.select-menu-action,.select-menu-item.selected{color:#333}.select-menu-item.select-menu-action .description,.select-menu-item.selected .description{color:#666}.select-menu-item.select-menu-action>.octicon,.select-menu-item.selected>.octicon{color:#333}.select-menu-item.select-menu-action .select-menu-item-text{font-weight:bold}.select-menu[data-multiple] .select-menu-item:active{background-color:transparent !important}.select-menu-item a{color:inherit;text-decoration:none}.select-menu-item .hidden-select-button-text{display:none}.select-menu-item .css-truncate-target{display:table-cell;max-width:100%}form.select-menu-item>div:first-child{display:none !important}.select-menu-item.last-visible,.select-menu-list:last-child .select-menu-item:last-child{border-bottom:0;border-radius:0 0 3px 3px}.select-menu-actions .select-menu-item:hover{background-color:#4183c4;color:#fff}.select-menu-actions .select-menu-item:hover>.octicon{color:#fff}.select-menu-actions .select-menu-item:hover .description{color:white}.select-menu-no-results{padding:9px;display:none;cursor:auto;color:#999}.select-menu-list.filterable-empty .select-menu-no-results,.select-menu-no-results:only-child{display:block}.select-menu-button-gravatar,.select-menu-item-gravatar{overflow:hidden;line-height:0;width:20px}.select-menu-button-gravatar img,.select-menu-item-gravatar img{height:20px;width:20px;display:inline-block;border-radius:3px}.select-menu-item-gravatar{display:table-cell;padding:6px 0 6px 8px;vertical-align:top;width:28px}.select-menu-button-gravatar{display:inline-block;margin:6px 3px 6px 0;margin-right:5px;vertical-align:middle}
+
+/***************popup***********************/
+#blanket {
+    background-color:#111;
+    opacity: 0.65;
+    filter:alpha(opacity=65);
+    position:absolute;
+    z-index: 9001;
+    top:0px;
+    left:0px;
+    width:100%;
+}
+#popUpDiv {
+    position:absolute;
+    background-color:#eeeeee;
+    width:300px;
+    height:300px;
+    z-index: 9002;
+}

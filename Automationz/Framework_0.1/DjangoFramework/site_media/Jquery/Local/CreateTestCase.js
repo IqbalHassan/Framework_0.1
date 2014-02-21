@@ -604,8 +604,8 @@ function add_step_teble_row()
         '<tr id="step_'+step_num+'">' +
         '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>'+step_num+'</td>' +
-        '<td></td>' +
-        '<td><a id="searchbox '+step_num+' data" class="notification-indicator tooltipped downwards" data-gotokey="n">' +
+        '<td><input class="textbox" style="width: auto"></td>' +
+        '<td><a id="searchbox '+step_num+' data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status"></span>' +
         '</a></td>' +
         '<td><textarea id="searchbox '+step_num+' info" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
@@ -622,7 +622,7 @@ function show_data_dialog(){
             'curosr':'pointer'
         });
     });
-    $("#steps_table .notification-indicator").each(function(){
+    $("#steps_table .data-popup").each(function(){
         $(this).click(function(){
             $("#inner-data").dialog({
                 buttons : {
