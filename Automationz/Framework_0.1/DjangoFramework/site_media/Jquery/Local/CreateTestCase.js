@@ -700,6 +700,16 @@ function check_required_data()
             $("#section-flag").removeClass("filled");
         }
     });
+
+   /* if($('#PC_radio').is(":checked") || $('#MAC_radio').is(":checked")){
+        console.log($('#PC_radio').val());
+        $("#platform-flag").addClass("filled");
+    }
+    else{
+        $("#platform-flag").removeClass("filled");
+    }*/
+
+
 }
 function dataArrayToString(array){
     var tempString ="";
