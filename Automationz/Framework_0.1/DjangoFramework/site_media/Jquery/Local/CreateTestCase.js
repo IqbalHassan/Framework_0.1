@@ -633,7 +633,9 @@ function add_step_teble_row()
         '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
         '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
         '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-'<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +        '</tr>'
+'<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
+        '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+        '</tr>'
     );
 }
 function show_data_dialog(){

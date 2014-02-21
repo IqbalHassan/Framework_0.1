@@ -12,7 +12,7 @@ p.flip { /*
     padding: 5px;
     width: 20%;
     text-align: center;
-    text-shadow: white;
+    /*text-shadow: white;*/
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60 );
     opacity: 0.8;
     font-family: monospace, Gadget, sans-serif;
@@ -391,7 +391,7 @@ p.flip:ACTIVE,p.flip:HOVER {
 /************buttons****************/
 .buttonCustom{
     text-align: center;
-    text-shadow: white;
+    /*text-shadow: white;*/
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
     opacity: 1;
     color: white;
@@ -413,7 +413,7 @@ p.flip:ACTIVE,p.flip:HOVER {
     line-height: 24px;
     box-shadow: none;
     color: #fff;
-    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+   /* text-shadow: 0 -1px 0 rgba(0,0,0,0.25);*/
     background-color: #60b044;
     background-image: -moz-linear-gradient(#8add6d, #60b044);
     background-image: -webkit-linear-gradient(#8add6d, #60b044);
@@ -536,7 +536,7 @@ header.main_header{
 
     /*margin-top: 10px;
     margin-left: 40px;*/
-    text-shadow: 0 1px 0 #fff;
+    /*text-shadow: 0 1px 0 #fff;*/
     border-bottom: 1px solid #e5e5e5;
     min-width: 1000px;
 }
@@ -615,7 +615,7 @@ section{
 }
 
 section header{
-//text-shadow: 2px 1px grey
+/*text-shadow: 2px 1px grey*/
 }
 
 article{
@@ -628,7 +628,7 @@ article{
 article header{
     font-size: 150%;
     font-weight: bold;
-//text-shadow: 2px 1px grey
+/*text-shadow: 2px 1px grey*/
 }
 
 /*=========home page============*/
@@ -641,14 +641,14 @@ article header{
 {
     margin-right: auto;
     margin-bottom: 10px;
-//text-shadow: 2px 1px grey
+/*text-shadow: 2px 1px grey*/
 }
 
 /*========create product sections========*/
 #section_names
 {
     margin-right: auto;
-//text-shadow: 2px 1px grey
+/*text-shadow: 2px 1px grey*/
 }
 
 /*========Text Box========*/
@@ -676,7 +676,7 @@ article header{
     word-spacing: normal;
     text-transform: none;
     text-indent: 0px;
-    text-shadow: none;
+    /*text-shadow: none;*/
     display: inline-block;
     text-align: start;
 }
@@ -938,7 +938,7 @@ article header{
     /*background-color: #e15a1f;*/
     color: #000;
     background-color: #CCCCCC;
-    text-shadow: none;
+    /*text-shadow: none;*/
     /*background: #e7e7e7;
     border-bottom: 2px solid #DADADA;*/
 }
@@ -1286,7 +1286,7 @@ article header{
 .sunken-menu .sunken-menu-item {
     padding: 8px 10px;
     display: block;
-    text-shadow: 0 1px 0 #fff;
+    /*text-shadow: 0 1px 0 #fff;*/
     text-decoration: none;
     border: 1px solid transparent;
     outline: 0;
@@ -1329,7 +1329,7 @@ article header{
     font-weight: 400;
     font-size: 14px;
     color: #9D9E9E;
-    text-shadow: 1px 1px 0 rgba(256, 256, 256, 1.0);
+    /*text-shadow: 1px 1px 0 rgba(256, 256, 256, 1.0);*/
     background: #FFF;
     border: 1px solid #FFF;
     border-radius: 5px;
@@ -1506,7 +1506,7 @@ hr, .rule {
 }
 .button.blue, .button.blue:hover, .minibutton.blue, .minibutton.blue:hover {
     color: #fff;
-    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    /*text-shadow: 0 -1px 0 rgba(0,0,0,0.25);*/
     background-color: #3072b3;
     background-image: -moz-linear-gradient(#599bcd, #3072b3);
     background-image: -webkit-linear-gradient(#599bcd, #3072b3);
