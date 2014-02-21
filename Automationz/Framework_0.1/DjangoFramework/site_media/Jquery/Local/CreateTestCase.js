@@ -44,18 +44,16 @@ $(document).ready(function() {
                 step_num--;
             }
         });
-        $(".remove_img").each(function(){
-            $(this).click(function() {
-                var table = document.getElementById("steps_table");
-                //var step = $(this).attr('id')
-                var step = $(this).prop('id');
-
-                console.log(step);
-                //table.deleteRow(step-1);
-                //table.deleteRow("step_" + step);
-                $("#step_"+step).fadeOut().remove();
-                step_num--;
+        $('.remove_img').live('click',function(){
+            var val=$(this).attr('id');
+            console.log('step_'+val);
+            var tr=$(this).closest('tr');
+            tr.css({'background-color':'#FF3700'});
+            tr.fadeOut('500',function(){
+               tr.remove();
             });
+            //resetNumber();
+            return false;
         });
 
         $("input[name=platform]").change(function () {
@@ -509,7 +507,6 @@ $(document).ready(function() {
     }
 
 });
-
 function recursivelyAddSection(_this){
     var fatherHeirarchy = $(_this).attr("data-level");
     var father = $(_this).children("option:selected").text();
