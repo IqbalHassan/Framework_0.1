@@ -85,7 +85,7 @@ $(document).ready(function() {
 
                 modal : true,
                 width : 800,
-                height : 500,
+                height : 600,
                 title: "Data: Step "+id
             });
         });
@@ -691,22 +691,42 @@ function add_step_teble_row()
     add_dialog_box();
 }
 function add_dialog_box(){
+    var dataset_num = 1;
     var message = ""
-    message += ('<table class="one-column-emphasis">' +
+    message += ('<table id="searchbox'+step_num+'data_table" class="one-column-emphasis" width="100%">' +
         '<tr>' +
-        '<th>DataSet</th>' +
-        '<th></th>' +
-        '<th>Type</th>' +
-        '<th>Sub-Type</th>' +
-        '<th>Title</th>' +
-        '<th></th>' +
+        '<th width="10%"></th>' +
+        '<th width="20%">DataSet</th>' +
+        '<th width="60%">Data</th>' +
+        '<th width="10%"></th>' +
         '</tr>' +
         '<tr>' +
-        '<td></td>' +
         '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+        '<td>Data Set '+dataset_num+'</td>' +
+        '<td>' +
+                    /******************dataset nested table(start)************/
+        '<table id="step'+step_num+'dataset'+dataset_num+'" class="one-column-emphasis" width="100%" style="font-size:80%">' +
+        '<tr>' +
+        '<th width="11%"></th>' +
+        '<th width="26%">Type</th>' +
+        '<th width="26%">Sub-Type</th>' +
+        '<th width="26%">Title</th>' +
+        '<th width="11%"></th>' +
+        '</tr>' +
+        '<tr>' +
+        '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' style=\"background-color: transparent; width:15px; height:15px\"></td>' +
         '<td><input class="textbox" style="width: auto"></td>' +
         '<td><input class="textbox" style="width: auto"></td>' +
         '<td><input class="textbox" style="width: auto"></td>' +
+        '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/new.png\' style=\"background-color: transparent; width:15px; height:15px\"></td>' +
+        '</tr>' +
+        '</table>' +
+        '<div class="new_tc_form" style="text-align: center">' +
+        '<input class="buttonCustom new_tc_form" type=\'image\' src=\'/site_media/plus1.png\' style="background-color: transparent; width:18px; height:18px">' +
+        '<input class="buttonCustom new_tc_form" type=\'image\' src=\'/site_media/minus1.png\' style="background-color: transparent; width:18px; height:18px">' +
+        '</div>' +
+                    /******************dataset nested table(end)************/
+        '</td>' +
         '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/new.png\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '</tr>' +
         '</table>' +
