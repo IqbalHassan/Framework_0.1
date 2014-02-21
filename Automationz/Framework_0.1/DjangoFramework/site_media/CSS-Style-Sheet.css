@@ -855,6 +855,7 @@ article header{
 #nav .mini-loader {
     font: normal normal 16px octicons;
     line-height: 1;
+    vertical-align: -12%;
     display: inline-block;
     text-decoration: none;
     -webkit-font-smoothing: antialiased;

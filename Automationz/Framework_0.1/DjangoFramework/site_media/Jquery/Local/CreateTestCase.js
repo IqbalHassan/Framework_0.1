@@ -660,7 +660,7 @@ function add_step_teble_row()
         '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
         '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
         '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-'<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
+        '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
         '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '</tr>'
     );
@@ -676,16 +676,24 @@ function show_data_dialog(){
             var message = ""
             message += '<table class="one-column-emphasis">' +
                 '<tr>' +
+                '<th></th>' +
                 '<th>Type</th>' +
                 '<th>Sub-Type</th>' +
                 '<th>Title</th>' +
+                '<th></th>' +
                 '</tr>' +
                 '<tr>' +
+                '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
                 '<td><input class="textbox" style="width: auto"></td>' +
                 '<td><input class="textbox" style="width: auto"></td>' +
                 '<td><input class="textbox" style="width: auto"></td>' +
+                '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/new.png\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
                 '</tr>' +
-                '</table>'
+                '</table>' +
+                '<div class="new_tc_form" style="text-align: center">' +
+                '<input class="buttonCustom new_tc_form" type=\'image\' src=\'/site_media/plus1.png\' style="background-color: transparent; width:22px; height:22px">' +
+                '<input class="buttonCustom new_tc_form" type=\'image\' src=\'/site_media/minus1.png\' style="background-color: transparent; width:22px; height:22px">' +
+                '</div>'
             $("#inner-data").html(message);
 
             $("#inner-data").dialog({
