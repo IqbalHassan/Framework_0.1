@@ -17,6 +17,7 @@ $(document).ready(function() {
 
     add_step_teble_row();
     show_data_dialog();
+    check_required_data();
 
     URL = window.location.pathname
     console.log("url:"+URL);
@@ -632,8 +633,7 @@ function add_step_teble_row()
         '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
         '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
         '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-        '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
-        '</tr>'
+'<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +        '</tr>'
     );
 }
 function show_data_dialog(){
@@ -643,6 +643,44 @@ function show_data_dialog(){
         });
     });
     $("#steps_table .data-popup").each(function(){
+        $(this).click(function(){
+            var message = ""
+            message += '<table class="one-column-emphasis">' +
+                '<tr>' +
+                '<th>Type</th>' +
+                '<th>Sub-Type</th>' +
+                '<th>Title</th>' +
+                '</tr>' +
+                '<tr>' +
+                '<td><input class="textbox" style="width: auto"></td>' +
+                '<td><input class="textbox" style="width: auto"></td>' +
+                '<td><input class="textbox" style="width: auto"></td>' +
+                '</tr>' +
+                '</table>'
+            $("#inner-data").html(message);
+
+            $("#inner-data").dialog({
+                buttons : {
+                    "OK" : function() {
+                        $(this).dialog("close");
+                    }
+                },
+
+                show : {
+                    effect : 'drop',
+                    direction : "up"
+                },
+
+                modal : true,
+                width : 800,
+                height : 500,
+                title: "Data"
+
+            });
+        });
+    });
+
+    $("#steps_table .step-info").each(function(){
         $(this).click(function(){
             $("#inner-data").dialog({
                 buttons : {
@@ -659,14 +697,26 @@ function show_data_dialog(){
                 modal : true,
                 width : 500,
                 height : 500,
-                title: "Data"
+                title: "Info"
 
             });
         });
     });
 
 }
-
+function check_required_data()
+{
+    $(".section").live('change',function(){
+        if($(".section").val() != "Choose...")
+        {
+            $("#section-flag").addClass("filled");
+        }
+        else
+        {
+            $("#section-flag").removeClass("filled");
+        }
+    });
+}
 function dataArrayToString(array){
     var tempString ="";
 
