@@ -49,10 +49,11 @@ $(document).ready(function() {
             console.log('step_'+val);
             var tr=$(this).closest('tr');
             tr.css({'background-color':'#FF3700'});
-            tr.fadeOut('500',function(){
-               tr.remove();
-            });
-            //resetNumber();
+            tr.css({'fadeOut':'500'});
+            tr.remove();
+            step_num--;
+            resetNumber();
+            console.log(step_num);
             return false;
         });
 
@@ -507,6 +508,25 @@ $(document).ready(function() {
     }
 
 });
+function resetNumber(){
+    var row_count=$('#steps_table tr').length;
+    var currentrow=$('#steps_table tr:first-child');
+    for (var i=1;i<=row_count;i++){
+        currentrow.attr('id','step_'+i);
+        currentrow.find('td:first-child input:eq(0)').attr('id',i);
+        currentrow.find('td:nth-child(2)').text(i);
+        currentrow.find('td:nth-child(3) input:eq(0)').attr('id','step_'+i+'name');
+        currentrow.find('td:nth-child(4) a:eq(0)').attr('id','searchbox'+i+'data');
+        currentrow.find('td:nth-child(5) textarea:eq(0)').attr('id','searchbox'+i+'info');
+        currentrow.find('td:nth-child(6) textarea:eq(0)').attr('id','searchbox'+i+'expected');
+        currentrow.find('td:nth-child(7) input:eq(0)').attr('id','searchbox'+i+'verify');
+        currentrow.find('td:nth-child(8) span:eq(0)').attr('id','searchbox'+i+'step_type');
+        currentrow.find('td:nth-child(9) a:eq(0)').attr('id','searchbox'+i+'step_desc');
+        currentrow=currentrow.closest('tr').next();
+    }
+    console.log(row_count);
+    //step_num=count;
+}
 function recursivelyAddSection(_this){
     var fatherHeirarchy = $(_this).attr("data-level");
     var father = $(_this).children("option:selected").text();
@@ -604,15 +624,15 @@ function add_step_teble_row()
         '<tr id="step_'+step_num+'">' +
         '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>'+step_num+'</td>' +
-        '<td><input class="textbox" style="width: auto"></td>' +
-        '<td><a id="searchbox '+step_num+' data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
+        '<td><input class="textbox" id="step_'+step_num+'name"style="width: auto"></td>' +
+        '<td><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status"></span>' +
         '</a></td>' +
-        '<td><textarea id="searchbox '+step_num+' info" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
-        '<td><textarea id="searchbox '+step_num+' expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
         '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
         '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-        '<td><a id="'+step_num+' step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
+        '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
         '</tr>'
     );
 }
