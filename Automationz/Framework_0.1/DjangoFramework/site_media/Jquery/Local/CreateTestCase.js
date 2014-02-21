@@ -47,17 +47,27 @@ $(document).ready(function() {
         });
         $('.remove_img').live('click',function(){
             var val=$(this).attr('id');
-            console.log('step_'+val);
+            //console.log('step_'+val);
             var tr=$(this).closest('tr');
             tr.css({'background-color':'#FF3700'});
             tr.css({'fadeOut':'500'});
             tr.remove();
             step_num--;
             resetNumber();
-            console.log(step_num);
+            //console.log(step_num);
             return false;
         });
-
+        $('.add_after_img').live('click',function(){
+            var row=$(this).closest('tr').attr('id').trim();
+            console.log(row);
+            var currentrow=$(this).closest('tr');
+            step_num++;
+            var message=add_new_row();
+            console.log(message);
+            currentrow.after(message);
+            resetNumber();
+            return false;
+        });
         $("input[name=platform]").change(function () {
             Env = $(this).val();
         });
@@ -618,7 +628,24 @@ function addStep(){
     add_step_teble_row();
 
 }
-
+function add_new_row(){
+    var message="";
+    message+=('<tr id="step_'+step_num+'">' +
+        '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+        '<td>'+step_num+'</td>' +
+        '<td><input class="textbox" id="step_'+step_num+'name"style="width: auto"></td>' +
+        '<td><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
+        '<span class="mail-status"></span>' +
+        '</a></td>' +
+        '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
+        '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
+        '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
+        '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+        '</tr>');
+    return message;
+}
 function add_step_teble_row()
 {
     $("#steps_table").append('' +
