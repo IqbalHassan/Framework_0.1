@@ -712,7 +712,6 @@ function show_data_dialog(){
                 width : 800,
                 height : 500,
                 title: "Data"
-
             });
         });
     });
