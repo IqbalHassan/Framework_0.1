@@ -705,7 +705,7 @@ function add_dialog_box(){
         '<td>Data Set '+dataset_num+'</td>' +
         '<td>' +
                     /******************dataset nested table(start)************/
-        '<table id="step'+step_num+'dataset'+dataset_num+'" class="one-column-emphasis" width="100%" style="font-size:80%">' +
+        '<table id="step'+step_num+'dataset'+dataset_num+'" class="one-column-emphasis" width="100%" style="font-size:75%">' +
         '<tr>' +
         '<th width="11%"></th>' +
         '<th width="26%">Type</th>' +
@@ -790,13 +790,49 @@ function check_required_data()
     $(".section").live('change',function(){
         if($(".section").val() != "Choose...")
         {
+            $("#section-flag").removeClass("unfilled");
             $("#section-flag").addClass("filled");
         }
         else
         {
             $("#section-flag").removeClass("filled");
+            $("#section-flag").addClass("unfilled");
         }
     });
+
+    $("#PC_radio, #MAC_radio").live('click',function(){
+        if(($("#PC_radio").is(':checked') == true) || ($("#MAC_radio").is(':checked') == true)){
+            $("#platform-flag").removeClass("unfilled");
+            $("#platform-flag").addClass("filled");
+        }
+        else {
+            $("#platform-flag").removeClass("filled");
+            $("#platform-flag").addClass("unfilled");
+        }
+    });
+
+    $(".browser").live('click',function(){
+        if(($('#Chrome').is(':checked') == true) || ($('#FireFox').is(':checked') == true) || ($('#IE').is(':checked') == true) || ($('#Safari').is(':checked') == true)){
+            $("#browser-flag").removeClass("unfilled");
+            $("#browser-flag").addClass("filled");
+        }
+        else {
+            $("#browser-flag").removeClass("filled");
+            $("#browser-flag").addClass("unfilled");
+        }
+    });
+
+    $("#smoke_check, #si_check, #svv_check").live('click',function(){
+        if(($('#smoke_check').is(':checked') == true) || ($('#si_check').is(':checked') == true) || ($('#svv_check').is(':checked') == true)){
+            $("#type-flag").removeClass("unfilled");
+            $("#type-flag").addClass("filled");
+        }
+        else {
+            $("#type-flag").removeClass("filled");
+            $("#type-flag").addClass("unfilled");
+        }
+    });
+
 }
 function dataArrayToString(array){
     var tempString ="";
