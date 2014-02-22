@@ -18,6 +18,7 @@ $(document).ready(function() {
     add_step_teble_row();
     //show_data_dialog();
     check_required_data();
+    show_radio_button();
 
     URL = window.location.pathname
     console.log("url:"+URL);
@@ -833,6 +834,23 @@ function check_required_data()
         }
     });
 
+}
+function show_radio_button(){
+    $("#enable_radio").live('click',function(){
+        $(this).addClass("selected");
+        $("#Disable_radio").removeClass("selected");
+        $("#Manual_radio").removeClass("selected");
+    });
+    $("#Disable_radio").live('click',function(){
+        $(this).addClass("selected");
+        $("#enable_radio").removeClass("selected");
+        $("#Manual_radio").removeClass("selected");
+    });
+    $("#Manual_radio").live('click',function(){
+        $(this).addClass("selected");
+        $("#Disable_radio").removeClass("selected");
+        $("#enable_radio").removeClass("selected");
+    });
 }
 function dataArrayToString(array){
     var tempString ="";
