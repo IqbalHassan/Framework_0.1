@@ -662,8 +662,8 @@ function add_new_row(){
         '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status"></span>' +
         '</a></td>' +
-        '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
-        '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
+        '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
         '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
         '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
         '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
@@ -681,8 +681,8 @@ function add_step_teble_row()
         '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status"></span>' +
         '</a></td>' +
-        '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
-        '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 80%"></textarea></td>' +
+        '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
+        '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
         '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
         '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
         '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
@@ -709,16 +709,16 @@ function add_dialog_box(){
         '<table id="step'+step_num+'dataset'+dataset_num+'" class="one-column-emphasis" width="100%" style="font-size:75%">' +
         '<tr>' +
         '<th width="11%"></th>' +
-        '<th width="26%">Type</th>' +
-        '<th width="26%">Sub-Type</th>' +
-        '<th width="26%">Title</th>' +
+        '<th width="26%">Field</th>' +
+        '<th width="26%">Sub-Field</th>' +
+        '<th width="26%">Value</th>' +
         '<th width="11%"></th>' +
         '</tr>' +
         '<tr>' +
         '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' style=\"background-color: transparent; width:15px; height:15px\"></td>' +
         '<td><input class="textbox" style="width: auto"></td>' +
         '<td><input class="textbox" style="width: auto"></td>' +
-        '<td><input class="textbox" style="width: auto"></td>' +
+        '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
         '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/new.png\' style=\"background-color: transparent; width:15px; height:15px\"></td>' +
         '</tr>' +
         '</table>' +
