@@ -114,6 +114,8 @@ $(document).ready(function() {
         $(".section[data-level='']").change(function(){
             isAtLowestSection = false;
             recursivelyAddSection(this);
+            $("#section-flag").removeClass("filled");
+            $("#section-flag").addClass("unfilled");
         });
 
         //Browsers
@@ -213,6 +215,8 @@ $(document).ready(function() {
                                         change: function(){
                                             isAtLowestSection = false;
                                             recursivelyAddSection(this);
+                                            $("#section-flag").removeClass("filled");
+                                            $("#section-flag").addClass("unfilled");
                                         }
                                     })
                                     if($('#sectiongroup select[id='+realItemIndex+']').length != 0)
@@ -236,6 +240,8 @@ $(document).ready(function() {
                                     $(".section[data-level='"+handlerString+"']").val(sectionArray[realItemIndex].replace(/_/g,' '))
                                 }
                                 isAtLowestSection = true;
+                                $("#section-flag").removeClass("unfilled");
+                                $("#section-flag").addClass("filled");
                             }
                         }
                     });
@@ -597,6 +603,8 @@ function recursivelyAddSection(_this){
                     change: function(){
                         isAtLowestSection = false;
                         recursivelyAddSection(this);
+                        $("#section-flag").removeClass("filled");
+                        $("#section-flag").addClass("unfilled");
                     }
                 }).appendTo('#sectiongroup');
 
@@ -615,6 +623,8 @@ function recursivelyAddSection(_this){
                 });
             }else{
                 isAtLowestSection = true;
+                $("#section-flag").removeClass("unfilled");
+                $("#section-flag").addClass("filled");
             }
         }
     });
@@ -788,7 +798,7 @@ function add_dialog_box(){
 }
 function check_required_data()
 {
-    $(".section").live('change',function(){
+    /*$(".section").live('change',function(){
         if($(".section").val() != "Choose...")
         {
             $("#section-flag").removeClass("unfilled");
@@ -799,7 +809,7 @@ function check_required_data()
             $("#section-flag").removeClass("filled");
             $("#section-flag").addClass("unfilled");
         }
-    });
+    });*/
 
     $("#PC_radio, #MAC_radio").live('click',function(){
         if(($("#PC_radio").is(':checked') == true) || ($("#MAC_radio").is(':checked') == true)){
