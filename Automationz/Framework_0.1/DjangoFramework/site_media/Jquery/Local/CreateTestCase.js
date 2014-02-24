@@ -9,7 +9,7 @@ var URL="";
 var step_num = 1;
 var step_num_data_num = new Array();
 var tag_list = new Array();
-var Env = "PC"
+var Env = "PC";
 var lowest_section = 0;
 var isAtLowestSection = false;
 
@@ -257,12 +257,18 @@ $(document).ready(function() {
 
                 //enabled_status
                 if(!template){
-                    if(enabledStatus == "Ready")
+                    /*if(enabledStatus == "Ready")
                         $('input[value="Production"]').attr('checked', true);
                     else if(enabledStatus == "Dev")
                         $('input[value="Development"]').attr('checked', true);
                     else if(enabledStatus == "Forced")
-                        $('input[value="Forced-Manual"]').attr('checked', true);
+                        $('input[value="Forced-Manual"]').attr('checked', true);*/
+                    if(enabledStatus == "Ready")
+                        $("#enable_radio").addClass("selected");
+                    else if(enabledStatus == "Dev")
+                        $("#Disable_radio").addClass("selected");
+                    else if(enabledStatus == "Forced")
+                        $("#Manual_radio").addClass("selected");
                     $('#tc_enable').css('display','block');
                 }
 
@@ -408,12 +414,18 @@ $(document).ready(function() {
             var manual_tc_id = $("#id_txtbox").val()
             var req_id = $("#reqid_txtbox").val();
             //status
-            var status;
-            if($('input[value="Production"]').attr('checked') == "checked")
+            var status;if($("#enable_radio").hasClass("selected"))
+            /*if($('input[value="Production"]').attr('checked') == "checked")
                 status = "Ready"
             else if($('input[value="Development"]').attr('checked') == "checked")
                 status = "Dev"
             else if($('input[value="Forced-Manual"]').attr('checked') == "checked")
+                status = "Forced"*/
+            if($("#enable_radio").hasClass("selected"))
+                status = "Ready"
+            else if($("#Disable_radio").hasClass("selected"))
+                status = "Dev"
+            else if($("#Manual_radio").hasClass("selected"))
                 status = "Forced"
 
             var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
@@ -668,7 +680,7 @@ function add_new_row(){
     message+=('<tr id="step_'+step_num+'">' +
         '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>'+step_num+'</td>' +
-        '<td><input class="textbox" id="step_'+step_num+'name"style="width: auto"></td>' +
+        '<td><input class="textbox stepbox" id="searchbox'+step_num+'"style="width: auto"></td>' +
         '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status"></span>' +
         '</a></td>' +
@@ -687,7 +699,7 @@ function add_step_teble_row()
         '<tr id="step_'+step_num+'">' +
         '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>'+step_num+'</td>' +
-        '<td><input class="textbox" id="step_'+step_num+'name"style="width: auto"></td>' +
+        '<td><input class="textbox stepbox" id="searchbox'+step_num+'"style="width: auto"></td>' +
         '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status"></span>' +
         '</a></td>' +
@@ -747,52 +759,6 @@ function add_dialog_box(){
         '</div>');
     $('#outer-data').append('<div id="searchbox'+step_num+'datapop"></div>');
     $('#searchbox'+step_num+'datapop').html(message);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
@@ -1074,6 +1040,7 @@ function RunTestAutocompleteSearch(Env, step) {
         source : function(request, response) {
             $.ajax({
                 url : "AutoCompleteTestStepSearch/",
+
                 dataType : "json",
                 data : {
                     term : request.term
