@@ -9,7 +9,7 @@ var URL="";
 var step_num = 1;
 var step_num_data_num = new Array();
 var tag_list = new Array();
-var Env = "PC"
+var Env = "PC";
 var lowest_section = 0;
 var isAtLowestSection = false;
 var popupdivrowcount=[];
@@ -38,7 +38,7 @@ $(document).ready(function() {
         $('#remove_test_step').click(function() {
             if (step_num > 0) {
                 /*$('#AutoSearchResult' + step_num).fadeOut().remove();
-                step_num--;
+                 step_num--;
                  RunTestAutocompleteSearch(Env, step_num);*/
                 var table = document.getElementById("steps_table");
                 var rowCount = table.rows.length;
@@ -275,12 +275,18 @@ $(document).ready(function() {
 
                 //enabled_status
                 if(!template){
+                    /*if(enabledStatus == "Ready")
+                     $('input[value="Production"]').attr('checked', true);
+                     else if(enabledStatus == "Dev")
+                     $('input[value="Development"]').attr('checked', true);
+                     else if(enabledStatus == "Forced")
+                     $('input[value="Forced-Manual"]').attr('checked', true);*/
                     if(enabledStatus == "Ready")
-                        $('input[value="Production"]').attr('checked', true);
+                        $("#enable_radio").addClass("selected");
                     else if(enabledStatus == "Dev")
-                        $('input[value="Development"]').attr('checked', true);
+                        $("#Disable_radio").addClass("selected");
                     else if(enabledStatus == "Forced")
-                        $('input[value="Forced-Manual"]').attr('checked', true);
+                        $("#Manual_radio").addClass("selected");
                     $('#tc_enable').css('display','block');
                 }
 
@@ -426,13 +432,19 @@ $(document).ready(function() {
             var manual_tc_id = $("#id_txtbox").val()
             var req_id = $("#reqid_txtbox").val();
             //status
-            var status;
-            if($('input[value="Production"]').attr('checked') == "checked")
-                status = "Ready"
-            else if($('input[value="Development"]').attr('checked') == "checked")
-                status = "Dev"
-            else if($('input[value="Forced-Manual"]').attr('checked') == "checked")
-                status = "Forced"
+            var status;if($("#enable_radio").hasClass("selected"))
+            /*if($('input[value="Production"]').attr('checked') == "checked")
+             status = "Ready"
+             else if($('input[value="Development"]').attr('checked') == "checked")
+             status = "Dev"
+             else if($('input[value="Forced-Manual"]').attr('checked') == "checked")
+             status = "Forced"*/
+                if($("#enable_radio").hasClass("selected"))
+                    status = "Ready"
+                else if($("#Disable_radio").hasClass("selected"))
+                    status = "Dev"
+                else if($("#Manual_radio").hasClass("selected"))
+                    status = "Forced"
 
             var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
             var _TC_Id = $('#TC_Id').html().substring($('#TC_Id').html().indexOf(": ")+2,$('#TC_Id').html().indexOf("</b>"))
@@ -706,7 +718,7 @@ function add_new_row(){
     message+=('<tr id="step_'+step_num+'">' +
         '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>'+step_num+'</td>' +
-        '<td><input class="textbox" id="step_'+step_num+'name"style="width: auto"></td>' +
+        '<td><input class="textbox stepbox" id="searchbox'+step_num+'"style="width: auto"></td>' +
         '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status"></span>' +
         '</a></td>' +
@@ -726,7 +738,7 @@ function add_step_teble_row()
         '<tr id="step_'+step_num+'">' +
         '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>'+step_num+'</td>' +
-        '<td><input class="textbox" id="step_'+step_num+'name"style="width: auto"></td>' +
+        '<td><input class="textbox stepbox" id="searchbox'+step_num+'"style="width: auto"></td>' +
         '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
         '<span class="mail-status"></span>' +
         '</a></td>' +
@@ -764,9 +776,8 @@ function add_dataset_row(stepno,dataset_num){
         '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
         '<td>Data Set '+dataset_num+'</td>' +
         '<td>' +
-    /******************dataset nested table(start)************/
-        '<table class="one-column-emphasis" width="100%" style="font-size:75%">' +
-        '<tr>' +
+		/******************dataset nested table(start)************/
+        '<table class="one-column-emphasis" width="100%" style="font-size:75%">' +        '<tr>' +
         '<th width="11%"></th>' +
         '<th width="26%">Field</th>' +
         '<th width="26%">Sub-Field</th>' +
@@ -788,23 +799,21 @@ function add_dataset_row(stepno,dataset_num){
     /******************dataset nested table(end)************/
         '</td>' +
         '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/new.png\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
-        '</tr>');
-    return message;
 }
 function check_required_data()
 {
     /*$(".section").live('change',function(){
-        if($(".section").val() != "Choose...")
-        {
-            $("#section-flag").removeClass("unfilled");
-            $("#section-flag").addClass("filled");
-        }
-        else
-        {
-            $("#section-flag").removeClass("filled");
-            $("#section-flag").addClass("unfilled");
-        }
-    });*/
+     if($(".section").val() != "Choose...")
+     {
+     $("#section-flag").removeClass("unfilled");
+     $("#section-flag").addClass("filled");
+     }
+     else
+     {
+     $("#section-flag").removeClass("filled");
+     $("#section-flag").addClass("unfilled");
+     }
+     });*/
 
     $("#PC_radio, #MAC_radio").live('click',function(){
         if(($("#PC_radio").is(':checked') == true) || ($("#MAC_radio").is(':checked') == true)){
@@ -1069,6 +1078,7 @@ function RunTestAutocompleteSearch(Env, step) {
         source : function(request, response) {
             $.ajax({
                 url : "AutoCompleteTestStepSearch/",
+
                 dataType : "json",
                 data : {
                     term : request.term
