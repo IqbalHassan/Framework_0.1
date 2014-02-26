@@ -6,18 +6,18 @@
 var indx=0;
 var indx2=0;
 var URL="";
-var step_num = 1;
+var step_num = 0;
 var step_num_data_num = new Array();
 var tag_list = new Array();
 var Env = "PC";
 var lowest_section = 0;
 var isAtLowestSection = false;
 var popupdivrowcount=[];
-
 $(document).ready(function() {
 
-    add_step_teble_row();
+    //add_step_teble_row();
     //show_data_dialog();
+    addMainTableRow('#steps_table');
     check_required_data();
     show_radio_button();
 
@@ -31,69 +31,46 @@ $(document).ready(function() {
     console.log("Url Length:"+URL.length);
     console.log("Template:"+template);
     if (indx != -1 || indx2 != -1) {
-        $('#add_test_step').click(function() {
-            addStep();
+        //Here the things will be added
+        $('#add_test_step').live('click',function(){
+            addMainTableRow('#steps_table');
         });
-
-        $('#remove_test_step').click(function() {
-            if (step_num > 0) {
-                /*$('#AutoSearchResult' + step_num).fadeOut().remove();
-                 step_num--;
-                 RunTestAutocompleteSearch(Env, step_num);*/
-                var table = document.getElementById("steps_table");
-                var rowCount = table.rows.length;
-
-                table.deleteRow(rowCount -1);
-                step_num--;
-            }
-        });
-        $('.remove_img').live('click',function(){
-            var val=$(this).attr('id');
-            var tr=$(this).closest('tr');
-            tr.css({'background-color':'#FF3700'});
-            tr.css({'fadeOut':'500'});
-            $('#searchbox'+val+'datapop').remove();
-            tr.remove();
+        $('#remove_test_step').live('click',function(){
+            var id=$('#steps_table tr:last').attr('id').split('_')[1].trim();
+            $('#searchbox'+id+'datapop').remove();
+            $('#steps_table tr:last').remove();
             step_num--;
-            resetCounter(val);
-            resetNumber();
-            //console.log(step_num);
-            return false;
-        });
-        $('.add_after_img').live('click',function(){
-            var row=$(this).closest('tr').attr('id').trim();
-            console.log(row);
-            var currentrow=$(this).closest('tr');
-            step_num++;
-            var message=add_new_row();
-            console.log(message);
-            currentrow.after(message);
-            add_dialog_box();
-            resetNumber();
-            return false;
+            popupdivrowcount.pop();
         });
         $('.add_dataset_row').live('click',function(){
-            //console.log($(this).parent().parent().attr('id'));
-            var divnum=$(this).parent().parent().attr('id');
-            divnum=divnum.split('d')[0].split('x')[1].trim();
+            var divnum=$(this).parent().parent().attr('id').split('d')[0].split('x')[1].trim();
+            var divname='#searchbox'+divnum+'data_table';
+            addnewrow(divname,divnum,(popupdivrowcount[divnum-1]+1));
             popupdivrowcount[divnum-1]++;
-            var message=add_dataset_row(divnum,popupdivrowcount[divnum-1]);
-            $('#searchbox'+divnum+'data_table').append(message);
         });
         $('.remove_dataset_row').live('click',function(){
-            var divnum=$(this).parent().parent().attr('id');
-            divnum=divnum.split('d')[0].split('x')[1].trim();
-            var tr=$('#step'+divnum+'data'+popupdivrowcount[divnum-1]);
+            var divnum=$(this).parent().parent().attr('id').split('d')[0].split('x')[1].trim();
+            var divname='#searchbox'+divnum+'data_table';
+            var row_name=$('#step'+divnum+'data'+popupdivrowcount[divnum-1]);
+            row_name.remove();
             popupdivrowcount[divnum-1]--;
-            console.log(tr);
-            tr.remove();
+        });
+        $('.add_dataset_entry').live('click',function(){
+            var tablename=$(this).parent().parent().find('table:eq(0)').attr('id');
+            adddataentry(tablename);
+        });
+        $('.remove_dataset_entry').live('click',function(){
+            var tablename=$(this).parent().parent().find('table:eq(0)').attr('id');
+            if($('#'+tablename+' tr').length>1){
+                $('#'+tablename+' tr:last').remove();
+            }
         });
         $('.data-popup').live('click',function(){
             var id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
             $('#searchbox'+id+'datapop').dialog({
                 buttons : {
                     "OK" : function() {
-                        $(this).dialog("close");
+                        $(this).dialog("destroy");
                     }
                 },
 
@@ -577,47 +554,76 @@ $(document).ready(function() {
     }
 
 });
-function resetCounter(value){
-    var temparray=[];
-    for(var i=0;i<popupdivrowcount.length;i++){
-        if(i!=(value-1)){
-            temparray.push(popupdivrowcount[i]);
-        }
-    }
-    popupdivrowcount=[];
-    for(var i=0;i<temparray.length;i++){
-        popupdivrowcount.push(temparray[i]);
-    }
+function adddataentry(tablename){
+    var message="";
+    message+=(
+        '<tr>' +
+        '<td><input class="textbox" style="width: auto"></td>' +
+        '<td><input class="textbox" style="width: auto"></td>' +
+        '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
+        '</tr>');
+    $('#'+tablename).append(message);
 }
-function resetNumber(){
-    var row_count=$('#steps_table tr').length;
-    var currentrow=$('#steps_table tr:first-child');
-    var popupserial=currentrow.attr('id').split('_')[1].trim();
-    for (var i=1;i<=row_count;i++){
-        currentrow.attr('id','step_'+i);
-        currentrow.find('td:first-child input:eq(0)').attr('id',i);
-        currentrow.find('td:nth-child(2)').text(i);
-        currentrow.find('td:nth-child(3) input:eq(0)').attr('id','step_'+i+'name');
-        currentrow.find('td:nth-child(4) a:eq(0)').attr('id','searchbox'+i+'data');
-        currentrow.find('td:nth-child(5) textarea:eq(0)').attr('id','searchbox'+i+'info');
-        currentrow.find('td:nth-child(6) textarea:eq(0)').attr('id','searchbox'+i+'expected');
-        currentrow.find('td:nth-child(7) input:eq(0)').attr('id','searchbox'+i+'verify');
-        currentrow.find('td:nth-child(8) span:eq(0)').attr('id','searchbox'+i+'step_type');
-        currentrow.find('td:nth-child(9) a:eq(0)').attr('id','searchbox'+i+'step_desc');
-        var currentdiv=$('#searchbox'+popupserial+'datapop');
-        currentdiv.attr('id','searchbox'+i+'datapop');
-        currentdiv.find('table:eq(0)').attr('id','searchbox'+i+'data_table');
-        var dataset_count=popupdivrowcount[i-1];
-        for(var j=1;j<=dataset_count;j++){
-            var row=$('#step'+popupserial+'data'+j);
-            row.attr('id','step'+i+'data'+j);
-        }
-        currentdiv=currentdiv.closest('div').next();
-        currentrow=currentrow.closest('tr').next();
-        popupserial++;
-    }
-    console.log(row_count);
-    //step_num=count;
+function addnewrow(divname,stepno,dataset_num){
+    var message="";
+    message+=('<tr id="step'+stepno+'data'+dataset_num+'">' +
+        '<td>Data Set '+dataset_num+'</td>' +
+        '<td>' +
+    /******************dataset nested table(start)************/
+        '<table id="step'+stepno+'data'+dataset_num+'entrytable"class="one-column-emphasis" width="100%" style="font-size:75%">' +
+        '<tr>' +
+        '<th width="33%">Field</th>' +
+        '<th width="33%">Sub-Field</th>' +
+        '<th width="33%">Value</th>' +
+        '</tr>' +
+        '<tr>' +
+        '<td><input class="textbox" style="width: auto"></td>' +
+        '<td><input class="textbox" style="width: auto"></td>' +
+        '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
+        '</tr>' +
+        '</table>' +
+        '<div class="new_tc_form" style="text-align: center">' +
+        '<input class="buttonCustom new_tc_form add_dataset_entry" type=\'image\' src=\'/site_media/plus1.png\' style="background-color: transparent; width:18px; height:18px">' +
+        '<input class="buttonCustom new_tc_form remove_dataset_entry" type=\'image\' src=\'/site_media/minus1.png\' style="background-color: transparent; width:18px; height:18px">' +
+        '</div>' +
+    /******************dataset nested table(end)************/
+        '</td>' +
+        '</tr>');
+    $(divname).append(message);
+}
+function addMainTableRow(divname){
+    var message="";
+    step_num++;
+    popupdivrowcount[step_num-1]=0;
+    message+=(
+            '<tr id="step_'+step_num+'">' +
+            '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+            '<td>'+step_num+'</td>' +
+            '<td><input class="textbox stepbox" id="searchbox'+step_num+'"style="width: auto"></td>' +
+            '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
+            '<span class="mail-status"></span>' +
+            '</a></td>' +
+            '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
+            '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
+            '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
+            '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
+            '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
+            '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
+            '</tr>'
+        );
+    var popupmetadata="";
+    popupmetadata+=('<table id="searchbox'+step_num+'data_table" class="one-column-emphasis" width="100%">' +
+        '<tr>' +
+        '<th width="20%">DataSet</th>' +
+        '<th width="80%">Data</th>' +
+        '</tr>' +
+        '</table>' +
+        '<div class="new_tc_form" style="text-align: center">' +
+        '<input class="buttonCustom new_tc_form add_dataset_row" type=\'image\' src=\'/site_media/plus1.png\' style="background-color: transparent; width:22px; height:22px">' +
+        '<input class="buttonCustom new_tc_form remove_dataset_row" type=\'image\' src=\'/site_media/minus1.png\' style="background-color: transparent; width:22px; height:22px">' +
+        '</div>');
+    $('#outer-data').append('<div id="searchbox'+step_num+'datapop">'+popupmetadata+'</div>');
+    $(divname).append(message);
 }
 function recursivelyAddSection(_this){
     var fatherHeirarchy = $(_this).attr("data-level");
@@ -678,127 +684,6 @@ function recursivelyAddSection(_this){
             }
         }
     });
-}
-
-function addStep(){
-    step_num++;
-    step_num_data_num[step_num] = 0;
-    var id = AddAutoCompleteSearchBox("#stepbox", "Step " + step_num + ": ", step_num);
-    //console.log("Step ID:"+id);
-    RunTestAutocompleteSearch(Env, step_num);
-
-
-    $('#'+step_num+'.add_test_data').live("click", function (event) {
-        addDataToStep(this)
-    });
-
-    $('#'+step_num+'.remove_test_data').live("click", function (event) {
-        var indx = $(this).attr("id");
-        if (step_num_data_num[indx] > -1) {
-            $('.searchbox'+indx +''+ step_num_data_num[indx] + 'data').remove();
-            step_num_data_num[indx]--;
-        }
-    });
-    $('#'+step_num+'step_desc').live("click",function(event){
-        //alert("clicked");
-        var name=$('#'+id).val();
-        $.get("AutoCompleteTestStepSearch/",{term:name},function(data){
-            MsgBox("Test Step Description","<b>"+data[0][3]+"</b>");
-        })
-
-    });
-
-    /*return id;*/
-
-    add_step_teble_row();
-
-}
-function add_new_row(){
-    var message="";
-    message+=('<tr id="step_'+step_num+'">' +
-        '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
-        '<td>'+step_num+'</td>' +
-        '<td><input class="textbox stepbox" id="searchbox'+step_num+'"style="width: auto"></td>' +
-        '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
-        '<span class="mail-status"></span>' +
-        '</a></td>' +
-        '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
-        '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
-        '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
-        '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-        '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
-        '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
-        '</tr>');
-    add_dialog_box();
-    return message;
-}
-function add_step_teble_row()
-{
-    $("#steps_table").append('' +
-        '<tr id="step_'+step_num+'">' +
-        '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
-        '<td>'+step_num+'</td>' +
-        '<td><input class="textbox stepbox" id="searchbox'+step_num+'"style="width: auto"></td>' +
-        '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
-        '<span class="mail-status"></span>' +
-        '</a></td>' +
-        '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
-        '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
-        '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
-        '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-        '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
-        '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
-        '</tr>'
-    );
-    add_dialog_box();
-}
-function add_dialog_box(){
-    var message = ""
-    message += ('<table id="searchbox'+step_num+'data_table" class="one-column-emphasis" width="100%">' +
-        '<tr>' +
-        '<th width="10%"></th>' +
-        '<th width="20%">DataSet</th>' +
-        '<th width="60%">Data</th>' +
-        '<th width="10%"></th>' +
-        '</tr>' +
-        '</table>' +
-        '<div class="new_tc_form" style="text-align: center">' +
-        '<input class="buttonCustom new_tc_form add_dataset_row" type=\'image\' src=\'/site_media/plus1.png\' style="background-color: transparent; width:22px; height:22px">' +
-        '<input class="buttonCustom new_tc_form remove_dataset_row" type=\'image\' src=\'/site_media/minus1.png\' style="background-color: transparent; width:22px; height:22px">' +
-        '</div>');
-    $('#outer-data').append('<div id="searchbox'+step_num+'datapop"></div>');
-    popupdivrowcount[step_num-1]=0;
-    $('#searchbox'+step_num+'datapop').html(message);
-}
-function add_dataset_row(stepno,dataset_num){
-    var message="";
-    message+=('<tr id="step'+stepno+'data'+dataset_num+'">' +
-        '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
-        '<td>Data Set '+dataset_num+'</td>' +
-        '<td>' +
-		/******************dataset nested table(start)************/
-        '<table class="one-column-emphasis" width="100%" style="font-size:75%">' +        '<tr>' +
-        '<th width="11%"></th>' +
-        '<th width="26%">Field</th>' +
-        '<th width="26%">Sub-Field</th>' +
-        '<th width="26%">Value</th>' +
-        '<th width="11%"></th>' +
-        '</tr>' +
-        '<tr>' +
-        '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/minus2.png\' style=\"background-color: transparent; width:15px; height:15px\"></td>' +
-        '<td><input class="textbox" style="width: auto"></td>' +
-        '<td><input class="textbox" style="width: auto"></td>' +
-        '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
-        '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/new.png\' style=\"background-color: transparent; width:15px; height:15px\"></td>' +
-        '</tr>' +
-        '</table>' +
-        '<div class="new_tc_form" style="text-align: center">' +
-        '<input class="buttonCustom new_tc_form" type=\'image\' src=\'/site_media/plus1.png\' style="background-color: transparent; width:18px; height:18px">' +
-        '<input class="buttonCustom new_tc_form" type=\'image\' src=\'/site_media/minus1.png\' style="background-color: transparent; width:18px; height:18px">' +
-        '</div>' +
-    /******************dataset nested table(end)************/
-        '</td>' +
-        '<td><input class="new_tc_form" type=\'image\' src=\'/site_media/new.png\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
 }
 function check_required_data()
 {
