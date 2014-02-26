@@ -265,8 +265,8 @@ function populate_feature_driver_info_div(){
                             $('#search_result tr>td:nth-child(1)').each(function(){
                                 var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                                $(this).after('<img class="templateBtn button minbutton primary" id="'+ID+'" src="/site_media/template.png" height="50"/>');
-                                $(this).after('<img class="editBtn button minbutton primary" id="'+ID+'" src="/site_media/edit_case.png" height="50"/>');
+                                $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50" style="cursor:pointer;"/>');
+                                $(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/edit_case.png" height="50" style="cursor:pointer;"/>');
 
                                 indx++;
                             });
@@ -485,8 +485,8 @@ function populate_footer_div(){
                 $('#search_result tr>td:nth-child(3)').each(function(){
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                    $(this).after('<img class="templateBtn button minbutton primary" id="'+ID+'" src="/site_media/template.png" height="50"/>');
-                    $(this).after('<img class="editBtn button minbutton primary" id="'+ID+'" src="/site_media/edit_case.png" height="50"/>');
+                    $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50" style="cursor:pointer;"/>');
+                    $(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/edit_case.png" height="50" style="cursor:pointer;"/>');
 
                     indx++;
                 });
@@ -613,8 +613,8 @@ function PerformSearch(){
 
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                    $(this).after('<img class="templateBtn button minbutton primary" id="'+ID+'" src="/site_media/template.png" height="50"/>');
-                    $(this).after('<img class="editBtn button minbutton primary" id="'+ID+'" src="/site_media/edit_case.png" height="50"/>');
+                    $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50" style="cursor:pointer;"/>');
+                    $(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/edit_case.png" height="50" style="cursor:pointer;"/>');
 
                     indx++;
                 });

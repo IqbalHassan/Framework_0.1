@@ -477,7 +477,7 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 								+ "<label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'>"
 								+ Label
 								+ " </b></label>"
-								+ "<input class = 'ui-corner-all textbox' id='searchbox' style = 'margin-left:-2%' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' />"
+								+ "<input class = 'ui-corner-all textbox' id='searchbox' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' />"
 							+ "</td>"
 						+ "</tr>"
 						
