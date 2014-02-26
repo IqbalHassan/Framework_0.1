@@ -12,7 +12,12 @@
 
         <h2>All</h2>
         <div align="center">
+
             <div id="allRun">
+                <br/>
+                <input id="searchInput" placeholder="Type to Filter" class="textbox">
+                <br/>
+
                 {%if all %}
                 <table class="one-column-emphasis">
                     <thead>
@@ -22,7 +27,7 @@
                         {%endfor%}
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="fbody">
 					{%for x in all%}
                     <tr >
                         {%for y in x.0%}

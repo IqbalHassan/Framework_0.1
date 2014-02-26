@@ -9,6 +9,69 @@ $(document).ready(function(){
     make_bar_clickable('#cancelledRun');
     make_bar_clickable('#progressRun');
     make_bar_clickable('#submittedRun');
+
+    $("#searchInput").keyup(function () {
+        //split the current value of searchInput
+        var data = this.value.split(" ");
+        //create a jquery object of the rows
+        var jo = $("#fbody").find("tr");
+        if (this.value == "") {
+            jo.show();
+            return;
+        }
+        //hide all the rows
+        jo.hide();
+
+        //Recusively filter the jquery object to get results.
+        jo.filter(function (i, v) {
+            var $t = $(this);
+            for (var d = 0; d < data.length; ++d) {
+                if ($t.is(":contains('" + data[d] + "')")) {
+                    return true;
+                }
+            }
+            return false;
+        })
+            //show the rows that match.
+            .show();
+    }).focus(function () {
+            this.value = "";
+            $(this).css({
+                "color": "black"
+            });
+            $(this).unbind('focus');
+        }).css({
+            "color": "#C0C0C0"
+        });
+
+    $(".textbox").autocomplete({
+        source: function(request,response){
+            $.ajax({
+                url:"GetSections",
+                dataType:"json",
+                data:{
+                    section : ''
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select: function(request,ui){
+            var value = ui.item[0];
+            if(value!=""){
+                $(".textbox").val(value);
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "</a>" )
+            .appendTo( ul );
+    };
+
+
 });
 function make_clickable(divname){
     $(divname+' tr>td:first-child').each(function(){
