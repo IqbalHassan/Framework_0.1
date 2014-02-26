@@ -108,33 +108,47 @@
                         <legend><b>Manual Test Machine Information</b></legend>
                         <label><b>Machine Name:</b></label>
                         <input type="text" id="machine_name" class="textbox" value="" style="width: 150px;" placeholder="Machine Name..."/>
+                        &nbsp;&nbsp;&nbsp;
+                        <label><b>Machine IP:</b></label>
+                        <input type="text" id="machine_ip" class="textbox" style="width: 150px;" placeholder="Machine IP.."/>
+                        <br/>
+                        <br/>
                         <label><b>OS:</b></label>
-                        <select id="os_name">
+                        <select id="os_name" class="wrapper-dropdown-3">
                             <option selected value="">OS</option>
                         </select>
+                        &nbsp;&nbsp;&nbsp;
                         <div id="version_bit" style="display: none">
                             <label><b>Version</b></label>
-                            <select id="os_version">
+                            <select id="os_version" class="wrapper-dropdown-3">
                                 <option>Version</option>
                             </select>
+                            &nbsp;&nbsp;&nbsp;
                             <label><b>Bit:</b></label>
-                            <select id="os_bit">
+                            <select id="os_bit" class="wrapper-dropdown-3">
                                 <option value="32">32 Bit</option>
                                 <option value="64">64 Bit</option>
                             </select>
                         </div>
+                        <br/>
+                        <br/>
                         <label><b>Browser:</b></label>
-                        <select id="browser">
+                        <select id="browser" class="wrapper-dropdown-3">
                             <option selected value="">Browser</option>
                         </select>
+
+                        &nbsp;&nbsp;&nbsp;
                         <div id="b_version" style="display: none">
                             <label><b>Browser version:</b></label>
                             <select id="browser_version">
 
                             </select>
                         </div>
-                        <label><b>Machine IP:</b></label>
-                        <input type="text" id="machine_ip" class="textbox" style="width: 150px;" placeholder="Machine IP.."/>
+
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
                         <input type="button" value="Submit" id="submit_button" class="button minibutton primary"/>
                     </fieldset>
                 </div>
