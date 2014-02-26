@@ -1209,7 +1209,7 @@ article header{
 
 .responsive-tabs__panel { margin-bottom: 50px;}
 
-@media (max-width: 800px) {
+@media (max-width: 767px) {
     .responsive-tabs__heading {
         padding: 0.5em; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0px 2px 3px rgba(0,0,0,0.4);
         background: #ddd;
@@ -1257,13 +1257,48 @@ article header{
 .one-column-emphasis col {
     display: table-column;
 }
+.one-column-emphasis thead {
+    cursor: pointer;
+}
 .one-column-emphasis th {
     font-size: 16px;
     font-weight: normal;
     color: #039;
     padding: 12px 15px;
 }
+.one-column-emphasis thead tr th {
+    font-size: 16px;
+    font-weight: normal;
+    color: #039;
+    padding: 12px 15px;
+}
 
+.one-column-emphasis thead tr th span {
+    padding-right: 20px;
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+}
+
+.one-column-emphasis thead tr th.headerSortUp, .one-column-emphasis thead tr tr th.headerSortDown {
+    background: #acc8dd;
+}
+
+.one-column-emphasis thead tr th.headerSortUp span {
+    background-image: url('up-arrow.png');
+}
+.one-column-emphasis thead tr th.headerSortDown span {
+    background-image: url('down-arrow.png');
+}
+
+.one-column-emphasis tbody tr td {
+    color: #669;
+    border-top: 1px solid #e8edff;
+    padding: 5px 7px;
+}
+.one-column-emphasis tbody tr:hover td {
+    color: #339;
+    background: #eff2ff;
+}
 .one-column-emphasis td {
     color: #669;
     border-top: 1px solid #e8edff;
