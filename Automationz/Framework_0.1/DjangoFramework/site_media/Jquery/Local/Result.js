@@ -10,6 +10,51 @@ $(document).ready(function(){
     make_bar_clickable('#progressRun');
     make_bar_clickable('#submittedRun');
 
+    //Testers
+    $.ajax({
+        url:'GetTesters/',
+        dataType : "json",
+        data : {
+            tester : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".tester[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+
+    //Status
+    $.ajax({
+        url:'GetStatus/',
+        dataType : "json",
+        data : {
+            status : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".status[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+
+    /*$("#simple-menu").click(function(){
+        if($(this).text() == "Advanced Filter >>"){
+            $(this).val("<< Advanced Filter");
+        }
+        else if($(this).text("<< Advanced Filter")) {
+            $(this).val("Advanced Filter >>");
+        }
+    });*/
+
     $("#searchInput").keyup(function () {
         //split the current value of searchInput
         var data = this.value.split(" ");
@@ -42,16 +87,13 @@ $(document).ready(function(){
             $(this).unbind('focus');
         }).css({
             "color": "#C0C0C0"
-        });
-
-    $(".textbox").autocomplete({
+        })
+    .autocomplete({
         source: function(request,response){
             $.ajax({
-                url:"GetSections",
+                url:"ResultFilter",
                 dataType:"json",
-                data:{
-                    section : ''
-                },
+                data:{term:request.term},
                 success:function(data){
                     response(data);
                 }
@@ -60,16 +102,84 @@ $(document).ready(function(){
         select: function(request,ui){
             var value = ui.item[0];
             if(value!=""){
-                $(".textbox").val(value);
+                $("#searchInput").val(value);
                 return false;
             }
         }
     }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
         return $( "<li></li>" )
             .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + "</a>" )
+            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
             .appendTo( ul );
     };
+
+    $(".tester").click(function () {
+        //split the current value of searchInput
+        var data = this.value.split(" ");
+        //create a jquery object of the rows
+        var jo = $("#fbody").find("tr");
+        if (this.value == "") {
+            jo.show();
+            return;
+        }
+        //hide all the rows
+        jo.hide();
+
+        //Recusively filter the jquery object to get results.
+        jo.filter(function (i, v) {
+            var $t = $(this);
+            for (var d = 0; d < data.length; ++d) {
+                if ($t.is(":contains('" + data[d] + "')")) {
+                    return true;
+                }
+            }
+            return false;
+        })
+            //show the rows that match.
+            .show();
+    }).focus(function () {
+            this.value = "";
+            $(this).css({
+                //"color": "black"
+            });
+            $(this).unbind('focus');
+        }).css({
+            "color": "#C0C0C0"
+        });
+
+    $(".status").click(function () {
+        //split the current value of searchInput
+        var data = this.value.split(" ");
+        //create a jquery object of the rows
+        var jo = $("#fbody").find("tr");
+        if (this.value == "") {
+            jo.show();
+            return;
+        }
+        //hide all the rows
+        jo.hide();
+
+        //Recusively filter the jquery object to get results.
+        jo.filter(function (i, v) {
+            var $t = $(this);
+            for (var d = 0; d < data.length; ++d) {
+                if ($t.is(":contains('" + data[d] + "')")) {
+                    return true;
+                }
+            }
+            return false;
+        })
+            //show the rows that match.
+            .show();
+    }).focus(function () {
+            this.value = "";
+            $(this).css({
+                //"color": "black"
+            });
+            $(this).unbind('focus');
+        }).css({
+            "color": "#C0C0C0"
+        });
 
 
 });
