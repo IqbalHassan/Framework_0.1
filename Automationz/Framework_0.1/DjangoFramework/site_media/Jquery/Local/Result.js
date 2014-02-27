@@ -44,13 +44,13 @@ $(document).ready(function(){
             "color": "#C0C0C0"
         });
 
-    $(".textbox").autocomplete({
+    /*$(".textbox").autocomplete({
         source: function(request,response){
             $.ajax({
                 url:"GetSections",
                 dataType:"json",
                 data:{
-                    section : ''
+
                 },
                 success:function(data){
                     response(data);
@@ -69,7 +69,7 @@ $(document).ready(function(){
             .data( "ui-autocomplete-item", item )
             .append( "<a>" + item[0] + "</a>" )
             .appendTo( ul );
-    };
+    };*/
 
 
 });
