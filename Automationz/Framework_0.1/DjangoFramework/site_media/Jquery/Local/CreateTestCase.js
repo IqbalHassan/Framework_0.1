@@ -42,11 +42,33 @@ $(document).ready(function() {
             step_num--;
             popupdivrowcount.pop();
         });
+        /********************For Specific Index Change********************************************/
+        $('.add_after_img').live('click',function(){
+            var step_id=$(this).closest('tr').attr('id').split('_')[1].trim();
+            //console.log('will be added after '+$('#steps_table>tr:eq('+(step_id-1)+')').attr('id'));
+            //console.log('will be added after '+$('#searchbox'+step_id+'datapop').attr('id'));
+            addMainTableRowFixedPlace(step_id);
+            var temp=popupdivrowcount.pop();
+            popupdivrowcount.splice(step_id,0,temp);
+            reOrganize();
+        });
+        $('.remove_img').live('click',function(){
+            var step_id=$(this).closest('tr');
+            var index=step_id.attr('id').split('_')[1].trim();
+            $('#searchbox'+index+'datapop').remove();
+            step_id.remove();
+            step_num--;
+            resetArray(index);
+            reOrganize();
+        });
+        /********************For Specific Index Change END********************************************/
+        /********************DataPopUP Function********************************************/
         $('.add_dataset_row').live('click',function(){
             var divnum=$(this).parent().parent().attr('id').split('d')[0].split('x')[1].trim();
             var divname='#searchbox'+divnum+'data_table';
             addnewrow(divname,divnum,(popupdivrowcount[divnum-1]+1));
             popupdivrowcount[divnum-1]++;
+            //reOrganize();
         });
         $('.remove_dataset_row').live('click',function(){
             var divnum=$(this).parent().parent().attr('id').split('d')[0].split('x')[1].trim();
@@ -65,6 +87,7 @@ $(document).ready(function() {
                 $('#'+tablename+' tr:last').remove();
             }
         });
+        /********************DataPopUP Function End********************************************/
         $('.data-popup').live('click',function(){
             var id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
             $('#searchbox'+id+'datapop').dialog({
@@ -554,6 +577,71 @@ $(document).ready(function() {
     }
 
 });
+/***********************************Start New Data Pop UP**********************************************************************/
+function resetArray(index){
+    var temp=[];
+    for(var i=0;i<popupdivrowcount.length;i++){
+        if(i!=(index-1)){
+            temp.push(popupdivrowcount[i]);
+        }
+    }
+    popupdivrowcount=[];
+    for(i=0;i<temp.length;i++){
+        popupdivrowcount.push(temp[i]);
+    }
+}
+function reOrganize(){
+    var row_count=$('#steps_table>tr').length;
+    var currentrow=$('#steps_table>tr:first-child')
+    /*******************ReOrdering the Main Menu Elements*********************/
+    for(var i=1;i<=row_count;i++){
+        currentrow.attr('id','step_'+i);
+        currentrow.find('td:first-child input:eq(0)').attr('id',i);
+        currentrow.find('td:nth-child(2)').text(i);
+        currentrow.find('td:nth-child(3) input:eq(0)').attr('id','searchbox'+i+'name');
+        currentrow.find('td:nth-child(4) a:eq(0)').attr('id','searchbox'+i+'data');
+        currentrow.find('td:nth-child(5) textarea:eq(0)').attr('id','searchbox'+i+'info');
+        currentrow.find('td:nth-child(6) textarea:eq(0)').attr('id','searchbox'+i+'expected');
+        currentrow.find('td:nth-child(7) input:eq(0)').attr('id','searchbox'+i+'verify');
+        currentrow.find('td:nth-child(8) span:eq(0)').attr('id','searchbox'+i+'step_type');
+        currentrow.find('td:nth-child(9) a:eq(0)').attr('id','searchbox'+i+'step_desc');
+        currentrow=currentrow.closest('tr').next();
+    }
+    /*******************ReOrdering the Main Menu Elements End*********************/
+    /*******************ReOrdering the Pop Up*********************/
+    var currentPop=$('#outer-data>div:first');
+    for(i=1;i<=row_count;i++){
+        //console.log(currentPop.attr('id'));
+        var temp=currentPop;
+        var temptable=currentPop.find('table:eq(0)');
+        var innercolumn=temptable.find('tbody>tr:eq(1)');
+        var innercolumncount=popupdivrowcount[i-1];
+        temp.attr('id','searchbox'+i+'datapop');
+        temptable.attr('id','searchbox'+i+'data_table');
+        for(var j=1;j<=innercolumncount;j++){
+            var tempColumn=innercolumn;
+            tempColumn.attr('id','step'+i+'data'+j);
+            innercolumn=innercolumn.next();
+        }
+        currentPop=currentPop.next();
+    }
+    var currentPop=$('#outer-data>div:first');
+    for(i=1;i<=row_count;i++){
+        console.log(currentPop.attr('id'));
+        console.log(currentPop.find('table:eq(0)').attr('id'));
+        var innercolumn=temptable.find('tbody>tr:eq(1)');
+        console.log('****************************************');
+        var innercolumncount=popupdivrowcount[i-1];
+        for(var j=1;j<=innercolumncount;j++){
+            console.log(innercolumn.attr('id'));
+            innercolumn=innercolumn.next();
+        }
+        console.log('--------------------------------');
+        currentPop=currentPop.next();
+    }
+    /*******************ReOrdering the Pop Up End*********************/
+
+}
 function adddataentry(tablename){
     var message="";
     message+=(
@@ -591,15 +679,14 @@ function addnewrow(divname,stepno,dataset_num){
         '</tr>');
     $(divname).append(message);
 }
-function addMainTableRow(divname){
+function GenerateMainRow()
+{
     var message="";
-    step_num++;
-    popupdivrowcount[step_num-1]=0;
     message+=(
-            '<tr id="step_'+step_num+'">' +
+        '<tr id="step_'+step_num+'">' +
             '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '<td>'+step_num+'</td>' +
-            '<td><input class="textbox stepbox" id="searchbox'+step_num+'"style="width: auto"></td>' +
+            '<td><input class="textbox stepbox" id="searchbox'+step_num+'name"style="width: auto"></td>' +
             '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
             '<span class="mail-status"></span>' +
             '</a></td>' +
@@ -611,6 +698,9 @@ function addMainTableRow(divname){
             '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '</tr>'
         );
+    return message;
+}
+function GeneratePopUpMetaData(){
     var popupmetadata="";
     popupmetadata+=('<table id="searchbox'+step_num+'data_table" class="one-column-emphasis" width="100%">' +
         '<tr>' +
@@ -622,9 +712,21 @@ function addMainTableRow(divname){
         '<input class="buttonCustom new_tc_form add_dataset_row" type=\'image\' src=\'/site_media/plus1.png\' style="background-color: transparent; width:22px; height:22px">' +
         '<input class="buttonCustom new_tc_form remove_dataset_row" type=\'image\' src=\'/site_media/minus1.png\' style="background-color: transparent; width:22px; height:22px">' +
         '</div>');
-    $('#outer-data').append('<div id="searchbox'+step_num+'datapop">'+popupmetadata+'</div>');
-    $(divname).append(message);
+    return popupmetadata;
 }
+function addMainTableRowFixedPlace(fixedPlace){
+    step_num++;
+    popupdivrowcount[step_num-1]=0;
+    $('#steps_table>tr:eq('+(fixedPlace-1)+')').after(GenerateMainRow());
+    $('#searchbox'+fixedPlace+'datapop').after('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
+}
+function addMainTableRow(divname){
+    step_num++;
+    popupdivrowcount[step_num-1]=0;
+    $('#outer-data').append('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
+    $(divname).append(GenerateMainRow());
+}
+/******************************************END New Data Pop Up***************************************************************/
 function recursivelyAddSection(_this){
     var fatherHeirarchy = $(_this).attr("data-level");
     var father = $(_this).children("option:selected").text();
