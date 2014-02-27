@@ -20,7 +20,9 @@ $(document).ready(function() {
     addMainTableRow('#steps_table');
     check_required_data();
     show_radio_button();
-
+    /*****************Shetu's Function************************/
+    //AutoCompleteTestStep();
+    /*****************End Shetu************************/
     URL = window.location.pathname
     console.log("url:"+URL);
     indx = URL.indexOf("Create");
@@ -34,6 +36,7 @@ $(document).ready(function() {
         //Here the things will be added
         $('#add_test_step').live('click',function(){
             addMainTableRow('#steps_table');
+
         });
         $('#remove_test_step').live('click',function(){
             var id=$('#steps_table tr:last').attr('id').split('_')[1].trim();
@@ -56,6 +59,7 @@ $(document).ready(function() {
             var step_id=$(this).closest('tr');
             var index=step_id.attr('id').split('_')[1].trim();
             $('#searchbox'+index+'datapop').remove();
+            $('#searchbox'+index+'descriptionpop').remove();
             step_id.remove();
             step_num--;
             resetArray(index);
@@ -68,6 +72,10 @@ $(document).ready(function() {
             var divname='#searchbox'+divnum+'data_table';
             addnewrow(divname,divnum,(popupdivrowcount[divnum-1]+1));
             popupdivrowcount[divnum-1]++;
+            if(popupdivrowcount[divnum-1]>0){
+                $('#searchbox'+divnum+'data span:eq(0)').removeClass('unfilled');
+                $('#searchbox'+divnum+'data span:eq(0)').addClass('filled');
+            }
             //reOrganize();
         });
         $('.remove_dataset_row').live('click',function(){
@@ -76,6 +84,10 @@ $(document).ready(function() {
             var row_name=$('#step'+divnum+'data'+popupdivrowcount[divnum-1]);
             row_name.remove();
             popupdivrowcount[divnum-1]--;
+            if(popupdivrowcount[divnum-1]<=0){
+                $('#searchbox'+divnum+'data span:eq(0)').removeClass('filled');
+                $('#searchbox'+divnum+'data span:eq(0)').addClass('unfilled');
+            }
         });
         $('.add_dataset_entry').live('click',function(){
             var tablename=$(this).parent().parent().find('table:eq(0)').attr('id');
@@ -87,7 +99,6 @@ $(document).ready(function() {
                 $('#'+tablename+' tr:last').remove();
             }
         });
-        /********************DataPopUP Function End********************************************/
         $('.data-popup').live('click',function(){
             var id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
             $('#searchbox'+id+'datapop').dialog({
@@ -108,6 +119,27 @@ $(document).ready(function() {
                 title: "Data: Step "+id
             });
         });
+        $('.descriptionpop').live('click',function(){
+            var id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
+            $('#searchbox'+id+'descriptionpop').dialog({
+                buttons : {
+                    "OK" : function() {
+                        $(this).dialog("destroy");
+                    }
+                },
+
+                show : {
+                    effect : 'drop',
+                    direction : "up"
+                },
+                textAlign:'center',
+                modal : true,
+                width : 400,
+                height : 400,
+                title: "Data: Step "+id
+            });
+        });
+        /********************DataPopUP Function End********************************************/
         $("input[name=platform]").change(function () {
             Env = $(this).val();
         });
@@ -167,7 +199,7 @@ $(document).ready(function() {
         });
 
         // Make tags autofill
-        AddAutoCompleteToTag();
+        //AddAutoCompleteToTag();
         DeleteSearchQueryText();
         if(indx2 != -1 || template){
             $.get("TestCase_EditData", {
@@ -577,6 +609,59 @@ $(document).ready(function() {
     }
 
 });
+/**************************************Database Works**************************************************/
+/***********Autocomplete Step name*****************/
+function AutoCompleteTestStep(){
+    var row_count=$('#steps_table>tr').length;
+    for(var i=1;i<=row_count;i++){
+        $('#searchbox'+i+'name').autocomplete({
+            source:function(request,response){
+                $.ajax({
+                    url:"AutoCompleteTestStepSearch/",
+                    dataType:"json",
+                    data:{term:request.term},
+                    success:function(data){
+                        /*var auto_list=[];
+                         for(var i=0;i<data.length;i++){
+                         auto_list.push(data[i][0]+'-'+data[i][2]);
+                         }
+                         response(auto_list);
+                         */response(data);
+                    }
+                });
+            },
+            select:function(request,ui){
+                console.log(ui);
+                var value=ui.item[0];
+                var fieldName=$('#'+$(this).attr('id'));
+                if(value!=""){
+                    fieldName.val(value);
+                    if(ui.item[1]){
+                        fieldName.closest('tr').find('td:nth-child(4) span:eq(0)').addClass('unfilled');
+                    }
+                    fieldName.closest('tr').find('td:nth-child(8)').html(ui.item[2]);
+                    if(ui.item[3]!=""){
+                        fieldName.closest('tr').find('td:nth-child(9) span:eq(0)').addClass('filled');
+                        $('#searchbox'+fieldName.closest('tr').find('td:nth-child(2)').text()+'descriptionpop').html(ui.item[3]);
+                    }
+                    else{
+                        fieldName.closest('tr').find('td:nth-child(9) span:eq(0)').addClass('unfilled');
+                        $('#searchbox'+fieldName.closest('tr').find('td:nth-child(2)').text()+'descriptionpop').html("");
+                    }
+                }
+                return false;
+            }
+        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+            return $( "<li></li>" )
+                .data( "ui-autocomplete-item", item )
+                .append( "<a><strong>" + item[0] + "</strong>-" + item[2] + "</a>" )
+                .appendTo( ul );
+        };
+    }
+}
+
+/************End Autocomplete Step name****************/
+/**************************************End Database Works**************************************************/
 /***********************************Start New Data Pop UP**********************************************************************/
 function resetArray(index){
     var temp=[];
@@ -625,7 +710,13 @@ function reOrganize(){
         }
         currentPop=currentPop.next();
     }
-    var currentPop=$('#outer-data>div:first');
+    var currentdescpop=$('#step_description_general>div:first');
+    for(i=1;i<=row_count;i++){
+        var temp=currentdescpop;
+        temp.attr('id','searchbox'+i+'descriptionpop');
+        currentdescpop=currentdescpop.next();
+    }
+    /*var currentPop=$('#outer-data>div:first');
     for(i=1;i<=row_count;i++){
         console.log(currentPop.attr('id'));
         console.log(currentPop.find('table:eq(0)').attr('id'));
@@ -638,7 +729,7 @@ function reOrganize(){
         }
         console.log('--------------------------------');
         currentPop=currentPop.next();
-    }
+    }*/
     /*******************ReOrdering the Pop Up End*********************/
 
 }
@@ -686,7 +777,7 @@ function GenerateMainRow()
         '<tr id="step_'+step_num+'">' +
             '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '<td>'+step_num+'</td>' +
-            '<td><input class="textbox stepbox" id="searchbox'+step_num+'name"style="width: auto"></td>' +
+            '<td><input class="textbox" id="searchbox'+step_num+'name"style="width: auto" value=""/></td>' +
             '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
             '<span class="mail-status"></span>' +
             '</a></td>' +
@@ -694,7 +785,7 @@ function GenerateMainRow()
             '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
             '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
             '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-            '<td><a id="searchbox'+step_num+'step_desc" class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>' +
+            '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
             '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '</tr>'
         );
@@ -719,14 +810,19 @@ function addMainTableRowFixedPlace(fixedPlace){
     popupdivrowcount[step_num-1]=0;
     $('#steps_table>tr:eq('+(fixedPlace-1)+')').after(GenerateMainRow());
     $('#searchbox'+fixedPlace+'datapop').after('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
+    $('#searchbox'+fixedPlace+'descriptionpop').after('<div id="searchbox'+step_num+'descriptionpop"></div>');
+    AutoCompleteTestStep();
 }
 function addMainTableRow(divname){
     step_num++;
     popupdivrowcount[step_num-1]=0;
     $('#outer-data').append('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
+    $('#step_description_general').append('<div id="searchbox'+step_num+'descriptionpop"></div>');
     $(divname).append(GenerateMainRow());
+    AutoCompleteTestStep();
 }
 /******************************************END New Data Pop Up***************************************************************/
+/****************************Minar's Thing****************************************************/
 function recursivelyAddSection(_this){
     var fatherHeirarchy = $(_this).attr("data-level");
     var father = $(_this).children("option:selected").text();
@@ -853,7 +949,9 @@ function show_radio_button(){
         $("#enable_radio").removeClass("selected");
     });
 }
-function dataArrayToString(array){
+/****************************End wMinar's Thing****************************************************/
+/****************************Unused****************************************************/
+/*function dataArrayToString(array){
     var tempString ="";
 
     tempString += "["
@@ -885,15 +983,15 @@ function dataArrayToString(array){
 }
 
 function addDataToStep(_this,value){
-    /*Step index */
+    //Step index
     var indx = $(_this).attr("id");
 
     step_num_data_num[indx]++;
 
-    /*Get type of fields*/
+    //Get type of fields
     var stepName = $("#searchbox" + indx).val();
     if(stepName.indexOf("Edit") == -1){
-        /* single column field */
+        // single column field
         $(_this).parent().append("	<fieldset class='searchbox"+indx+''+step_num_data_num[indx] + "data'>"+
             "						<legend class='Text'><b>Data " + step_num_data_num[indx] + "</b></legend>"+
             "<div >" +
@@ -902,7 +1000,7 @@ function addDataToStep(_this,value){
             "</fieldset>");
         $(".searchbox"+indx+''+step_num_data_num[indx] + "data  textarea.data").val(dataArrayToString(value));
     }else{
-        /* double column field */
+        // double column field
         $(_this).parent().append("	<fieldset class='searchbox"+indx+''+step_num_data_num[indx] + "data' >"+
             "						<legend class='Text'><b>Data " + step_num_data_num[indx] + "</b></legend>"+
             "<div style='position:relative; left:2px;'>"
@@ -1056,11 +1154,11 @@ function RunTestAutocompleteSearch(Env, step) {
         // two variable 'term' (this is the one when user type on search
         // box) and Env variable.
 
-        /*
+
          * source : 'AutoCompleteTestStepSearch' ,
          *
          * extraParams: { Env: function() {return Env}, },
-         */
+
 
         source : function(request, response) {
             $.ajax({
@@ -1135,8 +1233,8 @@ function RunTestAutocompleteSearch(Env, step) {
 
         }
     });
-}
-
+}*/
+/****************************End Unused****************************************************/
 function DeleteSearchQueryText() {
     $(".delete").live("click", function() {
         $(this).parent().parent().remove();

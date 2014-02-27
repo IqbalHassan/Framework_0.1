@@ -54,7 +54,7 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTestCases/Edit/[^/]*$',Edit),
     url(r'^Home/ManageTestCases/Edit/AutoCompleteTagSearch/$', AutoCompleteTagSearch),
     url(r'^Home/.*/AutoCompleteTestCasesSearchOtherPages/$',AutoCompleteTestCasesSearchOtherPages),
-    url(r'^Home/ManageTestCases/Edit/AutoCompleteTestStepSearch/$', AutoCompleteTestStepSearch),
+    url(r'^Home/.*/AutoCompleteTestStepSearch/$', AutoCompleteTestStepSearch),
     
     url(r'^Home/ManageTestCases/CreateNew/[^/]*$',CreateNew),
     #url(r'^Home/.*/TestCase_EditData/$', ViewTestCase),
