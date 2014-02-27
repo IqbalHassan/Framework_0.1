@@ -23,9 +23,24 @@
                 <div id="sidr" class="sidr">
                     <!-- Your content -->
                     <ul>
-                        <li><a href="#">List 1</a></li>
-                        <li class="#"><input id="searchInput" placeholder="Type to Filter" class="textbox"></li>
-                        <li><a href="#">List 3</a></li>
+                        <li>
+                            <input id="searchInput" placeholder="Type to Filter" class="textbox" style="width: 85%">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/ok.png" width="16">
+                        </li>
+                        <li>
+                            <div class="dropdown dropdown-dark" style="margin-top: 5%">
+                                <select class="dropdown-select tester" data-level="" id="1">
+                                    <option value="0">All Tester</option>
+                                </select>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="dropdown dropdown-dark" style="margin-top: 5%">
+                                <select class="dropdown-select status" data-level="" id="2">
+                                    <option value="">All Status</option>
+                                </select>
+                            </div>
+                        </li>
                     </ul>
                 </div>
 

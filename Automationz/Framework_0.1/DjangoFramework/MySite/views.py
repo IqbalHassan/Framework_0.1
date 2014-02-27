@@ -2844,6 +2844,30 @@ def Get_Browsers(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Get_Testers(request):
+    Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        tester = request.GET.get(u'tester', '')
+        if tester == '':
+            results = DB.GetData(Conn, "select distinct assigned_tester from test_run_env", False)
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Get_Status(request):
+    Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        status = request.GET.get(u'status', '')
+        if status == '':
+            results = DB.GetData(Conn, "select distinct status from test_run_env", False)
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def Get_Versions(request):
     Conn = GetConnection()
     results = []
@@ -3482,6 +3506,17 @@ def TestFeature_Auto(request):
     if request.method == "GET":
         value = request.GET.get(u'term', '')
         results = DB.GetData(Conn, "select  distinct value,type from config_values where value Ilike '%" + value + "%' and type='feature'",False)
+        #if len(results)>0:
+            #results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+
+def ResultFilter(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        results = DB.GetData(Conn, "select distinct assigned_tester,run_type from test_run_env",False)
         #if len(results)>0:
             #results.append("*Dev")
     json=simplejson.dumps(results)
