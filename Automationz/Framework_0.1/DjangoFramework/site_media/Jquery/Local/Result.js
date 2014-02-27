@@ -10,7 +10,7 @@ $(document).ready(function(){
     make_bar_clickable('#progressRun');
     make_bar_clickable('#submittedRun');
 
-    $("#searchInput").keyup(function () {
+    /*$("#searchInput").keyup(function () {
         //split the current value of searchInput
         var data = this.value.split(" ");
         //create a jquery object of the rows
@@ -42,9 +42,9 @@ $(document).ready(function(){
             $(this).unbind('focus');
         }).css({
             "color": "#C0C0C0"
-        });
+        });*/
 
-    /*$(".textbox").autocomplete({
+    /*$(".filter-table input").autocomplete({
         source: function(request,response){
             $.ajax({
                 url:"GetSections",
@@ -60,7 +60,7 @@ $(document).ready(function(){
         select: function(request,ui){
             var value = ui.item[0];
             if(value!=""){
-                $(".textbox").val(value);
+                $(".filter-table input").val(value);
                 return false;
             }
         }
