@@ -286,7 +286,7 @@ function LoadAllTestCases(divname){
     $('#'+divname+' tr td:nth-child(6)').each(function(){
         var data=$(this).text().trim();
         console.log(data);
-        $(this).html('<textarea rows="3" cols="30" readonly="readonly" style="border: none">'+data+'</textarea>');
+        $(this).html('<textarea rows="3" cols="30" readonly="readonly" style="border: none;text-align: center; vertical-align: middle;color: #669;display:inline-block;">'+data+'</textarea>');
     });
     /////////////////////////////////////////////////////
 }

@@ -108,7 +108,9 @@ function TestDataFetch(){
                 $(this).html("");
             }
             else{
-                $(this).html("see data");
+                //$(this).html("see data");
+                $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status filled\"></span></a>");
+                $(this).addClass("see_data");
                 $(this).css({
                     'color':'blue',
                     'cursor':'pointer'
@@ -116,8 +118,9 @@ function TestDataFetch(){
             }
         }
         $(this).live('click',function(){
-            var data_required=$(this).text().trim();
-            if(data_required=="see data"){
+            //var data_required=$(this).text().trim();
+            var data_required=$(this).hasClass("see_data");
+            if(data_required==true){
                 var tc_id=$('#testcaseid').text().trim();
                 var step_no=$(this).closest("tr").find("td:first-child").text().trim();
                 var step_name=$(this).closest("tr").find("td:nth-child(2)").text().trim();
