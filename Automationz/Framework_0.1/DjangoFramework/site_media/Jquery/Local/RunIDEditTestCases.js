@@ -105,7 +105,8 @@ function TestDataFetch(){
         console.log(value);
         if(value!="DataRequired"){
             if(value=="false"){
-                $(this).html("");
+                //$(this).html("");
+                $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status\"></span></a>");
             }
             else{
                 //$(this).html("see data");
