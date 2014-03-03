@@ -388,8 +388,91 @@ $(document).ready(function() {
             });
         }
 
-
-        $('#submit').click(function(){
+        $('#submit').live('click',function(){
+            /***************************DataFetching From the Pop UP*********************************************/
+            var finalArray=[];
+            for(var i=1;i<=step_num;i++){
+                var step_array=[];
+                for(var j=1;j<=popupdivrowcount[i-1];j++){
+                    var dataset=[];
+                    var tableid=$('#step'+i+'data'+j+'entrytable');
+                    console.log(tableid.attr('id'));
+                    var tableLength=tableid.find('tr').length;
+                    var row=tableid.find('tr:eq(1)');
+                    for(var k=0;k<tableLength-1;k++){
+                        var field=row.find('td:eq(0) input:eq(0)').val();
+                        var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                        var value=row.find('td:eq(2) textarea:eq(0)').val();
+                        var tempObject={field:field , sub_field:sub_field ,value:value};
+                        dataset.push(tempObject);
+                        row=row.next();
+                    }
+                    step_array.push(dataset);
+                }
+                finalArray.push(step_array);
+            }
+            /*************************DataFetching from the Pop up***********************************************/
+            /*************************Filtering***********************************************/
+            var stepDataSTR=[];
+            for(var i=1;i<=step_num;i++){
+                var tempSTR=[];
+                var stepData=finalArray[i-1];
+                /***********************Step Data Processing Here ********************************/
+                for(var j=1;j<=stepData.length;j++){
+                    var currentDataSet=stepData[j-1];
+                    var mainFields=[];
+                    var subFieldskey=[];
+                    var withsubFields=[];
+                    for(var k=0;k<currentDataSet.length;k++){
+                        //First Check whether it's a mainField or Not
+                        if(currentDataSet[k].sub_field==""){
+                            var temp_object={mainField:currentDataSet[k].field,fieldValue:currentDataSet[k].value};
+                            mainFields.push(temp_object);
+                        }
+                        else{
+                            var field_name=currentDataSet[k].field;
+                            if($.inArray(field_name,subFieldskey)===-1){
+                                subFieldskey.push(field_name);
+                            }
+                            withsubFields.push(currentDataSet[k]);
+                        }
+                    }
+                    /***************************create old format Data*********************************/
+                    var temp="";
+                    temp+="[";
+                    for(var i=0;i<mainFields.length;i++){
+                        temp+=("("+mainFields[i].mainField+","+mainFields[i].fieldValue+"),");
+                    }
+                    if(withsubFields.length==0 && subFieldskey==0){
+                        temp=temp.substring(0,temp.length-1);
+                        temp+="]";
+                    }
+                    else{
+                        for(var i=0;i<subFieldskey.length;i++){
+                            var mainField=subFieldskey[i];
+                            temp+=("("+mainField+",[");
+                            for(var j=0;j<withsubFields.length;j++){
+                                if(mainField==withsubFields[j].field){
+                                    temp+=("("+withsubFields[j].sub_field+","+withsubFields[j].value+"),");
+                                }
+                            }
+                            temp=temp.substring(0,temp.length-1);
+                            temp+="]),";
+                        }
+                        temp=temp.substring(0,temp.length-1);
+                        temp+="]";
+                    }
+                    console.log(temp);
+                    tempSTR.push(temp);
+                    /*************************** end create old format Data*********************************/
+                }
+                /*********************** END Step Data Processing Here ********************************/
+                stepDataSTR.push(tempSTR.join('%'));
+                console.log(stepDataSTR);
+            }
+            /*************************End Filtering***********************************************/
+        });
+        /*$('#submit').click(function(){
             //Check section is at lowest
             if(!isAtLowestSection){
                 alert("Section name is not set to a proper selection (must be lowest possible level).")
@@ -471,7 +554,7 @@ $(document).ready(function() {
              status = "Dev"
              else if($('input[value="Forced-Manual"]').attr('checked') == "checked")
              status = "Forced"*/
-                if($("#enable_radio").hasClass("selected"))
+             /*   if($("#enable_radio").hasClass("selected"))
                     status = "Ready"
                 else if($("#Disable_radio").hasClass("selected"))
                     status = "Dev"
@@ -605,7 +688,7 @@ $(document).ready(function() {
                     });
             }
 
-        });
+        });*/
     }
 
 });
