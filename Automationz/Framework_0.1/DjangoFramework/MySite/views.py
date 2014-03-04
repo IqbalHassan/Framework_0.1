@@ -545,6 +545,16 @@ def AutoCompleteTesterSearch(request):
             results=DB.GetData(Conn, "Select  DISTINCT user_names from permitted_user_list where user_names Ilike '%" + value + "%' and user_level = 'assigned_tester'")
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
+def AutoCompleteTag(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            value=request.GET.get(u'term','')
+            print value
+            Conn=GetConnection()
+            query="select value,type from config_values where value Ilike '%%%s%%' and type='tag'"%value
+            tag_list=DB.GetData(Conn,query,False)
+    json=simplejson.dumps(tag_list)
+    return HttpResponse(json,mimetype='application/json')
 def AutoCompleteTagSearch(request):
     Conn = GetConnection()
     results = []

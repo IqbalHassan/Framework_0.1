@@ -14,14 +14,11 @@ var lowest_section = 0;
 var isAtLowestSection = false;
 var popupdivrowcount=[];
 $(document).ready(function() {
-
-    //add_step_teble_row();
-    //show_data_dialog();
     addMainTableRow('#steps_table');
     check_required_data();
     show_radio_button();
     /*****************Shetu's Function************************/
-    //AutoCompleteTestStep();
+    AutoCompleteTag();
     /*****************End Shetu************************/
     URL = window.location.pathname
     console.log("url:"+URL);
@@ -34,6 +31,8 @@ $(document).ready(function() {
     console.log("Template:"+template);
     if (indx != -1 || indx2 != -1) {
         //Here the things will be added
+        //AutoCompleteTagSearch
+
         $('#add_test_step').live('click',function(){
             addMainTableRow('#steps_table');
 
@@ -389,27 +388,64 @@ $(document).ready(function() {
         }
 
         $('#submit').live('click',function(){
+            /*********************************Properties Tab Data ********************************/
+            //Select Status
+            var status;
+            if($('a[value="Production"]').hasClass('selected'))
+                status = "Ready";
+            if($('a[value="Development"]').hasClass('selected'))
+                status = "Dev";
+            if($('a[value="Forced-Manual"]').hasClass('selected'))
+                status = "Forced";
+            console.log(status);
+            //Select Section Name
+            var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
+            console.log(newSectionPath);
+            //Select Priority
+            var priority='P'+$('#priotiy_select option:selected').val();
+            console.log(priority);
+            //Select Tag
+            var tag = new Array();
+            for(var i = 0; i < $(".submitquery").length; i++){
+                tag.push($(".submitquery:eq("+i+")").html().replace(/&nbsp;/g,''));
+            }
+            console.log(tag);
+            /*********************************End Properties Tab Data ********************************/
+            /*********************************Parameters Tab Data ********************************/
+            var platformList=[];
+            $('input[name="platform"]:checked').each(function(){
+               platformList.push($(this).val());
+            });
+            console.log(platformList);
+            /*********************************End Parameters Tab Data ********************************/
+
             /***************************DataFetching From the Pop UP*********************************************/
             var finalArray=[];
             for(var i=1;i<=step_num;i++){
                 var step_array=[];
-                for(var j=1;j<=popupdivrowcount[i-1];j++){
-                    var dataset=[];
-                    var tableid=$('#step'+i+'data'+j+'entrytable');
-                    console.log(tableid.attr('id'));
-                    var tableLength=tableid.find('tr').length;
-                    var row=tableid.find('tr:eq(1)');
-                    for(var k=0;k<tableLength-1;k++){
-                        var field=row.find('td:eq(0) input:eq(0)').val();
-                        var sub_field=row.find('td:eq(1) input:eq(0)').val();
-                        var value=row.find('td:eq(2) textarea:eq(0)').val();
-                        var tempObject={field:field , sub_field:sub_field ,value:value};
-                        dataset.push(tempObject);
-                        row=row.next();
-                    }
-                    step_array.push(dataset);
+                if(popupdivrowcount[i-1]==0){
+                    finalArray[i-1]=undefined;
                 }
-                finalArray.push(step_array);
+                else{
+                    for(var j=1;j<=popupdivrowcount[i-1];j++){
+                        var dataset=[];
+                        var tableid=$('#step'+i+'data'+j+'entrytable');
+                        console.log(tableid.attr('id'));
+                        var tableLength=tableid.find('tr').length;
+                        var row=tableid.find('tr:eq(1)');
+                        for(var k=0;k<tableLength-1;k++){
+                            var field=row.find('td:eq(0) input:eq(0)').val();
+                            var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                            var value=row.find('td:eq(2) textarea:eq(0)').val();
+                            var tempObject={field:field , sub_field:sub_field ,value:value};
+                            dataset.push(tempObject);
+                            row=row.next();
+                        }
+                        step_array.push(dataset);
+                    }
+                    finalArray[i-1]=step_array;
+                }
+
             }
             /*************************DataFetching from the Pop up***********************************************/
             /*************************Filtering***********************************************/
@@ -417,60 +453,67 @@ $(document).ready(function() {
             for(var i=1;i<=step_num;i++){
                 var tempSTR=[];
                 var stepData=finalArray[i-1];
+                if(stepData=== undefined){
+                    stepDataSTR[i-1]="%";
+                }
                 /***********************Step Data Processing Here ********************************/
-                for(var j=1;j<=stepData.length;j++){
-                    var currentDataSet=stepData[j-1];
-                    var mainFields=[];
-                    var subFieldskey=[];
-                    var withsubFields=[];
-                    for(var k=0;k<currentDataSet.length;k++){
-                        //First Check whether it's a mainField or Not
-                        if(currentDataSet[k].sub_field==""){
-                            var temp_object={mainField:currentDataSet[k].field,fieldValue:currentDataSet[k].value};
-                            mainFields.push(temp_object);
+                else{
+                    for(var j=1;j<=stepData.length;j++){
+                        var currentDataSet=stepData[j-1];
+                        var mainFields=[];
+                        var subFieldskey=[];
+                        var withsubFields=[];
+                        for(var k=0;k<currentDataSet.length;k++){
+                            //First Check whether it's a mainField or Not
+                            if(currentDataSet[k].sub_field==""){
+                                var temp_object={mainField:currentDataSet[k].field,fieldValue:currentDataSet[k].value};
+                                mainFields.push(temp_object);
+                            }
+                            else{
+                                var field_name=currentDataSet[k].field;
+                                if($.inArray(field_name,subFieldskey)===-1){
+                                    subFieldskey.push(field_name);
+                                }
+                                withsubFields.push(currentDataSet[k]);
+                            }
+                        }
+                        /***************************create old format Data*********************************/
+                        var temp="";
+                        temp+="[";
+                        for(var k=0;k<mainFields.length;k++){
+                            temp+=("("+mainFields[k].mainField+","+mainFields[k].fieldValue+"),");
+                        }
+                        if(withsubFields.length==0 && subFieldskey==0){
+                            temp=temp.substring(0,temp.length-1);
+                            temp+="]";
                         }
                         else{
-                            var field_name=currentDataSet[k].field;
-                            if($.inArray(field_name,subFieldskey)===-1){
-                                subFieldskey.push(field_name);
-                            }
-                            withsubFields.push(currentDataSet[k]);
-                        }
-                    }
-                    /***************************create old format Data*********************************/
-                    var temp="";
-                    temp+="[";
-                    for(var i=0;i<mainFields.length;i++){
-                        temp+=("("+mainFields[i].mainField+","+mainFields[i].fieldValue+"),");
-                    }
-                    if(withsubFields.length==0 && subFieldskey==0){
-                        temp=temp.substring(0,temp.length-1);
-                        temp+="]";
-                    }
-                    else{
-                        for(var i=0;i<subFieldskey.length;i++){
-                            var mainField=subFieldskey[i];
-                            temp+=("("+mainField+",[");
-                            for(var j=0;j<withsubFields.length;j++){
-                                if(mainField==withsubFields[j].field){
-                                    temp+=("("+withsubFields[j].sub_field+","+withsubFields[j].value+"),");
+                            for(var k=0;k<subFieldskey.length;k++){
+                                var mainField=subFieldskey[k];
+                                temp+=("("+mainField+",[");
+                                for(var l=0;l<withsubFields.length;l++){
+                                    if(mainField==withsubFields[l].field){
+                                        temp+=("("+withsubFields[l].sub_field+","+withsubFields[l].value+"),");
+                                    }
                                 }
+                                temp=temp.substring(0,temp.length-1);
+                                temp+="]),";
                             }
                             temp=temp.substring(0,temp.length-1);
-                            temp+="]),";
+                            temp+="]";
                         }
-                        temp=temp.substring(0,temp.length-1);
-                        temp+="]";
+                        console.log(temp);
+                        tempSTR.push(temp);
+                        /*************************** end create old format Data*********************************/
+
                     }
-                    console.log(temp);
-                    tempSTR.push(temp);
-                    /*************************** end create old format Data*********************************/
+                    /*********************** END Step Data Processing Here ********************************/
+                    stepDataSTR[i-1]=tempSTR.join('%');
                 }
-                /*********************** END Step Data Processing Here ********************************/
-                stepDataSTR.push(tempSTR.join('%'));
                 console.log(stepDataSTR);
             }
             /*************************End Filtering***********************************************/
+            /************************End DataFetching From the POP Up*********************************************/
         });
         /*$('#submit').click(function(){
             //Check section is at lowest
@@ -742,7 +785,41 @@ function AutoCompleteTestStep(){
         };
     }
 }
+function AutoCompleteTag(){
+    $('#tag_txtbox').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"AutoCompleteTag/",
+                dataType:"json",
+                data:{
+                    term:request.term
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(request,ui){
+            console.log(ui);
+            var value=ui.item[0].trim();
+            if(value!=""){
+                AddToListTag(value);
+            }
+            return false;
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+    $("#tag_txtbox").keypress(function(event) {
+        if (event.which == 13) {
+            event.preventDefault();
 
+        }
+    });
+}
 /************End Autocomplete Step name****************/
 /**************************************End Database Works**************************************************/
 /***********************************Start New Data Pop UP**********************************************************************/
@@ -799,20 +876,6 @@ function reOrganize(){
         temp.attr('id','searchbox'+i+'descriptionpop');
         currentdescpop=currentdescpop.next();
     }
-    /*var currentPop=$('#outer-data>div:first');
-    for(i=1;i<=row_count;i++){
-        console.log(currentPop.attr('id'));
-        console.log(currentPop.find('table:eq(0)').attr('id'));
-        var innercolumn=temptable.find('tbody>tr:eq(1)');
-        console.log('****************************************');
-        var innercolumncount=popupdivrowcount[i-1];
-        for(var j=1;j<=innercolumncount;j++){
-            console.log(innercolumn.attr('id'));
-            innercolumn=innercolumn.next();
-        }
-        console.log('--------------------------------');
-        currentPop=currentPop.next();
-    }*/
     /*******************ReOrdering the Pop Up End*********************/
 
 }
@@ -1328,6 +1391,6 @@ function DeleteSearchQueryText() {
 function AddToListTag(text) {
     $("#searchedtag").append(
         '<tr><td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
-            + '<td class="submitquery" class = "Text" style = "size:10">' + text + "&nbsp;&nbsp;&nbsp;"
+            + '<td class="submitquery" class = "Text" style = "size:10;display: inline-block;">' + text + "&nbsp;&nbsp;&nbsp;"
             + '</td></tr>');
 }
