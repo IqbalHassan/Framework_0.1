@@ -418,35 +418,68 @@ $(document).ready(function() {
                platformList.push($(this).val());
             });
             console.log(platformList);
+            var browserList=[];
+            $('input[name="dependancy"]:checked').each(function(){
+                browserList.push($(this).val());
+            });
+            console.log(browserList);
+            var typeList=[];
+            $('input[name="type"]:checked').each(function(){
+                typeList.push($(this).val());
+            });
+            console.log(typeList);
             /*********************************End Parameters Tab Data ********************************/
-
+            /**************************Related Item *************************************************/
+            var defectId=$('#defectid_txtbox').val().trim();
+            var test_case_Id=$('#id_txtbox').val().trim();
+            var required_Id=$('#reqid_txtbox').val().trim();
+            var title=$('#titlebox').val().trim();
+            /**************************End Related Item *************************************************/
             /***************************DataFetching From the Pop UP*********************************************/
+            var stepNameList=[];
+            var stepExpectedList=[];
+            var stepDescriptionList=[];
+            var stepVerificationList=[];
             var finalArray=[];
             for(var i=1;i<=step_num;i++){
-                var step_array=[];
-                if(popupdivrowcount[i-1]==0){
-                    finalArray[i-1]=undefined;
+                if($('#searchbox'+i+'name').val()==""){
+                    alert('Step Name for step Number#'+i+' is not filled correctly');
+                    return false;
                 }
                 else{
-                    for(var j=1;j<=popupdivrowcount[i-1];j++){
-                        var dataset=[];
-                        var tableid=$('#step'+i+'data'+j+'entrytable');
-                        console.log(tableid.attr('id'));
-                        var tableLength=tableid.find('tr').length;
-                        var row=tableid.find('tr:eq(1)');
-                        for(var k=0;k<tableLength-1;k++){
-                            var field=row.find('td:eq(0) input:eq(0)').val();
-                            var sub_field=row.find('td:eq(1) input:eq(0)').val();
-                            var value=row.find('td:eq(2) textarea:eq(0)').val();
-                            var tempObject={field:field , sub_field:sub_field ,value:value};
-                            dataset.push(tempObject);
-                            row=row.next();
-                        }
-                        step_array.push(dataset);
+                    stepNameList.push($('#searchbox'+i+'name').val());
+                    stepExpectedList.push($('#searchbox'+i+'expected').val());
+                    stepDescriptionList.push($('#searchbox'+i+'info').val());
+                    if($('#searchbox'+i+'verify').attr('checked')==='checked'){
+                        stepVerificationList.push('yes');
                     }
-                    finalArray[i-1]=step_array;
-                }
-
+                    else{
+                        stepVerificationList.push('no');
+                    }
+                    var step_array=[];
+                    if(popupdivrowcount[i-1]==0){
+                        finalArray[i-1]=undefined;
+                    }
+                    else{
+                        for(var j=1;j<=popupdivrowcount[i-1];j++){
+                            var dataset=[];
+                            var tableid=$('#step'+i+'data'+j+'entrytable');
+                            console.log(tableid.attr('id'));
+                            var tableLength=tableid.find('tr').length;
+                            var row=tableid.find('tr:eq(1)');
+                            for(var k=0;k<tableLength-1;k++){
+                                var field=row.find('td:eq(0) input:eq(0)').val();
+                                var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                                var value=row.find('td:eq(2) textarea:eq(0)').val();
+                                var tempObject={field:field , sub_field:sub_field ,value:value};
+                                dataset.push(tempObject);
+                                row=row.next();
+                            }
+                            step_array.push(dataset);
+                        }
+                        finalArray[i-1]=step_array;
+                    }
+                };
             }
             /*************************DataFetching from the Pop up***********************************************/
             /*************************Filtering***********************************************/
@@ -515,6 +548,30 @@ $(document).ready(function() {
             }
             /*************************End Filtering***********************************************/
             /************************End DataFetching From the POP Up*********************************************/
+            var query = indx != -1?"c":(indx2 != -1?"e":"o");
+            console.log(query);
+            if(query == "c"){
+                $.get("Submit_New_TestCase/",{
+                    Section_Path:newSectionPath,
+                    Platform:platformList.join("|"),
+                    Manual_TC_Id:test_case_Id,
+                    TC_Name:title,
+                    TC_Creator:'Test',
+                    Associated_Bugs_List:defectId,
+                    Requirement_ID_List:required_Id,
+                    TC_Type:typeList.join("|"),
+                    Tag_List:tag.join("|"),
+                    Dependency_List:browserList.join("|"),
+                    Priority:priority,
+                    Steps_Data_List:stepDataSTR.join("|"),
+                    Steps_Name_List:stepNameList.join("|"),
+                    Steps_Description_List:stepDescriptionList.join("|"),
+                    Steps_Expected_List:stepExpectedList.join("|"),
+                    Steps_Verify_List:stepVerificationList.join("|"),
+                    Status:"Dev"},function(data) {
+                    alert(data);
+                });
+            }
         });
         /*$('#submit').click(function(){
             //Check section is at lowest
