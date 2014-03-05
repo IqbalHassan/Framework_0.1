@@ -242,7 +242,7 @@ p.flip:ACTIVE,p.flip:HOVER {
     -webkit-font-smoothing: antialiased;
 }
 
-.wrapper-dropdown-3 .dropdown:before {
+.wrapper-dropdown-3 .dropdown-list:before {
     content: "";
     width: 0;
     height: 0;
@@ -265,7 +265,7 @@ p.flip:ACTIVE,p.flip:HOVER {
     border-style: solid;
     border-color: #8aa8bd transparent;
 }
-.wrapper-dropdown-3 .dropdown {
+.wrapper-dropdown-3 .dropdown-list {
     /* Size & position */
     position: absolute;
     top: 140%;
@@ -290,7 +290,7 @@ p.flip:ACTIVE,p.flip:HOVER {
     pointer-events: none;
 }
 
-.wrapper-dropdown-3 .dropdown:after {
+.wrapper-dropdown-3 .dropdown-list:after {
     content: "";
     width: 0;
     height: 0;
@@ -302,7 +302,7 @@ p.flip:ACTIVE,p.flip:HOVER {
     border-color: #fff transparent;
 }
 
-.wrapper-dropdown-3 .dropdown:before {
+.wrapper-dropdown-3 .dropdown-list:before {
     content: "";
     width: 0;
     height: 0;
@@ -314,7 +314,7 @@ p.flip:ACTIVE,p.flip:HOVER {
     border-color: rgba(0,0,0,0.1) transparent;
 }
 
-.wrapper-dropdown-3 .dropdown li {
+.wrapper-dropdown-3 .dropdown-list option {
     display: block;
     padding: 10px;
     text-decoration: none;
@@ -328,29 +328,29 @@ p.flip:ACTIVE,p.flip:HOVER {
     transition: all 0.3s ease-out;
 }
 
-.wrapper-dropdown-3 .dropdown li i {
+.wrapper-dropdown-3 .dropdown-list option i {
     float: right;
     color: inherit;
 }
 
-.wrapper-dropdown-3 .dropdown li:first-of-type a{
+.wrapper-dropdown-3 .dropdown-list option:first-of-type {
     border-radius: 7px 7px 0 0;
 }
 
-.wrapper-dropdown-3 .dropdown li:last-of-type {
+.wrapper-dropdown-3 .dropdown-list option:last-of-type {
     border: none;
     border-radius: 0 0 7px 7px;
 }
 
 /* Hover state */
 
-.wrapper-dropdown-3 .dropdown li:hover a {
+.wrapper-dropdown-3 .dropdown-list option:hover {
     background: #f3f8f8;
 }
 
 /* Active state */
 
-.wrapper-dropdown-3.active .dropdown {
+.wrapper-dropdown-3.active .dropdown-list {
     opacity: 1;
     pointer-events: auto;
 }
@@ -2081,5 +2081,21 @@ td.alt { background-color: #ffc; background-color: rgba(255, 255, 0, 0.2); }
 textarea {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 13px;
+}
+select {
+    position: relative;
+    width: 180px;
+    margin: 0 auto;
+    padding: 10px;
+    background: #fff;
+    border-radius: 7px;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 4px 3px 2px rgba(50,50,50,0.1);
+    cursor: pointer;
+    outline: none;
+    font-weight: bold;
+    color: black;
+    font-family: 'Lato', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 /*****************************************************/

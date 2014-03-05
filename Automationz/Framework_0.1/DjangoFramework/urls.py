@@ -68,6 +68,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/GetBrowsers/$', Get_Browsers),
     url(r'^Home/.*/GetVersions/$', Get_Versions),
     url(r'^Home/.*/GetTesters/$', Get_Testers),
+    url(r'^Home/.*/GetRunTypes/$', Get_RunTypes),
     url(r'^Home/.*/GetStatus/$', Get_Status),
     url(r'^Home/ManageTestCases/DeleteExisting/$', DeleteExisting),
     #Test Set Management Section

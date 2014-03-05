@@ -214,6 +214,19 @@ def ResultPage(request):
     output=template.render(variables)
     return HttpResponse(output)
 
+def Result_Table(request):
+    Conn=GetConnection()
+    results = []
+    if request.method == "GET":
+        tester = request.GET.get(u'tester', '')
+        status = request.GET.get(u'status', '')
+        version = request.GET.get(u'version', '')
+        run_type = request.GET.get(u'run_type', '')
+        
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def Search2(request,Run_Id):
     #RunId = request.GET.get('ClickedRunId', '')
     if Run_Id != "":
@@ -2840,6 +2853,18 @@ def Get_Browsers(request):
         browser = request.GET.get(u'browser', '')
         if browser == '':
             results = DB.GetData(Conn, "select value from config_values where type = 'Browser'", False)
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Get_RunTypes(request):
+    Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        runtype = request.GET.get(u'run_type', '')
+        if runtype == '':
+            results = DB.GetData(Conn, "select distinct run_type from test_run_env", False)
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')

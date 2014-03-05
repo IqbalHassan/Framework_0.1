@@ -46,6 +46,42 @@ $(document).ready(function(){
         }
     });
 
+    //versions
+    $.ajax({
+        url:'GetVersions/',
+        dataType : "json",
+        data : {
+            version : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 0; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".version[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+
+    //run-types
+    $.ajax({
+        url:'GetRunTypes/',
+        dataType : "json",
+        data : {
+            run_type : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 0; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".run-type[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+
     /*$("#simple-menu").click(function(){
         if($(this).text() == "Advanced Filter >>"){
             $(this).val("<< Advanced Filter");
