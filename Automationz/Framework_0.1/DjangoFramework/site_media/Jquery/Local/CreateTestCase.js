@@ -17,6 +17,16 @@ $(document).ready(function() {
     addMainTableRow('#steps_table');
     check_required_data();
     show_radio_button();
+
+    $('.timepicker2').timepicker({
+        minuteStep: 1,
+        template: 'dropdown',
+        appendWidgetTo: 'body',
+        showSeconds: true,
+        showMeridian: false,
+        defaultTime: false
+    });
+
     /*****************Shetu's Function************************/
     AutoCompleteTag();
     /*****************End Shetu************************/
@@ -931,6 +941,9 @@ function GenerateMainRow()
             '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
             '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
             '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
+            '<td><div class="input-append bootstrap-timepicker"><input id="searchbox'+step_num+'step_est_time" type="text" class="input-small timepicker2 textbox">' +
+            '<span class="add-on">' +
+            '<i class="icon-time"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/clock.png" width="16" style="padding-top: 30%"></i></span></div></td>' +
             '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
             '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '</tr>'
@@ -1095,7 +1108,7 @@ function show_radio_button(){
         $("#enable_radio").removeClass("selected");
     });
 }
-/****************************End wMinar's Thing****************************************************/
+/****************************End Minar's Thing****************************************************/
 /****************************Unused****************************************************/
 /*function dataArrayToString(array){
     var tempString ="";
