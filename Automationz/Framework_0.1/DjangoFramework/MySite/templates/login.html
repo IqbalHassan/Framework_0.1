@@ -1,17 +1,18 @@
 <html>
 <head>
+    <title>Login</title>
     <link rel="stylesheet" type="text/css" href="/site_media/CSS-Style-Sheet.css" />
 </head>
 <body>
 <div align="center" width="50%" style="margin-left: 30%;margin-right: 30%;margin-top: 10%">
-    <form action="{% url 'MySite.views.loginTest' %}" method="post">
+    <form action="/processLogin/" method="post">
         {% csrf_token %}
         <fieldset align="right">
             <legend><b>Login Information</b></legend>
             <div align="center">
-                <input type="text" class="textbox" value="" name="username" placeholder="username" style="margin-bottom: 5%;margin-top: 5%;" size="25"/>
+                <input type="text" class="textbox" value="" name="user_id" placeholder="username" style="margin-bottom: 5%;margin-top: 5%;" size="25"/>
                 <br>
-                <input type="password" class="textbox" value="" name="password" placeholder="password" size="25"/>
+                <input type="password" class="textbox" value="" name="user_password" placeholder="password" size="25"/>
                 <hr>
                 <input type="submit" class="button" value="Login"/>
             </div>

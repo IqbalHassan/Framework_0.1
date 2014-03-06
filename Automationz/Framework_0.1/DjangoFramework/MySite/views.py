@@ -32,7 +32,9 @@ import re
 import time
 from TestCaseOperations import Cleanup_TestCase
 from django.core.context_processors import csrf
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate,login
+from django.contrib.auth.models import User
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
 
@@ -70,7 +72,7 @@ def TimeDiff(sYourTime):
 
 
 """ Main Pages functions """
-
+#@login_required(login_url='/Home/Login/')
 def HomePage(req):
     templ = get_template('HomePage.html')
     variables = Context(
@@ -4906,4 +4908,22 @@ def ReRun(request):
             Column=['Test Case ID','Test Case Name','Type','Status']
     result={'col':Column,'list':test_case_list}
     result=simplejson.dumps(result)
-    return HttpResponse(result,mimetype='application/json')        
+    return HttpResponse(result,mimetype='application/json')       
+def LoginPage(request):
+    return render_to_response('login.html',{},context_instance=RequestContext(request))
+def processLogin(request):
+    if request.method=='POST':
+        username=request.POST['user_id']
+        password=request.POST['user_password']
+        print username
+        print password
+        user=authenticate(username=username,password=password)
+        print user
+        if user is not None:
+            if user.is_active:
+                login(request,user)
+                return HttpResponseRedirect('/Home/')
+            else:
+                return HttpResponse("User Disabled")
+        else:    
+            return HttpResponse("User not present")
