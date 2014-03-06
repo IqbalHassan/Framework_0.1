@@ -18,6 +18,16 @@ $(document).ready(function() {
     check_required_data();
     show_radio_button();
 
+    $('.est_time_img').timepicker({
+        minuteStep: 1,
+        template: 'dropdown',
+        appendWidgetTo: 'body',
+        showSeconds: true,
+        showMeridian: false,
+        defaultTime: false,
+        secondStep: 1
+    });
+
     /*****************Shetu's Function************************/
     AutoCompleteTag();
     /*****************End Shetu************************/
@@ -139,6 +149,7 @@ $(document).ready(function() {
                 title: "Data: Step "+id
             });
         });
+        /*****************estd time picker************************
         $('.est_time_img').live('click',function(){
             //var id=$(this).closest('tr').find('td:nth-child(9)').text().trim();
             var id = '';
@@ -146,8 +157,8 @@ $(document).ready(function() {
                 '<td><input id="hours" class="textbox" placeholder="hours"></td>' +
                 '<td><input id="minutes" class="textbox" placeholder="minutes"></td>' +
                 '<td><input id="seconds" class="textbox" placeholder="seconds"></td>' +
-                '</tr></table>'
-            $(".est_time_img").dialog({
+                '</tr></table>';
+            $("#est_time").dialog({
                 buttons : {
                     "OK" : function() {
                         $(this).dialog("destroy");
@@ -162,10 +173,11 @@ $(document).ready(function() {
                 modal : true,
                 width : 400,
                 height : 400,
-                title: "Data: Step Estimated Time",
-                data: id
+                title: "Data: Step Estimated Time"
             });
         });
+        /**************************************************/
+
         /********************DataPopUP Function End********************************************/
         $("input[name=platform]").change(function () {
             Env = $(this).val();
@@ -1016,7 +1028,7 @@ function GenerateMainRow()
             '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
             '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
             '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-            '<td><input class="new_tc_form est_time_img" id="searchbox'+step_num+'step_est_time" type=\'image\' src=\'/site_media/clock.png\' style=\"background-color: transparent; width:16px; height:16px\"></td>' +
+            '<td><img class="new_tc_form est_time_img" id="searchbox'+step_num+'step_est_time" type=\'image\' src=\'/site_media/clock.png\' style=\"background-color: transparent; width:16px; height:16px;cursor:pointer\"></td>' +
             //'<td><input type="time" step="1" name="time" id="searchbox'+step_num+'step_est_time" class="textbox" style="width: auto"></td>' +
             '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
             '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
