@@ -280,10 +280,10 @@ function make_bar_clickable(divname){
                         ]);
                         var options = {
                             title:'Run-ID: '+RunID,
-                            width: 500,
+                           // width: 500,
                             height: 500,
                             fontSize: 13,
-                            titleTextStyle:{fontSize:16},
+                            titleTextStyle:{fontSize:19, color: '#4183c4', fontName:'Helvetica Neue, Helvetica, Arial, sans-serif'},
                             legend:{ textStyle: {fontSize: 17}},
                             colors:['#65bd10','#FD0006','#FF9e00','blue','grey','#88a388']
                         };
@@ -302,8 +302,8 @@ function make_bar_clickable(divname){
                             },
 
                             modal : true,
-                            width : 620,
-                            height : 620,
+                            width : 700,
+                            height : 650,
                             align:'center',
                             title:"Summary"
 

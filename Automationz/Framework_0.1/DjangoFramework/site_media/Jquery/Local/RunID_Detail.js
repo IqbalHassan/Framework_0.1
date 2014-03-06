@@ -19,7 +19,10 @@ $(document).ready(function(){
     $('#run_id').live('click',function(){
         window.location='/Home/RunID/'+RunID.trim();
     });
-    drawGraph(RunID);
+    //drawGraph(RunID);
+    $("#show_chart").click(function(){
+        drawGraph(RunID);
+    });
     ReRunTab();
 });
 function MakingReRunClickable(){
@@ -195,10 +198,10 @@ function drawGraph(RunID){
                 ]);
                 var options = {
                     title: 'Run-ID Summary : ' + RunID,
-                    width: 500,
+                    //width: 500,
                     height: 500,
                     fontSize: 13,
-                    titleTextStyle:{fontSize:16},
+                    titleTextStyle:{fontSize:19, color: '#4183c4', fontName:'Helvetica Neue, Helvetica, Arial, sans-serif'},
                     legend:{ textStyle: {fontSize: 17}},
                     colors:['#65bd10','#FD0006','#FF8C00','blue','grey','#88a388']
                 };
