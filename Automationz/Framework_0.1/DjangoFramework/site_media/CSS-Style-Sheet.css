@@ -2127,18 +2127,7 @@ input[type="text"], input[type="password"], input[type="datetime"], input[type="
     transition: border linear .2s,box-shadow linear .2s;
 }
 .input-small {
-    width: 90px;
-}
-
-.icon-time {
-    background-position: -48px -24px;
-}
-[class^="icon-"], [class*=" icon-"] {
-    line-height: 14px;
-    vertical-align: text-top;
-    background-image: url('clock.png');
-    background-position: 14px 14px;
-    background-repeat: no-repeat;
+    width: 76px;
 }
 
 .input-append .add-on, .input-prepend .add-on {
@@ -2157,6 +2146,9 @@ input[type="text"], input[type="password"], input[type="datetime"], input[type="
 .icon-chevron-down {
     background-position: -313px -119px;
 }
+.icon-time {
+    background-position: -48px -24px;
+}
 [class^="icon-"], [class*=" icon-"] {
     display: inline-block;
     width: 14px;
@@ -2165,6 +2157,25 @@ input[type="text"], input[type="password"], input[type="datetime"], input[type="
     vertical-align: text-top;
     background-image: url("glyphicons-halflings.png");
     background-repeat: no-repeat;
+}
+.input-append .add-on, .input-prepend .add-on {
+    display: inline-block;
+    width: auto;
+    height: 20px;
+    min-width: 16px;
+    padding: 4px 5px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    text-align: center;
+    text-shadow: 0 1px 0 #fff;
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+.input-append input, .input-append select, .input-append .uneditable-input {
+    -webkit-border-radius: 4px 0 0 4px;
+    -moz-border-radius: 4px 0 0 4px;
+    border-radius: 4px 0 0 4px;
 }
 .bootstrap-timepicker {
     position: relative;

@@ -18,7 +18,7 @@ $(document).ready(function() {
     check_required_data();
     show_radio_button();
 
-    $('.est_time_img').timepicker({
+    $('#timepicker2').timepicker({
         minuteStep: 1,
         template: 'dropdown',
         appendWidgetTo: 'body',
@@ -1028,9 +1028,11 @@ function GenerateMainRow()
             '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
             '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
             '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
-            '<td><img class="new_tc_form est_time_img" id="searchbox'+step_num+'step_est_time" type=\'image\' src=\'/site_media/clock.png\' style=\"background-color: transparent; width:16px; height:16px;cursor:pointer\"></td>' +
-            //'<td><input type="time" step="1" name="time" id="searchbox'+step_num+'step_est_time" class="textbox" style="width: auto"></td>' +
-            '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
+            '<td><div class="input-append bootstrap-timepicker">' +
+            '<input id="timepicker2" type="text" class="input-small textbox">' +
+            '<span class="add-on"><i class="icon-time"></i></span></div></td>' +
+            //'<td><img class="new_tc_form est_time_img" id="searchbox'+step_num+'step_est_time" type=\'image\' src=\'/site_media/clock.png\' style=\"background-color: transparent; width:16px; height:16px;cursor:pointer\"></td>' +
+             '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
             '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '</tr>'
         )
