@@ -77,10 +77,10 @@ function populate_feature_driver_info_div(){
                             '<td align="center">' +
         '<br/>' +
                                 '<div id="button_id" style="display: none">' +
-                                    '<input type=\'submit\' id=\"select_button\" class=\"button minbutton primary\" name=\'submit_button\'/>' +
+                                    '<input type=\'submit\' id=\"select_button\" class=\"button minibutton primary\" name=\'submit_button\'/>' +
                                 '</div>' +
                                 '<div id="button_del" style="display: none">' +
-                                    '<input type=\'button\' id=\"del_button\" class=\"button minbutton primary\" name=\'del_button\'/>' +
+                                    '<input type=\'button\' id=\"del_button\" class=\"button minibutton primary\" name=\'del_button\'/>' +
                                 '</div>' +
                             '</td>' +
                         '</tr>' +
@@ -455,9 +455,9 @@ function populate_info_div(){
 function populate_footer_div(){
     $('#footer_div').append('' +
         '<div>' +
-            '<input type="button" id="delete_button" class="button minbutton danger" value="Delete"/>' +
-            '<input type="button" id="get_cases" class="button minbutton primary" value="Get Test Cases"/>' +
-            '<input type="submit" id="submit_button" class="button minbutton primary" name="submit_button" value="Submit">' +
+            '<input type="button" id="delete_button" class="button minibutton danger" value="Delete"/>' +
+            '<input type="button" id="get_cases" class="button minibutton primary" value="Get Test Cases"/>' +
+            '<input type="submit" id="submit_button" class="button minibutton primary" name="submit_button" value="Submit">' +
         '</div>'
     );
     $("#get_cases").click(function(){

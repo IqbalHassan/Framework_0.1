@@ -103,6 +103,8 @@ urlpatterns = patterns('',
     url(r'^Home/.*/TestStepWithTypeInTable/$',TestStepWithTypeInTable),
     #Run Test Page
     url(r'^Home/RunTest/$',RunTest),
+    url(r'^Home/.*/Milestone_Auto/$',Milestone_Auto),
+    url(r'^Home/.*/Milestone_process/$',Milestone_process),
     url(r'^Home/.*/Verify_Query/$', Verify_Query),
     url(r'^Home/.*/Run_Test/$', Run_Test),
     url(r'^Home/.*/ReRun_Fail_TestCases/$', ReRun_Fail_TestCases),
