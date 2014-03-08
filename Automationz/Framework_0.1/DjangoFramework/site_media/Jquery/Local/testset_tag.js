@@ -1,22 +1,24 @@
 $(document).ready(function(){
-   $("#operation").click(function(event){
+   $("#operation").live('change',function(event){
        var choice_value=$("#operation").val();
+       var data_type;
        event.preventDefault();
        console.log(choice_value);
        if(choice_value == 2){
            $("#name_variable").html("Old Name:");
-           $("#renamebox").html(
+           $("#renamebox").css({'display':'inline-block'});
+          /* $("#renamebox").html(
                "<label><b>New Name:</b></label>"
                    +"&nbsp;&nbsp;&nbsp;"
                    +"<input class=\"ui-corner-all textbox\" id=\"input2\" style=\"margin: 5px; width: auto;\" type='text' title = 'Please Type Keyword' name='inputName2' />"
-           );
+           );*/
            //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
-           $("#error").hide();
+           //$("#error").hide();
           // console.log("choice_value:"+choice_value);
-           $("#select_button").val("Rename");
-           var value=$("#select_button").val();
+           //$("#select_button").val("Rename");
+           //var value=$("#select_button").val();
          //  console.log(value);
-           $("#button_id").show();
+           //$("#button_id").show();
            $("#input2").autocomplete({
                source: function(request,response){
                    if($("#type").val()=="set"){
@@ -42,17 +44,23 @@ $(document).ready(function(){
                    $("#input2").val(value);
                    return false;
                }
-           });
+           }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+               return $( "<li></li>" )
+                   .data( "ui-autocomplete-item", item )
+                   .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+                   .appendTo( ul );
+           };
        }
        else{
            $("#name_variable").html("Name:");
-           $("#renamebox").html("");
-           var button_value="";
+           $("#renamebox").css({'display':'none'});
+           //$("#renamebox").html("");
+           /*var button_value="";
            if(choice_value==0){
                button_value=0;
                if(button_value==0){
                    $("#select_button").val(button_value);
-                   $("#button_id").hide();
+                   //$("#button_id").hide();
                    $("#error").show();
                }
 
@@ -70,11 +78,11 @@ $(document).ready(function(){
                }
                console.log("choice_value:"+choice_value);
                $("#error").hide();
-               $("#select_button").val(button_value);
+               //$("#select_button").val(button_value);
                console.log($("#select_button").val());
-               $("#button_id").show();
+               //$("#button_id").show();
               // $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
-           }
+           }*/
        }
 
    });
