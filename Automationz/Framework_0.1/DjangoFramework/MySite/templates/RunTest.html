@@ -1,6 +1,5 @@
 {% extends "BaseTemplate.html" %}
 
-
  {% block title%} Run Test {% endblock%}
 
  {% block content %}
@@ -155,6 +154,56 @@
 
             </div>
             <!-- ************************ -->
+        </div>
+
+        <h3>Manage Milestones</h3>
+        <div>
+            <br/><br/>
+
+            <form action="{% url 'MySite.views.Milestone_process' %}" method="post">
+                {% csrf_token %}
+                <div align="center">
+                    <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
+                        <tr>
+                            <td align="center">
+                                <div id="right">
+                                    <label><b>Operation:</b></label>
+                                    <select id="operation" class="wrapper-dropdown-3" name="operation">
+                                        <option value="0"selected="selected">Select from list</option>
+                                        <option value="1">Create</option>
+                                        <option value="2">Rename</option>
+                                        <option value="3">Delete</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td align="center">
+                                <div id="center">
+                                    <label><b id="name_variable">Name:</b></label>
+                                    <input class="ui-corner-all textbox" id="input" style="margin : 5px; width: auto" type='text' name='inputName' />
+                                </div>
+                            </td>
+                            <td align="center">
+                                <div id="renamebox">
+
+                                </div>
+                            </td>
+                            <td align="center">
+                                <div id="error">
+                                    <p><b>No Operation is selected</b></p>
+                                </div>
+                                <div id="button_id" style="display: none">
+                                    <input type='submit' id="select_button" class="button minibutton primary" name='submit_button'/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </form>
+            <div align="center">
+                {% if error_message %}
+                <p align="center"><strong>{{error_message}}</strong></p>
+                {% endif %}
+            </div>
         </div>
 
 

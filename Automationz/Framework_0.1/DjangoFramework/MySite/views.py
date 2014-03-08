@@ -3586,6 +3586,38 @@ def TestStep_Auto(request):
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
 
+def Milestone_Auto(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        auto = request.GET.get(u'term', '')
+        results = DB.GetData(Conn, "select * from config_values where type = 'milestone' and value Ilike '%" + auto + "%'",False)
+        # if len(results)>0:
+        #  results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+
+def Milestone_process(request):
+    output="in the processing page"
+    conn = GetConnection()
+    if request.method=='POST':
+        operation=request.POST['operation']
+        input1=request.POST['inputName']        
+        if operation!="" and input1!="":
+            query = ""
+            if operation=="1":
+                testinsert = DB.UpdateRecordInTable(conn,"config_values",query, type='milestone',value=input1);
+                if testinsert==True:
+                    message="Milestone with name '"+input1+"' is updated"
+                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
+                else:
+                    message="Milestone with name '"+input1+"' is not updated.Please Try again"
+                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
+        else:
+            message="Fields are empty"
+            return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
+    return HttpResponse(output)
+
 def TestCase_Results(request):
     conn=GetConnection()
     TableData = []

@@ -258,6 +258,9 @@ function make_bar_clickable(divname){
             'cursor':'pointer'
         });
         $(this).live('click',function(){
+
+            //'<a id="show_chart" class="button primary">Show Graph</a>');
+
             var RunID=$(this).closest('tr').find('td:first-child').text().trim();
             $.get("chartDraw",
                 {
@@ -280,7 +283,7 @@ function make_bar_clickable(divname){
                         ]);
                         var options = {
                             title:'Run-ID: '+RunID,
-                           // width: 500,
+                            // width: 500,
                             height: 500,
                             fontSize: 13,
                             titleTextStyle:{fontSize:19, color: '#4183c4', fontName:'Helvetica Neue, Helvetica, Arial, sans-serif'},
@@ -310,8 +313,6 @@ function make_bar_clickable(divname){
                         });
                     }
                 });
-
         });
-
     });
 }
