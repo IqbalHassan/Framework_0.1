@@ -117,9 +117,10 @@ $(document).ready(function(){
 	
 	  }
 
-    $("#operation").click(function(event){
+
+    /*$("#operation_milestone").click(function(event){
         populate_milestone();
-    });
+    });*/
 
 	
 });
@@ -1124,10 +1125,11 @@ function Get_Selected_Env_Name()
 		
 }
 
+
 function populate_milestone()
 {
 
-    var choice_value=$("#operation").val();
+    var choice_value=$("#operation_milestone").val();
     event.preventDefault();
     console.log(choice_value);
     if(choice_value == 2){

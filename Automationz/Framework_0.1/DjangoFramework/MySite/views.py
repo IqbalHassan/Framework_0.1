@@ -3600,16 +3600,33 @@ def Milestone_process(request):
     conn = GetConnection()
     if request.method=='POST':
         operation=request.POST['operation']
-        input1=request.POST['inputName']        
+        input1=request.POST['inputName']    
+        input2=request.POST['inputName2']    
         if operation!="" and input1!="":
             query = ""
             if operation=="1":
-                testinsert = DB.UpdateRecordInTable(conn,"config_values",query, type='milestone',value=input1);
+                testinsert = DB.InsertNewRecordInToTable(conn,'config_values', type='milestone',value=input1);
                 if testinsert==True:
                     message="Milestone with name '"+input1+"' is updated"
                     return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
                 else:
-                    message="Milestone with name '"+input1+"' is not updated.Please Try again"
+                    message="Milestone with name '"+input1+"' is not updated. Please Try again"
+                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
+            elif operation=="3":
+                testinsert = DB.DeleteRecord(conn, 'config_values',type='milestone',value=input1)
+                if testinsert==True:
+                    message="Milestone with name '"+input1+"' is deleted"
+                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
+                else:
+                    message="Milestone with name '"+input1+"' is not deleted. Please Try again"
+                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
+            elif operation=="2" and input2!="":
+                testinsert = DB.UpdateRecordInTable(conn, 'config_values',query,type='milestone',value=input1)
+                if testinsert==True:
+                    message="Milestone with name '"+input1+"' is updated"
+                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
+                else:
+                    message="Milestone with name '"+input1+"' is not updated. Please Try again"
                     return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
         else:
             message="Fields are empty"
