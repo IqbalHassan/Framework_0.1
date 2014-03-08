@@ -160,8 +160,8 @@
         <div>
             <br/><br/>
 
-            <form action="{% url 'MySite.views.Milestone_process' %}" method="post">
-                {% csrf_token %}
+            <form action="{% url 'MySite.views.Milestone_Process' %}" method="post">
+                {%csrf_token%}
                 <div align="center">
                     <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
                         <tr>
@@ -183,16 +183,19 @@
                                 </div>
                             </td>
                             <td align="center">
-                                <div id="renamebox">
+                                <div id="renamebox" style="display: none">
+                                    <label><b>New Name:</b></label>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <input class="ui-corner-all textbox" id="input2" style="margin: 5px; width: auto;" type='text' title = 'Please Type Keyword' name='inputName2' />
 
                                 </div>
                             </td>
                             <td align="center">
-                                <div id="error">
+                                <!--div id="error">
                                     <p><b>No Operation is selected</b></p>
-                                </div>
-                                <div id="button_id" style="display: none">
-                                    <input type='submit' id="select_button" class="button minibutton primary" name='submit_button'/>
+                                </div-->
+                                <div id="button_id">
+                                    <input type='submit' id="select_button" class="button minibutton primary" name='submit_button' value="Submit"/>
                                 </div>
                             </td>
                         </tr>
@@ -265,15 +268,112 @@
         $(document).ready(function() {
             RESPONSIVEUI.responsiveTabs();
 
+            $("#operation_milestone").live('change',function(event){
+                var choice_value=$("#operation_milestone").val();
+                event.preventDefault();
+                console.log(choice_value);
+                if(choice_value == 2){
+                    $("#name_variable").html("Old Name:");
+                    /*$("#renamebox").html(
+                            "<label><b>New Name:</b></label>"
+                                    +"&nbsp;&nbsp;&nbsp;"
+                                    +"<input class=\"ui-corner-all textbox\" id=\"input2\" style=\"margin: 5px; width: auto;\" type='text' title = 'Please Type Keyword' name='inputName2' />"
+                    );
+                    //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
+                    $("#error").hide();
+                    // console.log("choice_value:"+choice_value);
+                    $("#select_button").val("Rename");
+                    var value=$("#select_button").val();
+                    //  console.log(value);
+                    $("#button_id").show();*/
+                    $("#renamebox").css({'display':'inline-block'});
+                    $("#input2").autocomplete({
+                        source: function(request,response){
+
+                            $.ajax({
+                                url:"Milestone_Auto",
+                                dataType:"json",
+                                data:{term:request.term},
+                                success:function(data){
+                                    response(data);
+                                }
+                            });
+                        },
+                        select: function(request,ui){
+                            var tc_id_name = ui.item.value.split(" - ");
+                            var value = "";
+                            if (tc_id_name != null)
+                                value = tc_id_name[0];
+                            $("#input2").val(value);
+                            return false;
+                        }
+                    });
+                }
+                else{
+                    $("#name_variable").html("Name:");
+                    $("#renamebox").css({'display':'none'});
+                    /*$("#renamebox").html("");
+                    var button_value="";
+                    if(choice_value==0){
+                        button_value=0;
+                        if(button_value==0){
+                            $("#select_button").val(button_value);
+                            $("#button_id").hide();
+                            $("#error").show();
+                        }
+
+                    }
+                    else{
+                        if(choice_value==1)
+                        {
+                            button_value="Create";
+                        }
+                        if(choice_value==3){
+                            button_value="Delete";
+                        }
+                        console.log("choice_value:"+choice_value);
+                        $("#error").hide();
+                        $("#select_button").val(button_value);
+                        console.log($("#select_button").val());
+                        $("#button_id").show();
+                        // $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
+                    }*/
+                }
+                $("#input").autocomplete({
+                    source: function(request,response){
+
+                        $.ajax({
+                            url:"Milestone_Auto",
+                            dataType:"json",
+                            data:{term:request.term},
+                            success:function(data){
+                                response(data);
+                            }
+                        });
+                    },
+                    select: function(request,ui){
+                        var tc_id_name = ui.item[0].split(" - ");
+                        var value = "";
+                        if (tc_id_name != null)
+                            value = tc_id_name[0];
+                        $("#input").val(value);
+                        return false;
+                    }
+                }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                    return $( "<li></li>" )
+                            .data( "ui-autocomplete-item", item )
+                            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+                            .appendTo( ul );
+                };
+            });
+
         })
-
-
     </script>
 
 
 
 </article>
-{% endblock %}		
+{% endblock %}
 
 
 
