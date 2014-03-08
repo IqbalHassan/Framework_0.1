@@ -105,7 +105,7 @@ $(document).ready(function() {
         });
         $('.remove_dataset_entry').live('click',function(){
             var tablename=$(this).parent().parent().find('table:eq(0)').attr('id');
-            if($('#'+tablename+' tr').length>1){
+            if($('#'+tablename+' tr').length>2){
                 $('#'+tablename+' tr:last').remove();
             }
         });
@@ -114,6 +114,7 @@ $(document).ready(function() {
             $('#searchbox'+id+'datapop').dialog({
                 buttons : {
                     "OK" : function() {
+                        checkFunction($(this).attr('id'));
                         $(this).dialog("destroy");
                     }
                 },
@@ -236,9 +237,6 @@ $(document).ready(function() {
                 });
             }
         });
-
-        // Make tags autofill
-        //AddAutoCompleteToTag();
         DeleteSearchQueryText();
         if(indx2 != -1 || template){
             $.get("TestCase_EditData",
@@ -438,42 +436,49 @@ $(document).ready(function() {
                         $('#searchbox'+(i+1)+'verify').attr('checked','true');
                     }
                     $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
+                    $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
                     var datasets=steps_and_data[i][1];
                     popupdivrowcount[i]=0;
-                    for(var j=0;j<datasets.length;j++){
-                        var temp=[];
-                        addnewrow('#searchbox'+(i+1)+'data_table',(i+1),(popupdivrowcount[i]+1));
-                        popupdivrowcount[i]++;
-                        var currentdataset=datasets[j];
-                        for(var k=0;k<currentdataset.length;k++){
-                            if(currentdataset[k][1] instanceof Array){
-                                for(var l=0;l<currentdataset[k][1].length;l++){
-                                    var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][0]};
-                                    temp.push(tempObject);
+                    if(datasets.length==0){
+                        $('#searchbox'+(i+1)+'data').html("");
+                        $('#searchbox'+(i+1)+'data').parent().css({'cursor':'none'});
+                    }
+                    else{
+                        for(var j=0;j<datasets.length;j++){
+                            var temp=[];
+                            addnewrow('#searchbox'+(i+1)+'data_table',(i+1),(popupdivrowcount[i]+1));
+                            popupdivrowcount[i]++;
+                            var currentdataset=datasets[j];
+                            for(var k=0;k<currentdataset.length;k++){
+                                if(currentdataset[k][1] instanceof Array){
+                                    for(var l=0;l<currentdataset[k][1].length;l++){
+                                        var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][0]};
+                                        temp.push(tempObject);
+                                    }
+                                }
+                                else{
+                                    var tempobject={field:currentdataset[k][0],sub_field:"",value:currentdataset[k][1]};
+                                    temp.push(tempobject);
                                 }
                             }
-                            else{
-                                var tempobject={field:currentdataset[k][0],sub_field:"",value:currentdataset[k][1]};
-                                temp.push(tempobject);
+                            for(var k=0;k<(temp.length-1);k++){
+                                adddataentry('step'+(i+1)+'data'+(j+1)+'entrytable');
                             }
-                        }
-                        for(var k=0;k<(temp.length-1);k++){
-                            adddataentry('step'+(i+1)+'data'+(j+1)+'entrytable');
-                        }
-                        var currentrow=$('#step'+(i+1)+'data'+(j+1)+'entrytable tr:eq(1)');
-                        for(var k=0;k<temp.length;k++){
-                            currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
-                            currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
-                            currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
-                            currentrow=currentrow.next();
-                        }
-                        if(temp.length>0){
-                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
-                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
-                        }
-                        else{
-                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
-                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                            var currentrow=$('#step'+(i+1)+'data'+(j+1)+'entrytable tr:eq(1)');
+                            for(var k=0;k<temp.length;k++){
+                                currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
+                                currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
+                                currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
+                                currentrow=currentrow.next();
+                            }
+                            if(temp.length>0){
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+                            }
+                            else{
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                            }
                         }
                     }
                 }
@@ -483,6 +488,46 @@ $(document).ready(function() {
         }
 
         $('#submit').live('click',function(){
+            /*****************************Validation Check Here***********************************/
+            if($('#section-flag').hasClass('unfilled')){
+                alert("Section Path is not defined Correctly");
+                return false;
+            }
+            if($('#platform-flag').hasClass('unfilled')){
+                alert("Platform is not selected correctly");
+                return false;
+            }
+            if($('#browser-flag').hasClass('unfilled')){
+                alert("Browser is not selected correctly");
+                return false;
+            }
+            if($('#type-flag').hasClass('unfilled')){
+                alert("Test Type is not defined correctly");
+                return false;
+            }
+            var row_count=$('#steps_table tr').length;
+            for(var i=0;i<row_count;i++){
+                if($('#searchbox'+(i+1)+'data').html()==""){
+                    continue;
+                }
+                else{
+                    if($('#searchbox'+(i+1)+'data').find('span:eq(0)').hasClass('unfilled')){
+                        alert("Data in the Step #"+(i+1)+" is not complete");
+                        return false;
+                    }
+                }
+            }
+            var checked_count=0;
+            for(var i=0;i<row_count;i++){
+                if($('#searchbox'+(i+1)+'verify').attr('checked')=='checked'){
+                    checked_count++;
+                }
+            }
+            if(checked_count<=0){
+                alert("Atleast One step is to be set as Verfication point");
+                return false;
+            }
+            /******************************END Validation Check here*******************************/
             /*********************************Properties Tab Data ********************************/
             //Select Status
             var status;
@@ -496,6 +541,8 @@ $(document).ready(function() {
             //Select Section Name
             var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
             console.log(newSectionPath);
+            //Get TC_ID for the test case
+            var _TC_Id = $('#TC_Id').html().substring($('#TC_Id').html().indexOf(": ")+2,$('#TC_Id').html().indexOf("</b>"))
             //Select Priority
             var priority='P'+$('#priotiy_select option:selected').val();
             console.log(priority);
@@ -665,6 +712,30 @@ $(document).ready(function() {
                     Status:"Dev"},function(data) {
                     alert(data);
                 });
+            }else if(query == "e"){
+                $.get("Edit_TestCase",{
+                        Section_Path:newSectionPath,
+                        TC_Id:_TC_Id,
+                        Platform:platformList.join("|"),
+                        Manual_TC_Id:test_case_Id,
+                        TC_Name:title,
+                        TC_Creator:'Test',
+                        Associated_Bugs_List:defectId,
+                        Requirement_ID_List:required_Id,
+                        Status:status,
+                        TC_Type:typeList.join("|"),
+                        Tag_List:tag.join("|"),
+                        Dependency_List:browserList.join("|"),
+                        Priority:priority,
+                        Steps_Data_List:stepDataSTR.join("|"),
+                        Steps_Name_List:stepNameList.join("|"),
+                        Steps_Description_List:stepDescriptionList.join("|"),
+                        Steps_Expected_List:stepExpectedList.join("|"),
+                        Steps_Verify_List:stepVerificationList.join("|")
+                    },
+                    function(data) {
+                        alert(data+" edited successfully");
+                    });
             }
         });
         /*$('#submit').click(function(){
@@ -917,13 +988,19 @@ function AutoCompleteTestStep(){
                     if(ui.item[1]){
                         fieldName.closest('tr').find('td:nth-child(4) span:eq(0)').addClass('unfilled');
                     }
+                    else{
+                        fieldName.closest('tr').find('td:nth-child(4)').html("");
+                        fieldName.closest('tr').find('td:nth-child(4)').css({
+                            'cursor':'none'
+                        });
+                    }
                     fieldName.closest('tr').find('td:nth-child(8)').html(ui.item[2]);
                     if(ui.item[3]!=""){
-                        fieldName.closest('tr').find('td:nth-child(9) span:eq(0)').addClass('filled');
+                        fieldName.closest('tr').find('td:nth-child(10) span:eq(0)').addClass('filled');
                         $('#searchbox'+fieldName.closest('tr').find('td:nth-child(2)').text()+'descriptionpop').html(ui.item[3]);
                     }
                     else{
-                        fieldName.closest('tr').find('td:nth-child(9) span:eq(0)').addClass('unfilled');
+                        fieldName.closest('tr').find('td:nth-child(9) span:eq(10)').addClass('unfilled');
                         $('#searchbox'+fieldName.closest('tr').find('td:nth-child(2)').text()+'descriptionpop').html("");
                     }
                 }
@@ -1122,6 +1199,39 @@ function addMainTableRow(divname){
     $('#step_description_general').append('<div id="searchbox'+step_num+'descriptionpop"></div>');
     $(divname).append(GenerateMainRow());
     AutoCompleteTestStep();
+}
+function checkFunction(divname){
+    var status="";
+    var index=divname.split('x')[1].split('d')[0].trim();
+    if(popupdivrowcount[index-1]<=0){
+        //alert("No dataset is included");
+        $('#searchbox'+index+'data').find('span:eq(0)').addClass('unfilled');
+    }
+    else{
+        for(var i=0;i<popupdivrowcount[index-1];i++){
+            var tablename=$('#step'+index+'data'+(i+1)+'entrytable');
+            var row_count=tablename.find('tr').length;
+            var currentrow=tablename.find('tr:eq(1)');
+            for(var j=0;j<row_count-1;j++){
+                if(currentrow.find('td:eq(0) input:eq(0)').val()==""||currentrow.find('td:eq(2) textarea:eq(0)').val()==""){
+                    status="false";
+                    break;
+                }
+                currentrow=currentrow.next();
+            }
+            if(status!=""){
+                break;
+            }
+        }
+        if(status=="false"){
+            $('#searchbox'+index+'data').find('span:eq(0)').removeClass('filled');
+            $('#searchbox'+index+'data').find('span:eq(0)').addClass('unfilled');
+        }
+        else{
+            $('#searchbox'+index+'data').find('span:eq(0)').removeClass('unfilled');
+            $('#searchbox'+index+'data').find('span:eq(0)').addClass('filled');
+        }
+    }
 }
 /******************************************END New Data Pop Up***************************************************************/
 /****************************Minar's Thing****************************************************/
