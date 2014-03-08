@@ -1,12 +1,12 @@
 $(document).ready(function(){
-   $("#operation").click(function(event){
+   $("#operation").live('change',function(event){
        var choice_value=$("#operation").val();
        var data_type;
        event.preventDefault();
        console.log(choice_value);
        if(choice_value == 2){
            $("#name_variable").html("Old Name:");
-           $("#renamebox").show();
+           $("#renamebox").css({'display':'inline-block'});
           /* $("#renamebox").html(
                "<label><b>New Name:</b></label>"
                    +"&nbsp;&nbsp;&nbsp;"
@@ -53,7 +53,7 @@ $(document).ready(function(){
        }
        else{
            $("#name_variable").html("Name:");
-           $("#renamebox").hide();
+           $("#renamebox").css({'display':'none'});
            //$("#renamebox").html("");
            /*var button_value="";
            if(choice_value==0){
