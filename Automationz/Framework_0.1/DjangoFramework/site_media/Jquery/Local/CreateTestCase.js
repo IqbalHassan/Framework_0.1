@@ -33,11 +33,11 @@ $(document).ready(function() {
     /*****************End Shetu************************/
     URL = window.location.pathname
     console.log("url:"+URL);
-    indx = URL.indexOf("Create");
+    indx = URL.indexOf("CreateNew");
     console.log("Create Index:"+indx);
     indx2 = URL.indexOf("Edit");
     console.log("Edit Index:"+indx2);
-    var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf("Create") != -1;
+    var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf("CreateNew") != -1;
     console.log("Url Length:"+URL.length);
     console.log("Template:"+template);
     if (indx != -1 || indx2 != -1) {
@@ -241,34 +241,40 @@ $(document).ready(function() {
         //AddAutoCompleteToTag();
         DeleteSearchQueryText();
         if(indx2 != -1 || template){
-            $.get("TestCase_EditData", {
+            $.get("TestCase_EditData",
+            {
                 TC_Id : URL.substring(URL.lastIndexOf("/")+1,URL.length)
-            }, function(data) {
-                //Edit finish button text
-                $("p.new_tc_form.buttonCustom").html($("p.new_tc_form.buttonCustom").html().substring(0,$("p.new_tc_form.buttonCustom").html().indexOf('<br>')) + '<br>Submit Edit')
-
-                var enabledStatus = data['Status']
-                var sections = data['Section_Path']
-                var auto_id = data['TC_Id']
-                var req_id = data['Requirement Ids']
-                var assoc_bugs = data['Associated Bugs']
-                var tc_id = data['Manual_TC_Id']
-                var dependancy_list = data['Dependency List']
-                var manual_tc_id = data['TC_Id']
-                var platform = data['Platform']
-                var priority = data['Priority']
-                var status = data['Status']
-                var steps_and_data = data['Steps and Data']
-                var tc_types = data['TC Type']
-                var tc_creator = data['TC_Creator']
-                var name = data["TC_Name"]
-                var tags = data['Tags List']
-
-
-                //Section path
+            },
+            function(data){
+                console.log(data);
+                /******************Properties tab Data*******************************/
+                //Status
+                var status=data['Status'];
+                console.log(status);
+                if(status=="Ready"){
+                    $('a[value="Production"]').addClass('selected');
+                }
+                if(status=="Dev"){
+                    $('a[value="Development"]').addClass('selected');
+                }
+                if(status=="Forced"){
+                    $('a[value="Forced-Manual"]').addClass('selected');
+                }
+                //TagList
+                var tag_list=data['Tags List'];
+                if(tag_list.length!=0){
+                    for(var i=0;i<tag_list.length;i++){
+                        console.log(tag_list);
+                        if(tag_list[i]!=""){
+                            AddToListTag(tag_list[i]);
+                        }
+                    }
+                }
+                //SectionPath
+                var sections=data['Section_Path'];
                 var sectionArray = sections.split('.');
                 var dataId ="";
-                var handlerString = ""
+                var handlerString = "";
                 for(var index in sectionArray){
                     if(sectionArray[index] == "")
                         continue;
@@ -337,94 +343,143 @@ $(document).ready(function() {
 
                     dataId += sectionArray[index] + '.'
                 }
-
-                //auto id
+                //Priority
+                var priority=data['Priority'];
+                $("#priotiy_select").val(parseInt(priority.substring(1,2)));
+                /*************** End Properties tab Data*******************************/
+                /****************************Parameters Tab*****************************/
+                //Select Platform
+                var platform=data['Platform'];
+                console.log(platform);
+                for(var i=0;i<platform.length;i++){
+                    $('input[name="platform"]').each(function(){
+                        if($(this).val()==platform[i]){
+                            $(this).attr('checked','true');
+                        }
+                    });
+                }
+                if($('input[name="platform"]:checked').length>0){
+                    $("#platform-flag").removeClass("unfilled");
+                    $("#platform-flag").addClass("filled");
+                }
+                else{
+                    $("#platform-flag").removeClass("filled");
+                    $("#platform-flag").addClass("unfilled");
+                }
+                //Select Browsers/Dependency
+                var dependency=data['Dependency List'];
+                for(var i=0;i<dependency.length;i++){
+                    $('input[name="dependancy"]').each(function(){
+                        if($(this).val()==dependency[i]){
+                            $(this).attr('checked','true');
+                        }
+                    })
+                };
+                if($('input[name="dependancy"]:checked').length>0){
+                    $("#browser-flag").removeClass("unfilled");
+                    $("#browser-flag").addClass("filled");
+                }
+                else{
+                    $("#browser-flag").removeClass("filled");
+                    $("#browser-flag").addClass("unfilled");
+                }
+                //Type Select
+                var tc_type=data['TC Type'];
+                for(var i=0;i<tc_type.length;i++){
+                    $('input[name="type"]').each(function(){
+                        if($(this).val()==tc_type[i]){
+                            $(this).attr('checked','true');
+                        }
+                    })
+                };
+                if($('input[name="type"]:checked').length>0){
+                    $("#type-flag").removeClass("unfilled");
+                    $("#type-flag").addClass("filled");
+                }
+                else{
+                    $("#type-flag").removeClass("filled");
+                    $("#type-flag").addClass("unfilled");
+                }
+                /****************************End Parameters Tab*****************************/
+                /****************************RelatedItems Tab*******************************/
+                var req_id = data['Requirement Ids'];
+                var assoc_bugs = data['Associated Bugs'];
+                var tc_id = data['Manual_TC_Id'];
+                //AssociatedBug
+                $('#defectid_txtbox').val(assoc_bugs);
+                //Manual Test Case Id
+                $('#id_txtbox').val(tc_id);
+                //Requirement Id
+                $('#reqid_txtbox').val(req_id);
                 if(!template){
+                    var auto_id=data['TC_Id'];
+                    var title=data['TC_Name'];
                     $('#TC_Id').html("<b>Automation ID: "+auto_id +"</b>")
                     $('#TC_Id').css('display','block');
+                    $('#titlebox').val(title);
                 }
-
-                //enabled_status
-                if(!template){
-                    /*if(enabledStatus == "Ready")
-                     $('input[value="Production"]').attr('checked', true);
-                     else if(enabledStatus == "Dev")
-                     $('input[value="Development"]').attr('checked', true);
-                     else if(enabledStatus == "Forced")
-                     $('input[value="Forced-Manual"]').attr('checked', true);*/
-                    if(enabledStatus == "Ready")
-                        $("#enable_radio").addClass("selected");
-                    else if(enabledStatus == "Dev")
-                        $("#Disable_radio").addClass("selected");
-                    else if(enabledStatus == "Forced")
-                        $("#Manual_radio").addClass("selected");
-                    $('#tc_enable').css('display','block');
+                /************************End RelatedItems Tab*******************************/
+                /***************************Steps Tab***************************************/
+                var steps_and_data = data['Steps and Data'];
+                //$('#steps_table').html("");
+                for(var i=0;i<(steps_and_data.length-1);i++){
+                    addMainTableRow('#steps_table');
                 }
-
-                //assoc id
-                $('#defectid_txtbox').val(assoc_bugs)
-                //tcid
-                $('#id_txtbox').val(tc_id)
-                //req id
-                $('#reqid_txtbox').val(req_id)
-                //name
-                $('#title_txtbox').val(name)
-                //platform
-                if(platform == 'PC') $('#PC_radio').attr('checked', true);
-                else $('#MAC_radio').attr('checked', true);
-                //dependancy
-                for(var dependancy in dependancy_list){
-                    if(dependancy_list[dependancy] == 'Outlook') $('input[value="Outlook"]').attr('checked', true);
-                    else if(dependancy_list[dependancy] == 'MacNative') $('input[value="MacNative"]').attr('checked', true);
-                    else if(dependancy_list[dependancy] == 'iTunes') $('input[value="iTunes"]').attr('checked', true);
-                    else if(dependancy_list[dependancy] == 'iPhoto') $('input[value="iPhoto"]').attr('checked', true);
-                    else if(dependancy_list[dependancy] == 'Chrome') $('input[value="Chrome"]').attr('checked', true);
-                    else if(dependancy_list[dependancy] == 'FireFox') $('input[value="FireFox"]').attr('checked', true);
-                    else if(dependancy_list[dependancy] == 'IE') $('input[value="IE"]').attr('checked', true);
-                }
-                //Type
-                for(var type in tc_types){
-                    if(tc_types[type].toLowerCase() == 'smoke') $('#smoke_check').attr('checked', true);
-                    else if(tc_types[type].toLowerCase() == 'si') $('#si_check').attr('checked', true);
-                    else if(tc_types[type].toLowerCase() == 'svv') $('#svv_check').attr('checked', true);
-                }
-                //Priority
-                $("#priotiy_select").val(parseInt(priority.substring(1,2)));
-                //Tags
-                for(var tag in tags)
-                    if(tags[tag] != "")
-                        AddToListTag(tags[tag]);
-                //test data
-                for(var step_indx in steps_and_data){
-                    var id = addStep();
-                    var colour="";
-                    var step_type=steps_and_data[step_indx][2];
-                    if(step_type=="automated"){
-                        colour="green";
+                var row_count=$('#steps_table tr').length;
+                var converted_data=[];
+                console.log(row_count);
+                popupdivrowcount=[];
+                for(var i=0;i<row_count;i++){
+                    $('#searchbox'+(i+1)+'name').val(steps_and_data[i][0]);
+                    $('#searchbox'+(i+1)+'info').val(steps_and_data[i][3]);
+                    $('#searchbox'+(i+1)+'expected').val(steps_and_data[i][4]);
+                    $('#searchbox'+(i+1)+'step_type').text(steps_and_data[i][2]);
+                    if(steps_and_data[i][5]=='yes'){
+                        $('#searchbox'+(i+1)+'verify').attr('checked','true');
                     }
-                    if(step_type=="manual"){
-                        colour="red";
-                    }
-                    if(step_type=="performance"){
-                        colour="blue";
-                    }
-                    $('#' + id).val(steps_and_data[step_indx][0]);
-                    $('#' + id+'info').val(steps_and_data[step_indx][3]);
-                    $('#' + id+'expected').val(steps_and_data[step_indx][4]);
-                    if(steps_and_data[step_indx][5]=="yes"){
-                        $('#'+id+'verify').attr('checked',true);
-                    }
-                    $("#" + id + "step_type").html("<b style='color:"+colour+"'>"+step_type+"</b>");
-                    //check if step has data
-                    if(steps_and_data[step_indx][1].length > 0){
-                        $("#" + id + "data").fadeIn(500);
-
-                        for(var data in steps_and_data[step_indx][1]){
-                            addDataToStep('#'+(parseInt(step_indx)+1) +'.add_test_data',steps_and_data[step_indx][1][data]);
+                    $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
+                    var datasets=steps_and_data[i][1];
+                    popupdivrowcount[i]=0;
+                    for(var j=0;j<datasets.length;j++){
+                        var temp=[];
+                        addnewrow('#searchbox'+(i+1)+'data_table',(i+1),(popupdivrowcount[i]+1));
+                        popupdivrowcount[i]++;
+                        var currentdataset=datasets[j];
+                        for(var k=0;k<currentdataset.length;k++){
+                            if(currentdataset[k][1] instanceof Array){
+                                for(var l=0;l<currentdataset[k][1].length;l++){
+                                    var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][0]};
+                                    temp.push(tempObject);
+                                }
+                            }
+                            else{
+                                var tempobject={field:currentdataset[k][0],sub_field:"",value:currentdataset[k][1]};
+                                temp.push(tempobject);
+                            }
+                        }
+                        for(var k=0;k<(temp.length-1);k++){
+                            adddataentry('step'+(i+1)+'data'+(j+1)+'entrytable');
+                        }
+                        var currentrow=$('#step'+(i+1)+'data'+(j+1)+'entrytable tr:eq(1)');
+                        for(var k=0;k<temp.length;k++){
+                            currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
+                            currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
+                            currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
+                            currentrow=currentrow.next();
+                        }
+                        if(temp.length>0){
+                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
+                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+                        }
+                        else{
+                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
+                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
                         }
                     }
                 }
+                /***************************End Steps Tab***************************************/
             });
+
         }
 
         $('#submit').live('click',function(){
@@ -693,8 +748,8 @@ $(document).ready(function() {
              else if($('input[value="Development"]').attr('checked') == "checked")
              status = "Dev"
              else if($('input[value="Forced-Manual"]').attr('checked') == "checked")
-             status = "Forced"*/
-             /*   if($("#enable_radio").hasClass("selected"))
+             status = "Forced"
+              if($("#enable_radio").hasClass("selected"))
                     status = "Ready"
                 else if($("#Disable_radio").hasClass("selected"))
                     status = "Dev"

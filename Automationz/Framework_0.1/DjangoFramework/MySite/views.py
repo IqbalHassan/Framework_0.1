@@ -341,7 +341,7 @@ def Edit(request):
     if TC_Id != "":
         return ViewTestCase(TC_Id)
     else:
-        templ = get_template('CreateTest.html')
+        templ = get_template('CreateTestCase.html')
         variables = Context({ })
         output = templ.render(variables)
         return HttpResponse(output)
@@ -2699,6 +2699,8 @@ def ViewTestCase(TC_Id):
                 query+="%s"% (str(Step_Iteration))
                 query+="%' and field='verification' and value='point'"
                 Step_Verified=DB.GetData(Conn,query,False)
+                query="select description from test_steps_list where stepname='%s'"%(Step_Name.strip())
+                Step_General_Description=DB.GetData(Conn,query,False)
                 Step_Iteration=Step_Iteration+1
                 #is data required for this step
                 if each_test_step[3]:
@@ -2728,7 +2730,7 @@ def ViewTestCase(TC_Id):
                             Step_Data.append(From_Data)
 
                 #append step name and data to send it back
-                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0],Step_Expected[0][0],Step_Verified[0][0]))
+                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0],Step_Expected[0][0],Step_Verified[0][0],Step_General_Description[0][0]))
 
             #return values
             results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List}
