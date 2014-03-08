@@ -3345,8 +3345,10 @@ def Data_Process(request):
         data_type=request.POST['type']
         if data_type=="tag":
             return general_work(request,data_type)
-        if data_type=="set":
+        elif data_type=="set":
             return general_work(request,data_type)
+        else:
+            return render_to_response('TestSet_Tag.html',{'error_message':"data is not posted successfully"},context_instance=RequestContext(request))
     return TestSet(request,"data is not posted successfully")
 def general_work(request,data_type):
     def Check_instance(x,data_type):
@@ -3359,9 +3361,12 @@ def general_work(request,data_type):
             return -1
     temp=0
     if request.method=='POST':
+        datatype=request.POST['type']
         operation=request.POST['operation']
         command=request.POST['submit_button']
-        if operation=="2" and command=="Rename":
+        first_name=request.POST['inputName']
+        second_name=request.POST['inputName2']
+        if operation=="2"  and first_name!="" and second_name!="" and datatype!="":
             temp=Check_instance('inputName',data_type)
             if(temp==0):
                 if request.POST['inputName']!="":
@@ -3371,14 +3376,12 @@ def general_work(request,data_type):
                     output="Name field is empty"
                     return TestSet(request,output)
             if(temp>0):
-                first_name=request.POST['inputName']
-                second_name=request.POST['inputName2']
                 if(first_name!="" and second_name!=""):
                     return rename(request,first_name,second_name,data_type)
                 else:
                     output="Name field is empty"
                     return TestSet(request,output)
-        if operation=="1" and command=="Create":
+        if operation=="1" and first_name!="" and second_name=="" and datatype!="":
             temp=Check_instance('inputName',data_type)
             if(temp==0):
                 name=request.POST['inputName']
@@ -3390,7 +3393,7 @@ def general_work(request,data_type):
             if(temp>0):
                 output="Test "+data_type+" with name '"+request.POST['inputName']+"' is already in the database"
                 return TestSet(request,output)
-        if operation=="3" and command=="Edit":
+        if operation=="3" and first_name!="" and second_name=="" and datatype!="":
             temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']
@@ -3399,7 +3402,7 @@ def general_work(request,data_type):
                 else:
                     output="Name field is empty"
             # output+=edit(name)
-        if operation=="4" and command=="Delete":
+        if operation=="4" and first_name!="" and second_name=="" and datatype!="":
             temp=Check_instance('inputName',data_type)
             if(temp>0):
                 name=request.POST['inputName']
@@ -3411,6 +3414,8 @@ def general_work(request,data_type):
             if(temp==0):
                 output="No such test "+data_type+" with the name '"+request.POST['inputName']+"'"
                 return TestSet(request,output)
+        if datatype=="":
+            return TestSet(request,"data is not posted successfully")
             #output+=delete(name)
     #return output
 def TestCases_InSet(name,data_type):
@@ -3604,7 +3609,8 @@ def Milestone_process(request):
         operation=request.POST['operation']
         input1=request.POST['inputName']    
         input2=request.POST['inputName2']    
-        if operation!="" and input1!="":
+        command=request.POST['submit_button']
+        if operation!="" and input1!="" and command!="":
             query = ""
             if operation=="1":
                 testinsert = DB.InsertNewRecordInToTable(conn,'config_values', type='milestone',value=input1);
