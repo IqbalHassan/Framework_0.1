@@ -159,9 +159,11 @@
         <h3>Manage Milestones</h3>
         <div>
             <br/><br/>
+            <form>
+                <div align="center" id="error_msg" style="display: none">
 
-            <form action="{% url 'MySite.views.Milestone_Process' %}" method="post">
-                {%csrf_token%}
+                </div>
+                <br/><br/>
                 <div align="center">
                     <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
                         <tr>
@@ -179,14 +181,14 @@
                             <td align="center">
                                 <div id="center">
                                     <label><b id="name_variable">Name:</b></label>
-                                    <input class="ui-corner-all textbox" id="input" style="margin : 5px; width: auto" type='text' name='inputName' />
+                                    <input class="ui-corner-all textbox" id="msinput" style="margin : 5px; width: auto" type='text' name='inputName' />
                                 </div>
                             </td>
                             <td align="center">
                                 <div id="renamebox" style="display: none">
                                     <label><b>New Name:</b></label>
                                     &nbsp;&nbsp;&nbsp;
-                                    <input class="ui-corner-all textbox" id="input2" style="margin: 5px; width: auto;" type='text' title = 'Please Type Keyword' name='inputName2' />
+                                    <input class="ui-corner-all textbox" id="msinput2" style="margin: 5px; width: auto;" type='text' title = 'Please Type Keyword' name='inputName2' />
 
                                 </div>
                             </td>
@@ -195,18 +197,14 @@
                                     <p><b>No Operation is selected</b></p>
                                 </div-->
                                 <div id="button_id">
-                                    <input type='submit' id="select_button" class="button minibutton primary" name='submit_button' value="Submit"/>
+                                    <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
+                                    <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
                                 </div>
                             </td>
                         </tr>
                     </table>
                 </div>
             </form>
-            <div align="center">
-                {% if error_message %}
-                <p align="center"><strong>{{error_message}}</strong></p>
-                {% endif %}
-            </div>
         </div>
 
 
@@ -287,7 +285,7 @@
                     //  console.log(value);
                     $("#button_id").show();*/
                     $("#renamebox").css({'display':'inline-block'});
-                    $("#input2").autocomplete({
+                    $("#msinput2").autocomplete({
                         source: function(request,response){
 
                             $.ajax({
@@ -304,7 +302,7 @@
                             var value = "";
                             if (tc_id_name != null)
                                 value = tc_id_name[0];
-                            $("#input2").val(value);
+                            $("#msinput2").val(value);
                             return false;
                         }
                     });
@@ -339,7 +337,7 @@
                         // $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
                     }*/
                 }
-                $("#input").autocomplete({
+                $("#nsinput").autocomplete({
                     source: function(request,response){
 
                         $.ajax({
@@ -356,7 +354,7 @@
                         var value = "";
                         if (tc_id_name != null)
                             value = tc_id_name[0];
-                        $("#input").val(value);
+                        $("#msinput").val(value);
                         return false;
                     }
                 }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
@@ -365,6 +363,49 @@
                             .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
                             .appendTo( ul );
                 };
+            });
+
+            $("#ms_button").live('click',function(){
+                var operation=$('#operation_milestone option:selected').val();
+                var inputName=$('#msinput').val();
+                var inputName2=$('#msinput2').val();
+
+                if(operation==''||inputName==''){
+                    var error_message="<b style='color: #ff0000'>Fields are empty</b>";
+                    $('#error_msg').html(error_message);
+                    $('#error_msg').css({'display':'block'});
+                }
+                else if(operation=='2' && (inputName=='' || inputName2=='')){
+                    var error_message="<b style='color: #ff0000'>Fields are empty</b>";
+                    $('#error_msg').html(error_message);
+                    $('#error_msg').css({'display':'block'});
+                }
+                else if((operation=='2' && inputName!='' && inputName2!="")){
+                    var inputName2=$('#msinput2').val();
+
+                    $.get("Milestone_Process",{
+                        operation:operation,
+                        inputName:inputName,
+                        inputName2:inputName2
+                    },function(data){
+                        //console.log(data);
+                        $('#error_msg').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                        $('#error_msg').slideDown('slow');
+                        setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                    });
+                }
+                else{
+
+                    $.get("Milestone_Process",{
+                        operation:operation,
+                        inputName:inputName
+                    },function(data){
+                        //console.log(data);
+                        $('#error_msg').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                        $('#error_msg').slideDown('slow');
+                        setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                    });
+                }
             });
 
         })

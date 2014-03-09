@@ -3604,50 +3604,46 @@ def Milestone_Auto(request):
     results = []
     if request.method == "GET":
         auto = request.GET.get(u'term', '')
-        results = DB.GetData(Conn, "select * from config_values where type = 'milestone' and value Ilike '%" + auto + "%'",False)
+        results = DB.GetData(Conn, "select value,type from config_values where type = 'milestone' and value Ilike '%" + auto + "%'",False)
         # if len(results)>0:
         #  results.append("*Dev")
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
 
 def Milestone_Process(request):
-    output="in the processing page"
-    conn = GetConnection()
-    if request.method=='POST':
-        operation=request.POST['operation']
-        input1=request.POST['inputName']    
-        input2=request.POST['inputName2']    
-        command=request.POST['submit_button']
-        if operation!="" and input1!="" and command!="":
-            query = ""
-            if operation=="1":
-                testinsert = DB.InsertNewRecordInToTable(conn,'config_values', type='milestone',value=input1);
-                if testinsert==True:
-                    message="Milestone with name '"+input1+"' is updated"
-                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
+
+    if request.is_ajax():
+        if request.method=='GET':
+            operation=request.GET.get(u'operation','')
+            input1=request.GET.get(u'inputName','')  
+
+        Conn=GetConnection()
+        if operation=="1":
+            count = DB.GetData(Conn, "Select count(value) from config_values where type='milestone' and value="+input1+"")
+            if (count[0]>0):
+                test = DB.InsertNewRecordInToTable(Conn, 'config_values', type='milestone',value=input1)
+                if test==True:
+                    message="Milestone '"+input1+"' is created."
                 else:
-                    message="Milestone with name '"+input1+"' is not updated. Please Try again"
-                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
-            elif operation=="3":
-                testinsert = DB.DeleteRecord(conn, 'config_values',type='milestone',value=input1)
-                if testinsert==True:
-                    message="Milestone with name '"+input1+"' is deleted"
-                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
-                else:
-                    message="Milestone with name '"+input1+"' is not deleted. Please Try again"
-                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
-            elif operation=="2" and input2!="":
-                testinsert = DB.UpdateRecordInTable(conn, 'config_values',query,type='milestone',value=input1)
-                if testinsert==True:
-                    message="Milestone with name '"+input1+"' is updated"
-                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
-                else:
-                    message="Milestone with name '"+input1+"' is not updated. Please Try again"
-                    return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
+                    message="Milestone '"+input1+"' is not created."
+        elif operation=="3":
+            test = DB.DeleteRecord(Conn, 'config_values', type='milestone',value=input1)
+            if test==True:
+                message="Milestone '"+input1+"' is deleted."
+            else:
+                message="Milestone '"+input1+"' is not deleted."
+        elif operation=="2":
+            input2=request.GET.get(u'inputName2','')  
+            test = DB.UpdateRecordInTable(Conn, 'config_values', "where type='milestone' and value="+input1+"", type='milestone', value=input2)
+            if test==True:
+                    message="Milestone '"+input1+"' is updated to '"+input1+"'."
+            else:
+                message="Milestone '"+input1+"' is not updated."
         else:
-            message="Fields are empty"
-            return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
-    return render_to_response('RunTest.html',{'error_message':output},context_instance=RequestContext(request))
+            message="Input Fields are empty"
+        
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
 
 
 def TestCase_Results(request):
