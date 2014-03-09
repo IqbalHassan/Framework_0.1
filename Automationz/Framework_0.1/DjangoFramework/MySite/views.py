@@ -244,7 +244,7 @@ def Create(request):
     if TC_Id != "":
         return ViewTestCase(TC_Id)
     else:
-        templ = get_template('CreateTest.html')
+        templ = get_template('CreateTestCase.html')
         variables = Context({ })
         output = templ.render(variables)
         return HttpResponse(output)
