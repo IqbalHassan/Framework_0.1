@@ -18,16 +18,6 @@ $(document).ready(function() {
     check_required_data();
     show_radio_button();
 
-    $('#timepicker2').timepicker({
-        minuteStep: 1,
-        template: 'dropdown',
-        appendWidgetTo: 'body',
-        showSeconds: true,
-        showMeridian: false,
-        defaultTime: false,
-        secondStep: 1
-    });
-
     /*****************Shetu's Function************************/
     AutoCompleteTag();
     /*****************End Shetu************************/
@@ -437,10 +427,11 @@ $(document).ready(function() {
                     }
                     $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
                     $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
+                    $('#searchbox'+(i+1)+'time').val(convertToString(steps_and_data[i][7]));
                     var datasets=steps_and_data[i][1];
                     popupdivrowcount[i]=0;
                     if(datasets.length==0){
-                        $('#searchbox'+(i+1)+'data').html("");
+                        //$('#searchbox'+(i+1)+'data').html("");
                         $('#searchbox'+(i+1)+'data').parent().css({'cursor':'none'});
                     }
                     else{
@@ -581,13 +572,26 @@ $(document).ready(function() {
             var stepExpectedList=[];
             var stepDescriptionList=[];
             var stepVerificationList=[];
+            var stepTimeList=[];
             var finalArray=[];
             for(var i=1;i<=step_num;i++){
                 if($('#searchbox'+i+'name').val()==""){
-                    alert('Step Name for step Number#'+i+' is not filled correctly');
+                    alert('Step Name for step Number#'+i+' can not be empty');
                     return false;
                 }
                 else{
+                    if($('#searchbox'+i+'info').val()==""){
+                        alert('Step Description for step Number#'+i+' can not be empty');
+                        return false;
+                    }
+                    if($('#searchbox'+i+'expected').val()==""){
+                        alert('Expected Result for step Number#'+i+' can not be empty');
+                        return false;
+                    }
+                    if($('#searchbox'+i+'time').val()==""){
+                        alert('Estimated time for step Number#'+i+' can not be empty');
+                        return false;
+                    }
                     stepNameList.push($('#searchbox'+i+'name').val());
                     stepExpectedList.push($('#searchbox'+i+'expected').val());
                     stepDescriptionList.push($('#searchbox'+i+'info').val());
@@ -597,6 +601,10 @@ $(document).ready(function() {
                     else{
                         stepVerificationList.push('no');
                     }
+                    /******************Convert into the seconds*******************/
+                    var stringTime=$('#searchbox'+i+'time').val();
+                    stepTimeList.push(convertToSeconds(stringTime));
+                    /************************End Convert into seconds*****************/
                     var step_array=[];
                     if(popupdivrowcount[i-1]==0){
                         finalArray[i-1]=undefined;
@@ -709,6 +717,7 @@ $(document).ready(function() {
                     Steps_Description_List:stepDescriptionList.join("|"),
                     Steps_Expected_List:stepExpectedList.join("|"),
                     Steps_Verify_List:stepVerificationList.join("|"),
+                    Steps_Time_List:stepTimeList.join("|"),
                     Status:"Dev"},function(data) {
                     alert(data);
                 });
@@ -731,7 +740,8 @@ $(document).ready(function() {
                         Steps_Name_List:stepNameList.join("|"),
                         Steps_Description_List:stepDescriptionList.join("|"),
                         Steps_Expected_List:stepExpectedList.join("|"),
-                        Steps_Verify_List:stepVerificationList.join("|")
+                        Steps_Verify_List:stepVerificationList.join("|"),
+                        Steps_Time_List:stepTimeList.join("|")
                     },
                     function(data) {
                         alert(data+" edited successfully");
@@ -986,14 +996,19 @@ function AutoCompleteTestStep(){
                 if(value!=""){
                     fieldName.val(value);
                     if(ui.item[1]){
+                        /*var index=fieldName.closest('tr').attr('id').split('_')[1].trim();
+                        fieldName.closest('tr').find('td:nth-child(4)').html('<a id="searchbox'+index+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
+                        '<span class="mail-status"></span>' +
+                        '</a>');*/
                         fieldName.closest('tr').find('td:nth-child(4) span:eq(0)').addClass('unfilled');
+                      //  fieldName.closest('tr').find('td:nth-child(4)').css({'cursor':'pointer'});
                     }
-                    else{
+                    /* else{
                         fieldName.closest('tr').find('td:nth-child(4)').html("");
                         fieldName.closest('tr').find('td:nth-child(4)').css({
                             'cursor':'none'
                         });
-                    }
+                    }*/
                     fieldName.closest('tr').find('td:nth-child(8)').html(ui.item[2]);
                     if(ui.item[3]!=""){
                         fieldName.closest('tr').find('td:nth-child(10) span:eq(0)').addClass('filled');
@@ -1052,6 +1067,30 @@ function AutoCompleteTag(){
 /************End Autocomplete Step name****************/
 /**************************************End Database Works**************************************************/
 /***********************************Start New Data Pop UP**********************************************************************/
+function convertToString(intTime){
+    var hour=Math.floor(intTime/3600);
+    intTime=intTime%3600;
+    var minuate=Math.floor(intTime/60);
+    intTime=intTime%60;
+    if(hour<10){
+        hour="0"+hour;
+    }
+    if(minuate<10){
+        minuate="0"+minuate;
+    }
+    if(intTime<10){
+        intTime="0"+intTime;
+    }
+    var stringTime=hour+":"+minuate+":"+intTime;
+    return stringTime.trim();
+}
+function convertToSeconds(stringTime){
+    var hour=stringTime.split(":")[0].trim();
+    var minuate=stringTime.split(":")[1].trim();
+    var seconds=stringTime.split(":")[2].trim();
+    var total=(hour*3600)+(minuate*60)+(seconds*1);
+    return total;
+}
 function resetArray(index){
     var temp=[];
     for(var i=0;i<popupdivrowcount.length;i++){
@@ -1078,7 +1117,8 @@ function reOrganize(){
         currentrow.find('td:nth-child(6) textarea:eq(0)').attr('id','searchbox'+i+'expected');
         currentrow.find('td:nth-child(7) input:eq(0)').attr('id','searchbox'+i+'verify');
         currentrow.find('td:nth-child(8) span:eq(0)').attr('id','searchbox'+i+'step_type');
-        currentrow.find('td:nth-child(9) a:eq(0)').attr('id','searchbox'+i+'step_desc');
+        currentrow.find('td:nth-child(9) input:eq(0)').attr('id','searchbox'+i+'time');
+        currentrow.find('td:nth-child(10) a:eq(0)').attr('id','searchbox'+i+'step_desc');
         currentrow=currentrow.closest('tr').next();
     }
     /*******************ReOrdering the Main Menu Elements End*********************/
@@ -1094,6 +1134,7 @@ function reOrganize(){
         temptable.attr('id','searchbox'+i+'data_table');
         for(var j=1;j<=innercolumncount;j++){
             var tempColumn=innercolumn;
+            tempColumn.find('td:eq(1) table:eq(0)').attr('id','step'+i+'data'+j+'entrytable');
             tempColumn.attr('id','step'+i+'data'+j);
             innercolumn=innercolumn.next();
         }
@@ -1161,7 +1202,7 @@ function GenerateMainRow()
             '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
             '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
             '<td><div class="input-append bootstrap-timepicker">' +
-            '<input id="timepicker2" type="text" class="input-small textbox">' +
+            '<input id="searchbox'+step_num+'time" type="text" class="input-small textbox timepicker">' +
             '<span class="add-on"><i class="icon-time"></i></span></div></td>' +
             //'<td><img class="new_tc_form est_time_img" id="searchbox'+step_num+'step_est_time" type=\'image\' src=\'/site_media/clock.png\' style=\"background-color: transparent; width:16px; height:16px;cursor:pointer\"></td>' +
              '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
@@ -1191,6 +1232,7 @@ function addMainTableRowFixedPlace(fixedPlace){
     $('#searchbox'+fixedPlace+'datapop').after('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
     $('#searchbox'+fixedPlace+'descriptionpop').after('<div id="searchbox'+step_num+'descriptionpop"></div>');
     AutoCompleteTestStep();
+    TimePicker();
 }
 function addMainTableRow(divname){
     step_num++;
@@ -1199,6 +1241,18 @@ function addMainTableRow(divname){
     $('#step_description_general').append('<div id="searchbox'+step_num+'descriptionpop"></div>');
     $(divname).append(GenerateMainRow());
     AutoCompleteTestStep();
+    TimePicker();
+}
+function TimePicker(){
+    $('.timepicker').timepicker({
+        minuteStep: 1,
+        template: 'dropdown',
+        appendWidgetTo: 'body',
+        showSeconds: true,
+        showMeridian: false,
+        defaultTime: false,
+        secondStep: 1
+    });
 }
 function checkFunction(divname){
     var status="";
