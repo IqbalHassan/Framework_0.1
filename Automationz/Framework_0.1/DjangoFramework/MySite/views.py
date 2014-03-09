@@ -3343,10 +3343,18 @@ def Data_Process(request):
     #output="in the post processing page"
     if request.method=='POST':
         data_type=request.POST['type']
+        operation=request.POST['operation']
+        command=request.POST['submit_button']
+        first_name=request.POST['inputName']
+        second_name=request.POST['inputName2']
         if data_type=="tag":
             return general_work(request,data_type)
         elif data_type=="set":
             return general_work(request,data_type)
+        elif data_type=="":
+            return TestSet(request,"data is not posted successfully")
+        elif data_type!="" and (first_name=="" or operation=="" or second_name=="" or command==""):
+            return TestSet(request,"data is not posted successfully")
         else:
             return render_to_response('TestSet_Tag.html',{'error_message':"data is not posted successfully"},context_instance=RequestContext(request))
     return TestSet(request,"data is not posted successfully")
@@ -3602,7 +3610,7 @@ def Milestone_Auto(request):
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
 
-def Milestone_process(request):
+def Milestone_Process(request):
     output="in the processing page"
     conn = GetConnection()
     if request.method=='POST':
@@ -3639,7 +3647,8 @@ def Milestone_process(request):
         else:
             message="Fields are empty"
             return render_to_response('RunTest.html',{'error_message':message},context_instance=RequestContext(request))
-    return HttpResponse(output)
+    return render_to_response('RunTest.html',{'error_message':output},context_instance=RequestContext(request))
+
 
 def TestCase_Results(request):
     conn=GetConnection()

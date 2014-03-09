@@ -89,7 +89,7 @@ function populate_feature_driver_info_div(){
 
     );
 
-    $("#operation").click(function(event){
+    $("#operation").live('change',function(event){
         var choice_value=$("#operation").val();
         event.preventDefault();
         console.log(choice_value);
