@@ -22,7 +22,7 @@
                     <td style="height:150px; width:150px">
 
                         <!-- Following Code is for PC Platform Flip button  -->
-                        <p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30%'' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/PC.png">  PC </p>
+                        <p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30%' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/PC.png">  PC </p>
                         <div id = 'PC_Platform' style='display:none'></div>
                         <!-- *********************** <img style = 'width : 200%'  src="/site_media/PC.png">-->
                     </td>
@@ -380,7 +380,7 @@
                     $('#error_msg').html(error_message);
                     $('#error_msg').css({'display':'block'});
                 }
-                else if((operation=='2' && inputName!='' && inputName2!="")){
+                else if(operation=='2' && inputName!='' && inputName2!=""){
                     var inputName2=$('#msinput2').val();
 
                     $.get("Milestone_Process",{
@@ -389,21 +389,35 @@
                         inputName2:inputName2
                     },function(data){
                         //console.log(data);
-                        $('#error_msg').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
-                        $('#error_msg').slideDown('slow');
-                        setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                        if(data){
+                            $('#error_msg').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                            $('#error_msg').slideDown('slow');
+                            setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                        }
+                        else{
+                            var error_message="<b style='color: #ff0000'>Error in database</b>";
+                            $('#error_msg').html(error_message);
+                            $('#error_msg').css({'display':'block'});
+                        }
                     });
                 }
-                else{
+                else if((operation!='' && inputName!='' && inputName2=="")){
 
                     $.get("Milestone_Process",{
                         operation:operation,
                         inputName:inputName
                     },function(data){
-                        //console.log(data);
-                        $('#error_msg').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
-                        $('#error_msg').slideDown('slow');
-                        setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                        console.log(data);
+                        if(data){
+                            $('#error_msg').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                            $('#error_msg').slideDown('slow');
+                            setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                        }
+                        else{
+                            var error_message="<b style='color: #ff0000'>Error in database</b>";
+                            $('#error_msg').html(error_message);
+                            $('#error_msg').css({'display':'block'});
+                        }
                     });
                 }
             });

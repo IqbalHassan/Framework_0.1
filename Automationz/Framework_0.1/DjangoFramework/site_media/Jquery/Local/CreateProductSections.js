@@ -4,6 +4,80 @@
 
 $(document).ready(function(){
 
+    $('#jstree').jstree({
+        "types" : {
+            "#" : {
+                "max_children" : 1,
+                "max_depth" : 4,
+                "valid_children" : ["root"]
+            },
+            "root" : {
+                "icon" : "/site_media/tree_icon.png",
+                "valid_children" : ["default"]
+            },
+            "default" : {
+                "valid_children" : ["default","file"]
+            },
+            "file" : {
+                "icon" : "glyphicon glyphicon-file",
+                "valid_children" : []
+            }
+        },
+        "plugins" : [ "checkbox", "contextmenu", "dnd", "search", "sort", "state", "types", "unique", "wholerow" ]
+    });
+    // 7 bind to events triggered on the tree
+    /*$('#jstree').jstree({
+        "core" : {
+            "animation" : 0,
+            "check_callback" : true,
+            "themes" : { "stripes" : true },
+            'data' : {
+                'url' : function (node) {
+                    return node.id === '#' ?
+                        'ajax_demo_roots.json' : 'ajax_demo_children.json';
+                },
+                'data' : function (node) {
+                    return { 'id' : node.id };
+                }
+            }
+        },
+        "types" : {
+            "#" : {
+                "max_children" : 1,
+                "max_depth" : 4,
+                "valid_children" : ["root"]
+            },
+            "root" : {
+                "icon" : "tree_icon.png",
+                "valid_children" : ["default"]
+            },
+            "default" : {
+                "valid_children" : ["default","file"]
+            },
+            "file" : {
+                "icon" : "glyphicon glyphicon-file",
+                "valid_children" : []
+            }
+        },
+        "plugins" : [
+            "contextmenu", "dnd", "search",
+            "state", "types", "wholerow"
+        ]
+    });*/
+    $('#jstree').on("changed.jstree", function (e, data) {
+        console.log(data.selected);
+    });
+
+    var to = false;
+    $('#searchbox').keyup(function () {
+        if(to) { clearTimeout(to); }
+        to = setTimeout(function () {
+            var v = $('#searchbox').val();
+            $('#searchbox').jstree(true).search(v);
+        }, 250);
+    });
+
+
     $(".main").autocomplete({
         source: function(request,response){
             $.ajax({
@@ -67,3 +141,4 @@ $(document).ready(function(){
             .appendTo( ul );
     };
 });
+
