@@ -993,6 +993,7 @@ function AutoCompleteTestStep(){
                 console.log(ui);
                 var value=ui.item[0];
                 var fieldName=$('#'+$(this).attr('id'));
+                var index=$(this).attr('id').split('x')[1].split('n')[0].trim();
                 if(value!=""){
                     fieldName.val(value);
                     if(ui.item[1]){
@@ -1017,6 +1018,23 @@ function AutoCompleteTestStep(){
                     else{
                         fieldName.closest('tr').find('td:nth-child(9) span:eq(10)').addClass('unfilled');
                         $('#searchbox'+fieldName.closest('tr').find('td:nth-child(2)').text()+'descriptionpop').html("");
+                    }
+                    if(ui.item[4]){
+                        var divname='#searchbox'+index+'data_table';
+                        $(divname).parent().find('div:eq(0)').remove();
+                        $(divname).html("");
+                        $(divname).attr('data-id','edit');
+                        editTypeRow(divname,index,1,"From");
+                        editTypeRow(divname,index,1,"To");
+                        popupdivrowcount[index-1]=1;
+                    }
+                    else{
+                        var divname='#searchbox'+index+'data_table';
+                        $(divname).parent().find('div:eq(0)').remove();
+                        $(divname).removeAttr('data-id');
+                        $(divname).css({'align':'center'});
+                        $(divname).html(GeneratePopUpMetaData());
+                        popupdivrowcount[index-1]=0;
                     }
                 }
                 return false;
@@ -1131,13 +1149,26 @@ function reOrganize(){
         var innercolumn=temptable.find('tbody>tr:eq(1)');
         var innercolumncount=popupdivrowcount[i-1];
         temp.attr('id','searchbox'+i+'datapop');
-        temptable.attr('id','searchbox'+i+'data_table');
-        for(var j=1;j<=innercolumncount;j++){
-            var tempColumn=innercolumn;
-            tempColumn.find('td:eq(1) table:eq(0)').attr('id','step'+i+'data'+j+'entrytable');
-            tempColumn.attr('id','step'+i+'data'+j);
-            innercolumn=innercolumn.next();
+        if(temptable.attr('data-id')=='edit'){
+            var stringName=['From','To'];
+            count=0;
+            while(count<2){
+                var tempColumn=innercolumn;
+                tempColumn.find('td:eq(1) table:eq(0)').attr('id','step'+i+'data'+j+stringName[count]+'entrytable');
+                tempColumn.attr('id','step'+i+'data'+stringName[count]);
+                count++;
+                innercolumn=innercolumn.next();
+            }
         }
+        else{
+            for(var j=1;j<=innercolumncount;j++){
+                var tempColumn=innercolumn;
+                tempColumn.find('td:eq(1) table:eq(0)').attr('id','step'+i+'data'+j+'entrytable');
+                tempColumn.attr('id','step'+i+'data'+j);
+                innercolumn=innercolumn.next();
+            }
+        }
+        temptable.attr('id','searchbox'+i+'data_table');
         currentPop=currentPop.next();
     }
     var currentdescpop=$('#step_description_general>div:first');
@@ -1158,6 +1189,33 @@ function adddataentry(tablename){
         '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
         '</tr>');
     $('#'+tablename).append(message);
+}
+function editTypeRow(divname,stepno,dataset_num,stringName){
+    var message="";
+    message+=('<tr id="step'+stepno+'data'+dataset_num+stringName+'">' +
+        '<td>'+stringName+'</td>' +
+        '<td>' +
+    /******************dataset nested table(start)************/
+        '<table id="step'+stepno+'data'+dataset_num+stringName+'entrytable"class="one-column-emphasis" width="100%" style="font-size:75%">' +
+        '<tr>' +
+        '<th width="33%">Field</th>' +
+        '<th width="33%">Sub-Field</th>' +
+        '<th width="33%">Value</th>' +
+        '</tr>' +
+        '<tr>' +
+        '<td><input class="textbox" style="width: auto"></td>' +
+        '<td><input class="textbox" style="width: auto"></td>' +
+        '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
+        '</tr>' +
+        '</table>' +
+        '<div class="new_tc_form" style="text-align: center">' +
+        '<input class="buttonCustom new_tc_form add_dataset_entry" type=\'image\' src=\'/site_media/plus1.png\' style="background-color: transparent; width:18px; height:18px">' +
+        '<input class="buttonCustom new_tc_form remove_dataset_entry" type=\'image\' src=\'/site_media/minus1.png\' style="background-color: transparent; width:18px; height:18px">' +
+        '</div>' +
+    /******************dataset nested table(end)************/
+        '</td>' +
+        '</tr>');
+    $(divname).append(message);
 }
 function addnewrow(divname,stepno,dataset_num){
     var message="";
@@ -1219,7 +1277,7 @@ function GeneratePopUpMetaData(){
         '<th width="80%">Data</th>' +
         '</tr>' +
         '</table>' +
-        '<div class="new_tc_form" style="text-align: center">' +
+        '<div class="new_tc_form" align="center" style="text-align: center">' +
         '<input class="buttonCustom new_tc_form add_dataset_row" type=\'image\' src=\'/site_media/plus1.png\' style="background-color: transparent; width:22px; height:22px">' +
         '<input class="buttonCustom new_tc_form remove_dataset_row" type=\'image\' src=\'/site_media/minus1.png\' style="background-color: transparent; width:22px; height:22px">' +
         '</div>');

@@ -244,7 +244,7 @@ def Create(request):
     if TC_Id != "":
         return ViewTestCase(TC_Id)
     else:
-        templ = get_template('CreateTestCase.html')
+        templ = get_template('CreateTest.html')
         variables = Context({ })
         output = templ.render(variables)
         return HttpResponse(output)
@@ -341,7 +341,7 @@ def Edit(request):
     if TC_Id != "":
         return ViewTestCase(TC_Id)
     else:
-        templ = get_template('CreateTestCase.html')
+        templ = get_template('CreateTest.html')
         variables = Context({ })
         output = templ.render(variables)
         return HttpResponse(output)
@@ -607,7 +607,7 @@ def AutoCompleteTestStepSearch(request):
     if request.method == "GET":
         value = request.GET.get(u'term', '')
 
-        results = DB.GetData(Conn, "select stepname,data_required,steptype,description from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
+        results = DB.GetData(Conn, "select stepname,data_required,steptype,description,step_editable from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
