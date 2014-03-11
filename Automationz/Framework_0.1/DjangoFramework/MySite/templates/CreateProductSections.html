@@ -11,32 +11,32 @@ Create Product Sections
 
         <h3>View & Organize Test Cases</h3>
 
-        <table class="row">
+        <!--table class="row">
             <tr>
                 <td class="col-md-4 col-sm-8 col-xs-8" style="float: left">
-                    <button type="button" class="btn btn-success btn-sm button blue" onclick="demo_create();"><i class="glyphicon glyphicon-asterisk"></i> Create</button>
-                    <button type="button" class="btn btn-warning btn-sm button primary" onclick="demo_rename();"><i class="glyphicon glyphicon-pencil"></i> Rename</button>
-                    <button type="button" class="btn btn-danger btn-sm button danger" onclick="demo_delete();"><i class="glyphicon glyphicon-remove"></i> Delete</button>
+                    <button id="create_btn" type="button" class="btn btn-success btn-sm button blue" onclick="create_node();">Create</button>
+                    <button id="rename_btn" type="button" class="btn btn-warning btn-sm button primary" onclick="rename_node();">Rename</button>
+                    <button id="delete_btn" type="button" class="btn btn-danger btn-sm button danger" onclick="delete_node();">Delete</button>
                 </td>
                 <td class="col-md-2 col-sm-4 col-xs-4" style="float: right">
-                    <input type="text" id="searchbox" class="textbox" value="" style="width:120px;" id="demo_q" placeholder="Search">
+                    <input type="text" id="searchbox" class="textbox" style="width:auto;" placeholder="Search">
                 </td>
             </tr>
-        </table>
+        </table-->
 
-        <div id="jstree" class="demo">
+        <div id="jstree" class="demo jstree">
             <!-- in this example the tree is populated from inline HTML -->
             <ul>
-                <li>Root node 1
+                <li><img src="/site_media/tree_icon.png" style="vertical-align: middle"> Root node 1
                     <ul>
-                        <li id="child_node_1">Child node 1</li>
-                        <li>Child node 2</li>
+                        <li id="child_node_1"><img src="/site_media/folder.png" style="vertical-align: middle;width: 16px;height: 16px"> Child node 1</li>
+                        <li><img src="/site_media/folder.png" style="vertical-align: middle;width: 16px;height: 16px"> Child node 2</li>
                     </ul>
                 </li>
-                <li>Root node 2
+                <li><img src="/site_media/tree_icon.png" style="vertical-align: middle"> Root node 2
                     <ul>
-                        <li id="child_node_2">Child node 3</li>
-                        <li>Child node 4</li>
+                        <li id="child_node_2"><img src="/site_media/folder.png" style="vertical-align: middle;width: 16px;height: 16px"> Child node 3</li>
+                        <li><img src="/site_media/folder.png" style="vertical-align: middle;width: 16px;height: 16px"> Child node 4</li>
                     </ul>
                 </li>
             </ul>
