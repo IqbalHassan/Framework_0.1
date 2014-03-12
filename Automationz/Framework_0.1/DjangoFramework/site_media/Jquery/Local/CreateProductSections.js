@@ -4,6 +4,7 @@
 
 $(document).ready(function(){
 
+
     $('.jstree').jstree({
         "core" : {
             "animation" : 0,
