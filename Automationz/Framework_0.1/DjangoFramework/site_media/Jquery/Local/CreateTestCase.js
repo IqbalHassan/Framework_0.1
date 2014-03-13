@@ -610,21 +610,42 @@ $(document).ready(function() {
                         finalArray[i-1]=undefined;
                     }
                     else{
-                        for(var j=1;j<=popupdivrowcount[i-1];j++){
-                            var dataset=[];
-                            var tableid=$('#step'+i+'data'+j+'entrytable');
-                            console.log(tableid.attr('id'));
-                            var tableLength=tableid.find('tr').length;
-                            var row=tableid.find('tr:eq(1)');
-                            for(var k=0;k<tableLength-1;k++){
-                                var field=row.find('td:eq(0) input:eq(0)').val();
-                                var sub_field=row.find('td:eq(1) input:eq(0)').val();
-                                var value=row.find('td:eq(2) textarea:eq(0)').val();
-                                var tempObject={field:field , sub_field:sub_field ,value:value};
-                                dataset.push(tempObject);
-                                row=row.next();
+                        if($('#searchbox'+i+'data_table').attr('data-id')=='edit'){
+                            var combined_array=[];
+                            for(var l=0;l<2;l++){
+                                var row_number=$('#searchbox'+i+'data_table table:eq('+l+') tr').length-1;
+                                var temptableid=$('#searchbox'+i+'data_table table:eq('+l+')');
+                                var row=temptableid.find('tr:eq(1)');
+                                var tempArray=[];
+                                for(var k=0;k<row_number;k++){
+                                    var field=row.find('td:eq(0) input:eq(0)').val();
+                                    var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                                    var value=row.find('td:eq(2) textarea:eq(0)').val();
+                                    var tempObject={field:field , sub_field:sub_field ,value:value};
+                                    tempArray.push(tempObject);
+                                    row=row.next();
+                                }
+                                combined_array.push(tempArray);
                             }
-                            step_array.push(dataset);
+                            step_array.push(combined_array);
+                        }
+                        else{
+                            for(var j=1;j<=popupdivrowcount[i-1];j++){
+                                var dataset=[];
+                                var tableid=$('#step'+i+'data'+j+'entrytable');
+                                console.log(tableid.attr('id'));
+                                var tableLength=tableid.find('tr').length;
+                                var row=tableid.find('tr:eq(1)');
+                                for(var k=0;k<tableLength-1;k++){
+                                    var field=row.find('td:eq(0) input:eq(0)').val();
+                                    var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                                    var value=row.find('td:eq(2) textarea:eq(0)').val();
+                                    var tempObject={field:field , sub_field:sub_field ,value:value};
+                                    dataset.push(tempObject);
+                                    row=row.next();
+                                }
+                                step_array.push(dataset);
+                            }
                         }
                         finalArray[i-1]=step_array;
                     }
@@ -642,58 +663,112 @@ $(document).ready(function() {
                 /***********************Step Data Processing Here ********************************/
                 else{
                     for(var j=1;j<=stepData.length;j++){
-                        var currentDataSet=stepData[j-1];
-                        var mainFields=[];
-                        var subFieldskey=[];
-                        var withsubFields=[];
-                        for(var k=0;k<currentDataSet.length;k++){
-                            //First Check whether it's a mainField or Not
-                            if(currentDataSet[k].sub_field==""){
-                                var temp_object={mainField:currentDataSet[k].field,fieldValue:currentDataSet[k].value};
-                                mainFields.push(temp_object);
-                            }
-                            else{
-                                var field_name=currentDataSet[k].field;
-                                if($.inArray(field_name,subFieldskey)===-1){
-                                    subFieldskey.push(field_name);
-                                }
-                                withsubFields.push(currentDataSet[k]);
-                            }
-                        }
-                        /***************************create old format Data*********************************/
-                        var temp="";
-                        temp+="[";
-                        for(var k=0;k<mainFields.length;k++){
-                            temp+=("("+mainFields[k].mainField+","+mainFields[k].fieldValue+"),");
-                        }
-                        if(withsubFields.length==0 && subFieldskey==0){
-                            temp=temp.substring(0,temp.length-1);
-                            temp+="]";
-                        }
-                        else{
-                            for(var k=0;k<subFieldskey.length;k++){
-                                var mainField=subFieldskey[k];
-                                temp+=("("+mainField+",[");
-                                for(var l=0;l<withsubFields.length;l++){
-                                    if(mainField==withsubFields[l].field){
-                                        temp+=("("+withsubFields[l].sub_field+","+withsubFields[l].value+"),");
+                        if($('#searchbox'+j+'data_table').attr('data-id')=='edit'){
+                            var currentDataSet=stepData[j-1];
+                            var edit_data=[]
+                            for(var k=0;k<currentDataSet.length;k++){
+                                var mainFields=[];
+                                var subFieldskey=[];
+                                var withsubFields=[];
+                                for(var l=0;l<currentDataSet[k].length;l++){
+                                    var temp=currentDataSet[k][l];
+                                    if(temp.sub_field==""){
+                                        var temp_object={mainField:temp.field,fieldValue:temp.value};
+                                        mainFields.push(temp_object);
+                                    }
+                                    else{
+                                        var field_name=temp.field;
+                                        if($.inArray(field_name,subFieldskey)===-1){
+                                            subFieldskey.push(field_name);
+                                        }
+                                        withsubFields.push(temp);
                                     }
                                 }
-                                temp=temp.substring(0,temp.length-1);
-                                temp+="]),";
+                                /***************************create old format Data*********************************/
+                                var temp="";
+                                temp+="[";
+                                for(var m=0;m<mainFields.length;m++){
+                                    temp+=("("+mainFields[m].mainField+","+mainFields[m].fieldValue+"),");
+                                }
+                                if(withsubFields.length==0 && subFieldskey==0){
+                                    temp=temp.substring(0,temp.length-1);
+                                    temp+="]";
+                                }
+                                else{
+                                    for(var n=0;n<subFieldskey.length;n++){
+                                        var mainField=subFieldskey[k];
+                                        temp+=("("+mainField+",[");
+                                        for(var o=0;o<withsubFields.length;o++){
+                                            if(mainField==withsubFields[o].field){
+                                                temp+=("("+withsubFields[o].sub_field+","+withsubFields[o].value+"),");
+                                            }
+                                        }
+                                        temp=temp.substring(0,temp.length-1);
+                                        temp+="]),";
+                                    }
+                                    temp=temp.substring(0,temp.length-1);
+                                    temp+="]";
+                                }
+                                console.log(temp);
+                                edit_data.push(temp);
+                                /*************************** end create old format Data*********************************/
                             }
-                            temp=temp.substring(0,temp.length-1);
-                            temp+="]";
+                            tempSTR.push(edit_data.join('#'));
                         }
-                        console.log(temp);
-                        tempSTR.push(temp);
-                        /*************************** end create old format Data*********************************/
+                        else{
+                            var currentDataSet=stepData[j-1];
+                            var mainFields=[];
+                            var subFieldskey=[];
+                            var withsubFields=[];
+                            for(var k=0;k<currentDataSet.length;k++){
+                                //First Check whether it's a mainField or Not
+                                if(currentDataSet[k].sub_field==""){
+                                    var temp_object={mainField:currentDataSet[k].field,fieldValue:currentDataSet[k].value};
+                                    mainFields.push(temp_object);
+                                }
+                                else{
+                                    var field_name=currentDataSet[k].field;
+                                    if($.inArray(field_name,subFieldskey)===-1){
+                                        subFieldskey.push(field_name);
+                                    }
+                                    withsubFields.push(currentDataSet[k]);
+                                }
+                            }
+                            /***************************create old format Data*********************************/
+                            var temp="";
+                            temp+="[";
+                            for(var k=0;k<mainFields.length;k++){
+                                temp+=("("+mainFields[k].mainField+","+mainFields[k].fieldValue+"),");
+                            }
+                            if(withsubFields.length==0 && subFieldskey==0){
+                                temp=temp.substring(0,temp.length-1);
+                                temp+="]";
+                            }
+                            else{
+                                for(var k=0;k<subFieldskey.length;k++){
+                                    var mainField=subFieldskey[k];
+                                    temp+=("("+mainField+",[");
+                                    for(var l=0;l<withsubFields.length;l++){
+                                        if(mainField==withsubFields[l].field){
+                                            temp+=("("+withsubFields[l].sub_field+","+withsubFields[l].value+"),");
+                                        }
+                                    }
+                                    temp=temp.substring(0,temp.length-1);
+                                    temp+="]),";
+                                }
+                                temp=temp.substring(0,temp.length-1);
+                                temp+="]";
+                            }
+                            console.log(temp);
+                            tempSTR.push(temp);
+                            /*************************** end create old format Data*********************************/
 
-                    }
+                        }
                     /*********************** END Step Data Processing Here ********************************/
                     stepDataSTR[i-1]=tempSTR.join('%');
                 }
                 console.log(stepDataSTR);
+            }
             }
             /*************************End Filtering***********************************************/
             /************************End DataFetching From the POP Up*********************************************/
@@ -746,227 +821,9 @@ $(document).ready(function() {
                     function(data) {
                         alert(data+" edited successfully");
                     });
-            }
-        });
-        /*$('#submit').click(function(){
-            //Check section is at lowest
-            if(!isAtLowestSection){
-                alert("Section name is not set to a proper selection (must be lowest possible level).")
-                return;
-            }
-
-            //if($("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_').indexOf("PIM.") == -1){
-            //	alert("Work in progress. For more information contact automationsolutionz.com")
-            //	return;
-            //}
-
-            //Validate Data
-            for(var j = 1; j <= step_num; j++){
-                if($("#searchbox"+j+"info").val()=="" || $("#searchbox"+j+"expected").val()==""){
-                    alert("No Test Step Description or Expected Results is filled for step number#"+j);
-                    return;
                 }
-                for(var i = 0; i < $("#searchbox"+j+"data textarea").length; i++){
-                    if($("#searchbox"+j+"data textarea:eq("+i+")").attr("data-id") == 'edit'){
-                        if(!validate_data($("#searchbox"+j+"data textarea:eq("+i+")").val())){
-                            $(".searchbox"+j+(i+1)+"data").css('background','#ff0000')
-                            $('html,body').animate({
-                                scrollTop: $(".searchbox"+j+(i+1)+"data").offset().top
-                            },500,function(){
-                                //$(".searchbox"+j+(i+1)+"data").effect("pulsate", { times:2 }, 500);
-                                $(".searchbox"+j+(i+1)+"data").stop().css("background-color", "transparent")
-                                    .animate({ backgroundColor: "#F00"}, 150)
-                                    .animate({ backgroundColor: "transparent"}, 150)
-                                    .animate({ backgroundColor: "#f00"}, 150)
-                                    .animate({ backgroundColor: "transparent"}, 150);
-                            });
-                            alert("There was an error in the FROM field of Step #"+j+", Data #" +(i+1));
-                            return;
-                        }
-                        if(!validate_data($("#searchbox"+j+"data div textarea:eq("+(i+1)+")").val())){
-                            $(".searchbox"+j+(i+1)+"data").css('background','#ff0000')
-                            $('html,body').animate({
-                                scrollTop: $(".searchbox"+j+(i+1)+"data").offset().top
-                            },500,function(){
-                                //$(".searchbox"+j+(i+1)+"data").effect("pulsate", { times:2 }, 500);
-                                $(".searchbox"+j+(i+1)+"data").stop().css("background-color", "transparent")
-                                    .animate({ backgroundColor: "#F00"}, 150)
-                                    .animate({ backgroundColor: "transparent"}, 150)
-                                    .animate({ backgroundColor: "#f00"}, 150)
-                                    .animate({ backgroundColor: "transparent"}, 150);
-                            });
-                            alert("There was an error in the TO field of Step #"+j+", Data #" +(i+1));
-                            return;
-                        }
-                        i++;
-                    }else{
-                        if(!validate_data($("#searchbox"+j+"data textarea:eq("+i+")").val())){
-                            $('html,body').animate({
-                                scrollTop: $(".searchbox"+j+(i+1)+"data").offset().top
-                            },1000,function(){
-                                //$(".searchbox"+j+(i+1)+"data").effect("pulsate", { times:2 }, 500);
-                                $(".searchbox"+j+(i+1)+"data").stop().css("background-color", "transparent")
-                                    .animate({ backgroundColor: "#F00"}, 150)
-                                    .animate({ backgroundColor: "transparent"}, 150)
-                                    .animate({ backgroundColor: "#f00"}, 150)
-                                    .animate({ backgroundColor: "transparent"}, 150);
-                            });
-                            alert("There was an error in Step #"+j+", Data #" +(i+1));
-                            return;
-                        }
-                    }
-                }
-            }
-
-            //Assoc bugs list
-            var defect_id = $("#defectid_txtbox").val()
-            var manual_tc_id = $("#id_txtbox").val()
-            var req_id = $("#reqid_txtbox").val();
-            //status
-            var status;if($("#enable_radio").hasClass("selected"))
-            /*if($('input[value="Production"]').attr('checked') == "checked")
-             status = "Ready"
-             else if($('input[value="Development"]').attr('checked') == "checked")
-             status = "Dev"
-             else if($('input[value="Forced-Manual"]').attr('checked') == "checked")
-             status = "Forced"
-              if($("#enable_radio").hasClass("selected"))
-                    status = "Ready"
-                else if($("#Disable_radio").hasClass("selected"))
-                    status = "Dev"
-                else if($("#Manual_radio").hasClass("selected"))
-                    status = "Forced"
-
-            var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
-            var _TC_Id = $('#TC_Id').html().substring($('#TC_Id').html().indexOf(": ")+2,$('#TC_Id').html().indexOf("</b>"))
-            var title = $("#title_txtbox").val();
-            var platform="";
-            platform = $("input[name=platform]:checked").val();
-            if(platform!="PC" && platform!="MAC"){
-                alert("Test Case Platform is not selected");
-                return;
-            }
-            var applic_client = []
-            $("input[name=dependancy]:checked").each(function() {
-                applic_client.push($(this).val())
             });
-            if(applic_client.length==0){
-                alert("Test Case Dependency is not given");
-                return;
-            }
-            //for(var i = 0; i < $("input[name=dependancy]:checked").length; i++)
-            var type = [];
-            $("input[name=type]:checked").each(function() {
-                type.push($(this).val())
-            });
-            if(type.length==0){
-                alert("Test Case type is not given");
-                return;
-            }
-
-            var priority = 'P' + $("#priotiy_select").val();
-
-            var tag = new Array();
-            for(var i = 0; i < $(".submitquery").length; i++){
-                tag.push($(".submitquery:eq("+i+")").html().replace(/&nbsp;/g,''));
-            }
-
-            var stepName = [];
-            var stepData = [];
-            var stepDescription=[];
-            var stepExpected=[];
-            var stepVerify=[];
-            for(var j = 1; j <= step_num; j++){
-                stepName[j-1] = $("#searchbox" + j).val();
-                stepDescription[j-1] = $("#searchbox" + j+"info").val();
-                stepExpected[j-1] = $("#searchbox" + j+"expected").val();
-                if($('#searchbox'+j+'verify').attr('checked')=='checked'){
-                    stepVerify[j-1]="yes";
-                }
-                else{
-                    stepVerify[j-1]="no";
-                }
-                for(var i = 0; i < $("#searchbox"+j+"data textarea").length; i++){
-                    if(stepData[j-1] === undefined){
-                        stepData[j-1] = [];
-                    }
-                    if($("#searchbox"+j+"data textarea:eq("+i+")").attr("data-id") == 'edit'){
-                        stepData[j-1].push([$("#searchbox"+j+"data textarea:eq("+i+")").val(),$("#searchbox"+j+"data div textarea:eq("+(i+1)+")").val()]);
-                        i++;
-                    }else{
-                        stepData[j-1].push($("#searchbox"+j+"data textarea:eq("+i+")").val());
-                    }
-                }
-            }
-            var stepDataSTR = [];
-            for(var i = 0; i < stepData.length;i++){
-                if(stepData[i] === undefined){
-                    stepDataSTR[i] = "%";
-                }else{
-                    var tempSTR = [];
-                    for(var j = 0; j < stepData[i].length; j++){
-                        if (stepData[i][j] instanceof Array) {
-                            tempSTR[j] = stepData[i][j].join("#");
-                        }else{
-                            tempSTR[j] = stepData[i][j];
-                        }
-                        console.log(tempSTR);
-                    }
-                    stepDataSTR[i] = tempSTR.join("%");
-                }
-                console.log(stepDataSTR[i]);
-            }
-            var query = indx != -1?"c":(indx2 != -1?"e":"o")
-            if(query == "c"){
-                $.get("Submit_New_TestCase/",{
-                    Section_Path:newSectionPath,
-                    Platform:Env,
-                    Manual_TC_Id:manual_tc_id,
-                    TC_Name:title,
-                    TC_Creator:'Test',
-                    Associated_Bugs_List:defect_id,
-                    Requirement_ID_List:req_id,
-                    TC_Type:type.join("|"),
-                    Tag_List:tag.join("|"),
-                    Dependency_List:applic_client.join("|"),
-                    Priority:priority,
-                    Steps_Data_List:stepDataSTR.join("|"),
-                    Steps_Name_List:stepName.join("|"),
-                    Steps_Description_List:stepDescription.join("|"),
-                    Steps_Expected_List:stepExpected.join("|"),
-                    Steps_Verify_List:stepVerify.join("|"),
-                    Status:"Dev"},function(data) {
-                    alert(data);
-                });
-            }else if(query == "e"){
-                $.get("Edit_TestCase",{
-                        Section_Path:newSectionPath,
-                        TC_Id:_TC_Id,
-                        Platform:Env,
-                        Manual_TC_Id:manual_tc_id,
-                        TC_Name:title,
-                        TC_Creator:'Test',
-                        Associated_Bugs_List:defect_id,
-                        Requirement_ID_List:req_id,
-                        Status:status,
-                        TC_Type:type.join("|"),
-                        Tag_List:tag.join("|"),
-                        Dependency_List:applic_client.join("|"),
-                        Priority:priority,
-                        Steps_Data_List:stepDataSTR.join("|"),
-                        Steps_Name_List:stepName.join("|"),
-                        Steps_Description_List:stepDescription.join("|"),
-                        Steps_Expected_List:stepExpected.join("|"),
-                        Steps_Verify_List:stepVerify.join("|")
-                    },
-                    function(data) {
-                        alert(data+" edited successfully");
-                    });
-            }
-
-        });*/
     }
-
 });
 /**************************************Database Works**************************************************/
 /***********Autocomplete Step name*****************/
@@ -1002,14 +859,14 @@ function AutoCompleteTestStep(){
                         '<span class="mail-status"></span>' +
                         '</a>');*/
                         fieldName.closest('tr').find('td:nth-child(4) span:eq(0)').addClass('unfilled');
-                      //  fieldName.closest('tr').find('td:nth-child(4)').css({'cursor':'pointer'});
-                    }
-                    /* else{
-                        fieldName.closest('tr').find('td:nth-child(4)').html("");
+                        fieldName.closest('tr').find('td:nth-child(4)').css({'cursor':'pointer'});
+                    }else{
+                        fieldName.closest('tr').find('td:nth-child(4) span:eq(0)').removeClass('unfilled');
+                        fieldName.closest('tr').find('td:nth-child(4) span:eq(0)').removeClass('filled');
                         fieldName.closest('tr').find('td:nth-child(4)').css({
                             'cursor':'none'
                         });
-                    }*/
+                    }
                     fieldName.closest('tr').find('td:nth-child(8)').html(ui.item[2]);
                     if(ui.item[3]!=""){
                         fieldName.closest('tr').find('td:nth-child(10) span:eq(0)').addClass('filled');
@@ -1152,12 +1009,12 @@ function reOrganize(){
         if(temptable.attr('data-id')=='edit'){
             var stringName=['From','To'];
             count=0;
+            var tempColumn=temptable.find('tbody:eq(0) tr:eq(0)');
             while(count<2){
-                var tempColumn=innercolumn;
-                tempColumn.find('td:eq(1) table:eq(0)').attr('id','step'+i+'data'+j+stringName[count]+'entrytable');
-                tempColumn.attr('id','step'+i+'data'+stringName[count]);
+                tempColumn.find('td:eq(1) table:eq(0)').attr('id','step'+i+stringName[count]+'entrytable');
+                tempColumn.attr('id','step'+i+'data1'+stringName[count]);
                 count++;
-                innercolumn=innercolumn.next();
+                tempColumn=tempColumn.next();
             }
         }
         else{
@@ -1196,7 +1053,8 @@ function editTypeRow(divname,stepno,dataset_num,stringName){
         '<td>'+stringName+'</td>' +
         '<td>' +
     /******************dataset nested table(start)************/
-        '<table id="step'+stepno+'data'+dataset_num+stringName+'entrytable"class="one-column-emphasis" width="100%" style="font-size:75%">' +
+        /*id="step'+stepno+'data'+dataset_num+stringName+'entrytable"*/
+        '<table id="step'+stepno+stringName+'entrytable" class="one-column-emphasis" width="100%" style="font-size:75%">' +
         '<tr>' +
         '<th width="33%">Field</th>' +
         '<th width="33%">Sub-Field</th>' +
