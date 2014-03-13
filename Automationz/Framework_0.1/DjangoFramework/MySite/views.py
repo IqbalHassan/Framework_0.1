@@ -145,15 +145,15 @@ def make_status_array(refined_list):
     return pass_list
 def ResultTableFetch():
     Conn=GetConnection()
-    interval="1"
-    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
+    #interval="1"
+    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') order by ter.teststarttime desc)"
     completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
     total_query=progress_query+' union all '+completed_query
     get_list=DB.GetData(Conn,total_query,False)
     get_list=set(get_list)
     total_run=make_array(get_list)
     print total_run
-    completed_query="select  ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Complete' order by ter.teststarttime desc"
+    """completed_query="select  ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Complete' order by ter.teststarttime desc"
     complete_list=DB.GetData(Conn,completed_query,False)
     complete_run=make_array(set(complete_list))
     cancelled_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Cancelled' order by ter.teststarttime desc"
@@ -171,18 +171,11 @@ def ResultTableFetch():
     complete_status=make_status_array(complete_run)
     cancelled_status=make_status_array(cancelled_run)
     progress_status=make_status_array(progress_run)
-    submitted_status=make_status_array(submitted_run)
+    submitted_status=make_status_array(submitted_run)"""
+    all_status=make_status_array(total_run)
     data={
           'total':total_run,
-          'complete':complete_run,
-          'cancelled':cancelled_run,
-          'progress':progress_run,
-          'submitted':submitted_run,
-          'all_status':all_status,
-          'complete_status':complete_status,
-          'progress_status':progress_status,
-          'cancelled_status':cancelled_status,
-          'submitted_status':submitted_status
+          'all_status':all_status
           }
     return data
 def zipdata(data_array,status_array):
@@ -200,17 +193,13 @@ def ResultPage(request):
     Column=["Run ID","Test Objective","Run Type","Assigned Tester","Report Status","Status","Duration","Product Version","Client"]
     template=get_template('Result.html')
     all_data=zipdata(data['total'], data['all_status'])
-    complete_data=zipdata(data['complete'],data['complete_status'])
+    """complete_data=zipdata(data['complete'],data['complete_status'])
     progress_data=zipdata(data['progress'],data['progress_status'])
     cancelled_data=zipdata(data['cancelled'],data['cancelled_status'])
-    submitted_data=zipdata(data['submitted'],data['submitted_status'])
+    submitted_data=zipdata(data['submitted'],data['submitted_status'])"""
     Dict={
         'column':Column,
-        'all':all_data,
-        'complete':complete_data,
-        'progress':progress_data,
-        'cancelled':cancelled_data,
-        'submitted':submitted_data
+        'all':all_data,        
         }
     variables=Context(Dict)
     output=template.render(variables)
