@@ -14,6 +14,8 @@ from django.db import connection
 #=======
 from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render_to_response
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
 #>>>>>>> 79295d8a9281fee2054c6e15061b281b41f17493
 
 from django.template import Context
@@ -2869,6 +2871,23 @@ def Get_Browsers(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Get_Users(request):
+    Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        username = request.GET.get(u'user', '').strip()
+        password = request.GET.get(u'pwd', '').strip()
+        #if username=='':
+        results = DB.GetData(Conn, "select username,password,full_name from user_info where username='"+username+"' and password='"+password+"'", False)
+
+    if len(results)>0:
+        message = "Logged In Successfully!"
+    else:
+        message = "User Not Found!"
+    json = simplejson.dumps(message)
+    return HttpResponse(json, mimetype='application/json')
+
 def Get_RunTypes(request):
     Conn = GetConnection()
     results = []
@@ -4966,15 +4985,19 @@ def ReRun(request):
     result={'col':Column,'list':test_case_list}
     result=simplejson.dumps(result)
     return HttpResponse(result,mimetype='application/json')       
-def LoginPage(request):
-    return render_to_response('login.html',{},context_instance=RequestContext(request))
-def processLogin(request):
+"""def LoginPage(request):
+    return render_to_response('login.html',{},context_instance=RequestContext(request))"""
+def ProcessLogin(request):
+    from django.contrib.auth.models import User
+    from django.http import HttpResponse
+    import AuthBackEnd
     if request.method=='POST':
-        username=request.POST['user_id']
-        password=request.POST['user_password']
+        username=request.POST['username']
+        password=request.POST['password']
         print username
         print password
-        user=authenticate(username=username,password=password)
+        if AuthBackEnd.Get_User(username):
+            user=AuthBackEnd.authenticate_user(username=username,password=password)
         print user
         if user is not None:
             if user.is_active:
@@ -4984,3 +5007,37 @@ def processLogin(request):
                 return HttpResponse("User Disabled")
         else:    
             return HttpResponse("User not present")
+        
+def checkusername(request):
+    from django.contrib.auth.models import User
+    from django.http import HttpResponse
+    username = request.GET.get(u'username', '')
+    if username:
+        u = User.objects.filter(username=username).count()
+        if u != 0:
+            res = "Already In Use"
+        else:
+            res = "OK"
+    else:
+        res = ""
+
+    return HttpResponse('%s' % res)
+
+def User_Login(request):
+    
+    if request.is_ajax() and request.method=='GET':
+        username=request.GET.get[u'username','']
+        password=request.GET.get[u'password','']
+    
+    Conn = GetConnection()
+    
+    user = DB.GetData(Conn,"select count(*) from user_info where username='"+username+"' and password='"+password+"'")
+    if(user==1):
+        message = "User Logged In"
+    else:
+        message = "User Not Found"
+        
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+
+

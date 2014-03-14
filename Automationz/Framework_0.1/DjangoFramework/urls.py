@@ -18,8 +18,8 @@ urlpatterns = patterns('',
     
     #Result Page
     #url(r'^Home/Search/$',Search),
-    url(r'^Home/Login/$',LoginPage),
-    url(r'^processLogin/$',processLogin),
+    #url(r'^Home/Login/$',LoginPage),
+    url(r'^User_Login/$',User_Login),
     url(r'^Home/Results/$',ResultPage),
     url(r'^Home/RunID/(?P<Run_Id>[^/]*)/$',Search2),
     url(r'^Home/RunID/(?P<Run_Id>[^/]*)/TC/(?P<TC_Id>[^/]*)/$',RunIDTestCases),
@@ -74,6 +74,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/GetTesters/$', Get_Testers),
     url(r'^Home/.*/GetRunTypes/$', Get_RunTypes),
     url(r'^Home/.*/GetStatus/$', Get_Status),
+    url(r'^Home/.*/GetUsers/$', Get_Users),
     url(r'^Home/ManageTestCases/DeleteExisting/$', DeleteExisting),
     #Test Set Management Section
     url(r'^Home/ManageTestCases/TestSet/$', TestSet),

@@ -33,6 +33,8 @@
     <script type="text/javascript" src="/site_media/Jquery/Local/Analysis.js"></script>
     <script type="text/javascript" src="/site_media/Jquery/Local/Execution_Report.js"></script>
     <script type="text/javascript" src="/site_media/Jquery/Local/PageAnimation.js"></script>
+    <script type="text/javascript" src="/site_media/Jquery/Local/Base.js"></script>
+    <script type="text/javascript" src="/site_media/Jquery/Local/jquery.session.js"></script>
 
 </head>
 
@@ -52,13 +54,13 @@
                 <li>
                     <a rel="prerender" href="" aria-haspopup="true"><span><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/manage1.png" width="16"> Manage</span></a>
                     <ul>
-                        <li><a rel="prefetch" href="/Home/ManageTestCases/Create/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/add.png" width="16"> Create New Test Case</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTestCases/CreateNew/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/add.png" width="16"> Create New Test Case</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/SearchEdit/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit.png" width="16"> Copy or Edit</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/CreateProductSections/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/manage4.png" width="16"> View & Organize Test Cases</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/TestSet/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/tag.png" width="16"> Manage Set & Tag</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/TestStep/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Manage Test Steps</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/DeleteExisting/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/delete1.png" width="16"> Delete Test Cases</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTestCases/CreateNew/">Create New Test Case (Under Development)</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTestCases/Create/">Create New Test Case (Old)</a></li>
                     </ul>
                 </li>
                 <li>
@@ -86,6 +88,94 @@
         </nav>
 
     </header>
+
+    <!--div class="ar login_popup">
+        <a class="buttonLog" href="#">Login</a>
+    </div-->
+    <div id="toppanel">
+        <div id="panel">
+            <div class="content clearfix">
+                <div class="left">
+                    <h1>Automation Solutionz</h1>
+                    <h2>Log In</h2>
+                    <!--p class="grey">You are free to use this login and registration system in you sites!</p>
+                    <p>You can log in with: <strong>admin/admin</strong></p>
+                    <h2>A Big Thanks</h2>
+                    <p class="grey">This tutorial was built on top of <a href="http://web-kreation.com/index.php/tutorials/nice-clean-sliding-login-panel-built-with-jquery" title="Go to site">Web-Kreation</a>'s amazing sliding panel.</p-->
+                </div>
+
+                <div class="left">
+                    <!-- Login Form -->
+                    <form class="clearfix" action="" method="post">
+                        <h1>User Login</h1>
+
+
+                        <label class="grey" for="username">Username:</label>
+                        <input class="field" type="text" name="username" id="username" value="" size="23">
+                        <label class="grey" for="password">Password:</label>
+                        <input class="field" type="password" name="password" id="password" size="23">
+                        <label><input name="rememberMe" id="rememberMe" type="checkbox" checked="checked" value="1"> &nbsp;Remember me</label>
+                        <div class="clear"></div>
+                        <input type="submit" name="submit" value="Login" class="bt_login">
+                        <span class="lost-pwd">Try it with admin/admin</span>
+                    </form>
+                </div>
+                <div class="left right">
+                    <!-- Register Form -->
+                    <form action="" method="post">
+                        <h1>Not a member yet? Sign Up!</h1>
+
+
+                        <label class="grey" for="username">Username:</label>
+                        <input class="field" type="text" name="username" id="username" value="" size="23">
+                        <label class="grey" for="email">Email:</label>
+                        <input class="field" type="text" name="email" id="email" size="23">
+                        <label>A password will be e-mailed to you.</label>
+                        <input type="submit" name="submit" value="Register" class="bt_register">
+                    </form>
+                </div>
+
+            </div>
+        </div> <!-- /login -->
+
+        <!-- The tab on top -->
+        <div class="tab">
+            <ul class="login">
+                <li class="left">&nbsp;</li>
+                <li class="welcome">Hello Guest!</li>
+                <li class="sep">|</li>
+                <li id="toggle">
+                    <a id="open" class="open" href="#">Log In | Register</a>
+                    <a id="close" style="display: none;" class="close" href="#">Close Panel</a>
+                </li>
+                <li class="right">&nbsp;</li>
+            </ul>
+        </div> <!-- / top -->
+
+    </div>
+
+    <div style="padding-top: 8%">
+    <a href="#loginmodal" class="button minibutton blue" id="modaltrigger">Modal Login</a>
+    </div>
+
+    <!-- modal -->
+    <div id="loginmodal" style="display:none;">
+        <h1 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">User Login</h1>
+        <form id="loginform" name="loginform" method="post">
+            <!--label for="username">Username:</label-->
+            <input type="text" name="username" id="username" class="textbox username" tabindex="1" placeholder="Username">
+
+            <br/><br/>
+
+            <!--label for="password">Password:</label-->
+            <input type="password" name="password" id="password" class="textbox password" tabindex="2" placeholder="Password">
+
+            <br/><br/>
+            <div class="center"><input type="submit" name="loginbtn" id="loginbtn" class="button minibutton primary" value="Log In" tabindex="3"></div>
+        </form>
+    </div>
+    <!-- modal -->
+
     <div id="outer_wrap">
 
 
@@ -108,6 +198,10 @@
 <script src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.js"></script>
 <script src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.min.js"></script>
 <script>
+    (function($){$.fn.extend({leanModal:function(options){var defaults={top:100,overlay:0.5,closeButton:null};var overlay=$("<div id='lean_overlay'></div>");$("body").append(overlay);options=$.extend(defaults,options);return this.each(function(){var o=options;$(this).click(function(e){var modal_id=$(this).attr("href");$("#lean_overlay").click(function(){close_modal(modal_id)});$(o.closeButton).click(function(){close_modal(modal_id)});var modal_height=$(modal_id).outerHeight();var modal_width=$(modal_id).outerWidth();
+        $("#lean_overlay").css({"display":"block",opacity:0});$("#lean_overlay").fadeTo(200,o.overlay);$(modal_id).css({"display":"block","position":"fixed","opacity":0,"z-index":11000,"left":50+"%","margin-left":-(modal_width/2)+"px","top":o.top+"px"});$(modal_id).fadeTo(200,1);e.preventDefault()})});function close_modal(modal_id){$("#lean_overlay").fadeOut(200);$(modal_id).css({"display":"none"})}}})})(jQuery);
+</script>
+<script>
     $(document).ready(function() {
         // Show or hide the sticky footer button
         $(window).scroll(function() {
@@ -126,6 +220,30 @@
         })
 
         //$( '#nav li:has(ul)' ).doubleTapToGo();
+
+        // Expand Panel
+        $("#open").click(function(){
+            $("div#panel").slideDown("slow");
+
+        });
+
+        // Collapse Panel
+        $("#close").click(function(){
+            $("div#panel").slideUp("slow");
+        });
+
+        // Switch buttons from "Log In | Register" to "Close Panel" on click
+        $("#toggle a").click(function () {
+            $("#toggle a").toggle();
+        });
+
+        //modal trigger
+        $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
+
+        if($(".welcome").text() == "Hello undefined!" || $(".welcome").text() == "Hello Guest!")
+        {
+            $( "#modaltrigger" ).trigger( 'click' , $(this).leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" }) );
+        }
     });
 </script>
 
