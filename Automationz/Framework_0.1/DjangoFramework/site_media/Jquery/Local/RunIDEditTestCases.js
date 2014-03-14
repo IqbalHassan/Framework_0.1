@@ -315,7 +315,7 @@ function header_print(column){
     var message="";
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+=('<td style="text-align: center">'+column[i]+'</td> ')
+        message+=('<th style="text-align: center">'+column[i]+'</th> ')
     }
     message+='</tr>';
     return message;
