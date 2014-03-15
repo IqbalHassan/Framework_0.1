@@ -5040,4 +5040,27 @@ def User_Login(request):
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
 
+def getProductSection(request):
+    Conn=GetConnection()
+    results=[]
+    if request.is_ajax():
+        if request.method=='GET':
+            section = request.GET.get(u'section', '')
+        if section == '':
+            results = DB.GetData(Conn, "select distinct subpath(section_path,0,1) from product_sections", False)
+            levelnumber = 0
+        else:
+            levelnumber = section.count('.') + 1
+            results = DB.GetData(Conn, "select distinct subltree(section_path,%d,%d) FROM product_sections WHERE section_path ~ '*.%s.*' and nlevel(section_path) > %d" % (levelnumber, levelnumber + 1, section, levelnumber), False)
+    results.insert(0, (str(levelnumber),))
+            
+                
+    result=simplejson.dumps(results)
+    return HttpResponse(result,mimetype='application/json')
+
+
+
+
+
+
 
