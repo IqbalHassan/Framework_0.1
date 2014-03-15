@@ -145,7 +145,7 @@
                 <li class="welcome">Hello Guest!</li>
                 <li class="sep">|</li>
                 <li id="toggle">
-                    <a id="open" class="open" href="#">Log In | Register</a>
+                    <a id="open" class="open" href="#loginmodal">Log In</a>
                     <a id="close" style="display: none;" class="close" href="#">Close Panel</a>
                 </li>
                 <li class="right">&nbsp;</li>
@@ -154,9 +154,11 @@
 
     </div>
 
-    <div style="padding-top: 8%">
+    <br/><br/>
+
+    <!--div style="padding-top: 8%">
     <a href="#loginmodal" class="button minibutton blue" id="modaltrigger">Modal Login</a>
-    </div>
+    </div-->
 
     <!-- modal -->
     <div id="loginmodal" style="display:none;">
@@ -179,7 +181,7 @@
     <div id="outer_wrap">
 
 
-        <br/>
+        <br/><br/>
 
         <section>
             {% block content %} {% endblock %}
@@ -222,7 +224,7 @@
         //$( '#nav li:has(ul)' ).doubleTapToGo();
 
         // Expand Panel
-        $("#open").click(function(){
+       /* $("#open").click(function(){
             $("div#panel").slideDown("slow");
 
         });
@@ -235,15 +237,15 @@
         // Switch buttons from "Log In | Register" to "Close Panel" on click
         $("#toggle a").click(function () {
             $("#toggle a").toggle();
-        });
+        });*/
 
         //modal trigger
-        $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
+        $('.open').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
 
-        if($(".welcome").text() == "Hello undefined!" || $(".welcome").text() == "Hello Guest!")
+        /*if($(".welcome").text() == "Hello undefined!" || $(".welcome").text() == "Hello Guest!")
         {
             $( "#modaltrigger" ).trigger( 'click' , $(this).leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" }) );
-        }
+        }*/
     });
 </script>
 

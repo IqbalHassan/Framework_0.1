@@ -62,18 +62,20 @@ $(document).ready(function(){
 
     if($.session.get('username')=="undefined")
     {
-        $(".welcome").text("Hello Guest!");
-        //$(".open").text("Log In | Register");
+        //$(".welcome").text("Hello Guest!");
+        //$(".open").text("Log In");
+        //$("#modaltrigger").show();
     }
     else
     {
         $(".welcome").text("Hello " + $.session.get('username') + "!");
         //$(".open").text("Log Out");
+        //$("#modaltrigger").hide();
     }
 
     if($(".welcome").text()=="Hello Guest!" || $(".welcome").text()=="Hello undefined!")
     {
-        $(".open").text("Log In | Register");
+        $(".open").text("Log In");
         /*$("#nav").click(function(){
             location.reload();
         });*/
@@ -83,7 +85,7 @@ $(document).ready(function(){
         $(".open").text("Log Out");
     }
 
-    if($(".open").text()=="Log In | Register")
+    if($(".open").text()=="Log In")
     {
         $('.open').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
     }
