@@ -328,7 +328,7 @@
                 };
             });
 
-            $("#ms_button").live('click',function(){
+            $("#ms_button").live('click',function(e){
                 var operation=$('#operation_milestone option:selected').val();
                 var inputName=$('#msinput').val();
                 var inputName2=$('#msinput2').val();
@@ -344,20 +344,23 @@
                     $('#error_msg').css({'display':'block'});
                 }
                 else if(operation=='2' && inputName!='' && inputName2!=""){
-                    var inputName2=$('#msinput2').val();
+                    //var inputName2=$('#msinput2').val();
 
-                    $.get("Milestone_Process",{
-                        operation:operation,
-                        inputName:inputName,
-                        inputName2:inputName2
-                    },function(data){
-                        //console.log(data);
-                        if(data){
-                            $('#error_msg').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                    $.ajax({
+                        url:'Milestone_Process/',
+                        dataType : "json",
+                        type : "GET",
+                        data : {
+                            operation:operation,
+                            inputName:inputName,
+                            inputName2:inputName2
+                        },
+                        success: function( result ) {
+                            $('#error_msg').html('<b style="color: #109F40">'+result+'<br>Page will be refreshed in 3 seconds to change effect</b>');
                             $('#error_msg').slideDown('slow');
                             setTimeout(function(){window.location='/Home/RunTest/';},4000);
-                        }
-                        else{
+                        },
+                        error: function(result){
                             var error_message="<b style='color: #ff0000'>Error in database</b>";
                             $('#error_msg').html(error_message);
                             $('#error_msg').css({'display':'block'});
@@ -366,23 +369,27 @@
                 }
                 else if((operation!='' && inputName!='' && inputName2=="")){
 
-                    $.get("Milestone_Process",{
-                        operation:operation,
-                        inputName:inputName
-                    },function(data){
-                        console.log(data);
-                        if(data){
-                            $('#error_msg').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                    $.ajax({
+                        url:'Milestone_Process/',
+                        dataType : "json",
+                        type : "GET",
+                        data : {
+                            operation:operation,
+                            inputName:inputName
+                        },
+                        success: function( result ) {
+                            $('#error_msg').html('<b style="color: #109F40">'+result+'<br>Page will be refreshed in 3 seconds to change effect</b>');
                             $('#error_msg').slideDown('slow');
                             setTimeout(function(){window.location='/Home/RunTest/';},4000);
-                        }
-                        else{
+                        },
+                        error: function(result){
                             var error_message="<b style='color: #ff0000'>Error in database</b>";
                             $('#error_msg').html(error_message);
                             $('#error_msg').css({'display':'block'});
                         }
                     });
                 }
+                return e.preventDefault();
             });
 
         })

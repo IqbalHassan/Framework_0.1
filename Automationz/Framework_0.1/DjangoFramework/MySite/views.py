@@ -3626,35 +3626,35 @@ def Milestone_Auto(request):
 
 def Milestone_Process(request):
 
-    if request.is_ajax():
-        if request.method=='GET':
-            operation=request.GET.get(u'operation','')
-            input1=request.GET.get(u'inputName','')  
+    #if request.is_ajax():
+    if request.method=='GET':
+        operation=request.GET.get(u'operation','')
+        input1=request.GET.get(u'inputName','')  
 
-        Conn=GetConnection()
-        if operation=="1":
-            count = DB.GetData(Conn, "Select count(value) from config_values where type='milestone' and value="+input1+"")
-            if (count[0]>0):
-                test = DB.InsertNewRecordInToTable(Conn, 'config_values', type='milestone',value=input1)
-                if test==True:
-                    message="Milestone '"+input1+"' is created."
-                else:
-                    message="Milestone '"+input1+"' is not created."
-        elif operation=="3":
-            test = DB.DeleteRecord(Conn, 'config_values', type='milestone',value=input1)
+    Conn=GetConnection()
+    if operation=='1':
+        count = DB.GetData(Conn, "Select count(value) from config_values where type='milestone' and value="+input1+"")
+        if (count[0]>0):
+            test = DB.InsertNewRecordInToTable(Conn, 'config_values', type='milestone',value=input1)
             if test==True:
-                message="Milestone '"+input1+"' is deleted."
+                message="Milestone '"+input1+"' is created."
             else:
-                message="Milestone '"+input1+"' is not deleted."
-        elif operation=="2":
-            input2=request.GET.get(u'inputName2','')  
-            test = DB.UpdateRecordInTable(Conn, 'config_values', "where type='milestone' and value="+input1+"", type='milestone', value=input2)
-            if test==True:
-                    message="Milestone '"+input1+"' is updated to '"+input1+"'."
-            else:
-                message="Milestone '"+input1+"' is not updated."
+                message="Milestone '"+input1+"' is not created."
+    elif operation=='3':
+        test = DB.DeleteRecord(Conn, 'config_values', type='milestone',value=input1)
+        if test==True:
+            message="Milestone '"+input1+"' is deleted."
         else:
-            message="Input Fields are empty"
+            message="Milestone '"+input1+"' is not deleted."
+    elif operation=='2':
+        input2=request.GET.get(u'inputName2','')  
+        test = DB.UpdateRecordInTable(Conn, 'config_values', "where type='milestone' and value="+input1+"", type='milestone', value=input2)
+        if test==True:
+                message="Milestone '"+input1+"' is updated to '"+input1+"'."
+        else:
+            message="Milestone '"+input1+"' is not updated."
+    else:
+        message="Input Fields are empty"
         
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
