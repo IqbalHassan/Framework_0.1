@@ -42,9 +42,11 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
                     + "<tr>"
                         + "<td>"
                             + "<label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'>"
-                            + Label
+                            //+ Label
                             + " </b></label>"
-                            + "<input class = 'ui-corner-all textbox' id='searchbox' style = 'margin:5px' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' />"
+                            + "<input class = 'ui-corner-all textbox' id='searchbox' style = 'margin:5px' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' placeholder='" +
+                             Label +
+                            "'/>"
                         + "</td>"
                     + "</tr>"
 
@@ -204,8 +206,8 @@ function PerformSearch() {
 												$('#RunTestResultTable tr>td:nth-child(4)').each(function(){
 													var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 													
-													$(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50"/>');
-													$(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/edit_case.png" height="50"/>');
+													$(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/>');
+													$(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25"/>');
 												
 													indx++;
 												});

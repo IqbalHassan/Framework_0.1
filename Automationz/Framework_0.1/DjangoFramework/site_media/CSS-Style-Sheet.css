@@ -237,7 +237,7 @@ p.flip:ACTIVE,p.flip:HOVER {
     cursor: pointer;
     outline: none;
     font-weight: bold;
-    color: black;
+    color: #505050;
     font-family: 'Lato', 'Arial', sans-serif;
     -webkit-font-smoothing: antialiased;
 }
@@ -356,9 +356,9 @@ p.flip:ACTIVE,p.flip:HOVER {
 }
 /* =================== Text Class ========================*/
 .Text {
-    font-family: monospace;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 18px;
-    color: black;
+    color: #707070;
 }
 
 /* =================== Loading Text ========================*/
@@ -369,7 +369,13 @@ p.flip:ACTIVE,p.flip:HOVER {
     text-shadow: 2px 1px 1px black;
     letter-Spacing: 15px;
 }
-
+a {
+    color: #4183c4;
+    text-decoration: none;
+}
+a:hover, a:focus{
+    text-decoration: underline;
+}
 /* =================== Test Case Creation/Edit ========================*/
 .new_tc_form {
     margin-top: 10px;
@@ -412,6 +418,25 @@ p.flip:ACTIVE,p.flip:HOVER {
 }
 
 .buttonCustom:HOVER {
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
+    opacity: 0.8;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.buttonPic{
+    text-align: center;
+    /*text-shadow: white;*/
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+    opacity: 1;
+    color: white;
+    background-color: #fff;
+    padding: 5px;
+    /*border: 1px #000 solid grey;*/
+    font-family: "Segoe UI",Helvetica,Arial,sans-serif;
+}
+
+.buttonPic:HOVER {
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
     opacity: 0.8;
     cursor: pointer;
@@ -2899,4 +2924,29 @@ a:hover{
     -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), 0 0 7px #96c7ec;
     -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), 0 0 7px #96c7ec;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), 0 0 7px #96c7ec;
+}
+/*******************tooltip********************/
+a.tooltip::before {
+    content: attr(data-tip) ;
+
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    position:absolute;
+    z-index: 999;
+    white-space:nowrap;
+    bottom:9999px;
+    left: 50%;
+    background:#000;
+    color:#e0e0e0;
+    padding:0px 7px;
+    line-height: 24px;
+    height: 24px;
+
+    opacity: 0;
+    transition:opacity 0.4s ease-out;
+}
+
+a.tooltip:hover::before {
+    opacity: 1;
+    bottom:-27.5px;
 }

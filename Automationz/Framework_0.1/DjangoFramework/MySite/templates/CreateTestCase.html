@@ -86,9 +86,9 @@
     <table>
         <tr>
             <td class="tc_form_label_col">
-                <span class="tc_form_required_field">*</span><b class="Text">Section:</b>
+                <!--span class="tc_form_required_field">*</span--><b class="Text">Section:</b>
             </td>
-            <td class="tc_form_input_col" id="sectiongroup" align="left">
+            <td class="tc_form_input_col" id="sectiongroup">
                 <select class="section wrapper-dropdown-3" data-level="" id="1">
                     <option>Choose...</option>
                 </select>
@@ -116,11 +116,11 @@
         <table>
             <tr>
                 <td class="tc_form_label_col">
-                    <span class="tc_form_required_field">*</span><b class="Text">Priority:</b> <br>
+                    <!--span class="tc_form_required_field">*</span--><b class="Text">Priority:</b> <br>
                 </td>
                 <td class="tc_form_input_col">
                     <div style="text-align: center;">
-                        <select id="priotiy_select"  class="wrapper-dropdown-3" name="priority" style="width:100%">
+                        <select id="priotiy_select"  class="wrapper-dropdown-3" name="priority" style="float: left">
                             <option value="1">1 (Highest)</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -152,7 +152,7 @@
     <table>
         <tr>
             <td class="tc_form_label_col">
-                <label><span class="tc_form_required_field">*</span><b class="Text">Platform:</b></label>
+                <label><!--span class="tc_form_required_field">*</span--><b class="Text">Platform:</b></label>
             </td>
             <td class="tc_form_input_col">
                 <table width="100%">
@@ -177,7 +177,7 @@
     <table>
         <tr>
             <td class="tc_form_label_col">
-                <label><span class="tc_form_required_field">*</span><b class="Text">Browser:</b></label>
+                <label><!--span class="tc_form_required_field">*</span--><b class="Text">Browser:</b></label>
             </td>
             <td class="tc_form_input_col">
                 <!-- select class="browser" multiple="multiple" data-level="" id="1">
@@ -196,7 +196,7 @@
     <table>
         <tr>
             <td class="tc_form_label_col">
-                <span class="tc_form_required_field">*</span><b class="Text">Type:</b>
+                <!--span class="tc_form_required_field">*</span--><b class="Text">Type:</b>
             </td>
             <td class="tc_form_input_col">
                 <table width="100%">
@@ -329,19 +329,20 @@
         <div class="sunken-menu vertical-right repo-nav js-repo-nav js-repository-container-pjax js-octicon-loaders">
             <div class="sunken-menu-contents">
                 <ul class="sunken-menu-group">
-                    <li class="tooltipped leftwards" original-title="Create Step">
-                        <a href="/Home/ManageTestCases/TestStep/" aria-label="Create Step" class="js-selected-navigation-item sunken-menu-item">
-                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/plus.png" width="16" title="Create New Step">
-                        </a>      </li>
+                    <li id="add_step_tip" class="tooltipped tooltip leftwards" original-title="Create Step">
+                        <a href="/Home/ManageTestCases/TestStep/" data-tip="Create New Step" aria-label="Create Step" class="js-selected-navigation-item sunken-menu-item tooltip">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/plus.png" width="16">
+                        </a>
+                    </li>
 
                     <li class="tooltipped leftwards" original-title="Edit Step">
-                        <a href="/Home/ManageTestCases/TestStep/" aria-label="Edit Step" class="js-selected-navigation-item sunken-menu-item js-disable-pjax">
-                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit.png" width="16" title="Edit Test Step">
+                        <a href="/Home/ManageTestCases/TestStep/" aria-label="Edit Test Step" data-tip="Edit Step" class="tooltip js-selected-navigation-item sunken-menu-item js-disable-pjax">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit.png" width="16">
                         </a>        </li>
 
                     <li class="tooltipped leftwards" original-title="Manage Set & Tag">
-                        <a href="/Home/ManageTestCases/TestSet/" aria-label="Tag" class="js-selected-navigation-item sunken-menu-item">
-                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/tag.png" width="16" title="Manage Set & Tag">
+                        <a href="/Home/ManageTestCases/TestSet/" aria-label="Tag" data-tip="Manage Set & Tag" class="tooltip js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/tag.png" width="16">
                         </a>      </li>
 
                 </ul>
@@ -351,13 +352,13 @@
                 <ul class="sunken-menu-group">
 
                     <li class="tooltipped leftwards" original-title="Bundle Report">
-                        <a href="/Home/BundleReport/" aria-label="Bundle Report" class="js-selected-navigation-item sunken-menu-item">
-                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report.png" width="16" title="Bundle Report">
+                        <a href="/Home/BundleReport/" aria-label="Bundle Report" data-tip="Bundle Report" class="tooltip js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report.png" width="16">
                         </a>      </li>
 
                     <li class="tooltipped leftwards" original-title="Test Type Status">
-                        <a href="/Home/TestTypeStatus/" aria-label="Test Type Status" class="js-selected-navigation-item sunken-menu-item">
-                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/status.png" width="16" title="Test Type Status">
+                        <a href="/Home/TestTypeStatus/" aria-label="Test Type Status" data-tip="Test Type Status" class="tooltip js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/status.png" width="16">
                         </a>      </li>
                 </ul>
 

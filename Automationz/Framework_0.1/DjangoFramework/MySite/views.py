@@ -683,7 +683,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         temp=tuple(temp)
         TempTableData.append(temp)
     RefinedData=TempTableData
-    Heading = ['TestCase_ID', 'TestCase_Name','TestCase_Type','Platform']
+    Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform']
 
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
     results = {'Heading':Heading, 'TableData':RefinedData}
