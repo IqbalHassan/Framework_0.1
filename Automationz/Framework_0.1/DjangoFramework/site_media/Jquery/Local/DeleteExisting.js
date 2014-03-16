@@ -52,9 +52,11 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 						+ "<tr>"
 							+ "<td>"
 								+ "<label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'>"
-								+ Label
+								//+ Label
 								+ " </b></label>"
-								+ "<input class = 'ui-corner-all textbox' id='searchbox' style = 'margin:5px; width:200px;' type='text' title = 'Please Type Keyword and Click On that to add to query' name='TC_Id' />"
+								+ "<input class = 'ui-corner-all textbox' id='searchbox' style = 'margin:5px;' type='text' title = 'Please Type Keyword and Click On that to add to query' name='TC_Id' placeholder='" +
+                                Label +
+                                "' />"
 							+ "</td>"
 						+ "</tr>"
 						

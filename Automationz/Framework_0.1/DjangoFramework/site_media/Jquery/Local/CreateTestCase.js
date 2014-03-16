@@ -21,6 +21,7 @@ $(document).ready(function() {
     /*****************Shetu's Function************************/
     AutoCompleteTag();
     /*****************End Shetu************************/
+
     URL = window.location.pathname
     console.log("url:"+URL);
     indx = URL.indexOf("CreateNew");
