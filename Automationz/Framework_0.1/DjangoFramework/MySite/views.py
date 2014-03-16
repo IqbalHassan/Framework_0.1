@@ -84,7 +84,6 @@ def HomePage(req):
     return HttpResponse(output)
 
 def RunTest(request):
-
     templ = get_template('RunTest.html')
     variables = Context({ })
     output = templ.render(variables)
@@ -5044,26 +5043,43 @@ def User_Login(request):
     return HttpResponse(result,mimetype='application/json')
 
 def getProductSection(request):
-    Conn=GetConnection()
-    results=[]
+    """Conn=GetConnection()
     if request.is_ajax():
         if request.method=='GET':
-            section = request.GET.get(u'section', '')
+            section=request.GET.get(u'section','')
+            if section=="":
+                main_result=[]
+                query="select distinct section_path from product_sections"
+                section_path=DB.GetData(Conn,query)
+                for each in section_path:
+                    main_result.append((section_path.split('.')[0],[]))
+                    
+                print section_path"""
+    """Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        section = request.GET.get(u'section', '')
         if section == '':
+            final_result=[]
             results = DB.GetData(Conn, "select distinct subpath(section_path,0,1) from product_sections", False)
             levelnumber = 0
-        else:
-            levelnumber = section.count('.') + 1
-            results = DB.GetData(Conn, "select distinct subltree(section_path,%d,%d) FROM product_sections WHERE section_path ~ '*.%s.*' and nlevel(section_path) > %d" % (levelnumber, levelnumber + 1, section, levelnumber), False)
-    results.insert(0, (str(levelnumber),))
-            
-                
-    result=simplejson.dumps(results)
+            for each in results:
+                top_level_query="select nlevel(section_path) from product_sections where section_path ~ '*.%s.*' order by nlevel(section_path) desc"%each[0]    
+                top_level=DB.GetData(Conn,top_level_query)
+                print top_level
+                levelnumber = section.count('.') + 1
+                results_sub = DB.GetData(Conn, "select distinct subltree(section_path,%d,%d) FROM product_sections WHERE section_path ~ '*.%s.*' and nlevel(section_path) > %d" % (levelnumber, levelnumber + 1, each[0], levelnumber), False)
+                temp=[]
+                for eachitem in results_sub:
+                    temp.append(eachitem[0])
+                final_result.append((each[0],temp))
+            print final_result"""
+    Conn=GetConnection()
+    if request.is_ajax():
+        if request.method=='GET':
+            section=request.GET.get(u'section','')
+            query="select distinct subpath(section_path,0,1) from product_sections"
+            section_path=DB.GetData(Conn,query)
+    result=simplejson.dumps(section_path)
     return HttpResponse(result,mimetype='application/json')
-
-
-
-
-
-
-
