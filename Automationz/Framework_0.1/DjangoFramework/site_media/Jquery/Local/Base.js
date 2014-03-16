@@ -33,10 +33,15 @@ $(document).ready(function(){
                      //if(i == 0)return;
                      $(".username[data-level='']").append($('<option>').text(value).attr('value', value));
                      });*/
-                    if(json=="Logged In Successfully!")
+                    if(json!="User Not Found!")
                     {
-                        location.reload();
+                        //location.reload();
                         $.session.set('username', user);
+                        $.session.set('fullname', json);
+                        $.session.set('log', 'logged');
+                        //setTimeout(function(){window.location='/Home/';},4000);
+                        window.location.href = '/Home/';
+                        $(".welcome").text($.session.get('fullname'));
                     }
                 },
                 error: function(json){
@@ -60,32 +65,35 @@ $(document).ready(function(){
     });
 
 
-    if($.session.get('username')=="undefined")
+    if($.session.get('log')!='logged' && $(this).attr('title')!='Log In')
     {
         //$(".welcome").text("Hello Guest!");
         //$(".open").text("Log In");
         //$("#modaltrigger").show();
+        setTimeout(function(){window.location='/Home/Login/';},4000);
     }
-    else
+    $(".welcome").text($.session.get('fullname'));
+    /*else
     {
-        $(".welcome").text("Hello " + $.session.get('username') + "!");
+
+        //$(".welcome").text(user);
         //$(".open").text("Log Out");
         //$("#modaltrigger").hide();
-    }
+    }*/
 
-    if($(".welcome").text()=="Hello Guest!" || $(".welcome").text()=="Hello undefined!")
+    /*if($(".welcome").text()=="Hello Guest!" || $(".welcome").text()=="Hello undefined!")
     {
         $(".open").text("Log In");
-        /*$("#nav").click(function(){
+        $("#nav").click(function(){
             location.reload();
-        });*/
+        });
     }
     else
     {
         $(".open").text("Log Out");
-    }
+    }*/
 
-    if($(".open").text()=="Log In")
+    /*if($(".open").text()=="Log In")
     {
         $('.open').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
     }
@@ -96,6 +104,15 @@ $(document).ready(function(){
             $.session.clear();
             location.reload();
         });
-    }
+    }*/
+    $(".logout").click(function(){
+        $.session.remove('username');
+        $.session.remove('fullname');
+        $.session.remove('log');
+        //$.session.clear();
+        location.reload();
+        //window.location.href = '/Home/Login/';
+        $(".welcome").text("");
+    });
 
-})
+});

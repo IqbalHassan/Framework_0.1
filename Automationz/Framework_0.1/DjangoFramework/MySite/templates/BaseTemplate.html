@@ -49,9 +49,9 @@
         <nav id="nav" role="navigation">
             <a href="#nav" title="Show navigation">Show navigation</a>
             <a href="#" title="Hide navigation">Hide navigation</a>
-            <ul>
-                <li><a rel="prerender" href="/Home/"><img alt="Octocat-spinner-32" class="mini-loader" height="18" src="/site_media/Logo.ico" width="20"></a></li>
-                <li>
+            <ul style="width:100%">
+                <li style="width:4%"><a rel="prerender" href="/Home/"><img alt="Octocat-spinner-32" class="mini-loader" height="18" src="/site_media/Logo.ico" width="20"></a></li>
+                <li style="width:16%">
                     <a rel="prerender" href="" aria-haspopup="true"><span><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/manage1.png" width="16"> Manage</span></a>
                     <ul>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/CreateNew/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/add.png" width="16"> Create New Test Case</a></li>
@@ -63,7 +63,7 @@
                         <li><a rel="prefetch" href="/Home/ManageTestCases/Create/">Create New Test Case (Old)</a></li>
                     </ul>
                 </li>
-                <li>
+                <li style="width:16%">
                     <a rel="prerender" href = "/Home/RunTest/"><span><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/run1.gif" width="16"> Run</span></a>
                     <ul>
                         <li><a rel="prefetch" href="/Home/RunTest/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/pc1.png" width="16"> PC</a></li>
@@ -71,8 +71,8 @@
                     </ul>
                 </li>
 
-                <li><a rel="prefetch" href = "/Home/Results/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/result4.png" width="16"> Result</a></li>
-                <li>
+                <li style="width:16%"><a rel="prefetch" href = "/Home/Results/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/result4.png" width="16"> Result</a></li>
+                <li style="width:16%">
                     <a rel="prerender" href="" aria-haspopup="true"><span><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report3.png" width="16"> Reports</span></a>
                     <ul>
                         <li><a rel="prefetch" href="/Home/BundleReport/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report2.png" width="16"> Bundle Report</a></li>
@@ -83,7 +83,9 @@
                         <li><a rel="prerender" href = "/Home/Performance/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/automated.png" width="16"> Performance</a></li>
                     </ul>
                 </li>
-                <li><a rel="prefetch" href="/Home/Admin/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/admin1.png" width="16"> Admin</a></li>
+                <li style="width:16%"><a rel="prefetch" href="/Home/Admin/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/admin1.png" width="16"> Admin</a></li>
+                <li style="width:12%"><a rel="prefetch" class="welcome" href=""></a></li>
+                <li style="width:4%"><a rel="prefetch" href=""><img alt="Octocat-spinner-32" class="mini-loader logout" height="16" src="/site_media/logout.png" width="16"></a></li>
             </ul>
         </nav>
 
@@ -92,7 +94,7 @@
     <!--div class="ar login_popup">
         <a class="buttonLog" href="#">Login</a>
     </div-->
-    <div id="toppanel">
+    <!--div id="toppanel">
         <div id="panel">
             <div class="content clearfix">
                 <div class="left">
@@ -101,11 +103,11 @@
                     <!--p class="grey">You are free to use this login and registration system in you sites!</p>
                     <p>You can log in with: <strong>admin/admin</strong></p>
                     <h2>A Big Thanks</h2>
-                    <p class="grey">This tutorial was built on top of <a href="http://web-kreation.com/index.php/tutorials/nice-clean-sliding-login-panel-built-with-jquery" title="Go to site">Web-Kreation</a>'s amazing sliding panel.</p-->
+                    <p class="grey">This tutorial was built on top of <a href="http://web-kreation.com/index.php/tutorials/nice-clean-sliding-login-panel-built-with-jquery" title="Go to site">Web-Kreation</a>'s amazing sliding panel.</p>
                 </div>
 
                 <div class="left">
-                    <!-- Login Form -->
+
                     <form class="clearfix" action="" method="post">
                         <h1>User Login</h1>
 
@@ -121,7 +123,7 @@
                     </form>
                 </div>
                 <div class="left right">
-                    <!-- Register Form -->
+
                     <form action="" method="post">
                         <h1>Not a member yet? Sign Up!</h1>
 
@@ -136,9 +138,9 @@
                 </div>
 
             </div>
-        </div> <!-- /login -->
+        </div>
 
-        <!-- The tab on top -->
+
         <div class="tab">
             <ul class="login">
                 <li class="left">&nbsp;</li>
@@ -150,33 +152,32 @@
                 </li>
                 <li class="right">&nbsp;</li>
             </ul>
-        </div> <!-- / top -->
+        </div>
 
-    </div>
+    </div-->
 
-    <br/><br/>
 
     <!--div style="padding-top: 8%">
     <a href="#loginmodal" class="button minibutton blue" id="modaltrigger">Modal Login</a>
     </div-->
 
     <!-- modal -->
-    <div id="loginmodal" style="display:none;">
+    <!--div id="loginmodal" style="display:none;">
         <h1 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">User Login</h1>
         <form id="loginform" name="loginform" method="post">
-            <!--label for="username">Username:</label-->
+
             <input type="text" name="username" id="username" class="textbox username" tabindex="1" placeholder="Username" style="width: 95%">
 
             <br/><br/>
 
-            <!--label for="password">Password:</label-->
+
             <input type="password" name="password" id="password" class="textbox password" tabindex="2" placeholder="Password" style="width: 95%">
 
             <br/><br/>
             <div class="center"><input type="submit" name="loginbtn" id="loginbtn" class="button minibutton primary" value="Log In" tabindex="3"></div>
         </form>
-    </div>
-    <!-- modal -->
+    </div-->
+
 
     <div id="outer_wrap">
 
@@ -240,7 +241,7 @@
         });*/
 
         //modal trigger
-        $('.open').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
+        //$('.open').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
 
         /*if($(".welcome").text() == "Hello undefined!" || $(".welcome").text() == "Hello Guest!")
         {

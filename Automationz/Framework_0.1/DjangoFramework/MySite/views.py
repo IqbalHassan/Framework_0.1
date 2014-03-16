@@ -2879,12 +2879,13 @@ def Get_Users(request):
         username = request.GET.get(u'user', '').strip()
         password = request.GET.get(u'pwd', '').strip()
         #if username=='':
-        results = DB.GetData(Conn, "select username,password,full_name from user_info where username='"+username+"' and password='"+password+"'", False)
+        results = DB.GetData(Conn, "select full_name from user_info where username='"+username+"' and password='"+password+"'", False)
 
     if len(results)>0:
-        message = "Logged In Successfully!"
+        message = results[0]
     else:
         message = "User Not Found!"
+
     json = simplejson.dumps(message)
     return HttpResponse(json, mimetype='application/json')
 
@@ -4985,9 +4986,11 @@ def ReRun(request):
     result={'col':Column,'list':test_case_list}
     result=simplejson.dumps(result)
     return HttpResponse(result,mimetype='application/json')       
-"""def LoginPage(request):
-    return render_to_response('login.html',{},context_instance=RequestContext(request))"""
-def ProcessLogin(request):
+
+def LoginPage(request):
+    return render_to_response('login.html',{},context_instance=RequestContext(request))
+
+"""def ProcessLogin(request):
     from django.contrib.auth.models import User
     from django.http import HttpResponse
     import AuthBackEnd
@@ -5021,7 +5024,7 @@ def checkusername(request):
     else:
         res = ""
 
-    return HttpResponse('%s' % res)
+    return HttpResponse('%s' % res)"""
 
 def User_Login(request):
     
@@ -5031,8 +5034,8 @@ def User_Login(request):
     
     Conn = GetConnection()
     
-    user = DB.GetData(Conn,"select count(*) from user_info where username='"+username+"' and password='"+password+"'")
-    if(user==1):
+    user = DB.GetData(Conn,"select full_name from user_info where username='"+username+"' and password='"+password+"'")
+    if(len(user)==1):
         message = "User Logged In"
     else:
         message = "User Not Found"

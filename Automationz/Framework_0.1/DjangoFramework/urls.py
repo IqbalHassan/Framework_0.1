@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     
     #Result Page
     #url(r'^Home/Search/$',Search),
-    #url(r'^Home/Login/$',LoginPage),
+    url(r'^Home/Login/$',LoginPage),
     url(r'^User_Login/$',User_Login),
     url(r'^Home/Results/$',ResultPage),
     url(r'^Home/RunID/(?P<Run_Id>[^/]*)/$',Search2),
