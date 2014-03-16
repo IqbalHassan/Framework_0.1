@@ -42,6 +42,7 @@ $(document).ready(function(){
                         //setTimeout(function(){window.location='/Home/';},4000);
                         window.location.href = '/Home/';
                         $(".welcome").text($.session.get('fullname'));
+                        //$("#nav").show();
                     }
                 },
                 error: function(json){
@@ -70,9 +71,12 @@ $(document).ready(function(){
         //$(".welcome").text("Hello Guest!");
         //$(".open").text("Log In");
         //$("#modaltrigger").show();
-        setTimeout(function(){window.location='/Home/Login/';},4000);
+        //setTimeout(function(){window.location='/Home/Login/';},4000);
+        window.location.href = '/Home/Login/'
+        //$("#nav").hide();
     }
     $(".welcome").text($.session.get('fullname'));
+
     /*else
     {
 
