@@ -4837,7 +4837,10 @@ def GetOS(request):
                 temp.append(browser)
                 temp=tuple(temp)
                 browser_data.append(temp)
-    results={'os':refined_list,'browser':browser_data}
+            productType='Product Version'
+            product_version_query="select value from config_values where type='%s'" %productType
+            product_version=DB.GetData(Conn,product_version_query)
+    results={'os':refined_list,'browser':browser_data,'productVersion':product_version}
     results=simplejson.dumps(results)
     return HttpResponse(results,mimetype='application/json')
 def Auto_MachineName(request):
@@ -4855,7 +4858,7 @@ def CheckMachine(request):
             name=request.GET.get(u'name','')
             print name
             Conn=GetConnection()
-            query="select os_name,os_version,os_bit,machine_ip,client from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s'"%name
+            query="select os_name,os_version,os_bit,machine_ip,client,product_version from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s' order by last_updated_time desc limit 1"%name
             machine_info=DB.GetData(Conn,query,False)
             print machine_info
     result=simplejson.dumps(machine_info)
@@ -4870,6 +4873,7 @@ def AddManualTestMachine(request):
             browser=request.GET.get(u'browser','').strip()
             browser_version=request.GET.get(u'browser_version','').strip()
             machine_ip=request.GET.get(u'machine_ip','').strip()
+            product_version=request.GET.get(u'product_version','').strip()
             print machine_name
             print os_name
             print os_version
@@ -4895,7 +4899,7 @@ def AddManualTestMachine(request):
                 machine_os=os_name+' '+os_version+' - '+os_bit
                 Client=browser+'('+browser_version+';'+os_bit+' Bit)'
                 updated_time=TimeStamp("string")
-                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
+                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip,'product_version':product_version.strip()}
                 tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
                 if tes2==True:
                     message="Machine is updated successfully"
@@ -4907,7 +4911,7 @@ def AddManualTestMachine(request):
                 updated_time=TimeStamp("string")
                 Dict={'user_names':machine_name.strip(),'user_level':'Manual','email':machine_name+'@machine.com'}
                 tes1= DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
-                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
+                Dict={'tester_id':machine_name.strip(),'product_version':product_version,'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
                 tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
                 if(tes1==True and tes2==True):
                     message="Machine Successfully Registered"
