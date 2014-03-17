@@ -18,7 +18,7 @@ $(document).ready(function(){
             }
         }
     });*/
-    var dataList=[];
+    /*var dataList=[];
     $.get('GetProductSection/',{section:""},function(data){
         dataList=configure_data(data);
         $('#jstree_container').tree({
@@ -38,7 +38,7 @@ $(document).ready(function(){
                 },node1);
             }
         })
-    })
+    })*/
     /*var data = [
         {
             label: 'node1',
@@ -61,12 +61,43 @@ $(document).ready(function(){
         },
         data:dataList
     });*/
+    /*$('#jstree_container').tree({
+        dataUrl:"/site_media/Jquery/jqtree/data.json"
+    });*/
+    /*$.getJSON('GetProductSection/',function(data){
+        var tree=$('#jstree_container');
+        for(var i=0;i<data.length;i++){
+            tree.tree(
+                'appendNode',
+                {
+                    label: 'new_node',
+                    id: 456
+                }
+            );
+        }
+    });
+    $('#jstree_container').bind('tree.click',function(event){
+        console.log(event.node);
+
+    });*/
+    var dataList=[];
+    $.get('GetProductSection/',{section:""},function(data){
+        dataList=data;
+        var tree=$('#jstree_container');
+        for(var i=0;i<data.length;i++){
+            tree.tree('appendNode',{
+               label:data[i],
+               id:data[i]
+            });
+        }
+    });
+    //console.log(dataList);
 });
-function configure_data(data){
+/*function configure_data(data){
     dataList=[];
     for(var i=0;i<data.length;i++){
         var object={label:data[i]};
         dataList.push(object);
     }
     return dataList;
-}
+}*/

@@ -5079,7 +5079,8 @@ def getProductSection(request):
     if request.is_ajax():
         if request.method=='GET':
             section=request.GET.get(u'section','')
-            query="select distinct subpath(section_path,0,1) from product_sections"
-            section_path=DB.GetData(Conn,query)
+            if section=="":
+                query="select distinct subpath(section_path,0,1) from product_sections"
+                section_path=DB.GetData(Conn,query)
     result=simplejson.dumps(section_path)
     return HttpResponse(result,mimetype='application/json')

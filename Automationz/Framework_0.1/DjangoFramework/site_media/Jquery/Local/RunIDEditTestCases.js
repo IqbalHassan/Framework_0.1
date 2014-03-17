@@ -14,7 +14,7 @@ $(document).ready(function(){
             console.log(step);
             step_name.push(step);
         });
-        step_name.shift();
+        //step_name.shift();
         var step_status=[];
         $('#data_table tr td:nth-child(6)').each(function(){
             var step_no=$(this).closest("tr").find("td:first-child").text().trim();
@@ -24,7 +24,7 @@ $(document).ready(function(){
             var status=$('#'+step_id+' option:selected').text().trim();
             step_status.push(status);
         });
-        step_status.shift();
+        //step_status.shift();
         var step_reason=[];
         $('#data_table tr td:nth-child(5)').each(function(){
             var step_no=$(this).closest("tr").find("td:first-child").text().trim();
@@ -33,7 +33,7 @@ $(document).ready(function(){
             var reason=$('#'+step_id).val();
             step_reason.push(reason);
         });
-        step_reason.shift();
+        //step_reason.shift();
         console.log(step_name);
         console.log(step_status);
         console.log(step_reason);
@@ -61,7 +61,7 @@ $(document).ready(function(){
             console.log(step);
             step_name.push(step);
         });
-        step_name.shift();
+        //step_name.shift();
         var step_reason=[];
         $('#data_table tr td:nth-child(5)').each(function(){
             var step_no=$(this).closest("tr").find("td:first-child").text().trim();
@@ -70,7 +70,7 @@ $(document).ready(function(){
             var reason=$('#'+step_id).val();
             step_reason.push(reason);
         });
-        step_reason.shift();
+        //step_reason.shift();
         $.get("UpdateData",{
             step_name:step_name.join('|'),
             step_status:"Passed",
