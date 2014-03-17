@@ -795,7 +795,9 @@ $(document).ready(function() {
                     Steps_Verify_List:stepVerificationList.join("|"),
                     Steps_Time_List:stepTimeList.join("|"),
                     Status:"Dev"},function(data) {
-                    alert(data);
+                    //alert(data);
+                    location='/Home/ManageTestCases/Edit/'+data;;
+                    window.location=location;
                 });
             }else if(query == "e"){
                 $.get("Edit_TestCase",{
@@ -820,7 +822,9 @@ $(document).ready(function() {
                         Steps_Time_List:stepTimeList.join("|")
                     },
                     function(data) {
-                        alert(data+" edited successfully");
+                        //alert(data+" edited successfully");
+                        var location='/Home/ManageTestCases/Edit/'+data;
+                        window.location=location;
                     });
                 }
             });
