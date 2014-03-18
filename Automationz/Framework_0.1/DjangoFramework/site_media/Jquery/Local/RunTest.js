@@ -16,7 +16,7 @@ $(document).ready(function(){
 	if (indx != -1)
 	{
 		//when use will click on PC flip bar
-		$(".flip[title='PC_Platform']").click(function(){ 
+		$(".flip[title='PC_Platform']").click(function(){
 			
 			//$(".flip[title='Availeable Test Machine']").fadeIn(1000);
 			//$(".flip[title='Add Manual Test Machine']").fadeIn(1000);
@@ -35,7 +35,7 @@ $(document).ready(function(){
 		
 		
 		//when user will click on Mac flip bar
-		$(".flip[title='Mac_Platform']").click(function(){ 
+		$(".flip[title='Mac_Platform']").click(function(){
 			
 			//$(".flip[title='Availeable Test Machine']").fadeIn(1000)
 			$("#Place_AutoComplete_Here").fadeIn(1000);

@@ -21,7 +21,7 @@
                     <td style="height:150px; width:150px">
 
                         <!-- Following Code is for PC Platform Flip button  -->
-                        <p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30%' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/PC.png">  PC </p>
+                        <p class='flip' id="pc_icon" style='color: black; display:block; margin-top: 10px; height : 100%; width:30%' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/PC.png">  PC </p>
                         <div id = 'PC_Platform' style='display:none'></div>
                         <!-- *********************** <img style = 'width : 200%'  src="/site_media/PC.png">-->
                     </td>
@@ -30,7 +30,7 @@
                     <td style="height:150px; width:150px">
 
                         <!-- Following Code is for Mac Platform Flip button  -->
-                        <p class='flip' style='color: black; display:block; margin-top: 10px; height : 100%; width:30% ' title='Mac_Platform'> <img style = 'width : 220%'  src="/site_media/Mac.png">   Mac </p>
+                        <p class='flip' id="mac_icon" style='color: black; display:block; margin-top: 10px; height : 100%; width:30% ' title='Mac_Platform'> <img style = 'width : 220%'  src="/site_media/Mac.png">   Mac </p>
                         <div id = 'Mac_Platform' style='display:none'></div>
                         <!-- *********************** <img style = 'width : 320%'  src="/site_media/Mac.png">-->
 
@@ -169,8 +169,8 @@
                             <td align="center">
                                 <div id="right">
                                     <label><b>Operation:</b></label>
-                                    <select id="operation_milestone" class="wrapper-dropdown-3" name="operation">
-                                        <option value="0"selected="selected">Select from list</option>
+                                    <select id="operation_milestone" name="operation" class="selectdrop">
+                                        <option value="0" selected="selected">Select from list</option>
                                         <option value="1">Create</option>
                                         <option value="2">Rename</option>
                                         <option value="3">Delete</option>
