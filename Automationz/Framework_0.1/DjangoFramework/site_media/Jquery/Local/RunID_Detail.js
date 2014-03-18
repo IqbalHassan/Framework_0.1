@@ -119,7 +119,7 @@ function ReRunTab(){
         var client=$('input[name="client"]').val();
         var email=$('input[name="email"]').val();
         var os=$('input[name="os"]').val();
-        var objective=$('#test_objective').val();
+        var objective=$('input[name="test_objective"]').val();
         os=os.split("-")[0].trim();
         os=os.split(" ")[0].trim();
         var environment="";
@@ -130,6 +130,8 @@ function ReRunTab(){
             environment="Mac";
         }
         //console.log(os);
+        objective=objective.trim();
+        objective+=(' -ReRun');
         objective=objective.trim();
         if(objective==""){
             alert("TestObjective is empty");
