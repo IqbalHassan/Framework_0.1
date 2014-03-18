@@ -926,9 +926,9 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     Conn=GetConnection()
     RunId=RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID","Mahchine","Assigned Tester","Status","Product","Machine OS","Client","Machine IP","Email Notification"]
+    Env_Details_Col = ["Run ID","Mahchine","Assigned Tester","Status","Product","Machine OS","Client","Machine IP","Test Objective","Email Notification"]
     run_id_status=GetRunIDStatus(RunId)
-    query="Select DISTINCT run_id,tester_id,assigned_tester,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip from test_run_env Where run_id = '%s'" % RunId
+    query="Select DISTINCT run_id,tester_id,assigned_tester,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip,test_objective from test_run_env Where run_id = '%s'" % RunId
     Env_Details_Data=DB.GetData(Conn, query, False)
     #code for fetching email notification
     email_query= "select email_notification from test_run_env where run_id='%s'"%RunId
@@ -1546,7 +1546,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         print client
         ip=each[11]
         Dict={'run_id':runid,'status':status,'machine_ip':ip,'last_updated_time':updateTime,'machine_os':machine_os,'client':client,'os_name':each[15],'os_version':each[14],'os_bit':each[16],'test_objective':TestObjective}
-        sWhereQuery="where tester_id='%s'" %TesterId
+        sWhereQuery="where tester_id='%s' and status='%s'" %(TesterId,status)
         print DB.UpdateRecordInTable(Conn,"test_run_env",sWhereQuery,**Dict)    
     #Creating Runid and assigning test cases to it in "testrun" table
     TestIDList = []
@@ -1621,7 +1621,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid' or TagName==CustomSet or TagName==Tag:
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
             if is_rerun=='rerun':
-                query="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
+                query="where tester_id='%s' and run_id='%s' and status='Unassigned'" %(TesterId,runid)
             
             TestSetName = TestSetName + " " + eachitem
             TestSetName = TestSetName.strip()
@@ -1629,7 +1629,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         else:
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
             if is_rerun=='rerun':
-                query="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
+                query="where tester_id='%s' and run_id='%s' and status='Unassigned'" %(TesterId,runid)
     
             TestSetName = TestSetName + " " + eachitem
             TestSetName = TestSetName.strip()
@@ -1637,20 +1637,23 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , **Dict)
     AddInfo(runid)
     if is_rerun=='rerun':
-        query="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
+        product_version_query="select product_version from test_run_env where run_id='%s'"%previous_run
+        product_version=DB.GetData(Conn,product_version_query)
+        query="where tester_id='%s' and run_id='%s' and status='Unassigned'" %(TesterId,runid)
     Result = DB.UpdateRecordInTable(Conn, "test_run_env", query,
                                      email_notification=stEmailIds,
                                      assigned_tester=Testers,
                                      test_objective=TestObjective,
                                      Status='Submitted',
-                                     run_type='Manual'
+                                     run_type='Manual',
+                                     product_version=product_version[0]
                                      )
     print DB.UpdateRecordInTable(Conn, "test_run_env", query,
                                      email_notification=stEmailIds,
                                      assigned_tester=Testers,
                                      test_objective=TestObjective,
                                      Status='Submitted',
-                                     run_type='Manual'
+                                     run_type='Manual',product_version=product_version[0]
                                      )
     #NJ-Insert into run env results to display submitted runs
     now = DB.GetData(Conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -4837,7 +4840,10 @@ def GetOS(request):
                 temp.append(browser)
                 temp=tuple(temp)
                 browser_data.append(temp)
-    results={'os':refined_list,'browser':browser_data}
+            productType='Product Version'
+            product_version_query="select value from config_values where type='%s'" %productType
+            product_version=DB.GetData(Conn,product_version_query)
+    results={'os':refined_list,'browser':browser_data,'productVersion':product_version}
     results=simplejson.dumps(results)
     return HttpResponse(results,mimetype='application/json')
 def Auto_MachineName(request):
@@ -4855,7 +4861,7 @@ def CheckMachine(request):
             name=request.GET.get(u'name','')
             print name
             Conn=GetConnection()
-            query="select os_name,os_version,os_bit,machine_ip,client from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s'"%name
+            query="select os_name,os_version,os_bit,machine_ip,client,product_version from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s' order by last_updated_time desc limit 1"%name
             machine_info=DB.GetData(Conn,query,False)
             print machine_info
     result=simplejson.dumps(machine_info)
@@ -4870,6 +4876,7 @@ def AddManualTestMachine(request):
             browser=request.GET.get(u'browser','').strip()
             browser_version=request.GET.get(u'browser_version','').strip()
             machine_ip=request.GET.get(u'machine_ip','').strip()
+            product_version=request.GET.get(u'product_version','').strip()
             print machine_name
             print os_name
             print os_version
@@ -4895,7 +4902,7 @@ def AddManualTestMachine(request):
                 machine_os=os_name+' '+os_version+' - '+os_bit
                 Client=browser+'('+browser_version+';'+os_bit+' Bit)'
                 updated_time=TimeStamp("string")
-                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
+                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip,'product_version':product_version.strip()}
                 tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
                 if tes2==True:
                     message="Machine is updated successfully"
@@ -4907,7 +4914,7 @@ def AddManualTestMachine(request):
                 updated_time=TimeStamp("string")
                 Dict={'user_names':machine_name.strip(),'user_level':'Manual','email':machine_name+'@machine.com'}
                 tes1= DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
-                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
+                Dict={'tester_id':machine_name.strip(),'product_version':product_version,'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
                 tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
                 if(tes1==True and tes2==True):
                     message="Machine Successfully Registered"

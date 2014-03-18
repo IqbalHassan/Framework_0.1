@@ -11,7 +11,8 @@ $(document).ready(function(){
         function(data){
             console.log(data['os']);
             console.log(data['browser']);
-            populate_manual_test_div(data['os'],data['browser']);
+            console.log(data['productVersion']);
+            populate_manual_test_div(data['os'],data['browser'],data['productVersion']);
         });
 	if (indx != -1)
 	{
@@ -133,7 +134,7 @@ function machine_div(){
         ResultTable('#AvailableTestMachine', data['Heading'],data['TableData'], "Available User/s");
     });
 }
-function populate_manual_test_div(environment,browserdata){
+function populate_manual_test_div(environment,browserdata,productVersion){
     //populate the os names
     var message="";
     console.log(environment);
@@ -147,7 +148,11 @@ function populate_manual_test_div(environment,browserdata){
         message+='<option value="'+browserdata[i][0].trim()+'">'+browserdata[i][0]+'</option>'
     }
     $('#browser').append(message);
-
+    message="";
+    for(var i=0;i<productVersion.length;i++){
+        message+='<option value="'+productVersion[i].trim()+'">'+productVersion[i].trim()+'</option>'
+    }
+    $('#product_version').append(message);
     $('#os_name').live('change',function(){
         if($('#os_name').val()!=''){
             console.log($(this).val());
@@ -241,6 +246,7 @@ function AutoCompletionButton(environment,browserdata){
                     }
                     $('#b_version').css({'display':'inline-block'});
                     $('#browser').val(browsers[0].trim());
+                    $('#product_version').val(list[5]);
                     console.log(browsers);
                 })
                 return false;
@@ -281,6 +287,10 @@ function AutoCompletionButton(environment,browserdata){
         $('#error_message').slideUp("slow");
         $('#error_message').html("");
     });
+    $('#product_version').live('change',function(){
+        $('#error_message').slideUp("slow");
+        $('#error_message').html("");
+    });
     $('#submit_button').live('click',function(){
         var machine_name=$('#machine_name').val();
         var os_name=$('#os_name option:selected').val();
@@ -289,7 +299,8 @@ function AutoCompletionButton(environment,browserdata){
         var browser=$('#browser option:selected').val();
         var browser_version=$('#browser_version option:selected').val();
         var machine_ip=$('#machine_ip').val();
-        if(machine_name==''||os_name==''||browser==''||machine_ip==''){
+        var product_version=$('#product_version option:selected').val();
+        if(machine_name==''||os_name==''||browser==''||machine_ip==''||product_version==''){
             var error_message="<b style='color: #ff0000'>Fields are empty</b>";
             $('#error_message').html(error_message);
             $('#error_message').css({'display':'block'});
@@ -302,7 +313,8 @@ function AutoCompletionButton(environment,browserdata){
                 os_bit:os_bit,
                 browser:browser,
                 browser_version:browser_version,
-                machine_ip:machine_ip
+                machine_ip:machine_ip,
+                product_version:product_version
             },function(data){
                 //console.log(data);
                 $('#error_message').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
