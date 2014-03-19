@@ -2,6 +2,8 @@
 $(document).ready(function(){
 
     //Sections
+
+    $('.combo-box').combobox();
     $.ajax({
         url:'GetSections/',
         dataType : "json",
