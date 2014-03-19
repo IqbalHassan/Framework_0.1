@@ -143,10 +143,12 @@ urlpatterns = patterns('',
     
     #Test Type Status Page                                #minar09
     url(r'^Home/TestTypeStatus/$', TestTypeStatus),
+    url(r'^Home/TestTypeStatus/get?$', TestTypeStatus),
     url(r'^Home/.*/TestTypeStatus_Report/$',TestTypeStatus_Report),
     
     #Bundle Report Page                                #minar09
     url(r'^Home/BundleReport/$', BundleReport),
+    url(r'^Home/BundleReport/get?$', BundleReport),
     url(r'^Home/.*/BundleReport_Table/$',BundleReport_Table),
     url(r'^Home/.*/Bundle_Report/$',Bundle_Report),
     #url(r'^Home/.*/Single_Env/$',Single_Env),
