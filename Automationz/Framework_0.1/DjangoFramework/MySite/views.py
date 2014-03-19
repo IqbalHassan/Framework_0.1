@@ -4952,10 +4952,10 @@ def ReRun(request):
     if request.is_ajax():
         if request.method=='GET':
             run_id=request.GET.get(u'RunID','')
-            status_name=request.GET.get(u'status','')
+            status_name=request.GET.get(u'status','').split(',')
             print run_id
             print status_name
-            status=[]
+            """status=[]
             if status_name=='failed':
                 status.append('Failed')
             elif status_name=='failed+pending':
@@ -4964,26 +4964,26 @@ def ReRun(request):
             elif status_name=='pending':
                 status.append('Submitted')
             else:
-                status=[]
+                status=[]"""
             Conn=GetConnection()
-            if len(status)==0:
+            """if len(status)==0:
                 query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and run_id='%s'"%run_id
                 tc_list=DB.GetData(Conn, query,False)
                 test_case_list=Modify(tc_list)
                 print test_case_list
-            else:
-                tc_list=[]
-                for each in status:
-                    query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and tcr.run_id='%s' and tcr.status='%s'"%(run_id,each)
-                    get_list=DB.GetData(Conn,query,False)
-                    for eachitem in get_list:
-                        tc_list.append(eachitem)
-                print tc_list
-                tc_list=list(set(tc_list))
-                test_case_list=Modify(tc_list)
-                print test_case_list
-            print test_case_list    
-            Column=['Test Case ID','Test Case Name','Type','Status']
+            else:"""
+            tc_list=[]
+            for each in status_name:
+                query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and tcr.run_id='%s' and tcr.status='%s'"%(run_id,each)
+                get_list=DB.GetData(Conn,query,False)
+                for eachitem in get_list:
+                    tc_list.append(eachitem)
+            print tc_list
+            tc_list=list(set(tc_list))
+            test_case_list=Modify(tc_list)
+            print test_case_list
+        print test_case_list    
+        Column=['Test Case ID','Test Case Name','Type','Status']
     result={'col':Column,'list':test_case_list}
     result=simplejson.dumps(result)
     return HttpResponse(result,mimetype='application/json')       

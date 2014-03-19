@@ -796,7 +796,7 @@ $(document).ready(function() {
                     Steps_Time_List:stepTimeList.join("|"),
                     Status:"Dev"},function(data) {
                     //alert(data);
-                    location='/Home/ManageTestCases/Edit/'+data;;
+                    var location='/Home/ManageTestCases/Edit/'+data;
                     window.location=location;
                 });
             }else if(query == "e"){
