@@ -5,6 +5,7 @@
 
 $(document).ready(function(){
 
+    $('.combo-box').combobox();
     $.ajax({
         url:'GetVersions/',
         dataType : "json",

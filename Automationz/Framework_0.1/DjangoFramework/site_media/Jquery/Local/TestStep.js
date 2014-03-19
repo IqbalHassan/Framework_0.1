@@ -38,7 +38,7 @@ function populate_feature_driver_info_div(){
                                 '<div id="left">'+
                                     '<label><b>Type:</b></label>' +
         "&nbsp;&nbsp;&nbsp;" +
-                                    '<select id="type" class="wrapper-dropdown-3" name="type">' +
+                                    '<select id="type" class="select-drop" name="type">' +
                                         '<option selected value="">Select from list</option>' +
                                         '<option value="feature">Feature</option>' +
                                         '<option value="driver">Driver</option>' +
@@ -49,7 +49,7 @@ function populate_feature_driver_info_div(){
                                 '<div id="right">' +
                                     '<label><b>Operation:</b></label>' +
         "&nbsp;&nbsp;&nbsp;" +
-                                    '<select id="operation" class="wrapper-dropdown-3" name="operation">' +
+                                    '<select id="operation" class="select-drop" name="operation">' +
                                         '<option value="0"selected="selected">Select from list</option>' +
                                         '<option value="1">Create</option>' +
                                         '<option value="2">Rename</option>' +
@@ -88,7 +88,7 @@ function populate_feature_driver_info_div(){
                 '</div>'
 
     );
-
+    $(".select-drop").selectBoxIt();
     $("#operation").live('change',function(event){
         var choice_value=$("#operation").val();
         event.preventDefault();
@@ -314,7 +314,7 @@ function populate_info_div(){
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<br/>' +
             '<label><b>Test Step Type:</b></label><br>' +
-                '<select id="step_type" class="wrapper-dropdown-3" name="step_type">' +
+                '<select id="step_type" class="select-drop" name="step_type">' +
                     '<option value="0" selected="selected">Select from list:</option>' +
                     '<option value="1">Automated</option> ' +
                     '<option value="2">Manual</option>' +
@@ -324,7 +324,7 @@ function populate_info_div(){
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<br/>' +
         '<label><b>Data Requirement:<b></label><br>' +
-        '<select id="step_data" class="wrapper-dropdown-3" name="step_data">' +
+        '<select id="step_data" class="select-drop" name="step_data">' +
         '<option value="0" selected="selected">Select from list:</option>' +
         '<option value="1">True</option>' +
         '<option value="2">False</option> ' +
@@ -333,7 +333,7 @@ function populate_info_div(){
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<br/>' +
         '<label><b>Step Enable<b></label><br>' +
-        '<select id="step_enable" class="wrapper-dropdown-3" name="step_enable">' +
+        '<select id="step_enable" class="select-drop" name="step_enable">' +
         '<option value="0" selected="selected">Select from list:</option>' +
         '<option value="1">True</option>' +
         '<option value="2">False</option> ' +
@@ -451,6 +451,7 @@ function populate_info_div(){
             .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
             .appendTo( ul );
     };
+    $(".select-drop").selectBoxIt();
 }
 function populate_footer_div(){
     $('#footer_div').append('' +
@@ -485,8 +486,8 @@ function populate_footer_div(){
                 $('#search_result tr>td:nth-child(3)').each(function(){
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                    $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50" style="cursor:pointer;"/>');
-                    $(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/edit_case.png" height="50" style="cursor:pointer;"/>');
+                    $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25" style="cursor:pointer;"/>');
+                    $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25" style="cursor:pointer;"/>');
 
                     indx++;
                 });
@@ -613,8 +614,8 @@ function PerformSearch(){
 
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                    $(this).after('<img class="templateBtn buttonCustom" id="'+ID+'" src="/site_media/template.png" height="50" style="cursor:pointer;"/>');
-                    $(this).after('<img class="editBtn buttonCustom" id="'+ID+'" src="/site_media/edit_case.png" height="50" style="cursor:pointer;"/>');
+                    $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25" style="cursor:pointer;"/>');
+                    $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25" style="cursor:pointer;"/>');
 
                     indx++;
                 });
