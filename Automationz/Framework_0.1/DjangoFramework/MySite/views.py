@@ -147,8 +147,8 @@ def make_status_array(refined_list):
 def ResultTableFetch():
     Conn=GetConnection()
     #interval="1"
-    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') order by ter.teststarttime desc)"
-    completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
+    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') order by ter.teststarttime desc)"
+    completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
     total_query=progress_query+' union all '+completed_query
     get_list=DB.GetData(Conn,total_query,False)
     get_list=set(get_list)
@@ -191,7 +191,7 @@ def zipdata(data_array,status_array):
 def ResultPage(request):
     data=ResultTableFetch()
     print data
-    Column=["Run ID","Test Objective","Run Type","Assigned Tester","Report Status","Status","Duration","Product Version","Client"]
+    Column=["Run ID","Objective","Run Type","Assigned Tester","Report","Status","Duration","Product Version"]
     template=get_template('Result.html')
     all_data=zipdata(data['total'], data['all_status'])
     """complete_data=zipdata(data['complete'],data['complete_status'])
@@ -966,10 +966,25 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     Conn=GetConnection()
     RunId=RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID","Mahchine","Assigned Tester","Status","Product","Machine OS","Client","Machine IP","Email Notification"]
+    Env_Details_Col = ["Run ID","Mahchine","Tester","Estd. Time","Status","Product","Machine OS","Client","Machine IP","Email"]
     run_id_status=GetRunIDStatus(RunId)
     query="Select DISTINCT run_id,tester_id,assigned_tester,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip from test_run_env Where run_id = '%s'" % RunId
     Env_Details_Data=DB.GetData(Conn, query, False)
+    #Code for the total estimated time for the RUNID
+    totalRunIDTime=0
+    query="select tc_id from test_run where run_id='%s'"%RunId
+    test_case_list=DB.GetData(Conn,query)
+    for each in test_case_list:
+        #Get the step_count
+        query="select count(*) from test_steps where tc_id='%s'"%each
+        step_count=DB.GetData(Conn,query)
+        for eachstep in range(1,step_count[0]+1):
+            temp_id=each+'_s'+str(eachstep)
+            query="select description from master_data where field='estimated' and value='time' and id='%s'"%temp_id
+            step_time=DB.GetData(Conn,query)
+            totalRunIDTime+=int(step_time[0])
+    formatTime=ConvertTime(totalRunIDTime) 
+    ################################################
     #code for fetching email notification
     email_query= "select email_notification from test_run_env where run_id='%s'"%RunId
     email_list=DB.GetData(Conn,email_query,False)
@@ -989,6 +1004,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     temp=[]
     for each in Env_Details_Data[0]:
         temp.append(each)
+    temp.insert(3,formatTime)
     temp.append(email_name)
     temp=tuple(temp)
     Env_Details_Data=[]
@@ -1011,7 +1027,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "from test_run tr,test_cases tc, test_case_tag tct "
                                             "where tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "
                                             "tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )" % (RunId, RunId, RunId) , False)
-    Col = ['Test Case ID', 'Test Case','Test Case Type', 'Status', 'Duration', 'Estimated Time','Fail Reason', 'Test Log', 'Automation ID']
+    Col = ['ID', 'Name','Type', 'Status', 'Duration', 'Estd. Time','Fail Reason', 'Log', 'Automation ID']
     AllTestCases=Modify(AllTestCases1)
     AllTestCases=AddEstimatedTime(AllTestCases)
     Pass_TestCases1 = DB.GetData(Conn, "select "
@@ -4864,27 +4880,31 @@ def GetOS(request):
             if name=='':
                 query="select distinct value from config_values where type='%s'" %ostype
                 os_list=DB.GetData(Conn,query,False)
-            for each in os_list:
-                query="select distinct value from config_values where type='%s Version'"%each[0]
-                os_verison=DB.GetData(Conn,query)
-                temp=[]
-                temp.append(each[0])
-                temp.append(os_verison)
-                temp=tuple(temp)
-                refined_list.append(temp)
-            browser_data=[]
-            browsertype='Browser'
-            query="select value from config_values where type='%s'" %browsertype
-            browser_list=DB.GetData(Conn,query)
-            for each in browser_list:
-                temp=[]
-                query="select value from config_values where type='%s Version'"%each
-                browser=DB.GetData(Conn,query)
-                temp.append(each)
-                temp.append(browser)
-                temp=tuple(temp)
-                browser_data.append(temp)
-    results={'os':refined_list,'browser':browser_data}
+                for each in os_list:
+                    query="select distinct value from config_values where type='%s Version'"%each[0]
+                    os_verison=DB.GetData(Conn,query)
+                    temp=[]
+                    temp.append(each[0])
+                    temp.append(os_verison)
+                    temp=tuple(temp)
+                    refined_list.append(temp)
+                browser_data=[]
+                browsertype='Browser'
+                query="select value from config_values where type='%s'" %browsertype
+                browser_list=DB.GetData(Conn,query)
+                for each in browser_list:
+                    temp=[]
+                    query="select value from config_values where type='%s Version'"%each
+                    browser=DB.GetData(Conn,query)
+                    temp.append(each)
+                    temp.append(browser)
+                    temp=tuple(temp)
+                    browser_data.append(temp)
+                #Get the productVersion
+                productVersion='Product Version'
+                query="select value from config_values where type='%s'"%productVersion
+                productVersion=DB.GetData(Conn,query)
+    results={'os':refined_list,'browser':browser_data,'productVersion':productVersion}
     results=simplejson.dumps(results)
     return HttpResponse(results,mimetype='application/json')
 def Auto_MachineName(request):
@@ -4902,7 +4922,7 @@ def CheckMachine(request):
             name=request.GET.get(u'name','')
             print name
             Conn=GetConnection()
-            query="select os_name,os_version,os_bit,machine_ip,client from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s'"%name
+            query="select os_name,os_version,os_bit,machine_ip,client,product_version from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s'"%name
             machine_info=DB.GetData(Conn,query,False)
             print machine_info
     result=simplejson.dumps(machine_info)
@@ -4917,6 +4937,7 @@ def AddManualTestMachine(request):
             browser=request.GET.get(u'browser','').strip()
             browser_version=request.GET.get(u'browser_version','').strip()
             machine_ip=request.GET.get(u'machine_ip','').strip()
+            product_version=request.GET.get(u'product_version','').strip()
             print machine_name
             print os_name
             print os_version
@@ -4942,7 +4963,7 @@ def AddManualTestMachine(request):
                 machine_os=os_name+' '+os_version+' - '+os_bit
                 Client=browser+'('+browser_version+';'+os_bit+' Bit)'
                 updated_time=TimeStamp("string")
-                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
+                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip,'product_version':product_version.strip()}
                 tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
                 if tes2==True:
                     message="Machine is updated successfully"
@@ -4954,7 +4975,7 @@ def AddManualTestMachine(request):
                 updated_time=TimeStamp("string")
                 Dict={'user_names':machine_name.strip(),'user_level':'Manual','email':machine_name+'@machine.com'}
                 tes1= DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
-                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip}
+                Dict={'tester_id':machine_name.strip(),'status':'Unassigned','machine_os':machine_os.strip(),'client':Client.strip(),'last_updated_time':updated_time.strip(),'os_bit':os_bit,'os_name':os_name,'os_version':os_version,'machine_ip':machine_ip,'product_version':product_version.strip()}
                 tes2= DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
                 if(tes1==True and tes2==True):
                     message="Machine Successfully Registered"
