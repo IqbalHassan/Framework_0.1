@@ -212,7 +212,7 @@ function DataFetch(){
         InputFailReason();
         ExecutionLog();
         UIChange();
-    });
+    })
 }
 function ExecutionLog(){
     $('#data_table tr td:nth-child(2)').each(function(){
@@ -287,7 +287,7 @@ function MakeStatusSelectable(){
         step_id=step_id.trim();
         console.log(value);
         if(value!="Status"){
-            $(this).html('<select id="'+step_id+'" style="align:center">' +
+            $(this).html('<select class="select-drop" id="'+step_id+'" style="align:center">' +
                 '<option value="Passed">Passed</option>' +
                 '<option value="Failed">Failed</option>' +
                 '<option value="Skipped">Skipped</option>' +
@@ -299,6 +299,7 @@ function MakeStatusSelectable(){
         }
 
     });
+    $(".select-drop").selectBoxIt();
 }
 function table_message(column,tabledata){
     var message="";
