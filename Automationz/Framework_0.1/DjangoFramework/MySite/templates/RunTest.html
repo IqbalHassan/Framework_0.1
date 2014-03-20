@@ -163,55 +163,56 @@
         <h3>Manage Milestones</h3>
         <div>
             <br/><br/>
+            <div align="center" id="error_milestone" style="display: none">
+
+            </div>
             <form>
-                <div align="center" id="error_msg" style="display: none">
+                <fieldset>
+                    <legend align="right">MileStone Management</legend>
+                    <br/><br/>
+                    <div align="center">
+                        <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
+                            <tr>
+                                <td align="center">
+                                    <div id="right">
+                                        <label><b>Operation:</b></label>
+                                        <select id="operation_milestone" name="operation" class="selectdrop">
+                                            <option value="0" selected="selected">Select from list</option>
+                                            <option value="1">Create</option>
+                                            <option value="2">Rename</option>
+                                            <option value="3">Delete</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td align="center">
+                                    <div id="center">
+                                        <label><b id="name_variable">Name:</b></label>
+                                        <input class="ui-corner-all textbox" id="msinput" style="margin : 5px; width: auto" size="40" type='text' name='inputName'/>
+                                    </div>
+                                </td>
+                                <td align="center">
+                                    <div id="renamebox" style="display: none">
+                                        <label><b>New Name:</b></label>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <input class="ui-corner-all textbox" id="msinput2" style="margin: 5px; width: auto;" type='text' title = 'Please Type Keyword' size="40" name='inputName2' />
 
-                </div>
-                <br/><br/>
-                <div align="center">
-                    <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
-                        <tr>
-                            <td align="center">
-                                <div id="right">
-                                    <label><b>Operation:</b></label>
-                                    <select id="operation_milestone" name="operation" class="selectdrop">
-                                        <option value="0" selected="selected">Select from list</option>
-                                        <option value="1">Create</option>
-                                        <option value="2">Rename</option>
-                                        <option value="3">Delete</option>
-                                    </select>
-                                </div>
-                            </td>
-                            <td align="center">
-                                <div id="center">
-                                    <label><b id="name_variable">Name:</b></label>
-                                    <input class="ui-corner-all textbox" id="msinput" style="margin : 5px; width: auto" type='text' name='inputName' />
-                                </div>
-                            </td>
-                            <td align="center">
-                                <div id="renamebox" style="display: none">
-                                    <label><b>New Name:</b></label>
-                                    &nbsp;&nbsp;&nbsp;
-                                    <input class="ui-corner-all textbox" id="msinput2" style="margin: 5px; width: auto;" type='text' title = 'Please Type Keyword' name='inputName2' />
-
-                                </div>
-                            </td>
-                            <td align="center">
-                                <!--div id="error">
-                                    <p><b>No Operation is selected</b></p>
-                                </div-->
-                                <div id="button_id">
-                                    <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
-                                    <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                                    </div>
+                                </td>
+                                <td align="center">
+                                    <!--div id="error">
+                                        <p><b>No Operation is selected</b></p>
+                                    </div-->
+                                    <div id="button_id">
+                                        <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
+                                        <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
             </form>
         </div>
-
-
     </div>
 
 

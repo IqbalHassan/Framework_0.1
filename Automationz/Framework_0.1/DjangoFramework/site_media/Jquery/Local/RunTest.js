@@ -16,6 +16,10 @@ $(document).ready(function(){
         });
 	if (indx != -1)
 	{
+        //Codes for the MileStone Tab
+        MileStoneTab();
+
+        autoCompleteMilestone();
 		//when use will click on PC flip bar
 		$(".flip[title='PC_Platform']").click(function(){
 			
@@ -125,7 +129,77 @@ $(document).ready(function(){
 
 	
 });
+function autoCompleteMilestone(){
+    $('#msinput').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"AutoMileStone",
+                dataType:"json",
+                data:{term:request.term},
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(request,ui){
+            var value=ui.item[0];
+            if (value!=""){
+                $(this).val(value);
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong></a>" )
+            .appendTo( ul );
+    };
+}
+function MileStoneTab(){
+    $('#operation_milestone').click(function(){
+        autoCompleteMilestone();
+    });
+    $('#operation_milestone').live('change',function(){
+       // autoCompleteMilestone();
+        var selection=$('#operation_milestone option:selected').val();
+        if(selection==2){
+            $('#renamebox').css({'display':'inline-block'});
+        }
+        else{
+            $('#renamebox').css({'display':'none'});
+        }
+    });
+    $('#ms_button').live('click',function(){
+        var operation=$('#operation_milestone option:selected').val();
+        if(operation==2){
+            var new_name=$('#msinput2').val();
+            var old_name=$('#msinput').val();
+        }
+        else{
+            var new_name=$('#msinput').val();
+            var old_name="";
+        }
+        $.get('MileStoneOperation',{old_name:old_name,new_name:new_name,operation:operation},function(data){
+            if(data['confirm_message']==""){
+                var color='red';
+            }
+            else{
+                var color='green';
+            }
+            if(data['confirm_message']==""){
+                $('#error_milestone').html('<b style="color:red;">'+data['error_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                $('#error_milestone').slideDown('slow');
+                setTimeout(function(){window.location='/Home/RunTest/';},4000);
+            }
+            else{
+                $('#error_milestone').html('<b style="color:green;">'+data['confirm_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                $('#error_milestone').slideDown('slow');
+                setTimeout(function(){window.location='/Home/RunTest/';},4000);
+            }
 
+        })
+    });
+}
 function machine_div(){
     Env = Get_Selected_Env_Name();
     //$("#AvailableTestMachine").slideToggle("slow");

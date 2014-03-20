@@ -3676,7 +3676,7 @@ def TestStep_Auto(request):
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
 
-def Milestone_Auto(request):
+"""def Milestone_Auto(request):
     Conn = GetConnection()
     results = []
     if request.method == "GET":
@@ -3721,7 +3721,7 @@ def Milestone_Process(request):
         
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
-
+"""
 
 def TestCase_Results(request):
     conn=GetConnection()
@@ -5152,3 +5152,65 @@ def getProductSection(request):
                 section_path=DB.GetData(Conn,query)
     result=simplejson.dumps(section_path)
     return HttpResponse(result,mimetype='application/json')
+##########MileStone Code####################
+def AutoMileStone(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            Conn=GetConnection()
+            milestone=request.GET.get(u'term','')
+            print milestone
+            query="select value from config_values where type='milestone' and value ilike'%%%s%%'"%milestone
+            milestone_list=DB.GetData(Conn,query,False)
+    result=simplejson.dumps(milestone_list)
+    return HttpResponse(result,mimetype='application/json')
+def MileStoneOperation(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            Conn=GetConnection()
+            operation=request.GET.get(u'operation','')
+            confirm_message=""
+            error_message=""
+            if operation=="2":
+                new_name=request.GET.get(u'new_name','')
+                old_name=request.GET.get(u'old_name','')
+                old_name=old_name.strip()
+                query="select count(*) from config_values where type='milestone' and value='%s'"%old_name
+                available=DB.GetData(Conn,query)
+                if(available[0]>0):
+                    #start Rename Operation
+                    condition="where type='milestone' and value='%s'"%old_name
+                    Dict={'value':new_name.strip()}
+                    print DB.UpdateRecordInTable(Conn, "config_values", condition,**Dict)
+                    confirm_message="MileStone is renamed"
+                else:
+                    confirm_message="No milestone is found"
+            #start Create Operation
+            if operation=="1":
+                new_name=request.GET.get(u'new_name','')
+                new_name=new_name.strip()
+                query="select count(*) from config_values where type='milestone' and value='%s'"%new_name
+                available=DB.GetData(Conn,query)
+                if(available[0]==0):
+                    Dict={'type':'milestone','value':new_name.strip()}
+                    print DB.InsertNewRecordInToTable(Conn, "config_values",**Dict)
+                    confirm_message="MileStone is created Successfully"
+                else:
+                    error_message="MileStone name exists.Can't create a new one"
+                #start Delete Operation
+            if operation=="3":
+                new_name=request.GET.get(u'new_name','')
+                new_name=new_name.strip()
+                query="select count(*) from config_values where type='milestone' and value='%s'"%new_name
+                available=DB.GetData(Conn,query)
+                if(available[0]>0):
+                    Dict={'type':'milestone','value':new_name.strip()}
+                    print DB.DeleteRecord(Conn, "config_values",**Dict)
+                    confirm_message="MileStone is deleted Successfully"
+                else:
+                    error_message="MileStone Not Found"
+    results={'confirm_message':confirm_message,
+             'error_message':error_message
+             }
+    result=simplejson.dumps(results)
+    return HttpResponse(result,mimetype='application/json')    
+############################################
