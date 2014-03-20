@@ -267,14 +267,14 @@ function LoadAllTestCases(divname){
             'textAlign':'left'
         });
         var name=$(this).text().trim();
-        var TestCaseName=$(this).closest("tr").find("td:nth-child(8)").text().trim();
+        var TestCaseName=$(this).closest("tr").find("td:nth-child(9)").text().trim();
         var RunID=$('#EnvironmentDetailsTable tr td:first-child').text().trim();
         $(this).html('<div id="'+TestCaseName+'name">'+name+'</div><div id="'+TestCaseName+'detail" style="display:none"></div>')
         $.get("TestCase_Detail_Table",{'RunID':RunID,'TestCaseName':TestCaseName},function(data){
             ResultTable('#'+divname+' #'+TestCaseName+'detail',data['TestCase_Detail_Col'],data['TestCase_Detail_Data'],"");
         })
         $('#'+divname+' #'+TestCaseName+'name').live('click',function(){
-            var TestCaseName=$(this).closest("tr").find("td:nth-child(8)").text().trim();
+            var TestCaseName=$(this).closest("tr").find("td:nth-child(9)").text().trim();
             $('#'+divname+' #'+TestCaseName+'detail tr td:first-child').each(function(){
                 $(this).css({
                     'color':'blue',
@@ -323,7 +323,7 @@ function LoadAllTestCases(divname){
             'cursor' : 'pointer'
         });
         $(this).live('click',function(){
-            var TestCaseName=$(this).closest("tr").find("td:nth-child(8)").text().trim();
+            var TestCaseName=$(this).closest("tr").find("td:nth-child(9)").text().trim();
             var location=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
             console.log(location);
             window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
@@ -334,7 +334,7 @@ function LoadAllTestCases(divname){
     });
     ////////////**********************\\\\\\\\\\\\\\\
     //////////////// To change the textbox in fail reason
-    $('#'+divname+' tr td:nth-child(6)').each(function(){
+    $('#'+divname+' tr td:nth-child(7)').each(function(){
         var data=$(this).text().trim();
         console.log(data);
         $(this).html('<textarea rows="3" cols="30" readonly="readonly" style="border: none;text-align: center; vertical-align: middle;color: #669;display:inline-block;">'+data+'</textarea>');
@@ -342,7 +342,7 @@ function LoadAllTestCases(divname){
     /////////////////////////////////////////////////////
 }
 function connectLogFile(ID){
-    $("#"+ID+" tr td:nth-child(7)").each(function(){
+    $("#"+ID+" tr td:nth-child(8)").each(function(){
         var location=$(this).text();
         var message='<a href="file:///'+location+'">Log File</a>';
         $(this).html(message);

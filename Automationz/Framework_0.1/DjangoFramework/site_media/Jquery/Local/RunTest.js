@@ -1112,8 +1112,15 @@ function RunTestProcess() {
 		$.get("Run_Test", {RunTestQuery : RunTestQuery,TesterIds:TesterIds,EmailIds:EmailIds, DependencyText:DependencyText, TestObjective:TestObjective, Env: Env}, function(data)
 		{
 			
-			MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);
+			//MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);
 			// alert(data['Result']);
+            if(data['Result']){
+                var location='/Home/RunID/'+data['runid'];
+                window.location=location;
+            }
+            else{
+                MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);
+            }
 
 		});
 		

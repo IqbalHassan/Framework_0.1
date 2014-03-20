@@ -921,7 +921,47 @@ def Modify(AllTestCases1):
             temp=tuple(temp)
             AllTestCases.append(temp)
         return AllTestCases
-    
+def ConvertTime(total_time):
+    seconds=total_time%60
+    minuates=total_time/60
+    minuate=minuates%60
+    hour=minuates/60
+    if seconds<10:
+        seconds=('0'+str(seconds))
+    else:
+        seconds=str(seconds)
+    if minuate<10:
+        minuate=('0'+str(minuate))
+    else:
+        minuate=str(minuate)
+    if hour<10:
+        hour=('0'+str(hour))
+    else:
+        hour=str(hour)
+    timeformat=hour+':'+minuate+':'+seconds
+    timeformat=timeformat.strip()
+    return timeformat
+def AddEstimatedTime(TestCaseList):
+    ModifiedTestCaseList=[]
+    for each in TestCaseList:
+        print each[0]
+        query="select count(*) from test_steps where tc_id='%s'" %each[0]
+        Conn=GetConnection()
+        step_count=DB.GetData(Conn,query)
+        total_time=0
+        for eachstep in range(1,step_count[0]+1):
+            step_id=each[0]+'_s'+str(eachstep)
+            time_query="select description from master_data where field='estimated' and value='time' and id='%s'"%step_id
+            step_time=DB.GetData(Conn,time_query)
+            total_time+=int(step_time[0])
+        format_time=ConvertTime(total_time)
+        temp=[]
+        for eachitem in each:
+            temp.append(eachitem)
+        temp.insert(5,format_time)
+        temp=tuple(temp)
+        ModifiedTestCaseList.append(temp)
+    return ModifiedTestCaseList
 def RunId_TestCases(request,RunId): #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
     Conn=GetConnection()
     RunId=RunId.strip()
@@ -940,9 +980,10 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     print email_list
     email_receiver=[]
     for each in email_list:
-        query="select user_names from permitted_user_list where user_level='email' and email='%s'"%each
-        name=DB.GetData(Conn,query)
-        email_receiver.append(name[0])
+        if each!="":
+            query="select user_names from permitted_user_list where user_level='email' and email='%s'"%each
+            name=DB.GetData(Conn,query)
+            email_receiver.append(name[0])
     print email_receiver
     email_name=",".join(email_receiver)
     temp=[]
@@ -955,7 +996,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     print Env_Details_Data
     #####################################
     AllTestCases1 = DB.GetData(Conn, "(select "
-                                            "tct.name as MKSId, "
+                                            "tc.tc_id as MKSId, "
                                             "tc.tc_name, "
                                             "tr.status, "
                                             "to_char(tr.duration,'HH24:MI:SS'), "
@@ -970,10 +1011,11 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "from test_run tr,test_cases tc, test_case_tag tct "
                                             "where tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "
                                             "tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )" % (RunId, RunId, RunId) , False)
-    Col = ['Test Case ID', 'Test Case','Test Case Type', 'Status', 'Duration', 'Fail Reason', 'Test Log', 'Automation ID']
+    Col = ['Test Case ID', 'Test Case','Test Case Type', 'Status', 'Duration', 'Estimated Time','Fail Reason', 'Test Log', 'Automation ID']
     AllTestCases=Modify(AllTestCases1)
+    AllTestCases=AddEstimatedTime(AllTestCases)
     Pass_TestCases1 = DB.GetData(Conn, "select "
-                                            "tct.name as mksid, "
+                                            "tc.tc_id as mksid, "
                                             "tc.tc_name, "
                                             "tr.status, "
                                             "to_char(tr.duration,'HH24:MI:SS'), "
@@ -986,8 +1028,9 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
 
 
     Pass_TestCases=Modify(Pass_TestCases1)
+    Pass_TestCases=AddEstimatedTime(Pass_TestCases)
     Fail_TestCases1= DB.GetData(Conn, "select "
-                                            "tct.name as mksid, "
+                                            "tc.tc_id as mksid, "
                                             "tc.tc_name, "
                                             "tr.status, "
                                             "to_char(tr.duration,'HH24:MI:SS'), "
@@ -998,8 +1041,9 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "where tr.run_id = '%s' and tr.status in('Failed','Blocked') and "
                                             "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % RunId, False)
     Fail_TestCases=Modify(Fail_TestCases1)
+    Fail_TestCases=AddEstimatedTime(Fail_TestCases)
     Submitted_TestCases1=DB.GetData(Conn,"select "
-                                            "tct.name as mksid, "
+                                            "tc.tc_id as mksid, "
                                             "tc.tc_name, "
                                             "tr.status, "
                                             "to_char(tr.duration,'HH24:MI:SS'), "
@@ -1010,6 +1054,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "where tr.run_id = '%s' and tr.status ='Submitted' and "
                                             "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % RunId, False)
     Submitted_TestCases=Modify(Submitted_TestCases1)
+    Submitted_TestCases=AddEstimatedTime(Submitted_TestCases)
     failsteps = DB.GetData(Conn, "select DISTINCT tsl.stepname from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
 
                           "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id and tr.tc_id = tsr.tc_id "
