@@ -259,9 +259,9 @@ function ExecutionLog(){
             });
         }
     });
-    $('#data_table tr td:nth-child(3)').each(function(){
+    /*$('#data_table tr td:nth-child(3)').each(function(){
         $(this).css({'text-align':'left'});
-    })
+    })*/
 }
 function InputFailReason(){
     $('#data_table tr td:nth-child(7)').each(function(){

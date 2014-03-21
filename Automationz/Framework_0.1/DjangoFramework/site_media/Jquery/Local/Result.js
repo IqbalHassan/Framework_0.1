@@ -294,7 +294,7 @@ function make_bar_clickable(divname){
         });
         $(this).live('click',function(){
 
-            //'<a id="show_chart" class="button primary">Show Graph</a>');
+            //$("#inner").append('<a id="show_chart" class="button primary">Show Graph</a>');
 
             var RunID=$(this).closest('tr').find('td:first-child').text().trim();
             $.get("chartDraw",

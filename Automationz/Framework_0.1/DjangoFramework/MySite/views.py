@@ -4615,7 +4615,7 @@ def DataFetchForTestCases(request):
                 #Temp_Data.append("Log")
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
-    DataColumn=["#","StepName","StepType","DataRequired","Description","Expected Results","FailReason","Status"]
+    DataColumn=["#","Step","Type","Data","Description","Expected","Comment","Status"]
     query="select status from test_case_results where tc_id='%s' and run_id='%s'" %(test_case_id,run_id)
     Conn=GetConnection()
     test_case_status=DB.GetData(Conn,query,False)
