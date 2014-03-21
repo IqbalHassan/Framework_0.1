@@ -99,13 +99,19 @@ function UIChange(){
     });*/
     $('#data_table, .one-column-emphasis').each(function(){
         $(this).css({
-            'textAlign':'left'
+            'textAlign':'left',
+            'text-align':'left'
+        })
+    });
+    $('#data_table tr td:nth-child(4)').each(function(){
+        $(this).css({
+            'textAlign':'center'
         })
     });
 }
 function TestDataFetch(){
     $('#data_table tr td:nth-child(4)').each(function(){
-        $(this).css({'textAlign':'center'});
+        //$(this).css({'textAlign':'center'});
         var value=$(this).text().trim();
         console.log(value);
         if(value!="DataRequired"){
@@ -151,7 +157,7 @@ function TestDataFetch(){
                         }
                     });
                     $('#data_detail tr>td:first-child:eq(0)').each(function(){
-                        $(this).css({'textAlign':'center'});
+                        //$(this).css({'textAlign':'center'});
                     })
                     $("#inside_back").dialog({
                         buttons : {
@@ -270,7 +276,7 @@ function ExecutionLog(){
 }
 function InputFailReason(){
     $('#data_table tr td:nth-child(7)').each(function(){
-        $(this).css({'textAlign':'center'});
+        //$(this).css({'textAlign':'center'});
         var failreason=$(this).text().trim();
         var step_no=$(this).closest("tr").find("td:first-child").text().trim();
         var tc_id=$('#testcaseid').text().trim();
@@ -284,7 +290,7 @@ function InputFailReason(){
 }
 function MakeStatusSelectable(){
     $('#data_table tr td:nth-child(8)').each(function(){
-        $(this).css({'textAlign':'center'});
+        //$(this).css({'textAlign':'center'});
         var value=$(this).text().trim();
         var step_no=$(this).closest("tr").find("td:first-child").text().trim();
         var tc_id=$('#testcaseid').text().trim();
@@ -308,7 +314,7 @@ function MakeStatusSelectable(){
 }
 function table_message(column,tabledata){
     var message="";
-    message+='<table id="data_table" class="one-column-emphasis" style="font-size:small; border-collapse:collapse; text-align: left;" width="100%">';
+    message+='<table id="data_table" class="one-column-emphasis" style="text-align: left;" width="100%">';
     var header_message=header_print(column);
     message+=header_message;
     var data_message=data_print(tabledata);
@@ -321,7 +327,7 @@ function header_print(column){
     var message="";
     message+='<tr>';
     for(var i=0;i<column.length;i++){
-        message+=('<th style="text-align: center">'+column[i]+'</th> ')
+        message+=('<th>'+column[i]+'</th> ')
     }
     message+='</tr>';
     return message;
