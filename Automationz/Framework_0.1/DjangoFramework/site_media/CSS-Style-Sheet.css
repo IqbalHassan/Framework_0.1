@@ -2559,9 +2559,9 @@ option:hover, option:checked {
 select:focus,select:hover {
     outline: 0;
     background-color: #e6e6e6;
-    background-image: -moz-linear-gradient(#e6e6e6,#e6e6e6 40%);
-    background-image: -webkit-linear-gradient(#e6e6e6,#e6e6e6 40%);
-    background-image: linear-gradient(#e6e6e6,#e6e6e6 40%);
+    background-image: -moz-linear-gradient(#e6e6e6,#efefef 40%);
+    background-image: -webkit-linear-gradient(#e6e6e6,#efefef 40%);
+    background-image: linear-gradient(#e6e6e6,#efefef 40%);
 }
 /************************time-picker*****************************/
 .input-append input, .input-append select, .input-append .uneditable-input {
@@ -3345,7 +3345,6 @@ a.tooltip::before {
     z-index: 999;
     white-space:nowrap;
     bottom:9999px;
-    left: 50%;
     background:#000;
     color:#e0e0e0;
     padding:0px 7px;
@@ -3359,6 +3358,13 @@ a.tooltip::before {
 a.tooltip:hover::before {
     opacity: 1;
     bottom:-27.5px;
+}
+a.tooltip.rightwards::before {
+    left: 185%;
+    top: 8%;
+}
+a.tooltip.downwards::before {
+    left: -15%;
 }
 /**************************ReRun Tab Button***********/
 .rerunTab{
