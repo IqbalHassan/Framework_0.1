@@ -4,6 +4,8 @@ $(document).ready(function(){
 	var URL = window.location.pathname;
 	indx = URL.indexOf("Run");
     machine_div();
+    //Codes for the MileStone Tab
+    MileStoneTab();
     $.get("GetOS",
         {
             os:''
@@ -16,10 +18,6 @@ $(document).ready(function(){
         });
 	if (indx != -1)
 	{
-        //Codes for the MileStone Tab
-        MileStoneTab();
-
-        autoCompleteMilestone();
 		//when use will click on PC flip bar
 		$(".flip[title='PC_Platform']").click(function(){
 			
@@ -156,9 +154,11 @@ function autoCompleteMilestone(){
     };
 }
 function MileStoneTab(){
+    autoCompleteMilestone();
+    /*
     $('#operation_milestone').click(function(){
         autoCompleteMilestone();
-    });
+    });*/
     $('#operation_milestone').live('change',function(){
        // autoCompleteMilestone();
         var selection=$('#operation_milestone option:selected').val();
@@ -762,7 +762,7 @@ function PerformSearch() {
 											if (data['TableData'].length == 0)
 											{
 												$('#RunTestResultTable').children().remove();
-												$('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+												//$('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
 												$("#DepandencyCheckboxes").children().remove();
 												//$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
 											} 

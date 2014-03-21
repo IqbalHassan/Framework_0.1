@@ -966,9 +966,9 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     Conn=GetConnection()
     RunId=RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID","Mahchine","Tester","Estd. Time","Status","Product","Machine OS","Client","Machine IP","Email"]
+    Env_Details_Col = ["Run ID","Mahchine","Tester","Estd. Time","Status","Product","Machine OS","Client","Machine IP","Objective","Email"]
     run_id_status=GetRunIDStatus(RunId)
-    query="Select DISTINCT run_id,tester_id,assigned_tester,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip from test_run_env Where run_id = '%s'" % RunId
+    query="Select DISTINCT run_id,tester_id,assigned_tester,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip,test_objective from test_run_env Where run_id = '%s'" % RunId
     Env_Details_Data=DB.GetData(Conn, query, False)
     #Code for the total estimated time for the RUNID
     totalRunIDTime=0
@@ -1592,7 +1592,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         print DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
     query="select user_level from permitted_user_list where user_names='%s'" %TesterId
     Machine_Status=DB.GetData(Conn,query,False)
-    if Machine_Status[0][0]=='Manual':
+    if Machine_Status[0][0]=='Manual' and is_rerun!='rerun':
         query="select * from test_run_env where tester_id='%s'"%TesterId
         Machine_Detail=DB.GetData(Conn, query,False)
         print Machine_Detail[0]
@@ -1607,7 +1607,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         print client
         ip=each[11]
         Dict={'run_id':runid,'status':status,'machine_ip':ip,'last_updated_time':updateTime,'machine_os':machine_os,'client':client,'os_name':each[15],'os_version':each[14],'os_bit':each[16],'test_objective':TestObjective}
-        sWhereQuery="where tester_id='%s'" %TesterId
+        sWhereQuery="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
         print DB.UpdateRecordInTable(Conn,"test_run_env",sWhereQuery,**Dict)    
     #Creating Runid and assigning test cases to it in "testrun" table
     TestIDList = []
@@ -1682,7 +1682,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid' or TagName==CustomSet or TagName==Tag:
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
             if is_rerun=='rerun':
-                query="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
+                query="where tester_id='%s' and run_id='%s' and status='Unassigned'" %(TesterId,runid)
             
             TestSetName = TestSetName + " " + eachitem
             TestSetName = TestSetName.strip()
@@ -1690,7 +1690,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         else:
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
             if is_rerun=='rerun':
-                query="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
+                query="where tester_id='%s' and run_id='%s' and status='Unassigned'" %(TesterId,runid)
     
             TestSetName = TestSetName + " " + eachitem
             TestSetName = TestSetName.strip()
@@ -1698,7 +1698,11 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , **Dict)
     AddInfo(runid)
     if is_rerun=='rerun':
-        query="where tester_id='%s' and run_id='%s'" %(TesterId,runid)
+        query="where tester_id='%s' and run_id='%s' and status='Unassigned'" %(TesterId,runid)
+        productversion_query="select product_version from test_run_env where run_id='%s'" %previous_run
+        product_version=DB.GetData(Conn,productversion_query)
+        Dict={'product_version':product_version[0].strip()}
+        print DB.UpdateRecordInTable(Conn,"test_run_env",query,**Dict)
     Result = DB.UpdateRecordInTable(Conn, "test_run_env", query,
                                      email_notification=stEmailIds,
                                      assigned_tester=Testers,
