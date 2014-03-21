@@ -87,12 +87,17 @@ $(document).ready(function(){
     });
 });
 function UIChange(){
-    $('#data_table tr td:nth-child(5)').each(function(){
+    /*$('#data_table tr td:nth-child(5)').each(function(){
        $(this).css({
            'textAlign':'left'
        })
     });
     $('#data_table tr td:nth-child(6)').each(function(){
+        $(this).css({
+            'textAlign':'left'
+        })
+    });*/
+    $('#data_table, .one-column-emphasis').each(function(){
         $(this).css({
             'textAlign':'left'
         })
@@ -303,7 +308,7 @@ function MakeStatusSelectable(){
 }
 function table_message(column,tabledata){
     var message="";
-    message+='<table id="data_table" class="one-column-emphasis" style="font-size:small; border-collapse:collapse;" width="100%">';
+    message+='<table id="data_table" class="one-column-emphasis" style="font-size:small; border-collapse:collapse; text-align: left;" width="100%">';
     var header_message=header_print(column);
     message+=header_message;
     var data_message=data_print(tabledata);
