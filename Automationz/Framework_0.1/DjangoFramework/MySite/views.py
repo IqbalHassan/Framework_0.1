@@ -1027,7 +1027,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
                                             "from test_run tr,test_cases tc, test_case_tag tct "
                                             "where tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "
                                             "tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )" % (RunId, RunId, RunId) , False)
-    Col = ['ID', 'Name','Type', 'Status', 'Duration', 'Estd. Time','Fail Reason', 'Log', 'Automation ID']
+    Col = ['ID', 'Title','Type', 'Status', 'Duration', 'Estd. Time','Comment', 'Log', 'Automation ID']
     AllTestCases=Modify(AllTestCases1)
     AllTestCases=AddEstimatedTime(AllTestCases)
     Pass_TestCases1 = DB.GetData(Conn, "select "
@@ -3647,6 +3647,18 @@ def TestFeature_Auto(request):
     json=simplejson.dumps(results)
     return HttpResponse(json,mimetype='application/json')
 
+def Get_Feature(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        feature = request.GET.get(u'feature', '')
+        if feature=='':
+            results = DB.GetData(Conn, "select  distinct value from config_values where type='feature'",False)
+        #if len(results)>0:
+            #results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+
 def ResultFilter(request):
     Conn = GetConnection()
     results = []
@@ -3664,6 +3676,18 @@ def TestDriver_Auto(request):
     if request.method == "GET":
         value = request.GET.get(u'term', '')
         results = DB.GetData(Conn, "select  distinct value,type from config_values where value Ilike '%" + value + "%' and type='driver'",False)
+        #if len(results)>0:
+            #results.append("*Dev")
+    json=simplejson.dumps(results)
+    return HttpResponse(json,mimetype='application/json')
+
+def Get_Driver(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        driver = request.GET.get(u'driver', '')
+        if driver=='':
+            results = DB.GetData(Conn, "select  distinct value from config_values where type='driver'",False)
         #if len(results)>0:
             #results.append("*Dev")
     json=simplejson.dumps(results)

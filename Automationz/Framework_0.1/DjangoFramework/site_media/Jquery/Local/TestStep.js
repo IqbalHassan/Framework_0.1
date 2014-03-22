@@ -305,11 +305,15 @@ function populate_info_div(){
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
             '<label><b>Feature:</b></label><br>' +
-            '<input type="text" id="step_feature" class="textbox" name="step_feature" placeholder="Enter the feature"/>' +
+            '<select type="text" id="step_feature" class="combo-box step-feat" data-level="">' +
+                '<option value="">Select from list</option>' +
+            '</select>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<label><b>Driver:</b></label><br>' +
-        '<input type="text" id="step_driver" class="textbox" name="step_driver" placeholder="Enter the driver">' +
+        '<select type="text" id="step_driver" class="combo-box step-driv" data-level="">' +
+            '<option value="">Select from list</option>' +
+        '</select>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<br/>' +
@@ -403,7 +407,7 @@ function populate_info_div(){
             .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
             .appendTo( ul );
     };
-    $("#step_feature").autocomplete({
+    /*$("#step_feature").autocomplete({
         source: function(request,response){
             $.ajax({
                 url:"TestFeature_Auto",
@@ -450,8 +454,41 @@ function populate_info_div(){
             .data( "ui-autocomplete-item", item )
             .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
             .appendTo( ul );
-    };
-    $(".select-drop").selectBoxIt();
+    };*/
+    //$(".select-drop").selectBoxIt();
+    //$('.combo-box').combobox();
+    $.ajax({
+        url:'GetFeature/',
+        dataType : "json",
+        data : {
+            feature : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".step-feat[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+    $.ajax({
+        url:'GetDriver/',
+        dataType : "json",
+        data : {
+            driver : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".step-driv[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
 }
 function populate_footer_div(){
     $('#footer_div').append('' +

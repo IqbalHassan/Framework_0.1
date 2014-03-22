@@ -283,7 +283,7 @@ function InputFailReason(){
         var step_id=tc_id+"_s"+step_no+"_reason";
         step_id=step_id.trim();
        if($(this).text().trim()!="FailReason"){
-           $(this).html('<textarea id="'+step_id+'" column="100" style="align:center"/></textarea>');
+           $(this).html('<textarea id="'+step_id+'" column="100"/></textarea>');
            $('#'+step_id).val(failreason);
        }
     });
@@ -298,7 +298,7 @@ function MakeStatusSelectable(){
         step_id=step_id.trim();
         console.log(value);
         if(value!="Status"){
-            $(this).html('<select class="select-drop" id="'+step_id+'" style="align:center">' +
+            $(this).html('<select class="select-drop" id="'+step_id+'">' +
                 '<option value="Passed">Passed</option>' +
                 '<option value="Failed">Failed</option>' +
                 '<option value="Skipped">Skipped</option>' +

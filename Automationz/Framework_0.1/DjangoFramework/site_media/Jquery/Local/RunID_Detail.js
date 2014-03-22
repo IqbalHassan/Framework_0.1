@@ -340,6 +340,9 @@ function LoadAllTestCases(divname){
         $(this).html('<textarea rows="3" cols="30" readonly="readonly" style="border: none;text-align: center; vertical-align: middle;color: #669;display:inline-block;">'+data+'</textarea>');
     });
     /////////////////////////////////////////////////////
+    /*$('#'+divname+' tr td:last-child').each(function(){
+        $(this).remove();
+    });*/
 }
 function connectLogFile(ID){
     $("#"+ID+" tr td:nth-child(8)").each(function(){
