@@ -222,7 +222,7 @@ def ResultPage(request,Page_No):
     print index
     data=ResultTableFetch(index)
     print data
-    Column=["Run ID","Objective","Run Type","Assigned Tester","Report","Status","Duration","Product Version"]
+    Column=["Run ID","Objective","Run Type","Tester","Report","Status","Duration","Version"]
     template=get_template('Result.html')
     all_data=zipdata(data['total'], data['all_status'])
     """complete_data=zipdata(data['complete'],data['complete_status'])
@@ -3383,12 +3383,12 @@ def Process_Git(request):
         command = request.GET.get(u'command', '')
         if command == 'Pull':
             GitApi.pull_latest_git()
-            message = 'git pull'
+            message = 'git pulled'
         elif command == 'Log':
             GitApi.git_log(-10)
             message = 'git log'
-
-    return render_to_response('Admin.html',{'error_message':message},context_instance=RequestContext(request))
+    json = simplejson.dumps(message)
+    return HttpResponse(json, mimetype='application/json')
 
 def DeleteExistingTestCase(TC_Ids):
     conn = Conn
