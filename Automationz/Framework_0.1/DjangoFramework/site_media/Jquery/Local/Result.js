@@ -9,7 +9,7 @@ $(document).ready(function(){
     make_bar_clickable('#cancelledRun');
     make_bar_clickable('#progressRun');
     make_bar_clickable('#submittedRun');
-
+    PaginationButton();
     //Testers
     $.ajax({
         url:'GetTesters/',
@@ -253,7 +253,37 @@ $(document).ready(function(){
 
 
 });
+function PaginationButton(){
+    $('#previous_page').click(function(){
+        var url=window.location.pathname;
+        index=url.split('/')[3].split('-')[1];
+        if(index>1){
+            index--;
+        }
+        else{
+            index=1;
+        }
+        var location='/Home/Results/Page-'+index+'/';
 
+        window.location=location;
+    });
+    $('#next_page').click(function(){
+        var url=window.location.pathname;
+        $.get("GetPageCount",{},function(data){
+            console.log(data);
+            index=url.split('/')[3].split('-')[1];
+            if(index<data){
+                index++;
+            }
+            else{
+                index=data;
+            }
+            var location='/Home/Results/Page-'+index+'/';
+            window.location=location;
+        });
+
+    });
+}
 function make_clickable(divname){
     $(divname+' tr>td:first-child').each(function(){
        $(this).css({

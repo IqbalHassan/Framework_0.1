@@ -144,12 +144,20 @@ def make_status_array(refined_list):
         pass_list.append(temp)
     print pass_list
     return pass_list
-def ResultTableFetch():
+def ResultTableFetch(index):
     Conn=GetConnection()
     #interval="1"
+    step=2
+    limit="limit "+str(step)
+    ########Code for selecting offset#########
+    index=int(index)
+    index=index-1
+    index=index*step
+    offset="offset "+str(index)
+    offset=offset.strip()
     progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') order by ter.teststarttime desc)"
     completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
-    total_query=progress_query+' union all '+completed_query
+    total_query=progress_query+' union all '+completed_query+ limit+" "+offset
     get_list=DB.GetData(Conn,total_query,False)
     get_list=set(get_list)
     total_run=make_array(get_list)
@@ -174,9 +182,15 @@ def ResultTableFetch():
     progress_status=make_status_array(progress_run)
     submitted_status=make_status_array(submitted_run)"""
     all_status=make_status_array(total_run)
+    ###########Code for getting the total entry##############
+    query="select count(*) from test_run_env tre,test_env_results ter where ter.run_id=tre.run_id"
+    totalCount=DB.GetData(Conn,query)
     data={
           'total':total_run,
-          'all_status':all_status
+          'all_status':all_status,
+          'totalCount':totalCount[0],
+          'start':index+1,
+          'end':index+step
           }
     return data
 def zipdata(data_array,status_array):
@@ -188,8 +202,24 @@ def zipdata(data_array,status_array):
         temp=tuple(temp)
         data.append(temp)
     return data
-def ResultPage(request):
-    data=ResultTableFetch()
+def GetPageCount(request):
+    totalPage=0
+    if request.is_ajax():
+        if request.method=='GET':
+            Conn=GetConnection()
+            query="select count(*) from test_run_env tre,test_env_results ter where tre.run_id=ter.run_id"
+            totalEntry=DB.GetData(Conn,query)
+            totalPage=totalEntry[0]/2
+            if((totalEntry[0]%2)>0):
+                totalPage+=1
+    result=simplejson.dumps(totalPage)
+    return HttpResponse(result,mimetype='application/json')
+def ResultPage(request,Page_No):
+    print Page_No
+    Page_No=str(Page_No)
+    index=Page_No.split('-')[1].strip()
+    print index
+    data=ResultTableFetch(index)
     print data
     Column=["Run ID","Objective","Run Type","Assigned Tester","Report","Status","Duration","Product Version"]
     template=get_template('Result.html')
@@ -200,7 +230,10 @@ def ResultPage(request):
     submitted_data=zipdata(data['submitted'],data['submitted_status'])"""
     Dict={
         'column':Column,
-        'all':all_data,        
+        'all':all_data,
+        'start':data['start'],
+        'end':data['end'],
+        'total_count':data['totalCount']        
         }
     variables=Context(Dict)
     output=template.render(variables)
