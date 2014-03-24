@@ -127,43 +127,64 @@ $(document).ready(function(){
 
 	
 });
-function autoCompleteMilestone(){
+function MileStoneTab(){
     $('#msinput').autocomplete({
         source:function(request,response){
-            $.ajax({
-                url:"AutoMileStone",
-                dataType:"json",
-                data:{term:request.term},
-                success:function(data){
-                    response(data);
-                }
-            });
+            if($('#operation_milestone option:selected').val()!="0"){
+                $.ajax({
+                    url:"AutoMileStone",
+                    dataType:"json",
+                    data:{term:request.term},
+                    success:function(data){
+                        response(data);
+                    }
+                });
+            }
         },
         select:function(request,ui){
-            var value=ui.item[0];
+            var value=ui.item[0].trim();
             if (value!=""){
-                $(this).val(value);
+                $(this).val(value.trim());
                 return false;
             }
         }
     }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
         return $( "<li></li>" )
             .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong></a>" )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
             .appendTo( ul );
     };
-}
-function MileStoneTab(){
-    autoCompleteMilestone();
-    /*
-    $('#operation_milestone').click(function(){
-        autoCompleteMilestone();
-    });*/
     $('#operation_milestone').live('change',function(){
-       // autoCompleteMilestone();
+        // autoCompleteMilestone();
         var selection=$('#operation_milestone option:selected').val();
         if(selection==2){
             $('#renamebox').css({'display':'inline-block'});
+            $('#msinput2').autocomplete({
+                source:function(request,response){
+                    if($('#operation_milestone option:selected').val()!="0"){
+                        $.ajax({
+                            url:"AutoMileStone",
+                            dataType:"json",
+                            data:{term:request.term},
+                            success:function(data){
+                                response(data);
+                            }
+                        });
+                    }
+                },
+                select:function(request,ui){
+                    var value=ui.item[0].trim();
+                    if (value!=""){
+                        $(this).val(value.trim());
+                        return false;
+                    }
+                }
+            }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                return $( "<li></li>" )
+                    .data( "ui-autocomplete-item", item )
+                    .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
+                    .appendTo( ul );
+            };
         }
         else{
             $('#renamebox').css({'display':'none'});
@@ -559,9 +580,18 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 								+"<td>"
 									+"<input class = 'ui-corner-all textbox' id = 'TestObjective' style = 'display:none;margin-left: -104%'  size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
 								+"</td>"
-						+"</tr>"		
-								
-							
+						+"</tr>"
+
+                        +"<tr>"
+
+                            +"<td >"
+                                +"<label  style = 'display:none'   class = 'Text' id = 'TestMileStoneText' > <b> *Test MileStone: </b></label>"
+                            +"</td>"
+
+                            +"<td>"
+                                +"<input class = 'ui-corner-all textbox' id = 'TestMileStone' style = 'display:none;margin-left: -104%'  size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
+                            +"</td>"
+                        +"</tr>"
 					
 					
 						+ "<tr>"
@@ -928,7 +958,8 @@ function SelecteUserProcess() {
 			$("P:contains('Test Data Type')").fadeOut(100);
 			
 			$("label#TestObjective, input#TestObjective").css("display","block");
-			
+			$("label#TestMileStoneText, input#TestMileStone").css("display","block");
+
 		 }
 
 	});
@@ -1123,6 +1154,37 @@ function SelectEmail()
 
         }
     });
+    $('#TestMileStone').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                    url:"AutoMileStone",
+                    dataType:"json",
+                    data:{term:request.term},
+                    success:function(data){
+                        response(data);
+                    }
+                });
+        },
+        select:function(request,ui){
+            var value=ui.item[0].trim();
+            if (value!=""){
+                $(this).val(value.trim());
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
+            .appendTo( ul );
+    };
+    $("#TestMileStone").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
     $("#DeleteTester").live('click', function() {
 
         $(this).parent().next().remove();
@@ -1136,6 +1198,7 @@ function SelectEmail()
 var EmailIds = '';
 var DependencyText = '';
 var TestObjective = '';
+var TestMileStone='';
 //var TestDataType = '';
 var TesterIds='';
 function RunTestProcess() {
@@ -1176,14 +1239,17 @@ function RunTestProcess() {
 		
 		//Getting Test Objective text
 		TestObjective =  $("input#TestObjective").val();
-		if(TesterIds === "" || TestObjective===""){
+        TestObjective=TestObjective.trim();
+        TestMileStone=$('#TestMileStone').val();
+        TestMileStone=TestMileStone.trim();
+		if(TesterIds === "" || TestObjective===""|| TestMileStone==""){
             message="Fields are not filled properly";
             MsgBox("Test Run Error",message);
             message="";
             return;
         }
 		Env = Get_Selected_Env_Name()
-		$.get("Run_Test", {RunTestQuery : RunTestQuery,TesterIds:TesterIds,EmailIds:EmailIds, DependencyText:DependencyText, TestObjective:TestObjective, Env: Env}, function(data)
+		$.get("Run_Test", {RunTestQuery : RunTestQuery,TesterIds:TesterIds,EmailIds:EmailIds, DependencyText:DependencyText, TestObjective:TestObjective,TestMileStone:TestMileStone, Env: Env}, function(data)
 		{
 			
 			//MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);

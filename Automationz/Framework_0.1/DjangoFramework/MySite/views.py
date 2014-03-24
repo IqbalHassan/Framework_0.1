@@ -966,9 +966,9 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     Conn=GetConnection()
     RunId=RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID","Mahchine","Tester","Estd. Time","Status","Product","Machine OS","Client","Machine IP","Objective","Email"]
+    Env_Details_Col = ["Run ID","Mahchine","Tester","Estd. Time","Status","Product","Machine OS","Client","Machine IP","Objective","MileStone","Email"]
     run_id_status=GetRunIDStatus(RunId)
-    query="Select DISTINCT run_id,tester_id,assigned_tester,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip,test_objective from test_run_env Where run_id = '%s'" % RunId
+    query="Select DISTINCT run_id,tester_id,assigned_tester,'"+run_id_status+"',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip,test_objective,test_milestone from test_run_env Where run_id = '%s'" % RunId
     Env_Details_Data=DB.GetData(Conn, query, False)
     #Code for the total estimated time for the RUNID
     totalRunIDTime=0
@@ -1513,6 +1513,8 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
             TestObjective = request.GET.get('TestObjective', '')
             TestObjective = str(TestObjective.replace(u'\xa0', u''))
+            TestMileStone = request.GET.get('TestMileStone', '')
+            TestMileStone = str(TestMileStone.replace(u'\xa0', u''))
             is_rerun=request.GET.get(u'ReRun','')
             previous_run=request.GET.get('RunID','')    
             Environment = request.GET.get('Env', '')
@@ -1703,19 +1705,26 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         product_version=DB.GetData(Conn,productversion_query)
         Dict={'product_version':product_version[0].strip()}
         print DB.UpdateRecordInTable(Conn,"test_run_env",query,**Dict)
+    #####Code for adding MileStone
+    if is_rerun=='rerun':
+        milestone_query="select test_milestone from test_run_env where run_id='%s'"%previous_run
+        milestone_list=DB.GetData(Conn,milestone_query)
+        TestMileStone=milestone_list[0]
     Result = DB.UpdateRecordInTable(Conn, "test_run_env", query,
                                      email_notification=stEmailIds,
                                      assigned_tester=Testers,
                                      test_objective=TestObjective,
                                      Status='Submitted',
-                                     run_type='Manual'
+                                     run_type='Manual',
+                                     test_milestone=TestMileStone
                                      )
     print DB.UpdateRecordInTable(Conn, "test_run_env", query,
                                      email_notification=stEmailIds,
                                      assigned_tester=Testers,
                                      test_objective=TestObjective,
                                      Status='Submitted',
-                                     run_type='Manual'
+                                     run_type='Manual',
+                                     test_milestone=TestMileStone
                                      )
     #NJ-Insert into run env results to display submitted runs
     now = DB.GetData(Conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -5187,7 +5196,7 @@ def AutoMileStone(request):
             Conn=GetConnection()
             milestone=request.GET.get(u'term','')
             print milestone
-            query="select value from config_values where type='milestone' and value ilike'%%%s%%'"%milestone
+            query="select value,type from config_values where type='milestone' and value ilike'%%%s%%'"%milestone
             milestone_list=DB.GetData(Conn,query,False)
     result=simplejson.dumps(milestone_list)
     return HttpResponse(result,mimetype='application/json')
@@ -5205,11 +5214,17 @@ def MileStoneOperation(request):
                 query="select count(*) from config_values where type='milestone' and value='%s'"%old_name
                 available=DB.GetData(Conn,query)
                 if(available[0]>0):
-                    #start Rename Operation
-                    condition="where type='milestone' and value='%s'"%old_name
-                    Dict={'value':new_name.strip()}
-                    print DB.UpdateRecordInTable(Conn, "config_values", condition,**Dict)
-                    confirm_message="MileStone is renamed"
+                    #check if old name is given again:
+                    againQuery="select count(*) from config_values where type='milestone' and value='%s'"%new_name
+                    again=DB.GetData(Conn,againQuery)
+                    if(again[0]>0):
+                        error_message="MileStone already exists,can't rename"
+                    else:
+                        #start Rename Operation
+                        condition="where type='milestone' and value='%s'"%old_name
+                        Dict={'value':new_name.strip()}
+                        print DB.UpdateRecordInTable(Conn, "config_values", condition,**Dict)
+                        confirm_message="MileStone is renamed"
                 else:
                     confirm_message="No milestone is found"
             #start Create Operation
