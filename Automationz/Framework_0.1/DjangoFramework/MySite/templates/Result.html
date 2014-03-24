@@ -13,6 +13,17 @@
     <!--div class="responsive-tabs" width="100%">
 
         <h2>All</h2-->
+        <div align="right">
+            <div>
+                <div>
+                    <b style="font-size: 120%;">showing {{start}}-{{end}} entry of {{total_count}} entries</b>
+                </div>
+                <div style="display: inline-block">
+                    <input  type="button" class="minibutton" id="previous_page" value="<"/>
+                    <input  type="button" class="minibutton" id="next_page" value=">"/>
+                </div>
+            </div>
+        </div>
         <div align="center">
 
             <div id="allRun">
@@ -20,7 +31,7 @@
                 <div align="center"><input id="searchInput" placeholder="Type to Filter" class="textbox"></div>
                 <br/-->
 
-                <a id="simple-menu" href="#sidr" class="button" style="text-decoration: none;float: left"><img title="Advanced Filter" alt="Advanced Filter" class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
+                <!--<a id="simple-menu" href="#sidr" class="button" style="text-decoration: none;float: left"><img title="Advanced Filter" alt="Advanced Filter" class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
                 <div id="sidr" class="sidr">
 
                     <ul>
@@ -61,7 +72,7 @@
                         </li>
                     </ul>
                 </div>
-
+                -->
                 {%if all %}
                 <table class="one-column-emphasis">
                     <thead>
@@ -139,8 +150,10 @@
                     </td>
                 </tr>
             </table>-->
-            <div id="allPage" align="center">
-
+            <div id="allPage" align="center" style="display: none;">
+                <br>
+                <br>
+                <b style="font-size: 150%;font-weight: bolder;">---------------------------------------------------------------------------------------</b>
             </div>
         </div>
 
