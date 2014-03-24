@@ -147,7 +147,7 @@ def make_status_array(refined_list):
 def ResultTableFetch(index):
     Conn=GetConnection()
     #interval="1"
-    step=2
+    step=20
     limit="limit "+str(step)
     ########Code for selecting offset#########
     index=int(index)
@@ -203,14 +203,15 @@ def zipdata(data_array,status_array):
         data.append(temp)
     return data
 def GetPageCount(request):
+    step=20
     totalPage=0
     if request.is_ajax():
         if request.method=='GET':
             Conn=GetConnection()
             query="select count(*) from test_run_env tre,test_env_results ter where tre.run_id=ter.run_id"
             totalEntry=DB.GetData(Conn,query)
-            totalPage=totalEntry[0]/2
-            if((totalEntry[0]%2)>0):
+            totalPage=totalEntry[0]/step
+            if((totalEntry[0]%step)>0):
                 totalPage+=1
     result=simplejson.dumps(totalPage)
     return HttpResponse(result,mimetype='application/json')

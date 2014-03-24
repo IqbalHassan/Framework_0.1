@@ -254,7 +254,7 @@ $(document).ready(function(){
 
 });
 function PaginationButton(){
-    $('#previous_page').click(function(){
+    $('.previous_page').click(function(){
         var url=window.location.pathname;
         index=url.split('/')[3].split('-')[1];
         if(index>1){
@@ -267,7 +267,7 @@ function PaginationButton(){
 
         window.location=location;
     });
-    $('#next_page').click(function(){
+    $('.next_page').click(function(){
         var url=window.location.pathname;
         $.get("GetPageCount",{},function(data){
             console.log(data);
