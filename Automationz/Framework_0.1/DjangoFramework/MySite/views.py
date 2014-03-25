@@ -3375,6 +3375,12 @@ def Admin(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
+def FeaDri(request):
+    templ = get_template('Feature_Driver.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
+
 def Process_Git(request):
     #Conn = GetConnection()
     import GitApi
@@ -4080,7 +4086,8 @@ def FeatureDriver_Delete(request):                              #minar09
 
 def FeatureDriverDelete(request):                               #minar09
     error_message="Feature/Driver is deleted successfully"
-    return TestStep(request,error_message)
+    output = {'error_message':error_message}
+    return render_to_response('Feature_Driver.html',output,context_instance=RequestContext(request))
 
 def myview(request):
     import RenderPDF

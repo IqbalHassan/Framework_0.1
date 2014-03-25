@@ -99,7 +99,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Populate_info_div/$',Populate_info_div),
     url(r'^Home/.*/TestStep_Delete/$',TestStep_Delete),
     url(r'^Home/.*/FeatureDriver_Delete/$',FeatureDriver_Delete),
-    url(r'^Home/ManageTestCases/FeatureDriverDelete/$',FeatureDriverDelete),
+    #url(r'^Home/ManageTestCases/FeatureDriverDelete/$',FeatureDriverDelete),
     url(r'^Home/ManageTestCases/TestStepDelete/$',TestStepDelete),
     url(r'^Home/ManageTestCases/Process_TestStep/$',Process_TestStep),
     url(r'^Home/ManageTestCases/Process_FeatureDriver/$',Process_FeatureDriver),
@@ -165,7 +165,8 @@ urlpatterns = patterns('',
     #Admin Page
     url(r'^Home/Admin/$',Admin),
     url(r'^Home/.*/Process_Git/$',Process_Git),
-    
+    url(r'^Home/FeaDri/$',FeaDri),
+    url(r'^Home/FeaDri/FeatureDriverDelete/$',FeatureDriverDelete),
     url(r'^Home/.*/myview/$',myview), 
     
     

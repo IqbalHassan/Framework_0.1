@@ -1,0 +1,87 @@
+{% extends "BaseTemplate.html" %}
+{% block title%} Feature & Driver {%endblock%}
+{% block content %}
+
+<script type="text/javascript" src="/site_media/Jquery/Local/Feature_Driver.js"></script>
+
+
+<article>
+
+    <!--div id='feature_driver_div' align="center"-->
+        <div id='feature_driver_choice'>
+
+        </div>
+
+        <form action="{% url 'MySite.views.Process_FeatureDriver'%}" method="post">  <!-- Process_FeatureDriver -->
+            {%csrf_token%}
+            <div id='feature_driver_info_div'>
+
+                <div align="center">
+                <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
+                    <tr>
+                        <td align="center">
+                            <div id="left">
+                                <label><b>Type:</b></label>
+                                &nbsp;&nbsp;&nbsp;
+                                <select id="type" class="select-drop" name="type">
+                                    <option selected value="">Select from list</option>
+                                    <option value="feature">Feature</option>
+                                    <option value="driver">Driver</option>
+                                    </select>
+                                </div>
+                            </td>
+                        <td align="center">
+                            <div id="right">
+                                <label><b>Operation:</b></label>
+                                &nbsp;&nbsp;&nbsp;
+                                <select id="operation" class="select-drop" name="operation">
+                                    <option value="0"selected="selected">Select from list</option>
+                                    <option value="1">Create</option>
+                                    <option value="2">Rename</option>
+                                    <option value="3">Delete</option>
+                                    </select>
+                                </div>
+                            </td>
+                        <td align="center">
+                            <div id="center">
+                                <label><b id="name_variable">Name:</b></label>
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="ui-corner-all textbox" id="input" style="margin: 5px; width:auto;" type='text' title = 'Please Type Keyword' name='inputName' />
+                                </div>
+                            </td>
+                        <td align="center">
+                            <div id="renamebox">
+
+                                </div>
+                            </td>
+                        <td align="center">
+                            <div id="error">
+                                <p><b>No Operation is selected</b></p>
+                                </div>
+                            </td>
+                        <td align="center">
+                            <br/>
+                            <div id="button_id" style="display: none">
+                                <input type='submit' id="select_button" class="button minibutton primary" name='submit_button'/>
+                                </div>
+                            <div id="button_del" style="display: none">
+                                <input type='button' id="del_button" class="button minibutton primary" name='del_button'/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+            <br>
+        </form>
+    <!--/div-->
+
+    {% if error_message %}
+    <div id="error_message" align="center">
+        <p><strong>{{error_message}}</strong></p>
+    </div>
+    {%endif%}
+
+</article>
+{% endblock %}
