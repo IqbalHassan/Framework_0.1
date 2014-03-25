@@ -155,8 +155,8 @@ def ResultTableFetch(index):
     index=index*step
     offset="offset "+str(index)
     offset=offset.strip()
-    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') order by ter.teststarttime desc)"
-    completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
+    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') order by ter.teststarttime desc)"
+    completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
     total_query=progress_query+' union all '+completed_query+ limit+" "+offset
     get_list=DB.GetData(Conn,total_query,False)
     get_list=set(get_list)
@@ -222,7 +222,7 @@ def ResultPage(request,Page_No):
     print index
     data=ResultTableFetch(index)
     print data
-    Column=["Run ID","Objective","Run Type","Tester","Report","Status","Duration","Version"]
+    Column=["Run ID","Objective","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
     template=get_template('Result.html')
     all_data=zipdata(data['total'], data['all_status'])
     """complete_data=zipdata(data['complete'],data['complete_status'])
