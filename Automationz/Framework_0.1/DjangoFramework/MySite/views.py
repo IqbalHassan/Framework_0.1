@@ -5298,3 +5298,94 @@ def MileStoneOperation(request):
     result=simplejson.dumps(results)
     return HttpResponse(result,mimetype='application/json')    
 ############################################
+def TableDataTestCasesOtherPages(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
+    Conn = GetConnection()
+    propertyValue = "Ready"
+    tabledata = []
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'Query', '')
+            UserText = UserData.split(":");
+            #Environment = request.GET.get(u'Env', '')
+            RefinedData=[]
+            platform=['PC','Mac']
+            for Environment in platform:
+                if Environment == "Mac":
+                    Section = "MacSection"
+                    Test_Run_Type = "Mac_test_run_type"
+                    Priority = "MacPriority"
+                    TCStatusName = "MacStatus"
+                    CustomTag = "MacCustomTag"
+                    CustomSet="set"
+                    Tag='tag'
+                if Environment == "PC":
+                    Section = "Section"
+                    Test_Run_Type = "test_run_type"
+                    Priority = "Priority"
+                    TCStatusName = "Status"
+                    CustomTag = "CustomTag"
+                    CustomSet="set"
+                    Tag='tag'
+                QueryText = []
+                for eachitem in UserText:
+                    if len(eachitem) != 0 and  len(eachitem) != 1:
+                        QueryText.append(eachitem.strip())
+
+                if "*Dev" in QueryText:
+                    QueryText.remove("*Dev")
+                    propertyValue = "Dev"
+            
+            
+                #In case if user search test cases using test case ids    
+                TestIDList = []
+                for eachitem in QueryText:
+                    TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
+                    for eachProp in TestID:
+                        if eachProp == 'tcid':
+                            TestIDList.append(eachitem)
+                            break
+            
+            
+                TableData = []
+                if len(TestIDList) > 0:
+                    for eachitem in TestIDList:
+                        tabledata = DB.GetData(Conn, "select distinct tc_id,tc_name from test_cases "
+                                    "where tc_id = '%s'" % eachitem, False)
+                        TableData.append(tabledata[0])
+            
+            
+                elif len(QueryText) > 0:
+                    count = 1
+                    for eachitem in QueryText:
+                        if count == 1:
+                            Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
+                            count = count + 1
+                        elif count >= 2:
+                            Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
+                    Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
+                    Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
+                    query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name "+Query
+                    TableData = DB.GetData(Conn, "select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc "
+                                    "where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query, False)
+                TempTableData=[]
+                RefinedDataTemp=[]
+                Check_TestCase(TableData, RefinedDataTemp)
+                for each in RefinedDataTemp:
+                    temp=[]
+                    for eachitem in each:
+                        temp.append(eachitem)
+                    query="select name from test_case_tag where tc_id='%s' and property='machine_os'"%each[0]
+                    platform=DB.GetData(Conn,query)
+                    temp.append(platform[0])
+                    temp=tuple(temp)
+                    TempTableData.append(temp)
+                for each in TempTableData:
+                    if each not in RefinedData:
+                        RefinedData.append(each)
+    Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform']
+
+    #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
+    results = {'Heading':Heading, 'TableData':RefinedData}
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
