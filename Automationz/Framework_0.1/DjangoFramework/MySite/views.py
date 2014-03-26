@@ -1562,7 +1562,9 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                 Priority = "MacPriority"
                 TCStatusName = "MacStatus"
                 CustomTag = "MacCustomTag"
-
+                CustomSet='set'
+                Tag='tag'
+                Client='client'
             if Environment == "PC":
                 Section = "Section"
                 Test_Run_Type = "test_run_type"
@@ -1571,7 +1573,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                 CustomTag = "CustomTag"
                 CustomSet='set'
                 Tag='tag'
-
+                Client='client'
             UserText = UserData.split(":");
             EmailIds = EmailIds.split(":")
             DependencyText = DependencyText.split(":")
@@ -1668,11 +1670,11 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         for eachitem in QueryText:
             if count == 1:
                 #Query = "HAVING COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
                 #Query = Query + "AND COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0" % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         TestCasesIDs = DB.GetData(Conn, "select distinct tct.tc_id from test_case_tag tct, test_cases tc "
@@ -4655,7 +4657,7 @@ def DataFetchForTestCases(request):
             print test_case_id
             #Get the test steps from test_step_results
             Conn=GetConnection()
-            query="select test_steps.step_id from test_step_results,test_steps where test_step_results.tc_id=test_steps.tc_id and test_step_results.teststep_id=test_steps.step_id and test_step_results.tc_id='%s' and test_step_results.run_id='%s' order by test_steps.teststepsequence;"%(test_case_id,run_id)
+            query="select step_id from test_steps where tc_id='%s'"%test_case_id
             TestStepList=DB.GetData(Conn, query)
             DataCollected=[]
             Conn.close()
@@ -4832,6 +4834,7 @@ def update_runid(run_id,test_case_id):
         status='Complete'
         endtime=DB.GetData(oConn,"select current_timestamp",False)
         Dict.update({'testendtime':str(endtime[0][0])})
+        
     elif progress>0 or submit_count>0:
         status='In-Progress'
         Dict.update({'status':status})
@@ -4842,11 +4845,30 @@ def update_runid(run_id,test_case_id):
             endtime=""
             Dict.update({'testendtime':endtime,'teststartime':str(starttime[0][0])})
     sWhereQuery="where run_id='%s'" %run_id
-
     Dict1.update({'status':status})
     print DB.UpdateRecordInTable(oConn, "test_run_env", sWhereQuery,**Dict1)
     print DB.UpdateRecordInTable(oConn, "test_env_results", sWhereQuery,**Dict)
     print DB.UpdateRecordInTable(oConn, "test_env_results", sWhereQuery,**Dict1)
+    #########################Add a new entry in the TestRunEnv Table#########################
+    #Get Machine Information
+    machine_query="select * from test_run_env where run_id='%s'"%run_id
+    machine_info=DB.GetData(oConn,machine_query,False)
+    print machine_info
+    status_query="select distinct status from test_run_env where tester_id='%s'"%(machine_info[0][3].strip())
+    status_list=DB.GetData(oConn,status_query)
+    forbidden_status=['Submitted','In-Progress']
+    command="create"
+    for each in status_list:
+        if each in forbidden_status:
+            command="can't create"
+            print DB.DeleteRecord(oConn,"test_run_env",tester_id=machine_info[0][3].strip(),status='Unassigned')
+    if command=="create":
+        currenttime=DB.GetData(oConn,"select current_timestamp",False)
+        updated_time=str(currenttime[0][0])
+        print DB.DeleteRecord(oConn, "test_run_env",tester_id=machine_info[0][3].strip(),status='Unassigned')
+        Dict={'tester_id':machine_info[0][3].strip(),'status':'Unassigned','machine_os':machine_info[0][6].strip(),'client':machine_info[0][7].strip(),'last_updated_time':updated_time.strip(),'os_bit':machine_info[0][16].strip(),'os_name':machine_info[0][15].strip(),'os_version':machine_info[0][14].strip(),'machine_ip':machine_info[0][11].strip(),'product_version':machine_info[0][10].strip()}
+        print DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
+    #########################################################################################
 def UpdateTestStepStatus(List,run_id,test_case_id,test_case_status,failReason):
     for each in List:
         print each
