@@ -177,13 +177,9 @@ def ResultTableFetch(index):
     total_run=make_array(get_list)
     print total_run
     all_status=make_status_array(total_run)
-    ###########Code for getting the total entry##############
-    query="select count(*) from test_run_env tre,test_env_results ter where ter.run_id=tre.run_id"
-    totalCount=DB.GetData(Conn,query)
     data={
           'total':total_run,
           'all_status':all_status,
-          'totalCount':totalCount[0],
           'start':index+1,
           'end':index+step
           }
@@ -225,7 +221,7 @@ def ResultPage(request,Page_No):
         'all':all_data,
         'start':data['start'],
         'end':data['end'],
-        'total_count':data['totalCount']        
+        'total_count':len(all_data)    
         }
     variables=Context(Dict)
     output=template.render(variables)
