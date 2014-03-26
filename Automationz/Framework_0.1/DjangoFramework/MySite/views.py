@@ -449,6 +449,7 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             CustomTag = "MacCustomTag"
             CustomSet="set"
             Tag='tag'
+            Client='client'
         if Environment == "PC":
             Section = "Section"
             Test_Run_Type = "test_run_type"
@@ -457,10 +458,11 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             CustomTag = "CustomTag"
             CustomSet="set"
             Tag='tag'
+            Client='client'
 
         results = DB.GetData(Conn, "select distinct name,property from test_case_tag "
                                    "where name Ilike '%" + value + "%' "
-                                     "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') "
+                                     "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') "
                                      "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) ",False
                                      )
 
@@ -654,6 +656,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 CustomTag = "MacCustomTag"
                 CustomSet="set"
                 Tag='tag'
+                Client='client'
             if Environment == "PC":
                 Section = "Section"
                 Test_Run_Type = "test_run_type"
@@ -662,6 +665,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 CustomTag = "CustomTag"
                 CustomSet="set"
                 Tag='tag'
+                Client='client'
             QueryText = []
             for eachitem in UserText:
                 if len(eachitem) != 0 and  len(eachitem) != 1:
@@ -695,10 +699,10 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         count = 1
         for eachitem in QueryText:
             if count == 1:
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name "+Query
@@ -5318,6 +5322,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     CustomTag = "MacCustomTag"
                     CustomSet="set"
                     Tag='tag'
+                    Client='client'
                 if Environment == "PC":
                     Section = "Section"
                     Test_Run_Type = "test_run_type"
@@ -5326,6 +5331,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     CustomTag = "CustomTag"
                     CustomSet="set"
                     Tag='tag'
+                    Client='client'
                 QueryText = []
                 for eachitem in UserText:
                     if len(eachitem) != 0 and  len(eachitem) != 1:
@@ -5358,15 +5364,14 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     count = 1
                     for eachitem in QueryText:
                         if count == 1:
-                            Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
+                            Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
                             count = count + 1
                         elif count >= 2:
-                            Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"') THEN 1 END) > 0 "
+                            Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
                     Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
                     Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
                     query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name "+Query
-                    TableData = DB.GetData(Conn, "select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc "
-                                    "where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query, False)
+                    TableData = DB.GetData(Conn,query,False)
                 TempTableData=[]
                 RefinedDataTemp=[]
                 Check_TestCase(TableData, RefinedDataTemp)
