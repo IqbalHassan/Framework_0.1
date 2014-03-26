@@ -101,6 +101,7 @@ def make_array(get_list):
         #print temp
         for eachitem in each:
             temp.append(eachitem)
+        temp.pop()
         temp.insert(4,"status")
         temp=tuple(temp)
         refined_list.append(temp)
@@ -155,11 +156,19 @@ def ResultTableFetch(index):
     index=index*step
     offset="offset "+str(index)
     offset=offset.strip()
-    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') order by ter.teststarttime desc)"
+    """progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') order by ter.teststarttime desc)"
     completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
-    total_query=progress_query+' union all '+completed_query+ limit+" "+offset
+    total_query=progress_query+' union all '+completed_query+ limit+" "+offset"""
+    total_query="select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime "
+    total_query+="from test_run_env tre, test_env_results ter "
+    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')) "
+    total_query+="union all "
+    total_query+="(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime "
+    total_query+="from test_run_env tre, test_env_results ter "
+    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress'))) as A order by starttime desc,run_id asc "
+    total_query+=(limit+" "+offset)
     get_list=DB.GetData(Conn,total_query,False)
-    get_list=set(get_list)
+    #get_list=set(get_list)
     total_run=make_array(get_list)
     print total_run
     all_status=make_status_array(total_run)
