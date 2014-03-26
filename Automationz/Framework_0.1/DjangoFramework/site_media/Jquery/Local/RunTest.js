@@ -19,17 +19,17 @@ $(document).ready(function(){
 	if (indx != -1)
 	{
 		//when use will click on PC flip bar
-		$(".flip[title='PC_Platform']").click(function(){
+		$(".buttonPic[title='PC_Platform']").click(function(){
 			
 			//$(".flip[title='Availeable Test Machine']").fadeIn(1000);
 			//$(".flip[title='Add Manual Test Machine']").fadeIn(1000);
 			$("#Place_AutoComplete_Here").fadeIn(1000);
 			$('#PlatformChose').css({'display':'none'});
-			$(".flip[title='Mac_Platform']").css({'display':'none'})
+			$(".buttonPic[title='Mac_Platform']").css({'display':'none'})
 			$(".text[title='Choose']").text('Welcome to PC Environment Test Lab');
 			//$(".flip[title='PC_Platform']").text('Welcome to PC Environment Test Lab');
 			//$(".flip[title='PC_Platform']").css({ 'cursor':'default','margin-left': '40%', 'height': '15%' , 'width': '200%'})
-			$(".flip[title='PC_Platform']").css({'display':'none'})
+			$(".buttonPic[title='PC_Platform']").css({'display':'none'})
 			
 			Env = "PC"
 			RunTestAutocompleteSearch(Env);
@@ -38,17 +38,17 @@ $(document).ready(function(){
 		
 		
 		//when user will click on Mac flip bar
-		$(".flip[title='Mac_Platform']").click(function(){
+		$(".buttonPic[title='Mac_Platform']").click(function(){
 			
 			//$(".flip[title='Availeable Test Machine']").fadeIn(1000)
 			$("#Place_AutoComplete_Here").fadeIn(1000);
             $('#PlatformChose').css({'display':'none'});
 			
-			$(".flip[title='PC_Platform']").css({'display':'none'})
+			$(".buttonPic[title='PC_Platform']").css({'display':'none'})
 			$(".text[title='Choose']").text('Welcome to Mac Environment Test Lab');
 			//$(".flip[title='Mac_Platform']").text('Welcome to Mac Environment Test Lab');
 			//$(".flip[title='Mac_Platform']").css({ 'cursor':'default','margin-left': '-100%','height': '15%' , 'width': '200%'})
-			$(".flip[title='Mac_Platform']").css({'display':'none'})
+			$(".buttonPic[title='Mac_Platform']").css({'display':'none'})
 			
 			Env = "Mac"
 			RunTestAutocompleteSearch(Env);
