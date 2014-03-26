@@ -489,7 +489,7 @@ function SendingQueryAndDepandency()
 								$("#AutoSearchResult #DependencyText").css('display','block')
 								$("#AutoSearchResult #DependencyText").append(
 										
-										'<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+										'<td><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
 										+ '<td name = "Dependencyquery" class = "Text" style = "size:10">'
 										+ Depend
 										+ ":&nbsp"
@@ -744,7 +744,7 @@ function RunTestAutocompleteSearch(Env)
                     //$("#Main_Heading_And_Menu").slideUp("slow");
                     $("p:contains('Menu')").fadeIn(2000);
 
-                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
                         + '<td name = "submitquery" class = "Text" style = "size:10">'
                         + value
                         + ":&nbsp"
@@ -1098,7 +1098,7 @@ function SelectEmail()
 		select : function(event, ui) {
 
 			var value = ui.item.value
-			$("#AutoSearchResult #SelectedEmail").append('<td><img class="delete" id = "DeleteEmail" title = "EmailDelete" src="/site_media/deletebutton.png" /></td>'
+			$("#AutoSearchResult #SelectedEmail").append('<td><img class="delete" id = "DeleteEmail" title = "EmailDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
 					+ '<td class="Text">'
 					+ value
 					+ ":&nbsp"
@@ -1134,7 +1134,7 @@ function SelectEmail()
         select : function(event, ui) {
 
             var value = ui.item.value
-            $("#AutoSearchResult #AssignedTester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/deletebutton.png" /></td>'
+            $("#AutoSearchResult #AssignedTester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
                 + '<td class="Text">'
                 + value
                 + ":&nbsp"
