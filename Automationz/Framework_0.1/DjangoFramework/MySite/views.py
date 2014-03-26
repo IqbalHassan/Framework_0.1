@@ -168,7 +168,12 @@ def ResultTableFetch(index):
     total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress'))) as A order by starttime desc,run_id asc "
     total_query+=(limit+" "+offset)
     get_list=DB.GetData(Conn,total_query,False)
+    refine=[]
+    for each in get_list:
+        if each not in refine:
+            refine.append(each)
     #get_list=set(get_list)
+    get_list=refine
     total_run=make_array(get_list)
     print total_run
     all_status=make_status_array(total_run)
