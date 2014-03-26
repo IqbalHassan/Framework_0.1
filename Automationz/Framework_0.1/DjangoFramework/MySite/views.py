@@ -162,25 +162,6 @@ def ResultTableFetch(index):
     get_list=set(get_list)
     total_run=make_array(get_list)
     print total_run
-    """completed_query="select  ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Complete' order by ter.teststarttime desc"
-    complete_list=DB.GetData(Conn,completed_query,False)
-    complete_run=make_array(set(complete_list))
-    cancelled_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Cancelled' order by ter.teststarttime desc"
-    cancelled_list=DB.GetData(Conn,cancelled_query,False)
-    cancelled_run=make_array(set(cancelled_list))
-    interval="7"
-    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='In-Progress' and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
-    progress_list=DB.GetData(Conn,progress_query,False)
-    progress_run=make_array(set(progress_list))
-    interval="7"
-    submitted_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Submitted' and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc"%interval
-    submitted_list=DB.GetData(Conn,submitted_query,False)
-    submitted_run=make_array(set(submitted_list))
-    all_status=make_status_array(total_run)
-    complete_status=make_status_array(complete_run)
-    cancelled_status=make_status_array(cancelled_run)
-    progress_status=make_status_array(progress_run)
-    submitted_status=make_status_array(submitted_run)"""
     all_status=make_status_array(total_run)
     ###########Code for getting the total entry##############
     query="select count(*) from test_run_env tre,test_env_results ter where ter.run_id=tre.run_id"
@@ -225,10 +206,6 @@ def ResultPage(request,Page_No):
     Column=["Run ID","Objective","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
     template=get_template('Result.html')
     all_data=zipdata(data['total'], data['all_status'])
-    """complete_data=zipdata(data['complete'],data['complete_status'])
-    progress_data=zipdata(data['progress'],data['progress_status'])
-    cancelled_data=zipdata(data['cancelled'],data['cancelled_status'])
-    submitted_data=zipdata(data['submitted'],data['submitted_status'])"""
     Dict={
         'column':Column,
         'all':all_data,
@@ -4793,15 +4770,20 @@ def RunIDStatus(request):
     return HttpResponse(result,mimetype='application/json')
 def Make_List(step_name,step_reason,step_status,test_case_id):
     ListAll=[]
-    if  isinstance(step_status, list):
+    """if  isinstance(step_status, list):
         for name in zip(step_name,step_reason,step_status):
             ListAll.append((name[0].strip(),name[1].strip(),name[2].strip()))
     if isinstance(step_status,basestring):
         for name in zip(step_name,step_reason,step_status):
             ListAll.append((name[0].strip(),name[1].strip(),step_status))
+    """
+    if  isinstance(step_status, list):
+        for name in zip(step_name,step_reason,step_status):
+            if isinstance(name[2],basestring):
+                ListAll.append((name[0].strip(),name[1].strip(),name[2].strip()))
     print ListAll
-    Conn=GetConnection()
-    query="select step_id from test_steps where tc_id='%s'" %test_case_id
+    """Conn=GetConnection()
+    query="select step_id from test_steps where tc_id='%s' order by teststepsequence" %test_case_id
     test_step_sequence_list=DB.GetData(Conn,query)
     print test_step_sequence_list
     Refined_List=[]
@@ -4811,7 +4793,8 @@ def Make_List(step_name,step_reason,step_status,test_case_id):
         for each in ListAll:
             if each[0]==stepName[0][0]:
                 Refined_List.append(each)
-                break
+                break"""
+    Refined_List=ListAll
     return Refined_List
 
 def update_runid(run_id,test_case_id):
