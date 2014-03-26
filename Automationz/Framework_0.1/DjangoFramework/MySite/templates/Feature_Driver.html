@@ -7,7 +7,7 @@
 
 <article>
 
-    <!--div id='feature_driver_div' align="center"-->
+    <div id='feature_driver_div' align="center">
         <div id='feature_driver_choice'>
 
         </div>
@@ -35,7 +35,7 @@
                                 <label><b>Operation:</b></label>
                                 &nbsp;&nbsp;&nbsp;
                                 <select id="operation" class="select-drop" name="operation">
-                                    <option value="0"selected="selected">Select from list</option>
+                                    <option value="0" selected="selected">Select from list</option>
                                     <option value="1">Create</option>
                                     <option value="2">Rename</option>
                                     <option value="3">Delete</option>
@@ -46,7 +46,7 @@
                             <div id="center">
                                 <label><b id="name_variable">Name:</b></label>
                                 &nbsp;&nbsp;&nbsp;
-                                <input class="ui-corner-all textbox" id="input" style="margin: 5px; width:auto;" type='text' title = 'Please Type Keyword' name='inputName' />
+                                <input class="ui-corner-all textbox" id="input" style="margin: 5px; width:auto;" type='text' title = 'Please Type Keyword' name='inputName'/>
                                 </div>
                             </td>
                         <td align="center">
@@ -75,13 +75,22 @@
             </div>
             <br>
         </form>
-    <!--/div-->
+    </div>
 
     {% if error_message %}
     <div id="error_message" align="center">
         <p><strong>{{error_message}}</strong></p>
     </div>
     {%endif%}
+
+    <div align="center">
+        <div id="delete_error" align="center">
+
+        </div>
+        <div id='search_result' align="center">
+
+        </div>
+    </div>
 
 </article>
 {% endblock %}
