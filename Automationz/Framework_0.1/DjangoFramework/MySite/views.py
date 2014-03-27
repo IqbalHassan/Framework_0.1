@@ -710,16 +710,30 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         TempTableData.append(temp)
     RefinedData=TempTableData
     totalRunIDTime=0
+    test_case_time=[]
     for each in RefinedData:
         temp_tc_id=each[0]
+        temp_tc_time=0
         step_count=DB.GetData(Conn,"select count(*) from test_steps where tc_id='%s'"%temp_tc_id)
         for eachstep in range(1,step_count[0]+1):
             temp_id=temp_tc_id+'_s'+str(eachstep)
             query="select description from master_data where field='estimated' and value='time' and id='%s'"%temp_id
             step_time=DB.GetData(Conn,query)
+            temp_tc_time+=int(step_time[0])
             totalRunIDTime+=int(step_time[0])
+        tempFormat=ConvertTime(temp_tc_time)
+        test_case_time.append(tempFormat)
     formatTime=ConvertTime(totalRunIDTime)
-    Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform']
+    data_temp=[]
+    for eachitem in zip(RefinedData,test_case_time):
+        temp=[]
+        for eachelement in eachitem[0]:
+            temp.append(eachelement)
+        temp.append(eachitem[1])
+        temp=tuple(temp)
+        data_temp.append(temp)
+    RefinedData=data_temp
+    Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform','Time Required']
 
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
     results = {'Heading':Heading, 'TableData':RefinedData,'TimeEstimated':formatTime}
