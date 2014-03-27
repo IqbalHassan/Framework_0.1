@@ -207,4 +207,38 @@ $(document).ready(function(){
         });
     });
 
+    $("#select_button").click(function(){
+
+        var type = $("#type").val();
+        var operation = $("#operation").val();
+        var inputName=$("#input").val();
+        var inputName2=$("#input2").val();
+        console.log(inputName);
+
+        $.ajax({
+            url:'FeatureDriverOperation',
+            dataType:"json",
+            data:{type:type,operation:operation,inputName:inputName,inputName2:inputName2},
+            success:function(data){
+            if(data['confirm_message']==""){
+                var color='red';
+            }
+            else{
+                var color='green';
+            }
+            if(data['confirm_message']==""){
+                $('#error_message').html('<b style="color:red;">'+data['error_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                $('#error_message').slideDown('slow');
+                setTimeout(function(){window.location='/Home/FeaDri/';},4000);
+            }
+            else{
+                $('#error_message').html('<b style="color:green;">'+data['confirm_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                $('#error_message').slideDown('slow');
+                setTimeout(function(){window.location='/Home/FeaDri/';},4000);
+            }
+            }
+        });
+    });
+
+
 });

@@ -372,7 +372,7 @@ function populate_info_div(feature_list,driver_list){
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<br/>' +
-        '<label><b>Data Requirement:<b></label><br>' +
+        '<label><b>Data Requirement:</b></label><br>' +
         '<select id="step_data" class="select-drop" name="step_data">' +
         '<option value="0" selected="selected">Select from list:</option>' +
         '<option value="1">Data</option>' +
@@ -382,7 +382,7 @@ function populate_info_div(feature_list,driver_list){
         '</div><br>'+
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<br/>' +
-        '<label><b>Step Enable<b></label><br>' +
+        '<label><b>Step Enable</b></label><br>' +
         '<select id="step_enable" class="select-drop" name="step_enable">' +
         '<option value="0" selected="selected">Select from list:</option>' +
         '<option value="1">True</option>' +
