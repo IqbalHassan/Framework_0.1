@@ -19,17 +19,17 @@ $(document).ready(function(){
 	if (indx != -1)
 	{
 		//when use will click on PC flip bar
-		$(".flip[title='PC_Platform']").click(function(){
+		$(".buttonPic[title='PC_Platform']").click(function(){
 			
 			//$(".flip[title='Availeable Test Machine']").fadeIn(1000);
 			//$(".flip[title='Add Manual Test Machine']").fadeIn(1000);
 			$("#Place_AutoComplete_Here").fadeIn(1000);
 			$('#PlatformChose').css({'display':'none'});
-			$(".flip[title='Mac_Platform']").css({'display':'none'})
+			$(".buttonPic[title='Mac_Platform']").css({'display':'none'})
 			$(".text[title='Choose']").text('Welcome to PC Environment Test Lab');
 			//$(".flip[title='PC_Platform']").text('Welcome to PC Environment Test Lab');
 			//$(".flip[title='PC_Platform']").css({ 'cursor':'default','margin-left': '40%', 'height': '15%' , 'width': '200%'})
-			$(".flip[title='PC_Platform']").css({'display':'none'})
+			$(".buttonPic[title='PC_Platform']").css({'display':'none'})
 			
 			Env = "PC"
 			RunTestAutocompleteSearch(Env);
@@ -38,17 +38,17 @@ $(document).ready(function(){
 		
 		
 		//when user will click on Mac flip bar
-		$(".flip[title='Mac_Platform']").click(function(){
+		$(".buttonPic[title='Mac_Platform']").click(function(){
 			
 			//$(".flip[title='Availeable Test Machine']").fadeIn(1000)
 			$("#Place_AutoComplete_Here").fadeIn(1000);
             $('#PlatformChose').css({'display':'none'});
 			
-			$(".flip[title='PC_Platform']").css({'display':'none'})
+			$(".buttonPic[title='PC_Platform']").css({'display':'none'})
 			$(".text[title='Choose']").text('Welcome to Mac Environment Test Lab');
 			//$(".flip[title='Mac_Platform']").text('Welcome to Mac Environment Test Lab');
 			//$(".flip[title='Mac_Platform']").css({ 'cursor':'default','margin-left': '-100%','height': '15%' , 'width': '200%'})
-			$(".flip[title='Mac_Platform']").css({'display':'none'})
+			$(".buttonPic[title='Mac_Platform']").css({'display':'none'})
 			
 			Env = "Mac"
 			RunTestAutocompleteSearch(Env);
@@ -489,7 +489,7 @@ function SendingQueryAndDepandency()
 								$("#AutoSearchResult #DependencyText").css('display','block')
 								$("#AutoSearchResult #DependencyText").append(
 										
-										'<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+										'<td><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
 										+ '<td name = "Dependencyquery" class = "Text" style = "size:10">'
 										+ Depend
 										+ ":&nbsp"
@@ -744,7 +744,7 @@ function RunTestAutocompleteSearch(Env)
                     //$("#Main_Heading_And_Menu").slideUp("slow");
                     $("p:contains('Menu')").fadeIn(2000);
 
-                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
                         + '<td name = "submitquery" class = "Text" style = "size:10">'
                         + value
                         + ":&nbsp"
@@ -1098,7 +1098,7 @@ function SelectEmail()
 		select : function(event, ui) {
 
 			var value = ui.item.value
-			$("#AutoSearchResult #SelectedEmail").append('<td><img class="delete" id = "DeleteEmail" title = "EmailDelete" src="/site_media/deletebutton.png" /></td>'
+			$("#AutoSearchResult #SelectedEmail").append('<td><img class="delete" id = "DeleteEmail" title = "EmailDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
 					+ '<td class="Text">'
 					+ value
 					+ ":&nbsp"
@@ -1134,7 +1134,7 @@ function SelectEmail()
         select : function(event, ui) {
 
             var value = ui.item.value
-            $("#AutoSearchResult #AssignedTester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/deletebutton.png" /></td>'
+            $("#AutoSearchResult #AssignedTester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
                 + '<td class="Text">'
                 + value
                 + ":&nbsp"
