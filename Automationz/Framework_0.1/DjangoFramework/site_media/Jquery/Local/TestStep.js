@@ -1,13 +1,58 @@
 $(document).ready(function(){
+    var feature_list=[];
+    var driver_list=[];
+    $.ajax({
+        url:'GetFeature/',
+        dataType : "json",
+        data : {
+            feature : ''
+        },
+        success: function( data ) {
+            /*if(json.length > 1)
+             for(var i = 1; i < json.length; i++)
+             json[i] = json[i][0].replace(/_/g,' ')
+             $.each(json, function(i, value) {
+             //if(i == 0)return;
+             $(".step-feat[data-level='']").append($('<option>').text(value).attr('value', value));
+             });*/
+            //console.log(data);
+            for(var i=0;i<data.length;i++){
+                //$('#step_feature').append('<option value="'+data[i][0]+'">'+data[i][0]+'</opiton>');
+                feature_list.push(data[i][0]);
+            }
+        }
+    });
+    $.ajax({
+        url:'GetDriver/',
+        dataType : "json",
+        data : {
+            driver : ''
+        },
+        success: function( data ) {
+            /* if(json.length > 1)
+             for(var i = 1; i < json.length; i++)
+             json[i] = json[i][0].replace(/_/g,' ')
+             $.each(json, function(i, value) {
+             //if(i == 0)return;
+             $(".step-driv[data-level='']").append($('<option>').text(value).attr('value', value));
+             });*/
+            //console.log(data);
+            for(var i=0;i<data.length;i++){
+                //$('#step_driver').append('<option value="'+data[i][0]+'">'+data[i][0]+'</opiton>');
+                driver_list.push(data[i][0]);
+            }
+        }
+    });
     $("#create_edit").click(function(event){
         //event.preventDefault();
         //console.log("clicked");
+
         $('#search').hide();
         $('#error').hide();
         $('#create_edit').hide();
         $("#feature_driver").hide();
         $("#choice").append("<p style='font-size:1.5em;'><b>Action</b>: Create/Edit</p>");
-        populate_info_div();
+        populate_info_div(feature_list,driver_list);
         populate_footer_div();
     });
     $("#search").click(function(){
@@ -293,7 +338,7 @@ function populate_feature_driver_info_div(){
     });
 }
 
-function populate_info_div(){
+function populate_info_div(feature_list,driver_list){
     $('#info_div').append('' +
         '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
             '<label><b>Test Step Name:</b></label><br>' +
@@ -305,13 +350,13 @@ function populate_info_div(){
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
             '<label><b>Feature:</b></label><br>' +
-            '<select type="text" id="step_feature" class="combo-box step-feat" data-level="">' +
+            '<select type="text" id="step_feature" name="step_feature" class="combo-box step-feat" data-level="">' +
                 '<option value="">Select from list</option>' +
             '</select>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<label><b>Driver:</b></label><br>' +
-        '<select type="text" id="step_driver" class="combo-box step-driv" data-level="">' +
+        '<select type="text" id="step_driver" name="step_driver" class="combo-box step-driv" data-level="">' +
             '<option value="">Select from list</option>' +
         '</select>' +
         '</div>' +
@@ -330,8 +375,9 @@ function populate_info_div(){
         '<label><b>Data Requirement:<b></label><br>' +
         '<select id="step_data" class="select-drop" name="step_data">' +
         '<option value="0" selected="selected">Select from list:</option>' +
-        '<option value="1">True</option>' +
-        '<option value="2">False</option> ' +
+        '<option value="1">Data</option>' +
+        '<option value="2">No Data</option> ' +
+        '<option value="3">Edit Data</option> ' +
         '</select>' +
         '</div><br>'+
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
@@ -344,6 +390,12 @@ function populate_info_div(){
         '</select>' +
         '</div><br>'
     );
+    for(var i=0;i<feature_list.length;i++){
+        $('#step_feature').append('<option value="'+feature_list[i]+'">'+feature_list[i]+'</opiton>');
+    }
+    for(var i=0;i<driver_list.length;i++){
+        $('#step_driver').append('<option value="'+driver_list[i]+'">'+driver_list[i]+'</opiton>');
+    }
     $("#step_name").autocomplete({
         source: function(request,response){
             $.ajax({
@@ -377,14 +429,17 @@ function populate_info_div(){
                         if(row[7]==true){
                             $("#step_enable").val(1);
                         }
-                        if(row[5]==null){
+                        if(row[5]==null && (row[8]== false||row[8]==null)){
                             $("#step_data").val(2);
                         }
-                        if(row[5]==false){
+                        if(row[5]==false && (row[8]== false||row[8]==null)){
                             $("#step_data").val(2);
                         }
-                        if(row[5]==true){
+                        if(row[5]==true && (row[8]== false||row[8]==null)){
                             $("#step_data").val(1);
+                        }
+                        if(row[5]==true && row[8]==true){
+                            $("#step_data").val(3);
                         }
                         if(row[4]=="manual"){
                             $("#step_type").val(2);
@@ -457,38 +512,6 @@ function populate_info_div(){
     };*/
     //$(".select-drop").selectBoxIt();
     //$('.combo-box').combobox();
-    $.ajax({
-        url:'GetFeature/',
-        dataType : "json",
-        data : {
-            feature : ''
-        },
-        success: function( json ) {
-            if(json.length > 1)
-                for(var i = 1; i < json.length; i++)
-                    json[i] = json[i][0].replace(/_/g,' ')
-            $.each(json, function(i, value) {
-                //if(i == 0)return;
-                $(".step-feat[data-level='']").append($('<option>').text(value).attr('value', value));
-            });
-        }
-    });
-    $.ajax({
-        url:'GetDriver/',
-        dataType : "json",
-        data : {
-            driver : ''
-        },
-        success: function( json ) {
-            if(json.length > 1)
-                for(var i = 1; i < json.length; i++)
-                    json[i] = json[i][0].replace(/_/g,' ')
-            $.each(json, function(i, value) {
-                //if(i == 0)return;
-                $(".step-driv[data-level='']").append($('<option>').text(value).attr('value', value));
-            });
-        }
-    });
 }
 function populate_footer_div(){
     $('#footer_div').append('' +

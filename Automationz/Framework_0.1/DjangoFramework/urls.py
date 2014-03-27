@@ -88,7 +88,7 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTestCases/TestSet/DeleteTestCase/$', DeleteTestCasesFromSet),
     #Test Step Management Section
     url(r'^Home/ManageTestCases/TestStep/$',TestStep),
-    url(r'^Home/ManageTestCases/Process_TestStep/$',TestStep),
+    url(r'^Home/ManageTestCases/Process_TestStep/$',Process_TestStep),
     url(r'^Home/.*/TestStep_Auto/$',TestStep_Auto),
     url(r'^Home/.*/TestFeature_Auto/$',TestFeature_Auto),
     url(r'^Home/.*/TestDriver_Auto/$',TestDriver_Auto),

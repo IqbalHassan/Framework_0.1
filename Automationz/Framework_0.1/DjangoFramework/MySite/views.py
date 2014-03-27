@@ -3920,8 +3920,13 @@ def Process_TestStep(request):
                 if(result[0]>0):
                     if(step_data=="1"):
                         data="true"
+                        edit_data="false"
+                    if(step_data=="3"):
+                        data="true"
+                        edit_data="true"
                     if(step_data=="2"):
                         data="false"
+                        edit_data="false"
                     if(step_type=="1"):
                         s_type="automated"
                     if(step_type=="2"):
@@ -3933,7 +3938,7 @@ def Process_TestStep(request):
                     if(step_enable=="2"):
                         enable="false"
                     query = "Where  stepname = '"+step_name+"'"
-                    testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",query,description=step_desc,data_required=data,steptype=s_type,driver=step_driver,stepfeature=step_feature,stepenable=enable)
+                    testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",query,description=step_desc,data_required=data,steptype=s_type,driver=step_driver,stepfeature=step_feature,stepenable=enable,step_editable=edit_data)
                     query="SELECT count(*) FROM config_values where type='feature' and value='"+step_feature+"'"
                     feature_count=DB.GetData(conn,query)
                     if(feature_count[0]<1):
@@ -3951,8 +3956,13 @@ def Process_TestStep(request):
                 else:
                     if(step_data=="1"):
                         data="true"
+                        edit_data="false"
+                    if(step_data=="3"):
+                        data="true"
+                        edit_data="true"
                     if(step_data=="2"):
                         data="false"
+                        edit_data="false"
                     if(step_type=="1"):
                         s_type="automated"
                     if(step_type=="2"):
@@ -3964,7 +3974,7 @@ def Process_TestStep(request):
                     if(step_enable=="2"):
                         enable="false"
                     
-                    testrunenv=DB.InsertNewRecordInToTable(conn, "test_steps_list",stepname=step_name,description=step_desc,data_required=data,steptype=s_type,driver=step_driver,stepfeature=step_feature,stepenable=enable)
+                    testrunenv=DB.InsertNewRecordInToTable(conn, "test_steps_list",stepname=step_name,description=step_desc,data_required=data,steptype=s_type,driver=step_driver,stepfeature=step_feature,stepenable=enable,step_editable=edit_data)
                     query="SELECT count(*) FROM config_values where type='feature' and value='"+step_feature+"'"
                     feature_count=DB.GetData(conn,query)
                     if(feature_count[0]<1):
