@@ -2411,9 +2411,9 @@ def TestCaseSearch(request):
         #if len(value) > 1:
         #results = DB.GetData(Conn,"Select DISTINCT name from test_case_tag where name != 'Dependency' and name Ilike '%" + value + "%'")
         #results = DB.GetData(Conn, "Select DISTINCT tc_id from test_cases")
-        results = DB.GetData(Conn, "Select  DISTINCT tc_id,tc_name,'Test Case' from test_cases where tc_id Ilike '%" + value + "%'",False)
+        results = DB.GetData(Conn, "Select  DISTINCT tc_id,tc_name,'Test Case' from test_cases where tc_id Ilike '%" + value + "%' or tc_name Ilike '%"+ value + "%'",False)
 
-
+    results=list(set(results))
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -2425,8 +2425,8 @@ def Selected_TestCaseID_Analaysis(request):
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_TC_Analysis', '')
 
-
-    TestCase_Analysis_Result = DB.GetData(Conn, "select run_id,tc.tc_name,status,failreason,logid from test_case_results tcr,test_cases tc where tcr.tc_id = '%s' and tcr.tc_id = tc.tc_id" % UserData, False)
+    query="select run_id,tc.tc_name,status,failreason,logid from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc"%UserData
+    TestCase_Analysis_Result = DB.GetData(Conn, query, False)
     Col = ["Run ID", "Test Case Name", "Status", "Fail Reason", "Product logid"]
 
     results = {'Heading':Col, 'TestCase_Analysis_Result':TestCase_Analysis_Result}

@@ -1,4 +1,4 @@
-$(document).ready(function(){
+/*$(document).ready(function(){
 	
 	
 	var URL = window.location.pathname
@@ -111,4 +111,60 @@ function AnalysisTableActions()
 		$("#TestAnalysisTable").slideToggle("slow");
 	});
 
+}
+*/
+$(document).ready(function(){
+    AutoCompleteSearchForAnalysis();
+});
+
+function AutoCompleteSearchForAnalysis(){
+    $('#searchbox').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"TestCaseSearch",
+                dataType:"json",
+                data:{
+                    term:request.term
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(event,ui){
+            var tc_id=ui.item[0].trim();
+            var tc_name=ui.item[1].trim();
+            if(tc_id!=""){
+                $(this).val(tc_id+' - '+tc_name);
+                PopulateResultDiv(tc_id);
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + " - "+item[1]+"<strong> - " + item[2] + "</strong></a>" )
+            .appendTo( ul );
+    };
+}
+
+function PopulateResultDiv(tc_id){
+    $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id},function(data){
+        ResultTable(Resultdiv,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result");
+        makeRunClickable();
+    });
+
+}
+function makeRunClickable(){
+    $('#Resultdiv tr>td:first-child').each(function(){
+       $(this).css({
+          'color':'blue',
+           'cursor':'pointer'
+       });
+       $(this).click(function(){
+          var run_id=$(this).text().trim();
+          var location='/Home/RunID/'+run_id;
+          window.location=location;
+       });
+    });
 }
