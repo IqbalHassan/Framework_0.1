@@ -1,0 +1,154 @@
+{% extends "BaseTemplate.html" %}
+{% block title%} Create/Edit Test Step {%endblock%}
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/CreateStep.js"></script>
+
+<div align="left">
+    <h3 style="font-size: 19px;"><a style="font-weight: bold">Create/Edit Test Step</a></h3>
+</div>
+
+    <form action="{% url 'MySite.views.Process_TestStep'%}" method="post">
+        {%csrf_token%}
+        <div id='info_div'>
+
+            <input type="text" placeholder="Test Step Name" id="step_name" class="textbox" name="step_name" style="margin-left: 30px;margin-bottom: 20px"/>
+
+            <div class="responsive-tabs" style="margin-left: 30px">
+                <h2>Info</h2>
+                <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
+
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Test Step Description:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <textarea rows="5" cols="35" id="step_desc" name="step_desc" class="textbox" style="height:35px"  placeholder="Describe the test step(within 180 letters)"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Feature:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <select type="text" id="step_feature" name="step_feature" class="combo-box step-feat" data-level="">
+                                    <option value="">Select from list</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Driver:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <select type="text" id="step_driver" name="step_driver" class="combo-box step-driv" data-level="">
+                                    <option value="">Select from list</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+
+                <h2>Detail</h2>
+                <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
+
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Test Step Type:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <select id="step_type" class="select-drop" name="step_type">
+                                    <option value="0" selected="selected">Select from list:</option>
+                                    <option value="1">Automated</option>
+                                    <option value="2">Manual</option>
+                                    <option value="3">Performance</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Data Requirement:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <select id="step_data" class="select-drop" name="step_data">
+                                    <option value="0" selected="selected">Select from list:</option>
+                                    <option value="1">Data</option>
+                                    <option value="2">No Data</option>
+                                    <option value="3">Edit Data</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+
+
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Step Enable</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <select id="step_enable" class="select-drop" name="step_enable">
+                                    <option value="0" selected="selected">Select from list:</option>
+                                    <option value="1">True</option>
+                                    <option value="2">False</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+
+
+        </div>
+        <br>
+        <div id='footer_div' align="center">
+            <input type="button" id="delete_button" class="button minibutton danger" value="Delete"/>
+            <input type="button" id="get_cases" class="button minibutton primary" value="Get Test Cases"/>
+            <input type="submit" id="submit_button" class="button minibutton blue" name="submit_button" value="Submit">
+        </div>
+    </form>
+
+
+
+{% if error_message %}
+<div id="error" align="center">
+    <p><strong>{{error_message}}</strong></p>
+</div>
+{%endif%}
+<div align="center">
+    <div id="delete_error" align="center">
+
+    </div>
+    <div id='search_result' align="center">
+
+    </div>
+</div>
+
+<script>
+    // ResponsiveTabs.js | Version:1.10 | Author:Pete Love | www.petelove.com
+    var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
+</script>
+
+<script>
+    $(document).ready(function() {
+        RESPONSIVEUI.responsiveTabs();
+    });
+</script>
+
+{% endblock %}
+

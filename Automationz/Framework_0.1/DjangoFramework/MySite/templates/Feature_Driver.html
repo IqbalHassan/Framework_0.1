@@ -12,8 +12,8 @@
 
         </div>
 
-        <form action="{% url 'MySite.views.Process_FeatureDriver'%}" method="post">  <!-- Process_FeatureDriver -->
-            {%csrf_token%}
+      <!--  <form action="{% url 'MySite.views.Process_FeatureDriver'%}" method="post">
+            {%csrf_token%} -->
             <div id='feature_driver_info_div'>
 
                 <div align="center">
@@ -23,7 +23,7 @@
                             <div id="left">
                                 <label><b>Type:</b></label>
                                 &nbsp;&nbsp;&nbsp;
-                                <select id="type" class="select-drop" name="type">
+                                <select id="type" class="select-drop type" name="type">
                                     <option selected value="">Select from list</option>
                                     <option value="feature">Feature</option>
                                     <option value="driver">Driver</option>
@@ -34,7 +34,7 @@
                             <div id="right">
                                 <label><b>Operation:</b></label>
                                 &nbsp;&nbsp;&nbsp;
-                                <select id="operation" class="select-drop" name="operation">
+                                <select id="operation" class="select-drop operation" name="operation">
                                     <option value="0" selected="selected">Select from list</option>
                                     <option value="1">Create</option>
                                     <option value="2">Rename</option>
@@ -62,7 +62,7 @@
                         <td align="center">
                             <br/>
                             <div id="button_id" style="display: none">
-                                <input type='submit' id="select_button" class="button minibutton primary" name='submit_button'/>
+                                <input type='button' id="select_button" class="button minibutton primary" name='submit_button'/>
                                 </div>
                             <div id="button_del" style="display: none">
                                 <input type='button' id="del_button" class="button minibutton primary" name='del_button'/>
@@ -74,7 +74,7 @@
 
             </div>
             <br>
-        </form>
+        <!--/form-->
     </div>
 
     {% if error_message %}
