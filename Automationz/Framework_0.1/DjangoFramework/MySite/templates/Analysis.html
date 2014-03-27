@@ -1,19 +1,14 @@
-
 {% extends "BaseTemplate.html" %}
-		
-	
-	{% block title%} Analysis {% endblock %}	
-		
-	{% block content %}	
-		
-<article>		
+{% block title%} Analysis {% endblock %}
+{% block content %}
+        <script src="/site_media/Jquery/Local/Analysis.js" type="text/javascript"></script>
+<!--<article>
 
 	<header>Analysis</header>
 	<br/>
 		<div id = "Analysis" >
 		
 		
-			<!----------------  Performance Flip Bars  ---------------------------->
 			<div id = "TestCaseSearch" style = "display:block">
 				<form action="get">
 				
@@ -52,15 +47,13 @@
 		
 		
 		
-		<!---------------- Environment Details Table ---------------------------->
-			<p> &nbsp; </p>
+		\	<p> &nbsp; </p>
 			<p class='flip' title = 'Environment Details'> Environment Details </p>
 				<div id = 'EnvironmentDetailsTable' style="display: none;">
 			
 				</div>
 				
 			
-			<!---------------- All Test Cases Table ---------------------------->
 			<p>&nbsp; </p>
 			<p class='flip' title = 'All Test Cases'> All Test Cases </p>
 				<div id = 'AllTestCasesTable' style="display: none;">
@@ -68,15 +61,13 @@
 				</div>
 			
 			
-			<!---------------- Pass Test Cases Table ---------------------------->
-			<p>&nbsp; </p>	
+			<p>&nbsp; </p>
 			<p class='flip' title = 'Passed Test Cases'>Passed Test Cases </p>
 				<div id = 'PassTestCasesTable' style="display: none;" >
 			
 				</div>
 			
 			
-			<!---------------- Fail Test Cases Table ---------------------------->
 			<p>&nbsp; </p>
 			<p class='flip' title = 'Failed Test Cases'>Failed Test Cases </p>
 		
@@ -86,8 +77,7 @@
 			
 			<p style ="margin-left: 300px; font-size: small; width:180px; height: 15px ; " class = 'flip' title = 'Re-Run Fail Test Cases'> Re-Run Fail Test Cases </p>		
 		
-			<!---------------- Failed Steps Table ---------------------------->
-			<p>&nbsp; </p>		
+			<p>&nbsp; </p>
 			<p class='flip' title = 'Failed Steps' >Common Failed Steps</p>
 		
 			<div id = 'FailedStepsTable' style="display: none; ">
@@ -115,5 +105,16 @@
 			
 			
 			
-</article>				
-	{% endblock %}		
+</article>
+-->
+<article>
+    <div align="left">
+        <div id="SearchField">
+            <input class = 'ui-corner-all textbox' id='searchbox' style = 'margin:5px' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' placeholder="Search Test Cases History"/>
+        </div>
+    </div>
+    <div align="center" id="Resultdiv">
+
+    </div>
+</article>
+{% endblock %}
