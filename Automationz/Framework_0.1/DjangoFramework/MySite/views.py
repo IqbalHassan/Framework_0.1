@@ -148,7 +148,7 @@ def make_status_array(refined_list):
 def ResultTableFetch(index):
     Conn=GetConnection()
     #interval="1"
-    step=20
+    step=10
     limit="limit "+str(step)
     ########Code for selecting offset#########
     index=int(index)
@@ -162,7 +162,9 @@ def ResultTableFetch(index):
     total_query+="union all "
     total_query+="(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query+="from test_run_env tre, test_env_results ter " 
-    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress'))) as A order by starttime desc,run_id asc"
+    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress'))) as A order by starttime desc,run_id asc "
+    count_query=total_query
+    total_query+=(limit+' '+offset)
     get_list=DB.GetData(Conn,total_query,False)
     refine_list=[]
     for each in get_list:
@@ -171,10 +173,11 @@ def ResultTableFetch(index):
     total_run=make_array(refine_list)
     print total_run
     all_status=make_status_array(total_run)
+    dataCount=DB.GetData(Conn,count_query,False)
     data={
           'total':total_run,
           'all_status':all_status,
-          'totalCount':len(total_run),
+          'totalCount':len(dataCount),
           'start':index+1,
           'end':index+step
           }
