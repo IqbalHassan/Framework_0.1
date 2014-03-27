@@ -4791,6 +4791,9 @@ def Make_List(step_name,step_reason,step_status,test_case_id):
         for name in zip(step_name,step_reason,step_status):
             if isinstance(name[2],basestring):
                 ListAll.append((name[0].strip(),name[1].strip(),name[2].strip()))
+    if isinstance(step_status,basestring):
+        for name in zip(step_name,step_reason,step_status):
+            ListAll.append((name[0].strip(),name[1].strip(),step_status))
     print ListAll
     """Conn=GetConnection()
     query="select step_id from test_steps where tc_id='%s' order by teststepsequence" %test_case_id
