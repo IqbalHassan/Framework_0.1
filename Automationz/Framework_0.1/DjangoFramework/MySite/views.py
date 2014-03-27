@@ -709,10 +709,20 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         temp=tuple(temp)
         TempTableData.append(temp)
     RefinedData=TempTableData
+    totalRunIDTime=0
+    for each in RefinedData:
+        temp_tc_id=each[0]
+        step_count=DB.GetData(Conn,"select count(*) from test_steps where tc_id='%s'"%temp_tc_id)
+        for eachstep in range(1,step_count[0]+1):
+            temp_id=temp_tc_id+'_s'+str(eachstep)
+            query="select description from master_data where field='estimated' and value='time' and id='%s'"%temp_id
+            step_time=DB.GetData(Conn,query)
+            totalRunIDTime+=int(step_time[0])
+    formatTime=ConvertTime(totalRunIDTime)
     Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform']
 
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
-    results = {'Heading':Heading, 'TableData':RefinedData}
+    results = {'Heading':Heading, 'TableData':RefinedData,'TimeEstimated':formatTime}
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')

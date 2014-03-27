@@ -795,12 +795,14 @@ function PerformSearch() {
 												//$('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
 												$("#DepandencyCheckboxes").children().remove();
 												//$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
-											} 
+                                                $('#timeRequired').fadeOut(500);
+                                                $('#timeRequired').html("");
+                                            }
 											else 
 											{
 												ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
 
-												$("#RunTestResultTable").fadeIn(4000);
+												$("#RunTestResultTable").fadeIn(1000);
 												$("p:contains('Show/Hide Test Cases')").fadeIn(2000);
 
 												// ===============To Make First
@@ -867,7 +869,9 @@ function PerformSearch() {
 																											
 													});
 												});*/
-
+                                                var message=('<p align="center" style="font-size:150%;font-weight: bold;color:#003bb3;">TimeRequired:&nbsp;&nbsp;<b style="font-size: 150%;font-weight:bolder; color: #000000;">'+data['TimeEstimated']+'</b></p>');
+                                                $('#timeRequired').html(message);
+                                                $('#timeRequired').fadeIn(1000);
                                                 implementDropDown('#RunTestResultTable');
 												VerifyQueryProcess();
 												//$(".Buttons[title='Verify Query']").fadeIn(2000);
@@ -1063,10 +1067,13 @@ function DeleteSearchQueryText()
             console.log($(this).text());
 			$(this).parent().next().remove();
 			$(this).remove();
+            PerformSearch();
             if($('#AutoSearchResult #searchedtext td').text()==""){
                 $('#DepandencyCheckboxes').css('display','none');
                 $('.flip[title="DepandencyCheckBox"]').css('display','none');
                 $('#RunTestResultTable').css('display','none');
+                $('#timeRequired').fadeOut(500);
+                $('#timeRequired').html("");
             }
 			$("#AutoSearchResult #searchedtext").each(function() {
 				var UserText = $(this).find("td").text();
