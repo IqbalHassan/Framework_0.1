@@ -1,6 +1,3 @@
-/**
- * Created by lent400 on 1/13/14.
- */
 $(document).ready(function(){
     RESPONSIVEUI.responsiveTabs();
     LoadAllTestCases("AllTestCasesTable");
@@ -64,42 +61,42 @@ function MakingReRunClickable(){
 }
 function ReRunTab(){
     /*$('.filter-item').click(function(){
-        $('.filter-item').removeClass('selected');
-        $(this).addClass('selected');
-        $.get('ReRun',{
-            status:$(this).attr('data-id').trim(),
-            RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim()
-        },function(data){
-            var column=data['col'];
-            var data_list=data['list'];
-            if(data_list.length==0){
-                $('#rerun').css({'marginTop':'20%'});
-                $('#rerun').html('<b style="color:#ccc;font-size:400%;font-weight:bolder;">No Test Cases</b>');
-                $('#additional_data').fadeOut(100);
-            }
-            else{
-                var message="";
-                message+='<table class="one-column-emphasis"><tr><th>Select</th>';
-                for(var i=0;i<column.length;i++){
-                    message+='<th>'+column[i]+'</th>';
-                }
-                message+='</tr>';
-                for(var i=0;i<data_list.length;i++){
-                    message+='<tr><td><input type="checkbox" name="checklist" value="'+data_list[i][0]+'"/></td>';
-                    for(var j=0;j<data_list[i].length;j++){
-                        message+='<td>'+data_list[i][j]+'</td>';
-                    }
-                    message+='</tr>';
-                }
-                message+='</table>';
-                $('#rerun').css({'marginTop':'0%'});
-                $('#rerun').html(message);
-                MakingReRunClickable();
-                $('input[name="checklist"]').attr('checked','true');
-                $('#additional_data').fadeIn(500);
-            }
-        });
-    });*/
+     $('.filter-item').removeClass('selected');
+     $(this).addClass('selected');
+     $.get('ReRun',{
+     status:$(this).attr('data-id').trim(),
+     RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim()
+     },function(data){
+     var column=data['col'];
+     var data_list=data['list'];
+     if(data_list.length==0){
+     $('#rerun').css({'marginTop':'20%'});
+     $('#rerun').html('<b style="color:#ccc;font-size:400%;font-weight:bolder;">No Test Cases</b>');
+     $('#additional_data').fadeOut(100);
+     }
+     else{
+     var message="";
+     message+='<table class="one-column-emphasis"><tr><th>Select</th>';
+     for(var i=0;i<column.length;i++){
+     message+='<th>'+column[i]+'</th>';
+     }
+     message+='</tr>';
+     for(var i=0;i<data_list.length;i++){
+     message+='<tr><td><input type="checkbox" name="checklist" value="'+data_list[i][0]+'"/></td>';
+     for(var j=0;j<data_list[i].length;j++){
+     message+='<td>'+data_list[i][j]+'</td>';
+     }
+     message+='</tr>';
+     }
+     message+='</table>';
+     $('#rerun').css({'marginTop':'0%'});
+     $('#rerun').html(message);
+     MakingReRunClickable();
+     $('input[name="checklist"]').attr('checked','true');
+     $('#additional_data').fadeIn(500);
+     }
+     });
+     });*/
     $('.rerunTab').click(function(){
         $(this).toggleClass('down');
         //Making the status known to all
@@ -148,7 +145,7 @@ function ReRunTab(){
     });
     MakingReRunClickable();
     $('#selectall').live('click',function(){
-       $('input[name="checklist"]').attr('checked','true');
+        $('input[name="checklist"]').attr('checked','true');
     });
     $('#submit_button').live('click',function(){
         var tc_list=[];
@@ -341,8 +338,8 @@ function LoadAllTestCases(divname){
     });
     /////////////////////////////////////////////////////
     /*$('#'+divname+' tr td:last-child').each(function(){
-        $(this).remove();
-    });*/
+     $(this).remove();
+     });*/
 }
 function connectLogFile(ID){
     $("#"+ID+" tr td:nth-child(8)").each(function(){
@@ -377,4 +374,4 @@ function When_Clicking_On_CommonFailedTestStep(){
             e.stopPropagation();
         });
     });
- }
+}

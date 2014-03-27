@@ -6,260 +6,260 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="/site_media/Jquery/Local/RunID_Detail.js"></script>
 <article>
+<div align="left">
+    <h3 style="font-size: 19px;"><a href="/Home/Results/Page-1/">Results</a> / <a href="" id="run_id" style="font-weight: bold"></a></h3>
+</div>
+<!--**********Tabs***************-->
 
-    <div align="left">
-        <h3 style="font-size: 19px;"><a href="/Home/Results/Page-1/">Results</a> / <a href="" id="run_id" style="font-weight: bold"></a></h3>
+<div class="responsive-tabs" width="100%">
+
+<h3 width="12.8%">All</h3>
+<div>
+
+    <!--Put your code here-->
+    <!---------------- All Test Cases Table ---------------------------->
+    <p>&nbsp; </p>
+    <div id = 'AllTestCasesTable' style="display: block;">
+        {%if All_length%}
+        <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
+            <tr>
+                {%for x in Column%}
+                <th  style="text-align: center">{{x}}</th>
+                {%endfor%}
+            </tr>
+            {%for x in AllTestCases%}
+            <tr>
+                {%for y in x%}
+                <td  style="text-align: center">{{y}}</td>
+                {%endfor%}
+            </tr>
+            {%endfor%}
+
+        </table>
+        {%endif%}
     </div>
-    <!--**********Tabs***************-->
 
-    <div class="responsive-tabs" width="100%">
+</div>
 
-        <h3 width="12.8%">All</h3>
-        <div>
+<h3 width="12.8%">Passed</h3>
+<div>
 
-            <!--Put your code here-->
-            <!---------------- All Test Cases Table ---------------------------->
-            <p>&nbsp; </p>
-            <div id = 'AllTestCasesTable' style="display: block;">
-                {%if All_length%}
-                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
-                    <tr>
-                        {%for x in Column%}
-                        <th  style="text-align: center">{{x}}</th>
-                        {%endfor%}
-                    </tr>
-                    {%for x in AllTestCases%}
-                    <tr>
-                        {%for y in x%}
-                        <td  style="text-align: center">{{y}}</td>
-                        {%endfor%}
-                    </tr>
-                    {%endfor%}
+    <!--Put your code here-->
+    <!---------------- Pass Test Cases Table ---------------------------->
+    <p>&nbsp; </p>
+    <div id = 'PassTestCasesTable' style="display: block;" >
+        {%if Pass_length%}
+        <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
+            <tr>
+                {%for x in Column%}
+                <th  style="text-align: center">{{x}}</th>
+                {%endfor%}
+            </tr>
+            {%for x in Pass%}
+            <tr>
+                {%for y in x%}
+                <td style="text-align: center">{{y}}</td>
+                {%endfor%}
+            </tr>
+            {%endfor%}
 
-                </table>
-                {%endif%}
+        </table>
+        {%endif%}
+    </div>
+
+</div>
+
+<h3 width="12.8%">Failed/Blocked</h3>
+<div>
+    <!---------------- Fail Test Cases Table ---------------------------->
+    <p>&nbsp; </p>
+    <div id = 'FailTestCasesTable' style="display:block;">
+        {%if Fail_length%}
+        <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
+            <tr>
+                {%for x in Column%}
+                <th style="text-align: center">{{x}}</th>
+                {%endfor%}
+            </tr>
+            {%for x in Fail%}
+            <tr>
+                {%for y in x%}
+                <td style="text-align: center">{{y}}</td>
+                {%endfor%}
+            </tr>
+            {%endfor%}
+        </table>
+        {%endif%}
+    </div>
+
+    <!--Put your code here-->
+
+</div>
+
+<h3 width="12.8%">Submitted</h3>
+<div>
+
+    <!--Put your code here-->
+    <!---------------- Submitted Test Cases Table ---------------------------->
+    <p>&nbsp; </p>
+    <div id = 'SubmittedTestCasesTable' style="display: block;" >
+        {%if submitted_length%}
+        <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
+            <tr>
+                {%for x in Column%}
+                <th style="text-align: center">{{x}}</th>
+                {%endfor%}
+            </tr>
+            {%for x in Submitted%}
+            <tr>
+                {%for y in x%}
+                <td style="text-align: center">{{y}}</td>
+                {%endfor%}
+            </tr>
+            {%endfor%}
+
+        </table>
+        {%endif%}
+    </div>
+
+</div>
+
+<h3 width="12.8%">Common</h3>
+<div>
+
+    <!--Put your code here-->
+    <!---------------- Failed Steps Table ---------------------------->
+    <p>&nbsp; </p>
+
+    <div id = 'FailedStepsTable' style="display: block; ">
+        {%if fail_length%}
+        <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
+            <tr>
+                {%for x in failsteps_col%}
+                <th style="text-align: center">{{x}}</th>
+                {%endfor%}
+            </tr>
+            {%for x in failsteps%}
+            <tr>
+                {%for y in x%}
+                <td style="text-align: center">{{y}}</td>
+                {%endfor%}
+            </tr>
+            {%endfor%}
+        </table>
+        {%endif%}
+    </div>
+
+</div>
+<h3 width="12.8%">Detail</h3>
+<div>
+
+    <!--Put your code here-->
+    <!---------------- Environment Details Table ---------------------------->
+    <p>&nbsp;</p>
+    <div id = 'EnvironmentDetailsTable' style="display: block;">
+        {%if Env_length%}
+        <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
+            <tr>
+                {%for x in Env_Details_Col%}
+                <th style="text-align: center">{{x}}</th>
+                {%endfor%}
+            </tr>
+            <tr>
+                {%for x in Env_Details_Data%}
+                {%for y in x%}
+                <td style="text-align: center">{{y}}</td>
+                {%endfor%}
+                {%endfor%}
+            </tr>
+        </table>
+        {%endif%}
+    </div>
+
+</div>
+<h3 width="12.8%">ReRun</h3>
+<div>
+    <div class="columns browser">
+        <div class="columns sidebar issues-list-sidebar browser" style="margin-left:-15px;">
+            <ul class="filter-list" align="center" style="margin-left: -5%;">
+                <!--<li><a class="filter-item selected" data-id='all'>Re Run</a></li>
+                <li><a class="filter-item " data-id="failed">ReRun Failed</a></li>
+                <li><a class="filter-item " data-id="failed+pending">ReRun Failed+Pending</a></li>
+                <li><a class="filter-item " data-id="pending">ReRun Pending</a></li>-->
+                <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Passed</a></li>
+                <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Failed</a></li>
+                <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Blocked</a></li>
+                <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">In-Progress</a></li>
+                <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Submitted</a></li>
+                <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Skipped</a></li>
+            </ul>
+            <div class="rule">
+
             </div>
-
         </div>
-
-        <h3 width="12.8%">Passed</h3>
-        <div>
-
-            <!--Put your code here-->
-            <!---------------- Pass Test Cases Table ---------------------------->
-            <p>&nbsp; </p>
-            <div id = 'PassTestCasesTable' style="display: block;" >
-                {%if Pass_length%}
-                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
-                    <tr>
-                        {%for x in Column%}
-                        <th  style="text-align: center">{{x}}</th>
-                        {%endfor%}
-                    </tr>
-                    {%for x in Pass%}
-                    <tr>
-                        {%for y in x%}
-                        <td style="text-align: center">{{y}}</td>
-                        {%endfor%}
-                    </tr>
-                    {%endfor%}
-
-                </table>
-                {%endif%}
-            </div>
-
-        </div>
-
-        <h3 width="12.8%">Failed/Blocked</h3>
-        <div>
-            <!---------------- Fail Test Cases Table ---------------------------->
-            <p>&nbsp; </p>
-            <div id = 'FailTestCasesTable' style="display:block;">
-                {%if Fail_length%}
-                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
-                    <tr>
-                        {%for x in Column%}
-                        <th style="text-align: center">{{x}}</th>
-                        {%endfor%}
-                    </tr>
-                    {%for x in Fail%}
-                    <tr>
-                        {%for y in x%}
-                        <td style="text-align: center">{{y}}</td>
-                        {%endfor%}
-                    </tr>
-                    {%endfor%}
-                </table>
-                {%endif%}
-            </div>
-
-            <!--Put your code here-->
-
-        </div>
-
-        <h3 width="12.8%">Submitted</h3>
-        <div>
-
-            <!--Put your code here-->
-            <!---------------- Submitted Test Cases Table ---------------------------->
-            <p>&nbsp; </p>
-            <div id = 'SubmittedTestCasesTable' style="display: block;" >
-                {%if submitted_length%}
-                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
-                    <tr>
-                        {%for x in Column%}
-                        <th style="text-align: center">{{x}}</th>
-                        {%endfor%}
-                    </tr>
-                    {%for x in Submitted%}
-                    <tr>
-                        {%for y in x%}
-                        <td style="text-align: center">{{y}}</td>
-                        {%endfor%}
-                    </tr>
-                    {%endfor%}
-
-                </table>
-                {%endif%}
-            </div>
-
-        </div>
-
-        <h3 width="12.8%">Common</h3>
-        <div>
-
-            <!--Put your code here-->
-            <!---------------- Failed Steps Table ---------------------------->
-            <p>&nbsp; </p>
-
-            <div id = 'FailedStepsTable' style="display: block; ">
-                {%if fail_length%}
-                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
-                    <tr>
-                        {%for x in failsteps_col%}
-                        <th style="text-align: center">{{x}}</th>
-                        {%endfor%}
-                    </tr>
-                    {%for x in failsteps%}
-                    <tr>
-                        {%for y in x%}
-                        <td style="text-align: center">{{y}}</td>
-                        {%endfor%}
-                    </tr>
-                    {%endfor%}
-                </table>
-                {%endif%}
-            </div>
-
-        </div>
-        <h3 width="12.8%">Detail</h3>
-        <div>
-
-            <!--Put your code here-->
-            <!---------------- Environment Details Table ---------------------------->
-            <p>&nbsp;</p>
-            <div id = 'EnvironmentDetailsTable' style="display: block;">
-                {%if Env_length%}
-                <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
-                    <tr>
-                        {%for x in Env_Details_Col%}
-                        <th style="text-align: center">{{x}}</th>
-                        {%endfor%}
-                    </tr>
-                    <tr>
-                        {%for x in Env_Details_Data%}
-                        {%for y in x%}
-                            <td style="text-align: center">{{y}}</td>
-                        {%endfor%}
-                        {%endfor%}
-                    </tr>
-                </table>
-                {%endif%}
-            </div>
-
-        </div>
-        <h3 width="12.8%">ReRun</h3>
-        <div>
-            <div class="columns browser">
-                <div class="columns sidebar issues-list-sidebar browser" style="margin-left:-15px;">
-                    <ul class="filter-list" align="center" style="margin-left: -5%;">
-                        <!--<li><a class="filter-item selected" data-id='all'>Re Run</a></li>
-                        <li><a class="filter-item " data-id="failed">ReRun Failed</a></li>
-                        <li><a class="filter-item " data-id="failed+pending">ReRun Failed+Pending</a></li>
-                        <li><a class="filter-item " data-id="pending">ReRun Pending</a></li>-->
-                        <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Passed</a></li>
-                        <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Failed</a></li>
-                        <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Blocked</a></li>
-                        <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">In-Progress</a></li>
-                        <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Submitted</a></li>
-                        <li><a class="button rerunTab" style="margin-top: 3px;width: 150px;">Skipped</a></li>
-                    </ul>
-                    <div class="rule">
-
+        <div class="column main">
+            <div class="chromed-list-browser">
+                <div align="center" style="margin-top: 20px;" >
+                    <div id="rerun">
+                        {% if rerun_list %}
+                        <table class="one-column-emphasis">
+                            <tr>
+                                <th>Select</th>
+                                {% for x in rerun_col%}
+                                <th>{{x}}</th>
+                                {% endfor %}
+                            </tr>
+                            {% for x in rerun_list %}
+                            <tr>
+                                <td><input type="checkbox" name="checklist" value="{{x.0}}"/></td>
+                                {% for y in x %}
+                                <td>{{y}}</td>
+                                {%endfor%}
+                            </tr>
+                            {% endfor%}
+                        </table>
+                        {%endif%}
                     </div>
-                </div>
-                <div class="column main">
-                    <div class="chromed-list-browser">
-                        <div align="center" style="margin-top: 20px;" >
-                            <div id="rerun">
-                            {% if rerun_list %}
-                                <table class="one-column-emphasis">
-                                    <tr>
-                                        <th>Select</th>
-                                        {% for x in rerun_col%}
-                                            <th>{{x}}</th>
-                                        {% endfor %}
-                                    </tr>
-                                    {% for x in rerun_list %}
-                                    <tr>
-                                        <td><input type="checkbox" name="checklist" value="{{x.0}}"/></td>
-                                        {% for y in x %}
-                                            <td>{{y}}</td>
-                                        {%endfor%}
-                                    </tr>
-                                    {% endfor%}
-                                </table>
-                            {%endif%}
-                            </div>
-                            <div id="additional_data">
-                            <div class="rule"></div>
-                                <div style="display: none;">
-                                    {% for x in Env_Details_Data%}
-                                    <input name="machine" value="{{x.1}}"/>
-                                    <input name="tester" value="{{x.2}}"/>
-                                    <input name="os" value="{{x.6}}"/>
-                                    <input name="client" value="{{x.7}}"/>
-                                    <input name="test_objective" value="{{x.9}}"/>
-                                    <input name="email" value="{{x.11}}"/>
-                                    {% endfor %}
-                                </div>
-                                <div>
-                                <!--<div align="right">
-                                    <input type="text" class="textbox" id="test_objective" val="" placeholder="Enter the Test Objective"/>
-                                </div>-->
-                                </div>
-                                <div align="left" style="margin-top: 20px;">
-                                    <a class=" minibutton blue flash-action" id="selectall">Select All</a>
-                                </div>
-                                <div align="right" style="margin-top: -40px;">
-                                    <a type="submit" class="button minibutton primary" id="submit_button">Submit</a>
-                                </div>
-                            </div>
+                    <div id="additional_data">
+                        <div class="rule"></div>
+                        <div style="display: none;">
+                            {% for x in Env_Details_Data%}
+                            <input name="machine" value="{{x.1}}"/>
+                            <input name="tester" value="{{x.2}}"/>
+                            <input name="os" value="{{x.6}}"/>
+                            <input name="client" value="{{x.7}}"/>
+                            <input name="test_objective" value="{{x.9}}"/>
+                            <input name="email" value="{{x.11}}"/>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            <!--<div align="right">
+                                <input type="text" class="textbox" id="test_objective" val="" placeholder="Enter the Test Objective"/>
+                            </div>-->
+                        </div>
+                        <div align="left" style="margin-top: 20px;">
+                            <a class=" minibutton blue flash-action" id="selectall">Select All</a>
+                        </div>
+                        <div align="right" style="margin-top: -40px;">
+                            <a type="submit" class="button minibutton primary" id="submit_button">Submit</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <h3 width="12.8%">Graph</h3>
-        <div>
-            <div id="chart" style="width: 100%;align:center">
-
-            </div>
-            <br/><br/>
-            <a id="show_chart" class="button primary">Show Graph</a>
-        </div>
     </div>
-    <div id="back">
+</div>
+<h3 width="12.8%">Graph</h3>
+<div>
+    <div id="chart" style="width: 100%;align:center">
+
+    </div>
+    <br/><br/>
+    <a id="show_chart" class="button primary">Show Graph</a>
+</div>
+</div>
+
+<div id="back">
         <div id="inside_back">
 
         </div>

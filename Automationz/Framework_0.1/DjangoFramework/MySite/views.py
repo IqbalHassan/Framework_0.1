@@ -156,40 +156,25 @@ def ResultTableFetch(index):
     index=index*step
     offset="offset "+str(index)
     offset=offset.strip()
-    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') order by ter.teststarttime desc)"
-    completed_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress') order by ter.teststarttime desc)"
-    total_query=progress_query+' union all '+completed_query+ limit+" "+offset
+    total_query="select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query+="from test_run_env tre, test_env_results ter " 
+    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')) "
+    total_query+="union all "
+    total_query+="(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query+="from test_run_env tre, test_env_results ter " 
+    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress'))) as A order by starttime desc,run_id asc"
     get_list=DB.GetData(Conn,total_query,False)
-    get_list=set(get_list)
-    total_run=make_array(get_list)
+    refine_list=[]
+    for each in get_list:
+        if each not in refine_list:
+            refine_list.append(each)
+    total_run=make_array(refine_list)
     print total_run
-    """completed_query="select  ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Complete' order by ter.teststarttime desc"
-    complete_list=DB.GetData(Conn,completed_query,False)
-    complete_run=make_array(set(complete_list))
-    cancelled_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Cancelled' order by ter.teststarttime desc"
-    cancelled_list=DB.GetData(Conn,cancelled_query,False)
-    cancelled_run=make_array(set(cancelled_list))
-    interval="7"
-    progress_query="(select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='In-Progress' and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc)"%interval
-    progress_list=DB.GetData(Conn,progress_query,False)
-    progress_run=make_array(set(progress_list))
-    interval="7"
-    submitted_query="select ter.run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.client from test_run_env tre, test_env_results ter where tre.run_id=ter.run_id and ter.status=tre.status and ter.status ='Submitted' and (cast(now() as timestamp without time zone)-ter.teststarttime)<interval '%s day' order by ter.teststarttime desc"%interval
-    submitted_list=DB.GetData(Conn,submitted_query,False)
-    submitted_run=make_array(set(submitted_list))
     all_status=make_status_array(total_run)
-    complete_status=make_status_array(complete_run)
-    cancelled_status=make_status_array(cancelled_run)
-    progress_status=make_status_array(progress_run)
-    submitted_status=make_status_array(submitted_run)"""
-    all_status=make_status_array(total_run)
-    ###########Code for getting the total entry##############
-    query="select count(*) from test_run_env tre,test_env_results ter where ter.run_id=tre.run_id"
-    totalCount=DB.GetData(Conn,query)
     data={
           'total':total_run,
           'all_status':all_status,
-          'totalCount':totalCount[0],
+          'totalCount':len(total_run),
           'start':index+1,
           'end':index+step
           }
