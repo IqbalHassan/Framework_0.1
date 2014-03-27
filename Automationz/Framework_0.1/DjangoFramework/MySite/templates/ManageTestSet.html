@@ -1,8 +1,12 @@
 {% extends "BaseTemplate.html" %}
-{% block title%} Test Case Management {%endblock%}
+{% block title%} Edit Test Set & Tag {%endblock%}
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageTestSet.js"></script>
-<br>
+
+<div align="left">
+    <h3 style="font-size: 19px;"><a style="font-weight: bold">Edit Test Set/Tag</a></h3>
+</div>
+
 <div id="general_info">
     <div id="info" style="margin: auto" align="center">
         {% if error_message %}<p id="error" align="center"><strong>{{error_message}}</strong></p>{% endif %}
@@ -24,17 +28,17 @@
             <div style="display: block;margin:auto" width="80%">
                 <p align="center" style="font-weight: bolder;font-size: 1.2em;">Available Test Cases</p>
                 <hr style="width: 80%">
-                <table class="ui-widget" style="border-collapse: collapse" width="80%">
+                <table class="one-column-emphasis" style="border-collapse: collapse" width="80%">
                     <tr>
-                        <th class="ui-widget-header" align="center" style="font-weight: bold;padding: 2px;" colspan="1">TestCaseID</th>
-                        <th class="ui-widget-header" align="center" style="font-weight: bold;padding: 2px;"colspan="1">TestCaseName</th>
-                        <th class="ui-widget-header" align="center" style="font-weight: bold;padding: 2px;"colspan="1">&nbsp;&nbsp;&nbsp;</th>
+                        <th align="center" style="font-weight: bold;padding: 2px;" colspan="1">TestCaseID</th>
+                        <th align="center" style="font-weight: bold;padding: 2px;"colspan="1">TestCaseName</th>
+                        <th align="center" style="font-weight: bold;padding: 2px;"colspan="1">&nbsp;&nbsp;&nbsp;</th>
                     </tr>
                     {% for x in ex_lst %}
                     <tr>
-                        <td class="ui-widget-content" align="center">{{x.item1}}</td>
-                        <td class="ui-widget-content"align="left">{{x.item2}}</td>
-                        <td class="ui-widget-content" align="center"><input type="checkbox" id="{{x.item1}}" value="{{x.item1}}" name="selectTCremove"/></td>
+                        <td align="center">{{x.item1}}</td>
+                        <td align="left">{{x.item2}}</td>
+                        <td align="center"><input type="checkbox" id="{{x.item1}}" value="{{x.item1}}" name="selectTCremove"/></td>
                     </tr>
                     {% endfor %}
                 </table>

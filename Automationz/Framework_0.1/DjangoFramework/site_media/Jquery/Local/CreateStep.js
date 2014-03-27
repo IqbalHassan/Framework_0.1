@@ -3,6 +3,9 @@
  */
 $(document).ready(function(){
 
+    verification_radio();
+    TimePicker();
+
     var feature_list=[];
     var driver_list=[];
     $.ajax({
@@ -186,3 +189,25 @@ $(document).ready(function(){
     });
 
 });
+
+function verification_radio(){
+    $("#true_radio").live('click',function(){
+        $(this).addClass("selected");
+        $("#false_radio").removeClass("selected");
+    });
+    $("#false_radio").live('click',function(){
+        $(this).addClass("selected");
+        $("#true_radio").removeClass("selected");
+    });
+}
+function TimePicker(){
+    $('.timepicker').timepicker({
+        minuteStep: 1,
+        template: 'dropdown',
+        appendWidgetTo: 'body',
+        showSeconds: true,
+        showMeridian: false,
+        defaultTime: '00:00:60 AM',
+        secondStep: 1
+    });
+}

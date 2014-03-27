@@ -8,25 +8,35 @@
 <script type="text/javascript" src="/site_media/Jquery/Local/Result.js"></script>
 
 <article>
-<div align="left">
-    <h3 style="font-size: 19px;"><a style="font-weight: bold">Results</a></h3>
-</div>
+
     <!--**********Tabs***************-->
 
     <!--div class="responsive-tabs" width="100%">
 
         <h2>All</h2-->
-        <div align="right">
-            <div>
+    <table width="100%">
+        <tr>
+            <td>
+                <div style="float: left">
+                    <h3 style="font-size: 19px;"><a style="font-weight: bold">Results</a></h3>
+                </div>
+            </td>
+            <td style="float: right">
                 <div>
-                    <b style="font-size: 120%;">showing {{start}}-{{end}} entry of {{total_count}} entries</b>
+                    <div>
+                        <div>
+                            <b style="font-size: 120%;">showing {{start}}-{{end}} entry of {{total_count}} entries</b>
+                        </div>
+                        <div style="display: inline-block; float: right">
+                            <input  type="button" class="minibutton previous_page" value="<"/>
+                            <input  type="button" class="minibutton next_page" value=">"/>
+                        </div>
+                    </div>
                 </div>
-                <div style="display: inline-block">
-                    <input  type="button" class="minibutton previous_page" value="<"/>
-                    <input  type="button" class="minibutton next_page" value=">"/>
-                </div>
-            </div>
-        </div>
+            </td>
+        </tr>
+    </table>
+
         <div align="center">
 
             <div id="allRun">
