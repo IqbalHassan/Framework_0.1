@@ -14,13 +14,14 @@
             <input type="text" placeholder="Test Step Title" id="step_name" class="textbox" name="step_name" style="margin-left: 30px;margin-bottom: 20px"/>
 
             <div class="responsive-tabs" style="margin-left: 30px">
-                <h2>Default</h2>
+
+                <h2>Detail</h2>
                 <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
 
                     <table>
                         <tr>
                             <td class="tc_form_label_col">
-                                <b class="Text">Description:</b>
+                                <b class="Text">Global Description:</b>
                             </td>
                             <td class="tc_form_input_col">
                                 <textarea rows="5" cols="35" id="step_desc" name="step_desc" class="textbox" style="height:35px"  placeholder="Describe the test step(within 180 letters)"></textarea>
@@ -28,82 +29,7 @@
                         </tr>
                     </table>
 
-                    &nbsp;&nbsp;&nbsp;
-                    <table>
-                        <tr>
-                            <td class="tc_form_label_col">
-                                <b class="Text">Expected:</b>
-                            </td>
-                            <td class="tc_form_input_col">
-                                <textarea rows="5" cols="35" id="step_expect" name="step_expect" class="textbox" style="height:35px"  placeholder="Expectation from the test step(within 180 letters)"></textarea>
-                            </td>
-                        </tr>
-                    </table>
-                    &nbsp;&nbsp;&nbsp;
-                    <table>
-                        <tr>
-                            <td class="tc_form_label_col">
-                                <b class="Text">Verification Point:</b>
-                            </td>
-                            <td class="tc_form_input_col">
-                                <table class="verify_radio">
-                                    <tr>
-                                        <td>
-                                            <!--input id="Enable_radio" type="radio"  name="Status" value="Production" style="width:auto"-->
-                                            <a id="true_radio" type="radio" value="True" class="button">True</a>
-                                            <!--label for="Enable_radio">Enabled</label--> &nbsp; &nbsp;
-                                        </td>
-                                        <td>
-                                            <a id="false_radio" type="radio" value="False" class="button selected">False</a>
-                                            <!--label for="Disable_radio">Disabled</label-->
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    &nbsp;&nbsp;&nbsp;
-                    <table>
-                        <tr>
-                            <td class="tc_form_label_col">
-                                <b class="Text">Continue On Fail:</b>
-                            </td>
-                            <td class="tc_form_input_col">
-                                <table class="continue_radio">
-                                    <tr>
-                                        <td>
-                                            <!--input id="Enable_radio" type="radio"  name="Status" value="Production" style="width:auto"-->
-                                            <a id="yes_radio" type="radio" value="Yes" class="button">Yes</a>
-                                            <!--label for="Enable_radio">Enabled</label--> &nbsp; &nbsp;
-                                        </td>
-                                        <td>
-                                            <a id="no_radio" type="radio" value="No" class="button">No</a>
-                                            <!--label for="Disable_radio">Disabled</label-->
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    &nbsp;&nbsp;&nbsp;
-                    <table>
-                        <tr>
-                            <td class="tc_form_label_col">
-                                <b class="Text">Estd. Time:</b>
-                            </td>
-                            <td class="tc_form_input_col">
-                                <div class="input-append bootstrap-timepicker">
-                                    <input id="step_time" type="text" class="input-small textbox timepicker"><span class="add-on"><i class="icon-time"></i></span>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-
-                </div>
-
-                <h2>Detail</h2>
-                <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
-
+                        &nbsp;&nbsp;&nbsp;
                     <table>
                         <tr>
                             <td class="tc_form_label_col">
@@ -182,8 +108,97 @@
 
                 </div>
 
+
+                <h2>Default</h2>
+                <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
+
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Description:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <textarea rows="5" cols="35" id="case_desc" name="case_desc" class="textbox" style="height:35px"  placeholder="Describe the test step(within 180 letters)"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Expected:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <textarea rows="5" cols="35" id="step_expect" name="step_expect" class="textbox" style="height:35px"  placeholder="Expectation from the test step(within 180 letters)"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Verification Point:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <table class="verify_radio">
+                                    <tr>
+                                        <td>
+                                            <!--input id="Enable_radio" type="radio"  name="Status" value="Production" style="width:auto"-->
+                                            <a id="true_radio" type="radio" value="True" class="button">True</a>
+                                            <!--label for="Enable_radio">Enabled</label--> &nbsp; &nbsp;
+                                        </td>
+                                        <td>
+                                            <a id="false_radio" type="radio" value="False" class="button selected">False</a>
+                                            <!--label for="Disable_radio">Disabled</label-->
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Continue On Fail:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <table class="continue_radio">
+                                    <tr>
+                                        <td>
+                                            <!--input id="Enable_radio" type="radio"  name="Status" value="Production" style="width:auto"-->
+                                            <a id="yes_radio" type="radio" value="Yes" class="button">Yes</a>
+                                            <!--label for="Enable_radio">Enabled</label--> &nbsp; &nbsp;
+                                        </td>
+                                        <td>
+                                            <a id="no_radio" type="radio" value="No" class="button">No</a>
+                                            <!--label for="Disable_radio">Disabled</label-->
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Estd. Time:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <div class="input-append bootstrap-timepicker">
+                                    <input id="step_time" type="text" class="input-small textbox timepicker"><span class="add-on"><i class="icon-time"></i></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+
+
                 <h2 id="history">History</h2>
                 <div class="tabs-div history-div" align="left" style="margin-top: 30px;margin-left: 20%">
+
                 </div>
 
             </div>
