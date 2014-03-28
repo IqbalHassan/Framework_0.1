@@ -11,10 +11,10 @@
         {%csrf_token%}
         <div id='info_div'>
 
-            <input type="text" placeholder="Test Step Name" id="step_name" class="textbox" name="step_name" style="margin-left: 30px;margin-bottom: 20px"/>
+            <input type="text" placeholder="Test Step Title" id="step_name" class="textbox" name="step_name" style="margin-left: 30px;margin-bottom: 20px"/>
 
             <div class="responsive-tabs" style="margin-left: 30px">
-                <h2>Info</h2>
+                <h2>Default</h2>
                 <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
 
                     <table>
@@ -35,7 +35,7 @@
                                 <b class="Text">Expected:</b>
                             </td>
                             <td class="tc_form_input_col">
-                                <textarea rows="5" cols="35" id="step_expect" name="step_expect" class="textbox" style="height:35px"  placeholder="Describe the test step(within 180 letters)"></textarea>
+                                <textarea rows="5" cols="35" id="step_expect" name="step_expect" class="textbox" style="height:35px"  placeholder="Expectation from the test step(within 180 letters)"></textarea>
                             </td>
                         </tr>
                     </table>
@@ -55,6 +55,29 @@
                                         </td>
                                         <td>
                                             <a id="false_radio" type="radio" value="False" class="button selected">False</a>
+                                            <!--label for="Disable_radio">Disabled</label-->
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Continue On Fail:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <table class="continue_radio">
+                                    <tr>
+                                        <td>
+                                            <!--input id="Enable_radio" type="radio"  name="Status" value="Production" style="width:auto"-->
+                                            <a id="yes_radio" type="radio" value="Yes" class="button">Yes</a>
+                                            <!--label for="Enable_radio">Enabled</label--> &nbsp; &nbsp;
+                                        </td>
+                                        <td>
+                                            <a id="no_radio" type="radio" value="No" class="button">No</a>
                                             <!--label for="Disable_radio">Disabled</label-->
                                         </td>
                                     </tr>

@@ -4,6 +4,7 @@
 $(document).ready(function(){
 
     verification_radio();
+    Continue_radio();
     TimePicker();
 
     var feature_list=[];
@@ -198,6 +199,16 @@ function verification_radio(){
     $("#false_radio").live('click',function(){
         $(this).addClass("selected");
         $("#true_radio").removeClass("selected");
+    });
+}
+function Continue_radio(){
+    $("#yes_radio").live('click',function(){
+        $(this).addClass("selected");
+        $("#no_radio").removeClass("selected");
+    });
+    $("#no_radio").live('click',function(){
+        $(this).addClass("selected");
+        $("#yes_radio").removeClass("selected");
     });
 }
 function TimePicker(){
