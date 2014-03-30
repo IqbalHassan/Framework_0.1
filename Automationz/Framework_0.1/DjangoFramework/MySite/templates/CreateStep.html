@@ -7,7 +7,7 @@
     <h3 style="font-size: 19px;"><a style="font-weight: bold">Create/Edit Test Step</a></h3>
 </div>
 
-    <form action="{% url 'MySite.views.Process_TestStep'%}" method="post">
+    <form action="{% url 'MySite.views.Process_CreateStep'%}" method="post">
         {%csrf_token%}
         <div id='info_div'>
 
@@ -35,7 +35,7 @@
                             <td class="tc_form_label_col">
                                 <b class="Text">Feature:</b>
                             </td>
-                            <td class="tc_form_input_col">
+                            <td>
                                 <select type="text" id="step_feature" name="step_feature" class="combo-box step-feat" data-level="">
                                     <option value="">Select from list</option>
                                 </select>
@@ -144,12 +144,13 @@
                                     <tr>
                                         <td>
                                             <!--input id="Enable_radio" type="radio"  name="Status" value="Production" style="width:auto"-->
-                                            <a id="true_radio" type="radio" value="True" class="button">True</a>
+                                            <a id="true_radio" value="True" type="radio" class="button">True</a>
                                             <!--label for="Enable_radio">Enabled</label--> &nbsp; &nbsp;
                                         </td>
                                         <td>
-                                            <a id="false_radio" type="radio" value="False" class="button selected">False</a>
+                                            <a id="false_radio" value="False" type="radio" class="button selected">False</a>
                                             <!--label for="Disable_radio">Disabled</label-->
+                                            <input name="verify_radio" id="verify_radio" value="" type="text" style="display: none">
                                         </td>
                                     </tr>
                                 </table>
@@ -173,6 +174,7 @@
                                         <td>
                                             <a id="no_radio" type="radio" value="No" class="button">No</a>
                                             <!--label for="Disable_radio">Disabled</label-->
+                                            <input id="continue_radio" name="continue_radio" value="" type="text" style="display: none">
                                         </td>
                                     </tr>
                                 </table>
@@ -187,7 +189,8 @@
                             </td>
                             <td class="tc_form_input_col">
                                 <div class="input-append bootstrap-timepicker">
-                                    <input id="step_time" type="text" class="input-small textbox timepicker"><span class="add-on"><i class="icon-time"></i></span>
+                                    <input type="text" class="input-small textbox timepicker"><span class="add-on clock"><i class="icon-time"></i></span>
+                                    <input  id="step_time" value="" name="step_time" type="text" style="display: none">
                                 </div>
                             </td>
                         </tr>

@@ -3,11 +3,39 @@
  */
 $(document).ready(function(){
 
-    verification_radio();
-    Continue_radio();
-    TimePicker();
-
-    var feature_list=[];
+    $.ajax({
+        url:'GetFeature/',
+        dataType : "json",
+        data : {
+            feature : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".step-feat[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+    $.ajax({
+        url:'GetDriver/',
+        dataType : "json",
+        data : {
+            driver : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".step-driv[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+    /*var feature_list=[];
     var driver_list=[];
     $.ajax({
         url:'GetFeature/',
@@ -24,7 +52,7 @@ $(document).ready(function(){
              $(".step-feat[data-level='']").append($('<option>').text(value).attr('value', value));
              });*/
             //console.log(data);
-            for(var i=0;i<data.length;i++){
+          /*  for(var i=0;i<data.length;i++){
                 //$('#step_feature').append('<option value="'+data[i][0]+'">'+data[i][0]+'</opiton>');
                 feature_list.push(data[i][0]);
             }
@@ -45,7 +73,7 @@ $(document).ready(function(){
              $(".step-driv[data-level='']").append($('<option>').text(value).attr('value', value));
              });*/
             //console.log(data);
-            for(var i=0;i<data.length;i++){
+         /*   for(var i=0;i<data.length;i++){
                 //$('#step_driver').append('<option value="'+data[i][0]+'">'+data[i][0]+'</opiton>');
                 driver_list.push(data[i][0]);
             }
@@ -56,7 +84,8 @@ $(document).ready(function(){
     }
     for(var i=0;i<driver_list.length;i++){
         $('#step_driver').append('<option value="'+driver_list[i]+'">'+driver_list[i]+'</opiton>');
-    }
+    }*/
+
     $("#step_name").autocomplete({
         source: function(request,response){
             $.ajax({
@@ -189,27 +218,61 @@ $(document).ready(function(){
         });
     });
 
+    verification_radio();
+    Continue_radio();
+    TimePicker();
+
 });
 
 function verification_radio(){
     $("#true_radio").live('click',function(){
         $(this).addClass("selected");
         $("#false_radio").removeClass("selected");
+        var value = $("#true_radio").attr('value');
+        $("#verify_radio").attr('value',value);
     });
     $("#false_radio").live('click',function(){
         $(this).addClass("selected");
         $("#true_radio").removeClass("selected");
+        var value = $("#false_radio").attr('value');
+        $("#verify_radio").attr('value',value);
     });
+
+   if($("#true_radio").hasClass("selected"))
+    {
+        var value = $("#true_radio").attr('value');
+        $("#verify_radio").attr('value',value);
+    }
+    else if($("#false_radio").hasClass("selected"))
+    {
+       var value = $("#false_radio").attr('value');
+       $("#verify_radio").attr('value',value);
+    }
 }
 function Continue_radio(){
     $("#yes_radio").live('click',function(){
         $(this).addClass("selected");
         $("#no_radio").removeClass("selected");
+        var value = $("#yes_radio").attr('value');
+        $("#continue_radio").attr('value',value);
     });
     $("#no_radio").live('click',function(){
         $(this).addClass("selected");
         $("#yes_radio").removeClass("selected");
+        var value = $("#no_radio").attr('value');
+        $("#continue_radio").attr('value',value);
     });
+
+    /*if($("#yes_radio").hasClass("selected"))
+    {
+        var value = $("#yes_radio").attr('value');
+        $("#continue_radio").attr('value',value);
+    }
+    else if($("#no_radio").hasClass("selected"))
+    {
+        var value = $("#no_radio").attr('value');
+        $("#continue_radio").attr('value',value);
+    }*/
 }
 function TimePicker(){
     $('.timepicker').timepicker({
@@ -221,4 +284,21 @@ function TimePicker(){
         defaultTime: '00:00:60 AM',
         secondStep: 1
     });
+
+    var time = $(".timepicker").val();
+    var second = convertToSeconds(time);
+    $("#step_time").val(second);
+
+    $(".timepicker").change(function(){
+        var time = $(".timepicker").val();
+        var second = convertToSeconds(time);
+        $("#step_time").val(second);
+    });
+}
+function convertToSeconds(stringTime){
+    var hour=stringTime.split(":")[0].trim();
+    var minuate=stringTime.split(":")[1].trim();
+    var seconds=stringTime.split(":")[2].trim();
+    var total=(hour*3600)+(minuate*60)+(seconds*1);
+    return total;
 }

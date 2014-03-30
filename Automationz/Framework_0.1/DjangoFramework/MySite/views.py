@@ -4019,6 +4019,109 @@ def Process_TestStep(request):
                 return render_to_response('TestStep.html',error,context_instance=RequestContext(request))
     return HttpResponse(output)
 
+def Process_CreateStep(request):
+    output="in the processing page"
+    if request.method=='POST':
+        step_name=request.POST['step_name']
+        step_desc=request.POST['step_desc']
+        step_feature=request.POST['step_feature']
+        step_data=request.POST['step_data']
+        step_type=request.POST['step_type']
+        step_driver=request.POST['step_driver'] 
+        step_enable=request.POST['step_enable']
+        case_desc=request.POST['case_desc']
+        step_expect=request.POST['step_expect']
+        verify_radio=request.POST['verify_radio']
+        continue_radio=request.POST['continue_radio']
+        step_time=request.POST['step_time']
+        
+        if step_name!="" and step_desc!="" and step_feature!="" and step_data!="0" and step_enable!="0" and case_desc!="" and step_expect!="" and step_time!="":
+            if step_type!="0" and step_driver!="":
+                conn=GetConnection()
+                sQuery="select count(*) from test_steps_list where stepname='"+step_name+"'"
+                result=DB.GetData(conn, sQuery)
+                if(result[0]>0):
+                    if(step_data=="1"):
+                        data="true"
+                        edit_data="false"
+                    if(step_data=="3"):
+                        data="true"
+                        edit_data="true"
+                    if(step_data=="2"):
+                        data="false"
+                        edit_data="false"
+                    if(step_type=="1"):
+                        s_type="automated"
+                    if(step_type=="2"):
+                        s_type="manual"
+                    if(step_type=="3"):
+                        s_type="performance"
+                    if(step_enable=="1"):
+                        enable="true"
+                    if(step_enable=="2"):
+                        enable="false"
+                    query = "Where  stepname = '"+step_name+"'"
+                    testrunenv=DB.UpdateRecordInTable(conn, "test_steps_list",query,description=step_desc,data_required=data,steptype=s_type,driver=step_driver,stepfeature=step_feature,stepenable=enable,step_editable=edit_data,case_desc=case_desc,expected=step_expect,verify_point=verify_radio,step_continue=continue_radio,estd_time=step_time)
+                    query="SELECT count(*) FROM config_values where type='feature' and value='"+step_feature+"'"
+                    feature_count=DB.GetData(conn,query)
+                    if(feature_count[0]<1):
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type='feature',value=step_feature)
+                    query="SELECT count(*) FROM config_values where type='driver' and value='"+step_driver+"'"
+                    driver_count=DB.GetData(conn, query)
+                    if(driver_count[0]<1):
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type='driver',value=step_driver)
+                    if testrunenv==True:
+                        message="Test Step with name '"+step_name+"' is updated"
+                        return render_to_response('CreateStep.html',{'error_message':message},context_instance=RequestContext(request))
+                    else:
+                        message="Test Step with name '"+step_name+"' is not updated.Please Try again"
+                        return render_to_response('CreateStep.html',{'error_message':message},context_instance=RequestContext(request))
+                else:
+                    if(step_data=="1"):
+                        data="true"
+                        edit_data="false"
+                    if(step_data=="3"):
+                        data="true"
+                        edit_data="true"
+                    if(step_data=="2"):
+                        data="false"
+                        edit_data="false"
+                    if(step_type=="1"):
+                        s_type="automated"
+                    if(step_type=="2"):
+                        s_type="manual"
+                    if(step_type=="3"):
+                        s_type="performance"
+                    if(step_enable=="1"):
+                        enable="true"
+                    if(step_enable=="2"):
+                        enable="false"
+                    
+                    testrunenv=DB.InsertNewRecordInToTable(conn, "test_steps_list",stepname=step_name,description=step_desc,data_required=data,steptype=s_type,driver=step_driver,stepfeature=step_feature,stepenable=enable,step_editable=edit_data,case_desc=case_desc,expected=step_expect,verify_point=verify_radio,step_continue=continue_radio,estd_time=step_time)
+                    query="SELECT count(*) FROM config_values where type='feature' and value='"+step_feature+"'"
+                    feature_count=DB.GetData(conn,query)
+                    if(feature_count[0]<1):
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type='feature',value=step_feature)
+                    query="SELECT count(*) FROM config_values where type='driver' and value='"+step_driver+"'"
+                    driver_count=DB.GetData(conn, query)
+                    if(driver_count[0]<1):
+                        testrunenv=DB.InsertNewRecordInToTable(conn, "config_values",type='driver',value=step_driver)
+                    if testrunenv==True:
+                        message="Test Step with name '"+step_name+"' is created"
+                        return render_to_response('CreateStep.html',{'error_message':message},context_instance=RequestContext(request))
+                    else:
+                        message="Test Step with name '"+step_name+"' is not created.Please Try again"
+                        return render_to_response('CreateStep.html',{'error_message':message},context_instance=RequestContext(request))         
+            else:
+                error_message="Input Fields are empty.Check the input fields"
+                error={'error_message':error_message}
+                return render_to_response('CreateStep.html',error,context_instance=RequestContext(request))
+        else:
+                error_message="Input Fields are empty.Check the input fields"
+                error={'error_message':error_message}
+                return render_to_response('CreateStep.html',error,context_instance=RequestContext(request))
+    return HttpResponse(output)
+
 def Process_FeatureDriver(request):                    #minar09
     output="in the processing page"
     if request.method=='POST':
