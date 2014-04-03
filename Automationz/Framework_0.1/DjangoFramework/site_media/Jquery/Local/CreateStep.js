@@ -3,6 +3,11 @@
  */
 $(document).ready(function(){
 
+    description_fill();
+    verification_radio();
+    Continue_radio();
+    TimePicker();
+
     $.ajax({
         url:'GetFeature/',
         dataType : "json",
@@ -14,8 +19,13 @@ $(document).ready(function(){
                 for(var i = 1; i < json.length; i++)
                     json[i] = json[i][0].replace(/_/g,' ')
             $.each(json, function(i, value) {
-                if(i == 0)return;
-                $(".step-feat[data-level='']").append($('<option>').text(value).attr('value', value));
+                //if(i == 0)return;
+                if(value=="Common"){
+                    $(".step-feat[data-level='']").append($('<option selected="selected">').text(value).attr('value', value));
+                }
+                else{
+                    $(".step-feat[data-level='']").append($('<option>').text(value).attr('value', value));
+                }
             });
         }
     });
@@ -30,8 +40,13 @@ $(document).ready(function(){
                 for(var i = 1; i < json.length; i++)
                     json[i] = json[i][0].replace(/_/g,' ')
             $.each(json, function(i, value) {
-                if(i == 0)return;
-                $(".step-driv[data-level='']").append($('<option>').text(value).attr('value', value));
+                //if(i == 0)return;
+                if(value=="Manual"){
+                    $(".step-driv[data-level='']").append($('<option selected="selected">').text(value).attr('value', value));
+                }
+                else{
+                    $(".step-driv[data-level='']").append($('<option>').text(value).attr('value', value));
+                }
             });
         }
     });
@@ -169,7 +184,7 @@ $(document).ready(function(){
             .appendTo( ul );
     };
 
-    /*$("#get_cases").click(function(){
+    $("#get_cases").click(function(){
         var UserText=$("#step_name").val();
         console.log(UserText);
         Env = "PC"
@@ -214,7 +229,7 @@ $(document).ready(function(){
         });
 
     });
-    $("#delete_button").click(function(){
+    /*$("#delete_button").click(function(){
         var name=$("#step_name").val();
         console.log(name);
         $.ajax({
@@ -234,15 +249,19 @@ $(document).ready(function(){
         });
     });*/
 
-    description_fill();
-    verification_radio();
-    Continue_radio();
-    TimePicker();
-
 });
 function description_fill(){
     $("#step_name").keyup(function(){
         var desc = $(this).val();
+        /*if(("#step_desc").val()==""){
+            $("#step_desc").val(desc);
+        }
+        if(("#case_desc").val()==""){
+            $("#case_desc").val(desc);
+        }
+        if(("#step_expect").val()==""){
+            $("#step_expect").val(desc);
+        }*/
         $("#step_desc").val(desc);
         $("#case_desc").val(desc);
         $("#step_expect").val(desc);
