@@ -898,6 +898,18 @@ function AutoCompleteTestStep(){
                         $(divname).html(GeneratePopUpMetaData());
                         popupdivrowcount[index-1]=0;
                     }
+                    if(ui.item[5]!=""){
+                        $('#searchbox'+index+'info').val(ui.item[5].trim());
+                    }
+                    if(ui.item[6]!=""){
+                        $('#searchbox'+index+'expected').val(ui.item[6].trim());
+                    }
+                    if(ui.item[7]){
+                        $('#searchbox'+index+'verify').attr('checked',true);
+                    }
+                    if(ui.item[8]){
+                        $('#searchbox'+index+'time').val(convertToString(ui.item[8]));
+                    }
                 }
                 return false;
             }
