@@ -1803,7 +1803,7 @@ def AddInfo(run_id):
         TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % eachcase, False)
         for eachstep in TestStepsList:
             print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
-            Dict={'run_id':run_id,'tc_id':eachcase,'teststep_id':eachstep[0],'status':"Submitted"}
+            Dict={'run_id':run_id,'tc_id':eachcase,'teststep_id':eachstep[0],'status':"Submitted",'teststepsequence':eachstep[2]}
             print DB.InsertNewRecordInToTable(conn, "test_step_results",**Dict)
 def ReRun_Fail_TestCases(request):
     Conn = GetConnection()
@@ -4864,14 +4864,14 @@ def DataFetchForTestCases(request):
             print test_case_id
             #Get the test steps from test_step_results
             Conn=GetConnection()
-            query="select step_id from test_steps where tc_id='%s'"%test_case_id
-            TestStepList=DB.GetData(Conn, query)
+            query="select step_id,teststepsequence from test_steps where tc_id='%s' order by teststepsequence"%test_case_id
+            TestStepList=DB.GetData(Conn, query,False)
             DataCollected=[]
             Conn.close()
             for each in range(0,len(TestStepList)):
                 Conn=GetConnection()
                 #Get the stepname fromt test_steps_list
-                query="select stepname,steptype,data_required from test_steps_list where step_id=%d" %TestStepList[each]
+                query="select stepname,steptype,data_required from test_steps_list where step_id=%d" %TestStepList[each][0]
                 StepName=DB.GetData(Conn,query,False)
                 Temp_Data=[]
                 Temp_Data.append(each+1)
@@ -4893,7 +4893,7 @@ def DataFetchForTestCases(request):
                 #Get the expected Result from the master data
                 #Get the failreson from the test_step_results
                 #Get the steps status from the test_step_results
-                query="select status,failreason from test_step_results where tc_id='%s' and run_id='%s' and teststep_id=%d" %(test_case_id,run_id,(TestStepList[each])) 
+                query="select status,failreason from test_step_results where tc_id='%s' and run_id='%s' and teststep_id=%d and teststepsequence='%d'" %(test_case_id,run_id,(TestStepList[each][0]),(TestStepList[each][1])) 
                 Status=DB.GetData(Conn,query,False) 
                 Temp_Data.append(Status[0][1]) #FailReason
                 Temp_Data.append(Status[0][0])
@@ -5080,11 +5080,15 @@ def update_runid(run_id,test_case_id):
         print DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
     #########################################################################################
 def UpdateTestStepStatus(List,run_id,test_case_id,test_case_status,failReason):
+    """test_step_id_list=[]
     for each in List:
         print each
         query="select step_id from test_steps_list where stepname='%s'" %each[0].strip()
         Conn=GetConnection()
         step_id=DB.GetData(Conn, query, False)
+        test_step_id_list.append(step_id[0][0])
+    print test_step_id_list
+    ##########Fetch the main order List for the 
         query="where run_id='%s' and tc_id='%s' and teststep_id='%d'"%(run_id,test_case_id,step_id[0][0])
         Dict={}
         Dict.update({'status':each[2],'failreason':each[1]})
@@ -5094,7 +5098,29 @@ def UpdateTestStepStatus(List,run_id,test_case_id,test_case_status,failReason):
     Dict.update({'status':test_case_status,'failreason':failReason})
     print DB.UpdateRecordInTable(Conn,"test_case_results",query,**Dict)
     update_runid(run_id,test_case_id)
-    return "true"    
+    return "true"
+    """
+    ######Get the step List for the selected Test Case #######################
+    query="select step_id,teststepsequence from test_steps where tc_id='%s' order by teststepsequence" %test_case_id
+    Conn=GetConnection()
+    test_steps_list=DB.GetData(Conn, query, False)
+    print test_steps_list
+    count=0
+    for each in test_steps_list:
+        name_query="select stepname from test_steps_list where step_id='%s'"%each[0]
+        stepName=DB.GetData(Conn,name_query)
+        if stepName[0]==List[count][0]:
+            query="where run_id='%s' and tc_id='%s' and teststep_id='%d' and teststepsequence='%d'"%(run_id,test_case_id,each[0],each[1])
+            Dict={}
+            Dict.update({'status':List[count][2],'failreason':List[count][1]})
+            print DB.UpdateRecordInTable(Conn, "test_step_results", query,**Dict)
+            count+=1
+    query="where run_id='%s' and tc_id='%s'"%(run_id,test_case_id)
+    Dict={}
+    Dict.update({'status':test_case_status,'failreason':failReason})
+    print DB.UpdateRecordInTable(Conn,"test_case_results",query,**Dict)
+    update_runid(run_id,test_case_id)
+    return "true"
 def UpdateData(request):
     if request.is_ajax():
         if request.method=='GET':
