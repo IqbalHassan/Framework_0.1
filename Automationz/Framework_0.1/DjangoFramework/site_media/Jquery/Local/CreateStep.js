@@ -141,6 +141,22 @@ $(document).ready(function(){
                             $("#step_type").val(3);
                         }
                         $("#step_feature").val(row[6]);
+                        $("#case_desc").val(row[9]);
+                        $("#step_expect").val(row[10]);
+                        if(row[11]==true){
+                            $("#true_radio").trigger('click');
+                        }
+                        else if(row[11]==false){
+                            $("#false_radio").trigger('click');
+                        }
+                        if(row[12]==true){
+                            $("#yes_radio").trigger('click');
+                        }
+                        else if(row[12]==false){
+                            $("#no_radio").trigger('click');
+                        }
+                        $("#step_time").val(row[13]);
+                        $(".timepicker").timepicker('setTime', convertToString(row[13]));
                     }
                 });
                 return false;
@@ -153,7 +169,7 @@ $(document).ready(function(){
             .appendTo( ul );
     };
 
-    $("#get_cases").click(function(){
+    /*$("#get_cases").click(function(){
         var UserText=$("#step_name").val();
         console.log(UserText);
         Env = "PC"
@@ -216,14 +232,22 @@ $(document).ready(function(){
                 }
             }
         });
-    });
+    });*/
 
+    description_fill();
     verification_radio();
     Continue_radio();
     TimePicker();
 
 });
-
+function description_fill(){
+    $("#step_name").keyup(function(){
+        var desc = $(this).val();
+        $("#step_desc").val(desc);
+        $("#case_desc").val(desc);
+        $("#step_expect").val(desc);
+    });
+};
 function verification_radio(){
     $("#true_radio").live('click',function(){
         $(this).addClass("selected");
@@ -263,7 +287,7 @@ function Continue_radio(){
         $("#continue_radio").attr('value',value);
     });
 
-    /*if($("#yes_radio").hasClass("selected"))
+    if($("#yes_radio").hasClass("selected"))
     {
         var value = $("#yes_radio").attr('value');
         $("#continue_radio").attr('value',value);
@@ -272,7 +296,7 @@ function Continue_radio(){
     {
         var value = $("#no_radio").attr('value');
         $("#continue_radio").attr('value',value);
-    }*/
+    }
 }
 function TimePicker(){
     $('.timepicker').timepicker({
@@ -301,4 +325,21 @@ function convertToSeconds(stringTime){
     var seconds=stringTime.split(":")[2].trim();
     var total=(hour*3600)+(minuate*60)+(seconds*1);
     return total;
+}
+function convertToString(intTime){
+    var hour=Math.floor(intTime/3600);
+    intTime=intTime%3600;
+    var minuate=Math.floor(intTime/60);
+    intTime=intTime%60;
+    if(hour<10){
+        hour="0"+hour;
+    }
+    if(minuate<10){
+        minuate="0"+minuate;
+    }
+    if(intTime<10){
+        intTime="0"+intTime;
+    }
+    var stringTime=hour+":"+minuate+":"+intTime;
+    return stringTime.trim();
 }
