@@ -286,7 +286,7 @@ def main():
                     #update test_step_results table
                     #cur.execute("insert into test_step_results (run_id,tc_id,teststep_id,teststepsequence,status,stepstarttime,logid,start_memory,testcaseresulttindex ) values ('%s','%s','%d','%d','In-Progress','%s','%s', '%s', '%d')" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], sTestStepStartTime, Global.sTestStepExecLogId, WinMemBegin, TestCaseResultIndex[0][0]))
                     #conn.commit()
-                    condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"' and teststep_id='"+str(TestStepsList[StepSeq - 1][0])+"'"
+                    condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"' and teststep_id='"+str(TestStepsList[StepSeq - 1][0])+"' and teststepsequence='"+str(TestStepsList[StepSeq - 1][2])+"'"
                     Dict={'teststepsequence':TestStepsList[StepSeq - 1][2],'status':'In-Progress','stepstarttime':sTestStepStartTime,'logid':Global.sTestStepExecLogId,'start_memory':WinMemBegin,'testcaseresulttindex':TestCaseResultIndex[0][0]}
                     DBUtil.UpdateRecordInTable(conn,"test_step_results",condition,**Dict)
                     try:
