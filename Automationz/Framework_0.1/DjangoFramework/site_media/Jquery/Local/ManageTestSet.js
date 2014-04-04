@@ -73,7 +73,6 @@ function AddAutoCompleteSearchBox(wheretoplace,label){
             +"<p> </p>"
             + "<th class = 'Text' style= 'text-align: left'> Test Data Set: </th>"
             + "</tr>"
-
             + "</tbody>"
             + "</table>"
             + "</form>"
@@ -84,7 +83,7 @@ function RunAutoCompleteTestSearch(env){
         {
             source : function(request, response) {
                 $.ajax({
-                    url:"AutoCompleteTestCasesSearch",
+                    url:"AutoCompleteTestCasesSearchOtherPages",
                     dataType: "json",
                     data:{ term: request.term, Env: env },
                     success: function( data ) {
@@ -119,9 +118,7 @@ function RunAutoCompleteTestSearch(env){
     };
     $("#searchbox").keypress(function(event) {
         if (event.which == 13) {
-
             event.preventDefault();
-
         }
 
     });
@@ -130,8 +127,8 @@ function PerformSearch(){
     $("#AutoSearchResult #searchedtext").each(function() {
         var UserText = $(this).find("td").text();
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
-        Env = Get_Selected_Env_Name()
-        $.get("Table_Data_TestCases",{Query: UserText, Env: Env},function(data) {
+        //Env = Get_Selected_Env_Name()
+        $.get("TableDataTestCasesOtherPages",{Query: UserText},function(data) {
 
             if (data['TableData'].length == 0)
             {
@@ -176,25 +173,32 @@ function PerformSearch(){
                 //$(".Buttons[title='Verify Query']").fadeIn(2000);
                 //$(".Buttons[title='Select User']").fadeOut();
                 var message="";
-                message+='<table class="ui-widget" style="border-collapse: collapse"><tr>';
+                message+='<p align="center" style="font-weight: bolder;font-size: 1.2em;">Select Test Case(s) To Add</p>';
+                message+='<hr style="width: 80%">';
+
+
+                message+='<table class="one-column-emphasis" style="border-collapse: collapse"><tr>';
                 for(var i=0;i<data['Heading'].length;i++){
-                    message+='<th class="ui-widget-header" align="center" style="font-weight: bold;padding: 2px;">'+data['Heading'][i]+'</th>';
+                    message+='<th align="center" style="font-weight: bold;padding: 2px;">'+data['Heading'][i]+'</th>';
                 }
-                message+='<th class="ui-widget-header" align="center">&nbsp</th>';
+                message+='<th align="center">&nbsp</th>';
                 message+='</tr>';
                 for(var i=0;i<data['TableData'].length;i++){
                     message+='<tr>';
                     for(var j=0;j<(data['TableData'][i]).length;j++){
-                        message+='<td class="ui-widget-content">'+data['TableData'][i][j]+'</td> ';
+                        message+='<td>'+data['TableData'][i][j]+'</td> ';
                     }
-                    message+='<td class="ui-widget-content"><input id="'+data['TableData'][i][0]+'" value="'+data['TableData'][i][0]+'" name="selectTCAdd" type="checkbox" /></td> '
+                    message+='<td><input id="'+data['TableData'][i][0]+'" value="'+data['TableData'][i][0]+'" name="selectTCAdd" type="checkbox" /></td> '
                     message+='</tr>';
                 }
                 message+='</table>';
+                message+='<br/>';
+                message+='<button type="submit" id="addBtn" class="button minibutton primary">Add Selected TCs</button>';
                 $('#right_div').html(message);
                 $(".delete").click(function(){
                    $(this).parent().next().remove();
                    $(this).remove();
+                   PerformSearch();
                 });
             }
 
