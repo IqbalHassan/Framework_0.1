@@ -4022,7 +4022,7 @@ def Process_TestStep(request):
 def Process_CreateStep(request):
     output="in the processing page"
     if request.method=='POST':
-        step_name=request.POST['step_name']
+        step_name=request.POST['step_name'].strip()
         step_desc=request.POST['step_desc']
         step_feature=request.POST['step_feature']
         step_data=request.POST['step_data']
