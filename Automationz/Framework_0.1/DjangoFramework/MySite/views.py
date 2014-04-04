@@ -3590,8 +3590,22 @@ def TestCases_InSet(name,data_type):
 def edit(request,name,data_type,error_message=""):
     output={}
     ex_lst=TestCases_InSet(name,data_type)
+    #Calculate the time for the test set
+    time_required=0
+    Conn=GetConnection()
+    for each in ex_lst:
+        query="select count(*) from test_steps where tc_id='%s' group by tc_id"%each['item1']
+        stepCount=DB.GetData(Conn, query)
+        stepCount=int(stepCount[0])
+        for count in range(1,stepCount+1):
+            temp_id=each['item1']+'_s'+str(count)
+            time_query="select description from master_data where id='%s' and field='estimated' and value='time'"%temp_id
+            time=DB.GetData(Conn,time_query)
+            time_required+=int(time[0])
+    formatTime=ConvertTime(time_required)
+    print formatTime
     output.update({'name':name,'data_type':data_type})
-    output.update({'ex_lst':ex_lst,'error_message':error_message})
+    output.update({'ex_lst':ex_lst,'error_message':error_message,'estimated_time':formatTime})
     return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
 
 def rename(request,first,second,data_type):

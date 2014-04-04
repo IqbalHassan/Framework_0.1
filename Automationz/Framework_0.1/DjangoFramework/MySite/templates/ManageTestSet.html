@@ -10,9 +10,19 @@
 <div id="general_info">
     <div id="info" style="margin: auto" align="center">
         {% if error_message %}<p id="error" align="center"><strong>{{error_message}}</strong></p>{% endif %}
-        <h4>Test {{data_type}} Name:<b style=" font-weight: bold; font-size: 1.4em; color: #4169e1;">  {{name}}</b></h4>
+        <table align="center">
+            <tr>
+                <td align="right"><label class="Text"><b>Test {{data_type }} Name: </b></label></td>
+                <td align="left"><label class="Text"><b style=" font-weight: bold; font-size: 1.4em; color: #4169e1;">  {{name}}</b></label></td>
+            </tr>
+            <tr>
+                <td align="right"><label class="Text"><b>Estimated Time: </b></label></td>
+                <td align="left"><label class="Text"><b style=" font-weight: bold; font-size: 1.4em; color: #4169e1;">  {{estimated_time}}</b></label></td>
+            </tr>
+        </table>
     </div>
 </div>
+<hr>
 <div id="searchBox" align="left">
 
 </div>
@@ -26,24 +36,27 @@
                 <div><input name="set_type" value="{{data_type}}" style="display: none" /></div>
             </div>
             <div style="display: block;margin:auto" width="80%">
+                {% if ex_lst %}
                 <p align="center" style="font-weight: bolder;font-size: 1.2em;">Available Test Cases</p>
                 <hr style="width: 80%">
-                <table class="one-column-emphasis" style="border-collapse: collapse" width="80%">
-                    <tr>
-                        <th align="center" style="font-weight: bold;padding: 2px;" colspan="1">TestCaseID</th>
-                        <th align="center" style="font-weight: bold;padding: 2px;"colspan="1">TestCaseName</th>
-                        <th align="center" style="font-weight: bold;padding: 2px;"colspan="1">&nbsp;&nbsp;&nbsp;</th>
-                    </tr>
-                    {% for x in ex_lst %}
-                    <tr>
-                        <td align="center">{{x.item1}}</td>
-                        <td align="left">{{x.item2}}</td>
-                        <td align="center"><input type="checkbox" id="{{x.item1}}" value="{{x.item1}}" name="selectTCremove"/></td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                    <table class="one-column-emphasis" style="border-collapse: collapse" width="80%">
+                        <tr>
+                            <th align="center" style="font-weight: bold;padding: 2px;" colspan="1">TestCaseID</th>
+                            <th align="center" style="font-weight: bold;padding: 2px;"colspan="1">TestCaseName</th>
+                            <th align="center" style="font-weight: bold;padding: 2px;"colspan="1">&nbsp;&nbsp;&nbsp;</th>
+                        </tr>
+                        {% for x in ex_lst %}
+                        <tr>
+                            <td align="center">{{x.item1}}</td>
+                            <td align="left">{{x.item2}}</td>
+                            <td align="left"><input type="checkbox" id="{{x.item1}}" value="{{x.item1}}" name="selectTCremove"/></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
                 <br/>
                 <button type="submit" id="RemoveBtn" class="button minibutton danger">Remove Selected TCs</button>
+                {% endif %}
+
             </div>
         </form>
     </div>
@@ -55,14 +68,10 @@
                <div><input name="set_type" value="{{data_type}}" style="display: none" /></div>
            </div>
            <div style="display: block;margin: auto">
-               <p align="center" style="font-weight: bolder;font-size: 1.2em;">Select Test Case(s) To Add</p>
-               <hr style="width: 80%">
-
                <div id="right_div" align="center">
 
                </div>
-               <br/>
-               <button type="submit" id="addBtn" class="button minibutton primary">Add Selected TCs</button>
+
            </div>
        </form>
     </div>
