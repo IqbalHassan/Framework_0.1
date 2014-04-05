@@ -1,34 +1,33 @@
 {% extends "BaseTemplate.html" %}
 {% block title%} Test Step Management {%endblock%}
 {% block content %}
-<script type="text/javascript" src="/site_media/Jquery/Local/TestStep.js"></script>
-        <script>
-            $(document).ready(function(){
-                $("#feature_driver").trigger('click');
-            });
-        </script>
+<script type="text/javascript" src="/site_media/Jquery/Local/ManageStep.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#create_edit").trigger('click');
+    });
+</script>
 <div id='choice_div' align="center">
     <br/>
     <input type='button' id='create_edit' class="button minibutton primary" value="Create/Edit"/>
     <input type='button' id='search' class="button minibutton primary" value="Search"/>
     <input type='button' id='feature_driver' class="button minibutton primary" value="Feature/Driver Options"/>
 </div>
-<div align="left">
-    <h3 style="font-size: 19px;"><a style="font-weight: bold">Manage Feature & Driver</a></h3>
-</div>
 <div id='create_edit_div' align="center">
     <div id='choice'>
 
     </div>
-
+    <div align="left">
+        <h3 style="font-size: 19px;"><a style="font-weight: bold">Delete Test Step</a></h3>
+    </div>
     <br>
     <form action="{% url 'MySite.views.Process_TestStep'%}" method="post">
         {%csrf_token%}
         <div id='info_div'>
 
         </div>
-        <br>
-        <div id='footer_div' style="margin-top: 150px;">
+        <!--br-->
+        <div id='footer_div' style="margin-top: 60px;">
 
         </div>
     </form>

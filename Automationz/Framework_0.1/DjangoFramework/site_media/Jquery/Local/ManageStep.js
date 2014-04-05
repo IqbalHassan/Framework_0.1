@@ -1,3 +1,6 @@
+/**
+ * Created by minar09 on 4/5/14.
+ */
 $(document).ready(function(){
 
 
@@ -50,10 +53,10 @@ $(document).ready(function(){
         //console.log("clicked");
 
         $('#search').hide();
-        $('#error').hide();
+        //$('#error').hide();
         $('#create_edit').hide();
         $("#feature_driver").hide();
-        $("#choice").append("<p style='font-size:1.5em;'><b>Action</b>: Create/Edit</p>");
+        //$("#choice").append("<p style='font-size:1.5em;'><b>Action</b>: Delete</p>");
         populate_info_div(feature_list,driver_list);
         populate_footer_div();
     });
@@ -64,12 +67,12 @@ $(document).ready(function(){
         $("#search_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Search Test Step</p>");
         populate_search_div();
     });
-	$("#feature_driver").click(function(){
+    $("#feature_driver").click(function(){
         //$('#error').hide();
         $('#search').hide();
         $("#choice_div").hide();
         $("#create_edit_div").hide();
-        //$("#feature_driver_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Feature/Driver Options</p>");
+        $("#feature_driver_choice").append("<p style='font-size:1.5em;'><b>Action</b>: Feature/Driver Options</p>");
         populate_feature_driver_info_div();
     });
 
@@ -78,61 +81,61 @@ $(document).ready(function(){
 
 function populate_feature_driver_info_div(){
     $("#feature_driver_info_div").append('' +
-                '<div align="center">' +
-                    '<table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">' +
-                        '<tr>' +
-                            '<td align="center">' +
-                                '<div id="left">'+
-                                    '<label><b>Type:</b></label>' +
+        '<div align="center">' +
+        '<table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">' +
+        '<tr>' +
+        '<td align="center">' +
+        '<div id="left">'+
+        '<label><b>Type:</b></label>' +
         "&nbsp;&nbsp;&nbsp;" +
-                                    '<select id="type" class="select-drop" name="type">' +
-                                        '<option selected value="">Select from list</option>' +
-                                        '<option value="feature">Feature</option>' +
-                                        '<option value="driver">Driver</option>' +
-                                    '</select>' +
-                                '</div>' +
-                            '</td>' +
-                            '<td align="center">' +
-                                '<div id="right">' +
-                                    '<label><b>Operation:</b></label>' +
+        '<select id="type" class="select-drop" name="type">' +
+        '<option selected value="">Select from list</option>' +
+        '<option value="feature">Feature</option>' +
+        '<option value="driver">Driver</option>' +
+        '</select>' +
+        '</div>' +
+        '</td>' +
+        '<td align="center">' +
+        '<div id="right">' +
+        '<label><b>Operation:</b></label>' +
         "&nbsp;&nbsp;&nbsp;" +
-                                    '<select id="operation" class="select-drop" name="operation">' +
-                                        '<option value="0"selected="selected">Select from list</option>' +
-                                        '<option value="1">Create</option>' +
-                                        '<option value="2">Rename</option>' +
-                                        '<option value="3">Delete</option>' +
-                                    '</select>' +
-                                '</div>' +
-                            '</td>' +
-                            '<td align="center">' +
-                                '<div id="center">' +
-                                    '<label><b id="name_variable">Name:</b></label>' +
-                                    "&nbsp;&nbsp;&nbsp;" +
-                                    "<input class=\"ui-corner-all textbox\" id=\"input\" style=\"margin: 5px; width:auto;\" type='text' title = 'Please Type Keyword' name='inputName' />" +
-                                '</div>' +
-                            '</td>' +
-                            '<td align="center">' +
-                                '<div id="renamebox">' +
+        '<select id="operation" class="select-drop" name="operation">' +
+        '<option value="0"selected="selected">Select from list</option>' +
+        '<option value="1">Create</option>' +
+        '<option value="2">Rename</option>' +
+        '<option value="3">Delete</option>' +
+        '</select>' +
+        '</div>' +
+        '</td>' +
+        '<td align="center">' +
+        '<div id="center">' +
+        '<label><b id="name_variable">Name:</b></label>' +
+        "&nbsp;&nbsp;&nbsp;" +
+        "<input class=\"ui-corner-all textbox\" id=\"input\" style=\"margin: 5px; width:auto;\" type='text' title = 'Please Type Keyword' name='inputName' />" +
+        '</div>' +
+        '</td>' +
+        '<td align="center">' +
+        '<div id="renamebox">' +
 
-                                '</div>' +
-                            '</td>' +
-                            '<td align="center">' +
-                                '<div id="error">' +
-                                    '<p><b>No Operation is selected</b></p>' +
-                                '</div>' +
-                            '</td>' +
-                            '<td align="center">' +
+        '</div>' +
+        '</td>' +
+        '<td align="center">' +
+        '<div id="error">' +
+        '<p><b>No Operation is selected</b></p>' +
+        '</div>' +
+        '</td>' +
+        '<td align="center">' +
         '<br/>' +
-                                '<div id="button_id" style="display: none">' +
-                                    '<input type=\'submit\' id=\"select_button\" class=\"button minibutton primary\" name=\'submit_button\'/>' +
-                                '</div>' +
-                                '<div id="button_del" style="display: none">' +
-                                    '<input type=\'button\' id=\"del_button\" class=\"button minibutton primary\" name=\'del_button\'/>' +
-                                '</div>' +
-                            '</td>' +
-                        '</tr>' +
-                    '</table>' +
-                '</div>'
+        '<div id="button_id" style="display: none">' +
+        '<input type=\'submit\' id=\"select_button\" class=\"button minibutton primary\" name=\'submit_button\'/>' +
+        '</div>' +
+        '<div id="button_del" style="display: none">' +
+        '<input type=\'button\' id=\"del_button\" class=\"button minibutton primary\" name=\'del_button\'/>' +
+        '</div>' +
+        '</td>' +
+        '</tr>' +
+        '</table>' +
+        '</div>'
 
     );
     $(".select-drop").selectBoxIt();
@@ -149,7 +152,7 @@ function populate_feature_driver_info_div(){
                     +"<input class=\"ui-corner-all textbox\" id=\"input2\" style=\"margin: 5px; width:auto;\" type='text' title = 'Please Type Keyword' name='inputName2' />"
             );
             //$("#button_id").html("<input type='submit' value='Rename' name='submit_button'/>");
-            $("#error").hide();
+            //$("#error").hide();
             $("#button_del").hide();
             // console.log("choice_value:"+choice_value);
             $("#select_button").val("Rename");
@@ -174,13 +177,13 @@ function populate_feature_driver_info_div(){
                     });
                 },
                 /*select: function(request,ui){
-                    var tc_id_name = ui.item.value.split(" - ");
-                    var value = "";
-                    if (tc_id_name != null)
-                        value = tc_id_name[0];
-                    $("#input2").val(value);
-                    return false;
-                }*/
+                 var tc_id_name = ui.item.value.split(" - ");
+                 var value = "";
+                 if (tc_id_name != null)
+                 value = tc_id_name[0];
+                 $("#input2").val(value);
+                 return false;
+                 }*/
                 select: function(request,ui){
                     var value = ui.item[0];
                     if(value!=""){
@@ -228,7 +231,7 @@ function populate_feature_driver_info_div(){
                 //console.log("choice_value:"+choice_value);
                 //$("#error").hide();
                 //$("#select_button").val(button_value);
-               // console.log($("#select_button").val());
+                // console.log($("#select_button").val());
                 //$("#button_id").show();
                 // $("#button_id").html("<input type='submit' value='"+ button_value +"' name='submit_button'/>");
             }
@@ -252,13 +255,13 @@ function populate_feature_driver_info_div(){
             });
         },
         /*select: function(request,ui){
-            var tc_id_name = ui.item.value.split(" - ");
-            var value = "";
-            if (tc_id_name != null)
-                value = tc_id_name[0];
-            $("#input").val(value);
-            return false;
-        }*/
+         var tc_id_name = ui.item.value.split(" - ");
+         var value = "";
+         if (tc_id_name != null)
+         value = tc_id_name[0];
+         $("#input").val(value);
+         return false;
+         }*/
         select: function(request,ui){
             var value = ui.item[0];
             if(value!=""){
@@ -342,35 +345,36 @@ function populate_feature_driver_info_div(){
 
 function populate_info_div(feature_list,driver_list){
     $('#info_div').append('' +
-        '<div style="float: left;margin-right: 15px;margin-left: 15px;">' +
-            '<label><b>Test Step Name:</b></label><br>' +
-            '<input type="text" placeholder="Enter the test set name" id="step_name" class="textbox" name="step_name"/>' +
+        '<div align="center">' +
+        '<label><b>Test Step Name:</b></label><br>' +
+        '<br/>' +
+        '<input type="text" placeholder="Enter the test step name" id="step_name" class="textbox" name="step_name"/>' +
+        '</div>'
+       /* '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
+        '<label><b>Test Step Description:</b></label><br>' +
+        '<textarea rows="5" cols="35" id="step_desc" name="step_desc" class="textbox" style="height:35px"  placeholder="Describe the test step(within 180 letters)"></textarea>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
-            '<label><b>Test Step Description:</b></label><br>' +
-            '<textarea rows="5" cols="35" id="step_desc" name="step_desc" class="textbox" style="height:35px"  placeholder="Describe the test step(within 180 letters)"></textarea>' +
-        '</div>' +
-        '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
-            '<label><b>Feature:</b></label><br>' +
-            '<select type="text" id="step_feature" name="step_feature" class="combo-box step-feat" data-level="">' +
-                '<option value="">Select from list</option>' +
-            '</select>' +
+        '<label><b>Feature:</b></label><br>' +
+        '<select type="text" id="step_feature" name="step_feature" class="combo-box step-feat" data-level="">' +
+        '<option value="">Select from list</option>' +
+        '</select>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<label><b>Driver:</b></label><br>' +
         '<select type="text" id="step_driver" name="step_driver" class="combo-box step-driv" data-level="">' +
-            '<option value="">Select from list</option>' +
+        '<option value="">Select from list</option>' +
         '</select>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<br/>' +
-            '<label><b>Test Step Type:</b></label><br>' +
-                '<select id="step_type" class="select-drop" name="step_type">' +
-                    '<option value="0" selected="selected">Select from list:</option>' +
-                    '<option value="1">Automated</option> ' +
-                    '<option value="2">Manual</option>' +
-                    '<option value="3">Performance</option> ' +
-                '</select>' +
+        '<label><b>Test Step Type:</b></label><br>' +
+        '<select id="step_type" class="select-drop" name="step_type">' +
+        '<option value="0" selected="selected">Select from list:</option>' +
+        '<option value="1">Automated</option> ' +
+        '<option value="2">Manual</option>' +
+        '<option value="3">Performance</option> ' +
+        '</select>' +
         '</div>' +
         '<div style="float: left;margin-right: 15px;margin-left: 5px">' +
         '<br/>' +
@@ -390,7 +394,7 @@ function populate_info_div(feature_list,driver_list){
         '<option value="1">True</option>' +
         '<option value="2">False</option> ' +
         '</select>' +
-        '</div><br>'
+        '</div><br>'*/
     );
     for(var i=0;i<feature_list.length;i++){
         $('#step_feature').append('<option value="'+feature_list[i]+'">'+feature_list[i]+'</opiton>');
@@ -465,62 +469,62 @@ function populate_info_div(feature_list,driver_list){
             .appendTo( ul );
     };
     /*$("#step_feature").autocomplete({
-        source: function(request,response){
-            $.ajax({
-                url:"TestFeature_Auto",
-                dataType:"json",
-                data:{term:request.term},
-                success:function(data){
-                    response(data);
-                }
-            });
-        },
-        select: function(request,ui){
-            var value = ui.item[0];
-            if(value!=""){
-                $("#step_feature").val(value);
-                return false;
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
-            .appendTo( ul );
-    };
-    $("#step_driver").autocomplete({
-        source: function(request,response){
-            $.ajax({
-                url:"TestDriver_Auto",
-                dataType:"json",
-                data:{term:request.term},
-                success:function(data){
-                    response(data);
-                }
-            });
-        },
-        select: function(request,ui){
-            var value = ui.item[0];
-            if(value!=""){
-                $("#step_driver").val(value);
-                return false;
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
-            .appendTo( ul );
-    };*/
+     source: function(request,response){
+     $.ajax({
+     url:"TestFeature_Auto",
+     dataType:"json",
+     data:{term:request.term},
+     success:function(data){
+     response(data);
+     }
+     });
+     },
+     select: function(request,ui){
+     var value = ui.item[0];
+     if(value!=""){
+     $("#step_feature").val(value);
+     return false;
+     }
+     }
+     }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+     return $( "<li></li>" )
+     .data( "ui-autocomplete-item", item )
+     .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+     .appendTo( ul );
+     };
+     $("#step_driver").autocomplete({
+     source: function(request,response){
+     $.ajax({
+     url:"TestDriver_Auto",
+     dataType:"json",
+     data:{term:request.term},
+     success:function(data){
+     response(data);
+     }
+     });
+     },
+     select: function(request,ui){
+     var value = ui.item[0];
+     if(value!=""){
+     $("#step_driver").val(value);
+     return false;
+     }
+     }
+     }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+     return $( "<li></li>" )
+     .data( "ui-autocomplete-item", item )
+     .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+     .appendTo( ul );
+     };*/
     //$(".select-drop").selectBoxIt();
     //$('.combo-box').combobox();
 }
 function populate_footer_div(){
     $('#footer_div').append('' +
         '<div>' +
-            '<input type="button" id="delete_button" class="button minibutton danger" value="Delete"/>' +
-            '<input type="button" id="get_cases" class="button minibutton primary" value="Get Test Cases"/>' +
-            '<input type="submit" id="submit_button" class="button minibutton blue" name="submit_button" value="Submit">' +
+        '<input type="button" id="delete_button" class="button minibutton danger" value="Delete"/>' +
+        '<input type="button" id="get_cases" class="button minibutton primary" value="Get Test Cases"/>' +
+        //'<input type="submit" id="submit_button" class="button minibutton blue" name="submit_button" value="Submit">' +
         '</div>'
     );
     $("#get_cases").click(function(){
@@ -591,54 +595,54 @@ function populate_footer_div(){
 function populate_search_div(){
     $('#search_div').append('' +
         '<div>' +
-            '<label><b>Search for the Test Steps:</b></label>' +
-            '<input type="text" id="search_query" class="textbox" name="search_query" placeholder="Enter the keywords"/>' +
+        '<label><b>Search for the Test Steps:</b></label>' +
+        '<input type="text" id="search_query" class="textbox" name="search_query" placeholder="Enter the keywords"/>' +
         '</div>' +
         '<div>' +
-            '<table id = "AutoSearchResult" >'
-                +   '<tbody>'
-                    + '<tr id = "searchedtext">'
-                        +'<p> </p>'
-                        + '<th class = "Text" style= "text-align: left"> Test Data Set: </th>'
-                    + '</tr>'
-                +   '</tbody>' +
-            '</table>' +
+        '<table id = "AutoSearchResult" >'
+        +   '<tbody>'
+        + '<tr id = "searchedtext">'
+        +'<p> </p>'
+        + '<th class = "Text" style= "text-align: left"> Test Data Set: </th>'
+        + '</tr>'
+        +   '</tbody>' +
+        '</table>' +
         '</div>'
     );
     AutoComplete();
 }
 function AutoComplete(){
     $("#search_query").autocomplete({
-            source : function(request, response) {
-                $.ajax({
-                    url:"TestStepAutoComplete",
-                    dataType: "json",
-                    data:{ term: request.term },
-                    success: function( data ) {
-                        response( data );
-                    }
-                });
-            },
-            select : function(event, ui) {
-
-                var tc_id_name = ui.item.value.split(" - ");
-                var value = "";
-                if (tc_id_name != null)
-                    value = tc_id_name[0];
-                if(value!=""){
-                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
-                        +'<td name = "submitquery" class = "Text" style = "size:10">'
-                        + value
-                        + ":&nbsp"
-                        +'</td>');
-                    //console.log(value);
-                    PerformSearch();
-                    $("#search_query").val("");
-                    return false;
+        source : function(request, response) {
+            $.ajax({
+                url:"TestStepAutoComplete",
+                dataType: "json",
+                data:{ term: request.term },
+                success: function( data ) {
+                    response( data );
                 }
+            });
+        },
+        select : function(event, ui) {
 
+            var tc_id_name = ui.item.value.split(" - ");
+            var value = "";
+            if (tc_id_name != null)
+                value = tc_id_name[0];
+            if(value!=""){
+                $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+                    +'<td name = "submitquery" class = "Text" style = "size:10">'
+                    + value
+                    + ":&nbsp"
+                    +'</td>');
+                //console.log(value);
+                PerformSearch();
+                $("#search_query").val("");
+                return false;
             }
-        });
+
+        }
+    });
     $("#search_query").keypress(function(event) {
         if (event.which == 13) {
 

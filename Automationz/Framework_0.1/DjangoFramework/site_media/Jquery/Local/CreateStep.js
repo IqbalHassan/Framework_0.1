@@ -172,6 +172,7 @@ $(document).ready(function(){
                         }
                         $("#step_time").val(row[13]);
                         $(".timepicker").timepicker('setTime', convertToString(row[13]));
+
                     }
                 });
                 return false;

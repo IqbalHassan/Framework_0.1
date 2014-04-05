@@ -3400,6 +3400,12 @@ def FeaDri(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
+def ManageStep(request):
+    templ = get_template('ManageStep.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
+
 def Process_Git(request):
     #Conn = GetConnection()
     import GitApi
@@ -3919,7 +3925,18 @@ def Populate_info_div(request):
     return HttpResponse(json, mimetype='application/json')
 def TestStepDelete(request):
     error_message="Test Step is deleted successfully"
-    return TestStep(request,error_message)
+    return Manage_Step(request,error_message)
+    #output={'error_message':error_message}
+    #return render_to_response('ManageStep.html',error_message,context_instance=RequestContext(request))
+
+def Manage_Step(request,error_message=""):
+    """templ=get_template('TestStep.html')
+    variables=Context({})
+    output=templ.render(variables)
+    return HttpResponse(output)"""
+    output={'error_message':error_message}
+    return render_to_response('ManageStep.html',output,context_instance=RequestContext(request))
+
 def TestStep(request,error_message=""):
     """templ=get_template('TestStep.html')
     variables=Context({})
