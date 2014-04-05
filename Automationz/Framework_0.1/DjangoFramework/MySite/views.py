@@ -4331,7 +4331,7 @@ def FeatureDriver_Delete(request):                              #minar09
 def FeatureDriverDelete(request):                               #minar09
     error_message="Feature/Driver is deleted successfully"
     output = {'error_message':error_message}
-    return render_to_response('Feature_Driver.html',output,context_instance=RequestContext(request))
+    return render_to_response('TestStep.html',output,context_instance=RequestContext(request))
 
 def myview(request):
     import RenderPDF
