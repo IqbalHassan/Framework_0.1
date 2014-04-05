@@ -1223,9 +1223,9 @@ article header{
 #nav
 {
     width: 100%; /* 1000 */
-    font-family: 'Open Sans', sans-serif;
+    font-family: Helvetica, arial, freesans, clean, sans-serif;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 13px;
     position: fixed;
     /*top: 15.75%;
     position: absolute;*/
@@ -1243,7 +1243,7 @@ article header{
 }
 #nav a{
     text-decoration: none;
-    color: #555;
+    color: #333333;
 }
 #nav .mini-loader {
     font: normal normal 16px octicons;

@@ -41,7 +41,7 @@ $(document).ready(function(){
                         $.session.set('log', 'logged');
                         //setTimeout(function(){window.location='/Home/';},4000);
                         window.location.href = '/Home/';
-                        $(".welcome").text($.session.get('fullname'));
+                        $(".welcome").text($.session.get('username'));
                         //$("#nav").show();
                     }
                 },
@@ -72,10 +72,10 @@ $(document).ready(function(){
         //$(".open").text("Log In");
         //$("#modaltrigger").show();
         //setTimeout(function(){window.location='/Home/Login/';},4000);
-        window.location.href = '/Home/Login/'
+        window.location.href = '/Home/Login/';
         //$("#nav").hide();
     }
-    $(".welcome").text($.session.get('fullname'));
+    $(".welcome").text($.session.get('username'));
 
     /*else
     {
