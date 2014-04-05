@@ -1,7 +1,7 @@
-from django.conf.urls import *
+from django.conf.urls import *  # @UnusedWildImport 
 
-import settings, os
-from MySite.views import *
+import os
+from MySite.views import *  # @UnusedWildImport
 site_media = os.path.join(os.path.dirname(__file__),'site_media')
 
 # Uncomment the next two lines to enable the admin:
@@ -9,13 +9,10 @@ site_media = os.path.join(os.path.dirname(__file__),'site_media')
 #admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
-    
     #Home Page
 	url(r'^$', HomePage),
     url(r'^Home/$',HomePage),
-    
-    
+        
     #Result Page
     #url(r'^Home/Search/$',Search),
     url(r'^Home/Login/$',LoginPage),

@@ -67,7 +67,7 @@
 		 * specifies the jstree version in use
 		 * @name $.jstree.version
 		 */
-		version : '3.0.0-beta10',
+		version : '3.0.0-beta9',
 		/**
 		 * holds all the default options used when creating new instances
 		 * @name $.jstree.defaults
@@ -323,7 +323,7 @@
 		 *
 		 *	$('#tree').jstree({
 		 *		'core' : {
-		 *			'check_callback' : function (operation, node, node_parent, node_position, more) {
+		 *			'check_callback' : function (operation, node, node_parent, node_position) {
 		 *				// operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
 		 *				// in case of 'rename_node' node_position is filled with the new node name
 		 *				return operation === 'rename_node' ? true : false;
@@ -770,7 +770,7 @@
 				if(this._model.data[obj]) {
 					obj = this._model.data[obj];
 				}
-				else if(((dom = $(obj, this.element)).length || (dom = $('#' + obj.replace(/[\\:'". \/]/g,'\\$&'), this.element)).length) && this._model.data[dom.closest('li').attr('id')]) {
+				else if(((dom = $(obj, this.element)).length || (dom = $('#' + obj, this.element)).length) && this._model.data[dom.closest('li').attr('id')]) {
 					obj = this._model.data[dom.closest('li').attr('id')];
 				}
 				else if((dom = $(obj, this.element)).length && dom.hasClass('jstree')) {
@@ -781,7 +781,7 @@
 				}
 
 				if(as_dom) {
-					obj = obj.id === '#' ? this.element : $('#' + obj.id.replace(/[\\:'". \/]/g,'\\$&'), this.element);
+					obj = obj.id === '#' ? this.element : $(document.getElementById(obj.id));
 				}
 				return obj;
 			} catch (ex) { return false; }
@@ -965,7 +965,7 @@
 		 * @trigger load_node.jstree
 		 */
 		load_node : function (obj, callback) {
-			var t1, t2, k, l, i, j, c;
+			var t1, t2;
 			if($.isArray(obj)) {
 				obj = obj.slice();
 				for(t1 = 0, t2 = obj.length; t1 < t2; t1++) {
@@ -975,26 +975,8 @@
 			}
 			obj = this.get_node(obj);
 			if(!obj) {
-				if(callback) { callback.call(this, obj, false); }
+				callback.call(this, obj, false);
 				return false;
-			}
-			if(obj.state.loaded) {
-				obj.state.loaded = false;
-				for(k = 0, l = obj.children_d.length; k < l; k++) {
-					for(i = 0, j = obj.parents.length; i < j; i++) {
-						this._model.data[obj.parents[i]].children_d = $.vakata.array_remove_item(this._model.data[obj.parents[i]].children_d, obj.children_d[k]);
-					}
-					if(this._model.data[obj.children_d[k]].state.selected) {
-						c = true;
-						this._data.core.selected = $.vakata.array_remove_item(this._data.core.selected, obj.children_d[k]);
-					}
-					delete this._model.data[obj.children_d[k]];
-				}
-				obj.children = [];
-				obj.children_d = [];
-				if(c) {
-					this.trigger('changed', { 'action' : 'load_node', 'node' : obj, 'selected' : this._data.core.selected });
-				}
 			}
 			this.get_node(obj, true).addClass("jstree-loading");
 			this._load_node(obj, $.proxy(function (status) {
@@ -1059,12 +1041,10 @@
 							}, this));
 				}
 				t = ($.isArray(s) || $.isPlainObject(s)) ? JSON.parse(JSON.stringify(s)) : s;
-				if(obj.id !== "#") { this._data.core.last_error = { 'error' : 'nodata', 'plugin' : 'core', 'id' : 'core_05', 'reason' : 'Could not load node', 'data' : JSON.stringify(obj.id) }; }
-				return callback.call(this, (obj.id === "#" ? this._append_json_data(obj, t) : false) );
+				return callback.call(this, this._append_json_data(obj, t));
 			}
 			if(typeof s === 'string') {
-				if(obj.id !== "#") { this._data.core.last_error = { 'error' : 'nodata', 'plugin' : 'core', 'id' : 'core_06', 'reason' : 'Could not load node', 'data' : JSON.stringify(obj.id) }; }
-				return callback.call(this, (obj.id === "#" ? this._append_html_data(obj, $(s)) : false) );
+				return callback.call(this, this._append_html_data(obj, s));
 			}
 			return callback.call(this, false);
 		},
@@ -1172,13 +1152,13 @@
 					if(!dat[i].children) {
 						dat[i].children = [];
 					}
-					m[dat[i].id.toString()] = dat[i];
+					m[dat[i].id] = dat[i];
 				}
 				// 2) populate children (foreach)
 				for(i = 0, j = dat.length; i < j; i++) {
-					m[dat[i].parent.toString()].children.push(dat[i].id.toString());
+					m[dat[i].parent].children.push(dat[i].id);
 					// populate parent.children_d
-					p.children_d.push(dat[i].id.toString());
+					p.children_d.push(dat[i].id);
 				}
 				// 3) normalize && populate parents and children_d with recursion
 				for(i = 0, j = p.children.length; i < j; i++) {
@@ -1261,7 +1241,7 @@
 				if(!v.length) { return true; }
 				data.li_attr[i] = v;
 				if(i === 'id') {
-					data.id = v.toString();
+					data.id = v;
 				}
 			});
 			tmp = d.children('a').eq(0);
@@ -1302,7 +1282,7 @@
 			do {
 				tid = 'j' + this._id + '_' + (++this._cnt);
 			} while(m[tid]);
-			data.id = data.li_attr.id ? data.li_attr.id.toString() : tid;
+			data.id = data.li_attr.id || tid;
 			if(tmp.length) {
 				tmp.each($.proxy(function (i, v) {
 					c = this._parse_model_from_html($(v), data.id, ps);
@@ -1344,7 +1324,7 @@
 			if(!ps) { ps = []; }
 			else { ps = ps.concat(); }
 			if(p) { ps.unshift(p); }
-			var tid = d.id.toString(),
+			var tid = d.id,
 				m = this._model.data,
 				df = this._model.default_state,
 				i, j, c, e,
@@ -1463,7 +1443,7 @@
 					tmp.state[i] = df[i];
 				}
 			}
-			if(d && d.id) { tmp.id = d.id.toString(); }
+			if(d && d.id) { tmp.id = d.id; }
 			if(d && d.text) { tmp.text = d.text; }
 			if(d && d.data && d.data.jstree && d.data.jstree.icon) {
 				tmp.icon = d.data.jstree.icon;
@@ -1493,7 +1473,7 @@
 				}
 			}
 			if(tmp.li_attr.id && !tmp.id) {
-				tmp.id = tmp.li_attr.id.toString();
+				tmp.id = tmp.li_attr.id;
 			}
 			if(!tmp.id) {
 				tmp.id = tid;
@@ -1602,12 +1582,12 @@
 			if(!obj) { return false; }
 			if(obj.id === '#') {  return this.redraw(true); }
 			deep = deep || obj.children.length === 0;
-			node = this.element[0].querySelector('#' + ("0123456789".indexOf(obj.id[0]) !== -1 ? '\\3' + obj.id[0] + ' ' + obj.id.substr(1).replace(/[\\:'". \/]/g,'\\$&') : obj.id.replace(/[\\:'". \/]/g,'\\$&')) ); //, this.element);
+			node = d.getElementById(obj.id); //, this.element);
 			if(!node) {
 				deep = true;
 				//node = d.createElement('LI');
 				if(!is_callback) {
-					par = obj.parent !== '#' ? $('#' + obj.parent.replace(/[\\:'". \/]/g,'\\$&'), this.element)[0] : null;
+					par = obj.parent !== '#' ? $('#' + obj.parent, this.element)[0] : null;
 					if(par !== null && (!par || !m[obj.parent].state.opened)) {
 						return false;
 					}
@@ -1654,12 +1634,12 @@
 			if(s && s !== "false") {
 				node.setAttribute('aria-selected', true);
 			}
-			if(obj.state.loaded && !obj.children.length) {
+			if(!obj.children.length && obj.state.loaded) {
 				c += ' jstree-leaf';
 			}
 			else {
-				c += obj.state.opened && obj.state.loaded ? ' jstree-open' : ' jstree-closed';
-				node.setAttribute('aria-expanded', (obj.state.opened && obj.state.loaded) );
+				c += obj.state.opened ? ' jstree-open' : ' jstree-closed';
+				node.setAttribute('aria-expanded', obj.state.opened);
 			}
 			if(obj.parent !== null && m[obj.parent].children[m[obj.parent].children.length - 1] === obj.id) {
 				c += ' jstree-last';
@@ -1699,7 +1679,7 @@
 			node.childNodes[1].innerHTML += obj.text;
 			// if(obj.data) { $.data(node, obj.data); } // always work with node's data, no need to touch jquery store
 
-			if(deep && obj.children.length && obj.state.opened && obj.state.loaded) {
+			if(deep && obj.children.length && obj.state.opened) {
 				k = d.createElement('UL');
 				k.setAttribute('role', 'group');
 				k.className = 'jstree-children';
@@ -1736,12 +1716,6 @@
 				if(f) {
 					node.childNodes[1].focus();
 				}
-			}
-			if(obj.state.opened && !obj.state.loaded) {
-				obj.state.opened = false;
-				setTimeout($.proxy(function () {
-					this.open_node(obj.id, false, 0);
-				}, this), 0);
 			}
 			return node;
 		},
@@ -1846,7 +1820,7 @@
 					this.open_node(p[i], false, 0);
 				}
 			}
-			return $('#' + obj.id.replace(/[\\:'". \/]/g,'\\$&'), this.element);
+			return $(document.getElementById(obj.id));
 		},
 		/**
 		 * closes a node, hiding its children
@@ -1866,9 +1840,6 @@
 			}
 			obj = this.get_node(obj);
 			if(!obj || obj.id === '#') {
-				return false;
-			}
-			if(this.is_closed(obj)) {
 				return false;
 			}
 			animation = animation === undefined ? this.settings.core.animation : animation;
@@ -2079,12 +2050,6 @@
 			if(this.is_disabled(obj)) {
 				return false;
 			}
-
-			// ensure last_clicked is still in the DOM, make it fresh (maybe it was moved?) and make sure it is still selected, if not - make last_clicked the last selected node
-			this._data.core.last_clicked = this._data.core.last_clicked && this._data.core.last_clicked.id !== undefined ? this.get_node(this._data.core.last_clicked.id) : null;
-			if(this._data.core.last_clicked && !this._data.core.last_clicked.state.selected) { this._data.core.last_clicked = null; }
-			if(!this._data.core.last_clicked && this._data.core.selected.length) { this._data.core.last_clicked = this.get_node(this._data.core.selected[this._data.core.selected.length - 1]); }
-
 			if(!this.settings.core.multiple || (!e.metaKey && !e.ctrlKey && !e.shiftKey) || (e.shiftKey && (!this._data.core.last_clicked || !this.get_parent(obj) || this.get_parent(obj) !== this._data.core.last_clicked.parent ) )) {
 				if(!this.settings.core.multiple && (e.metaKey || e.ctrlKey || e.shiftKey) && this.is_selected(obj)) {
 					this.deselect_node(obj, false, false, e);
@@ -2343,56 +2308,13 @@
 			return obj.state.selected;
 		},
 		/**
-		 * get an array of all selected nodes
+		 * get an array of all selected node IDs
 		 * @name get_selected([full])
 		 * @param  {mixed}  full if set to `true` the returned array will consist of the full node objects, otherwise - only IDs will be returned
 		 * @return {Array}
 		 */
 		get_selected : function (full) {
 			return full ? $.map(this._data.core.selected, $.proxy(function (i) { return this.get_node(i); }, this)) : this._data.core.selected;
-		},
-		/**
-		 * get an array of all top level selected nodes (ignoring children of selected nodes)
-		 * @name get_top_selected([full])
-		 * @param  {mixed}  full if set to `true` the returned array will consist of the full node objects, otherwise - only IDs will be returned
-		 * @return {Array}
-		 */
-		get_top_selected : function (full) {
-			var tmp = this.get_selected(true),
-				obj = {}, i, j, k, l;
-			for(i = 0, j = tmp.length; i < j; i++) {
-				obj[tmp[i].id] = tmp[i];
-			}
-			for(i = 0, j = tmp.length; i < j; i++) {
-				for(k = 0, l = tmp[i].children_d.length; k < l; k++) {
-					if(obj[tmp[i].children_d[k]]) {
-						delete obj[tmp[i].children_d[k]];
-					}
-				}
-			}
-			tmp = [];
-			for(i in obj) {
-				if(obj.hasOwnProperty(i)) {
-					tmp.push(i);
-				}
-			}
-			return full ? $.map(tmp, $.proxy(function (i) { return this.get_node(i); }, this)) : tmp;
-		},
-		/**
-		 * get an array of all bottom level selected nodes (ignoring selected parents)
-		 * @name get_top_selected([full])
-		 * @param  {mixed}  full if set to `true` the returned array will consist of the full node objects, otherwise - only IDs will be returned
-		 * @return {Array}
-		 */
-		get_bottom_selected : function (full) {
-			var tmp = this.get_selected(true),
-				obj = [], i, j;
-			for(i = 0, j = tmp.length; i < j; i++) {
-				if(!tmp[i].children.length) {
-					obj.push(tmp[i].id);
-				}
-			}
-			return full ? $.map(obj, $.proxy(function (i) { return this.get_node(i); }, this)) : obj;
 		},
 		/**
 		 * gets the current state of the tree so that it can be restored later with `set_state(state)`. Used internally.
@@ -2466,12 +2388,7 @@
 								}
 								else {
 									if(!t.is_loading(v)) {
-										t.open_node(v, $.proxy(function (o, s) {
-											if(!s && state && state.core && state.core.open) {
-												$.vakata.array_remove_item(state.core.open, o.id);
-											}
-											this.set_state(state, callback);
-										}, t), 0);
+										t.open_node(v, $.proxy(function () { this.set_state(state, callback); }, t), 0);
 									}
 									// there will be some async activity - so wait for it
 									res = false;
@@ -2592,7 +2509,6 @@
 			obj = this.get_node(obj);
 			if(!obj || obj.id === '#') { return false; }
 			var i, j, m = this._model.data;
-			id = id.toString();
 			// update parents (replace current ID with new one in children and children_d)
 			m[obj.parent].children[$.inArray(obj.id, m[obj.parent].children)] = id;
 			for(i = 0, j = obj.parents.length; i < j; i++) {
@@ -2918,10 +2834,9 @@
 		 * @param  {mixed} obj the node
 		 * @param  {mixed} par the parent
 		 * @param  {mixed} pos the position to insert at, or if "rename_node" - the new name
-		 * @param  {mixed} more some various additional information, for example if a "move_node" operations is triggered by DND this will be the hovered node
 		 * @return {Boolean}
 		 */
-		check : function (chk, obj, par, pos, more) {
+		check : function (chk, obj, par, pos) {
 			obj = obj && obj.id ? obj : this.get_node(obj);
 			par = par && par.id ? par : this.get_node(par);
 			var tmp = chk.match(/^move_node|copy_node|create_node$/i) ? par : obj,
@@ -2940,7 +2855,7 @@
 				}
 				return tmp.functions[chk];
 			}
-			if(chc === false || ($.isFunction(chc) && chc.call(this, chk, obj, par, pos, more) === false) || (chc && chc[chk] === false)) {
+			if(chc === false || ($.isFunction(chc) && chc.call(this, chk, obj, par, pos) === false) || (chc && chc[chk] === false)) {
 				this._data.core.last_error = { 'error' : 'check', 'plugin' : 'core', 'id' : 'core_03', 'reason' : 'User config for core.check_callback prevents function: ' + chk, 'data' : JSON.stringify({ 'chk' : chk, 'pos' : pos, 'obj' : obj && obj.id ? obj.id : false, 'par' : par && par.id ? par.id : false }) };
 				return false;
 			}
@@ -2959,7 +2874,7 @@
 		 * @name move_node(obj, par [, pos, callback, is_loaded])
 		 * @param  {mixed} obj the node to move, pass an array to move multiple nodes
 		 * @param  {mixed} par the new parent
-		 * @param  {mixed} pos the position to insert at (besides integer values, "first" and "last" are supported, as well as "before" and "after"), defaults to integer `0`
+		 * @param  {mixed} pos the position to insert at ("first" and "last" are supported, as well as "before" and "after"), defaults to `0`
 		 * @param  {function} callback a function to call once the move is completed, receives 3 arguments - the node, the new parent and the position
 		 * @param  {Boolean} internal parameter indicating if the parent node has been loaded
 		 * @trigger move_node.jstree
@@ -3105,7 +3020,7 @@
 		 * @name copy_node(obj, par [, pos, callback, is_loaded])
 		 * @param  {mixed} obj the node to copy, pass an array to copy multiple nodes
 		 * @param  {mixed} par the new parent
-		 * @param  {mixed} pos the position to insert at (besides integer values, "first" and "last" are supported, as well as "before" and "after"), defaults to integer `0`
+		 * @param  {mixed} pos the position to insert at ("first" and "last" are supported, as well as "before" and "after"), defaults to `0`
 		 * @param  {function} callback a function to call once the move is completed, receives 3 arguments - the node, the new parent and the position
 		 * @param  {Boolean} internal parameter indicating if the parent node has been loaded
 		 * @trigger model.jstree copy_node.jstree
@@ -3165,7 +3080,6 @@
 			node = this._parse_model_from_json(node, new_par.id, new_par.parents.concat());
 			if(!node) { return false; }
 			tmp = this.get_node(node);
-			if(obj && obj.state && obj.state.loaded === false) { tmp.state.loaded = false; }
 			dpc = [];
 			dpc.push(node);
 			dpc = dpc.concat(tmp.children_d);
@@ -3275,15 +3189,14 @@
 		},
 		/**
 		 * copy or move the previously cut or copied nodes to a new parent
-		 * @name paste(obj [, pos])
+		 * @name paste(obj)
 		 * @param  {mixed} obj the new parent
-		 * @param  {mixed} pos the position to insert at (besides integer, "first" and "last" are supported), defaults to integer `0`
 		 * @trigger paste.jstree
 		 */
-		paste : function (obj, pos) {
+		paste : function (obj) {
 			obj = this.get_node(obj);
 			if(!obj || !ccp_mode || !ccp_mode.match(/^(copy_node|move_node)$/) || !ccp_node) { return false; }
-			if(this[ccp_mode](ccp_node, obj, pos)) {
+			if(this[ccp_mode](ccp_node, obj)) {
 				/**
 				 * triggered when paste is invoked
 				 * @event
@@ -3952,7 +3865,7 @@
 			obj = parent.redraw_node.call(this, obj, deep, is_callback);
 			if(obj) {
 				var tmp = obj.getElementsByTagName('A')[0];
-				tmp.insertBefore(_i.cloneNode(false), tmp.childNodes[0]);
+				tmp.insertBefore(_i.cloneNode(), tmp.childNodes[0]);
 			}
 			if(!is_callback && this.settings.checkbox.three_state) {
 				if(this._data.checkbox.uto) { clearTimeout(this._data.checkbox.uto); }
@@ -4022,7 +3935,7 @@
 		 * * `separator_before` - a boolean indicating if there should be a separator before this item
 		 * * `separator_after` - a boolean indicating if there should be a separator after this item
 		 * * `_disabled` - a boolean indicating if this action should be disabled
-		 * * `label` - a string - the name of the action (could be a function returning a string)
+		 * * `label` - a string - the name of the action
 		 * * `action` - a function to be executed if this item is chosen
 		 * * `icon` - a string, can be a path to an icon or a className, if using an image that is in the current directory use a `./` prefix, otherwise it will be detected as a class
 		 * * `shortcut` - keyCode which will trigger the action if the menu is open (for example `113` for rename, which equals F2)
@@ -4322,7 +4235,7 @@
 						}
 						str += "><"+"/i><"+"span class='vakata-contextmenu-sep'>&#160;<"+"/span>";
 					}
-					str += ($.isFunction(val.label) ? val.label({ "item" : i, "reference" : vakata_context.reference, "element" : vakata_context.element }) : val.label) + (val.shortcut?' <span class="vakata-contextmenu-shortcut vakata-contextmenu-shortcut-'+val.shortcut+'">'+ (val.shortcut_label || '') +'</span>':'') + "<"+"/a>";
+					str += val.label + (val.shortcut?' <span class="vakata-contextmenu-shortcut vakata-contextmenu-shortcut-'+val.shortcut+'">'+ (val.shortcut_label || '') +'</span>':'') + "<"+"/a>";
 					if(val.submenu) {
 						tmp = $.vakata.context._parse(val.submenu, true);
 						if(tmp) { str += tmp; }
@@ -4599,7 +4512,7 @@
 		 */
 		open_timeout : 500,
 		/**
-		 * a function invoked each time a node is about to be dragged, invoked in the tree's scope and receives the nodes about to be dragged as an argument (array) - return `false` to prevent dragging
+		 * a function invoked each time a node is about to be dragged, invoked in the tree's scope and receives the node as an argument - return `false` to prevent dragging
 		 * @name $.jstree.defaults.dnd.is_draggable
 		 * @plugin dnd
 		 */
@@ -4622,7 +4535,7 @@
 					var obj = this.get_node(e.target),
 						mlt = this.is_selected(obj) ? this.get_selected().length : 1;
 					if(obj && obj.id && obj.id !== "#" && (e.which === 1 || e.type === "touchstart") &&
-						(this.settings.dnd.is_draggable === true || ($.isFunction(this.settings.dnd.is_draggable) && this.settings.dnd.is_draggable.call(this, (mlt > 1 ? this.get_selected(true) : [obj]))))
+						(this.settings.dnd.is_draggable === true || ($.isFunction(this.settings.dnd.is_draggable) && this.settings.dnd.is_draggable.call(this, obj)))
 					) {
 						this.element.trigger('mousedown.jstree');
 						return $.vakata.dnd.start(e, { 'jstree' : true, 'origin' : this, 'obj' : this.get_node(obj,true), 'nodes' : mlt > 1 ? this.get_selected() : [obj.id] }, '<div id="jstree-dnd" class="jstree-' + this.get_theme() + '"><i class="jstree-icon jstree-er"></i>' + (mlt > 1 ? mlt + ' ' + this.get_string('nodes') : this.get_text(e.currentTarget, true)) + '<ins class="jstree-copy" style="display:none;">+</ins></div>');
@@ -4705,7 +4618,7 @@
 									case 'i':
 										l = off.left - 2;
 										t = off.top - 5 + h / 2 + 1;
-										p = ins.get_node(ref.parent()).id;
+										p = ref.parent();
 										i = 0;
 										break;
 									case 'a':
@@ -4730,7 +4643,7 @@
 											ps -= 1;
 										}
 									}
-									ok = ok && ( (ins && ins.settings && ins.settings.dnd && ins.settings.dnd.check_while_dragging === false) || ins.check(op, (data.data.origin && data.data.origin !== ins ? data.data.origin.get_node(data.data.nodes[t1]) : data.data.nodes[t1]), p, ps, { 'dnd' : true, 'ref' : ins.get_node(ref.parent()), 'pos' : v }) );
+									ok = ok && ( (ins && ins.settings && ins.settings.dnd && ins.settings.dnd.check_while_dragging === false) || ins.check(op, (data.data.origin && data.data.origin !== ins ? data.data.origin.get_node(data.data.nodes[t1]) : data.data.nodes[t1]), p, ps) );
 									if(!ok) {
 										if(ins && ins.last_error) { laster = ins.last_error(); }
 										break;
@@ -5217,11 +5130,10 @@
 		this._search_open = function (d) {
 			var t = this;
 			$.each(d.concat([]), function (i, v) {
-				if(v === "#") { return true; }
-				try { v = $('#' + v.replace(/[\\:'". \/]/g,'\\$&'), t.element); } catch(ignore) { }
-				if(v && v.length) {
+				v = document.getElementById(v);
+				if(v) {
 					if(t.is_closed(v)) {
-						t._data.search.opn.push(v[0].id);
+						t._data.search.opn.push(v.id);
 						t.open_node(v, function () { t._search_open(d); }, 0);
 					}
 				}
@@ -5590,10 +5502,6 @@
 			parent.init.call(this, el, options);
 			this._model.data['#'].type = '#';
 		};
-		this.refresh = function (skip_loading) {
-			parent.refresh.call(this, skip_loading);
-			this._model.data['#'].type = '#';
-		};
 		this.bind = function () {
 			parent.bind.call(this);
 			this.element
@@ -5658,8 +5566,8 @@
 			}
 			return tmp;
 		};
-		this.check = function (chk, obj, par, pos, more) {
-			if(parent.check.call(this, chk, obj, par, pos, more) === false) { return false; }
+		this.check = function (chk, obj, par, pos) {
+			if(parent.check.call(this, chk, obj, par, pos) === false) { return false; }
 			obj = obj && obj.id ? obj : this.get_node(obj);
 			par = par && par.id ? par : this.get_node(par);
 			var m = obj && obj.id ? $.jstree.reference(obj.id) : null, tmp, d, i, j;
@@ -5766,8 +5674,8 @@
  */
 
 	$.jstree.plugins.unique = function (options, parent) {
-		this.check = function (chk, obj, par, pos, more) {
-			if(parent.check.call(this, chk, obj, par, pos, more) === false) { return false; }
+		this.check = function (chk, obj, par, pos) {
+			if(parent.check.call(this, chk, obj, par, pos) === false) { return false; }
 			obj = obj && obj.id ? obj : this.get_node(obj);
 			par = par && par.id ? par : this.get_node(par);
 			if(!par || !par.children) { return true; }
@@ -5847,8 +5755,7 @@
 					}, this))
 				.on("contextmenu.jstree", ".jstree-wholerow", $.proxy(function (e) {
 						e.preventDefault();
-						var tmp = $.Event('contextmenu', { metaKey : e.metaKey, ctrlKey : e.ctrlKey, altKey : e.altKey, shiftKey : e.shiftKey, pageX : e.pageX, pageY : e.pageY });
-						$(e.currentTarget).closest("li").children("a:eq(0)").trigger(tmp);
+						$(e.currentTarget).closest("li").children("a:eq(0)").trigger('contextmenu',e);
 					}, this))
 				.on("click.jstree", ".jstree-wholerow", function (e) {
 						e.stopImmediatePropagation();
