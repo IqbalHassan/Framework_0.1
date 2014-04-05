@@ -7,6 +7,11 @@
         $("#create_edit").trigger('click');
     });
 </script>
+
+<div align="left">
+    <h3 style="font-size: 19px;"><a style="font-weight: bold">Delete Test Step</a></h3>
+</div>
+
 <div id='choice_div' align="center">
     <br/>
     <input type='button' id='create_edit' class="button minibutton primary" value="Create/Edit"/>
@@ -17,9 +22,7 @@
     <div id='choice'>
 
     </div>
-    <div align="left">
-        <h3 style="font-size: 19px;"><a style="font-weight: bold">Delete Test Step</a></h3>
-    </div>
+
     <br>
     <form action="{% url 'MySite.views.Process_TestStep'%}" method="post">
         {%csrf_token%}
