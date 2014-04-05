@@ -80,14 +80,14 @@
                         <li><a rel="prefetch" href="/Home/Analysis/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/history1.png" width="16"> Test Case History</a></li>
                         <li><a rel="prerender" href="/Home/DailyBuildResults/">Automated Build History</a></li>
                         <li><a rel="prefetch" href="/Home/TestTypeStatus/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report4.png" width="16"> Test Type Status</a></li>
-                        <li><a rel="prerender" href = "/Home/Performance/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/automated.png" width="16"> Performance</a></li>
+                        <li><a rel="prerender" href="/Home/Performance/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/automated.png" width="16"> Performance</a></li>
                     </ul>
                 </li>
                 <li style="width:16%">
                     <a rel="prefetch" href=""><span><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/admin1.png" width="16"> Admin</span></a>
                     <ul>
                         <li><a rel="prefetch" href="/Home/Admin/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/git.png" width="16"> Git Pull</a></li>
-                        <li><a rel="prefetch" href="/Home/FeaDri/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/usb.png" width="16"> Feature & Driver</a></li>
+                        <li><a id="feadri" rel="prefetch" href="/Home/FeaDri/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/usb.png" width="16"> Feature & Driver</a></li>
                     </ul>
                 </li>
                 <li style="width:12%"><a rel="prefetch" class="welcome" href=""></a></li>
@@ -234,8 +234,12 @@
             $('html, body').animate({scrollTop: 0}, 300);
         })
 
-
         $(".selectdrop").selectBoxIt();
+
+        /*$("#feadri").click(function(){
+            //window.location.href = '/Home/FeaDri/';
+            $("#feature_driver").trigger('click');
+        });*/
     });
 </script>
 

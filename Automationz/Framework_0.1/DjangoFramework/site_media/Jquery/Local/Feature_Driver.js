@@ -207,7 +207,7 @@ $(document).ready(function(){
         });
     });
 
-    $("#select_button").click(function(){
+    /*$("#select_button").click(function(){
 
         var type = $("#type").val();
         var operation = $("#operation").val();
@@ -238,7 +238,7 @@ $(document).ready(function(){
             }
             }
         });
-    });
+    });*/
 
 
 });
