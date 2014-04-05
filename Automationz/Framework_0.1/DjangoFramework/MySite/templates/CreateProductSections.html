@@ -3,19 +3,81 @@
 {% block content %}
 
 <script type="text/javascript" src="/site_media/Jquery/jstree/libs/jquery.js"></script>
-<script type="text/javascript" src="/site_media/Jquery/jqtree/tree.jquery.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/jstree/jstree.min.js"></script>
 <script type="text/javascript" src="/site_media/Jquery/Local/CreateProductSections.js"></script>
-<link rel="stylesheet" href="/site_media/Jquery/jqtree/jqtree.css"/>
+	<link rel="stylesheet" href="/site_media/Jquery/bootstrap/css/bootstrap.min.css" />
+<!-- <script type="text/javascript" src="/site_media/Jquery/jqtree/tree.jquery.js"></script> -->
+<!-- <link rel="stylesheet" href="/site_media/Jquery/jqtree/jqtree.css"/> -->
 <article>
     <div align="left">
-        <h3 style="font-size: 19px;"><a style="font-weight: bold">View/Organize Test Cases</a></h3>
+        <h3 style="font-size: 19px;">View and Organize Test Cases</h3>
     </div>
+	
+	<script>
+		function tree_create() {
+			var ref = $('#jstree_container').jstree(true),
+			sel = ref.get_selected();
+			if(!sel.length) { return false; }
+			sel = sel[0];
+			console.log(sel);
+			sel = ref.create_node(sel, {"type":"root"});
+			if(sel) {
+				ref.edit(sel);
+				}
+		};
+		function tree_rename() {
+			var ref = $('#jstree_container').jstree(true),
+				sel = ref.get_selected();
+			if(!sel.length) { return false; }
+			sel = sel[0];
+			ref.edit(sel);
+		};
+		function tree_delete() {
+			var ref = $('#jstree_container').jstree(true),
+				sel = ref.get_selected();
+			if(!sel.length) { return false; }
+			ref.delete_node(sel);
+		};
+	</script>
 
     <div class="responsive-tabs">
-        <h3>View & Test Cases</h3>
+        <h3>View & Organize Test Cases</h3>
+		<br /><br />
+		<button type="button" class="btn btn-success btn-sm" onclick="tree_create();"><i class="glyphicon glyphicon-asterisk"></i> Create</button>
+		<button type="button" class="btn btn-warning btn-sm" onclick="tree_rename();"><i class="glyphicon glyphicon-pencil"></i> Rename</button>
+		<button type="button" class="btn btn-danger btn-sm" onclick="tree_delete();"><i class="glyphicon glyphicon-remove"></i> Delete</button>
+		<input
+			id="searchbox"
+			value=""
+			style="box-shadow:inset 0 0 4px #eee; width:120px; margin:0; padding:6px 12px; border-radius:4px; border:1px solid silver; font-size:1.1em;"
+			type="text"
+			placeholder="Search" >
+		</input>
+		<br /><br />
+		
         <div class="tabs-div">
             <div id='jstree_container'>
-
+				<ul>
+				<li data-jstree='{"type" : "root"}'>Section
+					<ul>				
+						<li data-jstree='{"type" : "test_case"}' rel="tc">Run</li>
+						<li rel="test_case">Manage</li>
+						<li>View and Manage Test Cases</li>
+					</ul>
+				</li>
+				<li data-jstree='{"type" : "root"}'>Shops
+					<ul>
+						<li>Future Shop
+							<ul>Categories
+								<li>Mobiles</li>
+								<li>Laptops</li>
+								<li>Routers</li>
+							</ul>
+						</li>
+						<li>AS</li>
+					</ul>
+				</li>
+			</ul>
             </div>
         </div>
         <h3>Create Product Sections</h3>
@@ -43,7 +105,70 @@
     <script>
         $(document).ready(function() {
             RESPONSIVEUI.responsiveTabs();
-        })
+			
+			// jsTree --------------------------------------
+			$("#jstree_container").jstree({
+				"core" : {
+					"themes" : { "stripes" : true, "variant" : "large" },
+				
+					// what operations are allowed on the tree items
+					"check_callback" : true
+				},
+				"types" : {
+					"#": {
+						"valid_children" : ["root"]
+					},
+					"root" : {
+						"valid_children" : ["test_case"],
+						"icon" : "glyphicon glyphicon-list-alt"
+					},
+					"test_case" : {
+						"max_children" : 0,
+						"max_depth" : 0,
+						"icon" : "glyphicon glyphicon-tag",
+						"delete_node" : false
+					}
+				},
+				"plugins" : [
+					"checkbox",					// enable check box
+					"contextmenu",				// enable context menu
+					// "dnd",					// drag and drop
+					"search",					// enable search
+					"wholerow",					// enable clicking on the whole border(box model)
+					"unique",					// enforces that no nodes with the same name can co-exist as siblings
+					// "state"					// enables saving current tree state
+					"types"						// enable customisation of different nodes
+				]
+			}).bind("before.jstree", function(e, data) {
+				console.log(data);
+				
+				/*
+				if (data.node.children.length === 0) {
+					console.log("The current node has no children, so it is deletable.");
+					return true;
+				} else {
+					console.log("The current node has no children, so it is deletable.");
+					alert("Sorry, you cannot delete a non-empty section!");
+					e.stopImmediatePropagation();
+					return false;
+				} */
+			});
+			
+			// Enable the search feature
+			var to = false;
+			$("#searchbox").keyup(function() {
+				if (to) { clearTimeout(to); }
+				
+				// Here we're using a timeout so that the search is done after
+				// a specified amount of time rather than on every key stroke
+				// NOTE: Raise the value if the browser slows down during search
+				to = setTimeout(function() {
+					var v = $("#searchbox").val();
+					
+					$("#jstree_container").jstree(true).search(v);
+				}, 250);
+			});
+        });
     </script>
 </article>
 {% endblock %}
