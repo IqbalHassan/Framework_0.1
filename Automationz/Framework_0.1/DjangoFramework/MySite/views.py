@@ -4036,18 +4036,18 @@ def Process_TestStep(request):
 def Process_CreateStep(request):
     output="in the processing page"
     if request.method=='POST':
-        step_name=request.POST['step_name']
-        step_desc=request.POST['step_desc']
-        step_feature=request.POST['step_feature']
-        step_data=request.POST['step_data']
-        step_type=request.POST['step_type']
-        step_driver=request.POST['step_driver'] 
-        step_enable=request.POST['step_enable']
-        case_desc=request.POST['case_desc']
-        step_expect=request.POST['step_expect']
-        verify_radio=request.POST['verify_radio']
-        continue_radio=request.POST['continue_radio']
-        step_time=request.POST['step_time']
+        step_name=request.POST['step_name'].strip()
+        step_desc=request.POST['step_desc'].strip()
+        step_feature=request.POST['step_feature'].strip()
+        step_data=request.POST['step_data'].strip()
+        step_type=request.POST['step_type'].strip()
+        step_driver=request.POST['step_driver'].strip()
+        step_enable=request.POST['step_enable'].strip()
+        case_desc=request.POST['case_desc'].strip()
+        step_expect=request.POST['step_expect'].strip()
+        verify_radio=request.POST['verify_radio'].strip()
+        continue_radio=request.POST['continue_radio'].strip()
+        step_time=request.POST['step_time'].strip()
         
         if step_name!="" and step_desc!="" and step_feature!="" and step_data!="0" and step_enable!="0" and case_desc!="" and step_expect!="" and step_time!="":
             if step_type!="0" and step_driver!="":
