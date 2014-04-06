@@ -65,6 +65,14 @@ $(document).ready(function(){
         return e.preventDefault();
     });
 
+    $('#username , #password').keypress(function (e) {
+        var key = e.which;
+        if(key == 13)  // the enter key code
+        {
+            $("#loginbtn").trigger('click');
+        }
+    });
+
 
     if($.session.get('log')!='logged' && $(this).attr('title')!='Log In')
     {
