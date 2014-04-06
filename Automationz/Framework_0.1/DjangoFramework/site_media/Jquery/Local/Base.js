@@ -41,7 +41,7 @@ $(document).ready(function(){
                         $.session.set('log', 'logged');
                         //setTimeout(function(){window.location='/Home/';},4000);
                         window.location.href = '/Home/';
-                        $(".welcome").text($.session.get('username'));
+                        $(".welcome").text($.session.get('fullname'));
                         //$("#nav").show();
                     }
                 },
@@ -75,7 +75,7 @@ $(document).ready(function(){
         window.location.href = '/Home/Login/';
         //$("#nav").hide();
     }
-    $(".welcome").text($.session.get('username'));
+    $(".welcome").text($.session.get('fullname'));
 
     /*else
     {
