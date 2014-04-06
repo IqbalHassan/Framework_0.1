@@ -319,10 +319,10 @@ function populate_feature_driver_info_div(){
                             });
 
                             $(".editBtn").click(function (){
-                                window.location = '/Home/ManageTestCases/TestStep/';//+ $(this).attr("id");
+                                window.location = '/Home/ManageTestCases/CreateStep/';//+ $(this).attr("id");
                             });
                             $(".templateBtn").click(function (){
-                                window.location = '/Home/ManageTestCases/TestStep/';//+ $(this).attr("id");
+                                window.location = '/Home/ManageTestCases/CreateStep/';//+ $(this).attr("id");
                             });
                             //VerifyQueryProcess();
                             //$(".Buttons[title='Verify Query']").fadeIn(2000);
