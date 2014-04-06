@@ -3362,7 +3362,13 @@ a.tooltip.rightwards::before {
     top: 8%;
 }
 a.tooltip.downwards::before {
-    left: -15%;
+     left: -15%;
+ }
+a.tooltip.downwards-right::before {
+    left: 25%;
+}
+a.tooltip.downwards-left::before {
+    left: -50%;
 }
 /**************************ReRun Tab Button***********/
 .rerunTab{
