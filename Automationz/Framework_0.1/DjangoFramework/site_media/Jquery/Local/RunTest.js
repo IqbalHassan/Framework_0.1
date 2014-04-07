@@ -649,6 +649,21 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
                         + "</tr>"
                     + "</tbody>"
                 + "</table>"
+                +"<table id = 'AutoSearchResult' >"
+                    + "<tbody>" +
+                            "<tr id='MileStoneHeader'>" +
+                                "<td><th class = 'Text' style= 'display:None ; text-align: left'>MileStone Added:&nbsp;&nbsp;&nbsp; </th>" +
+                            "</td>" +
+                            "<td>" +
+                                "<table>"
+                                + "<tr id = 'AddedMileStone' class='SearchEmail' style='display:None;margin-top: -10%;'>"
+
+                                + "</tr>"
+                                + "</table>" +
+                            "</td>" +
+                            "</tr>"
+                    + "</tbody>"
+                + "</table>"
 	  + "</form>"
 			
 			
@@ -1161,6 +1176,12 @@ function SelectEmail()
 
         }
     });
+    $("#DeleteTester").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
     $('#TestMileStone').autocomplete({
         source:function(request,response){
             $.ajax({
@@ -1175,7 +1196,16 @@ function SelectEmail()
         select:function(request,ui){
             var value=ui.item[0].trim();
             if (value!=""){
-                $(this).val(value.trim());
+                //$(this).val(value.trim());
+                $("#AutoSearchResult #AddedMileStone").html('<td><img class="delete" id = "DeleteMileStone" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                    + '<td class="Text">'
+                    + value
+                    + ":&nbsp"
+                    + '</td>');
+
+                $("#MileStoneHeader th").css('display', 'block');
+
+                $("#TestMileStone").val("");
                 return false;
             }
         }
@@ -1192,7 +1222,7 @@ function SelectEmail()
 
         }
     });
-    $("#DeleteTester").live('click', function() {
+    $("#DeleteMileStone").live('click', function() {
 
         $(this).parent().next().remove();
         $(this).remove();
@@ -1225,7 +1255,10 @@ function RunTestProcess() {
 			EmailIds = Email.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
             console.log(EmailIds);
 		});
-		
+		if(EmailIds.length==0){
+            alert("EmailIds is to be selected from suggestion");
+            return false;
+        }
 		//Getting Selected Dependency Text
 		$("#AutoSearchResult #DependencyText").each( function() 
 		{
@@ -1240,21 +1273,35 @@ function RunTestProcess() {
             TesterIds = Tester.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
             console.log(TesterIds);
         });
+        if(TesterIds.length==0){
+            alert("Testers is to be selected from suggestion");
+            return false;
+        }
 		//Getting Test Data Type Checkbox value
 		TestDataType = $("#TestDataTypeCheckboxes input:checked").val()
 		console.log(TestDataType);
-		
-		//Getting Test Objective text
-		TestObjective =  $("input#TestObjective").val();
+
+        //Getting Test Objective text
+        TestObjective =  $("input#TestObjective").val();
         TestObjective=TestObjective.trim();
-        TestMileStone=$('#TestMileStone').val();
-        TestMileStone=TestMileStone.trim();
-		if(TesterIds === "" || TestObjective===""|| TestMileStone==""){
-            message="Fields are not filled properly";
-            MsgBox("Test Run Error",message);
-            message="";
-            return;
+        if(TestObjective==""){
+            alert("Test Objective is empty");
+            return false;
         }
+		//Getting the addedMileStone
+        $("#AutoSearchResult #AddedMileStone").each( function()
+        {
+            var Tester= $(this).find("td").text();
+            TestMileStone = Tester.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
+            TestMileStone=TestMileStone.split(":")[0].trim();
+            console.log(TestMileStone);
+        });
+        if(TestMileStone==""){
+            alert("MileStone is to be selected from suggestion");
+            return false;
+        }
+        //TestMileStone=$('#TestMileStone').val();
+        //TestMileStone=TestMileStone.trim();
 		Env = Get_Selected_Env_Name()
 		$.get("Run_Test", {RunTestQuery : RunTestQuery,TesterIds:TesterIds,EmailIds:EmailIds, DependencyText:DependencyText, TestObjective:TestObjective,TestMileStone:TestMileStone, Env: Env}, function(data)
 		{
