@@ -375,4 +375,21 @@ function related_items(){
         $("#mksid").html(mksid);
         $("#requirementid").html(requirementid);
     });
+
+    $("#update").click(function(){
+        var testcaseid=$("#testcaseid").text();
+        var defect_Id=$('.defectid').val().trim();
+        var test_case_Id=$('.mksid').val().trim();
+        var required_Id=$('.requirementid').val().trim();
+
+        $.get("Update_RelatedItems/",{
+            TC_Id:testcaseid,
+            Associated_Bugs_List:defect_Id,
+            Manual_TC_Id:test_case_Id,
+            Requirement_ID_List:required_Id},function(data) {
+            //alert(data);
+            var location = window.location.pathname;
+            window.location=location;
+        });
+    });
 }

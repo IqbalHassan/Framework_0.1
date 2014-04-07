@@ -4903,6 +4903,31 @@ def RunIDTestCases(request,Run_Id,TC_Id):
     id3 = ', '.join(requirementid)
     return render_to_response('RunIDEditTestCases.html',{'runid':Run_Id,'testcaseid':TC_Id,'testcasename':testcasename[0][0],'defectid':id1,'mksid':id2,'requirementid':id3})
 
+def Update_RelatedItems(request):
+    if request.is_ajax() and request.method == 'GET':
+        TC_Id = request.GET.get(u'TC_Id', '')
+        Associated_Bugs_List = request.GET.get(u'Associated_Bugs_List', '').split(",")
+        Manual_TC_Id = request.GET.get(u'Manual_TC_Id', '').split(",")
+        Requirement_ID_List = request.GET.get(u'Requirement_ID_List', '').split(",")
+        
+        conn = GetConnection()
+        delete = DB.DeleteRecord(conn, 'test_case_tag',tc_id=TC_Id,property='JiraId')
+        for i in Associated_Bugs_List:
+            update= DB.InsertNewRecordInToTable(conn, 'test_case_tag',tc_id=TC_Id,name=i,property='JiraId')
+            
+        delete = DB.DeleteRecord(conn, 'test_case_tag',tc_id=TC_Id,property='MKS')
+        for i in Manual_TC_Id:
+            update= DB.InsertNewRecordInToTable(conn, 'test_case_tag',tc_id=TC_Id,name=i,property='MKS')
+            
+        delete = DB.DeleteRecord(conn, 'test_case_tag',tc_id=TC_Id,property='PRDId')
+        for i in Requirement_ID_List:
+            update= DB.InsertNewRecordInToTable(conn, 'test_case_tag',tc_id=TC_Id,name=i,property='PRDId')
+            
+        message="Related Items are updated."
+            
+    results=simplejson.dumps(message)
+    return HttpResponse(results,mimetype='application/json')
+
 def DataFetchForTestCases(request):
     #message="in the DataFetchForTestCases"
     if request.is_ajax():
