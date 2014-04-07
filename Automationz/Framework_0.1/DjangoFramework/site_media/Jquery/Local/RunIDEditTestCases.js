@@ -85,6 +85,8 @@ $(document).ready(function(){
         });
         event.stopPropagation();
     });
+
+    related_items();
 });
 function UIChange(){
     /*$('#data_table tr td:nth-child(5)').each(function(){
@@ -346,4 +348,31 @@ function data_print(data){
         message+='</tr>';
     }
     return message;
+}
+
+function related_items(){
+    var defectid = $("#defectid").text();
+    var mksid = $("#mksid").text();
+    var requirementid = $("#requirementid").text();
+
+    $("#edit").click(function(){
+        $(this).hide();
+        $("#edit_div").show();
+
+        $("#defectid").html('<input class="textbox defectid" style="width: 100%">');
+        $(".defectid").val(defectid);
+        $("#mksid").html('<input class="textbox mksid" style="width: 100%">');
+        $(".mksid").val(mksid);
+        $("#requirementid").html('<input class="textbox requirementid" style="width: 100%">');
+        $(".requirementid").val(requirementid);
+    });
+
+    $("#cancel").click(function(){
+        $("#edit_div").hide();
+        $("#edit").show();
+
+        $("#defectid").html(defectid);
+        $("#mksid").html(mksid);
+        $("#requirementid").html(requirementid);
+    });
 }
