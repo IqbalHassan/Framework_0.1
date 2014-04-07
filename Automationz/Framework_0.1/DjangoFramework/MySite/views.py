@@ -3599,17 +3599,23 @@ def edit(request,name,data_type,error_message=""):
     #Calculate the time for the test set
     time_required=0
     Conn=GetConnection()
+    #new_list=[]
     for each in ex_lst:
         query="select count(*) from test_steps where tc_id='%s' group by tc_id"%each['item1']
         stepCount=DB.GetData(Conn, query)
         stepCount=int(stepCount[0])
+        test_case_time=0
         for count in range(1,stepCount+1):
             temp_id=each['item1']+'_s'+str(count)
             time_query="select description from master_data where id='%s' and field='estimated' and value='time'"%temp_id
             time=DB.GetData(Conn,time_query)
+            test_case_time+=int(time[0])
             time_required+=int(time[0])
+        test_case_time=ConvertTime(test_case_time)
+        each.update({'item3':test_case_time.strip()})
     formatTime=ConvertTime(time_required)
     print formatTime
+    #ex_lst=new_list
     output.update({'name':name,'data_type':data_type})
     output.update({'ex_lst':ex_lst,'error_message':error_message,'estimated_time':formatTime})
     return render_to_response('ManageTestSet.html',output,context_instance=RequestContext(request))
@@ -5679,8 +5685,24 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 for each in TempTableData:
                     if each not in RefinedData:
                         RefinedData.append(each)
-    Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform']
-
+    dataWithTime=[]
+    for each in RefinedData:
+        query="select count(*) from test_steps where tc_id='%s'"%each[0].strip()
+        stepNumber=DB.GetData(Conn,query)
+        test_case_time=0
+        for count in range(0,int(stepNumber[0])):
+            temp_id=each[0]+'_s'+str(count+1)
+            step_time_query="select description from master_data where id='%s' and field='estimated' and value='time'"%temp_id.strip()
+            step_time=DB.GetData(Conn,step_time_query)
+            test_case_time+=int(step_time[0])
+        temp=[]
+        for eachitem in each:
+            temp.append(eachitem)
+        temp.append(ConvertTime(test_case_time))
+        temp=tuple(temp)
+        dataWithTime.append(temp)
+    Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform','Time Reqd.']
+    RefinedData=dataWithTime
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
     results = {'Heading':Heading, 'TableData':RefinedData}
 
