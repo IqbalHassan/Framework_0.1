@@ -111,7 +111,7 @@ def RunProcess(sTesterid):
             elif status[0] == "Unassigned":
                 time.sleep(3)
                 conn = DBUtil.ConnectToDataBase()
-                DBUtil.UpdateRecordInTable(conn, "test_run_env", "where tester_id = '%s' and status = 'Unassigned'" % sTesterid, last_updated_time=CommonUtil.TimeStamp("integer"))
+                DBUtil.UpdateRecordInTable(conn, "test_run_env", "where tester_id = '%s' and status = 'Unassigned'" % sTesterid, last_updated_time=CommonUtil.TimeStamp("string"))
                 conn.close()
                 #Check if there is any fw update
 #                objFW = FWUpdate.AutoUpdate()
