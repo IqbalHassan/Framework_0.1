@@ -4889,7 +4889,13 @@ def RunIDTestCases(request,Run_Id,TC_Id):
     Conn=GetConnection()
     query="select tc_name from test_cases where tc_id='%s'" %TC_Id
     testcasename=DB.GetData(Conn, query, False)
-    return render_to_response('RunIDEditTestCases.html',{'runid':Run_Id,'testcaseid':TC_Id,'testcasename':testcasename[0][0]})
+    dquery="select name from test_case_tag where tc_id='%s' and property='JiraId'" %TC_Id
+    defectid = DB.GetData(Conn,dquery, False)
+    tquery="select name from test_case_tag where tc_id='%s' and property='MKS'" %TC_Id
+    mksid = DB.GetData(Conn,tquery, False)
+    rquery="select name from test_case_tag where tc_id='%s' and property='PRDId'" %TC_Id
+    requirementid = DB.GetData(Conn,rquery, False)
+    return render_to_response('RunIDEditTestCases.html',{'runid':Run_Id,'testcaseid':TC_Id,'testcasename':testcasename[0][0],'defectid':defectid[0][0],'mksid':mksid[0][0],'requirementid':requirementid[0][0]})
 
 def DataFetchForTestCases(request):
     #message="in the DataFetchForTestCases"
