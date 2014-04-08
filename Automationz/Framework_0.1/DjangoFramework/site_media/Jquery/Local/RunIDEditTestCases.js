@@ -87,6 +87,7 @@ $(document).ready(function(){
     });
 
     related_items();
+    history();
 });
 function UIChange(){
     /*$('#data_table tr td:nth-child(5)').each(function(){
@@ -390,6 +391,34 @@ function related_items(){
             Requirement_ID_List:required_Id},function(data) {
             //alert(data);
             var location = window.location.pathname;
+            window.location=location;
+        });
+    });
+}
+
+function history(){
+    var testcaseid=$("#testcaseid").text();
+    $("#show_history").click(function(){
+        PopulateResultDiv(testcaseid);
+    });
+}
+
+function PopulateResultDiv(tc_id){
+    $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id},function(data){
+        ResultTable(Resultdiv,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result");
+        makeRunClickable();
+    });
+
+}
+function makeRunClickable(){
+    $('#Resultdiv tr>td:first-child').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor':'pointer'
+        });
+        $(this).click(function(){
+            var run_id=$(this).text().trim();
+            var location='/Home/RunID/'+run_id;
             window.location=location;
         });
     });
