@@ -427,6 +427,22 @@ def main():
                                                    duration='%s' % (TestStepDuration),
                                                    memory_consumed='%s' % (TestStepMemConsumed)
                                                    )
+                    elif sStepResult.upper() == "NOT RUN":
+                        #Step has Warning, but continue running next test step for this test case
+                        print TestStepsList[StepSeq - 1][1] + ": Test Step Not Run"
+                        CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Not Run" % TestStepsList[StepSeq - 1][1], 2)
+                        #Update Test Step Results table
+                        DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
+                                                   status='Not Run',
+                                                   stependtime='%s' % (sTestStepEndTime),
+                                                   end_memory='%s' % (WinMemEnd),
+                                                   duration='%s' % (TestStepDuration),
+                                                   memory_consumed='%s' % (TestStepMemConsumed)
+                                                   )
+                        if testcasecontinue=='yes':
+                            testcasecontinue='false'
+                        else:
+                            break    
                     elif sStepResult.upper() == "FAILED":
                         #Step has a Critial failure, fail the test step and test case. go to next test case
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Failed Failure"
@@ -512,6 +528,10 @@ def main():
                 CommonUtil.ExecLog(sModuleInfo, "Test Case "+sTestCaseStatus, 3)
             elif 'WARNING' in sTestStepResultList:
                 print "Test Case Contain Warning(s)"
+                CommonUtil.ExecLog(sModuleInfo, "Test Case Contain Warning(s)", 2)
+                sTestCaseStatus = "Failed"
+            elif 'NOT RUN' in sTestStepResultList:
+                print "Test Case Contain Not Run Steps"
                 CommonUtil.ExecLog(sModuleInfo, "Test Case Contain Warning(s)", 2)
                 sTestCaseStatus = "Failed"
             elif 'PASSED' in sTestStepResultList:

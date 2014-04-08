@@ -196,8 +196,8 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
 
 
         else:
-            sTestStepReturnStatus = "Warning"
-            print "Unknown test step : ", CurrentStep
+            sTestStepReturnStatus = "Not Run"
+            print "Framework error: Unable to locate the step driver for ", CurrentStep
             CommonUtil.ExecLog(sModuleInfo, "Unknown test step : %s" % CurrentStep , 2)
 
     except Exception, e:

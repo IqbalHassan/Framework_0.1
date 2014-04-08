@@ -1522,7 +1522,7 @@ def Table_Data_UserList(request): #==================Returns Available user list
                         else:
                             Usable_Machine.append(each)
                 for each in Usable_Machine:
-                    query="Select  distinct tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,last_updated_time,machine_ip from test_run_env where tester_id='"+each[0]+"' and os_name ='" + Environment + "'"
+                    query="Select  distinct tester_id,os_name ||' '||os_version||' - '||os_bit as machine_os,client,last_updated_time,machine_ip from test_run_env where tester_id='"+each[0]+"' and os_name ='" + Environment + "' and status='Unassigned'"
                     tabledata = DB.GetData(Conn, query, False)
                     if len(tabledata)==0:
                         continue
