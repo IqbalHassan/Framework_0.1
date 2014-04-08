@@ -42,7 +42,7 @@ def UpdateEnvParametersToDatabase():
         #Client Info
         client = oLocalInfo.getInstalledClients()
 
-        UpdatedTime = CommonUtil.TimeStamp("integer")
+        UpdatedTime = CommonUtil.TimeStamp("string")
 
         #Updating the test_run table in the database
         try:
