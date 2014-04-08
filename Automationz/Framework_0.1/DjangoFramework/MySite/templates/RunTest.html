@@ -1,280 +1,333 @@
 {% extends "BaseTemplate.html" %}
 
- {% block title%} Run Test {% endblock%}
+{% block title%} Run Test {% endblock%}
 
- {% block content %}
+{% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/RunTest.js"></script>
 <article>
 
-    <!--**********Tabs***************-->
+<!--**********Tabs***************-->
 
-    <div class="responsive-tabs" width="100%">
+<div class="responsive-tabs" width="100%">
 
-        <h3>Run Test</h3>
-        <div>
+<h3>Run Test</h3>
+<div>
 
-            <!--Put your code here-->
-            <table id="PlatformChose" style="margin-left:500px">
+    <!--Put your code here-->
+    <table id="PlatformChose" style="margin-left:500px">
 
-                <tr>
-                    <p class = 'text' style="color: inherit; display:block; margin-left: 20; font-family: Arial, Gadget, sans-serif; font-size: 20px;" title='Choose'><a>Please select the platform to run test cases.</a></p>
-                    <div id = 'Choose' style='display:none'></div>
-                    <td style="height:150px; width:150px">
+        <tr>
+            <p class = 'text' style="color: inherit; display:block; margin-left: 20; font-family: Arial, Gadget, sans-serif; font-size: 20px;" title='Choose'><a>Please select the platform to run test cases.</a></p>
+            <div id = 'Choose' style='display:none'></div>
+            <td style="height:150px; width:150px">
 
-                        <!-- Following Code is for PC Platform Flip button  -->
-                        <p class='buttonPic' id="pc_icon" style='color: black; display:block; margin-top: 10px; height : 100%; width:30%' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/pc1.png">  PC </p>
-                        <div id = 'PC_Platform' style='display:none'></div>
-                        <!-- *********************** <img style = 'width : 200%'  src="/site_media/PC.png">-->
-                    </td>
-
-
-                    <td style="height:150px; width:150px">
-
-                        <!-- Following Code is for Mac Platform Flip button  -->
-                        <p class='buttonPic' id="mac_icon" style='color: black; display:block; margin-top: 10px; height : 100%; width:30% ' title='Mac_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/mac1.png">   Mac </p>
-                        <div id = 'Mac_Platform' style='display:none'></div>
-                        <!-- *********************** <img style = 'width : 320%'  src="/site_media/Mac.png">-->
-
-                    </td>
-                </tr>
-            </table>
-            <!-- AutoComplete Search Box -->
-            <div id = "Place_AutoComplete_Here" style='display:none' >
-
-            </div>
-
-            <!-- *********************** -->
-            <table>
+                <!-- Following Code is for PC Platform Flip button  -->
+                <p class='buttonPic' id="pc_icon" style='color: black; display:block; margin-top: 10px; height : 100%; width:30%' title='PC_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/pc1.png">  PC </p>
+                <div id = 'PC_Platform' style='display:none'></div>
+                <!-- *********************** <img style = 'width : 200%'  src="/site_media/PC.png">-->
+            </td>
 
 
+            <td style="height:150px; width:150px">
 
-                <tbody>
+                <!-- Following Code is for Mac Platform Flip button  -->
+                <p class='buttonPic' id="mac_icon" style='color: black; display:block; margin-top: 10px; height : 100%; width:30% ' title='Mac_Platform'> <img style = 'width : 200%; margin-bottom:10px;'  src="/site_media/mac1.png">   Mac </p>
+                <div id = 'Mac_Platform' style='display:none'></div>
+                <!-- *********************** <img style = 'width : 320%'  src="/site_media/Mac.png">-->
 
+            </td>
+        </tr>
+    </table>
+    <!-- AutoComplete Search Box -->
+    <div id = "Place_AutoComplete_Here" style='display:none' >
 
-                <tr>
-
-                    <td>
-                        <img class = "Buttons button" alt="" title = "Select User" src="/site_media/admin.png" style="display:none;width: 30%; height: 30%">
-                    </td>
-
-                    <td>
-                        <img class = "Buttons button primary" alt="" title = "Run Test" src="/site_media/run1.gif" style="display:none;width: 40px; height: 40px">
-                    </td>
-
-                </tr>
-
-
-
-                </tbody>
-            </table>
-            <!-- *********************** -->
-
-
-
-            <!-- Following code is for Result Table -->
-            <p> </p>
-
-            <p class='flip'>Test Cases</p>
-            <div id="timeRequired" style="display: none;">
-
-            </div>
-            <div id = "RunTestResultTable" style="display: none;" >
-
-
-            </div>
-
-            <div id = "RunTestSubTable" align="center" style="display: none;">
-
-            </div>
-            <!-- *********************** -->
-
-        </div>
-
-        <h3>Available Test Machine</h3>
-        <div>
-            <div id = 'AvailableTestMachine' style='display:block'></div>
-            <!--Put your code here-->
-        </div>
-
-        <h3>Add Manual Test Machine</h3>
-        <div>
-            <!-- Add Manual Test Machine -->
-            <div id='AddManualTestMachine' style='display: block'>
-                <p>&nbsp;</p>
-                <div align="center" id="error_message" style="display: none">
-
-                </div>
-                <div align="center">
-                    <fieldset>
-                        <legend><b>Manual Test Machine Information</b></legend>
-                        <label><b>Machine Name:</b></label>
-                        <input type="text" id="machine_name" class="textbox" value="" style="width: 150px;" placeholder="Machine Name..."/>
-                        &nbsp;&nbsp;&nbsp;
-                        <label><b>Machine IP:</b></label>
-                        <input type="text" id="machine_ip" class="textbox" style="width: 150px;" placeholder="Machine IP.."/>
-                        <br/>
-                        <br/>
-                        <label><b>OS:</b></label>
-                        <select id="os_name">
-                            <option selected value="">OS</option>
-                        </select>
-                        &nbsp;&nbsp;&nbsp;
-                        <div id="version_bit" style="display: none">
-                            <label><b>Version</b></label>
-                            <select id="os_version">
-                                <option>Version</option>
-                            </select>
-                            &nbsp;&nbsp;&nbsp;
-                            <label><b>Bit:</b></label>
-                            <select id="os_bit">
-                                <option value="32">32 Bit</option>
-                                <option value="64">64 Bit</option>
-                            </select>
-                        </div>
-                        <br/>
-                        <br/>
-                        <label><b>Browser:</b></label>
-                        <select id="browser">
-                            <option selected value="">Browser</option>
-                        </select>
-
-                        &nbsp;&nbsp;&nbsp;
-                        <div id="b_version" style="display: none">
-                            <label><b>Browser version:</b></label>
-                            <select id="browser_version">
-
-                            </select>
-                        </div>
-                        <br>
-                        <br>
-                        <label><b>ProductVersion:</b></label>
-                        <select id="product_version">
-                            <option selected value="">Product Version</option>
-                        </select>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <input type="button" value="Submit" id="submit_button" class="button minibutton primary"/>
-                    </fieldset>
-                </div>
-
-            </div>
-            <!-- ************************ -->
-        </div>
-
-        <h3>Manage Milestones</h3>
-        <div>
-            <br/><br/>
-            <div align="center" id="error_milestone" style="display: none">
-
-            </div>
-            <form>
-                <fieldset>
-                    <legend align="right">MileStone Management</legend>
-                    <br/><br/>
-                    <div align="center">
-                        <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
-                            <tr>
-                                <td align="center">
-                                    <div id="right">
-                                        <label><b>Operation:</b></label>
-                                        <select id="operation_milestone" name="operation" class="selectdrop">
-                                            <option value="0" selected="selected">Select from list</option>
-                                            <option value="1">Create</option>
-                                            <option value="2">Rename</option>
-                                            <option value="3">Delete</option>
-                                        </select>
-                                    </div>
-                                </td>
-                                <td align="center">
-                                    <div id="center">
-                                        <label><b id="name_variable">Name:</b></label>
-                                        <input class="ui-corner-all textbox" id="msinput" style="margin : 5px; width: auto" size="40" type='text' name='inputName'/>
-                                    </div>
-                                </td>
-                                <td align="center">
-                                    <div id="renamebox" style="display: none">
-                                        <label><b>New Name:</b></label>
-                                        &nbsp;&nbsp;&nbsp;
-                                        <input class="ui-corner-all textbox" id="msinput2" style="margin: 5px; width: auto;" type='text' title = 'Please Type Keyword' size="40" name='inputName2' />
-
-                                    </div>
-                                </td>
-                                <td align="center">
-                                    <!--div id="error">
-                                        <p><b>No Operation is selected</b></p>
-                                    </div-->
-                                    <div id="button_id">
-                                        <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
-                                        <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </fieldset>
-            </form>
-        </div>
     </div>
 
+    <!-- *********************** -->
+    <table>
 
 
 
+        <tbody>
 
-	
-	
-		<!-- Following Code is for Available Test Machine Flip button
-        <div align="center" id="error" style="display: none">
+
+        <tr>
+
+            <td>
+                <img class = "Buttons button" alt="" title = "Select User" src="/site_media/admin.png" style="display:none;width: 30%; height: 30%">
+            </td>
+
+            <td>
+                <img class = "Buttons button primary" alt="" title = "Run Test" src="/site_media/run1.gif" style="display:none;width: 40px; height: 40px">
+            </td>
+
+        </tr>
+
+
+
+        </tbody>
+    </table>
+    <!-- *********************** -->
+
+
+
+    <!-- Following code is for Result Table -->
+    <p> </p>
+
+    <p class='flip'>Test Cases</p>
+    <div id="timeRequired" style="display: none;">
+
+    </div>
+    <div id = "RunTestResultTable" style="display: none;" >
+
+
+    </div>
+
+    <div id = "RunTestSubTable" align="center" style="display: none;">
+
+    </div>
+    <!-- *********************** -->
+
+</div>
+
+<h3>Available Test Machine</h3>
+<div>
+    <div id = 'AvailableTestMachine' style='display:block'></div>
+    <!--Put your code here-->
+</div>
+
+<h3>Add Manual Test Machine</h3>
+<div>
+    <div align="left">
+        <h3 style="font-size: 19px;"><a>Add Manual Test Machine</a></h3>
+    </div>
+    <!-- Add Manual Test Machine -->
+    <div id='AddManualTestMachine' style='display: block'>
+        <p>&nbsp;</p>
+        <div align="center" id="error_message" style="display: none">
 
         </div>
-        <div align='center'>
-            <p class='flip' style='color: black; display:none; margin-top: -150px;' title='Availeable Test Machine'>Available Test Machine</p>
+        <div align="center">
+            <fieldset>
+                <legend><b>Manual Test Machine Information</b></legend>
+                <br>
+                <label><b>Machine Name:</b></label>
+                <input type="text" id="machine_name" class="textbox" value="" style="width: 150px;" placeholder="Machine Name..."/>
+                &nbsp;&nbsp;&nbsp;
+                <label><b>Machine IP:</b></label>
+                <input type="text" id="machine_ip" class="textbox" style="width: 150px;" placeholder="Machine IP.."/>
+                <br/>
+                <br/>
 
-            <p class='flip' style='color: black;display: none;' title='Add Manual Test Machine'>Add Manual Test Machine</p>
+                <table style="width: 63%">
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <label><b>OS:</b></label>
+                                    </td><td>
+                                    <select id="os_name">
+                                        <option selected value="">OS</option>
+                                    </select>
+                                </td>
+                                </tr>
+                            </table>
+                        </td>
+
+                        &nbsp;&nbsp;&nbsp;
+                        <td>
+                            <div id="version_bit" style="display: none;">
+                                <table>
+                                    <tr>
+                                        <td style="text-align: left">
+                                            <label><b>Version</b></label>
+
+                                            <select id="os_version">
+                                                <option>Version</option>
+                                            </select>
+
+                                        </td><td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <label><b>Bit:</b></label>
+                                        <select id="os_bit">
+                                            <option value="32">32 Bit</option>
+                                            <option value="64">64 Bit</option>
+                                        </select>
+                                    </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+
+                <br/>
+
+                <table style="width: 63%">
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <label><b>Browser:</b></label>
+                                    </td><td>
+                                    <select id="browser">
+                                        <option selected value="">Browser</option>
+                                    </select>
+                                </td>
+                                </tr></table>
+                        </td>
+
+                        &nbsp;&nbsp;&nbsp;
+                        <td>
+                            <div id="b_version" style="display: none">
+                                <label><b>Browser version:</b></label>
+                                <select id="browser_version">
+
+                                </select>
+                            </div>
+                        </td></tr></table>
+
+
+                <br><br>
+                <table style="width: 63%">
+                    <tr>
+                        <td>
+                            <label><b>Product Version:</b></label>
+                            <select id="product_version">
+                                <option selected value="">Product Version</option>
+                            </select>
+                        </td>
+                    </tr></table>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <input type="button" value="Submit" id="submit_button" class="button minibutton primary"/>
+            </fieldset>
         </div>
 
-		<!-- *********************** -->
+    </div>
+    <!-- ************************ -->
+</div>
+
+<h3>Manage Milestones</h3>
+<div>
+    <div align="left">
+        <h3 style="font-size: 19px;"><a>Manage Milestones</a></h3>
+    </div>
+    <br/><br/>
+    <div align="center" id="error_milestone" style="display: none">
+
+    </div>
+    <form>
+        <fieldset>
+            <legend align="right">MileStone Management</legend>
+            <br/><br/>
+            <div align="center">
+                <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
+                    <tr>
+                        <td align="center">
+                            <div id="right">
+                                <label><b>Operation:</b></label>
+                                <select id="operation_milestone" name="operation" class="selectdrop">
+                                    <option value="0" selected="selected">Select from list</option>
+                                    <option value="1">Create</option>
+                                    <option value="2">Rename</option>
+                                    <option value="3">Delete</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td align="center">
+                            <div id="center">
+                                <label><b id="name_variable">Name:</b></label>
+                                <input class="ui-corner-all textbox" id="msinput" style="margin : 5px; width: auto" size="40" type='text' name='inputName'/>
+                            </div>
+                        </td>
+                        <td align="center">
+                            <div id="renamebox" style="display: none">
+                                <label><b>New Name:</b></label>
+                                &nbsp;&nbsp;&nbsp;
+                                <input class="ui-corner-all textbox" id="msinput2" style="margin: 5px; width: auto;" type='text' title = 'Please Type Keyword' size="40" name='inputName2' />
+
+                            </div>
+                        </td>
+                        <td align="center">
+                            <!--div id="error">
+                                <p><b>No Operation is selected</b></p>
+                            </div-->
+                            <div id="button_id">
+                                <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
+                                <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </form>
+</div>
+</div>
 
 
-		
-
-		
-		<!-- Following Table Is For Selecte User and Run Test Button -->
-
-		
-		
-		<!-- {% include "ResultTable.html" %}  -->
-		
-		
-				
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
 
 
 
 
-    <script>
-        // ResponsiveTabs.js | Version:1.10 | Author:Pete Love | www.petelove.com
-        var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
-    </script>
 
-    <script>
-        $(document).ready(function() {
-            RESPONSIVEUI.responsiveTabs();
-        });
-    </script>
+<!-- Following Code is for Available Test Machine Flip button
+<div align="center" id="error" style="display: none">
+
+</div>
+<div align='center'>
+    <p class='flip' style='color: black; display:none; margin-top: -150px;' title='Availeable Test Machine'>Available Test Machine</p>
+
+    <p class='flip' style='color: black;display: none;' title='Add Manual Test Machine'>Add Manual Test Machine</p>
+</div>
+
+<!-- *********************** -->
+
+
+
+
+
+<!-- Following Table Is For Selecte User and Run Test Button -->
+
+
+
+<!-- {% include "ResultTable.html" %}  -->
+
+
+
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
+
+
+
+
+<script>
+    // ResponsiveTabs.js | Version:1.10 | Author:Pete Love | www.petelove.com
+    var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
+</script>
+
+<script>
+    $(document).ready(function() {
+        RESPONSIVEUI.responsiveTabs();
+    });
+</script>
 
 
 
@@ -353,174 +406,174 @@
 								<td  >
 									<select  name="tid" >
 										<!--  {% for item in tester_id %} -->
-											
-										<!--  {% endfor %} 
-									</select>
-								</td>
-					{% endif %}
-				{% endif %}
-			{% endif %}
-			
-			
-			{% if stoprun %}					
-					<tr>
-						<!-- Tester Id Selection Box 
-						<th><label for="tester_id"><font face="Arial" size="3" color="white"><b>Tester ID:</b></label></th>
-							<td  >
-								<select  name="tid" >
-									{% for item in tester_id %}
-										<option  value={{item}} style="color: #00000 ; background-color: #D6D6FF;">{{item}}</option>
-									{% endfor %}
-								</select>
-							</td>
-							
-							<table>
-								<tr>
-									<td>
-										<h2 style = "color: #380000 ">Please Select Tester ID To Stop The Test.</h2>	
-									</td>
-								</tr>
-								
-								<tr>	
-									<td>
-									&nbsp;
-									 <input   style = "font-family:serif;  color:#00000; font-weight:bold; width: 80px; height: 30px;" value="Submit" type="submit"  name = "stopsubmited" >
-									</td>
-								<tr>
-							</table>
-			 {% endif %}
-						
-			
-			<!-- TestSet Id Selection Box 
-			{% if testset_id %}
-						<th><label for="testset_id"><font face="Arial" size="3" color="white"><b>Test Set ID:</b></label></th>
-							<td>
-								<select  name="tsid" >
-									{% for item in testset_id %}
-										<option  value={{item}} style="color: #00000 ; background-color: #D6D6FF;">{{item}}</option>
-									{% endfor %}
-									
-								</select>
-							</td>
-					</tr>
-					
-			{% endif %}
-			
-					
-			{% if Rerun %}
-			
-						
-						<tr>
-						<!-- Tester Id Selection Box 
-						<th><label for="tester_id"><font face="Arial" size="3" color="white"><b>Tester ID:</b></label></th>
-							<td  >
-								<select  name = 'rerun_runid' " >
-									{% for item in tester_id %}
-										<option   value={{item}} style="color: #00000 ; background-color: #D6D6FF;">{{item}}</option>
-									{% endfor %}
-								</select>
-								
-								&nbsp;
-								<input   style = "font-family:serif;  color:#00000; font-weight:bold;" value="GO" type="submit"  name = "rungo1" >
-							</td>
-				{% if re_run_tstrid %}
-				
-						<th><label for="testset_id"><font face="Arial" size="3" color="white"><b>Test Run IDs For {{re_run_tstrid}}:</b></label></th>
-							<td>
-								<select  name="rerun_testid" >
-									{% for item in RunIDs %}
-										<option  value={{item}} style="color: #00000 ; background-color: #D6D6FF;">{{item}}</option>
-									{% endfor %}
-									
-								</select>
-								
-								&nbsp;
-								<input   style = "font-family:serif;  color:#00000; font-weight:bold;" value="Run Test" type="submit"  name = "rungo2" >
-							</td>
-							
-				{% else %}	
-							
-						<table>
-								<tr>
-									<td>
-										<h2 style = "color: #380000 ">Please Select Tester ID to Re-run the Test Set.</h2>	
-									</td>
-								</tr>
-						</table>
-				{% endif %}
-									
-			{% endif %}
-			
-			
-			
-			
-						
-						
-			</tbody>
-	</table>
-		
-	
-	<!-- Client Name, Memory Type, Device Type and Device Model code 
-	
-	{% if testset_id %}	
-		{% if not re_run_tstrid %}
-	<table border="1" cellpadding="1" cellspacing="1" style="background-color:#000033";width: 500 px;">
-			<tbody>	
-					<tr>
-							<!-- Client Name Selection Box 
-							<th><label ><font face="Arial" size="2" color= "white"><b>Client Name:</b></label></th>
-							<td>
-								<select  name="clientname" >
-										<option  value= N/A style="color: #00000 ; background-color: #D6D6FF;">N/A</option>
-										<option  value= iTunes style="color: #00000 ; background-color: #D6D6FF;">iTunes</option>
-										<option  value= WMP style="color: #00000 ; background-color: #D6D6FF;">WMP</option>
-									
-								</select>
-							</td>
-							
-							<!-- Memory Type Selection Box 
-							<th><label><font face="Arial" size="2" color= "white"><b>Memory Type:</b></label></th>
-							<td>
-								<select  name="memorytype" >
-										<option  value=N/A style="color: #00000 ; background-color: #D6D6FF;">N/A</option>
-										<option  value=BBX style="color: #00000 ; background-color: #D6D6FF;">BBX</option>
-										<option  value=EMMC style="color: #00000 ; background-color: #D6D6FF;">EMMC</option>
-										<option  value=SD style="color: #00000 ; background-color: #D6D6FF;">SD</option>
-									
-								</select>
-							</td>
-							
-							
-							<!-- Device Type Selection Box 
-							<th><label><font face="Arial" size="2" color= "white"><b>Device Type:</b></label></th>
-							<td>
-								<select  name="devicetype" >
-										
-										<option  value=Java style="color: #00000 ; background-color: #D6D6FF;">Java</option>
-										<option  value=BBX style="color: #00000 ; background-color: #D6D6FF;">BBX</option>
-									
-								</select>
-							</td>
-							
-							
-							<!-- Device Model Type Selection Box 
-							<th><label><font face="Arial" size="2" color= "white"><b>Device Model:</b></label></th>
-							<td>
-								<select  name="devicemodel" >
-										
-										<option  value=Monza style="color: #00000 ; background-color: #D6D6FF;">Monza</option>
-										<option  value=9930 style="color: #00000 ; background-color: #D6D6FF;">9930</option>
-										<option  value=Dekota style="color: #00000 ; background-color: #D6D6FF;">Dekota</option>
-										<option  value=Jennings style="color: #00000 ; background-color: #D6D6FF;">Jennings</option>
-									
-								</select>
-							</td>
-						</tr>
-							
-				</tbody>
-			</table>
-	 	{% endif %}
-	 	
-	{% endif %}
-	
-	-->
+
+<!--  {% endfor %}
+</select>
+</td>
+{% endif %}
+{% endif %}
+{% endif %}
+
+
+{% if stoprun %}
+<tr>
+<!-- Tester Id Selection Box
+<th><label for="tester_id"><font face="Arial" size="3" color="white"><b>Tester ID:</b></label></th>
+<td  >
+<select  name="tid" >
+{% for item in tester_id %}
+<option  value={{item}} style="color: #00000 ; background-color: #D6D6FF;">{{item}}</option>
+{% endfor %}
+</select>
+</td>
+
+<table>
+<tr>
+<td>
+<h2 style = "color: #380000 ">Please Select Tester ID To Stop The Test.</h2>
+</td>
+</tr>
+
+<tr>
+<td>
+&nbsp;
+<input   style = "font-family:serif;  color:#00000; font-weight:bold; width: 80px; height: 30px;" value="Submit" type="submit"  name = "stopsubmited" >
+</td>
+<tr>
+</table>
+{% endif %}
+
+
+<!-- TestSet Id Selection Box
+{% if testset_id %}
+<th><label for="testset_id"><font face="Arial" size="3" color="white"><b>Test Set ID:</b></label></th>
+<td>
+<select  name="tsid" >
+{% for item in testset_id %}
+<option  value={{item}} style="color: #00000 ; background-color: #D6D6FF;">{{item}}</option>
+{% endfor %}
+
+</select>
+</td>
+</tr>
+
+{% endif %}
+
+
+{% if Rerun %}
+
+
+<tr>
+<!-- Tester Id Selection Box
+<th><label for="tester_id"><font face="Arial" size="3" color="white"><b>Tester ID:</b></label></th>
+<td  >
+<select  name = 'rerun_runid' " >
+{% for item in tester_id %}
+<option   value={{item}} style="color: #00000 ; background-color: #D6D6FF;">{{item}}</option>
+{% endfor %}
+</select>
+
+&nbsp;
+<input   style = "font-family:serif;  color:#00000; font-weight:bold;" value="GO" type="submit"  name = "rungo1" >
+</td>
+{% if re_run_tstrid %}
+
+<th><label for="testset_id"><font face="Arial" size="3" color="white"><b>Test Run IDs For {{re_run_tstrid}}:</b></label></th>
+<td>
+<select  name="rerun_testid" >
+{% for item in RunIDs %}
+<option  value={{item}} style="color: #00000 ; background-color: #D6D6FF;">{{item}}</option>
+{% endfor %}
+
+</select>
+
+&nbsp;
+<input   style = "font-family:serif;  color:#00000; font-weight:bold;" value="Run Test" type="submit"  name = "rungo2" >
+</td>
+
+{% else %}
+
+<table>
+<tr>
+<td>
+<h2 style = "color: #380000 ">Please Select Tester ID to Re-run the Test Set.</h2>
+</td>
+</tr>
+</table>
+{% endif %}
+
+{% endif %}
+
+
+
+
+
+
+</tbody>
+</table>
+
+
+<!-- Client Name, Memory Type, Device Type and Device Model code
+
+{% if testset_id %}
+{% if not re_run_tstrid %}
+<table border="1" cellpadding="1" cellspacing="1" style="background-color:#000033";width: 500 px;">
+<tbody>
+<tr>
+<!-- Client Name Selection Box
+<th><label ><font face="Arial" size="2" color= "white"><b>Client Name:</b></label></th>
+<td>
+<select  name="clientname" >
+<option  value= N/A style="color: #00000 ; background-color: #D6D6FF;">N/A</option>
+<option  value= iTunes style="color: #00000 ; background-color: #D6D6FF;">iTunes</option>
+<option  value= WMP style="color: #00000 ; background-color: #D6D6FF;">WMP</option>
+
+</select>
+</td>
+
+<!-- Memory Type Selection Box
+<th><label><font face="Arial" size="2" color= "white"><b>Memory Type:</b></label></th>
+<td>
+<select  name="memorytype" >
+<option  value=N/A style="color: #00000 ; background-color: #D6D6FF;">N/A</option>
+<option  value=BBX style="color: #00000 ; background-color: #D6D6FF;">BBX</option>
+<option  value=EMMC style="color: #00000 ; background-color: #D6D6FF;">EMMC</option>
+<option  value=SD style="color: #00000 ; background-color: #D6D6FF;">SD</option>
+
+</select>
+</td>
+
+
+<!-- Device Type Selection Box
+<th><label><font face="Arial" size="2" color= "white"><b>Device Type:</b></label></th>
+<td>
+<select  name="devicetype" >
+
+<option  value=Java style="color: #00000 ; background-color: #D6D6FF;">Java</option>
+<option  value=BBX style="color: #00000 ; background-color: #D6D6FF;">BBX</option>
+
+</select>
+</td>
+
+
+<!-- Device Model Type Selection Box
+<th><label><font face="Arial" size="2" color= "white"><b>Device Model:</b></label></th>
+<td>
+<select  name="devicemodel" >
+
+<option  value=Monza style="color: #00000 ; background-color: #D6D6FF;">Monza</option>
+<option  value=9930 style="color: #00000 ; background-color: #D6D6FF;">9930</option>
+<option  value=Dekota style="color: #00000 ; background-color: #D6D6FF;">Dekota</option>
+<option  value=Jennings style="color: #00000 ; background-color: #D6D6FF;">Jennings</option>
+
+</select>
+</td>
+</tr>
+
+</tbody>
+</table>
+{% endif %}
+
+{% endif %}
+
+-->
