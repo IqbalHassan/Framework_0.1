@@ -111,6 +111,56 @@ function UIChange(){
             'textAlign':'center'
         })
     });
+    $('#data_table tr td:nth-child(9)').each(function(){
+        $(this).css({
+            'textAlign':'center'
+        })
+        var value=$(this).text().trim();
+        if(value=="false"){
+            //$(this).html("");
+            $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status\"></span></a>");
+        }
+        else if(value=="true"){
+            //$(this).html("see data");
+            $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status filled\"></span></a>");
+        }
+    });
+    $('#data_table tr td:nth-child(10)').each(function(){
+        $(this).css({
+            'textAlign':'center'
+        })
+        var value=$(this).text().trim();
+        if(value=="false"){
+            //$(this).html("");
+            $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status\"></span></a>");
+        }
+        else if(value=="true"){
+            //$(this).html("see data");
+            $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status filled\"></span></a>");
+        }
+    });
+    $('#data_table tr td:nth-child(11)').each(function(){
+        /*$(this).css({
+            'textAlign':'center'
+        })*/
+        var value=$(this).text().trim();
+        $(this).html(convertToString(value));
+    });
+    $('#data_table tr td:nth-child(12)').each(function(){
+        $(this).css({
+            'textAlign':'center'
+        })
+        var value=$(this).text().trim();
+        if(value=="false"){
+            //$(this).html("");
+            $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status\"></span></a>");
+        }
+        else if(value=="true"){
+            //$(this).html("see data");
+            $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status filled\"></span></a>");
+        }
+    });
+
 }
 function TestDataFetch(){
     $('#data_table tr td:nth-child(4)').each(function(){
@@ -422,4 +472,21 @@ function makeRunClickable(){
             window.location=location;
         });
     });
+}
+function convertToString(intTime){
+    var hour=Math.floor(intTime/3600);
+    intTime=intTime%3600;
+    var minuate=Math.floor(intTime/60);
+    intTime=intTime%60;
+    if(hour<10){
+        hour="0"+hour;
+    }
+    if(minuate<10){
+        minuate="0"+minuate;
+    }
+    if(intTime<10){
+        intTime="0"+intTime;
+    }
+    var stringTime=hour+":"+minuate+":"+intTime;
+    return stringTime.trim();
 }
