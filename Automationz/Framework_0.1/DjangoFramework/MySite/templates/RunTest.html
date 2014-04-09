@@ -107,106 +107,106 @@
         <div align="center" id="error_message" style="display: none">
 
         </div>
-        <div align="center">
-            <fieldset>
+        <div align="left" style="margin-left: 15%">
+            <!--fieldset>
                 <legend><b>Manual Test Machine Information</b></legend>
-                <br>
-                <label><b>Machine Name:</b></label>
-                <input type="text" id="machine_name" class="textbox" value="" style="width: 150px;" placeholder="Machine Name..."/>
-                &nbsp;&nbsp;&nbsp;
-                <label><b>Machine IP:</b></label>
-                <input type="text" id="machine_ip" class="textbox" style="width: 150px;" placeholder="Machine IP.."/>
-                <br/>
-                <br/>
+                <br-->
+            <table>
+                <tr>
+                    <td class="tc_form_label_col">
+                        <b class="Text">Machine Name:</b>
+                    </td>
+                    <td class="tc_form_input_col">
+                        <input type="text" id="machine_name" class="textbox" value="" placeholder="Machine Name..."/>
+                    </td>
+                </tr>
+            </table>
 
-                <table style="width: 63%">
-                    <tr>
-                        <td>
-                            <table>
-                                <tr>
-                                    <td style="text-align: left;">
-                                        <label><b>OS:</b></label>
-                                    </td><td>
-                                    <select id="os_name">
-                                        <option selected value="">OS</option>
-                                    </select>
-                                </td>
-                                </tr>
-                            </table>
-                        </td>
+            &nbsp;&nbsp;&nbsp;
 
+            <table>
+                <tr>
+                    <td class="tc_form_label_col">
+                        <b class="Text">Machine IP:</b>
+                    </td>
+                    <td class="tc_form_input_col">
+                        <input type="text" id="machine_ip" class="textbox" placeholder="Machine IP.."/>
+                    </td>
+                </tr>
+            </table>
+
+            <br/>
+
+            <table>
+                <tr>
+                    <td class="tc_form_label_col">
+                        <b class="Text">OS:</b>
+                    </td>
+                    <td class="tc_form_input_col">
+                        <select id="os_name">
+                            <option selected value="">Select OS</option>
+                        </select>
                         &nbsp;&nbsp;&nbsp;
-                        <td>
-                            <div id="version_bit" style="display: none;">
-                                <table>
-                                    <tr>
-                                        <td style="text-align: left">
-                                            <label><b>Version</b></label>
-
-                                            <select id="os_version">
-                                                <option>Version</option>
-                                            </select>
-
-                                        </td><td>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <label><b>Bit:</b></label>
-                                        <select id="os_bit">
-                                            <option value="32">32 Bit</option>
-                                            <option value="64">64 Bit</option>
-                                        </select>
-                                    </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-
-
-                <br/>
-
-                <table style="width: 63%">
-                    <tr>
-                        <td>
-                            <table>
-                                <tr>
-                                    <td style="text-align: left;">
-                                        <label><b>Browser:</b></label>
-                                    </td><td>
-                                    <select id="browser">
-                                        <option selected value="">Browser</option>
-                                    </select>
-                                </td>
-                                </tr></table>
-                        </td>
-
-                        &nbsp;&nbsp;&nbsp;
-                        <td>
-                            <div id="b_version" style="display: none">
-                                <label><b>Browser version:</b></label>
-                                <select id="browser_version">
-
-                                </select>
-                            </div>
-                        </td></tr></table>
-
-
-                <br><br>
-                <table style="width: 63%">
-                    <tr>
-                        <td>
-                            <label><b>Product Version:</b></label>
-                            <select id="product_version">
-                                <option selected value="">Product Version</option>
+                        <div id="version_bit" style="display: none;">
+                            <b>Version</b>
+                            <select id="os_version">
+                                <option>Version</option>
                             </select>
-                        </td>
-                    </tr></table>
+                            &nbsp;&nbsp;&nbsp;
+                            <b>Bit:</b>
+                            <select id="os_bit">
+                                <option value="32">32 Bit</option>
+                                <option value="64">64 Bit</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+                <br/>
+
+            <table>
+                <tr>
+                    <td class="tc_form_label_col">
+                        <b class="Text">Browser:</b>
+                    </td>
+                    <td class="tc_form_input_col">
+                        <select id="browser">
+                            <option selected value="">Select Browser</option>
+                        </select>
+                        &nbsp;&nbsp;&nbsp;
+                        <div id="b_version" style="display: none">
+                            <label><b>Browser version:</b></label>
+                            <select id="browser_version">
+
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <br>
+
+            <table>
+                <tr>
+                    <td class="tc_form_label_col">
+                        <b class="Text">Product Version:</b>
+                    </td>
+                    <td class="tc_form_label_col">
+                        <select id="product_version">
+                            <option selected value="">Select Product Version</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
                 <br/>
                 <br/>
-                <br/>
-                <br/>
+
+            <div align="center">
                 <input type="button" value="Submit" id="submit_button" class="button minibutton primary"/>
-            </fieldset>
+            </div>
+            <!--/fieldset-->
         </div>
 
     </div>
@@ -223,9 +223,9 @@
 
     </div>
     <form>
-        <fieldset>
+        <!--fieldset>
             <legend align="right">MileStone Management</legend>
-            <br/><br/>
+            <br/><br/-->
             <div align="center">
                 <table style="border: 2px #666; font-family: Open Sans, Arial, Helvetica, sans-serif; padding: 2px; margin: 10px;" width="80%">
                     <tr>
@@ -266,7 +266,7 @@
                     </tr>
                 </table>
             </div>
-        </fieldset>
+        <!--/fieldset-->
     </form>
 </div>
 </div>
