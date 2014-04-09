@@ -4971,12 +4971,32 @@ def DataFetchForTestCases(request):
                 Status=DB.GetData(Conn,query,False) 
                 Temp_Data.append(Status[0][1]) #FailReason
                 Temp_Data.append(Status[0][0])
+                query="select verify_point,step_continue,estd_time,stepenable,driver,stepfeature from test_steps_list where step_id=%d" %TestStepList[each][0]
+                StepType=DB.GetData(Conn,query,False)
+                #Temp_Data.append(StepType[0][0])
+                if StepType[0][0]==True:
+                    Temp_Data.append("true")
+                else:
+                    Temp_Data.append("false")
+                #Temp_Data.append(StepType[0][1])
+                if StepType[0][1]==True:
+                    Temp_Data.append("true")
+                else:
+                    Temp_Data.append("false")
+                Temp_Data.append(StepType[0][2])
+                #Temp_Data.append(StepType[0][3])
+                if StepType[0][3]==True:
+                    Temp_Data.append("true")
+                else:
+                    Temp_Data.append("false")
+                Temp_Data.append(StepType[0][4])
+                Temp_Data.append(StepType[0][5])
                 Conn.close()
                 print Temp_Data
                 #Temp_Data.append("Log")
                 Temp_Data=tuple(Temp_Data)
                 DataCollected.append(Temp_Data)
-    DataColumn=["#","Step","Type","Data","Description","Expected","Comment","Status"]
+    DataColumn=["#","Step","Type","Data","Description","Expected","Comment","Status","Verification Point","Cont. On Fail","Estd. Time","State","Driver","Feature"]
     query="select status from test_case_results where tc_id='%s' and run_id='%s'" %(test_case_id,run_id)
     Conn=GetConnection()
     test_case_status=DB.GetData(Conn,query,False)
