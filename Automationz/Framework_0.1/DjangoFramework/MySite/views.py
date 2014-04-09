@@ -192,7 +192,7 @@ def zipdata(data_array,status_array):
         data.append(temp)
     return data
 def GetPageCount(request):
-    step=20
+    step=10
     totalPage=0
     if request.is_ajax():
         if request.method=='GET':
@@ -223,7 +223,7 @@ def ResultPage(request,Page_No):
         'all':all_data,
         'start':data['start'],
         'end':data['end'],
-        'total_count':data['totalCount']        
+        'total_count':data['totalCount']
         }
     variables=Context(Dict)
     output=template.render(variables)

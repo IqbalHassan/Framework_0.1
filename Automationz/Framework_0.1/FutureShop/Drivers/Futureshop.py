@@ -91,7 +91,7 @@ def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q):
             sTestStepReturnStatus = WebProgram.BrowserSelection(browser)
             print sTestStepReturnStatus
 
-        elif CurrentStep == "Open WebPage":
+        elif CurrentStep == "Go to webpage":#"Open WebPage"
             DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
             web_link = DataSet[0][2]
             sTestStepReturnStatus = WebProgram.OpenLink(web_link)

@@ -848,10 +848,10 @@ def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
                     """
 
         message.Html = message.Html + Body
-    username = "automation.solutionz"
-    password = "te@mwork"
+    username = "AutomationReport@automationsolutionz.com"
+    password = "te@mWork"
 
-    sender = Mailer('smtp.gmail.com','587', True, username, password)
+    sender = Mailer('smtp.automationsolutionz.com','25', True, username, password)
     sender.send(message)
 
 
