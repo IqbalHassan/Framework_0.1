@@ -101,25 +101,27 @@ $(document).ready(function() {
             }
         });
         $('.data-popup').live('click',function(){
-            var id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
-            $('#searchbox'+id+'datapop').dialog({
-                buttons : {
-                    "OK" : function() {
-                        checkFunction($(this).attr('id'));
-                        $(this).dialog("destroy");
-                    }
-                },
+            if(($(this).find('span:eq(0)').hasClass('unfilled')) || ($(this).find('span:eq(0)').hasClass('filled'))){
+                var id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
+                $('#searchbox'+id+'datapop').dialog({
+                    buttons : {
+                        "OK" : function() {
+                            checkFunction($(this).attr('id'));
+                            $(this).dialog("destroy");
+                        }
+                    },
 
-                show : {
-                    effect : 'drop',
-                    direction : "up"
-                },
+                    show : {
+                        effect : 'drop',
+                        direction : "up"
+                    },
 
-                modal : true,
-                width : 800,
-                height : 600,
-                title: "Data: Step "+id
-            });
+                    modal : true,
+                    width : 800,
+                    height : 600,
+                    title: "Data: Step "+id
+                });
+            }
         });
         $('.descriptionpop').live('click',function(){
             var id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
