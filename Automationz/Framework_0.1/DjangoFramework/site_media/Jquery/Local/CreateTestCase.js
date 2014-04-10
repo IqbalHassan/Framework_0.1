@@ -848,6 +848,21 @@ function AutoCompleteTestStep(){
                          }
                          response(auto_list);
                          */response(data);
+                        if(data.length==0){
+                            $(".textbox:focus").css({
+                                'border': '1px solid #FF3D00',
+                                'box-shadow': '0px 0px 3px #FF3D00'
+                            });
+                            alert("Test Step must be chosen from popup list! Either you have to create new steps first.");
+                        }
+                        else{
+                            $(".textbox:focus").css({
+                                'outline': 'none',
+                                'border': '1px solid #7bc1f7',
+                                'background-color': '#fff',
+                                'box-shadow': '0px 0px 3px #7bc1f7'
+                            });
+                        }
                     }
                 });
             },
