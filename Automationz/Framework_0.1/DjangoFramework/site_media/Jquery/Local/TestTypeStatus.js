@@ -43,12 +43,12 @@ $(document).ready(function(){
 
                 var piedata = google.visualization.arrayToDataTable([
                     ['Test Type', 'Total Case Number'],
-                    ['Manual',     data['Summary'][2]],
-                    ['Manual in-progress',      data['Summary'][3]],
-                    ['Automated',  data['Summary'][4]],
-                    ['Automated in-progress', data['Summary'][5]],
-                    ['Performance',  data['Summary'][6]],
-                    ['Performance in-progress', data['Summary'][7]]
+                    ['Manual ('+data['Summary'][2]+')', data['Summary'][2]],
+                    ['Manual in-progress ('+data['Summary'][3]+')', data['Summary'][3]],
+                    ['Automated ('+data['Summary'][4]+')',  data['Summary'][4]],
+                    ['Automated in-progress ('+data['Summary'][5]+')', data['Summary'][5]],
+                    ['Performance ('+data['Summary'][6]+')',  data['Summary'][6]],
+                    ['Performance in-progress ('+data['Summary'][7]+')', data['Summary'][7]]
                 ]);
 
                 var options = {

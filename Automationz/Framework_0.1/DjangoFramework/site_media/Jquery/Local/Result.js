@@ -339,12 +339,12 @@ function make_bar_clickable(divname){
                     function drawChart() {
                         var piedata = google.visualization.arrayToDataTable([
                             ['Run Status', 'Total Case Number'],
-                            ['Passed',     data[1]],
-                            ['Failed',      data[2]],
-                            ['Blocked',  data[3]],
-                            ['In-Progress', data[4]],
-                            ['Submitted',  data[5]],
-                            ['Skipped', data[6]]
+                            ['Passed ('+data[1]+')',     data[1]],
+                            ['Failed ('+data[2]+')',      data[2]],
+                            ['Blocked ('+data[3]+')',  data[3]],
+                            ['In-Progress ('+data[4]+')', data[4]],
+                            ['Submitted ('+data[5]+')',  data[5]],
+                            ['Skipped ('+data[6]+')', data[6]]
                         ]);
                         var options = {
                             title:'Run-ID: '+RunID,

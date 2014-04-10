@@ -4435,6 +4435,8 @@ def TestTypeStatus_Report(request):                     #minar09
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'choice', '')
+            if " " in UserData:
+                UserData = UserData.replace(' ', '_')
             if UserData=="All":
                 sectionQuery="select product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
                 testCasesQuery="select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by test_case_tag.tc_id, product_sections.section_path"
