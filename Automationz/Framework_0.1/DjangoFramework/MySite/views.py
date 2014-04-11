@@ -4339,18 +4339,6 @@ def FeatureDriverDelete(request):                               #minar09
     output = {'error_message':error_message}
     return render_to_response('TestStep.html',output,context_instance=RequestContext(request))
 
-def myview(request):
-    import RenderPDF
-    #Retrieve data or whatever you need
-    results = []
-    return RenderPDF.render_to_pdf(
-            'TestTypeStatus.html',
-            {
-                'pagesize':'A4',
-                'mylist': results,
-            }
-        )
-
 def TestTypeStatus_Report(request):                     #minar09
     Conn = GetConnection()
     sections = []

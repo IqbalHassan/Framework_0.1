@@ -17,6 +17,7 @@ $(document).ready(function() {
     addMainTableRow('#steps_table');
     check_required_data();
     show_radio_button();
+    vertical_sidebar();
 
     /*****************Shetu's Function************************/
     AutoCompleteTag();
@@ -1363,6 +1364,38 @@ function show_radio_button(){
         $(this).addClass("selected");
         $("#Disable_radio").removeClass("selected");
         $("#enable_radio").removeClass("selected");
+    });
+}
+function vertical_sidebar(){
+    $("#add_step_tip").click(function(){
+        if(confirm("Are you sure about leaving before saving?")){
+            window.location = '/Home/ManageTestCases/CreateStep/'
+        }
+    });
+    $("#edit_step_tip").click(function(){
+        if(confirm("Are you sure about leaving before saving?")){
+            window.location = '/Home/ManageTestCases/CreateStep/'
+        }
+    });
+    $("#set_tag_tip").click(function(){
+        if(confirm("Are you sure about leaving before saving?")){
+            window.location = '/Home/ManageTestCases/TestSet/'
+        }
+    });
+    $("#copy_edit_tip").click(function(){
+        if(confirm("Are you sure about leaving before saving?")){
+            window.location = '/Home/ManageTestCases/SearchEdit/'
+        }
+    });
+    $("#history_tip").click(function(){
+        if(confirm("Are you sure about leaving before saving?")){
+            window.location = '/Home/Analysis/'
+        }
+    });
+    $("#organize_tip").click(function(){
+        if(confirm("Are you sure about leaving before saving?")){
+            window.location = '/Home/ManageTestCases/CreateProductSections/'
+        }
     });
 }
 /****************************End Minar's Thing****************************************************/

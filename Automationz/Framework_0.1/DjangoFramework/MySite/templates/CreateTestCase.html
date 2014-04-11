@@ -333,19 +333,19 @@
         <div class="sunken-menu vertical-right repo-nav js-repo-nav js-repository-container-pjax js-octicon-loaders">
             <div class="sunken-menu-contents">
                 <ul class="sunken-menu-group">
-                    <li id="add_step_tip" class="tooltipped tooltip leftwards" original-title="Create Step">
-                        <a href="/Home/ManageTestCases/TestStep/" data-tip="Create New Step" aria-label="Create Step" class="js-selected-navigation-item sunken-menu-item tooltip rightwards">
+                    <li id="add_step_tip" style="cursor: pointer" class="tooltipped tooltip leftwards" original-title="Create Step">
+                        <a data-tip="Create New Step" aria-label="Create Step" class="js-selected-navigation-item sunken-menu-item tooltip rightwards">
                             <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/plus.png" width="16">
                         </a>
                     </li>
 
-                    <li class="tooltipped leftwards" original-title="Edit Step">
-                        <a href="/Home/ManageTestCases/TestStep/" aria-label="Edit Test Step" data-tip="Edit Step" class="tooltip rightwards js-selected-navigation-item sunken-menu-item js-disable-pjax">
+                    <li id="edit_step_tip" style="cursor: pointer" class="tooltipped leftwards" original-title="Edit Step">
+                        <a aria-label="Edit Test Step" data-tip="Edit Step" class="tooltip rightwards js-selected-navigation-item sunken-menu-item js-disable-pjax">
                             <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit.png" width="16">
                         </a>        </li>
 
-                    <li class="tooltipped leftwards" original-title="Manage Set & Tag">
-                        <a href="/Home/ManageTestCases/TestSet/" aria-label="Tag" data-tip="Manage Set & Tag" class="tooltip rightwards js-selected-navigation-item sunken-menu-item">
+                    <li id="set_tag_tip" style="cursor: pointer" class="tooltipped leftwards" original-title="Manage Set & Tag">
+                        <a aria-label="Tag" data-tip="Manage Set & Tag" class="tooltip rightwards js-selected-navigation-item sunken-menu-item">
                             <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/tag.png" width="16">
                         </a>      </li>
 
@@ -355,14 +355,19 @@
 
                 <ul class="sunken-menu-group">
 
-                    <li class="tooltipped leftwards" original-title="Bundle Report">
-                        <a href="/Home/BundleReport/" aria-label="Bundle Report" data-tip="Bundle Report" class="tooltip rightwards js-selected-navigation-item sunken-menu-item">
-                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report.png" width="16">
+                    <li id="copy_edit_tip" style="cursor: pointer" class="tooltipped leftwards" original-title="Copy/Edit Test Case">
+                        <a aria-label="Copy/Edit Test Case" data-tip="Copy/Edit Test Case" class="tooltip rightwards js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit.png" width="16">
                         </a>      </li>
 
-                    <li class="tooltipped leftwards" original-title="Test Type Status">
-                        <a href="/Home/TestTypeStatus/" aria-label="Test Type Status" data-tip="Test Type Status" class="tooltip rightwards js-selected-navigation-item sunken-menu-item">
-                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/status.png" width="16">
+                    <li id="history_tip" style="cursor: pointer" class="tooltipped leftwards" original-title="Test Case History">
+                        <a aria-label="Test Case History" data-tip="Test Case History " class="tooltip rightwards js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/history1.png" width="16">
+                        </a>      </li>
+
+                    <li id="organize_tip" style="cursor: pointer" class="tooltipped leftwards" original-title="View and Organize Test Cases">
+                        <a aria-label="View and Organize Test Cases" data-tip="View/Organize Test Cases" class="tooltip rightwards js-selected-navigation-item sunken-menu-item">
+                            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/manage4.png" width="16">
                         </a>      </li>
                 </ul>
 

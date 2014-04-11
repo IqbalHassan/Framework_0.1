@@ -171,7 +171,7 @@ urlpatterns = patterns('',
     #url(r'^Home/FeaDri/Process_FeatureDriver/$',Process_FeatureDriver),
     url(r'^Home/FeaDri/FeatureDriverOperation/$',FeatureDriverOperation),
     url(r'^Home/FeaDri/FeatureDriverDelete/$',FeatureDriverDelete),
-    url(r'^Home/.*/myview/$',myview), 
+    #url(r'^Home/.*/myview/$',myview), 
     
     
     
