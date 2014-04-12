@@ -578,6 +578,7 @@ $(document).ready(function() {
             var stepVerificationList=[];
             var stepTimeList=[];
             var finalArray=[];
+            var stepTypeList=[];
             for(var i=1;i<=step_num;i++){
                 if($('#searchbox'+i+'name').val()==""){
                     alert('Step Name for step Number#'+i+' can not be empty');
@@ -605,6 +606,7 @@ $(document).ready(function() {
                     else{
                         stepVerificationList.push('no');
                     }
+                    stepTypeList.push($('#searchbox'+i+'name').closest('tr').find('td:nth-child(8)').text());
                     /******************Convert into the seconds*******************/
                     var stringTime=$('#searchbox'+i+'time').val();
                     stepTimeList.push(convertToSeconds(stringTime));
@@ -778,59 +780,95 @@ $(document).ready(function() {
             /************************End DataFetching From the POP Up*********************************************/
             var query = indx != -1?"c":(indx2 != -1?"e":"o");
             console.log(query);
-            if(query == "c"){
-                $.get("Submit_New_TestCase/",{
-                    Section_Path:newSectionPath,
-                    Platform:platformList.join("|"),
-                    Manual_TC_Id:test_case_Id,
-                    TC_Name:title,
-                    TC_Creator:'Test',
-                    Associated_Bugs_List:defectId,
-                    Requirement_ID_List:required_Id,
-                    TC_Type:typeList.join("|"),
-                    Tag_List:tag.join("|"),
-                    Dependency_List:browserList.join("|"),
-                    Priority:priority,
-                    Steps_Data_List:stepDataSTR.join("|"),
-                    Steps_Name_List:stepNameList.join("|"),
-                    Steps_Description_List:stepDescriptionList.join("|"),
-                    Steps_Expected_List:stepExpectedList.join("|"),
-                    Steps_Verify_List:stepVerificationList.join("|"),
-                    Steps_Time_List:stepTimeList.join("|"),
-                    Status:"Dev"},function(data) {
-                    //alert(data);
-                    var location='/Home/ManageTestCases/Edit/'+data;
-                    window.location=location;
+            $.get("GetStepNameType/",
+                {},
+                function(data){
+                    //Check for the Signal that it's okay
+                    var alertFound=0;
+                    var found=0;
+                    for(var i=0;i<stepNameList.length;i++){
+                        //make temp array
+                        temp=[];
+                        temp.push(stepNameList[i]);
+                        temp.push(stepTypeList[i]);
+                        for(var j=0;j<data.length;j++){
+                            if(temp[0]==data[j][0] && temp[1]==data[j][1]){
+                                found=1;
+                                break;
+                            }
+                            else{
+                                found=0;
+                            }
+                        }
+                        if(!found){
+                            alert("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
+                            alertFound=1;
+                            return false;
+                        }
+                    }
+                    var dataValidationCheck=true;
+                    if(alertFound>0){
+                        dataValidationCheck=false;
+                    }
+                    if(query == "c" && dataValidationCheck){
+                        $.get("Submit_New_TestCase/",{
+                            Section_Path:newSectionPath,
+                            Platform:platformList.join("|"),
+                            Manual_TC_Id:test_case_Id,
+                            TC_Name:title,
+                            TC_Creator:'Test',
+                            Associated_Bugs_List:defectId,
+                            Requirement_ID_List:required_Id,
+                            TC_Type:typeList.join("|"),
+                            Tag_List:tag.join("|"),
+                            Dependency_List:browserList.join("|"),
+                            Priority:priority,
+                            Steps_Data_List:stepDataSTR.join("|"),
+                            Steps_Name_List:stepNameList.join("|"),
+                            Steps_Description_List:stepDescriptionList.join("|"),
+                            Steps_Expected_List:stepExpectedList.join("|"),
+                            Steps_Verify_List:stepVerificationList.join("|"),
+                            Steps_Time_List:stepTimeList.join("|"),
+                            Status:"Dev"},function(data) {
+                            //alert(data);
+                            var location='/Home/ManageTestCases/Edit/'+data;
+                            window.location=location;
+                        });
+                    }
+                    else if(query == "e" && dataValidationCheck){
+                        $.get("Edit_TestCase",{
+                                Section_Path:newSectionPath,
+                                TC_Id:_TC_Id,
+                                Platform:platformList.join("|"),
+                                Manual_TC_Id:test_case_Id,
+                                TC_Name:title,
+                                TC_Creator:'Test',
+                                Associated_Bugs_List:defectId,
+                                Requirement_ID_List:required_Id,
+                                Status:status,
+                                TC_Type:typeList.join("|"),
+                                Tag_List:tag.join("|"),
+                                Dependency_List:browserList.join("|"),
+                                Priority:priority,
+                                Steps_Data_List:stepDataSTR.join("|"),
+                                Steps_Name_List:stepNameList.join("|"),
+                                Steps_Description_List:stepDescriptionList.join("|"),
+                                Steps_Expected_List:stepExpectedList.join("|"),
+                                Steps_Verify_List:stepVerificationList.join("|"),
+                                Steps_Time_List:stepTimeList.join("|")
+                            },
+                            function(data) {
+                                //alert(data+" edited successfully");
+                                var location='/Home/ManageTestCases/Edit/'+data;
+                                window.location=location;
+                            });
+                    }
+                    else{
+                        alert("Wrong data in StepName,StepType");
+                        return false;
+                    }
                 });
-            }else if(query == "e"){
-                $.get("Edit_TestCase",{
-                        Section_Path:newSectionPath,
-                        TC_Id:_TC_Id,
-                        Platform:platformList.join("|"),
-                        Manual_TC_Id:test_case_Id,
-                        TC_Name:title,
-                        TC_Creator:'Test',
-                        Associated_Bugs_List:defectId,
-                        Requirement_ID_List:required_Id,
-                        Status:status,
-                        TC_Type:typeList.join("|"),
-                        Tag_List:tag.join("|"),
-                        Dependency_List:browserList.join("|"),
-                        Priority:priority,
-                        Steps_Data_List:stepDataSTR.join("|"),
-                        Steps_Name_List:stepNameList.join("|"),
-                        Steps_Description_List:stepDescriptionList.join("|"),
-                        Steps_Expected_List:stepExpectedList.join("|"),
-                        Steps_Verify_List:stepVerificationList.join("|"),
-                        Steps_Time_List:stepTimeList.join("|")
-                    },
-                    function(data) {
-                        //alert(data+" edited successfully");
-                        var location='/Home/ManageTestCases/Edit/'+data;
-                        window.location=location;
-                    });
-                }
-            });
+        });
     }
 });
 /**************************************Database Works**************************************************/
@@ -1399,291 +1437,6 @@ function vertical_sidebar(){
     });
 }
 /****************************End Minar's Thing****************************************************/
-/****************************Unused****************************************************/
-/*function dataArrayToString(array){
-    var tempString ="";
-
-    tempString += "["
-    for(var field in array){
-        tempString += "("
-
-        if($.isArray(array[field][1])){
-            tempString += array[field][0] + ","
-            tempString += "["
-            for(var address in array[field][1]){
-                tempString += "("
-                tempString += array[field][1][address].join(",")
-                tempString += ")"
-                if(address != array[field][1].length - 1)
-                    tempString += ", "
-            }
-            tempString += "]"
-        }else{
-            tempString += array[field].join(",")
-        }
-
-        tempString += ")"
-        if(field != array.length - 1)
-            tempString += ", "
-    }
-    tempString += "]"
-
-    return tempString
-}
-
-function addDataToStep(_this,value){
-    //Step index
-    var indx = $(_this).attr("id");
-
-    step_num_data_num[indx]++;
-
-    //Get type of fields
-    var stepName = $("#searchbox" + indx).val();
-    if(stepName.indexOf("Edit") == -1){
-        // single column field
-        $(_this).parent().append("	<fieldset class='searchbox"+indx+''+step_num_data_num[indx] + "data'>"+
-            "						<legend class='Text'><b>Data " + step_num_data_num[indx] + "</b></legend>"+
-            "<div >" +
-            "<textarea class='data' placeholder='Enter Data' style = 'position:relative; width:534px;height:100px;max-height: 150px;max-width: 534px;margin:5px;'/>" +
-            "</div>" +
-            "</fieldset>");
-        $(".searchbox"+indx+''+step_num_data_num[indx] + "data  textarea.data").val(dataArrayToString(value));
-    }else{
-        // double column field
-        $(_this).parent().append("	<fieldset class='searchbox"+indx+''+step_num_data_num[indx] + "data' >"+
-            "						<legend class='Text'><b>Data " + step_num_data_num[indx] + "</b></legend>"+
-            "<div style='position:relative; left:2px;'>"
-            + "<textarea class='dataEdit' data-id='edit' placeholder='From...' style = 'width:300px;height:100px;max-height: 200px;max-width: 300px;margin:5px;'/>"
-            + "<textarea class='dataEdit' data-id='edit' placeholder='To...' style = 'position:relative; width:300px;height:100px;max-height: 200px;max-width: 300px;margin:5px; 5px 5px 0'/>" +
-            "</div>"+
-            "</fieldset>");
-        $(".searchbox"+indx+''+step_num_data_num[indx] + "data  textarea:eq("+0+")").val(dataArrayToString(value[0]));
-        $(".searchbox"+indx+''+step_num_data_num[indx] + "data  textarea:eq("+1+")").val(dataArrayToString(value[1]));
-    }
-}
-
-function validate_data(str){
-    var patt1 = /\(|,|\)|\[|\]/g;
-
-    var format_error = false;
-    var error_location;
-    var list = str.match(patt1);
-    var temp = []
-
-    if(list === null){
-        return false;
-    }
-
-    for(var i = 0; i < list.length; i++){
-        if(list[i] == '(' || list[i] == ',' || list[i] == '['){
-            temp.unshift(list[i]);
-            continue;
-        }
-        if(list[i] == ')'){
-            if(temp[0] == ',' && temp[1] == '('){
-                temp.shift();
-                temp.shift();
-            }else{
-                format_error = true;
-                return false;
-            }
-            if(temp[0] == ','){
-                temp.shift();
-            }
-            continue;
-        }
-
-        if(list[i] == ']'){
-            if(temp[0] == '['){
-                temp.shift();
-            }else{
-                format_error = true;
-                return false;
-            }
-            continue;
-        }
-    }
-
-    return true;
-}
-
-function AddAutoCompleteSearchBox(WhereToPlaceId, Label, stepNumber) {
-    var visibility="";
-    if(indx!=-1 && URL.length<30){
-        visibility="none";
-    }
-    else{
-        visibility="block";
-    }
-    $(WhereToPlaceId).append(
-        "<form id='AutoSearchResult" + stepNumber + "' class='new_tc_form'>" +
-
-            "	<fieldset>"+
-            "		<legend class='Text'><b>" + Label + "</b></legend>"+
-            "		<input class='ui-corner-all stepbox ui-autocomplete-input' id='searchbox" + stepNumber + "' type='text'"+
-            "		title='Please Type Keyword and Click On that to add to query' name='searchboxname" + stepNumber + "' autocomplete='off'"+
-            "		aria-autocomplete='list' aria-haspopup='true'>" +
-
-            "<div id='searchbox"+stepNumber+"infotab' style='display:"+visibility+"'>"+
-            "<br><table  width='100%'>" +
-            "<tr width='100%'>" +
-            "<td width='20%' align='left'><img  class='Text' id='" + stepNumber + "step_desc' src='/site_media/info_button.jpg' style='background-color: transparent; width:20px; height:20px'/> </td>" +
-            "<td width='40%' align='left'><span class='Text'><b>Type:</b><span id='searchbox"+stepNumber+"step_type'></span></span></td>" +
-            "<td width='40%' align='right'><span style='color: darkslateblue'><b>Verification Point:</b></span><input type='checkbox' id='searchbox"+stepNumber+"verify' value='yes'/></td>" +
-            "</tr>" +
-            "</table><br>"+
-            "       <legend class='Text'><b style='color: #ff0000'>*</b><b>Description:</b></legend>" +
-            "       <textarea class='ui-corner-all  ui-autocomplete-input' id='searchbox" + stepNumber + "info' type='text'"+
-            "		title='Please type the purpose of the test step' rows=\"3\" cols=\"60\"  name='searchboxname" + stepNumber + "' autocomplete='off'"+
-            "		aria-autocomplete='list' aria-haspopup='true'></textarea>" +
-
-            "       <legend class='Text'><b style='color: #ff0000'>*</b><b>Expected:</b></legend>" +
-            "       <textarea class='ui-corner-all  ui-autocomplete-input' id='searchbox" + stepNumber + "expected' type='text'"+
-            "		title='Please type the purpose of the test step' rows=\"3\" cols=\"60\"name='searchboxname" + stepNumber + "' autocomplete='off'"+
-            "		aria-autocomplete='list' aria-haspopup='true'></textarea>" +
-            "       </div>"+
-
-            "		<div id='searchbox"+stepNumber+"data' style='display:none; text-align: right;margin:10px'>"+
-            "			<a class='Text'>Test Data </a>"+
-            "			<img class='add_test_data buttonCustom' id='" + stepNumber + "' src='/site_media/add_step.png' style='background-color: transparent; width:20px; height:20px'>"+
-            "			<img class='remove_test_data buttonCustom' id='" + stepNumber + "' src='/site_media/remove_step.png' style='background-color: transparent; width:20px; height:20px'>"+
-            "		</div>" +
-            "	</fieldset>"+
-            "</form>");
-
-    return "searchbox" + stepNumber;
-}
-
-function AddAutoCompleteToTag() {
-    $("#tag_txtbox").autocomplete({
-        source : function(request, response) {
-            $.ajax({
-                url : "AutoCompleteTagSearch/",
-                dataType : "json",
-                data : {
-                    term : request.term,
-                    Env : Env
-                },
-                success : function(data) {
-                    response(data);
-                }
-            });
-        },
-
-        // source : 'AutoCompleteTagSearch?Env = ' +Env,
-        select : function(event, ui) {
-
-            var value = ui.item[0].split("-");
-
-            if (value != "") {
-                AddToListTag(value);
-            }
-            return false;
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
-            .appendTo( ul );
-    };;
-    $("#tag_txtbox").keypress(function(event) {
-        if (event.which == 13) {
-            event.preventDefault();
-
-        }
-    });
-}
-
-function RunTestAutocompleteSearch(Env, step) {
-    auto_complete_list = [];
-    $(".stepbox").autocomplete({
-        // Calling AutoCompleteTestSearch function with 'term'(default)
-        // parameter and Env variable
-        // So AutoCompleteTestSearch function in View.py will receive
-        // two variable 'term' (this is the one when user type on search
-        // box) and Env variable.
-
-
-         * source : 'AutoCompleteTestStepSearch' ,
-         *
-         * extraParams: { Env: function() {return Env}, },
-
-
-        source : function(request, response) {
-            $.ajax({
-                url : "AutoCompleteTestStepSearch/",
-
-                dataType : "json",
-                data : {
-                    term : request.term
-                },
-                success : function(data) {
-                    //console.log(data);
-                    auto_complete_list = data;
-                    //console.log(auto_complete_list[3]);
-                    var just_names = []
-
-                    for(var i = 0; i < data.length; i++){
-                        just_names.push(auto_complete_list[i][0]+' - '+auto_complete_list[i][2]);
-                    }
-
-                    response(just_names);
-                }
-            });
-        },
-
-        // source : 'AutoCompleteTestStepSearch?Env = ' +Env,
-        select : function(event, ui) {
-
-            var values = ui.item.value.split(' -')
-            //console.log(values);
-            //console.log(this.id);//console.log('in select'+ui.item.value);
-            var value=values[0];
-            var step_type=values[1].trim();
-            var colour="";
-            if(step_type=="automated"){
-                colour="green";
-            }
-            if(step_type=="manual"){
-                colour="red";
-            }
-            if(step_type=="performance"){
-                colour="blue";
-            }
-            if (value != "") {
-                this.value = value;
-                for(var i = 0; i < auto_complete_list.length; i++){
-                    if(auto_complete_list[i][0] == value){
-                        //console.log(this.id);
-                        var position=this.id.indexOf("1");
-                        //console.log(position);
-                        var string=this.id.substring(position);
-                        //console.log(string);
-                        $("#" + this.id + "step_type").html("<b style='color:"+colour+"'>"+step_type+"</b>");
-                        // $("#" + this.id + "info").val(auto_complete_list[i][3]);
-                        $("#" + this.id + "infotab").fadeIn(500);
-                        if(auto_complete_list[i][1] === true){
-                            $("#" + this.id + "data").fadeIn(500);
-                        }
-                        else{
-                            $("#" + this.id + "data").fadeOut(500);
-                        }
-                    }
-                }
-
-            }
-            return false;
-        }
-    });
-
-    $(".stepbox").keypress(function(event) {
-        if (event.which == 13) {
-            event.preventDefault();
-
-        }
-    });
-}*/
-/****************************End Unused****************************************************/
 function DeleteSearchQueryText() {
     $(".delete").live("click", function() {
         $(this).parent().parent().remove();

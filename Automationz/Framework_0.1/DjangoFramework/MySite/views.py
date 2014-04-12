@@ -5755,3 +5755,11 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+def GetStepNameType(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            Conn=GetConnection()
+            query="select stepname,steptype from test_steps_list"
+            test_steps_list=DB.GetData(Conn, query, False)
+    result=simplejson.dumps(test_steps_list)
+    return HttpResponse(result,mimetype='appliction/json')
