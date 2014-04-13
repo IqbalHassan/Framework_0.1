@@ -10,6 +10,8 @@ $(document).ready(function(){
     make_bar_clickable('#progressRun');
     make_bar_clickable('#submittedRun');
     PaginationButton();
+
+    /*
     //Testers
     $.ajax({
         url:'GetTesters/',
@@ -91,6 +93,7 @@ $(document).ready(function(){
         }
     });*/
 
+    /*
     $("#searchInput").keyup(function () {
         //split the current value of searchInput
         var data = this.value.split(" ");
@@ -251,6 +254,7 @@ $(document).ready(function(){
             "color": "#C0C0C0"
         });
 
+    */
 
 });
 function PaginationButton(){

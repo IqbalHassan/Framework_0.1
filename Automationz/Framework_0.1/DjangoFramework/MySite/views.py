@@ -3758,7 +3758,7 @@ def ResultFilter(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
-        results = DB.GetData(Conn, "select distinct assigned_tester,run_type from test_run_env",False)
+        results = DB.GetData(Conn, "select distinct assigned_tester from test_run_env",False)
         #if len(results)>0:
             #results.append("*Dev")
     json=simplejson.dumps(results)
