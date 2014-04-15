@@ -448,15 +448,22 @@ function related_items(){
 
 function history(){
     var testcaseid=$("#testcaseid").text();
+    var testcasename=$("#testcasename").text();
     $("#show_history").click(function(){
+        $("#title").text(testcasename);
         PopulateResultDiv(testcaseid);
     });
 }
 
 function PopulateResultDiv(tc_id){
-    $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id},function(data){
+    $.get("Selected_TestCaseID_History",{Selected_TC_Analysis : tc_id},function(data){
         ResultTable(Resultdiv,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result");
         makeRunClickable();
+        $(".one-column-emphasis").each(function(){
+            $(this).css({
+                'textAlign':'left'
+            })
+        });
     });
 
 }

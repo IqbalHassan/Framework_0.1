@@ -146,6 +146,7 @@ urlpatterns = patterns('',
     url(r'^Home/Analysis/$', Analysis),
     url(r'^Home/.*/TestCaseSearch/$', TestCaseSearch),
     url(r'^Home/.*/Selected_TestCaseID_Analaysis/$', Selected_TestCaseID_Analaysis),
+    url(r'^Home/.*/Selected_TestCaseID_History/$', Selected_TestCaseID_History),
     
     #Execution Report Page
     url(r'^Home/ExecutionReport/$',ExecutionReport),
