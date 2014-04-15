@@ -2445,6 +2445,20 @@ def Selected_TestCaseID_Analaysis(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Selected_TestCaseID_History(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'Selected_TC_Analysis', '')
+
+    query="select run_id,status,failreason from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc"%UserData
+    TestCase_Analysis_Result = DB.GetData(Conn, query, False)
+    Col = ["Run ID", "Status", "Fail Reason"]
+
+    results = {'Heading':Col, 'TestCase_Analysis_Result':TestCase_Analysis_Result}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def ExecutionReport(request):
     templ = get_template('ExecutionReport.html')
     variables = Context({ })
