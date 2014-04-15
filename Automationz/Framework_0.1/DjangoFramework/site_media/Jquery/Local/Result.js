@@ -425,7 +425,7 @@ function make_clickable(divname){
     });
 }
 function make_bar_clickable(divname){
-    $(divname+' tr>td:nth-child(5)').each(function(){
+    $(divname+' tr>td:nth-child(6)').each(function(){
         $(this).css({
             'cursor':'pointer'
         });

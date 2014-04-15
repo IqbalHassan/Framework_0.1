@@ -102,7 +102,7 @@ def make_array(get_list):
         for eachitem in each:
             temp.append(eachitem)
         temp.pop()
-        temp.insert(4,"status")
+        temp.insert(5,"status")
         temp=tuple(temp)
         refined_list.append(temp)
     print refined_list
@@ -5772,7 +5772,7 @@ def GetResultAuto(request):
             term=request.GET.get(u'term','')
             Conn=GetConnection()
             #Fetching the tester_id
-            query="select distinct tester_id,'Tester' from test_run_env where tester_id Ilike '%%%s%%'"%term
+            query="select distinct tester_id,'Machine' from test_run_env where tester_id Ilike '%%%s%%'"%term
             testers=DB.GetData(Conn, query, False)
             for each in testers:
                 if each not in final:
@@ -5812,7 +5812,7 @@ def GetFilteredDataResult(request):
             condition=""
             for each in UserText:
                 temp=each.split(":")
-                if temp[1].strip()=="Tester":
+                if temp[1].strip()=="Machine":
                     condition+="tre.tester_id='%s'"%temp[0]
                 if temp[1].strip()=="Product Version":
                     condition+="tre.product_version='%s'"%temp[0]
@@ -5828,7 +5828,7 @@ def GetFilteredDataResult(request):
     return HttpResponse(result,mimetype='application/json')
 def NewResultFetch(condition):
     print condition
-    total_query="select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query="select * from ((select ter.run_id as run_id,tre.test_objective,tre.tester_id,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query+="from test_run_env tre, test_env_results ter " 
     total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
     if condition!="":
@@ -5836,7 +5836,7 @@ def NewResultFetch(condition):
         total_query+=condition
     total_query+=") "
     total_query+="union all "
-    total_query+="(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query+="(select ter.run_id as run_id,tre.test_objective,tre.tester_id,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query+="from test_run_env tre, test_env_results ter " 
     total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
     if condition!="":
@@ -5853,6 +5853,6 @@ def NewResultFetch(condition):
     print total_run
     all_status=make_status_array(total_run)
     #make Dict
-    Column=["Run ID","Objective","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
+    Column=["Run ID","Objective","Machine","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
     Dict={'total':total_run,'status':all_status,'column':Column}
     return Dict
