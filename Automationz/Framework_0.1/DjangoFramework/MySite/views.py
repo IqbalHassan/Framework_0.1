@@ -5763,3 +5763,96 @@ def GetStepNameType(request):
             test_steps_list=DB.GetData(Conn, query, False)
     result=simplejson.dumps(test_steps_list)
     return HttpResponse(result,mimetype='appliction/json')
+def Result(request):
+    return render_to_response('Result.html',{},context_instance=RequestContext(request))
+def GetResultAuto(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            final=[]
+            term=request.GET.get(u'term','')
+            Conn=GetConnection()
+            #Fetching the tester_id
+            query="select distinct tester_id,'Tester' from test_run_env where tester_id Ilike '%%%s%%'"%term
+            testers=DB.GetData(Conn, query, False)
+            for each in testers:
+                if each not in final:
+                    final.append(each)
+            #fetching the status
+            query="select distinct status,'Status' from test_run_env where status Ilike '%%%s%%'"%term
+            status=DB.GetData(Conn, query, False)
+            for each in status:
+                if each not in final:
+                    final.append(each)
+            ###Fetching the product version
+            query="select distinct product_version,'Product Version' from test_run_env where product_version Ilike '%%%s%%'"%term
+            products=DB.GetData(Conn, query, False)
+            for each in products:
+                if each not in final:
+                    final.append(each)
+            #Fetching the run_type
+            query="select distinct run_type,'Run Type' from test_run_env where run_type Ilike '%%%s%%'"%term
+            run_types=DB.GetData(Conn,query,False)
+            for each in run_types:
+                if each not in final:
+                    final.append(each)
+    result=simplejson.dumps(final)
+    return HttpResponse(result,mimetype='application/json')
+def GetFilteredDataResult(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            final=[]
+            UserText=request.GET.get(u'UserText','')
+            UserText=str(UserText)
+            UserText=UserText.split("\xa0")
+            for each in UserText:
+                if each=="":
+                    UserText.remove(each)
+            print UserText
+            #form query
+            condition=""
+            for each in UserText:
+                temp=each.split(":")
+                if temp[1].strip()=="Tester":
+                    condition+="tre.tester_id='%s'"%temp[0]
+                if temp[1].strip()=="Product Version":
+                    condition+="tre.product_version='%s'"%temp[0]
+                if temp[1].strip()=="Status":
+                    condition+="tre.status='%s'"%temp[0]
+                if temp[1].strip()=="Run Type":
+                    condition+="tre.run_type='%s'"%temp[0]
+                condition+=" and "
+            condition=condition[:-5].strip()
+            print condition
+            final=NewResultFetch(condition)
+    result=simplejson.dumps(final)
+    return HttpResponse(result,mimetype='application/json')
+def NewResultFetch(condition):
+    print condition
+    total_query="select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query+="from test_run_env tre, test_env_results ter " 
+    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
+    if condition!="":
+        total_query+=" and "
+        total_query+=condition
+    total_query+=") "
+    total_query+="union all "
+    total_query+="(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query+="from test_run_env tre, test_env_results ter " 
+    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
+    if condition!="":
+        total_query+=" and "
+        total_query+=condition
+    total_query+=")) as A order by starttime desc,run_id asc "
+    print total_query
+    get_list=DB.GetData(Conn,total_query,False)
+    refine_list=[]
+    for each in get_list:
+        if each not in refine_list:
+            refine_list.append(each)
+    total_run=make_array(refine_list)
+    print total_run
+    all_status=make_status_array(total_run)
+    #make Dict
+    Column=["Run ID","Objective","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
+    Dict={'total':total_run,'status':all_status,'column':Column}
+    return Dict
