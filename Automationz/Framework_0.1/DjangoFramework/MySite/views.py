@@ -5816,6 +5816,8 @@ def GetFilteredDataResult(request):
         if request.method=='GET':
             final=[]
             UserText=request.GET.get(u'UserText','')
+            currentPagination=request.GET.get(u'pagination','')
+            print currentPagination
             UserText=str(UserText)
             UserText=UserText.split("\xa0")
             for each in UserText:
@@ -5837,10 +5839,18 @@ def GetFilteredDataResult(request):
                 condition+=" and "
             condition=condition[:-5].strip()
             print condition
-            final=NewResultFetch(condition)
+            final=NewResultFetch(condition,currentPagination)
     result=simplejson.dumps(final)
     return HttpResponse(result,mimetype='application/json')
-def NewResultFetch(condition):
+def NewResultFetch(condition,currentPagination):
+    #pagination Code
+    step=10
+    limit=""
+    limit+=("limit "+str(step))
+    ###determine offset
+    offset=""
+    stepDelete=int(step)*int(int(currentPagination)-1)
+    offset+=("offset "+str(stepDelete))
     print condition
     total_query="select * from ((select ter.run_id as run_id,tre.test_objective,tre.tester_id,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query+="from test_run_env tre, test_env_results ter " 
@@ -5857,7 +5867,14 @@ def NewResultFetch(condition):
         total_query+=" and "
         total_query+=condition
     total_query+=")) as A order by starttime desc,run_id asc "
+    count_query=total_query
+    total_query+=(limit+" "+offset)
     print total_query
+    total_count=DB.GetData(Conn,count_query,False)
+    received_data=[]
+    for each in total_count:
+        if each not in received_data:
+            received_data.append(each)
     get_list=DB.GetData(Conn,total_query,False)
     refine_list=[]
     for each in get_list:
@@ -5868,5 +5885,5 @@ def NewResultFetch(condition):
     all_status=make_status_array(total_run)
     #make Dict
     Column=["Run ID","Objective","Machine","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
-    Dict={'total':total_run,'status':all_status,'column':Column}
+    Dict={'total':total_run,'status':all_status,'column':Column,'totalGet':len(received_data)}
     return Dict

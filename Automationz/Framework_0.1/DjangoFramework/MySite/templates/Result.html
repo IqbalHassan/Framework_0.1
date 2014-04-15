@@ -21,9 +21,10 @@
             <tr id="searchedFilter">
                 <th><b class="Text">Filtered By:</b></th>
             </tr>
+            <tr><td style="display: none;" id="pagination_no">1</td></tr>
         </table>
     </div>
-    <!--<table width="100%">
+    <table width="100%">
         <tr>
             <td>
                 <div style="float: left">
@@ -34,7 +35,7 @@
                 <div>
                     <div>
                         <div>
-                            <b style="font-size: 120%;">showing {{start}}-{{end}} entry of {{total_count}} entries</b>
+                            <b style="font-size: 120%;">showing <b id="start"></b> - <b id="end"></b>entry of <b id="total"></b> entries</b>
                         </div>
                         <div style="display: inline-block; float: right">
                             <input  type="button" class="minibutton previous_page" value="<"/>
@@ -44,7 +45,7 @@
                 </div>
             </td>
         </tr>
-    </table>-->
+    </table>
 
         <div align="center">
 
@@ -457,12 +458,12 @@
     <div id="result_table">
 
     </div>
-    <!--<div id="pagination_div" align="right">
+    <div id="pagination_div" align="right">
         <div style="display: inline-block">
             <input  type="button" class="minibutton previous_page" value="<"/>
             <input  type="button" class="minibutton next_page" value=">"/>
         </div>
-    </div>-->
+    </div>
 
     <div id="floatouter" width="100%" align="center">
         <div id="inner">
