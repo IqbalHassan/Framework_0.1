@@ -1,3 +1,4 @@
+var stepCount=10;
 $(document).ready(function(){
     AutoComplete();
     DeleteFilterData();
@@ -250,12 +251,13 @@ $(document).ready(function(){
 
 });
 function PerformSearch(){
+    var currentPagination=$('#pagination_no').text().trim();
     $('#searchedFilter').each(function(){
         var UserText = $(this).find("td").text();
         //UserText+='|';
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
         console.log(UserText);
-        $.get("GetFilteredDataResult",{UserText:UserText},function(data){
+        $.get("GetFilteredDataResult",{UserText:UserText,pagination:currentPagination},function(data){
             console.log(data);
             if(data['total'].length>0){
                 //make a table column
@@ -283,6 +285,9 @@ function PerformSearch(){
                 $('#allRun').html(message);
                 make_clickable('#allRun');
                 make_bar_clickable('#allRun');
+                $('#total').html(data['totalGet']);
+                $('#start').html((currentPagination-1)*stepCount+1);
+                $('#end').html((currentPagination)*stepCount);
             }
             else{
                 $('#allRun').html('<div align="center" style="margin-top: 20%"><b style="font-size: 200%;font-weight: bolder">No Data Available</b></div>');
@@ -362,7 +367,7 @@ function AutoComplete(){
 }
 function PaginationButton(){
     $('.previous_page').click(function(){
-        var url=window.location.pathname;
+        /*var url=window.location.pathname;
         index=url.split('/')[3].split('-')[1];
         if(index>1){
             index--;
@@ -372,10 +377,18 @@ function PaginationButton(){
         }
         var location='/Home/Results/Page-'+index+'/';
 
-        window.location=location;
+        window.location=location;*/
+        //get the current value
+        var index=$("#pagination_no").text().trim();
+        index=parseInt(index);
+        if(index>=2){
+            index--;
+        }
+        $('#pagination_no').text(index);
+        PerformSearch();
     });
     $('.next_page').click(function(){
-        var url=window.location.pathname;
+        /*var url=window.location.pathname;
         $.get("GetPageCount",{},function(data){
             console.log(data);
             index=url.split('/')[3].split('-')[1];
@@ -388,7 +401,16 @@ function PaginationButton(){
             var location='/Home/Results/Page-'+index+'/';
             window.location=location;
         });
-
+*/
+        var index=$('#pagination_no').text().trim();
+        index=parseInt(index);
+        var end=$('#end').text().trim();
+        var total_entry=$('#total').text().trim();
+        if (parseInt(end)<parseInt(total_entry)){
+            index++;
+        }
+        $('#pagination_no').text(index);
+        PerformSearch();
     });
 }
 function make_clickable(divname){

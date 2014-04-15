@@ -669,7 +669,7 @@ $(document).ready(function() {
                 /***********************Step Data Processing Here ********************************/
                 else{
                     for(var j=1;j<=stepData.length;j++){
-                        if($('#searchbox'+j+'data_table').attr('data-id')=='edit'){
+                        if($('#searchbox'+i+'data_table').attr('data-id')=='edit'){
                             var currentDataSet=stepData[j-1];
                             var edit_data=[]
                             for(var k=0;k<currentDataSet.length;k++){
