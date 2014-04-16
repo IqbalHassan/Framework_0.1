@@ -287,10 +287,19 @@ function PerformSearch(){
                 make_bar_clickable('#allRun');
                 $('#total').html(data['totalGet']);
                 $('#start').html((currentPagination-1)*stepCount+1);
-                $('#end').html((currentPagination)*stepCount);
+                if(parseInt((currentPagination)*stepCount)>parseInt(data['totalGet'])){
+                    $('#end').html(data['totalGet']);
+                }
+                else{
+                    $('#end').html((currentPagination)*stepCount);
+                }
+                $('#pagination_div').css({'display':'block'});
+                $('#UpperDiv').css({'display':'block'});
             }
             else{
                 $('#allRun').html('<div align="center" style="margin-top: 20%"><b style="font-size: 200%;font-weight: bolder">No Data Available</b></div>');
+                $('#pagination_div').css({'display':'none'});
+                $('#UpperDiv').css({'display':'none'});
             }
         });
     });
@@ -355,6 +364,7 @@ function AutoComplete(){
             if(value!=""){
                 $('#searchedFilter').append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>' +
                     '<td class="Text"><b>'+value+':<b style="display: none;">'+ui.item[1].trim()+'</b>&nbsp;</b></td>');
+                $('#pagination_no').text(1);
                 PerformSearch();
             }
         }
@@ -447,7 +457,7 @@ function make_clickable(divname){
     });
 }
 function make_bar_clickable(divname){
-    $(divname+' tr>td:nth-child(6)').each(function(){
+    $(divname+' tr>td:nth-child(5)').each(function(){
         $(this).css({
             'cursor':'pointer'
         });
