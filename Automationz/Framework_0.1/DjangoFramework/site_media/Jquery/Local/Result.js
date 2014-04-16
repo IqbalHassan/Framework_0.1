@@ -518,6 +518,65 @@ function make_bar_clickable(divname){
                     }
                 });
         });
+
+        $(this).live('mouseover',function(){
+
+            //$("#inner").append('<a id="show_chart" class="button primary">Show Graph</a>');
+
+            var RunID=$(this).closest('tr').find('td:first-child').text().trim();
+            $.get("chartDraw",
+                {
+                    runid:RunID
+                },
+                function(data){
+                    console.log(data);
+                    /***************pie chart***********************/
+                    google.load("visualization", "1", {packages:["corechart"], callback:drawChart});
+
+                    function drawChart() {
+                        var piedata = google.visualization.arrayToDataTable([
+                            ['Run Status', 'Total Case Number'],
+                            ['Passed ('+data[1]+')',     data[1]],
+                            ['Failed ('+data[2]+')',      data[2]],
+                            ['Blocked ('+data[3]+')',  data[3]],
+                            ['In-Progress ('+data[4]+')', data[4]],
+                            ['Submitted ('+data[5]+')',  data[5]],
+                            ['Skipped ('+data[6]+')', data[6]]
+                        ]);
+                        var options = {
+                            title:'Run-ID: '+RunID,
+                            // width: 500,
+                            height: 500,
+                            fontSize: 13,
+                            titleTextStyle:{fontSize:19, color: '#4183c4', fontName:'Helvetica Neue, Helvetica, Arial, sans-serif'},
+                            legend:{ textStyle: {fontSize: 17}},
+                            colors:['#65bd10','#FD0006','#FF9e00','blue','grey','#88a388']
+                        };
+                        var chart = new google.visualization.PieChart(document.getElementById('chart'));
+                        chart.draw(piedata, options);
+                        $("#inner").dialog({
+                            buttons : {
+                                "OK" : function() {
+                                    $(this).dialog("close");
+                                }
+                            },
+
+                            show : {
+                                effect : 'drop',
+                                direction : "up"
+                            },
+
+                            modal : true,
+                            width : 700,
+                            height : 650,
+                            align:'center',
+                            title:"Summary"
+
+                        });
+                    }
+                });
+        });
+
     });
 }
 function DeleteFilterData(){
