@@ -102,12 +102,12 @@ def make_array(get_list):
         for eachitem in each:
             temp.append(eachitem)
         temp.pop()
-        temp.insert(5,"status")
+        temp.insert(4,"status")
         temp=tuple(temp)
         refined_list.append(temp)
     print refined_list
     return refined_list        
-def make_status_array(refined_list):
+def make_status_array(Conn,refined_list):
     pass_list=[]
     for each in refined_list:
         #print each
@@ -120,7 +120,7 @@ def make_status_array(refined_list):
         progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
         notrun_query="select count(*) from test_case_results where run_id='%s' and status='Submitted'" %run_id
         skipped_query="select count(*) from test_case_results where run_id='%s' and status='Skipped'" %run_id
-        Conn=GetConnection()
+        #Conn=GetConnection()
         total=DB.GetData(Conn,total_query)
         passed=DB.GetData(Conn,pass_query)
         failed=DB.GetData(Conn,fail_query)
@@ -141,7 +141,7 @@ def make_status_array(refined_list):
         temp.append(submitted)
         temp.append(pending)
         temp=tuple(temp)
-        Conn.close()    
+        #Conn.close()    
         pass_list.append(temp)
     print pass_list
     return pass_list
@@ -172,7 +172,7 @@ def ResultTableFetch(index):
             refine_list.append(each)
     total_run=make_array(refine_list)
     print total_run
-    all_status=make_status_array(total_run)
+    all_status=make_status_array(Conn,total_run)
     dataCount=DB.GetData(Conn,count_query,False)
     data={
           'total':total_run,
@@ -5785,12 +5785,6 @@ def GetResultAuto(request):
             final=[]
             term=request.GET.get(u'term','')
             Conn=GetConnection()
-            #Fetching the tester_id
-            query="select distinct tester_id,'Machine' from test_run_env where tester_id Ilike '%%%s%%'"%term
-            testers=DB.GetData(Conn, query, False)
-            for each in testers:
-                if each not in final:
-                    final.append(each)
             #fetching the status
             query="select distinct status,'Status' from test_run_env where status Ilike '%%%s%%'"%term
             status=DB.GetData(Conn, query, False)
@@ -5809,6 +5803,37 @@ def GetResultAuto(request):
             for each in run_types:
                 if each not in final:
                     final.append(each)
+            #Fetching the distinct User From the Test Run Env
+            query="select assigned_tester from test_run_env"
+            Testers=DB.GetData(Conn,query,False)
+            tester=[]
+            for each in Testers:
+                print each
+                for eachitem in each:
+                    if eachitem is not None:
+                        if "," not in eachitem:
+                            if (term in eachitem or str(term).upper() in eachitem or str(term).lower() in eachitem) and eachitem not in tester:
+                                tester.append(eachitem)
+                        else:
+                            for eachitemdivide in eachitem.split(","):
+                                if (term in eachitemdivide.strip() or str(term).upper() in eachitemdivide.strip() or str(term).lower() in eachitemdivide.strip()) and eachitemdivide.strip() not in tester:
+                                    tester.append(eachitemdivide.strip())
+            print tester
+            for each in tester:
+                if (term in each or str(term).upper() in each or str(term).lower() in each) and (each,'Tester') not in final:
+                    final.append((each,'Tester'))
+            #Fetch the objectives
+            query="select distinct ter.rundescription,'Objective' from test_env_results ter,test_run_env tre where tre.run_id=ter.run_id and ter.rundescription Ilike '%%%s%%'"%term
+            objectives=DB.GetData(Conn,query,False)
+            for each in objectives:
+                if each not in final:
+                    final.append(each)
+            #Fetch the milestones
+            query="select distinct test_milestone,'Milestone' from test_run_env where test_milestone Ilike '%%%s%%'"%term
+            milestone=DB.GetData(Conn,query,False)
+            for each in milestone:
+                if each not in final:
+                    final.append(each)
     result=simplejson.dumps(final)
     return HttpResponse(result,mimetype='application/json')
 def GetFilteredDataResult(request):
@@ -5818,7 +5843,7 @@ def GetFilteredDataResult(request):
             UserText=request.GET.get(u'UserText','')
             currentPagination=request.GET.get(u'pagination','')
             print currentPagination
-            UserText=str(UserText)
+            # UserText=str(UserText)
             UserText=UserText.split("\xa0")
             for each in UserText:
                 if each=="":
@@ -5828,14 +5853,18 @@ def GetFilteredDataResult(request):
             condition=""
             for each in UserText:
                 temp=each.split(":")
-                if temp[1].strip()=="Machine":
-                    condition+="tre.tester_id='%s'"%temp[0]
                 if temp[1].strip()=="Product Version":
                     condition+="tre.product_version='%s'"%temp[0]
                 if temp[1].strip()=="Status":
                     condition+="tre.status='%s'"%temp[0]
                 if temp[1].strip()=="Run Type":
                     condition+="tre.run_type='%s'"%temp[0]
+                if temp[1].strip()=="Tester":
+                    condition+="tre.assigned_tester Ilike '%%%s%%'"%temp[0]
+                if temp[1].strip()=="Milestone":
+                    condition+="tre.test_milestone='%s'"%temp[0]
+                if temp[1].strip()=="Objective":
+                    condition+="ter.rundescription='%s'"%temp[0]
                 condition+=" and "
             condition=condition[:-5].strip()
             print condition
@@ -5852,7 +5881,7 @@ def NewResultFetch(condition,currentPagination):
     stepDelete=int(step)*int(int(currentPagination)-1)
     offset+=("offset "+str(stepDelete))
     print condition
-    total_query="select * from ((select ter.run_id as run_id,tre.test_objective,tre.tester_id,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query="select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query+="from test_run_env tre, test_env_results ter " 
     total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
     if condition!="":
@@ -5860,7 +5889,7 @@ def NewResultFetch(condition,currentPagination):
         total_query+=condition
     total_query+=") "
     total_query+="union all "
-    total_query+="(select ter.run_id as run_id,tre.test_objective,tre.tester_id,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query+="(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query+="from test_run_env tre, test_env_results ter " 
     total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
     if condition!="":
@@ -5882,8 +5911,8 @@ def NewResultFetch(condition,currentPagination):
             refine_list.append(each)
     total_run=make_array(refine_list)
     print total_run
-    all_status=make_status_array(total_run)
+    all_status=make_status_array(Conn,total_run)
     #make Dict
-    Column=["Run ID","Objective","Machine","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
+    Column=["Run ID","Objective","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
     Dict={'total':total_run,'status':all_status,'column':Column,'totalGet':len(received_data)}
     return Dict
