@@ -5921,6 +5921,7 @@ def RunID_New(request):
     if request.is_ajax():
         if request.method=='GET':
             run_id=request.GET.get(u'run_id','')
+            run_id=run_id.replace("%3A",":")
             index=request.GET.get(u'pagination','')
             runData=GetData(run_id,index)
             Col = ['ID', 'Title','Type', 'Status', 'Duration', 'Estd. Time','Comment', 'Log', 'Automation ID']

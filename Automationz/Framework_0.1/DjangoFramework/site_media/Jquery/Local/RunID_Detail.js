@@ -48,6 +48,7 @@ function PaginationButton(){
     });
 }
 function GetAllData(){
+    //var pathname=$('#run_id').text().trim();
     var pathname=window.location.pathname;
     pathname=pathname.split("/");
     pathname=pathname[3].trim();
