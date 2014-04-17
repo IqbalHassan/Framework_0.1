@@ -1,6 +1,9 @@
+var stepCount=5;
 $(document).ready(function(){
     RESPONSIVEUI.responsiveTabs();
-    LoadAllTestCases("AllTestCasesTable");
+    GetAllData();
+    PaginationButton();
+    /*LoadAllTestCases("AllTestCasesTable");
     connectLogFile("AllTestCasesTable");
     LoadAllTestCases("PassTestCasesTable");
     connectLogFile("PassTestCasesTable");
@@ -9,7 +12,7 @@ $(document).ready(function(){
     LoadAllTestCases("SubmittedTestCasesTable");
     connectLogFile("SubmittedTestCasesTable");
     //buttonPreparation();
-    When_Clicking_On_CommonFailedTestStep()
+    When_Clicking_On_CommonFailedTestStep()*/
     var RunID=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
     $('#run_id').text(RunID.trim());
     //drawChart(RunID);
@@ -22,6 +25,74 @@ $(document).ready(function(){
     });
     ReRunTab();
 });
+function PaginationButton(){
+    $('.previous_page').click(function(){
+        var index=$("#runpagination_no").text().trim();
+        index=parseInt(index);
+        if(index>=2){
+            index--;
+        }
+        $('#runpagination_no').text(index);
+        GetAllData();
+    });
+    $('.next_page').click(function(){
+        var index=$('#runpagination_no').text().trim();
+        index=parseInt(index);
+        var end=$('#end').text().trim();
+        var total_entry=$('#total').text().trim();
+        if (parseInt(end)<parseInt(total_entry)){
+            index++;
+        }
+        $('#runpagination_no').text(index);
+        GetAllData();
+    });
+}
+function GetAllData(){
+    var pathname=window.location.pathname;
+    pathname=pathname.split("/");
+    pathname=pathname[3].trim();
+    var currentPagination=$('#runpagination_no').text().trim()
+    $.get("RunID_New",{run_id:pathname.trim(),pagination:currentPagination},function(data){
+        //alert(data);
+        if(data['runData'].length>0){
+            var message=makeTable(data['runData'],data['runCol']);
+            $('#allData').html(message);
+            $('#total').text(data['total']);
+            $('#start').html((currentPagination-1)*stepCount+1);
+            if(parseInt((currentPagination)*stepCount)>parseInt(data['total'])){
+                $('#end').html(data['total']);
+            }
+            else{
+                $('#end').html((currentPagination)*stepCount);
+            }
+            $('#UpperDiv').css({'display':'block'});
+            LoadAllTestCases("allData");
+            connectLogFile("allData");
+        }
+        else{
+            $('#allData').html('<div align="center" style="margin-top: 20%"><b style="font-size: 200%;font-weight: bolder">No Data Available</b></div>');
+        }
+
+    });
+}
+function makeTable(data,col){
+    var message="";
+    message+='<table class="one-column-emphasis">';
+    message+='<tr>';
+    for(var i=0;i<col.length;i++){
+        message+='<th align="left">'+col[i]+'</th>';
+    }
+    message+='</tr>';
+    for(var i=0;i<data.length;i++){
+        message+='<tr>';
+        for(var j=0;j<data[i].length;j++){
+            message+='<td>'+data[i][j]+'</td>';
+        }
+        message+='</tr>';
+    }
+    message+='</table>';
+    return message;
+}
 function MakingReRunClickable(){
     $('#rerun tr>td:nth-child(3)').each(function(){
         $(this).css({
@@ -60,43 +131,6 @@ function MakingReRunClickable(){
     });
 }
 function ReRunTab(){
-    /*$('.filter-item').click(function(){
-     $('.filter-item').removeClass('selected');
-     $(this).addClass('selected');
-     $.get('ReRun',{
-     status:$(this).attr('data-id').trim(),
-     RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim()
-     },function(data){
-     var column=data['col'];
-     var data_list=data['list'];
-     if(data_list.length==0){
-     $('#rerun').css({'marginTop':'20%'});
-     $('#rerun').html('<b style="color:#ccc;font-size:400%;font-weight:bolder;">No Test Cases</b>');
-     $('#additional_data').fadeOut(100);
-     }
-     else{
-     var message="";
-     message+='<table class="one-column-emphasis"><tr><th>Select</th>';
-     for(var i=0;i<column.length;i++){
-     message+='<th>'+column[i]+'</th>';
-     }
-     message+='</tr>';
-     for(var i=0;i<data_list.length;i++){
-     message+='<tr><td><input type="checkbox" name="checklist" value="'+data_list[i][0]+'"/></td>';
-     for(var j=0;j<data_list[i].length;j++){
-     message+='<td>'+data_list[i][j]+'</td>';
-     }
-     message+='</tr>';
-     }
-     message+='</table>';
-     $('#rerun').css({'marginTop':'0%'});
-     $('#rerun').html(message);
-     MakingReRunClickable();
-     $('input[name="checklist"]').attr('checked','true');
-     $('#additional_data').fadeIn(500);
-     }
-     });
-     });*/
     $('.rerunTab').click(function(){
         $(this).toggleClass('down');
         //Making the status known to all

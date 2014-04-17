@@ -1062,7 +1062,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     Env_Details_Data.append(temp)
     print Env_Details_Data
     #####################################
-    AllTestCases1 = DB.GetData(Conn, "(select "
+    """ AllTestCases1 = DB.GetData(Conn, "(select "
                                             "tc.tc_id as MKSId, "
                                             "tc.tc_name, "
                                             "tr.status, "
@@ -1143,7 +1143,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
         L.append("%s (%s)" % (failstep, Count))
         FailsStepsWithCount.append(L)
 
-    failsteps_Col = ["Step Name"]
+    failsteps_Col = ["Step Name"]"""
     ReRunColumn=['Test Case ID','Test Case Name','Type','Status']
     query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and tcr.run_id='%s'"%RunId
     ReRunList=DB.GetData(Conn,query,False)
@@ -1152,7 +1152,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
              'Env_Details_Col':Env_Details_Col,
              'Env_Details_Data':Env_Details_Data,
              'Env_length':len(Env_Details_Data),
-             'Column':Col,
+             """'Column':Col,
              'AllTestCases':AllTestCases,
              'All_length':len(AllTestCases),
              'Pass_length':len(Pass_TestCases),
@@ -1163,7 +1163,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
              'submitted_length':len(Submitted_TestCases),
              'failsteps':FailsStepsWithCount,
              'failsteps_col':failsteps_Col,
-             'fail_length':len(FailsStepsWithCount),
+             'fail_length':len(FailsStepsWithCount),"""
              'rerun_col':ReRunColumn,
              'rerun_list':ReRun
              }
@@ -5916,3 +5916,51 @@ def NewResultFetch(condition,currentPagination):
     Column=["Run ID","Objective","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
     Dict={'total':total_run,'status':all_status,'column':Column,'totalGet':len(received_data)}
     return Dict
+def RunID_New(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            run_id=request.GET.get(u'run_id','')
+            index=request.GET.get(u'pagination','')
+            runData=GetData(run_id,index)
+            Col = ['ID', 'Title','Type', 'Status', 'Duration', 'Estd. Time','Comment', 'Log', 'Automation ID']
+            runDetail={'runData':runData['allData'],'runCol':Col,'total':runData['count']}
+    result=simplejson.dumps(runDetail)
+    return HttpResponse(result,mimetype='application/json')
+def GetData(run_id,index):
+    step=5
+    limit=("limit "+str(step))
+    #offset
+    offset=""
+    offset+=("offset "+str((int(index)-1)*int(step)))
+    condition= limit +" "+ offset
+    print condition
+    #form the query
+    query=""
+    query+="select * from ("
+    query+="(select "
+    query+="tc.tc_id as MKSId, "
+    query+="tc.tc_name, "
+    query+="tr.status, "
+    query+="to_char(tr.duration,'HH24:MI:SS'), "
+    query+="tr.failreason, "
+    query+="tr.logid, "
+    query+="tc.tc_id "
+    query+="from test_case_results tr, test_cases tc, test_case_tag tct "
+    query+="where tr.run_id = '%s' and "%run_id
+    query+="tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id) "
+    query+="union all "
+    query+="(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
+    query+="from test_run tr,test_cases tc, test_case_tag tct "
+    query+="where tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "%run_id
+    query+="tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )) AS A" %run_id
+    count_query=query
+    query+=" %s"%condition
+    print query
+    Conn=GetConnection()
+    runData=DB.GetData(Conn,query,False)
+    print runData
+    AllTestCases=Modify(runData)
+    AllTestCases=AddEstimatedTime(AllTestCases)
+    DataCount=DB.GetData(Conn,count_query,False)
+    DataReturn={'allData':AllTestCases,'count':len(DataCount)}
+    return DataReturn
