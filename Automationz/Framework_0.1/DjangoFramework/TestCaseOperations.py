@@ -395,7 +395,7 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Ta
         if Status=="Forced":
             Tag_List.append(('Status', 'Ready'))
     elif Platform.lower() == 'mac':
-        Tag_List.append(('Mac', 'machine_os'))
+        Tag_List.append(('MAC', 'machine_os'))
         Section_Tag = 'MacSection'
         Custom_Tag = 'MacCustomTag'
         Section_Path_Tag = 'mac_section_id'

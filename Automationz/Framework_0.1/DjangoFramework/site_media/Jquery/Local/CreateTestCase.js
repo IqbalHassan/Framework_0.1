@@ -500,6 +500,10 @@ $(document).ready(function() {
                 alert("Test Type is not defined correctly");
                 return false;
             }
+            if($('#tag_txtbox').val()!=""){
+                alert("Tag Field must be empty as you have to select from the suggestion provided");
+                return false;
+            }
             var row_count=$('#steps_table tr').length;
             for(var i=0;i<row_count;i++){
                 if($('#searchbox'+(i+1)+'data').html()==""){
@@ -791,8 +795,8 @@ $(document).ready(function() {
                         temp=[];
                         temp.push(stepNameList[i]);
                         temp.push(stepTypeList[i]);
-                        for(var j=0;j<data.length;j++){
-                            if(temp[0]==data[j][0] && temp[1]==data[j][1]){
+                        for(var j=0;j<data['test_steps'].length;j++){
+                            if(temp[0]==data['test_steps'][j][0] && temp[1]==data['test_steps'][j][1]){
                                 found=1;
                                 break;
                             }
@@ -806,9 +810,36 @@ $(document).ready(function() {
                             return false;
                         }
                     }
+                    if(tag.length>0){
+                        var tag_alert=0;
+                        var tag_found=0;
+                        for(var i=0;i<tag.length;i++){
+                            for(var j=0;j<data['tag_list'].length;j++){
+                                if(tag[i].trim()==data['tag_list'][j][0].trim()){
+                                    tag_found=1;
+                                    break;
+                                }
+                                else{
+                                    tag_found=0;
+                                }
+                            }
+                            if(!tag_found){
+                                alert("Tag Name Not present in the Database");
+                                tag_alert=1;
+                                return false;
+                            }
+                        }
+                    }
                     var dataValidationCheck=true;
-                    if(alertFound>0){
-                        dataValidationCheck=false;
+                    if(tag.length>0){
+                        if(alertFound>0 || tag_alert>0){
+                            dataValidationCheck=false;
+                        }
+                    }
+                    else{
+                        if(alertFound>0){
+                            dataValidationCheck=false;
+                        }
                     }
                     if(query == "c" && dataValidationCheck){
                         $.get("Submit_New_TestCase/",{

@@ -5775,7 +5775,10 @@ def GetStepNameType(request):
             Conn=GetConnection()
             query="select stepname,steptype from test_steps_list"
             test_steps_list=DB.GetData(Conn, query, False)
-    result=simplejson.dumps(test_steps_list)
+            query="select distinct value from config_values where type='tag'"
+            tag_list=DB.GetData(Conn,query,False)
+            Dict={'test_steps':test_steps_list,'tag_list':tag_list}
+    result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='appliction/json')
 def Result(request):
     return render_to_response('Result.html',{},context_instance=RequestContext(request))
