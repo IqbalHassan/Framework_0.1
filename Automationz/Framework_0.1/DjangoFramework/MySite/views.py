@@ -5844,7 +5844,8 @@ def GetFilteredDataResult(request):
             currentPagination=request.GET.get(u'pagination','')
             print currentPagination
             # UserText=str(UserText)
-            UserText=UserText.split("\xa0")
+            UserText=UserText.replace(u'\xa0',u'|')
+            UserText=UserText.split('|')
             for each in UserText:
                 if each=="":
                     UserText.remove(each)

@@ -145,7 +145,7 @@ $(document).ready(function() {
             });
         });
         /*****************estd time picker************************
-        $('.est_time_img').live('click',function(){
+         $('.est_time_img').live('click',function(){
             //var id=$(this).closest('tr').find('td:nth-child(9)').text().trim();
             var id = '';
             id += '<table><tr>' +
@@ -171,7 +171,7 @@ $(document).ready(function() {
                 title: "Data: Step Estimated Time"
             });
         });
-        /**************************************************/
+         /**************************************************/
 
         /********************DataPopUP Function End********************************************/
         $("input[name=platform]").change(function () {
@@ -234,251 +234,251 @@ $(document).ready(function() {
         DeleteSearchQueryText();
         if(indx2 != -1 || template){
             $.get("TestCase_EditData",
-            {
-                TC_Id : URL.substring(URL.lastIndexOf("/")+1,URL.length)
-            },
-            function(data){
-                console.log(data);
-                /******************Properties tab Data*******************************/
-                //Status
-                var status=data['Status'];
-                console.log(status);
-                if(status=="Ready"){
-                    $('a[value="Production"]').addClass('selected');
-                }
-                if(status=="Dev"){
-                    $('a[value="Development"]').addClass('selected');
-                }
-                if(status=="Forced"){
-                    $('a[value="Forced-Manual"]').addClass('selected');
-                }
-                //TagList
-                var tag_list=data['Tags List'];
-                if(tag_list.length!=0){
-                    for(var i=0;i<tag_list.length;i++){
-                        console.log(tag_list);
-                        if(tag_list[i]!=""){
-                            AddToListTag(tag_list[i]);
-                        }
+                {
+                    TC_Id : URL.substring(URL.lastIndexOf("/")+1,URL.length)
+                },
+                function(data){
+                    console.log(data);
+                    /******************Properties tab Data*******************************/
+                    //Status
+                    var status=data['Status'];
+                    console.log(status);
+                    if(status=="Ready"){
+                        $('a[value="Production"]').addClass('selected');
                     }
-                }
-                //SectionPath
-                var sections=data['Section_Path'];
-                var sectionArray = sections.split('.');
-                var dataId ="";
-                var handlerString = "";
-                for(var index in sectionArray){
-                    if(sectionArray[index] == "")
-                        continue;
-                    $.ajax({
-                        url:'GetSections/',
-                        dataType : "json",
-                        data : {
-                            section : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_')
-                        },
-                        success: function( json ) {
-                            if(json.length != 1){
-                                var realItemIndex = parseInt(json[0][0])
-                                var handlerString = ""
-                                for(var i = 0; i < realItemIndex; i++)
-                                    handlerString+=sectionArray[i]+'.'
-
-                                if(realItemIndex == 0){
-                                    $(".section[data-level='']").find('option').each(function(){$(this).remove();});
-                                    $(".section[data-level='']").append("<option>Choose...</option>");
-
-                                    for(var i = 0; i < json.length; i++)
-                                        json[i] = json[i][0].replace(/_/g,' ')
-                                    $.each(json, function(i, value) {
-                                        if(i == 0)return;
-                                        $(".section[data-level='']").append($('<option>').text(value).attr('value', value));
-                                    });
-                                    $(".section[data-level='']").val(sectionArray[realItemIndex].replace(/_/g,' '))
-                                }else{
-                                    var tag = jQuery('<select/>',{
-                                        'class':'section',
-                                        'data-level':handlerString,
-                                        'id':realItemIndex+1,
-                                        change: function(){
-                                            isAtLowestSection = false;
-                                            recursivelyAddSection(this);
-                                            $("#section-flag").removeClass("filled");
-                                            $("#section-flag").addClass("unfilled");
-                                        }
-                                    })
-                                    if($('#sectiongroup select[id='+realItemIndex+']').length != 0)
-                                        $('#sectiongroup select[id='+realItemIndex+']').after(tag)
-                                    else
-                                        $('#sectiongroup select[id=1]').after(tag)
-
-                                    $(".section[data-level='"+handlerString+"']").append("<option>Choose...</option>");
-
-                                    var once = true;
-                                    for(var i = 0; i < json.length; i++)
-                                        json[i] = json[i][0].replace(/_/g,' ')
-                                    $.each(json, function(i, value) {
-                                        if(i == 0)return;
-                                        if(once){
-                                            lowest_section+=1
-                                            once = false
-                                        }
-                                        $(".section[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
-                                    });
-                                    $(".section[data-level='"+handlerString+"']").val(sectionArray[realItemIndex].replace(/_/g,' '))
-                                }
-                                isAtLowestSection = true;
-                                $("#section-flag").removeClass("unfilled");
-                                $("#section-flag").addClass("filled");
+                    if(status=="Dev"){
+                        $('a[value="Development"]').addClass('selected');
+                    }
+                    if(status=="Forced"){
+                        $('a[value="Forced-Manual"]').addClass('selected');
+                    }
+                    //TagList
+                    var tag_list=data['Tags List'];
+                    if(tag_list.length!=0){
+                        for(var i=0;i<tag_list.length;i++){
+                            console.log(tag_list);
+                            if(tag_list[i]!=""){
+                                AddToListTag(tag_list[i]);
                             }
                         }
-                    });
-
-                    dataId += sectionArray[index] + '.'
-                }
-                //Priority
-                var priority=data['Priority'];
-                $("#priotiy_select").val(parseInt(priority.substring(1,2)));
-                /*************** End Properties tab Data*******************************/
-                /****************************Parameters Tab*****************************/
-                //Select Platform
-                var platform=data['Platform'];
-                console.log(platform);
-                for(var i=0;i<platform.length;i++){
-                    $('input[name="platform"]').each(function(){
-                        if($(this).val()==platform[i]){
-                            $(this).attr('checked','true');
-                        }
-                    });
-                }
-                if($('input[name="platform"]:checked').length>0){
-                    $("#platform-flag").removeClass("unfilled");
-                    $("#platform-flag").addClass("filled");
-                }
-                else{
-                    $("#platform-flag").removeClass("filled");
-                    $("#platform-flag").addClass("unfilled");
-                }
-                //Select Browsers/Dependency
-                var dependency=data['Dependency List'];
-                for(var i=0;i<dependency.length;i++){
-                    $('input[name="dependancy"]').each(function(){
-                        if($(this).val()==dependency[i]){
-                            $(this).attr('checked','true');
-                        }
-                    })
-                };
-                if($('input[name="dependancy"]:checked').length>0){
-                    $("#browser-flag").removeClass("unfilled");
-                    $("#browser-flag").addClass("filled");
-                }
-                else{
-                    $("#browser-flag").removeClass("filled");
-                    $("#browser-flag").addClass("unfilled");
-                }
-                //Type Select
-                var tc_type=data['TC Type'];
-                for(var i=0;i<tc_type.length;i++){
-                    $('input[name="type"]').each(function(){
-                        if($(this).val()==tc_type[i]){
-                            $(this).attr('checked','true');
-                        }
-                    })
-                };
-                if($('input[name="type"]:checked').length>0){
-                    $("#type-flag").removeClass("unfilled");
-                    $("#type-flag").addClass("filled");
-                }
-                else{
-                    $("#type-flag").removeClass("filled");
-                    $("#type-flag").addClass("unfilled");
-                }
-                /****************************End Parameters Tab*****************************/
-                /****************************RelatedItems Tab*******************************/
-                var req_id = data['Requirement Ids'];
-                var assoc_bugs = data['Associated Bugs'];
-                var tc_id = data['Manual_TC_Id'];
-                //AssociatedBug
-                $('#defectid_txtbox').val(assoc_bugs);
-                //Manual Test Case Id
-                $('#id_txtbox').val(tc_id);
-                //Requirement Id
-                $('#reqid_txtbox').val(req_id);
-                if(!template){
-                    var auto_id=data['TC_Id'];
-                    var title=data['TC_Name'];
-                    $('#TC_Id').html("<b>Automation ID: "+auto_id +"</b>")
-                    $('#TC_Id').css('display','block');
-                    $('#titlebox').val(title);
-                }
-                /************************End RelatedItems Tab*******************************/
-                /***************************Steps Tab***************************************/
-                var steps_and_data = data['Steps and Data'];
-                //$('#steps_table').html("");
-                for(var i=0;i<(steps_and_data.length-1);i++){
-                    addMainTableRow('#steps_table');
-                }
-                var row_count=$('#steps_table tr').length;
-                var converted_data=[];
-                console.log(row_count);
-                popupdivrowcount=[];
-                for(var i=0;i<row_count;i++){
-                    $('#searchbox'+(i+1)+'name').val(steps_and_data[i][0]);
-                    $('#searchbox'+(i+1)+'info').val(steps_and_data[i][3]);
-                    $('#searchbox'+(i+1)+'expected').val(steps_and_data[i][4]);
-                    $('#searchbox'+(i+1)+'step_type').text(steps_and_data[i][2]);
-                    if(steps_and_data[i][5]=='yes'){
-                        $('#searchbox'+(i+1)+'verify').attr('checked','true');
                     }
-                    $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
-                    $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
-                    $('#searchbox'+(i+1)+'time').val(convertToString(steps_and_data[i][7]));
-                    var datasets=steps_and_data[i][1];
-                    popupdivrowcount[i]=0;
-                    if(datasets.length==0){
-                        //$('#searchbox'+(i+1)+'data').html("");
-                        $('#searchbox'+(i+1)+'data').parent().css({'cursor':'none'});
+                    //SectionPath
+                    var sections=data['Section_Path'];
+                    var sectionArray = sections.split('.');
+                    var dataId ="";
+                    var handlerString = "";
+                    for(var index in sectionArray){
+                        if(sectionArray[index] == "")
+                            continue;
+                        $.ajax({
+                            url:'GetSections/',
+                            dataType : "json",
+                            data : {
+                                section : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_')
+                            },
+                            success: function( json ) {
+                                if(json.length != 1){
+                                    var realItemIndex = parseInt(json[0][0])
+                                    var handlerString = ""
+                                    for(var i = 0; i < realItemIndex; i++)
+                                        handlerString+=sectionArray[i]+'.'
+
+                                    if(realItemIndex == 0){
+                                        $(".section[data-level='']").find('option').each(function(){$(this).remove();});
+                                        $(".section[data-level='']").append("<option>Choose...</option>");
+
+                                        for(var i = 0; i < json.length; i++)
+                                            json[i] = json[i][0].replace(/_/g,' ')
+                                        $.each(json, function(i, value) {
+                                            if(i == 0)return;
+                                            $(".section[data-level='']").append($('<option>').text(value).attr('value', value));
+                                        });
+                                        $(".section[data-level='']").val(sectionArray[realItemIndex].replace(/_/g,' '))
+                                    }else{
+                                        var tag = jQuery('<select/>',{
+                                            'class':'section',
+                                            'data-level':handlerString,
+                                            'id':realItemIndex+1,
+                                            change: function(){
+                                                isAtLowestSection = false;
+                                                recursivelyAddSection(this);
+                                                $("#section-flag").removeClass("filled");
+                                                $("#section-flag").addClass("unfilled");
+                                            }
+                                        })
+                                        if($('#sectiongroup select[id='+realItemIndex+']').length != 0)
+                                            $('#sectiongroup select[id='+realItemIndex+']').after(tag)
+                                        else
+                                            $('#sectiongroup select[id=1]').after(tag)
+
+                                        $(".section[data-level='"+handlerString+"']").append("<option>Choose...</option>");
+
+                                        var once = true;
+                                        for(var i = 0; i < json.length; i++)
+                                            json[i] = json[i][0].replace(/_/g,' ')
+                                        $.each(json, function(i, value) {
+                                            if(i == 0)return;
+                                            if(once){
+                                                lowest_section+=1
+                                                once = false
+                                            }
+                                            $(".section[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
+                                        });
+                                        $(".section[data-level='"+handlerString+"']").val(sectionArray[realItemIndex].replace(/_/g,' '))
+                                    }
+                                    isAtLowestSection = true;
+                                    $("#section-flag").removeClass("unfilled");
+                                    $("#section-flag").addClass("filled");
+                                }
+                            }
+                        });
+
+                        dataId += sectionArray[index] + '.'
+                    }
+                    //Priority
+                    var priority=data['Priority'];
+                    $("#priotiy_select").val(parseInt(priority.substring(1,2)));
+                    /*************** End Properties tab Data*******************************/
+                    /****************************Parameters Tab*****************************/
+                    //Select Platform
+                    var platform=data['Platform'];
+                    console.log(platform);
+                    for(var i=0;i<platform.length;i++){
+                        $('input[name="platform"]').each(function(){
+                            if($(this).val()==platform[i]){
+                                $(this).attr('checked','true');
+                            }
+                        });
+                    }
+                    if($('input[name="platform"]:checked').length>0){
+                        $("#platform-flag").removeClass("unfilled");
+                        $("#platform-flag").addClass("filled");
                     }
                     else{
-                        for(var j=0;j<datasets.length;j++){
-                            var temp=[];
-                            addnewrow('#searchbox'+(i+1)+'data_table',(i+1),(popupdivrowcount[i]+1));
-                            popupdivrowcount[i]++;
-                            var currentdataset=datasets[j];
-                            for(var k=0;k<currentdataset.length;k++){
-                                if(currentdataset[k][1] instanceof Array){
-                                    for(var l=0;l<currentdataset[k][1].length;l++){
-                                        var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][0]};
-                                        temp.push(tempObject);
+                        $("#platform-flag").removeClass("filled");
+                        $("#platform-flag").addClass("unfilled");
+                    }
+                    //Select Browsers/Dependency
+                    var dependency=data['Dependency List'];
+                    for(var i=0;i<dependency.length;i++){
+                        $('input[name="dependancy"]').each(function(){
+                            if($(this).val()==dependency[i]){
+                                $(this).attr('checked','true');
+                            }
+                        })
+                    };
+                    if($('input[name="dependancy"]:checked').length>0){
+                        $("#browser-flag").removeClass("unfilled");
+                        $("#browser-flag").addClass("filled");
+                    }
+                    else{
+                        $("#browser-flag").removeClass("filled");
+                        $("#browser-flag").addClass("unfilled");
+                    }
+                    //Type Select
+                    var tc_type=data['TC Type'];
+                    for(var i=0;i<tc_type.length;i++){
+                        $('input[name="type"]').each(function(){
+                            if($(this).val()==tc_type[i]){
+                                $(this).attr('checked','true');
+                            }
+                        })
+                    };
+                    if($('input[name="type"]:checked').length>0){
+                        $("#type-flag").removeClass("unfilled");
+                        $("#type-flag").addClass("filled");
+                    }
+                    else{
+                        $("#type-flag").removeClass("filled");
+                        $("#type-flag").addClass("unfilled");
+                    }
+                    /****************************End Parameters Tab*****************************/
+                    /****************************RelatedItems Tab*******************************/
+                    var req_id = data['Requirement Ids'];
+                    var assoc_bugs = data['Associated Bugs'];
+                    var tc_id = data['Manual_TC_Id'];
+                    //AssociatedBug
+                    $('#defectid_txtbox').val(assoc_bugs);
+                    //Manual Test Case Id
+                    $('#id_txtbox').val(tc_id);
+                    //Requirement Id
+                    $('#reqid_txtbox').val(req_id);
+                    if(!template){
+                        var auto_id=data['TC_Id'];
+                        var title=data['TC_Name'];
+                        $('#TC_Id').html("<b>Automation ID: "+auto_id +"</b>")
+                        $('#TC_Id').css('display','block');
+                        $('#titlebox').val(title);
+                    }
+                    /************************End RelatedItems Tab*******************************/
+                    /***************************Steps Tab***************************************/
+                    var steps_and_data = data['Steps and Data'];
+                    //$('#steps_table').html("");
+                    for(var i=0;i<(steps_and_data.length-1);i++){
+                        addMainTableRow('#steps_table');
+                    }
+                    var row_count=$('#steps_table tr').length;
+                    var converted_data=[];
+                    console.log(row_count);
+                    popupdivrowcount=[];
+                    for(var i=0;i<row_count;i++){
+                        $('#searchbox'+(i+1)+'name').val(steps_and_data[i][0]);
+                        $('#searchbox'+(i+1)+'info').val(steps_and_data[i][3]);
+                        $('#searchbox'+(i+1)+'expected').val(steps_and_data[i][4]);
+                        $('#searchbox'+(i+1)+'step_type').text(steps_and_data[i][2]);
+                        if(steps_and_data[i][5]=='yes'){
+                            $('#searchbox'+(i+1)+'verify').attr('checked','true');
+                        }
+                        $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
+                        $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
+                        $('#searchbox'+(i+1)+'time').val(convertToString(steps_and_data[i][7]));
+                        var datasets=steps_and_data[i][1];
+                        popupdivrowcount[i]=0;
+                        if(datasets.length==0){
+                            //$('#searchbox'+(i+1)+'data').html("");
+                            $('#searchbox'+(i+1)+'data').parent().css({'cursor':'none'});
+                        }
+                        else{
+                            for(var j=0;j<datasets.length;j++){
+                                var temp=[];
+                                addnewrow('#searchbox'+(i+1)+'data_table',(i+1),(popupdivrowcount[i]+1));
+                                popupdivrowcount[i]++;
+                                var currentdataset=datasets[j];
+                                for(var k=0;k<currentdataset.length;k++){
+                                    if(currentdataset[k][1] instanceof Array){
+                                        for(var l=0;l<currentdataset[k][1].length;l++){
+                                            var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][0]};
+                                            temp.push(tempObject);
+                                        }
+                                    }
+                                    else{
+                                        var tempobject={field:currentdataset[k][0],sub_field:"",value:currentdataset[k][1]};
+                                        temp.push(tempobject);
                                     }
                                 }
-                                else{
-                                    var tempobject={field:currentdataset[k][0],sub_field:"",value:currentdataset[k][1]};
-                                    temp.push(tempobject);
+                                for(var k=0;k<(temp.length-1);k++){
+                                    adddataentry('step'+(i+1)+'data'+(j+1)+'entrytable');
                                 }
-                            }
-                            for(var k=0;k<(temp.length-1);k++){
-                                adddataentry('step'+(i+1)+'data'+(j+1)+'entrytable');
-                            }
-                            var currentrow=$('#step'+(i+1)+'data'+(j+1)+'entrytable tr:eq(1)');
-                            for(var k=0;k<temp.length;k++){
-                                currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
-                                currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
-                                currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
-                                currentrow=currentrow.next();
-                            }
-                            if(temp.length>0){
-                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
-                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
-                            }
-                            else{
-                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
-                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                                var currentrow=$('#step'+(i+1)+'data'+(j+1)+'entrytable tr:eq(1)');
+                                for(var k=0;k<temp.length;k++){
+                                    currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
+                                    currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
+                                    currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
+                                    currentrow=currentrow.next();
+                                }
+                                if(temp.length>0){
+                                    $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
+                                    $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+                                }
+                                else{
+                                    $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
+                                    $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                                }
                             }
                         }
                     }
-                }
-                /***************************End Steps Tab***************************************/
-            });
+                    /***************************End Steps Tab***************************************/
+                });
 
         }
 
@@ -551,7 +551,7 @@ $(document).ready(function() {
             /*********************************Parameters Tab Data ********************************/
             var platformList=[];
             $('input[name="platform"]:checked').each(function(){
-               platformList.push($(this).val());
+                platformList.push($(this).val());
             });
             console.log(platformList);
             var browserList=[];
@@ -770,11 +770,11 @@ $(document).ready(function() {
                             /*************************** end create old format Data*********************************/
 
                         }
-                    /*********************** END Step Data Processing Here ********************************/
-                    stepDataSTR[i-1]=tempSTR.join('%');
+                        /*********************** END Step Data Processing Here ********************************/
+                        stepDataSTR[i-1]=tempSTR.join('%');
+                    }
+                    console.log(stepDataSTR);
                 }
-                console.log(stepDataSTR);
-            }
             }
             /*************************End Filtering***********************************************/
             /************************End DataFetching From the POP Up*********************************************/
@@ -916,9 +916,9 @@ function AutoCompleteTestStep(){
                     fieldName.val(value);
                     if(ui.item[1]){
                         /*var index=fieldName.closest('tr').attr('id').split('_')[1].trim();
-                        fieldName.closest('tr').find('td:nth-child(4)').html('<a id="searchbox'+index+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
-                        '<span class="mail-status"></span>' +
-                        '</a>');*/
+                         fieldName.closest('tr').find('td:nth-child(4)').html('<a id="searchbox'+index+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
+                         '<span class="mail-status"></span>' +
+                         '</a>');*/
                         fieldName.closest('tr').find('td:nth-child(4) span:eq(0)').addClass('unfilled');
                         fieldName.closest('tr').find('td:nth-child(4)').css({'cursor':'pointer'});
                     }else{
@@ -1114,10 +1114,10 @@ function adddataentry(tablename){
     var message="";
     message+=(
         '<tr>' +
-        '<td><input class="textbox" style="width: auto"></td>' +
-        '<td><input class="textbox" style="width: auto"></td>' +
-        '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
-        '</tr>');
+            '<td><input class="textbox" style="width: auto"></td>' +
+            '<td><input class="textbox" style="width: auto"></td>' +
+            '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
+            '</tr>');
     $('#'+tablename).append(message);
 }
 function editTypeRow(divname,stepno,dataset_num,stringName){
@@ -1194,7 +1194,7 @@ function GenerateMainRow()
             '<input id="searchbox'+step_num+'time" type="text" class="input-small textbox timepicker">' +
             '<span class="add-on"><i class="icon-time"></i></span></div></td>' +
             //'<td><img class="new_tc_form est_time_img" id="searchbox'+step_num+'step_est_time" type=\'image\' src=\'/site_media/clock.png\' style=\"background-color: transparent; width:16px; height:16px;cursor:pointer\"></td>' +
-             '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
+            '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
             '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '</tr>'
         )

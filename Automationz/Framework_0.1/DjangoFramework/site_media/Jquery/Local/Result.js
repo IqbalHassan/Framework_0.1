@@ -247,6 +247,8 @@ function make_bar_clickable(divname){
                     }
                 });
         });
+
+
     });
 }
 function DeleteFilterData(){
