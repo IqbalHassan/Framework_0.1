@@ -1405,10 +1405,21 @@ function show_radio_button(){
     });
 }
 function vertical_sidebar(){
-    $("#add_step_tip").click(function(){
+    /*$("#add_step_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/CreateStep/'
         }
+    });*/
+    $('#add_step_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/CreateStep/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
     $("#edit_step_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
