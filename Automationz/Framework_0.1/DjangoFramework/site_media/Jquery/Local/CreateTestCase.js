@@ -1452,30 +1452,85 @@ function vertical_sidebar(){
             '<a href="/Home/ManageTestCases/CreateStep/" class="twitter" style="margin-left: 40%">Yes</a>' +
             '</div>'
     });
-    $("#edit_step_tip").click(function(){
+    /*$("#edit_step_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/CreateStep/'
         }
+    });*/
+    $('#edit_step_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/CreateStep/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
-    $("#set_tag_tip").click(function(){
+    /*$("#set_tag_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/TestSet/'
         }
+    });*/
+    $('#set_tag_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/TestSet/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
-    $("#copy_edit_tip").click(function(){
+    /*$("#copy_edit_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/SearchEdit/'
         }
+    });*/
+    $('#copy_edit_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/SearchEdit/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
-    $("#history_tip").click(function(){
+    /*$("#history_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/Analysis/'
         }
+    });*/
+    $('#history_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/Analysis/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
-    $("#organize_tip").click(function(){
+    /*$("#organize_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/CreateProductSections/'
         }
+    });*/
+    $('#organize_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/CreateProductSections/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
 }
 /****************************End Minar's Thing****************************************************/
