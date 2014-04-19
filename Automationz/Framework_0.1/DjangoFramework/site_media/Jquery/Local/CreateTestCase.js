@@ -485,23 +485,28 @@ $(document).ready(function() {
         $('#submit').live('click',function(){
             /*****************************Validation Check Here***********************************/
             if($('#section-flag').hasClass('unfilled')){
-                alert("Section Path is not defined Correctly");
+                //alert("Section Path is not defined Correctly");
+                alertify.error("Section Path is not defined Correctly");
                 return false;
             }
             if($('#platform-flag').hasClass('unfilled')){
-                alert("Platform is not selected correctly");
+                //alert("Platform is not selected correctly");
+                alertify.error("Platform is not selected correctly");
                 return false;
             }
             if($('#browser-flag').hasClass('unfilled')){
-                alert("Browser is not selected correctly");
+                //alert("Browser is not selected correctly");
+                alertify.error("Browser is not selected correctly");
                 return false;
             }
             if($('#type-flag').hasClass('unfilled')){
-                alert("Test Type is not defined correctly");
+                //alert("Test Type is not defined correctly");
+                alertify.error("Test Type is not defined correctly");
                 return false;
             }
             if($('#tag_txtbox').val()!=""){
-                alert("Tag Field must be empty as you have to select from the suggestion provided");
+                //alert("Tag Field must be empty as you have to select from the suggestion provided");
+                alertify.error("Tag Field must be empty as you have to select from the suggestion provided");
                 return false;
             }
             var row_count=$('#steps_table tr').length;
@@ -511,7 +516,8 @@ $(document).ready(function() {
                 }
                 else{
                     if($('#searchbox'+(i+1)+'data').find('span:eq(0)').hasClass('unfilled')){
-                        alert("Data in the Step #"+(i+1)+" is not complete");
+                        //alert("Data in the Step #"+(i+1)+" is not complete");
+                        alertify.error("Data in the Step #"+(i+1)+" is not complete");
                         return false;
                     }
                 }
@@ -523,7 +529,8 @@ $(document).ready(function() {
                 }
             }
             if(checked_count<=0){
-                alert("Atleast One step is to be set as Verfication point");
+                //alert("Atleast One step is to be set as Verfication point");
+                alertify.error("Atleast One step is to be set as Verfication point");
                 return false;
             }
             /******************************END Validation Check here*******************************/
@@ -585,20 +592,24 @@ $(document).ready(function() {
             var stepTypeList=[];
             for(var i=1;i<=step_num;i++){
                 if($('#searchbox'+i+'name').val()==""){
-                    alert('Step Name for step Number#'+i+' can not be empty');
+                    //alert('Step Name for step Number#'+i+' can not be empty');
+                    alertify.error('Step Name for step Number#'+i+' can not be empty');
                     return false;
                 }
                 else{
                     if($('#searchbox'+i+'info').val()==""){
-                        alert('Step Description for step Number#'+i+' can not be empty');
+                        //alert('Step Description for step Number#'+i+' can not be empty');
+                        alertify.error('Step Description for step Number#'+i+' can not be empty');
                         return false;
                     }
                     if($('#searchbox'+i+'expected').val()==""){
-                        alert('Expected Result for step Number#'+i+' can not be empty');
+                        //alert('Expected Result for step Number#'+i+' can not be empty');
+                        alertify.error('Expected Result for step Number#'+i+' can not be empty');
                         return false;
                     }
                     if($('#searchbox'+i+'time').val()==""){
-                        alert('Estimated time for step Number#'+i+' can not be empty');
+                        //alert('Estimated time for step Number#'+i+' can not be empty');
+                        alertify.error('Estimated time for step Number#'+i+' can not be empty');
                         return false;
                     }
                     stepNameList.push($('#searchbox'+i+'name').val());
@@ -805,7 +816,8 @@ $(document).ready(function() {
                             }
                         }
                         if(!found){
-                            alert("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
+                            //alert("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
+                            alertify.error("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
                             alertFound=1;
                             return false;
                         }
@@ -824,7 +836,8 @@ $(document).ready(function() {
                                 }
                             }
                             if(!tag_found){
-                                alert("Tag Name Not present in the Database");
+                                //alert("Tag Name Not present in the Database");
+                                alertify.error("Tag Name Not present in the Database");
                                 tag_alert=1;
                                 return false;
                             }
@@ -862,6 +875,7 @@ $(document).ready(function() {
                             Steps_Time_List:stepTimeList.join("|"),
                             Status:"Dev"},function(data) {
                             //alert(data);
+                            alertify.success("Test Case '"+data+"' successfully created!");
                             var location='/Home/ManageTestCases/Edit/'+data;
                             window.location=location;
                         });
@@ -890,12 +904,14 @@ $(document).ready(function() {
                             },
                             function(data) {
                                 //alert(data+" edited successfully");
+                                alertify.success("Test Case '"+data+"' successfully edited!");
                                 var location='/Home/ManageTestCases/Edit/'+data;
                                 window.location=location;
                             });
                     }
                     else{
-                        alert("Wrong data in StepName,StepType");
+                        //alert("Wrong data in StepName,StepType");
+                        alertify.error("Wrong data in StepName,StepType");
                         return false;
                     }
                 });
@@ -925,7 +941,8 @@ function AutoCompleteTestStep(){
                                 'border': '1px solid #FF3D00',
                                 'box-shadow': '0px 0px 3px #FF3D00'
                             });
-                            alert("Test Step must be chosen from popup list! Either you have to create new steps first.");
+                            //alert("Test Step must be chosen from popup list! Either you have to create new steps first.");
+                            alertify.error("Test Step must be chosen from popup list! Either you have to create new steps first.");
                         }
                         else{
                             $(".textbox:focus").css({
@@ -1531,6 +1548,18 @@ function vertical_sidebar(){
             '<div style="margin-top: 10%">' +
             '<a href="/Home/ManageTestCases/CreateProductSections/" class="twitter" style="margin-left: 40%">Yes</a>' +
             '</div>'
+    });
+}
+function reset () {
+    //$("#toggleCSS").attr("href", "alertify.default.css");
+    alertify.set({
+        labels : {
+            ok     : "OK",
+            cancel : "Cancel"
+        },
+        delay : 5000,
+        buttonReverse : false,
+        buttonFocus   : "ok"
     });
 }
 /****************************End Minar's Thing****************************************************/
