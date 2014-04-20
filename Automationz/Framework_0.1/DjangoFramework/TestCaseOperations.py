@@ -640,7 +640,7 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
 
     LogMessage(sModuleInfo, "Completed Cleaning up:%s" % (TC_Id), 4)
 
-def LogMessage(sModuleInfo, msg, level, debug=False):
+def LogMessage(sModuleInfo, msg, level, debug=True):
         if debug:
             print msg
             CommonUtil.ExecLog(sModuleInfo, msg, level)
