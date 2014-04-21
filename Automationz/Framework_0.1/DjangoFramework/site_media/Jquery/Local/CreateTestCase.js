@@ -875,7 +875,7 @@ $(document).ready(function() {
                             Steps_Time_List:stepTimeList.join("|"),
                             Status:"Dev"},function(data) {
                             //alert(data);
-                            alertify.success("Test Case '"+data+"' successfully created!");
+                            //$.notify("Test Case '"+data+"' successfully created!");
                             var location='/Home/ManageTestCases/Edit/'+data;
                             window.location=location;
                         });

@@ -286,6 +286,7 @@ function populate_feature_driver_info_div(){
                 var count=data[0];
                 console.log(count);
                 if(count>0){
+                    alertify.error("This feature/driver can't be deleted. There are "+count+" test steps using this feature/driver '"+inputName+"'");
                     $("#delete_error").html("<p><b>This feature/driver can't be deleted. There are "+count+" test steps using this feature/driver '"+inputName+"'</b></p>");
 
                     var UserText=$("#input").val();
