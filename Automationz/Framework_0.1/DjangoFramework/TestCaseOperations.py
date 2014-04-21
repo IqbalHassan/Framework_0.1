@@ -331,11 +331,10 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                                                     value=Addr_Data_Id
                                                      )
                     if result == True:
-                        LogMessage(sModuleInfo,"inserted data in master_data data id: %s"%(eachData),4)
+                        msg=LogMessage(sModuleInfo,"inserted data in master_data data id: %s - %s "%(eachData[0],Addr_Data_Id),4)
                     if result != True:
                         err_msg = LogMessage(sModuleInfo, "Failed to insert list data id: %s" % (eachData), 4)
                         return err_msg
-
                     for eachAddrData in eachData[1]:
                         #each addr data should be tuple too
                         if isinstance(eachAddrData, tuple):
@@ -345,13 +344,9 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                                                             field=eachAddrData[0],
                                                             value=eachAddrData[1]
                                                              )
-
-                            if result == True:
-                                LogMessage(sModuleInfo,"inserted data in master_data data id: %s"%(eachData),4)
                             if result != True:
                                 err_msg = LogMessage(sModuleInfo, "Failed to insert list data value: %s" % (eachAddrData), 4)
                                 return err_msg
-
                         else:
                             err_msg = LogMessage(sModuleInfo, "Data is not a tuple: %s" % (eachData), 4)
                             return err_msg
@@ -371,11 +366,10 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                                                 value=eachData[1]
                                                  )
                 if result == True:
-                        LogMessage(sModuleInfo,"inserted data in master_data data id: %s"%(eachData),4)
+                    msg = LogMessage(sModuleInfo,"inserted data in master_data data id: %s - %s"%(eachData[0],eachData[1]),4)
             if result != True:
                 err_msg = LogMessage(sModuleInfo, "Failed to insert data: %s" % (eachData), 4)
                 return err_msg
-
 
         else:
             err_msg = LogMessage(sModuleInfo, "Data is not a tuple: %s" % (eachData), 4)
