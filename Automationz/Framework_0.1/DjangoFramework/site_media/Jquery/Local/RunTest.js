@@ -200,25 +200,35 @@ function MileStoneTab(){
             var new_name=$('#msinput').val();
             var old_name="";
         }
-        $.get('MileStoneOperation',{old_name:old_name,new_name:new_name,operation:operation},function(data){
-            if(data['confirm_message']==""){
-                var color='red';
-            }
-            else{
-                var color='green';
-            }
-            if(data['confirm_message']==""){
-                $('#error_milestone').html('<b style="color:red;">'+data['error_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
-                $('#error_milestone').slideDown('slow');
-                setTimeout(function(){window.location='/Home/RunTest/';},4000);
-            }
-            else{
-                $('#error_milestone').html('<b style="color:green;">'+data['confirm_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
-                $('#error_milestone').slideDown('slow');
-                setTimeout(function(){window.location='/Home/RunTest/';},4000);
-            }
+        if(operation=="0"||new_name==''){
+            var error_message="<b style='color: #ff0000'>Fields are empty</b>";
+            alertify.error("Fields are empty");
+            $('#error_milestone').html(error_message);
+            $('#error_milestone').css({'display':'block'});
+        }
+        else {
+            $.get('MileStoneOperation',{old_name:old_name,new_name:new_name,operation:operation},function(data){
+                if(data['confirm_message']==""){
+                    var color='red';
+                }
+                else{
+                    var color='green';
+                }
+                if(data['confirm_message']==""){
+                    alertify.error(""+data['error_message']+"");
+                    $('#error_milestone').html('<b style="color:red;">'+data['error_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                    $('#error_milestone').slideDown('slow');
+                    setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                }
+                else{
+                    alertify.success(""+data['confirm_message']+"");
+                    $('#error_milestone').html('<b style="color:green;">'+data['confirm_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                    $('#error_milestone').slideDown('slow');
+                    setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                }
 
-        })
+            })
+        }
     });
 }
 function machine_div(){
@@ -397,6 +407,7 @@ function AutoCompletionButton(environment,browserdata){
         var product_version=$('#product_version option:selected').val();
         if(machine_name==''||os_name==''||browser==''||machine_ip==''||product_version==''){
             var error_message="<b style='color: #ff0000'>Fields are empty</b>";
+            alertify.error("Fields are empty");
             $('#error_message').html(error_message);
             $('#error_message').css({'display':'block'});
         }
@@ -412,6 +423,7 @@ function AutoCompletionButton(environment,browserdata){
                 product_version:product_version
             },function(data){
                 //console.log(data);
+                alertify.success(""+data+"");
                 $('#error_message').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
                 $('#error_message').slideDown('slow');
                 setTimeout(function(){window.location='/Home/RunTest/';},4000);
@@ -1256,7 +1268,8 @@ function RunTestProcess() {
             console.log(EmailIds);
 		});
 		if(EmailIds.length==0){
-            alert("EmailIds is to be selected from suggestion");
+            //alert("EmailIds is to be selected from suggestion");
+            alertify.error("EmailIds is to be selected from suggestion");
             return false;
         }
 		//Getting Selected Dependency Text
@@ -1274,7 +1287,8 @@ function RunTestProcess() {
             console.log(TesterIds);
         });
         if(TesterIds.length==0){
-            alert("Testers is to be selected from suggestion");
+            //alert("Testers is to be selected from suggestion");
+            alertify.error("Testers is to be selected from suggestion");
             return false;
         }
 		//Getting Test Data Type Checkbox value
@@ -1285,7 +1299,8 @@ function RunTestProcess() {
         TestObjective =  $("input#TestObjective").val();
         TestObjective=TestObjective.trim();
         if(TestObjective==""){
-            alert("Test Objective is empty");
+            //alert("Test Objective is empty");
+            alertify.error("Test Objective is empty");
             return false;
         }
 		//Getting the addedMileStone
@@ -1297,7 +1312,8 @@ function RunTestProcess() {
             console.log(TestMileStone);
         });
         if(TestMileStone==""){
-            alert("MileStone is to be selected from suggestion");
+            //alert("MileStone is to be selected from suggestion");
+            alertify.error("MileStone is to be selected from suggestion");
             return false;
         }
         //TestMileStone=$('#TestMileStone').val();
