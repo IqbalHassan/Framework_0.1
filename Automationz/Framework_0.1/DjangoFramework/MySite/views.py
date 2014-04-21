@@ -2742,9 +2742,13 @@ def Create_Submit_New_TestCase(request):
         test_case_tags_result = TestCaseOperations.Insert_TestCase_Tags(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List)
 
         if test_case_steps_result == "Pass":
+            msg="==========================================================================================================="
+            TestCaseOperations.LogMessage("Create Test Case", msg, 4)
             return returnResult(TC_Id)
         else:
             TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            msg="==========================================================================================================="
+            TestCaseOperations.LogMessage("Create Test Case", msg, 4)
             return returnResult(test_case_tags_result)
 
     except Exception, e:

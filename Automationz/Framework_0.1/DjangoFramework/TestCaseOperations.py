@@ -21,10 +21,10 @@ def Insert_TestCaseName(conn, TC_Id, TC_Name, TC_Creator):
                                      )
 
     if result == True:
-        LogMessage(sModuleInfo, "Entered test case %s: %s" % (TC_Id, TC_Name), 4)
+        LogMessage(sModuleInfo, "Entered test case %s: %s" % (TC_Id, TC_Name), 4,result)
         return "Pass"
     else:
-        err_msg = LogMessage(sModuleInfo, "Failed to Enter test case %s: %s" % (TC_Id, TC_Name), 4)
+        err_msg = LogMessage(sModuleInfo, "Failed to Enter test case %s: %s" % (TC_Id, TC_Name), 4,result)
         return err_msg
 
 def Update_TestCaseDetails(conn, TC_Id, TC_Name, TC_Creator):
@@ -38,10 +38,10 @@ def Update_TestCaseDetails(conn, TC_Id, TC_Name, TC_Creator):
                                      )
 
     if result == True:
-        LogMessage(sModuleInfo, "Updated test case %s: %s" % (TC_Id, TC_Name), 4)
+        LogMessage(sModuleInfo, "Updated test case %s: %s" % (TC_Id, TC_Name), 4,result)
         return "Pass"
     else:
-        err_msg = LogMessage(sModuleInfo, "Failed to update test case %s: %s" % (TC_Id, TC_Name), 4)
+        err_msg = LogMessage(sModuleInfo, "Failed to update test case %s: %s" % (TC_Id, TC_Name), 4,result)
         return err_msg
 
 def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_List):
@@ -70,7 +70,7 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
 
         #Get the sequence number of the inserted step
         if result == True:
-            LogMessage(sModuleInfo, "Added test step to test case id %s: %s" % (TC_Id, Step_Name), 4)
+            LogMessage(sModuleInfo, "Added test step to test case id %s: %s" % (TC_Id, Step_Name), 4,result)
 
             result = DBUtil.GetData(conn, "select teststepsequence from test_steps where tc_id = '%s' order by teststepsequence desc limit 1" % (TC_Id))
             if len(result) > 0:
@@ -83,26 +83,45 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                     eachstep=Data_Id_List[0].split("_d")
                     eachstep=eachstep[0].strip()
                     print eachstep +"-"+eachStepData[2]
-                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                    result= DBUtil.InsertNewRecordInToTable(conn,"master_data",
                                                               id=eachstep,
                                                               field="step",
                                                               value="description",
                                                               description=eachStepData[2])
-                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                    if result==True:
+                        LogMessage(sModuleInfo,"Inserted step Description in master_data", 4,result)
+                    else:
+                        LogMessage(sModuleInfo,"Failed insertion step Description in master_data", 4,result)
+                    result= DBUtil.InsertNewRecordInToTable(conn,"master_data",
                                                               id=eachstep,  
                                                               field="expected",
                                                               value="result",
                                                               description=eachStepData[3])
-                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                    if result==True:
+                        LogMessage(sModuleInfo,"Inserted expected in master_data", 4,result)
+                    else:
+                        LogMessage(sModuleInfo,"Failed insertion expected in master_data", 4,result)
+                    
+                    result = DBUtil.InsertNewRecordInToTable(conn,"master_data",
                                                               id=eachstep,  
                                                               field="verification",
                                                               value="point",
                                                               description=eachStepData[4])
-                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                    if result==True:
+                        LogMessage(sModuleInfo,"Inserted verification in master_data", 4,result)
+                    else:
+                        LogMessage(sModuleInfo,"Failed insertion verification in master_data", 4,result)
+                    
+                    result= DBUtil.InsertNewRecordInToTable(conn,"master_data",
                                                               id=eachstep,  
                                                               field="estimated",
                                                               value="time",
                                                               description=eachStepData[5])
+                    if result==True:
+                        LogMessage(sModuleInfo,"Inserted estimated in master_data", 4,result)
+                    else:
+                        LogMessage(sModuleInfo,"Failed insertion estimated in master_data", 4,result)
+                    
                     if isinstance(Data_Id_List, list):
                         #Insert Container_Type_Data - dataid, curname
                         Container_Data_Id = Insert_ContainerTypeData(conn, TC_Id, Step_Index, Data_Id_List)
@@ -152,26 +171,43 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                     #Add the test steps description to the datasets and steps
                     Data_Id = "%s_s%s" %(TC_Id,Step_Index)
                     print Data_Id +" - "+eachStepData[2]
-                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                    result=DBUtil.InsertNewRecordInToTable(conn,"master_data",
                                                               id=Data_Id,  
                                                               field="step",
                                                               value="description",
                                                               description=eachStepData[2])
-                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                    if result==True:
+                        LogMessage(sModuleInfo,"Inserted step Description in master_data", 4,result)
+                    else:
+                        LogMessage(sModuleInfo,"Failed insertion step Description in master_data", 4,result)
+                    result=DBUtil.InsertNewRecordInToTable(conn,"master_data",
                                                               id=Data_Id,  
                                                               field="expected",
                                                               value="result",
                                                               description=eachStepData[3])
-                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                    if result==True:
+                        LogMessage(sModuleInfo,"Inserted expected in master_data", 4,result)
+                    else:
+                        LogMessage(sModuleInfo,"Failed insertion expected in master_data", 4,result)
+                    result=DBUtil.InsertNewRecordInToTable(conn,"master_data",
                                                               id=Data_Id,  
                                                               field="verification",
                                                               value="point",
                                                               description=eachStepData[4])
-                    print DBUtil.InsertNewRecordInToTable(conn,"master_data",
+                    if result==True:
+                        LogMessage(sModuleInfo,"Inserted verification in master_data", 4,result)
+                    else:
+                        LogMessage(sModuleInfo,"Failed insertion verification in master_data", 4,result)
+                    result= DBUtil.InsertNewRecordInToTable(conn,"master_data",
                                                               id=Data_Id,  
                                                               field="estimated",
                                                               value="time",
                                                               description=eachStepData[5])
+                    if result==True:
+                        LogMessage(sModuleInfo,"Inserted estimated in master_data", 4,result)
+                    else:
+                        LogMessage(sModuleInfo,"Failed insertion estimated in master_data", 4,result)
+                    
             else:
                 err_msg = LogMessage(sModuleInfo, "Step Sequence not found: %s" % (Step_Name), 4)
                 return err_msg
@@ -219,7 +255,8 @@ def Insert_ContainerTypeData(conn, TC_Id, Step_Index, Data_Id_List):
                                             dataid=Container_Data_Id,
                                             curname=eachDataId
                                              )
-
+        if result==True:
+            LogMessage(sModuleInfo,"Inserted Container data set for %s"%Data_Id_List,4,result)
         if result != True:
             err_msg = LogMessage(sModuleInfo, "Failed to add container data set for %s:" % Data_Id_List, 4)
             return err_msg
@@ -293,7 +330,8 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                                                     field=eachData[0],
                                                     value=Addr_Data_Id
                                                      )
-
+                    if result == True:
+                        LogMessage(sModuleInfo,"inserted data in master_data data id: %s"%(eachData),4)
                     if result != True:
                         err_msg = LogMessage(sModuleInfo, "Failed to insert list data id: %s" % (eachData), 4)
                         return err_msg
@@ -308,6 +346,8 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                                                             value=eachAddrData[1]
                                                              )
 
+                            if result == True:
+                                LogMessage(sModuleInfo,"inserted data in master_data data id: %s"%(eachData),4)
                             if result != True:
                                 err_msg = LogMessage(sModuleInfo, "Failed to insert list data value: %s" % (eachAddrData), 4)
                                 return err_msg
@@ -330,6 +370,8 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                                                 field=eachData[0],
                                                 value=eachData[1]
                                                  )
+                if result == True:
+                        LogMessage(sModuleInfo,"inserted data in master_data data id: %s"%(eachData),4)
             if result != True:
                 err_msg = LogMessage(sModuleInfo, "Failed to insert data: %s" % (eachData), 4)
                 return err_msg
@@ -460,11 +502,13 @@ def AddTag(conn, TC_Id, name, property):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
 
     try:
-        DBUtil.InsertNewRecordInToTable(conn, 'test_case_tag',
+        result=DBUtil.InsertNewRecordInToTable(conn, 'test_case_tag',
             tc_id='%s' % TC_Id,
             name='%s' % name,
             property='%s' % property)
         #print "Tag: %s with Property: %s added." %(name, property)
+        if result==True:
+            LogMessage(sModuleInfo,"Inserted %s - %s in test_case_tag table"%(name,property),4)
         return "Pass"
     except Exception, e:
         err_msg = LogMessage(sModuleInfo, "Failed to Enter tag for test case %s:%s:%s" % (TC_Id, name, property), 4)
