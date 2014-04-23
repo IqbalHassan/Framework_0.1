@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     #Home Page
 	url(r'^$', HomePage),
     url(r'^Home/$',HomePage),
+    
         
     #Result Page
     #url(r'^Home/Search/$',Search),
@@ -49,8 +50,11 @@ urlpatterns = patterns('',
     url(r'^Home/.*/TestStep_Detail_Table/$', TestStep_Detail_Table),
     url(r'^Home/.*/createTablefromString/$', createTablefromString),
     
-    #Create Test
-    url(r'^Home/ManageTestCases/$',ManageTestCases),
+    # override the old one as its no more required
+    url(r'^Home/ManageTestCases/$', manage_tc),
+    url(r'^Home/ManageTestCases/getData/$', manage_tc_data),
+    
+    # For now, let's keep away this buggy page
     url(r'^Home/ManageTestCases/CreateProductSections/$', CreateProductSections),
     url(r'^Home/ManageTestCases/CreateProductSections/ProductSectionsCreated/$', ProductSectionsCreated),
     url(r'^Home/ManageTestCases/Create/[^/]*$',Create),

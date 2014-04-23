@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 ##
 from django.db import connection
 #=======
-#>>>>>>> parent of 5208765... Create Test Set added with create,update and delete function
+#>>>>>>> parent of 5208765... Create Test Set added with create,update and  function
 #from django.shortcuts import render_to_response
 #=======
 from django.views.decorators.csrf import csrf_protect
@@ -37,6 +37,7 @@ from django.core.context_processors import csrf
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login
 from django.contrib.auth.models import User
+from mimetypes import MimeTypes
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
 
@@ -5386,7 +5387,7 @@ def AddManualTestMachine(request):
                     elif eachitem == "Submitted":
                         DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % machine_name, status="Cancelled")
                     elif eachitem == "Unassigned":
-                        DB.DeleteRecord(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
+                        DB.Record(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
                 machine_os=os_name+' '+os_version+' - '+os_bit
                 Client=browser+'('+browser_version+';'+os_bit+' Bit)'
                 updated_time=TimeStamp("string")
@@ -5629,7 +5630,7 @@ def MileStoneOperation(request):
                     confirm_message="MileStone is created Successfully"
                 else:
                     error_message="MileStone name exists.Can't create a new one"
-                #start Delete Operation
+                #start  Operation
             if operation=="3":
                 new_name=request.GET.get(u'new_name','')
                 new_name=new_name.strip()
@@ -5637,8 +5638,8 @@ def MileStoneOperation(request):
                 available=DB.GetData(Conn,query)
                 if(available[0]>0):
                     Dict={'type':'milestone','value':new_name.strip()}
-                    print DB.DeleteRecord(Conn, "config_values",**Dict)
-                    confirm_message="MileStone is deleted Successfully"
+                    print DB.Record(Conn, "config_values",**Dict)
+                    confirm_message="MileStone is d Successfully"
                 else:
                     error_message="MileStone Not Found"
     results={'confirm_message':confirm_message,
@@ -5763,3 +5764,85 @@ def GetStepNameType(request):
             test_steps_list=DB.GetData(Conn, query, False)
     result=simplejson.dumps(test_steps_list)
     return HttpResponse(result,mimetype='appliction/json')
+
+def manage_tc(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            print "-----------It's an ajax request-----------"
+            
+            query = "SELECT * FROM product_sections ORDER BY section_path"
+            data = DB.GetData(Conn, query, False)
+            processed_data = []
+            
+            for i in data:
+                row = {}
+                row['id'] = i[0]
+                row['text'] = i[1]
+                row['type'] = 'parent'
+                row['children'] = True
+                processed_data.append(row)
+            
+            result = json.dumps(processed_data)
+            return HttpResponse(result, mimetype="application/json")
+        else:
+            print "-----------It's not an ajax request-------------"
+            return render(request, 'jsTree/index.html', {})
+
+def manage_tc_data(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            print "-----------It's an ajax request-----------"
+            section_id = request.GET.get('id')
+            processed_data = []
+            
+            print "Request ID is: %s" % section_id
+            query = '''
+            SELECT 
+              * 
+            FROM 
+              test_case_tag
+            WHERE 
+              test_case_tag.property = 'section_id' AND 
+              test_case_tag.name = '%s';
+            ''' % section_id
+            data = DB.GetData(Conn, query, False)
+            
+            query = '''
+            SELECT 
+              * 
+            FROM 
+              test_case_tag
+            WHERE 
+              test_case_tag.name = 'Status';
+            '''
+            test_case_statuses = DB.GetData(Conn, query, False)
+            
+            query = '''
+            SELECT 
+              * 
+            FROM 
+              test_cases;
+            '''
+            test_cases = DB.GetData(Conn, query, False)
+            
+
+            for i in data:
+                for test_case_status in test_case_statuses:
+                    for test_case in test_cases:
+                        # match against each row's test case ID
+                        if i[0] == test_case_status[0] == test_case[0]:
+                            row = {}
+                            row['id'] = "children_%s_%s" % (section_id, i[0])
+                            
+                            row['text'] = r'''<code>
+                            <span style="color:#000000;">%s</span> ----->
+                            <span style="color:blue;">%s</span> ----->
+                            <span style="color:red;">%s</span>
+                            </code>''' % (i[0], test_case[1], test_case_status[2])
+                            
+                            row['type'] = 'children'
+                            row['parent'] = section_id
+                            processed_data.append(row)
+         
+            result = json.dumps(processed_data)
+            return HttpResponse(result, mimetype="application/json")

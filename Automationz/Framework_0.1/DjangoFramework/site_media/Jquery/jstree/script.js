@@ -1,32 +1,64 @@
+
 // Bismillahir Rahmanir Rahim, ALLAHU AKBAR
 // Author: Sazid
 
-$(function() {
+$(document).ready(function() {
+	
+	var config_object = {
+			"core" : {
+				"themes" : { "variant" : "large" },
 
-	$("button").click(function() {
-		$.get("http://127.0.0.1:8000/Home/ManageTestCases/view_and_organize_tc/", function(data, status) {
-			alert("Data: " + data + "\nStatus: " + status);
-		});
-	});
-
-	var treeConfig = {
-		
-		'core' : { /*
-			'data' : {
-				'url' : function (node) {
-				  return node.id === '#' ? 
-					'http://127.0.0.1:8000/Home/ManageTestCases/view_and_organize_tc/' : 
-					'http://127.0.0.1:8000/Home/ManageTestCases/view_and_organize_tc/';
-				},
-				'data' : function (node) {
-				  return { 'id' : node.id };
+				"data" : {
+					"url" : function(node) {
+						if (node.id === "#") {
+							return "/Home/ManageTestCases";
+						} else {
+							return "/Home/ManageTestCases/getData";
+						}
+						
+					},
+					"data" : function(node) {
+						return { 'id' : node.id }
+					}
 				}
-			} */
-		}
+				
+				// "check_callback" : true
+			},
+			
+			"types" : {
+				"#" : {
+					"valid_children" : ["parent"]
+				},
+				
+				"parent" : {
+					"icon" : "glyphicon glyphicon-list",
+					"valid_children" : ["children"]
+				},
+				
+				"children" : {
+					"icon" : "glyphicon glyphicon-tag",
+					"valid_children" : []
+				}
+			},
+			
+			"plugins" : [ "checkbox", "search", "types", "wholerow", "contextmenu", "sort", "state" ]
 	};
 	
-	// Create an instance of jstree with the provided container
-	$("#jstree_container").jstree(treeConfig);
-
+	$("#tree_container").jstree(config_object);
 	
+	var to = false;
+	$("#searchbox").keyup(function() {
+		if (to) { clearTimeout(to); }
+		
+		/* Here we're using a timeout so that the search is done after
+		   a specified amount of time rather than on every key stroke
+		   NOTE: Raise the value if the browser slows down during search
+		 */
+		to = setTimeout(function() {
+			var v = $("#searchbox").val();
+			
+			$("#tree_container").jstree(true).search(v);
+		}, 250);
+	});
+
 });
