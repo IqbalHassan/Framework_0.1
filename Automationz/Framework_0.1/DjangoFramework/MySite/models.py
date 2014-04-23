@@ -13,7 +13,7 @@ import DataBaseUtilities as DB
 
 
 def GetConnection():
-    Conn = DB.ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost="135.23.123.67")
+    Conn = DB.ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost="127.0.0.1")
     return Conn
 
 def GetData(sTableName):
