@@ -5780,7 +5780,7 @@ def GetStepNameType(request):
             Conn=GetConnection()
             query="select stepname,steptype from test_steps_list"
             test_steps_list=DB.GetData(Conn, query, False)
-<<<<<<< HEAD
+# <<<<<<< HEAD
     result=simplejson.dumps(test_steps_list)
     return HttpResponse(result,mimetype='appliction/json')
 
@@ -5865,12 +5865,12 @@ def manage_tc_data(request):
          
             result = json.dumps(processed_data)
             return HttpResponse(result, mimetype="application/json")
-=======
-            query="select distinct value from config_values where type='tag'"
-            tag_list=DB.GetData(Conn,query,False)
-            Dict={'test_steps':test_steps_list,'tag_list':tag_list}
-    result=simplejson.dumps(Dict)
-    return HttpResponse(result,mimetype='appliction/json')
+# =======
+#             query="select distinct value from config_values where type='tag'"
+#             tag_list=DB.GetData(Conn,query,False)
+#             Dict={'test_steps':test_steps_list,'tag_list':tag_list}
+#     result=simplejson.dumps(Dict)
+#     return HttpResponse(result,mimetype='appliction/json')
 def Result(request):
     return render_to_response('Result.html',{},context_instance=RequestContext(request))
 def GetResultAuto(request):
@@ -6060,4 +6060,4 @@ def GetData(run_id,index):
     DataCount=DB.GetData(Conn,count_query,False)
     DataReturn={'allData':AllTestCases,'count':len(DataCount)}
     return DataReturn
->>>>>>> 72469b69a9f7e281bdf335494f6719e3a83b2de0
+# >>>>>>> 72469b69a9f7e281bdf335494f6719e3a83b2de0
