@@ -7,7 +7,7 @@ else:
     import MacCommonFoldersPaths as compath
 
 ###########Production / Dev Config variables######################
-Environment = "Test"
+Environment = "Production"
 #Environment = "Production"
 if Environment == "Test":
     ###########Dev Config Variables############################
