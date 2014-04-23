@@ -3606,3 +3606,22 @@ body.avgrund-active {
 }
 
 /****************************************************************/
+
+/*** Scroll bar modification, for consistency ***/
+::-webkit-scrollbar {
+    height: 10px;
+    width: 12px;
+    background: #DDD;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #999;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #BBB;
+}
+
+::-webkit-scrollbar-corner {
+    background: #CCC;
+}

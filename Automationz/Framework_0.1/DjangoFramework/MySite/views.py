@@ -5789,20 +5789,23 @@ def manage_tc(request):
         if request.is_ajax():
             print "-----------It's an ajax request-----------"
             
-            query = "SELECT * FROM product_sections ORDER BY section_path"
-            data = DB.GetData(Conn, query, False)
-            processed_data = []
-            
-            for i in data:
-                row = {}
-                row['id'] = i[0]
-                row['text'] = i[1]
-                row['type'] = 'parent'
-                row['children'] = True
-                processed_data.append(row)
-            
-            result = json.dumps(processed_data)
-            return HttpResponse(result, mimetype="application/json")
+            try:
+                query = "SELECT * FROM product_sections ORDER BY section_path"
+                data = DB.GetData(Conn, query, False)
+                processed_data = []
+                
+                for i in data:
+                    row = {}
+                    row['id'] = i[0]
+                    row['text'] = i[1]
+                    row['type'] = 'parent'
+                    row['children'] = True
+                    processed_data.append(row)
+                
+                result = json.dumps(processed_data)
+                return HttpResponse(result, mimetype="application/json")
+            except Exception, e:
+                return render("Sorry, data from the server could not be recieved.")
         else:
             print "-----------It's not an ajax request-------------"
             return render(request, 'jsTree/index.html', {})
