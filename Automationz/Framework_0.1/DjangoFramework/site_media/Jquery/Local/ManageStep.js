@@ -583,6 +583,7 @@ function populate_footer_div(){
                 var count=data[0];
                 console.log(count);
                 if(count>0){
+                    alertify.error("This test step can't be deleted. There are "+count+" test cases using this test step '"+name+"'");
                     $("#delete_error").html("<p><b>This test step can't be deleted. There are "+count+" test cases using this test step '"+name+"'</b></p>");
                 }
                 if(count==0){

@@ -16,6 +16,7 @@ $(document).ready(function(){
                 },
                 success: function( json ) {
                     $("#error").html("<p><b> Git  '"+command+"'</b></p>");
+                    alertify.success("Git pulled.")
                 }
             });
         }
@@ -26,7 +27,7 @@ $(document).ready(function(){
         if(command != 0)
         {
             $.get('Process_Git',{command:command},function(json){
-                alert(json);
+                alertify.log(json);
                     //$("#error").html("<p><b> Git  '"+command+"'</b></p>");
                     /*if(json==""){
                         $('#error_git').html('<b style="color:red;">'+json+'<br>Page will be refreshed in 3 seconds to change effect</b>');

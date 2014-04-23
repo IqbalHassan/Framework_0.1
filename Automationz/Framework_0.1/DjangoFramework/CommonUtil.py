@@ -29,6 +29,8 @@ def ExecLog(sModuleInfo, sDetails, iLogLevel=1, sStatus="",):
         logger.warning(sModuleInfo + ' - ' + sDetails + '' + sStatus)
     elif iLogLevel == 3:
         logger.error(sModuleInfo + ' - ' + sDetails + '' + sStatus)
+    elif iLogLevel==4:
+        logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
     else:
         print "unknown log level"
 

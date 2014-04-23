@@ -7,7 +7,7 @@ else:
     import MacCommonFoldersPaths as compath
 
 ###########Production / Dev Config variables######################
-Environment = "Test"
+Environment = "Production"
 #Environment = "Production"
 if Environment == "Test":
     ###########Dev Config Variables############################
@@ -39,7 +39,7 @@ elif Environment == "Production":
     go_url = "enter/url"
 
     #database ip
-    database_ip = "127.0.0.1"
+    database_ip = "135.23.123.67"
 
     #Folder Paths
     if os.name == 'nt':

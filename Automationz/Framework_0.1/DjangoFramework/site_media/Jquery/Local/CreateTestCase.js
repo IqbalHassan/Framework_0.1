@@ -145,7 +145,7 @@ $(document).ready(function() {
             });
         });
         /*****************estd time picker************************
-        $('.est_time_img').live('click',function(){
+         $('.est_time_img').live('click',function(){
             //var id=$(this).closest('tr').find('td:nth-child(9)').text().trim();
             var id = '';
             id += '<table><tr>' +
@@ -171,7 +171,7 @@ $(document).ready(function() {
                 title: "Data: Step Estimated Time"
             });
         });
-        /**************************************************/
+         /**************************************************/
 
         /********************DataPopUP Function End********************************************/
         $("input[name=platform]").change(function () {
@@ -234,270 +234,279 @@ $(document).ready(function() {
         DeleteSearchQueryText();
         if(indx2 != -1 || template){
             $.get("TestCase_EditData",
-            {
-                TC_Id : URL.substring(URL.lastIndexOf("/")+1,URL.length)
-            },
-            function(data){
-                console.log(data);
-                /******************Properties tab Data*******************************/
-                //Status
-                var status=data['Status'];
-                console.log(status);
-                if(status=="Ready"){
-                    $('a[value="Production"]').addClass('selected');
-                }
-                if(status=="Dev"){
-                    $('a[value="Development"]').addClass('selected');
-                }
-                if(status=="Forced"){
-                    $('a[value="Forced-Manual"]').addClass('selected');
-                }
-                //TagList
-                var tag_list=data['Tags List'];
-                if(tag_list.length!=0){
-                    for(var i=0;i<tag_list.length;i++){
-                        console.log(tag_list);
-                        if(tag_list[i]!=""){
-                            AddToListTag(tag_list[i]);
-                        }
+                {
+                    TC_Id : URL.substring(URL.lastIndexOf("/")+1,URL.length)
+                },
+                function(data){
+                    console.log(data);
+                    /******************Properties tab Data*******************************/
+                    //Status
+                    var status=data['Status'];
+                    console.log(status);
+                    if(status=="Ready"){
+                        $('a[value="Production"]').addClass('selected');
                     }
-                }
-                //SectionPath
-                var sections=data['Section_Path'];
-                var sectionArray = sections.split('.');
-                var dataId ="";
-                var handlerString = "";
-                for(var index in sectionArray){
-                    if(sectionArray[index] == "")
-                        continue;
-                    $.ajax({
-                        url:'GetSections/',
-                        dataType : "json",
-                        data : {
-                            section : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_')
-                        },
-                        success: function( json ) {
-                            if(json.length != 1){
-                                var realItemIndex = parseInt(json[0][0])
-                                var handlerString = ""
-                                for(var i = 0; i < realItemIndex; i++)
-                                    handlerString+=sectionArray[i]+'.'
-
-                                if(realItemIndex == 0){
-                                    $(".section[data-level='']").find('option').each(function(){$(this).remove();});
-                                    $(".section[data-level='']").append("<option>Choose...</option>");
-
-                                    for(var i = 0; i < json.length; i++)
-                                        json[i] = json[i][0].replace(/_/g,' ')
-                                    $.each(json, function(i, value) {
-                                        if(i == 0)return;
-                                        $(".section[data-level='']").append($('<option>').text(value).attr('value', value));
-                                    });
-                                    $(".section[data-level='']").val(sectionArray[realItemIndex].replace(/_/g,' '))
-                                }else{
-                                    var tag = jQuery('<select/>',{
-                                        'class':'section',
-                                        'data-level':handlerString,
-                                        'id':realItemIndex+1,
-                                        change: function(){
-                                            isAtLowestSection = false;
-                                            recursivelyAddSection(this);
-                                            $("#section-flag").removeClass("filled");
-                                            $("#section-flag").addClass("unfilled");
-                                        }
-                                    })
-                                    if($('#sectiongroup select[id='+realItemIndex+']').length != 0)
-                                        $('#sectiongroup select[id='+realItemIndex+']').after(tag)
-                                    else
-                                        $('#sectiongroup select[id=1]').after(tag)
-
-                                    $(".section[data-level='"+handlerString+"']").append("<option>Choose...</option>");
-
-                                    var once = true;
-                                    for(var i = 0; i < json.length; i++)
-                                        json[i] = json[i][0].replace(/_/g,' ')
-                                    $.each(json, function(i, value) {
-                                        if(i == 0)return;
-                                        if(once){
-                                            lowest_section+=1
-                                            once = false
-                                        }
-                                        $(".section[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
-                                    });
-                                    $(".section[data-level='"+handlerString+"']").val(sectionArray[realItemIndex].replace(/_/g,' '))
-                                }
-                                isAtLowestSection = true;
-                                $("#section-flag").removeClass("unfilled");
-                                $("#section-flag").addClass("filled");
+                    if(status=="Dev"){
+                        $('a[value="Development"]').addClass('selected');
+                    }
+                    if(status=="Forced"){
+                        $('a[value="Forced-Manual"]').addClass('selected');
+                    }
+                    //TagList
+                    var tag_list=data['Tags List'];
+                    if(tag_list.length!=0){
+                        for(var i=0;i<tag_list.length;i++){
+                            console.log(tag_list);
+                            if(tag_list[i]!=""){
+                                AddToListTag(tag_list[i]);
                             }
                         }
-                    });
-
-                    dataId += sectionArray[index] + '.'
-                }
-                //Priority
-                var priority=data['Priority'];
-                $("#priotiy_select").val(parseInt(priority.substring(1,2)));
-                /*************** End Properties tab Data*******************************/
-                /****************************Parameters Tab*****************************/
-                //Select Platform
-                var platform=data['Platform'];
-                console.log(platform);
-                for(var i=0;i<platform.length;i++){
-                    $('input[name="platform"]').each(function(){
-                        if($(this).val()==platform[i]){
-                            $(this).attr('checked','true');
-                        }
-                    });
-                }
-                if($('input[name="platform"]:checked').length>0){
-                    $("#platform-flag").removeClass("unfilled");
-                    $("#platform-flag").addClass("filled");
-                }
-                else{
-                    $("#platform-flag").removeClass("filled");
-                    $("#platform-flag").addClass("unfilled");
-                }
-                //Select Browsers/Dependency
-                var dependency=data['Dependency List'];
-                for(var i=0;i<dependency.length;i++){
-                    $('input[name="dependancy"]').each(function(){
-                        if($(this).val()==dependency[i]){
-                            $(this).attr('checked','true');
-                        }
-                    })
-                };
-                if($('input[name="dependancy"]:checked').length>0){
-                    $("#browser-flag").removeClass("unfilled");
-                    $("#browser-flag").addClass("filled");
-                }
-                else{
-                    $("#browser-flag").removeClass("filled");
-                    $("#browser-flag").addClass("unfilled");
-                }
-                //Type Select
-                var tc_type=data['TC Type'];
-                for(var i=0;i<tc_type.length;i++){
-                    $('input[name="type"]').each(function(){
-                        if($(this).val()==tc_type[i]){
-                            $(this).attr('checked','true');
-                        }
-                    })
-                };
-                if($('input[name="type"]:checked').length>0){
-                    $("#type-flag").removeClass("unfilled");
-                    $("#type-flag").addClass("filled");
-                }
-                else{
-                    $("#type-flag").removeClass("filled");
-                    $("#type-flag").addClass("unfilled");
-                }
-                /****************************End Parameters Tab*****************************/
-                /****************************RelatedItems Tab*******************************/
-                var req_id = data['Requirement Ids'];
-                var assoc_bugs = data['Associated Bugs'];
-                var tc_id = data['Manual_TC_Id'];
-                //AssociatedBug
-                $('#defectid_txtbox').val(assoc_bugs);
-                //Manual Test Case Id
-                $('#id_txtbox').val(tc_id);
-                //Requirement Id
-                $('#reqid_txtbox').val(req_id);
-                if(!template){
-                    var auto_id=data['TC_Id'];
-                    var title=data['TC_Name'];
-                    $('#TC_Id').html("<b>Automation ID: "+auto_id +"</b>")
-                    $('#TC_Id').css('display','block');
-                    $('#titlebox').val(title);
-                }
-                /************************End RelatedItems Tab*******************************/
-                /***************************Steps Tab***************************************/
-                var steps_and_data = data['Steps and Data'];
-                //$('#steps_table').html("");
-                for(var i=0;i<(steps_and_data.length-1);i++){
-                    addMainTableRow('#steps_table');
-                }
-                var row_count=$('#steps_table tr').length;
-                var converted_data=[];
-                console.log(row_count);
-                popupdivrowcount=[];
-                for(var i=0;i<row_count;i++){
-                    $('#searchbox'+(i+1)+'name').val(steps_and_data[i][0]);
-                    $('#searchbox'+(i+1)+'info').val(steps_and_data[i][3]);
-                    $('#searchbox'+(i+1)+'expected').val(steps_and_data[i][4]);
-                    $('#searchbox'+(i+1)+'step_type').text(steps_and_data[i][2]);
-                    if(steps_and_data[i][5]=='yes'){
-                        $('#searchbox'+(i+1)+'verify').attr('checked','true');
                     }
-                    $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
-                    $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
-                    $('#searchbox'+(i+1)+'time').val(convertToString(steps_and_data[i][7]));
-                    var datasets=steps_and_data[i][1];
-                    popupdivrowcount[i]=0;
-                    if(datasets.length==0){
-                        //$('#searchbox'+(i+1)+'data').html("");
-                        $('#searchbox'+(i+1)+'data').parent().css({'cursor':'none'});
+                    //SectionPath
+                    var sections=data['Section_Path'];
+                    var sectionArray = sections.split('.');
+                    var dataId ="";
+                    var handlerString = "";
+                    for(var index in sectionArray){
+                        if(sectionArray[index] == "")
+                            continue;
+                        $.ajax({
+                            url:'GetSections/',
+                            dataType : "json",
+                            data : {
+                                section : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_')
+                            },
+                            success: function( json ) {
+                                if(json.length != 1){
+                                    var realItemIndex = parseInt(json[0][0])
+                                    var handlerString = ""
+                                    for(var i = 0; i < realItemIndex; i++)
+                                        handlerString+=sectionArray[i]+'.'
+
+                                    if(realItemIndex == 0){
+                                        $(".section[data-level='']").find('option').each(function(){$(this).remove();});
+                                        $(".section[data-level='']").append("<option>Choose...</option>");
+
+                                        for(var i = 0; i < json.length; i++)
+                                            json[i] = json[i][0].replace(/_/g,' ')
+                                        $.each(json, function(i, value) {
+                                            if(i == 0)return;
+                                            $(".section[data-level='']").append($('<option>').text(value).attr('value', value));
+                                        });
+                                        $(".section[data-level='']").val(sectionArray[realItemIndex].replace(/_/g,' '))
+                                    }else{
+                                        var tag = jQuery('<select/>',{
+                                            'class':'section',
+                                            'data-level':handlerString,
+                                            'id':realItemIndex+1,
+                                            change: function(){
+                                                isAtLowestSection = false;
+                                                recursivelyAddSection(this);
+                                                $("#section-flag").removeClass("filled");
+                                                $("#section-flag").addClass("unfilled");
+                                            }
+                                        })
+                                        if($('#sectiongroup select[id='+realItemIndex+']').length != 0)
+                                            $('#sectiongroup select[id='+realItemIndex+']').after(tag)
+                                        else
+                                            $('#sectiongroup select[id=1]').after(tag)
+
+                                        $(".section[data-level='"+handlerString+"']").append("<option>Choose...</option>");
+
+                                        var once = true;
+                                        for(var i = 0; i < json.length; i++)
+                                            json[i] = json[i][0].replace(/_/g,' ')
+                                        $.each(json, function(i, value) {
+                                            if(i == 0)return;
+                                            if(once){
+                                                lowest_section+=1
+                                                once = false
+                                            }
+                                            $(".section[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
+                                        });
+                                        $(".section[data-level='"+handlerString+"']").val(sectionArray[realItemIndex].replace(/_/g,' '))
+                                    }
+                                    isAtLowestSection = true;
+                                    $("#section-flag").removeClass("unfilled");
+                                    $("#section-flag").addClass("filled");
+                                }
+                            }
+                        });
+
+                        dataId += sectionArray[index] + '.'
+                    }
+                    //Priority
+                    var priority=data['Priority'];
+                    $("#priotiy_select").val(parseInt(priority.substring(1,2)));
+                    /*************** End Properties tab Data*******************************/
+                    /****************************Parameters Tab*****************************/
+                    //Select Platform
+                    var platform=data['Platform'];
+                    console.log(platform);
+                    for(var i=0;i<platform.length;i++){
+                        $('input[name="platform"]').each(function(){
+                            if($(this).val()==platform[i]){
+                                $(this).attr('checked','true');
+                            }
+                        });
+                    }
+                    if($('input[name="platform"]:checked').length>0){
+                        $("#platform-flag").removeClass("unfilled");
+                        $("#platform-flag").addClass("filled");
                     }
                     else{
-                        for(var j=0;j<datasets.length;j++){
-                            var temp=[];
-                            addnewrow('#searchbox'+(i+1)+'data_table',(i+1),(popupdivrowcount[i]+1));
-                            popupdivrowcount[i]++;
-                            var currentdataset=datasets[j];
-                            for(var k=0;k<currentdataset.length;k++){
-                                if(currentdataset[k][1] instanceof Array){
-                                    for(var l=0;l<currentdataset[k][1].length;l++){
-                                        var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][0]};
-                                        temp.push(tempObject);
+                        $("#platform-flag").removeClass("filled");
+                        $("#platform-flag").addClass("unfilled");
+                    }
+                    //Select Browsers/Dependency
+                    var dependency=data['Dependency List'];
+                    for(var i=0;i<dependency.length;i++){
+                        $('input[name="dependancy"]').each(function(){
+                            if($(this).val()==dependency[i]){
+                                $(this).attr('checked','true');
+                            }
+                        })
+                    };
+                    if($('input[name="dependancy"]:checked').length>0){
+                        $("#browser-flag").removeClass("unfilled");
+                        $("#browser-flag").addClass("filled");
+                    }
+                    else{
+                        $("#browser-flag").removeClass("filled");
+                        $("#browser-flag").addClass("unfilled");
+                    }
+                    //Type Select
+                    var tc_type=data['TC Type'];
+                    for(var i=0;i<tc_type.length;i++){
+                        $('input[name="type"]').each(function(){
+                            if($(this).val()==tc_type[i]){
+                                $(this).attr('checked','true');
+                            }
+                        })
+                    };
+                    if($('input[name="type"]:checked').length>0){
+                        $("#type-flag").removeClass("unfilled");
+                        $("#type-flag").addClass("filled");
+                    }
+                    else{
+                        $("#type-flag").removeClass("filled");
+                        $("#type-flag").addClass("unfilled");
+                    }
+                    /****************************End Parameters Tab*****************************/
+                    /****************************RelatedItems Tab*******************************/
+                    var req_id = data['Requirement Ids'];
+                    var assoc_bugs = data['Associated Bugs'];
+                    var tc_id = data['Manual_TC_Id'];
+                    //AssociatedBug
+                    $('#defectid_txtbox').val(assoc_bugs);
+                    //Manual Test Case Id
+                    $('#id_txtbox').val(tc_id);
+                    //Requirement Id
+                    $('#reqid_txtbox').val(req_id);
+                    if(!template){
+                        var auto_id=data['TC_Id'];
+                        var title=data['TC_Name'];
+                        $('#TC_Id').html("<b>Automation ID: "+auto_id +"</b>")
+                        $('#TC_Id').css('display','block');
+                        $('#titlebox').val(title);
+                    }
+                    /************************End RelatedItems Tab*******************************/
+                    /***************************Steps Tab***************************************/
+                    var steps_and_data = data['Steps and Data'];
+                    //$('#steps_table').html("");
+                    for(var i=0;i<(steps_and_data.length-1);i++){
+                        addMainTableRow('#steps_table');
+                    }
+                    var row_count=$('#steps_table tr').length;
+                    var converted_data=[];
+                    console.log(row_count);
+                    popupdivrowcount=[];
+                    for(var i=0;i<row_count;i++){
+                        $('#searchbox'+(i+1)+'name').val(steps_and_data[i][0]);
+                        $('#searchbox'+(i+1)+'info').val(steps_and_data[i][3]);
+                        $('#searchbox'+(i+1)+'expected').val(steps_and_data[i][4]);
+                        $('#searchbox'+(i+1)+'step_type').text(steps_and_data[i][2]);
+                        if(steps_and_data[i][5]=='yes'){
+                            $('#searchbox'+(i+1)+'verify').attr('checked','true');
+                        }
+                        $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
+                        $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
+                        $('#searchbox'+(i+1)+'time').val(convertToString(steps_and_data[i][7]));
+                        var datasets=steps_and_data[i][1];
+                        popupdivrowcount[i]=0;
+                        if(datasets.length==0){
+                            //$('#searchbox'+(i+1)+'data').html("");
+                            $('#searchbox'+(i+1)+'data').parent().css({'cursor':'none'});
+                        }
+                        else{
+                            for(var j=0;j<datasets.length;j++){
+                                var temp=[];
+                                addnewrow('#searchbox'+(i+1)+'data_table',(i+1),(popupdivrowcount[i]+1));
+                                popupdivrowcount[i]++;
+                                var currentdataset=datasets[j];
+                                for(var k=0;k<currentdataset.length;k++){
+                                    if(currentdataset[k][1] instanceof Array){
+                                        for(var l=0;l<currentdataset[k][1].length;l++){
+                                            var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][0]};
+                                            temp.push(tempObject);
+                                        }
+                                    }
+                                    else{
+                                        var tempobject={field:currentdataset[k][0],sub_field:"",value:currentdataset[k][1]};
+                                        temp.push(tempobject);
                                     }
                                 }
-                                else{
-                                    var tempobject={field:currentdataset[k][0],sub_field:"",value:currentdataset[k][1]};
-                                    temp.push(tempobject);
+                                for(var k=0;k<(temp.length-1);k++){
+                                    adddataentry('step'+(i+1)+'data'+(j+1)+'entrytable');
                                 }
-                            }
-                            for(var k=0;k<(temp.length-1);k++){
-                                adddataentry('step'+(i+1)+'data'+(j+1)+'entrytable');
-                            }
-                            var currentrow=$('#step'+(i+1)+'data'+(j+1)+'entrytable tr:eq(1)');
-                            for(var k=0;k<temp.length;k++){
-                                currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
-                                currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
-                                currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
-                                currentrow=currentrow.next();
-                            }
-                            if(temp.length>0){
-                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
-                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
-                            }
-                            else{
-                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
-                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                                var currentrow=$('#step'+(i+1)+'data'+(j+1)+'entrytable tr:eq(1)');
+                                for(var k=0;k<temp.length;k++){
+                                    currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
+                                    currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
+                                    currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
+                                    currentrow=currentrow.next();
+                                }
+                                if(temp.length>0){
+                                    $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
+                                    $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+                                }
+                                else{
+                                    $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
+                                    $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                                }
                             }
                         }
                     }
-                }
-                /***************************End Steps Tab***************************************/
-            });
+                    /***************************End Steps Tab***************************************/
+                });
 
         }
 
         $('#submit').live('click',function(){
             /*****************************Validation Check Here***********************************/
             if($('#section-flag').hasClass('unfilled')){
-                alert("Section Path is not defined Correctly");
+                //alert("Section Path is not defined Correctly");
+                alertify.error("Section Path is not defined Correctly");
                 return false;
             }
             if($('#platform-flag').hasClass('unfilled')){
-                alert("Platform is not selected correctly");
+                //alert("Platform is not selected correctly");
+                alertify.error("Platform is not selected correctly");
                 return false;
             }
             if($('#browser-flag').hasClass('unfilled')){
-                alert("Browser is not selected correctly");
+                //alert("Browser is not selected correctly");
+                alertify.error("Browser is not selected correctly");
                 return false;
             }
             if($('#type-flag').hasClass('unfilled')){
-                alert("Test Type is not defined correctly");
+                //alert("Test Type is not defined correctly");
+                alertify.error("Test Type is not defined correctly");
+                return false;
+            }
+            if($('#tag_txtbox').val()!=""){
+                //alert("Tag Field must be empty as you have to select from the suggestion provided");
+                alertify.error("Tag Field must be empty as you have to select from the suggestion provided");
                 return false;
             }
             var row_count=$('#steps_table tr').length;
@@ -507,7 +516,8 @@ $(document).ready(function() {
                 }
                 else{
                     if($('#searchbox'+(i+1)+'data').find('span:eq(0)').hasClass('unfilled')){
-                        alert("Data in the Step #"+(i+1)+" is not complete");
+                        //alert("Data in the Step #"+(i+1)+" is not complete");
+                        alertify.error("Data in the Step #"+(i+1)+" is not complete");
                         return false;
                     }
                 }
@@ -519,7 +529,8 @@ $(document).ready(function() {
                 }
             }
             if(checked_count<=0){
-                alert("Atleast One step is to be set as Verfication point");
+                //alert("Atleast One step is to be set as Verfication point");
+                alertify.error("Atleast One step is to be set as Verfication point");
                 return false;
             }
             /******************************END Validation Check here*******************************/
@@ -551,7 +562,7 @@ $(document).ready(function() {
             /*********************************Parameters Tab Data ********************************/
             var platformList=[];
             $('input[name="platform"]:checked').each(function(){
-               platformList.push($(this).val());
+                platformList.push($(this).val());
             });
             console.log(platformList);
             var browserList=[];
@@ -581,20 +592,24 @@ $(document).ready(function() {
             var stepTypeList=[];
             for(var i=1;i<=step_num;i++){
                 if($('#searchbox'+i+'name').val()==""){
-                    alert('Step Name for step Number#'+i+' can not be empty');
+                    //alert('Step Name for step Number#'+i+' can not be empty');
+                    alertify.error('Step Name for step Number#'+i+' can not be empty');
                     return false;
                 }
                 else{
                     if($('#searchbox'+i+'info').val()==""){
-                        alert('Step Description for step Number#'+i+' can not be empty');
+                        //alert('Step Description for step Number#'+i+' can not be empty');
+                        alertify.error('Step Description for step Number#'+i+' can not be empty');
                         return false;
                     }
                     if($('#searchbox'+i+'expected').val()==""){
-                        alert('Expected Result for step Number#'+i+' can not be empty');
+                        //alert('Expected Result for step Number#'+i+' can not be empty');
+                        alertify.error('Expected Result for step Number#'+i+' can not be empty');
                         return false;
                     }
                     if($('#searchbox'+i+'time').val()==""){
-                        alert('Estimated time for step Number#'+i+' can not be empty');
+                        //alert('Estimated time for step Number#'+i+' can not be empty');
+                        alertify.error('Estimated time for step Number#'+i+' can not be empty');
                         return false;
                     }
                     stepNameList.push($('#searchbox'+i+'name').val());
@@ -669,7 +684,7 @@ $(document).ready(function() {
                 /***********************Step Data Processing Here ********************************/
                 else{
                     for(var j=1;j<=stepData.length;j++){
-                        if($('#searchbox'+j+'data_table').attr('data-id')=='edit'){
+                        if($('#searchbox'+i+'data_table').attr('data-id')=='edit'){
                             var currentDataSet=stepData[j-1];
                             var edit_data=[]
                             for(var k=0;k<currentDataSet.length;k++){
@@ -770,11 +785,11 @@ $(document).ready(function() {
                             /*************************** end create old format Data*********************************/
 
                         }
-                    /*********************** END Step Data Processing Here ********************************/
-                    stepDataSTR[i-1]=tempSTR.join('%');
+                        /*********************** END Step Data Processing Here ********************************/
+                        stepDataSTR[i-1]=tempSTR.join('%');
+                    }
+                    console.log(stepDataSTR);
                 }
-                console.log(stepDataSTR);
-            }
             }
             /*************************End Filtering***********************************************/
             /************************End DataFetching From the POP Up*********************************************/
@@ -791,8 +806,8 @@ $(document).ready(function() {
                         temp=[];
                         temp.push(stepNameList[i]);
                         temp.push(stepTypeList[i]);
-                        for(var j=0;j<data.length;j++){
-                            if(temp[0]==data[j][0] && temp[1]==data[j][1]){
+                        for(var j=0;j<data['test_steps'].length;j++){
+                            if(temp[0]==data['test_steps'][j][0] && temp[1]==data['test_steps'][j][1]){
                                 found=1;
                                 break;
                             }
@@ -801,14 +816,43 @@ $(document).ready(function() {
                             }
                         }
                         if(!found){
-                            alert("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
+                            //alert("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
+                            alertify.error("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
                             alertFound=1;
                             return false;
                         }
                     }
+                    if(tag.length>0){
+                        var tag_alert=0;
+                        var tag_found=0;
+                        for(var i=0;i<tag.length;i++){
+                            for(var j=0;j<data['tag_list'].length;j++){
+                                if(tag[i].trim()==data['tag_list'][j][0].trim()){
+                                    tag_found=1;
+                                    break;
+                                }
+                                else{
+                                    tag_found=0;
+                                }
+                            }
+                            if(!tag_found){
+                                //alert("Tag Name Not present in the Database");
+                                alertify.error("Tag Name Not present in the Database");
+                                tag_alert=1;
+                                return false;
+                            }
+                        }
+                    }
                     var dataValidationCheck=true;
-                    if(alertFound>0){
-                        dataValidationCheck=false;
+                    if(tag.length>0){
+                        if(alertFound>0 || tag_alert>0){
+                            dataValidationCheck=false;
+                        }
+                    }
+                    else{
+                        if(alertFound>0){
+                            dataValidationCheck=false;
+                        }
                     }
                     if(query == "c" && dataValidationCheck){
                         $.get("Submit_New_TestCase/",{
@@ -831,6 +875,7 @@ $(document).ready(function() {
                             Steps_Time_List:stepTimeList.join("|"),
                             Status:"Dev"},function(data) {
                             //alert(data);
+                            //$.notify("Test Case '"+data+"' successfully created!");
                             var location='/Home/ManageTestCases/Edit/'+data;
                             window.location=location;
                         });
@@ -859,12 +904,14 @@ $(document).ready(function() {
                             },
                             function(data) {
                                 //alert(data+" edited successfully");
+                                //alertify.success("Test Case '"+data+"' successfully edited!");
                                 var location='/Home/ManageTestCases/Edit/'+data;
                                 window.location=location;
                             });
                     }
                     else{
-                        alert("Wrong data in StepName,StepType");
+                        //alert("Wrong data in StepName,StepType");
+                        alertify.error("Wrong data in StepName,StepType");
                         return false;
                     }
                 });
@@ -894,7 +941,8 @@ function AutoCompleteTestStep(){
                                 'border': '1px solid #FF3D00',
                                 'box-shadow': '0px 0px 3px #FF3D00'
                             });
-                            alert("Test Step must be chosen from popup list! Either you have to create new steps first.");
+                            //alert("Test Step must be chosen from popup list! Either you have to create new steps first.");
+                            alertify.error("Test Step must be chosen from popup list! Either you have to create new steps first.");
                         }
                         else{
                             $(".textbox:focus").css({
@@ -916,9 +964,9 @@ function AutoCompleteTestStep(){
                     fieldName.val(value);
                     if(ui.item[1]){
                         /*var index=fieldName.closest('tr').attr('id').split('_')[1].trim();
-                        fieldName.closest('tr').find('td:nth-child(4)').html('<a id="searchbox'+index+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
-                        '<span class="mail-status"></span>' +
-                        '</a>');*/
+                         fieldName.closest('tr').find('td:nth-child(4)').html('<a id="searchbox'+index+'data" class="data-popup notification-indicator tooltipped downwards" data-gotokey="n">' +
+                         '<span class="mail-status"></span>' +
+                         '</a>');*/
                         fieldName.closest('tr').find('td:nth-child(4) span:eq(0)').addClass('unfilled');
                         fieldName.closest('tr').find('td:nth-child(4)').css({'cursor':'pointer'});
                     }else{
@@ -1114,10 +1162,10 @@ function adddataentry(tablename){
     var message="";
     message+=(
         '<tr>' +
-        '<td><input class="textbox" style="width: auto"></td>' +
-        '<td><input class="textbox" style="width: auto"></td>' +
-        '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
-        '</tr>');
+            '<td><input class="textbox" style="width: auto"></td>' +
+            '<td><input class="textbox" style="width: auto"></td>' +
+            '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
+            '</tr>');
     $('#'+tablename).append(message);
 }
 function editTypeRow(divname,stepno,dataset_num,stringName){
@@ -1194,7 +1242,7 @@ function GenerateMainRow()
             '<input id="searchbox'+step_num+'time" type="text" class="input-small textbox timepicker">' +
             '<span class="add-on"><i class="icon-time"></i></span></div></td>' +
             //'<td><img class="new_tc_form est_time_img" id="searchbox'+step_num+'step_est_time" type=\'image\' src=\'/site_media/clock.png\' style=\"background-color: transparent; width:16px; height:16px;cursor:pointer\"></td>' +
-             '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
+            '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
             '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '</tr>'
         )
@@ -1405,35 +1453,113 @@ function show_radio_button(){
     });
 }
 function vertical_sidebar(){
-    $("#add_step_tip").click(function(){
+    /*$("#add_step_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/CreateStep/'
         }
+    });*/
+    $('#add_step_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/CreateStep/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
-    $("#edit_step_tip").click(function(){
+    /*$("#edit_step_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/CreateStep/'
         }
+    });*/
+    $('#edit_step_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/CreateStep/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
-    $("#set_tag_tip").click(function(){
+    /*$("#set_tag_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/TestSet/'
         }
+    });*/
+    $('#set_tag_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/TestSet/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
-    $("#copy_edit_tip").click(function(){
+    /*$("#copy_edit_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/SearchEdit/'
         }
+    });*/
+    $('#copy_edit_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/SearchEdit/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
-    $("#history_tip").click(function(){
+    /*$("#history_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/Analysis/'
         }
+    });*/
+    $('#history_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/Analysis/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
     });
-    $("#organize_tip").click(function(){
+    /*$("#organize_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/CreateProductSections/'
         }
+    });*/
+    $('#organize_tip').avgrund({
+        height: 200,
+        holderClass: 'custom',
+        showClose: true,
+        showCloseText: 'close',
+        onBlurContainer: '.container',
+        template: '<p>Are you sure about leaving before saving?</p>' +
+            '<div style="margin-top: 10%">' +
+            '<a href="/Home/ManageTestCases/CreateProductSections/" class="twitter" style="margin-left: 40%">Yes</a>' +
+            '</div>'
+    });
+}
+function reset () {
+    //$("#toggleCSS").attr("href", "alertify.default.css");
+    alertify.set({
+        labels : {
+            ok     : "OK",
+            cancel : "Cancel"
+        },
+        delay : 5000,
+        buttonReverse : false,
+        buttonFocus   : "ok"
     });
 }
 /****************************End Minar's Thing****************************************************/

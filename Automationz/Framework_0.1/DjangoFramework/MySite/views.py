@@ -108,7 +108,7 @@ def make_array(get_list):
         refined_list.append(temp)
     print refined_list
     return refined_list        
-def make_status_array(refined_list):
+def make_status_array(Conn,refined_list):
     pass_list=[]
     for each in refined_list:
         #print each
@@ -121,7 +121,7 @@ def make_status_array(refined_list):
         progress_query="select count(*) from test_case_results where run_id='%s' and status='In-Progress'" %run_id
         notrun_query="select count(*) from test_case_results where run_id='%s' and status='Submitted'" %run_id
         skipped_query="select count(*) from test_case_results where run_id='%s' and status='Skipped'" %run_id
-        Conn=GetConnection()
+        #Conn=GetConnection()
         total=DB.GetData(Conn,total_query)
         passed=DB.GetData(Conn,pass_query)
         failed=DB.GetData(Conn,fail_query)
@@ -142,7 +142,7 @@ def make_status_array(refined_list):
         temp.append(submitted)
         temp.append(pending)
         temp=tuple(temp)
-        Conn.close()    
+        #Conn.close()    
         pass_list.append(temp)
     print pass_list
     return pass_list
@@ -173,7 +173,7 @@ def ResultTableFetch(index):
             refine_list.append(each)
     total_run=make_array(refine_list)
     print total_run
-    all_status=make_status_array(total_run)
+    all_status=make_status_array(Conn,total_run)
     dataCount=DB.GetData(Conn,count_query,False)
     data={
           'total':total_run,
@@ -1063,7 +1063,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
     Env_Details_Data.append(temp)
     print Env_Details_Data
     #####################################
-    AllTestCases1 = DB.GetData(Conn, "(select "
+    """ AllTestCases1 = DB.GetData(Conn, "(select "
                                             "tc.tc_id as MKSId, "
                                             "tc.tc_name, "
                                             "tr.status, "
@@ -1144,7 +1144,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
         L.append("%s (%s)" % (failstep, Count))
         FailsStepsWithCount.append(L)
 
-    failsteps_Col = ["Step Name"]
+    failsteps_Col = ["Step Name"]"""
     ReRunColumn=['Test Case ID','Test Case Name','Type','Status']
     query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and tcr.run_id='%s'"%RunId
     ReRunList=DB.GetData(Conn,query,False)
@@ -1153,7 +1153,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
              'Env_Details_Col':Env_Details_Col,
              'Env_Details_Data':Env_Details_Data,
              'Env_length':len(Env_Details_Data),
-             'Column':Col,
+             """'Column':Col,
              'AllTestCases':AllTestCases,
              'All_length':len(AllTestCases),
              'Pass_length':len(Pass_TestCases),
@@ -1164,7 +1164,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
              'submitted_length':len(Submitted_TestCases),
              'failsteps':FailsStepsWithCount,
              'failsteps_col':failsteps_Col,
-             'fail_length':len(FailsStepsWithCount),
+             'fail_length':len(FailsStepsWithCount),"""
              'rerun_col':ReRunColumn,
              'rerun_list':ReRun
              }
@@ -2446,6 +2446,20 @@ def Selected_TestCaseID_Analaysis(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Selected_TestCaseID_History(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'Selected_TC_Analysis', '')
+
+    query="select run_id,status,failreason from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc"%UserData
+    TestCase_Analysis_Result = DB.GetData(Conn, query, False)
+    Col = ["Run ID", "Status", "Fail Reason"]
+
+    results = {'Heading':Col, 'TestCase_Analysis_Result':TestCase_Analysis_Result}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def ExecutionReport(request):
     templ = get_template('ExecutionReport.html')
     variables = Context({ })
@@ -2729,9 +2743,13 @@ def Create_Submit_New_TestCase(request):
         test_case_tags_result = TestCaseOperations.Insert_TestCase_Tags(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List)
 
         if test_case_steps_result == "Pass":
+            msg="==========================================================================================================="
+            TestCaseOperations.LogMessage("Create Test Case", msg, 4)
             return returnResult(TC_Id)
         else:
             TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            msg="==========================================================================================================="
+            TestCaseOperations.LogMessage("Create Test Case", msg, 4)
             return returnResult(test_case_tags_result)
 
     except Exception, e:
@@ -5762,6 +5780,7 @@ def GetStepNameType(request):
             Conn=GetConnection()
             query="select stepname,steptype from test_steps_list"
             test_steps_list=DB.GetData(Conn, query, False)
+<<<<<<< HEAD
     result=simplejson.dumps(test_steps_list)
     return HttpResponse(result,mimetype='appliction/json')
 
@@ -5846,3 +5865,199 @@ def manage_tc_data(request):
          
             result = json.dumps(processed_data)
             return HttpResponse(result, mimetype="application/json")
+=======
+            query="select distinct value from config_values where type='tag'"
+            tag_list=DB.GetData(Conn,query,False)
+            Dict={'test_steps':test_steps_list,'tag_list':tag_list}
+    result=simplejson.dumps(Dict)
+    return HttpResponse(result,mimetype='appliction/json')
+def Result(request):
+    return render_to_response('Result.html',{},context_instance=RequestContext(request))
+def GetResultAuto(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            final=[]
+            term=request.GET.get(u'term','')
+            Conn=GetConnection()
+            #fetching the status
+            query="select distinct status,'Status' from test_run_env where status Ilike '%%%s%%'"%term
+            status=DB.GetData(Conn, query, False)
+            for each in status:
+                if each not in final:
+                    final.append(each)
+            ###Fetching the product version
+            query="select distinct product_version,'Product Version' from test_run_env where product_version Ilike '%%%s%%'"%term
+            products=DB.GetData(Conn, query, False)
+            for each in products:
+                if each not in final:
+                    final.append(each)
+            #Fetching the run_type
+            query="select distinct run_type,'Run Type' from test_run_env where run_type Ilike '%%%s%%'"%term
+            run_types=DB.GetData(Conn,query,False)
+            for each in run_types:
+                if each not in final:
+                    final.append(each)
+            #Fetching the distinct User From the Test Run Env
+            query="select assigned_tester from test_run_env"
+            Testers=DB.GetData(Conn,query,False)
+            tester=[]
+            for each in Testers:
+                print each
+                for eachitem in each:
+                    if eachitem is not None:
+                        if "," not in eachitem:
+                            if (term in eachitem or str(term).upper() in eachitem or str(term).lower() in eachitem) and eachitem not in tester:
+                                tester.append(eachitem)
+                        else:
+                            for eachitemdivide in eachitem.split(","):
+                                if (term in eachitemdivide.strip() or str(term).upper() in eachitemdivide.strip() or str(term).lower() in eachitemdivide.strip()) and eachitemdivide.strip() not in tester:
+                                    tester.append(eachitemdivide.strip())
+            print tester
+            for each in tester:
+                if (term in each or str(term).upper() in each or str(term).lower() in each) and (each,'Tester') not in final:
+                    final.append((each,'Tester'))
+            #Fetch the objectives
+            query="select distinct ter.rundescription,'Objective' from test_env_results ter,test_run_env tre where tre.run_id=ter.run_id and ter.rundescription Ilike '%%%s%%'"%term
+            objectives=DB.GetData(Conn,query,False)
+            for each in objectives:
+                if each not in final:
+                    final.append(each)
+            #Fetch the milestones
+            query="select distinct test_milestone,'Milestone' from test_run_env where test_milestone Ilike '%%%s%%'"%term
+            milestone=DB.GetData(Conn,query,False)
+            for each in milestone:
+                if each not in final:
+                    final.append(each)
+    result=simplejson.dumps(final)
+    return HttpResponse(result,mimetype='application/json')
+def GetFilteredDataResult(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            final=[]
+            UserText=request.GET.get(u'UserText','')
+            currentPagination=request.GET.get(u'pagination','')
+            print currentPagination
+            # UserText=str(UserText)
+            UserText=UserText.replace(u'\xa0',u'|')
+            UserText=UserText.split('|')
+            for each in UserText:
+                if each=="":
+                    UserText.remove(each)
+            print UserText
+            #form query
+            condition=""
+            for each in UserText:
+                temp=each.split(":")
+                if temp[1].strip()=="Product Version":
+                    condition+="tre.product_version='%s'"%temp[0]
+                if temp[1].strip()=="Status":
+                    condition+="tre.status='%s'"%temp[0]
+                if temp[1].strip()=="Run Type":
+                    condition+="tre.run_type='%s'"%temp[0]
+                if temp[1].strip()=="Tester":
+                    condition+="tre.assigned_tester Ilike '%%%s%%'"%temp[0]
+                if temp[1].strip()=="Milestone":
+                    condition+="tre.test_milestone='%s'"%temp[0]
+                if temp[1].strip()=="Objective":
+                    condition+="ter.rundescription='%s'"%temp[0]
+                condition+=" and "
+            condition=condition[:-5].strip()
+            print condition
+            final=NewResultFetch(condition,currentPagination)
+    result=simplejson.dumps(final)
+    return HttpResponse(result,mimetype='application/json')
+def NewResultFetch(condition,currentPagination):
+    #pagination Code
+    step=10
+    limit=""
+    limit+=("limit "+str(step))
+    ###determine offset
+    offset=""
+    stepDelete=int(step)*int(int(currentPagination)-1)
+    offset+=("offset "+str(stepDelete))
+    print condition
+    total_query="select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query+="from test_run_env tre, test_env_results ter " 
+    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
+    if condition!="":
+        total_query+=" and "
+        total_query+=condition
+    total_query+=") "
+    total_query+="union all "
+    total_query+="(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query+="from test_run_env tre, test_env_results ter " 
+    total_query+="where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
+    if condition!="":
+        total_query+=" and "
+        total_query+=condition
+    total_query+=")) as A order by starttime desc,run_id asc "
+    count_query=total_query
+    total_query+=(limit+" "+offset)
+    print total_query
+    total_count=DB.GetData(Conn,count_query,False)
+    received_data=[]
+    for each in total_count:
+        if each not in received_data:
+            received_data.append(each)
+    get_list=DB.GetData(Conn,total_query,False)
+    refine_list=[]
+    for each in get_list:
+        if each not in refine_list:
+            refine_list.append(each)
+    total_run=make_array(refine_list)
+    print total_run
+    all_status=make_status_array(Conn,total_run)
+    #make Dict
+    Column=["Run ID","Objective","Run Type","Tester","Report","Status","Duration","Version","MileStone"]
+    Dict={'total':total_run,'status':all_status,'column':Column,'totalGet':len(received_data)}
+    return Dict
+def RunID_New(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            run_id=request.GET.get(u'run_id','')
+            run_id=run_id.replace("%3A",":")
+            index=request.GET.get(u'pagination','')
+            runData=GetData(run_id,index)
+            Col = ['ID', 'Title','Type', 'Status', 'Duration', 'Estd. Time','Comment', 'Log', 'Automation ID']
+            runDetail={'runData':runData['allData'],'runCol':Col,'total':runData['count']}
+    result=simplejson.dumps(runDetail)
+    return HttpResponse(result,mimetype='application/json')
+def GetData(run_id,index):
+    step=5
+    limit=("limit "+str(step))
+    #offset
+    offset=""
+    offset+=("offset "+str((int(index)-1)*int(step)))
+    condition= limit +" "+ offset
+    print condition
+    #form the query
+    query=""
+    query+="select * from ("
+    query+="(select "
+    query+="tc.tc_id as MKSId, "
+    query+="tc.tc_name, "
+    query+="tr.status, "
+    query+="to_char(tr.duration,'HH24:MI:SS'), "
+    query+="tr.failreason, "
+    query+="tr.logid, "
+    query+="tc.tc_id "
+    query+="from test_case_results tr, test_cases tc, test_case_tag tct "
+    query+="where tr.run_id = '%s' and "%run_id
+    query+="tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id) "
+    query+="union all "
+    query+="(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
+    query+="from test_run tr,test_cases tc, test_case_tag tct "
+    query+="where tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "%run_id
+    query+="tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )) AS A" %run_id
+    count_query=query
+    query+=" %s"%condition
+    print query
+    Conn=GetConnection()
+    runData=DB.GetData(Conn,query,False)
+    print runData
+    AllTestCases=Modify(runData)
+    AllTestCases=AddEstimatedTime(AllTestCases)
+    DataCount=DB.GetData(Conn,count_query,False)
+    DataReturn={'allData':AllTestCases,'count':len(DataCount)}
+    return DataReturn
+>>>>>>> 72469b69a9f7e281bdf335494f6719e3a83b2de0

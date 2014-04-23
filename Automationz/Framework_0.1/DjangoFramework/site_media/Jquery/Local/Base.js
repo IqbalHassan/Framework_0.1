@@ -11,7 +11,8 @@ $(document).ready(function(){
 
         if (user=="" || pwd=="")
         {
-            alert("Fields are empty");
+            //alert("Fields are empty");
+            alertify.error("Fields are empty");
         }
         else
         {
@@ -24,7 +25,7 @@ $(document).ready(function(){
                     pwd : pwd
                 },
                 success: function( json ) {
-                    alert(json);
+                    //alert(json);
                     /*if(json.length > 0)
                      logged = true;
                      /*for(var i = 0; i < json.length; i++)
@@ -35,18 +36,22 @@ $(document).ready(function(){
                      });*/
                     if(json!="User Not Found!")
                     {
+                        alertify.success("Logged in as '"+json+"'");
                         //location.reload();
                         $.session.set('username', user);
                         $.session.set('fullname', json);
                         $.session.set('log', 'logged');
-                        //setTimeout(function(){window.location='/Home/';},4000);
-                        window.location.href = '/Home/';
+                        setTimeout(function(){window.location='/Home/';},3000);
+                        //window.location.href = '/Home/';
                         $(".welcome").text($.session.get('fullname'));
                         //$("#nav").show();
                     }
+                    else{
+                        alertify.error("'"+json+"'");
+                    }
                 },
                 error: function(json){
-                    alert("Error");}
+                    alertify.error("Error");}
             });
             /*if(data.length > 0)
              {
