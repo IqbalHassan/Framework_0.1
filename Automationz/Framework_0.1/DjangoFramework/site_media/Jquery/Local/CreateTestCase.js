@@ -904,7 +904,7 @@ $(document).ready(function() {
                             },
                             function(data) {
                                 //alert(data+" edited successfully");
-                                //alertify.success("Test Case '"+data+"' successfully edited!");
+                                alertify.success("Test Case '"+data+"' successfully edited!");
                                 var location='/Home/ManageTestCases/Edit/'+data;
                                 window.location=location;
                             });
