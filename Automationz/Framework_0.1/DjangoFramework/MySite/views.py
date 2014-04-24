@@ -5781,7 +5781,8 @@ def GetStepNameType(request):
             query="select stepname,steptype from test_steps_list"
             test_steps_list=DB.GetData(Conn, query, False)
 # <<<<<<< HEAD
-    result=simplejson.dumps(test_steps_list)
+    Dict={'test_steps':test_steps_list}
+    result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='appliction/json')
 
 def manage_tc(request):
