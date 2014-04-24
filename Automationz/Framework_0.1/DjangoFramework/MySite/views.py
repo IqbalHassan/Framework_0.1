@@ -3432,11 +3432,9 @@ def Process_Git(request):
     if request.method == "GET":
         command = request.GET.get(u'command', '')
         if command == 'Pull':
-            GitApi.pull_latest_git()
-            message = 'git pulled'
+            message = GitApi.pull_latest_git()
         elif command == 'Log':
-            GitApi.git_log(-10)
-            message = 'git log'
+            message = GitApi.git_log(-10)
     json = simplejson.dumps(message)
     return HttpResponse(json, mimetype='application/json')
 
