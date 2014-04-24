@@ -1,4 +1,6 @@
 import logging
+import Global
+
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s %(levelname)s %(message)s',
@@ -14,14 +16,14 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-
+ip = Global.get_ip()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'postgres', # Or path to database file if using sqlite3.
         'USER': 'postgres', # Not used with sqlite3.
         'PASSWORD': 'password', # Not used with sqlite3.
-        'HOST': '135.23.123.67', # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': ip, # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '5432', # Set to empty string for default. Not used with sqlite3.
     }
 }
