@@ -26,7 +26,7 @@ def git_repo():
         return e
     
     
-def git_log(last_log = -10):
+def git_log(last_log = -3):
     try:
         g = git_repo()
         result = g.log(last_log)
