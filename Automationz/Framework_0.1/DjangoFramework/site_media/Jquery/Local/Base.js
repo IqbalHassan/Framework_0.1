@@ -12,7 +12,7 @@ $(document).ready(function(){
         if (user=="" || pwd=="")
         {
             //alert("Fields are empty");
-            alertify.error("Fields are empty");
+            alertify.log("Fields are empty","",0);
         }
         else
         {
@@ -36,7 +36,7 @@ $(document).ready(function(){
                      });*/
                     if(json!="User Not Found!")
                     {
-                        alertify.success("Logged in as '"+json+"'");
+                        alertify.log("Logged in as '"+json+"'","",0);
                         desktop_notify("Logged in as '"+json+"'");
                         //location.reload();
                         $.session.set('username', user);
@@ -48,11 +48,11 @@ $(document).ready(function(){
                         //$("#nav").show();
                     }
                     else{
-                        alertify.error("'"+json+"'");
+                        alertify.log("'"+json+"'","",0);
                     }
                 },
                 error: function(json){
-                    alertify.error("Error");}
+                    alertify.log("Error","",0);}
             });
             /*if(data.length > 0)
              {
@@ -145,11 +145,11 @@ function desktop_notify(message){
         });
     }
 
-    var button = document.getElementById('submit_button');
+    //var button = document.getElementById('submit_button');
 
     // If the user agreed to get notified
     if (Notification && Notification.permission === "granted") {
-        var n = new Notification(message);
+        var n = new Notification("Logged In!",{body:message, icon:"/site_media/noti.ico"});
     }
 
     // If the user hasn't told if he wants to be notified or not
@@ -163,12 +163,12 @@ function desktop_notify(message){
 
             // If the user said okay
             if (status === "granted") {
-                var n = new Notification(message);
+                var n = new Notification("Logged In!",{body:message, icon:"/site_media/noti.ico"});
             }
 
             // Otherwise, we can fallback to a regular modal alert
             else {
-                alertify.log(message);
+                alertify.log(message,"",0);
             }
         });
     }
@@ -176,7 +176,7 @@ function desktop_notify(message){
     // If the user refuses to get notified
     else {
         // We can fallback to a regular modal alert
-        alertify.log(message);
+        alertify.log(message,"",0);
     }
 
 

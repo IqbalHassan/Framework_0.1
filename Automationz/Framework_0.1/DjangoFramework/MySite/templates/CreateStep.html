@@ -261,7 +261,7 @@
         button.addEventListener('click', function () {
             // If the user agreed to get notified
             if (Notification && Notification.permission === "granted") {
-                var n = new Notification(message);
+                var n = new Notification(message,{body:message, icon:"/site_media/noti.ico"});
             }
 
             // If the user hasn't told if he wants to be notified or not
@@ -275,12 +275,12 @@
 
                     // If the user said okay
                     if (status === "granted") {
-                        var n = new Notification(message);
+                        var n = new Notification(message,{body:message, icon:"/site_media/noti.ico"});
                     }
 
                     // Otherwise, we can fallback to a regular modal alert
                     else {
-                        alertify.log(message);
+                        alertify.log(message,"",0);
                     }
                 });
             }
@@ -288,7 +288,7 @@
             // If the user refuses to get notified
             else {
                 // We can fallback to a regular modal alert
-                alertify.log(message);
+                alertify.log(message,"",0);
             }
         });
     });

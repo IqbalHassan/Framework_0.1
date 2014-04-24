@@ -200,9 +200,21 @@ function MileStoneTab(){
             var new_name=$('#msinput').val();
             var old_name="";
         }
+        if(operation=="0"){
+            var title_msg = "Fields are Empty!"
+        }
+        else if(operation=="1"){
+            title_msg = "Milestone Created"
+        }
+        else if(operation=="2"){
+            title_msg = "Milestone Renamed"
+        }
+        else if(operation=="3"){
+            title_msg = "Milestone Deleted"
+        }
         if(operation=="0"||new_name==''){
             var error_message="<b style='color: #ff0000'>Fields are empty</b>";
-            alertify.error("Fields are empty");
+            alertify.log("Fields are empty","",0);
             $('#error_milestone').html(error_message);
             $('#error_milestone').css({'display':'block'});
         }
@@ -215,16 +227,20 @@ function MileStoneTab(){
                     var color='green';
                 }
                 if(data['confirm_message']==""){
-                    alertify.error(""+data['error_message']+"");
+                    alertify.log(""+data['error_message']+"","",0);
+                    milestone_notify(""+data['error_message']+"",""+data['error_message']+"","/site_media/noti2.ico");
                     $('#error_milestone').html('<b style="color:red;">'+data['error_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
                     $('#error_milestone').slideDown('slow');
-                    setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                    //setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                    window.location = '/Home/RunTest/';
                 }
                 else{
-                    alertify.success(""+data['confirm_message']+"");
+                    alertify.log(""+data['confirm_message']+"","",0);
+                    milestone_notify(title_msg,""+data['confirm_message']+"","/site_media/noti.ico");
                     $('#error_milestone').html('<b style="color:green;">'+data['confirm_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
                     $('#error_milestone').slideDown('slow');
-                    setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                    //setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                    window.location = '/Home/RunTest/';
                 }
 
             })
@@ -407,7 +423,7 @@ function AutoCompletionButton(environment,browserdata){
         var product_version=$('#product_version option:selected').val();
         if(machine_name==''||os_name==''||browser==''||machine_ip==''||product_version==''){
             var error_message="<b style='color: #ff0000'>Fields are empty</b>";
-            alertify.error("Fields are empty");
+            alertify.log("Fields are empty","",0);
             $('#error_message').html(error_message);
             $('#error_message').css({'display':'block'});
         }
@@ -423,10 +439,12 @@ function AutoCompletionButton(environment,browserdata){
                 product_version:product_version
             },function(data){
                 //console.log(data);
-                alertify.success(""+data+"");
-                $('#error_message').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                alertify.log(""+data+"","",0);
+                machine_notify(""+data+"");
+                $('#error_message').html('<b style="color: #109F40">'+data+'<br>Page will be refreshed to change effect</b>');
                 $('#error_message').slideDown('slow');
-                setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                //setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                window.location = '/Home/RunTest/';
             });
         }
     });
@@ -1269,7 +1287,7 @@ function RunTestProcess() {
 		});
 		if(EmailIds.length==0){
             //alert("EmailIds is to be selected from suggestion");
-            alertify.error("EmailIds is to be selected from suggestion");
+            alertify.log("EmailIds is to be selected from suggestion","",0);
             return false;
         }
 		//Getting Selected Dependency Text
@@ -1288,7 +1306,7 @@ function RunTestProcess() {
         });
         if(TesterIds.length==0){
             //alert("Testers is to be selected from suggestion");
-            alertify.error("Testers is to be selected from suggestion");
+            alertify.log("Testers is to be selected from suggestion","",0);
             return false;
         }
 		//Getting Test Data Type Checkbox value
@@ -1300,7 +1318,7 @@ function RunTestProcess() {
         TestObjective=TestObjective.trim();
         if(TestObjective==""){
             //alert("Test Objective is empty");
-            alertify.error("Test Objective is empty");
+            alertify.log("Test Objective is empty","",0);
             return false;
         }
 		//Getting the addedMileStone
@@ -1313,7 +1331,7 @@ function RunTestProcess() {
         });
         if(TestMileStone==""){
             //alert("MileStone is to be selected from suggestion");
-            alertify.error("MileStone is to be selected from suggestion");
+            alertify.log("MileStone is to be selected from suggestion","",0);
             return false;
         }
         //TestMileStone=$('#TestMileStone').val();
@@ -1354,3 +1372,97 @@ function Get_Selected_Env_Name()
 		
 }
 
+function machine_notify(message){
+    // At first, let's check if we have permission for notification
+    // If not, let's ask for it
+    if (Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    }
+
+    var button = document.getElementById('submit_button');
+
+    // If the user agreed to get notified
+    if (Notification && Notification.permission === "granted") {
+        var n = new Notification("Manual Test Machine Added!",{body:message, icon:"/site_media/noti.ico"});
+    }
+
+    // If the user hasn't told if he wants to be notified or not
+    // Note: because of Chrome, we are not sure the permission property
+    // is set, therefore it's unsafe to check for the "default" value.
+    else if (Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+
+            // If the user said okay
+            if (status === "granted") {
+                var n = new Notification("Manual Test Machine Added!",{body:message, icon:"/site_media/noti.ico"});
+            }
+
+            // Otherwise, we can fallback to a regular modal alert
+            else {
+                alertify.log(message,"",0);
+            }
+        });
+    }
+
+    // If the user refuses to get notified
+    else {
+        // We can fallback to a regular modal alert
+        alertify.log(message,"",0);
+    }
+
+
+}
+function milestone_notify(title_msg,message,icon){
+    // At first, let's check if we have permission for notification
+    // If not, let's ask for it
+    if (Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    }
+
+    var button = document.getElementById('ms_button');
+
+    // If the user agreed to get notified
+    if (Notification && Notification.permission === "granted") {
+        var n = new Notification(title_msg,{body:message, icon:icon});
+    }
+
+    // If the user hasn't told if he wants to be notified or not
+    // Note: because of Chrome, we are not sure the permission property
+    // is set, therefore it's unsafe to check for the "default" value.
+    else if (Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+
+            // If the user said okay
+            if (status === "granted") {
+                var n = new Notification(title_msg,{body:message, icon:icon});
+            }
+
+            // Otherwise, we can fallback to a regular modal alert
+            else {
+                alertify.log(message,"",0);
+            }
+        });
+    }
+
+    // If the user refuses to get notified
+    else {
+        // We can fallback to a regular modal alert
+        alertify.log(message,"",0);
+    }
+
+
+}

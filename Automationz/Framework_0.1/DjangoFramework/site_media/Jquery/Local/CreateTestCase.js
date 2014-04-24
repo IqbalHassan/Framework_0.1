@@ -486,27 +486,27 @@ $(document).ready(function() {
             /*****************************Validation Check Here***********************************/
             if($('#section-flag').hasClass('unfilled')){
                 //alert("Section Path is not defined Correctly");
-                alertify.error("Section Path is not defined Correctly");
+                alertify.log("Section Path is not defined Correctly","",0);
                 return false;
             }
             if($('#platform-flag').hasClass('unfilled')){
                 //alert("Platform is not selected correctly");
-                alertify.error("Platform is not selected correctly");
+                alertify.log("Platform is not selected correctly","",0);
                 return false;
             }
             if($('#browser-flag').hasClass('unfilled')){
                 //alert("Browser is not selected correctly");
-                alertify.error("Browser is not selected correctly");
+                alertify.log("Browser is not selected correctly","",0);
                 return false;
             }
             if($('#type-flag').hasClass('unfilled')){
                 //alert("Test Type is not defined correctly");
-                alertify.error("Test Type is not defined correctly");
+                alertify.log("Test Type is not defined correctly","",0);
                 return false;
             }
             if($('#tag_txtbox').val()!=""){
                 //alert("Tag Field must be empty as you have to select from the suggestion provided");
-                alertify.error("Tag Field must be empty as you have to select from the suggestion provided");
+                alertify.log("Tag Field must be empty as you have to select from the suggestion provided","",0);
                 return false;
             }
             var row_count=$('#steps_table tr').length;
@@ -517,7 +517,7 @@ $(document).ready(function() {
                 else{
                     if($('#searchbox'+(i+1)+'data').find('span:eq(0)').hasClass('unfilled')){
                         //alert("Data in the Step #"+(i+1)+" is not complete");
-                        alertify.error("Data in the Step #"+(i+1)+" is not complete");
+                        alertify.log("Data in the Step #"+(i+1)+" is not complete","",0);
                         return false;
                     }
                 }
@@ -530,7 +530,7 @@ $(document).ready(function() {
             }
             if(checked_count<=0){
                 //alert("Atleast One step is to be set as Verfication point");
-                alertify.error("Atleast One step is to be set as Verfication point");
+                alertify.log("Atleast One step is to be set as Verfication point","",0);
                 return false;
             }
             /******************************END Validation Check here*******************************/
@@ -593,23 +593,23 @@ $(document).ready(function() {
             for(var i=1;i<=step_num;i++){
                 if($('#searchbox'+i+'name').val()==""){
                     //alert('Step Name for step Number#'+i+' can not be empty');
-                    alertify.error('Step Name for step Number#'+i+' can not be empty');
+                    alertify.log('Step Name for step Number#'+i+' can not be empty',"",0);
                     return false;
                 }
                 else{
                     if($('#searchbox'+i+'info').val()==""){
                         //alert('Step Description for step Number#'+i+' can not be empty');
-                        alertify.error('Step Description for step Number#'+i+' can not be empty');
+                        alertify.log('Step Description for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
                     if($('#searchbox'+i+'expected').val()==""){
                         //alert('Expected Result for step Number#'+i+' can not be empty');
-                        alertify.error('Expected Result for step Number#'+i+' can not be empty');
+                        alertify.log('Expected Result for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
                     if($('#searchbox'+i+'time').val()==""){
                         //alert('Estimated time for step Number#'+i+' can not be empty');
-                        alertify.error('Estimated time for step Number#'+i+' can not be empty');
+                        alertify.log('Estimated time for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
                     stepNameList.push($('#searchbox'+i+'name').val());
@@ -817,7 +817,7 @@ $(document).ready(function() {
                         }
                         if(!found){
                             //alert("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
-                            alertify.error("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
+                            alertify.log("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion","",0);
                             alertFound=1;
                             return false;
                         }
@@ -837,7 +837,7 @@ $(document).ready(function() {
                             }
                             if(!tag_found){
                                 //alert("Tag Name Not present in the Database");
-                                alertify.error("Tag Name Not present in the Database");
+                                alertify.log("Tag Name Not present in the Database","",0);
                                 tag_alert=1;
                                 return false;
                             }
@@ -875,8 +875,8 @@ $(document).ready(function() {
                             Steps_Time_List:stepTimeList.join("|"),
                             Status:"Dev"},function(data) {
                             //alert(data);
-                            alertify.success("Test Case '"+data+"' successfully created!");
-                            desktop_notify("Test Case '"+data+"' successfully created!");
+                            alertify.log("Test Case '"+data+"' successfully created!","",0);
+                            desktop_notify("Test Case '"+data+"'-'"+title+"' successfully created!");
                             var location='/Home/ManageTestCases/Edit/'+data;
                             window.location=location;
                         });
@@ -905,15 +905,15 @@ $(document).ready(function() {
                             },
                             function(data) {
                                 //alert(data+" edited successfully");
-                                alertify.success("Test Case '"+data+"' successfully edited!");
-                                desktop_notify("Test Case '"+data+"' successfully edited!");
+                                alertify.log("Test Case '"+data+"' successfully edited!","",0);
+                                desktop_notify("Test Case '"+data+"'-'"+title+"' successfully edited!");
                                 var location='/Home/ManageTestCases/Edit/'+data;
                                 window.location=location;
                             });
                     }
                     else{
                         //alert("Wrong data in StepName,StepType");
-                        alertify.error("Wrong data in StepName,StepType");
+                        alertify.log("Wrong data in StepName,StepType","",0);
                         return false;
                     }
                 });
@@ -944,7 +944,7 @@ function AutoCompleteTestStep(){
                                 'box-shadow': '0px 0px 3px #FF3D00'
                             });
                             //alert("Test Step must be chosen from popup list! Either you have to create new steps first.");
-                            alertify.error("Test Step must be chosen from popup list! Either you have to create new steps first.");
+                            alertify.log("Test Step must be chosen from popup list! Either you have to create new steps first.","",0);
                         }
                         else{
                             $(".textbox:focus").css({
@@ -1579,7 +1579,7 @@ function desktop_notify(message){
 
     // If the user agreed to get notified
     if (Notification && Notification.permission === "granted") {
-        var n = new Notification(message);
+        var n = new Notification("Test Case Created/Updated!",{body:message, icon:"/site_media/noti.ico"});
     }
 
     // If the user hasn't told if he wants to be notified or not
@@ -1593,12 +1593,12 @@ function desktop_notify(message){
 
             // If the user said okay
             if (status === "granted") {
-                var n = new Notification(message);
+                var n = new Notification("Test Case Created/Updated!",{body:message, icon:"/site_media/noti.ico"});
             }
 
             // Otherwise, we can fallback to a regular modal alert
             else {
-                alertify.log(message);
+                alertify.log(message,"",0);
             }
         });
     }
@@ -1606,7 +1606,7 @@ function desktop_notify(message){
     // If the user refuses to get notified
     else {
         // We can fallback to a regular modal alert
-        alertify.log(message);
+        alertify.log(message,"",0);
     }
 
 

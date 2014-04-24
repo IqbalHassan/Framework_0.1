@@ -5627,7 +5627,7 @@ def MileStoneOperation(request):
                     againQuery="select count(*) from config_values where type='milestone' and value='%s'"%new_name
                     again=DB.GetData(Conn,againQuery)
                     if(again[0]>0):
-                        error_message="MileStone already exists,can't rename"
+                        error_message="MileStone already exists, can't rename"
                     else:
                         #start Rename Operation
                         condition="where type='milestone' and value='%s'"%old_name
@@ -5647,7 +5647,7 @@ def MileStoneOperation(request):
                     print DB.InsertNewRecordInToTable(Conn, "config_values",**Dict)
                     confirm_message="MileStone is created Successfully"
                 else:
-                    error_message="MileStone name exists.Can't create a new one"
+                    error_message="MileStone name exists. Can't create a new one"
                 #start  Operation
             if operation=="3":
                 new_name=request.GET.get(u'new_name','')
@@ -5656,8 +5656,8 @@ def MileStoneOperation(request):
                 available=DB.GetData(Conn,query)
                 if(available[0]>0):
                     Dict={'type':'milestone','value':new_name.strip()}
-                    print DB.Record(Conn, "config_values",**Dict)
-                    confirm_message="MileStone is d Successfully"
+                    print DB.DeleteRecord(Conn, "config_values",**Dict)
+                    confirm_message="MileStone is deleted Successfully"
                 else:
                     error_message="MileStone Not Found"
     results={'confirm_message':confirm_message,
