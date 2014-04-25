@@ -5780,7 +5780,6 @@ def GetStepNameType(request):
             Conn=GetConnection()
             query="select stepname,steptype from test_steps_list"
             test_steps_list=DB.GetData(Conn, query, False)
-# <<<<<<< HEAD
     result=simplejson.dumps(test_steps_list)
     return HttpResponse(result,mimetype='appliction/json')
 
@@ -5805,7 +5804,7 @@ def manage_tc(request):
                 result = json.dumps(processed_data)
                 return HttpResponse(result, mimetype="application/json")
             except Exception, e:
-                return render("Sorry, data from the server could not be recieved.")
+                return render("Sorry, data from the server could not be retrieved.")
         else:
             print "-----------It's not an ajax request-------------"
             return render(request, 'jsTree/index.html', {})
