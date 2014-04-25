@@ -1789,11 +1789,63 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
     EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query, test_objective = TestObjective  )
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , Status = 'Submitted' ) 
-    
+    RegisterPermanentInfo(Conn,runid)
     results = {'Result': Result,'runid':runid}
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+def RegisterPermanentInfo(Conn,run_id):
+    print run_id
+    ###Enter the test Case Name in the result test_case table
+    #get the test case name
+    query="select tc_id from test_case_results where run_id='%s'"%run_id.strip()
+    test_cases=DB.GetData(Conn, query)
+    test_case_column_query="select column_name from information_schema.columns where table_name='result_test_cases'"
+    test_case_column=DB.GetData(Conn,test_case_column_query)
+    test_case_column.reverse()
+    test_case_column.pop()
+    test_case_column.reverse()
+    for each in test_cases:
+        test_case=each
+        test_case_query="select * from test_cases where tc_id='%s'"%test_case
+        Dict={}
+        Dict.update({'run_id':run_id})
+        test_case_column_data=DB.GetData(Conn,test_case_query,False)
+        ###populate Dict for the test_cases
+        for each in test_case_column_data:
+            for eachitem in zip(each,test_case_column):
+                Dict.update({eachitem[1]:eachitem[0]})
+        print Dict
+        result=DB.InsertNewRecordInToTable(Conn,"result_test_cases",**Dict)
+        if result==False:
+            CleanRun(run_id)
+        test_step_column_query="select column_name from information_schema.columns where table_name='test_steps_list'"
+        test_step_column=DB.GetData(Conn,test_step_column_query)
+        test_step_query="select * from test_steps_list where step_id in (select step_id from test_steps where tc_id='"+test_case+"')"
+        test_step_list_data=DB.GetData(Conn,test_step_query,False)
+        ##form the dictionary
+        for each in test_step_list_data:
+            step_list_dict={}
+            step_list_dict.update({'run_id':run_id})
+            for eachitem in zip(test_step_column,each):
+                step_list_dict.update({eachitem[0]:eachitem[1]})
+            result=DB.InsertNewRecordInToTable(Conn,"result_test_steps_list",**step_list_dict)
+            if result==False:
+                CleanRun(run_id)
+        test_steps_query="select column_name from information_schema.columns where table_name='test_steps'"
+        test_steps=DB.GetData(Conn,test_steps_query)
+        test_steps_data_query="select * from test_steps where tc_id='%s'"%test_case
+        test_steps_data=DB.GetData(Conn,test_steps_data_query,False)
+        for each in test_steps_data:
+            steps_dict={}
+            steps_dict.update({'run_id':run_id})
+            for eachitem in zip(test_steps,each):
+                steps_dict.update({eachitem[0]:eachitem[1]})
+            result=DB.InsertNewRecordInToTable(Conn,"result_test_steps",**steps_dict)
+            if result==False:
+                CleanRun(run_id)
+def CleanRun(runid):
+    print runid
 def AddInfo(run_id):
     conn=GetConnection()
     query="select tc_id from test_run where run_id='"+run_id+"'"
