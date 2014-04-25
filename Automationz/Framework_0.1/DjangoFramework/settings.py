@@ -7,8 +7,9 @@ logging.basicConfig(
 )
 
 # Django settings for DjangoFramework project.
+debug_settings = Global.set_debug()
 
-DEBUG = True
+DEBUG = debug_settings
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -176,4 +177,7 @@ LOGGING = {
 }
 
 
+ALLOWED_HOSTS = [
+    '135.23.123.67', # Allow domain and subdomains
 
+]
