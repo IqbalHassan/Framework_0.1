@@ -3434,7 +3434,7 @@ def Process_Git(request):
         if command == 'Pull':
             message = GitApi.pull_latest_git()
         elif command == 'Log':
-            message = GitApi.git_log(-10)
+            message = GitApi.git_log(-4)
     json = simplejson.dumps(message)
     return HttpResponse(json, mimetype='application/json')
 
