@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import psycopg2, inspect, sys, time
+import Global
 
 
 
@@ -17,7 +18,9 @@ To Drop Primary key: Alter Table test_run
 To Change the Column Data Type: Alter Table test_run
                                 Alter execution_time Type VARCHAR(255)
 """
-def ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost='135.23.123.67'):
+ip = Global.get_ip()
+
+def ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost=ip):
 
     for x in range (0, 5):
             conn = False
