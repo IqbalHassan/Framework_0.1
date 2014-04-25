@@ -27,7 +27,7 @@ $(document).ready(function(){
                 	
                 	instance.stop( 1 );
                 	clearInterval( interval );
-                	
+            
                     setTimeout(function(){window.location='/Home/';}, 1500);
                     setTimeout(function(){
                     	window.location='/Home/';
@@ -37,7 +37,7 @@ $(document).ready(function(){
                     $.session.set('fullname', json);
                     $.session.set('log', 'logged');
                     
-                    $("#loginFieldset").css("border", "6px solid #1ECD97");
+                    $("#loginFieldset").css("border", "#1ECD97");
                 	$("#loginLegened").css({
                 		"border": "#1ECD97",
                 		"background": "#1ECD97"
@@ -51,17 +51,26 @@ $(document).ready(function(){
                 	clearInterval( interval );
                 	s_success = false;
                 	progress = 0;
+                	
+                	$("#loginFieldset").css("border", "#FB797E");
+                	$("#loginLegened").css({
+                		"border": "#FB797E",
+                		"background": "#FB797E"
+                	});
                 }
             },
             error: function(json){
-            	$("#loginFieldset").css("border", "#FB797E");
-            	$("#loginLegened").css({
-            		"border": "#FB797E",
-            		"background": "#FB797E"
-            	});
-            	instance.stop( -1 );
-            	clearInterval( interval );
-            	s_success = false;
+                	
+                	clearInterval( interval );
+                	s_success = false;
+                	progress = 0;
+                	
+                	$("#loginFieldset").css("border", "#FB797E");
+                	$("#loginLegened").css({
+                		"border": "#FB797E",
+                		"background": "#FB797E"
+                	});
+                }
             }
         });
 	}
@@ -122,6 +131,22 @@ $(document).ready(function(){
 			}
 		} );
 	} );
+							clearInterval( interval );
+				            instance.stop( -1 );
+				            $("#loginFieldset").css("border", "6px solid #FB797E");
+			            	$("#loginLegened").css({
+			            		"border": "#FB797E",
+			            		"background": "#FB797E"
+			            	});
+				        }
+
+						if ( s_success === true ) {
+							clearInterval( interval );
+						}
+					}, 80 );
+			}
+		} );
+	} );
 
 });
 function desktop_notify(message){
@@ -168,5 +193,4 @@ function desktop_notify(message){
         // We can fallback to a regular modal alert
         alertify.log(message,"",0);
     }
-
 }

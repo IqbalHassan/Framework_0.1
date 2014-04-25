@@ -5778,10 +5778,18 @@ def GetStepNameType(request):
             Conn=GetConnection()
             query="select stepname,steptype from test_steps_list"
             test_steps_list=DB.GetData(Conn, query, False)
-    result=simplejson.dumps(test_steps_list)
-    Dict={'test_steps':test_steps_list}
-    result=simplejson.dumps(Dict)
-    result=simplejson.dumps(test_steps_list)
+# <<<<<<< HEAD
+#     result=simplejson.dumps(test_steps_list)
+#     Dict={'test_steps':test_steps_list}
+#     result=simplejson.dumps(Dict)
+#     result=simplejson.dumps(test_steps_list)
+#     Dict={'test_steps':test_steps_list}
+#     result=simplejson.dumps(Dict)
+# =======
+# <<<<<<< HEAD
+#     result=simplejson.dumps(test_steps_list)
+# =======
+# # <<<<<<< HEAD
     Dict={'test_steps':test_steps_list}
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='appliction/json')
