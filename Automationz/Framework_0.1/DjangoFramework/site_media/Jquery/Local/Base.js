@@ -2,7 +2,7 @@
  * Last modified by: sazid on 4/25/14.
  */
 $(document).ready(function(){
-    //login
+
 	window.interval = 0;
 	s_success = false;
 	
@@ -28,7 +28,6 @@ $(document).ready(function(){
                 	instance.stop( 1 );
                 	clearInterval( interval );
             
-                    setTimeout(function(){window.location='/Home/';}, 1500);
                     setTimeout(function(){
                     	window.location='/Home/';
                     }, 1500);
@@ -37,7 +36,7 @@ $(document).ready(function(){
                     $.session.set('fullname', json);
                     $.session.set('log', 'logged');
                     
-                    $("#loginFieldset").css("border", "#1ECD97");
+                    $("#loginFieldset").css("border", "6px solid #1ECD97");
                 	$("#loginLegened").css({
                 		"border": "#1ECD97",
                 		"background": "#1ECD97"
@@ -52,7 +51,7 @@ $(document).ready(function(){
                 	s_success = false;
                 	progress = 0;
                 	
-                	$("#loginFieldset").css("border", "#FB797E");
+                	$("#loginFieldset").css("border", "6px solid #FB797E");
                 	$("#loginLegened").css({
                 		"border": "#FB797E",
                 		"background": "#FB797E"
@@ -60,18 +59,16 @@ $(document).ready(function(){
                 }
             },
             error: function(json){
-                	
-                	clearInterval( interval );
-                	s_success = false;
-                	progress = 0;
-                	
-                	$("#loginFieldset").css("border", "#FB797E");
-                	$("#loginLegened").css({
-                		"border": "#FB797E",
-                		"background": "#FB797E"
-                	});
-                }
-            }
+				clearInterval( interval );
+				s_success = false;
+				progress = 0;
+				
+				$("#loginFieldset").css("border", "6px solid #FB797E");
+				$("#loginLegened").css({
+					"border": "#FB797E",
+					"background": "#FB797E"
+				});
+			}
         });
 	}
 	
@@ -111,31 +108,11 @@ $(document).ready(function(){
 				        
 						if (window.user === "" || window.pwd === "")
 				        {
-				            alertify.error("Field(s) are empty");
-
-							clearInterval( interval );
-				            instance.stop( -1 );
-							clearInterval( interval );
-				            instance.stop( -1 );
-				            $("#loginFieldset").css("border", "#FB797E");
-			            	$("#loginLegened").css({
-			            		"border": "#FB797E",
-			            		"background": "#FB797E"
-			            	});
-				        }
-
-						if ( s_success === true ) {
-							clearInterval( interval );
-						}
-					}, 80 );
-			}
-		} );
-	} );
 							clearInterval( interval );
 				            instance.stop( -1 );
 				            $("#loginFieldset").css("border", "6px solid #FB797E");
 			            	$("#loginLegened").css({
-			            		"border": "#FB797E",
+			            		"border": "6px solid #FB797E",
 			            		"background": "#FB797E"
 			            	});
 				        }
@@ -147,8 +124,9 @@ $(document).ready(function(){
 			}
 		} );
 	} );
-
 });
+
+
 function desktop_notify(message){
     // At first, let's check if we have permission for notification
     // If not, let's ask for it
