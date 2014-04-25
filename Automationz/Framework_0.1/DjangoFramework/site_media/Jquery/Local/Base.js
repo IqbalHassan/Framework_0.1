@@ -36,10 +36,10 @@ $(document).ready(function(){
                     $.session.set('fullname', json);
                     $.session.set('log', 'logged');
                     
-                    $("#loginFieldset").css("border", "6px solid #1ECD97");
+                    $("#loginFieldset").css("border", "6px solid #4183c4");
                 	$("#loginLegened").css({
-                		"border": "#1ECD97",
-                		"background": "#1ECD97"
+                		"border": "#4183c4",
+                		"background": "#4183c4"
                 	});
                     
                     $(".welcome").text($.session.get('fullname'));
@@ -120,7 +120,7 @@ $(document).ready(function(){
 						if ( s_success === true ) {
 							clearInterval( interval );
 						}
-					}, 80 );
+					}, 40 );
 			}
 		} );
 	} );
