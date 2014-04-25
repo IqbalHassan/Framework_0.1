@@ -2,6 +2,8 @@
  * Last modified by: sazid on 4/25/14.
  */
 $(document).ready(function(){
+<<<<<<< HEAD
+=======
     //login
     $('#loginbtn').click(function(e) {
         var user = $('.username').val();
