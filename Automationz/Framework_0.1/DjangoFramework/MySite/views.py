@@ -3484,11 +3484,9 @@ def Process_Git(request):
     if request.method == "GET":
         command = request.GET.get(u'command', '')
         if command == 'Pull':
-            GitApi.pull_latest_git()
-            message = 'git pulled'
+            message = GitApi.pull_latest_git()
         elif command == 'Log':
-            GitApi.git_log(-10)
-            message = 'git log'
+            message = GitApi.git_log(-4)
     json = simplejson.dumps(message)
     return HttpResponse(json, mimetype='application/json')
 
@@ -5679,7 +5677,7 @@ def MileStoneOperation(request):
                     againQuery="select count(*) from config_values where type='milestone' and value='%s'"%new_name
                     again=DB.GetData(Conn,againQuery)
                     if(again[0]>0):
-                        error_message="MileStone already exists,can't rename"
+                        error_message="MileStone already exists, can't rename"
                     else:
                         #start Rename Operation
                         condition="where type='milestone' and value='%s'"%old_name
@@ -5699,7 +5697,7 @@ def MileStoneOperation(request):
                     print DB.InsertNewRecordInToTable(Conn, "config_values",**Dict)
                     confirm_message="MileStone is created Successfully"
                 else:
-                    error_message="MileStone name exists.Can't create a new one"
+                    error_message="MileStone name exists. Can't create a new one"
                 #start  Operation
             if operation=="3":
                 new_name=request.GET.get(u'new_name','')
@@ -5708,8 +5706,8 @@ def MileStoneOperation(request):
                 available=DB.GetData(Conn,query)
                 if(available[0]>0):
                     Dict={'type':'milestone','value':new_name.strip()}
-                    print DB.Record(Conn, "config_values",**Dict)
-                    confirm_message="MileStone is d Successfully"
+                    print DB.DeleteRecord(Conn, "config_values",**Dict)
+                    confirm_message="MileStone is deleted Successfully"
                 else:
                     error_message="MileStone Not Found"
     results={'confirm_message':confirm_message,

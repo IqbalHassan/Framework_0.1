@@ -8,6 +8,7 @@ $(document).ready(function(){
     Continue_radio();
     TimePicker();
 
+
     $.ajax({
         url:'GetFeature/',
         dataType : "json",
@@ -193,6 +194,7 @@ $(document).ready(function(){
 
             if (data['TableData'].length == 0)
             {
+                alertify.log("Sorry There is No Test Cases For Selected Query!","",0);
                 $('#search_result').children().remove();
                 $('#search_result').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
                 //$("#DepandencyCheckboxes").children().remove();
