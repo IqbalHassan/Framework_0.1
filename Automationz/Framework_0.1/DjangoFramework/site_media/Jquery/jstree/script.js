@@ -41,6 +41,11 @@ $(document).ready(function() {
 				}
 			},
 			
+			"checkbox" : {
+				"whole_node" : true,
+				"keep_selected_style" : false
+			},
+			
 			"plugins" : [ "checkbox", "search", "types", "wholerow", "contextmenu", "sort", "state" ]
 	};
 	
