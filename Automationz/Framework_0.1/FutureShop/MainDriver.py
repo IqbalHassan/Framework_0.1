@@ -130,10 +130,10 @@ def main():
         DataType = DataTypeList[0][0]
 
         #Find Test Cases in this Test Set & add it to test_run table
-        TestCaseLists = DBUtil.GetData(conn, "Select TC_ID From Test_Sets Where testset_id = '%s' order by id" % TestRunID[1], False) #and data_type
-        for TestCaseID in TestCaseLists:
+        #TestCaseLists = DBUtil.GetData(conn, "Select TC_ID From Test_Sets Where testset_id = '%s' order by id" % TestRunID[1], False) #and data_type
+        #for TestCaseID in TestCaseLists:
             #Insert each test case id to the test_run table
-            DBUtil.InsertNewRecordInToTable(conn, 'test_run', run_id=sTestResultsRunId, tc_id=list(TestCaseID)[0])
+         #   DBUtil.InsertNewRecordInToTable(conn, 'test_run', run_id=sTestResultsRunId, tc_id=list(TestCaseID)[0])
 
         #This step will remain here for now, just to make sure test case is added in the previous one
         #Find all test cases added in the test_run table for the current run id

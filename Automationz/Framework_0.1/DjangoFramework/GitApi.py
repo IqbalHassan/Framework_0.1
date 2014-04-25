@@ -17,7 +17,8 @@ def pull_latest_git():
 def git_repo():
     try:
         import git
-        g = git.cmd.Git(r'/home/riz/git/Framework_0.1')
+        git_path =  str(os.path.dirname(os.path.realpath(__file__)).split("git")[0])+"git"+os.sep+"Framework_0.1"
+        g = git.cmd.Git(git_path)
         return g
     except Exception, e:
         print "There was an error while pulling the git changes: "
@@ -25,7 +26,7 @@ def git_repo():
         return e
     
     
-def git_log(last_log = -10):
+def git_log(last_log = -3):
     try:
         g = git_repo()
         result = g.log(last_log)
@@ -35,5 +36,10 @@ def git_log(last_log = -10):
         print "There was an error while pulling the git changes: "
         print e
         return e
-print os.path.dirname(os.path.realpath(__file__))
-pull_latest_git()
+
+#pull_latest_git()
+
+
+
+
+#

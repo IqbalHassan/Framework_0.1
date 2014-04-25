@@ -9,11 +9,12 @@ https://docs.djangoproject.com/en/1.3/topics/db/sql/#executing-custom-sql-direct
 
 
 import DataBaseUtilities as DB
+import Global
 #import CommonUtil
-
+ip = Global.get_ip()
 
 def GetConnection():
-    Conn = DB.ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost="135.23.123.67")
+    Conn = DB.ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost=ip)
     return Conn
 
 def GetData(sTableName):

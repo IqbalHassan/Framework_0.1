@@ -2,6 +2,77 @@
  * Last modified by: sazid on 4/25/14.
  */
 $(document).ready(function(){
+<<<<<<< HEAD
+=======
+    //login
+    $('#loginbtn').click(function(e) {
+        var user = $('.username').val();
+        var pwd = $('.password').val();
+        var logged = false;
+        var data = [];
+
+        if (user=="" || pwd=="")
+        {
+            //alert("Fields are empty");
+            alertify.log("Fields are empty","",0);
+        }
+        else
+        {
+            $.ajax({
+                url:'GetUsers/',
+                dataType : "json",
+                type : "GET",
+                data : {
+                    user : user,
+                    pwd : pwd
+                },
+                success: function( json ) {
+                    //alert(json);
+                    /*if(json.length > 0)
+                     logged = true;
+                     /*for(var i = 0; i < json.length; i++)
+                     json[i] = json[i][0].replace(/_/g,' ')
+                     $.each(json, function(i, value) {
+                     //if(i == 0)return;
+                     $(".username[data-level='']").append($('<option>').text(value).attr('value', value));
+                     });*/
+                    if(json!="User Not Found!")
+                    {
+                        alertify.log("Logged in as '"+json+"'","",0);
+                        desktop_notify("Logged in as '"+json+"'");
+                        //location.reload();
+                        $.session.set('username', user);
+                        $.session.set('fullname', json);
+                        $.session.set('log', 'logged');
+                        //setTimeout(function(){window.location='/Home/';},3000);
+                        window.location.href = '/Home/';
+                        $(".welcome").text($.session.get('fullname'));
+                        //$("#nav").show();
+                    }
+                    else{
+                        alertify.log("'"+json+"'","",0);
+                    }
+                },
+                error: function(json){
+                    alertify.log("Error","",0);}
+            });
+            /*if(data.length > 0)
+             {
+             logged = true;
+             }*/
+            /*if(logged==true)
+             {
+             alert("Logged In");
+             }
+             else
+             {
+             alert("Not Found")
+             }*/
+
+        }
+        return e.preventDefault();
+    });
+>>>>>>> df54d7313c25a907112e5f8b61e7f3a52f2a3a9d
 
 	window.interval = 0;
 	s_success = false;
@@ -126,3 +197,50 @@ $(document).ready(function(){
 	} );
 
 });
+function desktop_notify(message){
+    // At first, let's check if we have permission for notification
+    // If not, let's ask for it
+    if (Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    }
+
+    //var button = document.getElementById('submit_button');
+
+    // If the user agreed to get notified
+    if (Notification && Notification.permission === "granted") {
+        var n = new Notification("Logged In!",{body:message, icon:"/site_media/noti.ico"});
+    }
+
+    // If the user hasn't told if he wants to be notified or not
+    // Note: because of Chrome, we are not sure the permission property
+    // is set, therefore it's unsafe to check for the "default" value.
+    else if (Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+
+            // If the user said okay
+            if (status === "granted") {
+                var n = new Notification("Logged In!",{body:message, icon:"/site_media/noti.ico"});
+            }
+
+            // Otherwise, we can fallback to a regular modal alert
+            else {
+                alertify.log(message,"",0);
+            }
+        });
+    }
+
+    // If the user refuses to get notified
+    else {
+        // We can fallback to a regular modal alert
+        alertify.log(message,"",0);
+    }
+
+
+}
