@@ -1168,7 +1168,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
              'rerun_col':ReRunColumn,
              'rerun_list':ReRun
              }
-    return render_to_response('RunID_Detail.html',results)
+    return render(request, 'RunID_Detail.html', results)
 
 def TestCase_Detail_Table(request): #==================Returns Test Steps and Details Table When User Click on Test Case Name On Test Result Page========
     Conn = GetConnection()

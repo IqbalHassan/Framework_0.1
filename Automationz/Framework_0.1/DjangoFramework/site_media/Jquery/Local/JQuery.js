@@ -37,7 +37,12 @@ function MsgBox(Title, MessageText) {
 	});*/
 }
 
-
+colors = {
+	'pass' : '#65bd10',
+	'fail' : '#fd0006',
+	'block' : '#ff9e00',
+	'submitted' : '#808080'
+};
 
 function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	
@@ -75,6 +80,22 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 			var mStr = table_item[data];
 			if ((String(mStr).indexOf("[") !== -1) == false)
 			{
+				
+				switch (table_item[data]) {
+				case 'Passed':
+					content += '<td style="border-bottom: 4px solid ' + colors['pass'] + ';">' + table_item[data] + '</font></td>';
+					continue;
+				case 'Failed':
+					content += '<td style="border-bottom: 4px solid ' + colors['fail'] + ';">' + table_item[data] + '</font></td>';
+					continue;
+				case 'Submitted':
+					content += '<td style="border-bottom: 4px solid ' + colors['submitted'] + ';">' + table_item[data] + '</font></td>';
+					continue;
+				case 'Blocked':
+					content += '<td style="border-bottom: 4px solid ' + colors['block'] + ';">' + table_item[data] + '</font></td>';
+					continue;
+				}
+				
 				content += "<td >" + table_item[data]
 				+ '</font></td>';
 			}

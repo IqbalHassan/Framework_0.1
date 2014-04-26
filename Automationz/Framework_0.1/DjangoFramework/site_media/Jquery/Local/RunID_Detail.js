@@ -86,8 +86,35 @@ function makeTable(data,col){
     message+='</tr>';
     for(var i=0;i<data.length;i++){
         message+='<tr>';
+        once = true;
+        colors = {
+        	'pass' : '#65bd10',
+        	'fail' : '#fd0006',
+        	'block' : '#ff9e00',
+        	'submitted' : '#808080'
+        };
         for(var j=0;j<data[i].length;j++){
-            message+='<td>'+data[i][j]+'</td>';
+        	if (once === true) {
+	        	switch (data[i][3]) {
+        		case 'Passed':
+        			message+='<td><span style="background-color: ' + colors['pass'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+        			break;
+        		case 'Failed':
+        			message+='<td><span style="background-color: ' + colors['fail'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+        			break;
+        		case 'Submitted':
+        			message+='<td><span style="background-color: ' + colors['submitted'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+        			break;
+        		case 'Blocked':
+        			message+='<td><span style="background-color: ' + colors['block'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+        			break;
+	        	}
+	        	
+        		once = false;
+        		continue;
+        	}
+        	
+    		message+='<td>'+data[i][j]+'</td>';
         }
         message+='</tr>';
     }
@@ -105,7 +132,6 @@ function MakingReRunClickable(){
         $(this).html('<div id="'+test_case_id+'">'+name+'</div><div id="'+test_case_id+'detail" style="display:none"></div>');
         var name=$(this).closest('tr').find('td:nth-child(2)').text().trim();
         $.get('TestStepWithTypeInTable',{RunID:name},function(data){
-            console.log(data);
             var column=data['column'];
             var resultdata=data['Result'];
             var message="";
@@ -123,7 +149,6 @@ function MakingReRunClickable(){
                 message+='</tr>';
             }
             message+='</table> ';
-            console.log(message);
             $('#rerun '+'#'+test_case_id+'detail').html(message);
         });
         $('#rerun '+'#'+test_case_id).live('click',function(){
@@ -368,7 +393,6 @@ function LoadAllTestCases(divname){
     //////////////// To change the textbox in fail reason
     $('#'+divname+' tr td:nth-child(7)').each(function(){
         var data=$(this).text().trim();
-        console.log(data);
         $(this).html('<textarea rows="3" cols="30" readonly="readonly" style="border: none;text-align: center; vertical-align: middle;color: #669;display:inline-block;">'+data+'</textarea>');
     });
     /////////////////////////////////////////////////////
