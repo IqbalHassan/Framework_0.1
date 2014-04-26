@@ -10,6 +10,9 @@
     <link rel="stylesheet" type="text/css" href="/site_media/CSS-Style-Sheet.css" />
     <link rel="stylesheet" href="/site_media/alertify.core.css" />
     <link rel="stylesheet" href="/site_media/alertify.default.css" id="toggleCSS" />
+    
+    <!-- Tooltip library -->
+    <link rel="stylesheet" href="/site_media/hint.min.css">
 
 
     <!-- Google CDN file   https://developers.google.com/speed/libraries/devguide#jquery -->
@@ -51,7 +54,7 @@
             <a href="#nav" title="Show navigation">Show navigation</a>
             <a href="#" title="Hide navigation">Hide navigation</a>
             <ul style="width:100%">
-                <li style="width:4%"><a rel="prerender" href="/Home/" data-tip="Home" class="tooltip downwards-right"><img alt="Octocat-spinner-32" class="mini-loader" height="18" src="/site_media/Logo.ico" width="20"></a></li>
+                <li style="width:4%"><a rel="prerender" href="/Home/" class="hint--right hint--bounce hint--rounded" data-hint="Home"><img alt="Octocat-spinner-32" class="mini-loader" height="18" src="/site_media/Logo.ico" width="20"></a></li>
                 <li style="width:16%">
                     <a rel="prerender" href="" aria-haspopup="true"><span><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/manage1.png" width="16"> Manage</span></a>
                     <ul>
@@ -95,7 +98,7 @@
                     </ul>
                 </li>
                 <li style="width:10%"><a rel="prefetch" class="welcome" href=""></a></li>
-                <li style="width:4%"><a rel="prefetch" href="" data-tip="Log Out" class="tooltip downwards-left"><img alt="Octocat-spinner-32" class="mini-loader logout" height="16" src="/site_media/logout.png" width="16"></a></li>
+                <li style="width:4%"><a rel="prefetch" href="" class="hint--left hint--bounce hint--rounded" data-hint="Logout"><img alt="Octocat-spinner-32" class="mini-loader logout" height="16" src="/site_media/logout.png" width="16"></a></li>
             </ul>
         </nav>
 
