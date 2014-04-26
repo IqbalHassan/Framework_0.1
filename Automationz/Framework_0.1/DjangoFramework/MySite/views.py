@@ -1168,7 +1168,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
              'rerun_col':ReRunColumn,
              'rerun_list':ReRun
              }
-    return render_to_response('RunID_Detail.html',results)
+    return render(request, 'RunID_Detail.html', results)
 
 def TestCase_Detail_Table(request): #==================Returns Test Steps and Details Table When User Click on Test Case Name On Test Result Page========
     Conn = GetConnection()
@@ -5831,6 +5831,17 @@ def GetStepNameType(request):
             query="select stepname,steptype from test_steps_list"
             test_steps_list=DB.GetData(Conn, query, False)
 # <<<<<<< HEAD
+#     result=simplejson.dumps(test_steps_list)
+#     Dict={'test_steps':test_steps_list}
+#     result=simplejson.dumps(Dict)
+#     result=simplejson.dumps(test_steps_list)
+#     Dict={'test_steps':test_steps_list}
+#     result=simplejson.dumps(Dict)
+# =======
+# <<<<<<< HEAD
+#     result=simplejson.dumps(test_steps_list)
+# =======
+# # <<<<<<< HEAD
     Dict={'test_steps':test_steps_list}
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='appliction/json')
@@ -5856,7 +5867,7 @@ def manage_tc(request):
                 result = json.dumps(processed_data)
                 return HttpResponse(result, mimetype="application/json")
             except Exception, e:
-                return render("Sorry, data from the server could not be recieved.")
+                return render("Sorry, data from the server could not be retrieved.")
         else:
             print "-----------It's not an ajax request-------------"
             return render(request, 'jsTree/index.html', {})

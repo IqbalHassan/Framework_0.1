@@ -21,4 +21,3 @@ def set_debug():
         return debug_value
     elif Environment == "Production":
         debug_value = False
-        return debug_value

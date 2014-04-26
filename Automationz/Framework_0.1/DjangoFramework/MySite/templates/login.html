@@ -1,21 +1,33 @@
 {% extends "BaseTemplate.html" %}
 
-{% block title%} Log In {% endblock%}
+{% block title %} Log In {% endblock %}
 
 {% block content %}
 <article>
 
+<link rel="stylesheet" type="text/css" href="/site_media/Jquery/CircularProgressButton/component.css" />
+<script src="/site_media/Jquery/CircularProgressButton/modernizr.custom.js"></script>
+
 <div align="center" width="50%" style="margin-left: 30%;margin-right: 30%;margin-top: 10%">
     <!--form action="/processLogin/" method="post"-->
         <!--{% csrf_token %}-->
-        <fieldset align="right">
-            <legend><b>Login Information</b></legend>
+        <fieldset id="loginFieldset" align="center" style="border-radius: 10px; border: 6px solid #4183c4; transition: background-color 0.5s; padding: 20px;">
+            <legend id="loginLegened" style="background: #4183c4; color: #fff; padding: 8px 16px; font-size: 1.5em; transition: background-color 0.3s; border-radius: 10px;"><b>Login Information</b></legend>
             <div align="center">
-                <input type="text" id="username" class="textbox username" value="" name="username" placeholder="username" style="margin-bottom: 5%;margin-top: 5%;" size="25" autofocus="autofocus"/>
-                <br>
-                <input type="password" id="password" class="textbox password" value="" name="password" placeholder="password" size="25"/>
-                <hr>
-                <input type="submit" id="loginbtn" class="button primary" value="Login"/>
+                <input type="text" id="username" class="textbox username" value="" style="width:240px;" name="username" placeholder="username" style="margin-bottom: 5%;margin-top: 5%;" autofocus="autofocus"/>
+                <br><br>
+                <input type="password" id="password" class="textbox password" value="" style="width:240px;" name="password" placeholder="password"/>
+                <!-- <input type="submit" id="loginbtn" class="button primary" value="Login"/> -->
+                <br><br>
+                <!-- progress button -->
+                <div class="progress-button">
+					<button id="loginbtn"><span>Login</span></button>
+					<svg class="progress-circle" width="70" height="70"><path d="m35,2.5c17.955803,0 32.5,14.544199 32.5,32.5c0,17.955803 -14.544197,32.5 -32.5,32.5c-17.955803,0 -32.5,-14.544197 -32.5,-32.5c0,-17.955801 14.544197,-32.5 32.5,-32.5z"/></svg>
+					<svg class="checkmark" width="70" height="70"><path d="m31.5,46.5l15.3,-23.2"/><path d="m31.5,46.5l-8.5,-7.1"/></svg>
+					<svg class="cross" width="70" height="70"><path d="m35,35l-9.3,-9.3"/><path d="m35,35l9.3,9.3"/><path d="m35,35l-9.3,9.3"/><path d="m35,35l9.3,-9.3"/></svg>
+				</div><!-- /progress-button -->
+				<script src="/site_media/Jquery/CircularProgressButton/classie.js"></script>
+				<script src="/site_media/Jquery/CircularProgressButton/uiProgressButton.js"></script>
             </div>
         </fieldset>
     <!--/form-->

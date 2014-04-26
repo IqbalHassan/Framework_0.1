@@ -1,139 +1,132 @@
 /**
- * Created by minar09 on 3/15/14.
+ * Last modified by: sazid on 4/25/14.
  */
 $(document).ready(function(){
-    //login
-    $('#loginbtn').click(function(e) {
-        var user = $('.username').val();
-        var pwd = $('.password').val();
-        var logged = false;
-        var data = [];
 
-        if (user=="" || pwd=="")
-        {
-            //alert("Fields are empty");
-            alertify.log("Fields are empty","",0);
-        }
-        else
-        {
-            $.ajax({
-                url:'GetUsers/',
-                dataType : "json",
-                type : "GET",
-                data : {
-                    user : user,
-                    pwd : pwd
-                },
-                success: function( json ) {
-                    //alert(json);
-                    /*if(json.length > 0)
-                     logged = true;
-                     /*for(var i = 0; i < json.length; i++)
-                     json[i] = json[i][0].replace(/_/g,' ')
-                     $.each(json, function(i, value) {
-                     //if(i == 0)return;
-                     $(".username[data-level='']").append($('<option>').text(value).attr('value', value));
-                     });*/
-                    if(json!="User Not Found!")
-                    {
-                        alertify.log("Logged in as '"+json+"'","",0);
-                        desktop_notify("Logged in as '"+json+"'");
-                        //location.reload();
-                        $.session.set('username', user);
-                        $.session.set('fullname', json);
-                        $.session.set('log', 'logged');
-                        //setTimeout(function(){window.location='/Home/';},3000);
-                        window.location.href = '/Home/';
-                        $(".welcome").text($.session.get('fullname'));
-                        //$("#nav").show();
-                    }
-                    else{
-                        alertify.log("'"+json+"'","",0);
-                    }
-                },
-                error: function(json){
-                    alertify.log("Error","",0);}
-            });
-            /*if(data.length > 0)
-             {
-             logged = true;
-             }*/
-            /*if(logged==true)
-             {
-             alert("Logged In");
-             }
-             else
-             {
-             alert("Not Found")
-             }*/
-
-        }
-        return e.preventDefault();
-    });
-
+	window.interval = 0;
+	s_success = false;
+	
+	function s_loadData(instance) {
+		window.user = $('#username').val();
+	    window.pwd = $('#password').val();
+	    window.logged = false;
+	    window.data = [];
+		
+		$.ajax({
+            url:'GetUsers/',
+            dataType : "json",
+            type : "GET",
+            data : {
+                user : user,
+                pwd : pwd
+            },
+            success: function( json ) {
+                if(json!="User Not Found!")
+                {
+                	s_success = true;
+                	
+                	instance.stop( 1 );
+                	clearInterval( interval );
+            
+                    setTimeout(function(){
+                    	window.location='/Home/';
+                    }, 1500);
+					
+					$.session.set('username', user);
+                    $.session.set('fullname', json);
+                    $.session.set('log', 'logged');
+                    
+                    $("#loginFieldset").css("border", "6px solid #4183c4");
+                	$("#loginLegened").css({
+                		"border": "#4183c4",
+                		"background": "#4183c4"
+                	});
+                    
+                    $(".welcome").text($.session.get('fullname'));
+                }
+                else
+                {
+                	instance.stop( -1 );
+                	clearInterval( interval );
+                	s_success = false;
+                	progress = 0;
+                	
+                	$("#loginFieldset").css("border", "6px solid #FB797E");
+                	$("#loginLegened").css({
+                		"border": "#FB797E",
+                		"background": "#FB797E"
+                	});
+                }
+            },
+            error: function(json){
+				clearInterval( interval );
+				s_success = false;
+				progress = 0;
+				
+				$("#loginFieldset").css("border", "6px solid #FB797E");
+				$("#loginLegened").css({
+					"border": "#FB797E",
+					"background": "#FB797E"
+				});
+			}
+        });
+	}
+	
     $('#username , #password').keypress(function (e) {
         var key = e.which;
-        if(key == 13)  // the enter key code
+        if(key === 13)  // the enter key code
         {
             $("#loginbtn").trigger('click');
         }
     });
 
 
-    if($.session.get('log')!='logged' && $(this).attr('title')!='Log In')
+    if($.session.get('log') !== 'logged' && $(this).attr('title') !== 'Log In')
     {
-        //$(".welcome").text("Hello Guest!");
-        //$(".open").text("Log In");
-        //$("#modaltrigger").show();
-        //setTimeout(function(){window.location='/Home/Login/';},4000);
-        window.location.href = '/Home/Login/';
-        //$("#nav").hide();
+        window.location = '/Home/Login/';
     }
+    
     $(".welcome").text($.session.get('fullname'));
 
-    /*else
-    {
-
-        //$(".welcome").text(user);
-        //$(".open").text("Log Out");
-        //$("#modaltrigger").hide();
-    }*/
-
-    /*if($(".welcome").text()=="Hello Guest!" || $(".welcome").text()=="Hello undefined!")
-    {
-        $(".open").text("Log In");
-        $("#nav").click(function(){
-            location.reload();
-        });
-    }
-    else
-    {
-        $(".open").text("Log Out");
-    }*/
-
-    /*if($(".open").text()=="Log In")
-    {
-        $('.open').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
-    }
-    else if($(".open").text()=="Log Out")
-    {
-        $(".open").click(function(){
-            $.session.remove('username');
-            $.session.clear();
-            location.reload();
-        });
-    }*/
     $(".logout").click(function(){
         $.session.remove('username');
         $.session.remove('fullname');
         $.session.remove('log');
-        //$.session.clear();
-        location.reload();
-        //window.location.href = '/Home/Login/';
+        window.location = '/Home/Login/';
         $(".welcome").text("");
     });
+    
+    [].slice.call( document.querySelectorAll( '.progress-button' ) ).forEach( function( bttn, pos ) {
+		new UIProgressButton( bttn, {
+			callback : function( instance ) {
+				s_loadData(instance);
+				progress = 0,
+					interval = setInterval( function() {
+						
+						progress = Math.min( progress + Math.random() * 0.1, 1 );
+						instance.setProgress( progress );
+				        
+						if (window.user === "" || window.pwd === "")
+				        {
+							clearInterval( interval );
+				            instance.stop( -1 );
+				            $("#loginFieldset").css("border", "6px solid #FB797E");
+			            	$("#loginLegened").css({
+			            		"border": "6px solid #FB797E",
+			            		"background": "#FB797E"
+			            	});
+				        }
 
+						if ( s_success === true ) {
+							clearInterval( interval );
+						}
+					}, 40 );
+			}
+		} );
+	} );
 });
+
+
 function desktop_notify(message){
     // At first, let's check if we have permission for notification
     // If not, let's ask for it
@@ -178,6 +171,4 @@ function desktop_notify(message){
         // We can fallback to a regular modal alert
         alertify.log(message,"",0);
     }
-
-
 }
