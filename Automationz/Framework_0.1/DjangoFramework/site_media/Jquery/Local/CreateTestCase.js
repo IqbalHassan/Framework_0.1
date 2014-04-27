@@ -855,6 +855,7 @@ $(document).ready(function() {
                         }
                     }
                     if(query == "c" && dataValidationCheck){
+                        $("#submit").attr('disabled','disabled');
                         $.get("Submit_New_TestCase/",{
                             Section_Path:newSectionPath,
                             Platform:platformList.join("|"),
@@ -877,11 +878,13 @@ $(document).ready(function() {
                             //alert(data);
                             alertify.log("Test Case '"+data+"' successfully created!","",0);
                             desktop_notify("Test Case '"+data+"'-'"+title+"' successfully created!");
+                            $("#submit").removeAttr('disabled');
                             var location='/Home/ManageTestCases/Edit/'+data;
                             window.location=location;
                         });
                     }
                     else if(query == "e" && dataValidationCheck){
+                        $("#submit").attr('disabled','disabled');
                         $.get("Edit_TestCase",{
                                 Section_Path:newSectionPath,
                                 TC_Id:_TC_Id,
@@ -907,6 +910,7 @@ $(document).ready(function() {
                                 //alert(data+" edited successfully");
                                 alertify.log("Test Case '"+data+"' successfully edited!","",0);
                                 desktop_notify("Test Case '"+data+"'-'"+title+"' successfully edited!");
+                                $("#submit").removeAttr('disabled');
                                 var location='/Home/ManageTestCases/Edit/'+data;
                                 window.location=location;
                             });
