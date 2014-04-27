@@ -286,7 +286,7 @@ function populate_feature_driver_info_div(){
                 var count=data[0];
                 console.log(count);
                 if(count>0){
-                    alertify.error("This feature/driver can't be deleted. There are "+count+" test steps using this feature/driver '"+inputName+"'");
+                    alertify.log("This feature/driver can't be deleted. There are "+count+" test steps using this feature/driver '"+inputName+"'","",0);
                     $("#delete_error").html("<p><b>This feature/driver can't be deleted. There are "+count+" test steps using this feature/driver '"+inputName+"'</b></p>");
 
                     var UserText=$("#input").val();
@@ -334,11 +334,60 @@ function populate_feature_driver_info_div(){
                     });
                 }
                 if(count==0){
+                    var message = ""+type+" '"+inputName+"' deleted successfully!";
+                    delete_notify(message);
                     window.location = '/Home/ManageTestCases/FeatureDriverDelete';
                 }
             }
         });
     });
+}
+function delete_notify(message){
+    // At first, let's check if we have permission for notification
+    // If not, let's ask for it
+    if (Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    }
+
+    var button = document.getElementById('del_button');
+
+    // If the user agreed to get notified
+    if (Notification && Notification.permission === "granted") {
+        var n = new Notification("Feature/driver Deleted!",{body:message, icon:"/site_media/noti.ico"});
+    }
+
+    // If the user hasn't told if he wants to be notified or not
+    // Note: because of Chrome, we are not sure the permission property
+    // is set, therefore it's unsafe to check for the "default" value.
+    else if (Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+
+            // If the user said okay
+            if (status === "granted") {
+                var n = new Notification("Feature/driver Deleted!",{body:message, icon:"/site_media/noti.ico"});
+            }
+
+            // Otherwise, we can fallback to a regular modal alert
+            else {
+                alertify.log(message,"",0);
+            }
+        });
+    }
+
+    // If the user refuses to get notified
+    else {
+        // We can fallback to a regular modal alert
+        alertify.log(message,"",0);
+    }
+
+
 }
 
 function populate_info_div(feature_list,driver_list){

@@ -213,7 +213,8 @@ function ReRunTab(){
             tc_list.push($(this).val());
         });
         if(tc_list.length==0){
-            alert('Test Cases are not selected');
+            //alert('Test Cases are not selected');
+            alertify.log('Test Cases are not selected',"",0);
             return false;
         }
         //console.log(tc_list);
@@ -237,7 +238,8 @@ function ReRunTab(){
         objective+=(' -ReRun');
         objective=objective.trim();
         if(objective==""){
-            alert("TestObjective is empty");
+            //alert("TestObjective is empty");
+            alertify.log("TestObjective is empty","",0);
             return false;
         }
         var queryText="";
@@ -275,6 +277,9 @@ function ReRunTab(){
             RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim()
         },function(data){
             if(data['Result']){
+                var oldid = $("#run_id").text().trim();
+                var message = "Re-run Executed with ID - '"+data['runid']+"' from the previous run ID - '"+oldid+"'!";
+                desktop_notify(message);
                 var location='/Home/RunID/'+data['runid']+'/';
                 window.location=location;
             }
@@ -433,4 +438,51 @@ function When_Clicking_On_CommonFailedTestStep(){
             e.stopPropagation();
         });
     });
+}
+function desktop_notify(message){
+    // At first, let's check if we have permission for notification
+    // If not, let's ask for it
+    if (Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    }
+
+    var button = document.getElementById('submit_button');
+
+    // If the user agreed to get notified
+    if (Notification && Notification.permission === "granted") {
+        var n = new Notification("Re-run Executed!",{body:message, icon:"/site_media/noti.ico"});
+    }
+
+    // If the user hasn't told if he wants to be notified or not
+    // Note: because of Chrome, we are not sure the permission property
+    // is set, therefore it's unsafe to check for the "default" value.
+    else if (Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+
+            // If the user said okay
+            if (status === "granted") {
+                var n = new Notification("Re-run Executed!",{body:message, icon:"/site_media/noti.ico"});
+            }
+
+            // Otherwise, we can fallback to a regular modal alert
+            else {
+                alertify.log(message,"",0);
+            }
+        });
+    }
+
+    // If the user refuses to get notified
+    else {
+        // We can fallback to a regular modal alert
+        alertify.log(message,"",0);
+    }
+
+
 }

@@ -583,10 +583,12 @@ function populate_footer_div(){
                 var count=data[0];
                 console.log(count);
                 if(count>0){
-                    alertify.error("This test step can't be deleted. There are "+count+" test cases using this test step '"+name+"'");
+                    alertify.log("This test step can't be deleted. There are "+count+" test cases using this test step '"+name+"'","",0);
                     $("#delete_error").html("<p><b>This test step can't be deleted. There are "+count+" test cases using this test step '"+name+"'</b></p>");
                 }
                 if(count==0){
+                    var message = "Test Step '"+name+"' deleted successfully!";
+                    desktop_notify(message);
                     window.location = '/Home/ManageTestCases/TestStepDelete';
                 }
             }
@@ -753,4 +755,51 @@ function implementDropDown(wheretoplace){
 
         });
     });
+}
+function desktop_notify(message){
+    // At first, let's check if we have permission for notification
+    // If not, let's ask for it
+    if (Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    }
+
+    var button = document.getElementById('submit_button');
+
+    // If the user agreed to get notified
+    if (Notification && Notification.permission === "granted") {
+        var n = new Notification("Test Step Deleted!",{body:message, icon:"/site_media/noti.ico"});
+    }
+
+    // If the user hasn't told if he wants to be notified or not
+    // Note: because of Chrome, we are not sure the permission property
+    // is set, therefore it's unsafe to check for the "default" value.
+    else if (Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+
+            // If the user said okay
+            if (status === "granted") {
+                var n = new Notification("Test Step Deleted!",{body:message, icon:"/site_media/noti.ico"});
+            }
+
+            // Otherwise, we can fallback to a regular modal alert
+            else {
+                alertify.log(message,"",0);
+            }
+        });
+    }
+
+    // If the user refuses to get notified
+    else {
+        // We can fallback to a regular modal alert
+        alertify.log(message,"",0);
+    }
+
+
 }
