@@ -14,14 +14,6 @@ $(document).ready(function(){
     }
     
     $(".welcome").text($.session.get('fullname'));
-
-    $(".logout").click(function(){
-        $.session.remove('username');
-        $.session.remove('fullname');
-        $.session.remove('log');
-        window.location = '/Home/Login/';
-        $(".welcome").text("");
-    });
     
     [].slice.call( document.querySelectorAll( '.progress-button' ) ).forEach( function( bttn, pos ) {
 		new UIProgressButton( bttn, {
