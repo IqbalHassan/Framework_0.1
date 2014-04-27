@@ -2578,7 +2578,7 @@ def Selected_TestCaseID_History(request):
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_TC_Analysis', '')
 
-    query="select run_id,status,failreason from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc"%UserData
+    query="select run_id,status,failreason from test_case_results tcr,result_test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc"%UserData
     TestCase_Analysis_Result = DB.GetData(Conn, query, False)
     Col = ["Run ID", "Status", "Fail Reason"]
 
