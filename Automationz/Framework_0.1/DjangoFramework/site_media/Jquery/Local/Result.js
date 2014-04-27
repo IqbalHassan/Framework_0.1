@@ -13,7 +13,6 @@ function PerformSearch(){
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
         console.log(UserText);
         $.get("GetFilteredDataResult",{UserText:UserText,pagination:currentPagination},function(data){
-            console.log(data);
             if(data['total'].length>0){
                 //make a table column
                 var message="";
