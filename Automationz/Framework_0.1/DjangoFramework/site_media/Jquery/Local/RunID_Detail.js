@@ -91,7 +91,9 @@ function makeTable(data,col){
         	'pass' : '#65bd10',
         	'fail' : '#fd0006',
         	'block' : '#ff9e00',
-        	'submitted' : '#808080'
+        	'submitted' : '#808080',
+            'in-progress':'#0000ff',
+            'skipped':'#cccccc'
         };
         for(var j=0;j<data[i].length;j++){
         	if (once === true) {
@@ -108,7 +110,13 @@ function makeTable(data,col){
         		case 'Blocked':
         			message+='<td><span style="background-color: ' + colors['block'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
         			break;
-	        	}
+                case 'In-Progress':
+                   message+='<td><span style="background-color: ' + colors['in-progress'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+                   break;
+                case 'In-Progress':
+                    message+='<td><span style="background-color: ' + colors['skipped'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+                    break;
+                }
 	        	
         		once = false;
         		continue;

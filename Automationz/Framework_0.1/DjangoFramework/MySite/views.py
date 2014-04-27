@@ -1146,7 +1146,7 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
 
     failsteps_Col = ["Step Name"]"""
     ReRunColumn=['Test Case ID','Test Case Name','Type','Status']
-    query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and tcr.run_id='%s'"%RunId
+    query="select tc.tc_id,tc.tc_name,tcr.status from result_test_cases tc,test_case_results tcr where tc.run_id=tcr.run_id and tc.tc_id=tcr.tc_id and tcr.run_id='%s'"%RunId
     ReRunList=DB.GetData(Conn,query,False)
     ReRun=Modify(ReRunList)
     results={
@@ -1752,6 +1752,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             TestSetName = TestSetName.strip()
             Dict = {'run_id':runid, 'rundescription': TestSetName , '%s' % (TagName) : '%s' % (eachitem)}
         Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , **Dict)
+    RegisterPermanentInfo(Conn,runid)
     AddInfo(runid)
     if is_rerun=='rerun':
         query="where tester_id='%s' and run_id='%s' and status='Unassigned'" %(TesterId,runid)
@@ -1789,7 +1790,6 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
     EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query, test_objective = TestObjective  )
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , Status = 'Submitted' ) 
-    RegisterPermanentInfo(Conn,runid)
     results = {'Result': Result,'runid':runid}
 
     json = simplejson.dumps(results)
@@ -1798,7 +1798,7 @@ def RegisterPermanentInfo(Conn,run_id):
     print run_id
     ###Enter the test Case Name in the result test_case table
     #get the test case name
-    query="select tc_id from test_case_results where run_id='%s'"%run_id.strip()
+    query="select tc_id from test_run where run_id='%s'"%run_id.strip()
     test_cases=DB.GetData(Conn, query)
     test_case_column_query="select column_name from information_schema.columns where table_name='test_cases'"
     test_case_column=DB.GetData(Conn,test_case_column_query)
@@ -1929,7 +1929,7 @@ def AddInfo(run_id):
         print DB.InsertNewRecordInToTable(conn, "test_case_results",run_id=run_id,tc_id=eachcase,status="Submitted")
         TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % eachcase, False)
         for eachstep in TestStepsList:
-            print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
+            #print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
             Dict={'run_id':run_id,'tc_id':eachcase,'teststep_id':eachstep[0],'status':"Submitted",'teststepsequence':eachstep[2]}
             print DB.InsertNewRecordInToTable(conn, "test_step_results",**Dict)
 def ReRun_Fail_TestCases(request):
@@ -5329,13 +5329,13 @@ def UpdateTestStepStatus(List,run_id,test_case_id,test_case_status,failReason):
     return "true"
     """
     ######Get the step List for the selected Test Case #######################
-    query="select step_id,teststepsequence from test_steps where tc_id='%s' order by teststepsequence" %test_case_id
+    query="select step_id,teststepsequence from result_test_steps where tc_id='%s' and run_id='%s' order by teststepsequence" %(test_case_id,run_id)
     Conn=GetConnection()
     test_steps_list=DB.GetData(Conn, query, False)
     print test_steps_list
     count=0
     for each in test_steps_list:
-        name_query="select stepname from test_steps_list where step_id='%s'"%each[0]
+        name_query="select stepname from result_test_steps_list where step_id='%s' and run_id='%s'"%(each[0],run_id)
         stepName=DB.GetData(Conn,name_query)
         if stepName[0]==List[count][0]:
             query="where run_id='%s' and tc_id='%s' and teststep_id='%d' and teststepsequence='%d'"%(run_id,test_case_id,each[0],each[1])
@@ -5358,7 +5358,7 @@ def UpdateData(request):
             run_id=request.GET.get(u'run_id','')
             test_case_id=request.GET.get(u'test_case_id','')
             Conn=GetConnection()
-            query="select teststepsequence from test_steps where tc_id='%s'"%test_case_id
+            query="select teststepsequence from result_test_steps where tc_id='%s' and run_id='%s'"%(test_case_id,run_id)
             test_step_sequence_list=DB.GetData(Conn,query)
             if(len(step_status)==1):
                 Refined_List=Make_List(step_name, step_reason, step_status[0], test_case_id,test_step_sequence_list)
@@ -5416,7 +5416,7 @@ def UpdateData(request):
             print test_case_status
             if test_case_status=='Failed':
                 datasetid=test_case_id+'_s'+str(index)
-                query="select description from master_data where field='verification' and value='point' and id='%s'"%datasetid
+                query="select description from result_master_data where field='verification' and value='point' and id='%s' and run_id='%s'"%(datasetid,run_id)
                 Conn=GetConnection()
                 verification=DB.GetData(Conn,query,False)
                 if verification[0][0]=="no":
@@ -6183,11 +6183,11 @@ def GetData(run_id,index):
     query+="tc.tc_id "
     query+="from test_case_results tr, result_test_cases tc, result_test_case_tag tct "
     query+="where tr.run_id = '%s' and "%run_id
-    query+="tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id) "
+    query+="tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id) "
     query+="union all "
     query+="(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
     query+="from test_run tr,result_test_cases tc, result_test_case_tag tct "
-    query+="where tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "%run_id
+    query+="where tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "%run_id
     query+="tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )) AS A" %run_id
     count_query=query
     query+=" %s"%condition
