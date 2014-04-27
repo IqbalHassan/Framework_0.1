@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 
 <html>
+<!-- Above code is for adding HTML5 and XHTML to your html code. Copy paste to your other html files -->
 <head>
-	<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Automation Solutionz; Framework">
-    
 
     <title>{% block title %} {% endblock %}</title>
     <link rel="icon" type="image/ico" href="/site_media/Logo.ico"></link>
@@ -13,29 +10,25 @@
     <link rel="stylesheet" type="text/css" href="/site_media/CSS-Style-Sheet.css" />
     <link rel="stylesheet" href="/site_media/alertify.core.css" />
     <link rel="stylesheet" href="/site_media/alertify.default.css" id="toggleCSS" />
-    <link href="/site_media/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/site_media/bootstrap/css/alertify.bootstrap3.css" rel="stylesheet" />
+    <link href="/site_media/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Tooltip library -->
     <link rel="stylesheet" href="/site_media/hint.min.css">
 
 
     <!-- Google CDN file   https://developers.google.com/speed/libraries/devguide#jquery -->
-    <script src="/site_media/Jquery/jquery-2.1.0.min.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
 
     <!-- JQuery UI Files http://jqueryui.com/themeroller/ -->
-    <!-- <script type="text/javascript" src="/site_media/Jquery/js/jquery-1.8.0.min.js"></script> -->
+    <script type="text/javascript" src="/site_media/Jquery/js/jquery-1.8.0.min.js"></script>
     <script type="text/javascript" src="/site_media/Jquery/js/jquery-ui-1.10.3.custom.min.js"></script>
     <link type="text/css" href="/site_media/Jquery/css/smoothness/jquery-ui-1.10.3.custom.css" rel="Stylesheet" />
 
     <!-- JQuery URL Address plug In Files http://www.asual.com/jquery/address/ -->
-    <!-- <script type="text/javascript" src="/site_media/Jquery/jquery.address-1.4/jquery.address-1.4.min.js"></script> -->
+    <script type="text/javascript" src="/site_media/Jquery/jquery.address-1.4/jquery.address-1.4.min.js"></script>
 
     <!-- JQuery Spager for controlling table data plug http://code.google.com/p/spager/downloads/detail?name=jquery.spager.js -->
     <!--<script type="text/javascript" src="/site_media/Jquery/Spager_Controll_TableData.js"></script>-->
-
-	<!-- Bootstrap source file -->
-	<script src="/site_media/bootstrap/js/bootstrap.min.js"></script>
 
     <!-- JQuery Local Files -->
     <script type="text/javascript" src="/site_media/Jquery/Local/JQuery.js"></script>
@@ -52,84 +45,154 @@
 
 
 <body>
+<script src="/site_media/js/bootstrap.min.js"></script>
 <div id="master_wrap">
     <header class="main_header">
-        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="navigation_bar">
-        	<div class="container-fluid">
-        		<!-- Brand and toggle get grouped for better mobile display -->
-			    <div class="navbar-header">
-			      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
-			        <span class="sr-only">Toggle navigation</span>
-			        <span class="icon-bar"></span>
-			        <span class="icon-bar"></span>
-			        <span class="icon-bar"></span>
-			      </button>
-			      <a class="navbar-brand" href="/Home/" title="Home">Automation Solutionz</a>
-			    </div>
-			
-			    <!-- Collect the nav links, forms, and other content for toggling -->
-			    <div class="collapse navbar-collapse" id="navbar-collapse-1">
-			      <ul class="nav navbar-nav">
-			        <li class="dropdown">
-			          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cloud-upload"></i> Manage <b class="caret"></b></a>
-			          <ul class="dropdown-menu" style="min-width: 240px;">
-			            <li><a href="/Home/ManageTestCases/CreateNew/"><i class="glyphicon glyphicon-asterisk"></i> Create New Test Case</a></li>
-			            <li><a href="/Home/ManageTestCases/SearchEdit/"><i class="glyphicon glyphicon-pencil"></i> Copy/Edit Test Case</a></li>
-			            <li><a href="/Home/ManageTestCases/CreateStep/"><i class="glyphicon glyphicon-ok"></i> Create/Edit Test Step</a></li>
-			            <li class="divider"></li>
-			            <li><a href="/Home/ManageTestCases/"><i class="glyphicon glyphicon-list-alt"></i> &nbsp;View & Organize Test Cases</a></li>
-			            <li><a href="/Home/ManageTestCases/TestSet/"><i class="glyphicon glyphicon-tags"></i> &nbsp;Manage Set & Tag</a></li>
-			          </ul>
-			        </li>
-			      </ul>
-			      
-			      <ul class="nav navbar-nav navbar-right">
-			        <li><a href="/Home/RunTest/"><i class="glyphicon glyphicon-play"></i> Test Deployment</a></li>
-			        <li><a href="/Home/Results/"><i class="glyphicon glyphicon-repeat"></i> Result & Execution</a></li>
-			        <li class="dropdown">
-			          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-signal"></i> Reports <b class="caret"></b></a>
-			          <ul class="dropdown-menu" style="min-width: 210px;">
-			            <li><a href="/Home/BundleReport/"><i class="glyphicon glyphicon-filter"></i> Bundle Report</a></li>
-			            <li><a href="/Home/MKS-Report/"><i class="glyphicon glyphicon-sort-by-attributes-alt"></i> MKS Report</a></li>
-			            <li class="divider"></li>
-			            <li><a href="/Home/Analysis/"><i class="glyphicon glyphicon-time"></i> Test Case History</a></li>
-			            <li><a href="/Home/DailyBuildResults/"><i class="glyphicon glyphicon-wrench"></i> Automated Build History</a></li>
-			            <li class="divider"></li>
-			            <li><a href="/Home/TestTypeStatus/"><i class="glyphicon glyphicon-random"></i> Test Type Status</a></li>
-			            <li><a href="/Home/Performance/"><i class="glyphicon glyphicon-dashboard"></i> Performance</a></li>
-			          </ul>
-			        </li>
-			        <li class="dropdown">
-			          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-warning-sign"></i> Admin <b class="caret"></b></a>
-			          <ul class="dropdown-menu">
-			            <li><a href="/Home/Admin/"><i class="glyphicon glyphicon-indent-left"></i> Git Functions</a></li>
-			            <li><a href="/Home/FeaDri/"><i class="glyphicon glyphicon-cog"></i> Feature & Driver</a></li>
-			            <li class="divider"></li>
-			            <li><a href="/Home/ManageTestCases/DeleteExisting/"><i class="glyphicon glyphicon-trash"></i> Delete Test Cases</a></li>
-			            <li><a href="/Home/ManageStep/"><i class="glyphicon glyphicon-ban-circle"></i> Delete Test Step</a></li>
-			          </ul>
-			        </li>
-			        <li>
-			        	<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> Profile <b class="caret"></b></a>
-			        	<ul class="dropdown-menu" style="min-width: 198px;">
-			            	<li><a href="#" onclick="alertify.error('Sorry, this page has not yet been implemented.');" id="user_profile"></a></li>
-			            	<li id="logout_item"><a id="logout_link" href="/Home/Login/"><i class="glyphicon glyphicon-off"></i> Logout</a></li>
-		            	</ul>
-			        </li>
-			      </ul>
-			    </div><!-- /.navbar-collapse -->
-        	</div><!-- /.container-fluid -->
+        <!--a id="logo" href="/Home/">
+            <img src="/site_media/Logo.png" style="width:256px;border:0;"/>
+        </a-->
+
+        <nav id="nav" role="navigation">
+            <a href="#nav" title="Show navigation">Show navigation</a>
+            <a href="#" title="Hide navigation">Hide navigation</a>
+            <ul style="width:100%">
+                <li style="width:4%"><a rel="prerender" href="/Home/" class="hint--right hint--bounce hint--rounded" data-hint="Home"><img alt="Octocat-spinner-32" class="mini-loader" height="18" src="/site_media/Logo.ico" width="20"></a></li>
+                <li style="width:16%">
+                    <a rel="prerender" href="" aria-haspopup="true"><span><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/manage1.png" width="16"> Manage</span></a>
+                    <ul>
+                        <li><a rel="prefetch" href="/Home/ManageTestCases/CreateNew/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/add.png" width="16"> Create New Test Case</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTestCases/SearchEdit/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit.png" width="16"> Copy/Edit Test Case</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTestCases/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/manage4.png" width="16"> View & Organize Test Cases</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTestCases/CreateStep/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Create/Edit Test Step</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTestCases/TestSet/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/tag.png" width="16"> Manage Set & Tag</a></li>
+                        <!--li><a rel="prefetch" href="/Home/ManageTestCases/TestStep/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Manage Test Steps</a></li-->
+
+                        <!--li><a rel="prefetch" href="/Home/ManageTestCases/Create/">Create New Test Case (Old)</a></li-->
+                    </ul>
+                </li>
+                <li style="width:19%">
+                    <a rel="prerender" href = "/Home/RunTest/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/run1.gif" width="16"> Test Deployment</a>
+                    <!--ul>
+                        <li><a rel="prefetch" id="pc_menu" href=""><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/pc1.png" width="16"> PC</a></li>
+                        <li><a rel="prerender" id="mac_menu" href=""><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/mac1.png" width="16"> MAC</a></li>
+                    </ul-->
+                </li>
+
+                <li style="width:19%"><a rel="prefetch" href = "/Home/Results/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/result4.png" width="16"> Result & Execution</a></li>
+                <li style="width:15%">
+                    <a rel="prerender" href="" aria-haspopup="true"><span><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report3.png" width="16"> Reports</span></a>
+                    <ul>
+                        <li><a rel="prefetch" href="/Home/BundleReport/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report2.png" width="16"> Bundle Report</a></li>
+                        <li><a rel="prerender" href="/Home/MKS-Report/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/mks.png" width="16"> MKS Report</a></li>
+                        <li><a rel="prefetch" href="/Home/Analysis/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/history1.png" width="16"> Test Case History</a></li>
+                        <li><a rel="prerender" href="/Home/DailyBuildResults/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/history3.png" width="16"> Automated Build History</a></li>
+                        <li><a rel="prefetch" href="/Home/TestTypeStatus/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/report4.png" width="16"> Test Type Status</a></li>
+                        <li><a rel="prerender" href="/Home/Performance/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/automated.png" width="16"> Performance</a></li>
+                    </ul>
+                </li>
+                <li style="width:13%">
+                    <a rel="prefetch" href=""><span><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/admin1.png" width="16"> Admin</span></a>
+                    <ul>
+                        <li><a rel="prefetch" href="/Home/Admin/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/git.png" width="16"> Git Pull</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTestCases/DeleteExisting/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/delete1.png" width="16"> Delete Test Cases</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageStep/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/delete6.png" width="16"> Delete Test Step</a></li>
+                        <li><a id="feadri" rel="prefetch" href="/Home/FeaDri/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/usb.png" width="16"> Feature & Driver</a></li>
+                    </ul>
+                </li>
+                <li style="width:10%"><a rel="prefetch" class="welcome" href=""></a></li>
+                <li style="width:4%"><a rel="prefetch" href="" class="hint--left hint--bounce hint--rounded" data-hint="Logout"><img alt="Octocat-spinner-32" class="mini-loader logout" height="16" src="/site_media/logout.png" width="16"></a></li>
+            </ul>
         </nav>
 
     </header>
-    
-    <script>
-    $(document).ready(function() {
-    	// Script for managing the username
-    	var fullname = $.session.get("fullname") || 'guest';
-    	$("#user_profile").html('<i class="glyphicon glyphicon-user"></i> ' + fullname);    	
-    });
-    </script>
+
+    <!--div class="ar login_popup">
+        <a class="buttonLog" href="#">Login</a>
+    </div-->
+    <!--div id="toppanel">
+        <div id="panel">
+            <div class="content clearfix">
+                <div class="left">
+                    <h1>Automation Solutionz</h1>
+                    <h2>Log In</h2>
+                    <!--p class="grey">You are free to use this login and registration system in you sites!</p>
+                    <p>You can log in with: <strong>admin/admin</strong></p>
+                    <h2>A Big Thanks</h2>
+                    <p class="grey">This tutorial was built on top of <a href="http://web-kreation.com/index.php/tutorials/nice-clean-sliding-login-panel-built-with-jquery" title="Go to site">Web-Kreation</a>'s amazing sliding panel.</p>
+                </div>
+
+                <div class="left">
+
+                    <form class="clearfix" action="" method="post">
+                        <h1>User Login</h1>
+
+
+                        <label class="grey" for="username">Username:</label>
+                        <input class="field" type="text" name="username" id="username" value="" size="23">
+                        <label class="grey" for="password">Password:</label>
+                        <input class="field" type="password" name="password" id="password" size="23">
+                        <label><input name="rememberMe" id="rememberMe" type="checkbox" checked="checked" value="1"> &nbsp;Remember me</label>
+                        <div class="clear"></div>
+                        <input type="submit" name="submit" value="Login" class="bt_login">
+                        <span class="lost-pwd">Try it with admin/admin</span>
+                    </form>
+                </div>
+                <div class="left right">
+
+                    <form action="" method="post">
+                        <h1>Not a member yet? Sign Up!</h1>
+
+
+                        <label class="grey" for="username">Username:</label>
+                        <input class="field" type="text" name="username" id="username" value="" size="23">
+                        <label class="grey" for="email">Email:</label>
+                        <input class="field" type="text" name="email" id="email" size="23">
+                        <label>A password will be e-mailed to you.</label>
+                        <input type="submit" name="submit" value="Register" class="bt_register">
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="tab">
+            <ul class="login">
+                <li class="left">&nbsp;</li>
+                <li class="welcome">Hello undefined!</li>
+                <li class="sep">|</li>
+                <li id="toggle">
+                    <a id="open" class="open" href="#loginmodal">Log In</a>
+                    <a id="close" style="display: none;" class="close" href="#">Close Panel</a>
+                </li>
+                <li class="right">&nbsp;</li>
+            </ul>
+        </div>
+
+    </div-->
+
+
+    <!--div style="padding-top: 8%">
+    <a href="#loginmodal" class="button minibutton blue" id="modaltrigger">Modal Login</a>
+    </div-->
+
+    <!-- modal -->
+    <!--div id="loginmodal" style="display:none;">
+        <h1 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">User Login</h1>
+        <form id="loginform" name="loginform" method="post">
+
+            <input type="text" name="username" id="username" class="textbox username" tabindex="1" placeholder="Username" style="width: 95%">
+
+            <br/><br/>
+
+
+            <input type="password" name="password" id="password" class="textbox password" tabindex="2" placeholder="Password" style="width: 95%">
+
+            <br/><br/>
+            <div class="center"><input type="submit" name="loginbtn" id="loginbtn" class="button minibutton primary" value="Log In" tabindex="3"></div>
+        </form>
+    </div-->
+
 
     <div id="outer_wrap">
 
@@ -150,6 +213,7 @@
     </div>
 </div>
 
+<script src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.js"></script>
 <script src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.min.js"></script>
 <script>
     (function($){$.fn.extend({leanModal:function(options){var defaults={top:100,overlay:0.5,closeButton:null};var overlay=$("<div id='lean_overlay'></div>");$("body").append(overlay);options=$.extend(defaults,options);return this.each(function(){var o=options;$(this).click(function(e){var modal_id=$(this).attr("href");$("#lean_overlay").click(function(){close_modal(modal_id)});$(o.closeButton).click(function(){close_modal(modal_id)});var modal_height=$(modal_id).outerHeight();var modal_width=$(modal_id).outerWidth();
@@ -165,9 +229,9 @@
     /*! jquery.avgrund - v1.3.2 (http://labs.voronianski.com/jquery.avgrund.js) */
     !function(a){"function"==typeof define&&define.amd?define(["jquery"],a):"object"==typeof exports?module.exports=a:a(jQuery)}(function($){$.fn.avgrund=function(a){var b={width:380,height:280,showClose:!1,showCloseText:"",closeByEscape:!0,closeByDocument:!0,holderClass:"",overlayClass:"",enableStackAnimation:!1,onBlurContainer:"",openOnEvent:!0,setEvent:"click",onLoad:!1,onUnload:!1,template:"<p>This is test popin content!</p>"};return a=$.extend(b,a),this.each(function(){function b(b){a.closeByEscape&&27===b.keyCode&&e()}function c(b){a.closeByDocument?$(b.target).is(".avgrund-overlay, .avgrund-close")&&(b.preventDefault(),e()):$(b.target).is(".avgrund-close")&&(b.preventDefault(),e())}function d(){"function"==typeof a.onLoad&&a.onLoad(f),setTimeout(function(){g.addClass("avgrund-active")},100);var d=$('<div class="avgrund-popin '+a.holderClass+'"></div>');d.append(j),g.append(d),$(".avgrund-popin").css({width:h+"px",height:i+"px","margin-left":"-"+(h/2+10)+"px","margin-top":"-"+(i/2+10)+"px"}),a.showClose&&$(".avgrund-popin").append('<a href="#" class="avgrund-close">'+a.showCloseText+"</a>"),a.enableStackAnimation&&$(".avgrund-popin").addClass("stack"),g.bind("keyup",b).bind("click",c)}function e(){g.unbind("keyup",b).unbind("click",c).removeClass("avgrund-active"),setTimeout(function(){$(".avgrund-popin").remove()},500),"function"==typeof a.onUnload&&a.onUnload(f)}var f=$(this),g=$("body"),h=a.width>640?640:a.width,i=a.height>350?350:a.height,j="function"==typeof a.template?a.template(f):a.template;g.addClass("avgrund-ready"),0===$(".avgrund-overlay").length&&g.append('<div class="avgrund-overlay '+a.overlayClass+'"></div>'),""!==a.onBlurContainer&&$(a.onBlurContainer).addClass("avgrund-blur"),a.openOnEvent?f.bind(a.setEvent,function(a){a.stopPropagation(),$(a.target).is("a")&&a.preventDefault(),d()}):d()})}});
 </script>
-<script src="/site_media/Jquery/alertify.min.js" type="text/javascript"></script>
 <script>
-    !function(a){var b=null;a.modal=function(c,d){a.modal.close();var e,f;if(this.$body=a("body"),this.options=a.extend({},a.modal.defaults,d),this.options.doFade=!isNaN(parseInt(this.options.fadeDuration,10)),c.is("a"))if(f=c.attr("href"),/^#/.test(f)){if(this.$elm=a(f),1!==this.$elm.length)return null;this.open()}else this.$elm=a("<div>"),this.$body.append(this.$elm),e=function(a,b){b.elm.remove()},this.showSpinner(),c.trigger(a.modal.AJAX_SEND),a.get(f).done(function(d){b&&(c.trigger(a.modal.AJAX_SUCCESS),b.$elm.empty().append(d).on(a.modal.CLOSE,e),b.hideSpinner(),b.open(),c.trigger(a.modal.AJAX_COMPLETE))}).fail(function(){c.trigger(a.modal.AJAX_FAIL),b.hideSpinner(),c.trigger(a.modal.AJAX_COMPLETE)});else this.$elm=c,this.open()},a.modal.prototype={constructor:a.modal,open:function(){var b=this;this.options.doFade?(this.block(),setTimeout(function(){b.show()},this.options.fadeDuration*this.options.fadeDelay)):(this.block(),this.show()),this.options.escapeClose&&a(document).on("keydown.modal",function(b){27==b.which&&a.modal.close()}),this.options.clickClose&&this.blocker.click(a.modal.close)},close:function(){this.unblock(),this.hide(),a(document).off("keydown.modal")},block:function(){var b=this.options.doFade?0:this.options.opacity;this.$elm.trigger(a.modal.BEFORE_BLOCK,[this._ctx()]),this.blocker=a('<div class="jquery-modal blocker"></div>').css({top:0,right:0,bottom:0,left:0,width:"100%",height:"100%",position:"fixed",zIndex:this.options.zIndex,background:this.options.overlay,opacity:b}),this.$body.append(this.blocker),this.options.doFade&&this.blocker.animate({opacity:this.options.opacity},this.options.fadeDuration),this.$elm.trigger(a.modal.BLOCK,[this._ctx()])},unblock:function(){this.options.doFade?this.blocker.fadeOut(this.options.fadeDuration,function(){a(this).remove()}):this.blocker.remove()},show:function(){this.$elm.trigger(a.modal.BEFORE_OPEN,[this._ctx()]),this.options.showClose&&(this.closeButton=a('<a href="#close-modal" rel="modal:close" class="close-modal '+this.options.closeClass+'">'+this.options.closeText+"</a>"),this.$elm.append(this.closeButton)),this.$elm.addClass(this.options.modalClass+" current"),this.center(),this.options.doFade?this.$elm.fadeIn(this.options.fadeDuration):this.$elm.show(),this.$elm.trigger(a.modal.OPEN,[this._ctx()])},hide:function(){this.$elm.trigger(a.modal.BEFORE_CLOSE,[this._ctx()]),this.closeButton&&this.closeButton.remove(),this.$elm.removeClass("current"),this.options.doFade?this.$elm.fadeOut(this.options.fadeDuration):this.$elm.hide(),this.$elm.trigger(a.modal.CLOSE,[this._ctx()])},showSpinner:function(){this.options.showSpinner&&(this.spinner=this.spinner||a('<div class="'+this.options.modalClass+'-spinner"></div>').append(this.options.spinnerHtml),this.$body.append(this.spinner),this.spinner.show())},hideSpinner:function(){this.spinner&&this.spinner.remove()},center:function(){this.$elm.css({position:"fixed",top:"50%",left:"50%",marginTop:-(this.$elm.outerHeight()/2),marginLeft:-(this.$elm.outerWidth()/2),zIndex:this.options.zIndex+1})},_ctx:function(){return{elm:this.$elm,blocker:this.blocker,options:this.options}}},a.modal.prototype.resize=a.modal.prototype.center,a.modal.close=function(a){if(b){a&&a.preventDefault(),b.close();var c=b.$elm;return b=null,c}},a.modal.resize=function(){b&&b.resize()},a.modal.isActive=function(){return b?!0:!1},a.modal.defaults={overlay:"#000",opacity:.75,zIndex:1,escapeClose:!0,clickClose:!0,closeText:"Close",closeClass:"",modalClass:"modal",spinnerHtml:null,showSpinner:!0,showClose:!0,fadeDuration:null,fadeDelay:1},a.modal.BEFORE_BLOCK="modal:before-block",a.modal.BLOCK="modal:block",a.modal.BEFORE_OPEN="modal:before-open",a.modal.OPEN="modal:open",a.modal.BEFORE_CLOSE="modal:before-close",a.modal.CLOSE="modal:close",a.modal.AJAX_SEND="modal:ajax:send",a.modal.AJAX_SUCCESS="modal:ajax:success",a.modal.AJAX_FAIL="modal:ajax:fail",a.modal.AJAX_COMPLETE="modal:ajax:complete",a.fn.modal=function(c){return 1===this.length&&(b=new a.modal(this,c)),this},a(document).on("click.modal",'a[rel="modal:close"]',a.modal.close),a(document).on("click.modal",'a[rel="modal:open"]',function(b){b.preventDefault(),a(this).modal()})}(jQuery);
+    /*! alertify - v0.3.11 - 2013-10-08 */
+    !function(a,b){"use strict";var c,d=a.document;c=function(){var c,e,f,g,h,i,j,k,l,m,n,o,p,q={},r={},s=!1,t={ENTER:13,ESC:27,SPACE:32},u=[];return r={buttons:{holder:'<nav class="alertify-buttons">{{buttons}}</nav>',submit:'<button type="submit" class="alertify-button alertify-button-ok" id="alertify-ok">{{ok}}</button>',ok:'<button class="alertify-button alertify-button-ok" id="alertify-ok">{{ok}}</button>',cancel:'<button class="alertify-button alertify-button-cancel" id="alertify-cancel">{{cancel}}</button>'},input:'<div class="alertify-text-wrapper"><input type="text" class="alertify-text" id="alertify-text"></div>',message:'<p class="alertify-message">{{message}}</p>',log:'<article class="alertify-log{{class}}">{{message}}</article>'},p=function(){var a,c,e=!1,f=d.createElement("fakeelement"),g={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",OTransition:"otransitionend",transition:"transitionend"};for(a in g)if(f.style[a]!==b){c=g[a],e=!0;break}return{type:c,supported:e}},c=function(a){return d.getElementById(a)},q={labels:{ok:"OK",cancel:"Cancel"},delay:5e3,buttonReverse:!1,buttonFocus:"ok",transition:b,addListeners:function(a){var b,c,i,j,k,l="undefined"!=typeof f,m="undefined"!=typeof e,n="undefined"!=typeof o,p="",q=this;b=function(b){return"undefined"!=typeof b.preventDefault&&b.preventDefault(),i(b),"undefined"!=typeof o&&(p=o.value),"function"==typeof a&&("undefined"!=typeof o?a(!0,p):a(!0)),!1},c=function(b){return"undefined"!=typeof b.preventDefault&&b.preventDefault(),i(b),"function"==typeof a&&a(!1),!1},i=function(){q.hide(),q.unbind(d.body,"keyup",j),q.unbind(g,"focus",k),l&&q.unbind(f,"click",b),m&&q.unbind(e,"click",c)},j=function(a){var d=a.keyCode;(d===t.SPACE&&!n||n&&d===t.ENTER)&&b(a),d===t.ESC&&m&&c(a)},k=function(){n?o.focus():!m||q.buttonReverse?f.focus():e.focus()},this.bind(g,"focus",k),this.bind(h,"focus",k),l&&this.bind(f,"click",b),m&&this.bind(e,"click",c),this.bind(d.body,"keyup",j),this.transition.supported||this.setFocus()},bind:function(a,b,c){"function"==typeof a.addEventListener?a.addEventListener(b,c,!1):a.attachEvent&&a.attachEvent("on"+b,c)},handleErrors:function(){if("undefined"!=typeof a.onerror){var b=this;return a.onerror=function(a,c,d){b.error("["+a+" on line "+d+" of "+c+"]",0)},!0}return!1},appendButtons:function(a,b){return this.buttonReverse?b+a:a+b},build:function(a){var b="",c=a.type,d=a.message,e=a.cssClass||"";switch(b+='<div class="alertify-dialog">',b+='<a id="alertify-resetFocusBack" class="alertify-resetFocus" href="#">Reset Focus</a>',"none"===q.buttonFocus&&(b+='<a href="#" id="alertify-noneFocus" class="alertify-hidden"></a>'),"prompt"===c&&(b+='<div id="alertify-form">'),b+='<article class="alertify-inner">',b+=r.message.replace("{{message}}",d),"prompt"===c&&(b+=r.input),b+=r.buttons.holder,b+="</article>","prompt"===c&&(b+="</div>"),b+='<a id="alertify-resetFocus" class="alertify-resetFocus" href="#">Reset Focus</a>',b+="</div>",c){case"confirm":b=b.replace("{{buttons}}",this.appendButtons(r.buttons.cancel,r.buttons.ok)),b=b.replace("{{ok}}",this.labels.ok).replace("{{cancel}}",this.labels.cancel);break;case"prompt":b=b.replace("{{buttons}}",this.appendButtons(r.buttons.cancel,r.buttons.submit)),b=b.replace("{{ok}}",this.labels.ok).replace("{{cancel}}",this.labels.cancel);break;case"alert":b=b.replace("{{buttons}}",r.buttons.ok),b=b.replace("{{ok}}",this.labels.ok)}return l.className="alertify alertify-"+c+" "+e,k.className="alertify-cover",b},close:function(a,b){var c,d,e=b&&!isNaN(b)?+b:this.delay,f=this;this.bind(a,"click",function(){c(a)}),d=function(a){a.stopPropagation(),f.unbind(this,f.transition.type,d),m.removeChild(this),m.hasChildNodes()||(m.className+=" alertify-logs-hidden")},c=function(a){"undefined"!=typeof a&&a.parentNode===m&&(f.transition.supported?(f.bind(a,f.transition.type,d),a.className+=" alertify-log-hide"):(m.removeChild(a),m.hasChildNodes()||(m.className+=" alertify-logs-hidden")))},0!==b&&setTimeout(function(){c(a)},e)},dialog:function(a,b,c,e,f){j=d.activeElement;var g=function(){m&&null!==m.scrollTop&&k&&null!==k.scrollTop||g()};if("string"!=typeof a)throw new Error("message must be a string");if("string"!=typeof b)throw new Error("type must be a string");if("undefined"!=typeof c&&"function"!=typeof c)throw new Error("fn must be a function");return this.init(),g(),u.push({type:b,message:a,callback:c,placeholder:e,cssClass:f}),s||this.setup(),this},extend:function(a){if("string"!=typeof a)throw new Error("extend method must have exactly one paramter");return function(b,c){return this.log(b,a,c),this}},hide:function(){var a,b=this;u.splice(0,1),u.length>0?this.setup(!0):(s=!1,a=function(c){c.stopPropagation(),b.unbind(l,b.transition.type,a)},this.transition.supported?(this.bind(l,this.transition.type,a),l.className="alertify alertify-hide alertify-hidden"):l.className="alertify alertify-hide alertify-hidden alertify-isHidden",k.className="alertify-cover alertify-cover-hidden",j.focus())},init:function(){d.createElement("nav"),d.createElement("article"),d.createElement("section"),null==c("alertify-cover")&&(k=d.createElement("div"),k.setAttribute("id","alertify-cover"),k.className="alertify-cover alertify-cover-hidden",d.body.appendChild(k)),null==c("alertify")&&(s=!1,u=[],l=d.createElement("section"),l.setAttribute("id","alertify"),l.className="alertify alertify-hidden",d.body.appendChild(l)),null==c("alertify-logs")&&(m=d.createElement("section"),m.setAttribute("id","alertify-logs"),m.className="alertify-logs alertify-logs-hidden",d.body.appendChild(m)),d.body.setAttribute("tabindex","0"),this.transition=p()},log:function(a,b,c){var d=function(){m&&null!==m.scrollTop||d()};return this.init(),d(),m.className="alertify-logs",this.notify(a,b,c),this},notify:function(a,b,c){var e=d.createElement("article");e.className="alertify-log"+("string"==typeof b&&""!==b?" alertify-log-"+b:""),e.innerHTML=a,m.appendChild(e),setTimeout(function(){e.className=e.className+" alertify-log-show"},50),this.close(e,c)},set:function(a){var b;if("object"!=typeof a&&a instanceof Array)throw new Error("args must be an object");for(b in a)a.hasOwnProperty(b)&&(this[b]=a[b])},setFocus:function(){o?(o.focus(),o.select()):i.focus()},setup:function(a){var d,j=u[0],k=this;s=!0,d=function(a){a.stopPropagation(),k.setFocus(),k.unbind(l,k.transition.type,d)},this.transition.supported&&!a&&this.bind(l,this.transition.type,d),l.innerHTML=this.build(j),g=c("alertify-resetFocus"),h=c("alertify-resetFocusBack"),f=c("alertify-ok")||b,e=c("alertify-cancel")||b,i="cancel"===q.buttonFocus?e:"none"===q.buttonFocus?c("alertify-noneFocus"):f,o=c("alertify-text")||b,n=c("alertify-form")||b,"string"==typeof j.placeholder&&""!==j.placeholder&&(o.value=j.placeholder),a&&this.setFocus(),this.addListeners(j.callback)},unbind:function(a,b,c){"function"==typeof a.removeEventListener?a.removeEventListener(b,c,!1):a.detachEvent&&a.detachEvent("on"+b,c)}},{alert:function(a,b,c){return q.dialog(a,"alert",b,"",c),this},confirm:function(a,b,c){return q.dialog(a,"confirm",b,"",c),this},extend:q.extend,init:q.init,log:function(a,b,c){return q.log(a,b,c),this},prompt:function(a,b,c,d){return q.dialog(a,"prompt",b,c,d),this},success:function(a,b){return q.log(a,"success",b),this},error:function(a,b){return q.log(a,"error",b),this},set:function(a){q.set(a)},labels:q.labels,debug:q.handleErrors}},"function"==typeof define?define([],function(){return new c}):"undefined"==typeof a.alertify&&(a.alertify=new c)}(this);
 </script>
 
 <script>
@@ -189,6 +253,8 @@
         })
 
         $(".selectdrop").selectBoxIt();
+
+
     });
 </script>
 
