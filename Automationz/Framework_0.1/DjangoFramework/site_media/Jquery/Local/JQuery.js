@@ -83,16 +83,16 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 				
 				switch (table_item[data]) {
 				case 'Passed':
-					content += '<td style="border-bottom: 4px solid ' + colors['pass'] + ';">' + table_item[data] + '</font></td>';
+					content += '<td style="border-left: 4px solid ' + colors['pass'] + ';">' + table_item[data] + '</font></td>';
 					continue;
 				case 'Failed':
-					content += '<td style="border-bottom: 4px solid ' + colors['fail'] + ';">' + table_item[data] + '</font></td>';
+					content += '<td style="border-left: 4px solid ' + colors['fail'] + ';">' + table_item[data] + '</font></td>';
 					continue;
 				case 'Submitted':
-					content += '<td style="border-bottom: 4px solid ' + colors['submitted'] + ';">' + table_item[data] + '</font></td>';
+					content += '<td style="border-left: 4px solid ' + colors['submitted'] + ';">' + table_item[data] + '</font></td>';
 					continue;
 				case 'Blocked':
-					content += '<td style="border-bottom: 4px solid ' + colors['block'] + ';">' + table_item[data] + '</font></td>';
+					content += '<td style="border-left: 4px solid ' + colors['block'] + ';">' + table_item[data] + '</font></td>';
 					continue;
 				}
 				
