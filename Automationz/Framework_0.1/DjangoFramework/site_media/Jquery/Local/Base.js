@@ -1,13 +1,86 @@
 /**
- * Last modified by: sazid on 4/27/14.
+ * Last modified by: sazid on 4/25/14.
  */
 $(document).ready(function(){
 
-	// Remember the path so that after the login, the user is redirected back to the same page he/she was trying to view
-	current_path = window.location.pathname;
-	// Save it to session storage rather than local storage
-	sessionStorage.setItem("path_to_redirect", current_path);
+	window.interval = 0;
+	s_success = false;
 	
+	function s_loadData(instance) {
+		window.user = $('#username').val();
+	    window.pwd = $('#password').val();
+	    window.logged = false;
+	    window.data = [];
+		
+		$.ajax({
+            url:'GetUsers/',
+            dataType : "json",
+            type : "GET",
+            data : {
+                user : user,
+                pwd : pwd
+            },
+            success: function( json ) {
+                if(json!="User Not Found!")
+                {
+                	s_success = true;
+                	
+                	instance.stop( 1 );
+                	clearInterval( interval );
+            
+                    setTimeout(function(){
+                    	window.location='/Home/';
+                    }, 1500);
+					
+					$.session.set('username', user);
+                    $.session.set('fullname', json);
+                    $.session.set('log', 'logged');
+                    
+                    $("#loginFieldset").css("border", "6px solid #4183c4");
+                	$("#loginLegened").css({
+                		"border": "#4183c4",
+                		"background": "#4183c4"
+                	});
+                    
+                    $(".welcome").text($.session.get('fullname'));
+                }
+                else
+                {
+                	instance.stop( -1 );
+                	clearInterval( interval );
+                	s_success = false;
+                	progress = 0;
+                	
+                	$("#loginFieldset").css("border", "6px solid #FB797E");
+                	$("#loginLegened").css({
+                		"border": "#FB797E",
+                		"background": "#FB797E"
+                	});
+                }
+            },
+            error: function(json){
+				clearInterval( interval );
+				s_success = false;
+				progress = 0;
+				
+				$("#loginFieldset").css("border", "6px solid #FB797E");
+				$("#loginLegened").css({
+					"border": "#FB797E",
+					"background": "#FB797E"
+				});
+			}
+        });
+	}
+	
+    $('#username , #password').keypress(function (e) {
+        var key = e.which;
+        if(key === 13)  // the enter key code
+        {
+            $("#loginbtn").trigger('click');
+        }
+    });
+
+
     if($.session.get('log') !== 'logged' && $(this).attr('title') !== 'Log In')
     {
         window.location = '/Home/Login/';
@@ -15,6 +88,14 @@ $(document).ready(function(){
     
     $(".welcome").text($.session.get('fullname'));
 
+    $(".logout").click(function(){
+        $.session.remove('username');
+        $.session.remove('fullname');
+        $.session.remove('log');
+        window.location = '/Home/Login/';
+        $(".welcome").text("");
+    });
+    
     [].slice.call( document.querySelectorAll( '.progress-button' ) ).forEach( function( bttn, pos ) {
 		new UIProgressButton( bttn, {
 			callback : function( instance ) {

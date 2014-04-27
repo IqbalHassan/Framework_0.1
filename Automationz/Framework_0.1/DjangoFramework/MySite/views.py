@@ -3025,12 +3025,12 @@ def Get_Users(request):
         password = request.GET.get(u'pwd', '').strip()
         #if username=='':
         results = DB.GetData(Conn, "select full_name from user_info where username='"+username+"' and password='"+password+"'", False)
- 
+
     if len(results)>0:
         message = results[0]
     else:
         message = "User Not Found!"
- 
+
     json = simplejson.dumps(message)
     return HttpResponse(json, mimetype='application/json')
 

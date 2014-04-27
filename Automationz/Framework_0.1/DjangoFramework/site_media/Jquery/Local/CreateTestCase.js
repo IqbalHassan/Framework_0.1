@@ -18,7 +18,6 @@ $(document).ready(function() {
     check_required_data();
     show_radio_button();
     vertical_sidebar();
-    AutoCompleteSearchForPrompt();
 
     /*****************Shetu's Function************************/
     AutoCompleteTag();
@@ -856,7 +855,6 @@ $(document).ready(function() {
                         }
                     }
                     if(query == "c" && dataValidationCheck){
-                        $("#submit").attr('disabled','disabled');
                         $.get("Submit_New_TestCase/",{
                             Section_Path:newSectionPath,
                             Platform:platformList.join("|"),
@@ -879,13 +877,11 @@ $(document).ready(function() {
                             //alert(data);
                             alertify.log("Test Case '"+data+"' successfully created!","",0);
                             desktop_notify("Test Case '"+data+"'-'"+title+"' successfully created!");
-                            $("#submit").removeAttr('disabled');
                             var location='/Home/ManageTestCases/Edit/'+data;
                             window.location=location;
                         });
                     }
                     else if(query == "e" && dataValidationCheck){
-                        $("#submit").attr('disabled','disabled');
                         $.get("Edit_TestCase",{
                                 Section_Path:newSectionPath,
                                 TC_Id:_TC_Id,
@@ -911,7 +907,6 @@ $(document).ready(function() {
                                 //alert(data+" edited successfully");
                                 alertify.log("Test Case '"+data+"' successfully edited!","",0);
                                 desktop_notify("Test Case '"+data+"'-'"+title+"' successfully edited!");
-                                $("#submit").removeAttr('disabled');
                                 var location='/Home/ManageTestCases/Edit/'+data;
                                 window.location=location;
                             });
@@ -1616,55 +1611,6 @@ function desktop_notify(message){
 
 
 }
-function AutoCompleteSearchForPrompt(){
-    $("#titlebox").autocomplete({
-        source:function(request,response){
-            $.ajax({
-                url:"TestCaseSearch/",
-                dataType:"json",
-                data:{
-                    term:request.term
-                },
-                success:function(data){
-                    response(data);
-                }
-            });
-        },
-        select:function(event,ui){
-            var tc_id=ui.item[0].trim();
-            var tc_name=ui.item[1].trim();
-            if(tc_id!=""){
-                $(this).val(tc_name);
-                /*if(confirm("Are you sure about leaving before saving?")){
-                    window.location = '/Home/ManageTestCases/Edit/'+tc_id
-                }
-                else{
-                    window.location = '/Home/ManageTestCases/CreateNew/'+tc_id
-                }*/
-                $("#title_prompt").html(
-                    '<p style="text-align: center">You have selected ' +
-                    tc_id +'-'+ tc_name + '.' +
-                    '<br/> What do you want to do?' +
-                        '</p>' +
-                        '<div style="padding-left: 15%">' +
-                        '<a class="github" href="/Home/ManageTestCases/Edit/'+tc_id+'">Edit</a>' +
-                        '<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
-                        '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
-                        '</div>'
-
-                );
-                $("#title_prompt").modal();
-                return false;
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + " - "+item[1]+"<strong> - " + item[2] + "</strong></a>" )
-            .appendTo( ul );
-    };
-}
-
 /****************************End Minar's Thing****************************************************/
 function DeleteSearchQueryText() {
     $(".delete").live("click", function() {

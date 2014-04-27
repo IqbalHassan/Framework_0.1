@@ -1,203 +1,273 @@
- {% extends "BaseTemplate.html" %} {% block title%} Automation Solutionz
-{% endblock %} {% block content %}
+
+{% extends "BaseTemplate.html" %}
+
+{% block title%} Automation Home {% endblock %}
+  
+{% block content %}
+	
+	<div id="about_us">
 
 
-<meta name="author" content="Sazid">
+    <!--link href="http://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet" /-->
 
-<!-- Bootstrap core CSS -->
-<link href="/site_media/bootstrap/css/bootstrap.min.css"
-	rel="stylesheet">
+	<article>
 
-<!-- Custom styles for this template -->
-<link href="/site_media/bootstrap/css/dashboard.css" rel="stylesheet">
-<style id="holderjs-style" type="text/css"></style>
-</head>
+    <!--<h1 class="Text" style="margin: 24%; text-align: center; font-weight: normal; line-height: 1.1;font-size: 38px;font-family: Satisfy, cursive; color: red">Under Construction!</h1>-->
 
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-sm-3 col-md-2 sidebar">
-			<ul class="nav nav-sidebar">
-				<li class="active"><a href="#">Overview</a></li>
-				<li><a href="#">Reports</a></li>
-				<li><a href="#">Analytics</a></li>
-				<li><a href="#">Export</a></li>
-			</ul>
-			<ul class="nav nav-sidebar">
-				<li><a href="">Design</a></li>
-				<li><a href="">Specs</a></li>
-				<li><a href="">Price</a></li>
-				<li><a href="">Release Date</a></li>
-			</ul>
-		</div>
-		<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-			<h1 class="page-header">Dashboard</h1>
+        <style type="text/css">
+            body
+            {
+                background-color: #f7f7f7;
+            }
 
-			<div class="row placeholders">
-				<div class="col-xs-6 col-sm-3 placeholder">
-					<img data-src="holder.js/200x200/auto/sky" class="img-responsive"
-						alt="200x200"
-						src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzBEOEZEQiI+PC9yZWN0Pjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEwMCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojZmZmO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEzcHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MjAweDIwMDwvdGV4dD48L3N2Zz4=">
-					<h4>Label</h4>
-					<span class="text-muted">Something else</span>
-				</div>
-				<div class="col-xs-6 col-sm-3 placeholder">
-					<img data-src="holder.js/200x200/auto/vine" class="img-responsive"
-						alt="200x200"
-						src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzM5REJBQyI+PC9yZWN0Pjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEwMCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojMUUyOTJDO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEzcHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MjAweDIwMDwvdGV4dD48L3N2Zz4=">
-					<h4>Label</h4>
-					<span class="text-muted">Something else</span>
-				</div>
-				<div class="col-xs-6 col-sm-3 placeholder">
-					<img data-src="holder.js/200x200/auto/sky" class="img-responsive"
-						alt="200x200"
-						src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzBEOEZEQiI+PC9yZWN0Pjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEwMCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojZmZmO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEzcHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MjAweDIwMDwvdGV4dD48L3N2Zz4=">
-					<h4>Label</h4>
-					<span class="text-muted">Something else</span>
-				</div>
-				<div class="col-xs-6 col-sm-3 placeholder">
-					<img data-src="holder.js/200x200/auto/vine" class="img-responsive"
-						alt="200x200"
-						src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzM5REJBQyI+PC9yZWN0Pjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEwMCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojMUUyOTJDO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEzcHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MjAweDIwMDwvdGV4dD48L3N2Zz4=">
-					<h4>Label</h4>
-					<span class="text-muted">Something else</span>
-				</div>
-			</div>
+            .wrapper
+            {
+                width: 960px;
+                margin: 0px auto;
+                padding-top: 20px;
+                min-height: 600px;
+            }
 
-			<h2 class="sub-header">Section title</h2>
-			<div class="table-responsive">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Header</th>
-							<th>Header</th>
-							<th>Header</th>
-							<th>Header</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>1,001</td>
-							<td>Lorem</td>
-							<td>ipsum</td>
-							<td>dolor</td>
-							<td>sit</td>
-						</tr>
-						<tr>
-							<td>1,002</td>
-							<td>amet</td>
-							<td>consectetur</td>
-							<td>adipiscing</td>
-							<td>elit</td>
-						</tr>
-						<tr>
-							<td>1,003</td>
-							<td>Integer</td>
-							<td>nec</td>
-							<td>odio</td>
-							<td>Praesent</td>
-						</tr>
-						<tr>
-							<td>1,003</td>
-							<td>libero</td>
-							<td>Sed</td>
-							<td>cursus</td>
-							<td>ante</td>
-						</tr>
-						<tr>
-							<td>1,004</td>
-							<td>dapibus</td>
-							<td>diam</td>
-							<td>Sed</td>
-							<td>nisi</td>
-						</tr>
-						<tr>
-							<td>1,005</td>
-							<td>Nulla</td>
-							<td>quis</td>
-							<td>sem</td>
-							<td>at</td>
-						</tr>
-						<tr>
-							<td>1,006</td>
-							<td>nibh</td>
-							<td>elementum</td>
-							<td>imperdiet</td>
-							<td>Duis</td>
-						</tr>
-						<tr>
-							<td>1,007</td>
-							<td>sagittis</td>
-							<td>ipsum</td>
-							<td>Praesent</td>
-							<td>mauris</td>
-						</tr>
-						<tr>
-							<td>1,008</td>
-							<td>Fusce</td>
-							<td>nec</td>
-							<td>tellus</td>
-							<td>sed</td>
-						</tr>
-						<tr>
-							<td>1,009</td>
-							<td>augue</td>
-							<td>semper</td>
-							<td>porta</td>
-							<td>Mauris</td>
-						</tr>
-						<tr>
-							<td>1,010</td>
-							<td>massa</td>
-							<td>Vestibulum</td>
-							<td>lacinia</td>
-							<td>arcu</td>
-						</tr>
-						<tr>
-							<td>1,011</td>
-							<td>eget</td>
-							<td>nulla</td>
-							<td>Class</td>
-							<td>aptent</td>
-						</tr>
-						<tr>
-							<td>1,012</td>
-							<td>taciti</td>
-							<td>sociosqu</td>
-							<td>ad</td>
-							<td>litora</td>
-						</tr>
-						<tr>
-							<td>1,013</td>
-							<td>torquent</td>
-							<td>per</td>
-							<td>conubia</td>
-							<td>nostra</td>
-						</tr>
-						<tr>
-							<td>1,014</td>
-							<td>per</td>
-							<td>inceptos</td>
-							<td>himenaeos</td>
-							<td>Curabitur</td>
-						</tr>
-						<tr>
-							<td>1,015</td>
-							<td>sodales</td>
-							<td>ligula</td>
-							<td>in</td>
-							<td>libero</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-</div>
+            .wrapper h1, .wrapper h4, .wrapper p, .wrapper pre, .wrapper ul, .wrapper li
+            {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                vertical-align: baseline;
+                background: transparent;
+            }
+
+            .wrapper li
+            {
+                outline: 0;
+                text-decoration: none;
+                -webkit-transition-property: background color;
+                -moz-transition-property: background color;
+                -o-transition-property: background color;
+                -ms-transition-property: background color;
+                transition-property: background color;
+                -webkit-transition-duration: 0.12s;
+                -moz-transition-duration: 0.12s;
+                -o-transition-duration: 0.12s;
+                -ms-transition-duration: 0.12s;
+                transition-duration: 0.12s;
+                -webkit-transition-timing-function: ease-out;
+                -moz-transition-timing-function: ease-out;
+                -o-transition-timing-function: ease-out;
+                -ms-transition-timing-function: ease-out;
+                transition-timing-function: ease-out;
+            }
+
+            #v-nav
+            {
+                height: 100%;
+                margin: auto;
+                color: #333;
+                font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+            }
+
+            #v-nav >ul
+            {
+                float: left;
+                width: 210px;
+                display: block;
+                position: relative;
+                top: 0;
+                border: 1px solid #DDD;
+                border-right-width: 0;
+                margin: auto 0 !important;
+                padding:0;
+            }
+
+            #v-nav >ul >li
+            {
+                width: 180px;
+                list-style-type: none;
+                display: block;
+                text-shadow: 0px 1px 1px #F2F1F0;
+                cursor: pointer;
+                font-size: 1.11em;
+                position: relative;
+                border-right-width: 0;
+                border-bottom: 1px solid #DDD;
+                margin: auto;
+                padding: 10px 15px !important;
+                background: whiteSmoke; /* Old browsers */
+                background: -moz-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* FF3.6+ */
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100%, #f2f2f2)); /* Chrome,Safari4+ */
+                background: -webkit-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Chrome10+,Safari5.1+ */
+                background: -o-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Opera 11.10+ */
+                background: -ms-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* IE10+ */
+                background: linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* W3C */
+            }
+
+            #v-nav >ul >li.current
+            {
+                color: black;
+                border-right: none;
+                z-index: 10;
+                background: white !important;
+                position: relative;
+                moz-box-shadow: inset 0 0 35px 5px #fafbfd;
+                -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
+                box-shadow: inset 0 0 35px 5px #fafbfd;
+            }
+
+            #v-nav >ul >li.first.current
+            {
+                border-bottom: 1px solid #DDD;
+            }
+
+            #v-nav >ul >li.last
+            {
+                border-bottom: none;
+            }
+
+            #v-nav >div.tab-content
+            {
+                margin-left: 210px;
+                border: 1px solid #ddd;
+                background-color: #FFF;
+                min-height: 400px;
+                position: relative;
+                z-index: 9;
+                padding: 12px;
+                moz-box-shadow: inset 0 0 35px 5px #fafbfd;
+                -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
+                box-shadow: inset 0 0 35px 5px #fafbfd;
+                display: none;
+                padding: 25px;
+            }
+
+            #v-nav >div.tab-content >h4
+            {
+                font-size: 1.2em;
+                color: Black;
+                text-shadow: 0px 1px 1px #F2F1F0;
+                border-bottom: 1px dotted #EEEDED;
+                padding-top: 5px;
+                padding-bottom: 5px;
+            }
+
+        </style>
+        <section class="wrapper" id="wrapper">
+
+            <div align="left">
+                <h3 style="font-size: 19px;"><a style="font-weight: bold">Dashboard</a></h3>
+            </div>
+            <div id="v-nav">
+                <ul>
+                    <li tab="tab1" class="first current">Design</li>
+                    <li tab="tab2">Specs</li>
+                    <li tab="tab3">Price</li>
+                    <li tab="tab4" class="last">Release Date</li>
+                </ul>
+                <div class="tab-content" style="display: block">
+                    <h4>Design</h4>
+                </div>
+                <div class="tab-content" style="display: none">
+                    <h4>Specs</h4>
+                </div>
+                <div class="tab-content" style="display: none">
+                    <h4>Price</h4>
+                </div>
+                <div class="tab-content" style="display: none">
+                    <h4>Release Date</h4>
+                </div>
+            </div>
+        </section>
+<pre>
+            <!-- Include Scripts -->
+
+<script type="text/javascript">
+    $(function () {
+        var items = $('#v-nav>ul>li').each(function () {
+            $(this).click(function () {
+                //remove previous class and add it to clicked tab
+                items.removeClass('current');
+                $(this).addClass('current');
+
+                //hide all content divs and show current one
+                $('#v-nav>div.tab-content').hide().eq(items.index($(this))).show('fast');
+
+                window.location.hash = $(this).attr('tab');
+            });
+        });
+
+        if (location.hash) {
+            showTab(location.hash);
+        }
+        else {
+            showTab("tab1");
+        }
+
+        function showTab(tab) {
+            $("#v-nav ul li:[tab=" + tab + "]").click();
+        }
+
+        // Bind the event hashchange, using jquery-hashchange-plugin
+        $(window).hashchange(function () {
+            showTab(location.hash.replace("#", ""));
+        })
+
+        // Trigger the event hashchange on page load, using jquery-hashchange-plugin
+        $(window).hashchange();
+    });
+</script>
 
 
+
+        <!--h1 class="Text" style="margin: 24%; text-align: center; font-weight: normal; line-height: 1.1;font-size: 38px;font-family: Satisfy, cursive; color: red">Under Construction!</h1-->
+	<!--header id="about_us_header" style="font-family: Open Sans;">
+	Why We Built It!
+	</header-->
+	<!--p id="about_us_statement" style="font-family: Open Sans;">
+	</p>
+	Automation Solutionz provides Web Based test case management and execution.  Our team is composed of one of the most talented individuals with vast knowledge in software development life cycle.
+	<br>
+	<br>
+	During our 10+ years of venture in software automation, we have developed framework around QTP, Unit testing, Applescript with Automator, Ration Robot, Robot, Fitness and various other customized framework.
+	<br>
+	<br>
+	Code based driven testing (unit testing) provides best solution for finding bugs before they are introduced to the product.  It allows developers to detect bug at the very early stages of the software development life cycle.  It requires decent level coding and good code flow knowledge of the product.
+	<br>
+	<br>
+	However when it comes to complex testing which requires integration with multiple modules, it does not meet the testing requirements.  It also does not produce good reporting matrix and does not keep execution history.  It does extremely poor with end user testing as it does not drive the application.
+	<br>
+	<br>
+	On the other hand, record and playback automation framework (QTP) may provide solution for testers with very little or no coding experience to create automation testing.  This type of framework proves to be one of the most expensive when it comes to reliability and maintenance.  However, these types of frameworks are focused with end-end testing and provide a better reporting.
+	<br>
+	<br>
+	Our approach of automation framework combines best of both worlds.  We have analyzed all the bad and good of various framework and came up with a solution that would satisfy both developers and testers requirements.
+	<br>
+	<br>
+	We are able to execute white box testing or black box testing.  We achieved this by allowing developers to write unit testing and integrating the unit testing directly into our framework with very little work. Developers are able to run their testing before they submit the code and manual testers also able to write keyword based testing that would drive the UI to simulate end user testing.
+	<br>
+	<br>
+	Our reporting structure provides one of the most comprehensive reporting in the market. We focused most on our reporting during our research prior to designing the framework.  We are able to pin point root case of failure with screen captures and detailed logs that are organized with various log level. This allows testers to view results without going into too much detail of failure reason and at the same time allows developers to drill deep in finding the root cause.  All this is done with dynamic table with clear and concise reporting.
+	<br>
+	<br>
+	We believe that with our intelligent reporting and advanced cloud based test case management, execution and reporting, your software will be able to deliver the highest quality with lowest price point.  We are always learning new technology and would enjoy any challenges your developers or testers faces.  
+	<div id="about_us_list">
+	<ul class="pros">
+	<li>Minimal setup time (less than 15 minutes)</li>
+	<li>Execute same test cases on various platforms Automated build test with email reporting</li>
+	<li>Test Case management by tag, id, sections, etc.</li>
+	<li>View live results and test case execution from Mobile devices or work station</li>
+	<li>Grouping of test cases on the basis of test session results and by root cause failure</li>
+	<li>Re-Run the failed test cases (helps to reproduce failed test cases)</li>
+	<li>Log Collection at central server (helps with analyzing failure causes while the session is in progress)</li>
+	<li>Track the execution history of an individual test case (gives a quick over view of when the test case last failed/passed)</li>
+	<li>Generate execution reports dynamically</li>
+	<li>Integrate the results into graphs for analysis</li>
+	<li>3rd party software (JIRA, MKS and others) integration </li>
+	</ul>
+	</div-->
+	</article>
+	
+	</div>			
 {% endblock %}
-
+			
 
 
 
