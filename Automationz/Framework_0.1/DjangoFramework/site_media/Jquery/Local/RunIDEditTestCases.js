@@ -191,6 +191,7 @@ function TestDataFetch(){
                 var step_name=$(this).closest("tr").find("td:nth-child(2)").text().trim();
                 var datasetid=tc_id+"_s"+step_no;
                 $.get("TestDataFetch",{
+                    'run_id':$('#runid').text().trim(),
                     'data_set_id':datasetid.trim()
                 },function(data){
                     console.log(data['row_array']);
