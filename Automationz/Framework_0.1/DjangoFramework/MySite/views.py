@@ -1700,7 +1700,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
     #Finding Client info from TestRenEnv for selected machine
     #if is_rerun=='rerun':
-     #   query="select client from test_run_env where tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
+    #   query="select client from test_run_env where tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
     #else:
     query="Select client from test_run_env Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
     ClientInfo = DB.GetData(Conn, query)
@@ -1726,7 +1726,16 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             if len(TagName) > 0:
                 TagName = TagName[0]
 
-
+        if is_rerun=="rerun":
+            TagName = DB.GetData(Conn, "Select DISTINCT property from result_test_case_tag where name = '%s' and property in ('%s','%s') and run_id='%s'" % (eachitem, Section, CustomTag,previous_run))
+            if len(TagName) > 0:
+                TagName = TagName[0]
+            else:
+                TagName = DB.GetData(Conn, "Select DISTINCT property from result_test_case_tag where name = '%s' and run_id='%s'" % (eachitem,previous_run))
+                if len(TagName) > 0 and 'tcid' in TagName:
+                    TagName = 'tcid'
+                else:
+                    TagName=TagName[0]
         #Checking if QuestyText has Client name. if yes geting client name and version from ClientInfo
         for iclient in ClientInfo:
             print "eachitem:"+eachitem
