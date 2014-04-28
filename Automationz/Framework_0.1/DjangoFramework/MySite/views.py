@@ -3142,6 +3142,22 @@ def Get_Browsers(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Auto_Step_Create(request):
+    Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        step = request.GET.get(u'step', '')
+        if step != '':
+            results = DB.GetData(Conn, "select count(stepname) from test_steps_list where stepname =  '"+step+"'")
+
+    if results[0]==0:
+        dbtest = DB.InsertNewRecordInToTable(Conn, "test_steps_list", stepname=step, description=step, driver='WebDriver', steptype='manual', data_required='false', stepfeature='Common', stepenable='true', step_editable='true', case_desc=step, expected=step, verify_point='false', step_continue='false', estd_time='59')
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+
 def Get_Users(request):
     Conn = GetConnection()
     results = []

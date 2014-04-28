@@ -83,6 +83,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/GetRunTypes/$', Get_RunTypes),
     url(r'^Home/.*/GetStatus/$', Get_Status),
     url(r'^Home/.*/GetUsers/$', Get_Users),
+    url(r'^Home/.*/Auto_Step_Create/$', Auto_Step_Create),
     url(r'^Home/ManageTestCases/DeleteExisting/$', DeleteExisting),
     url(r'^Home/.*/GetStepNameType/$',GetStepNameType),
     #Test Set Management Section

@@ -613,6 +613,7 @@ $(document).ready(function() {
                         alertify.log('Estimated time for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
+                    auto_step_create($('#searchbox'+i+'name').val());
                     stepNameList.push($('#searchbox'+i+'name').val());
                     stepExpectedList.push($('#searchbox'+i+'expected').val());
                     stepDescriptionList.push($('#searchbox'+i+'info').val());
@@ -818,9 +819,9 @@ $(document).ready(function() {
                         }
                         if(!found){
                             //alert("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion");
-                            alertify.log("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion","",0);
-                            alertFound=1;
-                            return false;
+                            //alertify.log("StepName and Type Error in step #"+(i+1)+"Not selected from suggestion","",0);
+                            //alertFound=1;
+                            //return false;
                         }
                     }
                     if(tag.length>0){
@@ -943,7 +944,7 @@ function AutoCompleteTestStep(){
                          }
                          response(auto_list);
                          */response(data);
-                        if(data.length==0){
+                        /*if(data.length==0){
                             $(".textbox:focus").css({
                                 'border': '1px solid #FF3D00',
                                 'box-shadow': '0px 0px 3px #FF3D00'
@@ -958,7 +959,7 @@ function AutoCompleteTestStep(){
                                 'background-color': '#fff',
                                 'box-shadow': '0px 0px 3px #7bc1f7'
                             });
-                        }
+                        }*/
                     }
                 });
             },
@@ -1710,6 +1711,20 @@ function AutoCompleteSearchForPrompt(){
                 .append( "<a>" + item[0] + " - "+item[1]+"<strong> - " + item[2] + "</strong></a>" )
                 .appendTo( ul );
         };
+}
+function auto_step_create(step){
+    $.ajax({
+        url:'Auto_Step_Create/',
+        dataType : "json",
+        data : {
+            step : step
+        },
+        success: function( json ) {
+            if(json[0]==0){
+                alertify.log("New step created with title '"+step+"'","",0)
+            }
+        }
+    });
 }
 /****************************End Minar's Thing****************************************************/
 function DeleteSearchQueryText() {
