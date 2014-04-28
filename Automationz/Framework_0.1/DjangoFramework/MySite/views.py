@@ -6015,7 +6015,7 @@ def Result(request):
     return render_to_response('Result.html',{},context_instance=RequestContext(request))
 def GetResultAuto(request):
     if request.is_ajax():
-        if request.method=='GET':
+        if request.method=='GET':            
             final=[]
             term=request.GET.get(u'term','')
             Conn=GetConnection()
@@ -6041,20 +6041,47 @@ def GetResultAuto(request):
             query="select assigned_tester from test_run_env"
             Testers=DB.GetData(Conn,query,False)
             tester=[]
+            ###Making Camel Case to accept####
+            newTerm=""
+            TermList=[]
+            for each in range(0,len(term)):
+                TermList.append(term[each])
+            newTerm=TermList[0].upper()
+            for each in range(0,len(term)):
+                if each!=0:
+                    newTerm+=TermList[each]
+            ########Making full CAPS LOCK ON ########
+            newCap=""
+            TermList=[]
+            for each in range(0,len(term)):
+                TermList.append(term[each])
+            newCap=TermList[0]
+            for each in range(0,len(term)):
+                if each!=0:
+                    newCap+=(TermList[each].lower())
+            ##########Making first Camel case Upper and all Lower#############
+            firstup=""
+            TermList=[]
+            for each in range(0,len(term)):
+                TermList.append(term[each])
+            firstup=TermList[0].upper()
+            for each in range(0,len(term)):
+                if each!=0:
+                    firstup+=(TermList[each].lower())
             for each in Testers:
                 print each
                 for eachitem in each:
                     if eachitem is not None:
                         if "," not in eachitem:
-                            if (term in eachitem or str(term).upper() in eachitem or str(term).lower() in eachitem) and eachitem not in tester:
+                            if (term in eachitem or str(term).upper() in eachitem or str(term).lower() in eachitem or newTerm in eachitem or newCap in eachitem or firstup in eachitem) and eachitem not in tester:
                                 tester.append(eachitem)
                         else:
                             for eachitemdivide in eachitem.split(","):
-                                if (term in eachitemdivide.strip() or str(term).upper() in eachitemdivide.strip() or str(term).lower() in eachitemdivide.strip()) and eachitemdivide.strip() not in tester:
+                                if (term in eachitemdivide.strip() or str(term).upper() in eachitemdivide.strip() or str(term).lower() in eachitemdivide.strip() or newTerm in eachitemdivide.strip() or newCap in eachitemdivide.strip() or firstup in eachitemdivide.strip()) and eachitemdivide.strip() not in tester:
                                     tester.append(eachitemdivide.strip())
             print tester
             for each in tester:
-                if (term in each or str(term).upper() in each or str(term).lower() in each) and (each,'Tester') not in final:
+                if (term in each or str(term).upper() in each or str(term).lower() in each or newTerm in each or newCap in each or firstup in each) and (each,'Tester') not in final:
                     final.append((each,'Tester'))
             #Fetch the objectives
             query="select distinct ter.rundescription,'Objective' from test_env_results ter,test_run_env tre where tre.run_id=ter.run_id and ter.rundescription Ilike '%%%s%%'"%term
