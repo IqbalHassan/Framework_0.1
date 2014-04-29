@@ -1668,7 +1668,10 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
     #Creating Runid and assigning test cases to it in "testrun" table
     TestIDList = []
     for eachitem in QueryText:
-        TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
+        if is_rerun=="rerun":
+            TestID = DB.GetData(Conn, "Select property from result_test_case_tag where name = '%s' and run_id='%s'" % (eachitem,previous_run))
+        else:
+            TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
         for eachProp in TestID:
             if eachProp == 'tcid':
                 TestIDList.append(eachitem)
@@ -1697,10 +1700,21 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             final_query="select distinct tct.tc_id from test_case_tag tct, test_cases tc where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query
         TestCasesIDs = DB.GetData(Conn,final_query )
     #The Run ID and test case may be given a status of submitted here.    
-    for eachitem in TestCasesIDs:
-        Dict = {'run_id':runid, 'tc_id':str(eachitem)}
-        Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
-
+    if is_rerun=="rerun":
+        RegisterReRunPermanentInfo(Conn,runid,previous_run,TestCasesIDs)
+        for eachitem in TestCasesIDs:
+            Dict = {'run_id':runid, 'tc_id':str(eachitem)}
+            Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
+            print Result
+        AddReRunInfo(runid,previous_run)
+    else:
+        RegisterPermanentInfo(Conn,runid,TestCasesIDs)
+        for eachitem in TestCasesIDs:
+            Dict = {'run_id':runid, 'tc_id':str(eachitem)}
+            Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
+            print Result
+        AddInfo(runid)
+    
     #Finding Client info from TestRenEnv for selected machine
     #if is_rerun=='rerun':
     #   query="select client from test_run_env where tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
@@ -1764,12 +1778,6 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             TestSetName = TestSetName.strip()
             Dict = {'run_id':runid, 'rundescription': TestSetName , '%s' % (TagName) : '%s' % (eachitem)}
         Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , **Dict)
-    if is_rerun=="rerun":
-        RegisterReRunPermanentInfo(Conn,runid,previous_run)
-        AddReRunInfo(runid,previous_run)
-    else:
-        RegisterPermanentInfo(Conn,runid)
-        AddInfo(runid)
     if is_rerun=='rerun':
         query="where tester_id='%s' and run_id='%s' and status='Unassigned'" %(TesterId,runid)
         productversion_query="select product_version from test_run_env where run_id='%s'" %previous_run
@@ -1810,9 +1818,10 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-def RegisterReRunPermanentInfo(Conn,run_id,previous_run):
-    query="select tc_id from test_run where run_id='%s'"%run_id.strip()
-    test_cases=DB.GetData(Conn, query)
+def RegisterReRunPermanentInfo(Conn,run_id,previous_run,TestCasesIDs):
+    #query="select tc_id from test_run where run_id='%s'"%run_id.strip()
+    #est_cases=DB.GetData(Conn, query)
+    test_cases=TestCasesIDs
     test_case_column_query="select column_name from information_schema.columns where table_name='result_test_cases'"
     test_case_column=DB.GetData(Conn,test_case_column_query)
     for each in test_cases:
@@ -1931,12 +1940,13 @@ def RegisterReRunPermanentInfo(Conn,run_id,previous_run):
             if result==False:
                 CleanRun(run_id)
 
-def RegisterPermanentInfo(Conn,run_id):
+def RegisterPermanentInfo(Conn,run_id,TestCasesIDs):
     print run_id
     ###Enter the test Case Name in the result test_case table
     #get the test case name
-    query="select tc_id from test_run where run_id='%s'"%run_id.strip()
-    test_cases=DB.GetData(Conn, query)
+    #query="select tc_id from test_run where run_id='%s'"%run_id.strip()
+    #test_cases=DB.GetData(Conn, query)
+    test_cases=TestCasesIDs
     test_case_column_query="select column_name from information_schema.columns where table_name='test_cases'"
     test_case_column=DB.GetData(Conn,test_case_column_query)
     ##########################################Result_Test_Case##############################################
