@@ -1030,7 +1030,9 @@ def RunId_TestCases(request,RunId): #==================Returns Test Cases When U
         #Get the step_count
         query="select count(*) from result_test_steps where tc_id='%s' and run_id='%s'"%(each,RunId)
         step_count=DB.GetData(Conn,query)
-        for eachstep in range(1,step_count[0]+1):
+        count=step_count[0]
+        count=int(count)
+        for eachstep in range(1,count+1):
             temp_id=each+'_s'+str(eachstep)
             query="select description from result_master_data where field='estimated' and value='time' and id='%s' and run_id='%s'"%(temp_id,RunId)
             step_time=DB.GetData(Conn,query)
@@ -2737,7 +2739,7 @@ def Selected_TestCaseID_History(request):
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_TC_Analysis', '')
 
-    query="select run_id,status,failreason from test_case_results tcr,result_test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc"%UserData
+    query="select run_id,status,failreason from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc"%UserData
     TestCase_Analysis_Result = DB.GetData(Conn, query, False)
     Col = ["Run ID", "Status", "Fail Reason"]
 
@@ -3433,7 +3435,7 @@ def BundleReport_Table(request):
             os_query = "select distinct machine_os from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by machine_os"
             browser_query = "select distinct client from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by client"
             section_query = "select distinct subpath(section_path,0,1) from product_sections"
-            sect_sub_q = "select product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' group by product_sections.section_path order by product_sections.section_path"
+            sect_sub_q = "select ps.section_path from product_sections ps, result_test_case_tag rtct where ps.section_id::text = rtct.name and rtct.property='section_id' group by ps.section_path order by ps.section_path"
             OS_client_query = "select distinct machine_os,client from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by machine_os"
             OS = DB.GetData(Conn, os_query, False)
             browsers = DB.GetData(Conn, browser_query, False)
@@ -3456,10 +3458,10 @@ def BundleReport_Table(request):
             temp = []
             temp.append(s[0])
             #selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
-            passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'" , False)
+            passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'" , False)
             pass_count = len(passed_cases)
             temp.append(pass_count)
-            failed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Failed'" , False)
+            failed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Failed'" , False)
             same = 0
             for j in failed_cases:
                 for k in passed_cases:
@@ -3467,7 +3469,7 @@ def BundleReport_Table(request):
                         same = same+1
             fail_count = len(failed_cases)
             temp.append(fail_count - same)
-            blocked_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Blocked'" , False)
+            blocked_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Blocked'" , False)
             same1 = 0
             for j in blocked_cases:
                 for k in passed_cases:
@@ -3478,10 +3480,10 @@ def BundleReport_Table(request):
                         same1 = same1 + 1                        
             block_count = len(blocked_cases)
             temp.append(block_count - same1)
-            notrun_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and (tcr.status = 'In-Progress' or tcr.status = 'Skipped' or tcr.status = 'Submitted')" , False)
+            notrun_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and (tcr.status = 'In-Progress' or tcr.status = 'Skipped' or tcr.status = 'Submitted')" , False)
             notrun_count = len(notrun_cases)
             temp.append(notrun_count)
-            defected_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tct.property = 'JiraId' and tct.name != ''" , False)
+            defected_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tct.property = 'JiraId' and tct.name != ''" , False)
             defect_count = len(defected_cases)
             temp.append(defect_count)
             temp.append(pass_count + fail_count - same + block_count - same1 + notrun_count + defect_count)

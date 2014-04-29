@@ -167,4 +167,17 @@ function makeRunClickable(){
           window.location=location;
        });
     });
+
+    $('#Resultdiv tr>td:last-child').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor':'pointer'
+        });
+        var log=$(this).text().trim();
+        if(log != "null"){
+            $(this).html('<a target="_blank" href="' +
+                log +
+                '">log file</a>')
+        }
+    });
 }
