@@ -1614,7 +1614,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
             else:
                 Testers=','.join(Testers)
             for eachitem in UserText:
-                if len(eachitem) != 0 and  len(eachitem) != 1:
+                if len(eachitem) != 0 and  eachitem!="":
                     QueryText.append(str(eachitem.strip()))
 
     if "*Dev" in QueryText:
@@ -1691,8 +1691,11 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                 Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0" % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
-        TestCasesIDs = DB.GetData(Conn, "select distinct tct.tc_id from test_case_tag tct, test_cases tc "
-                "where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query)
+        if is_rerun=="rerun":
+            final_query="select distinct tct.tc_id from result_test_case_tag tct, result_test_cases tc where tct.run_id=tc.run_id and tct.tc_id = tc.tc_id and tc.run_id='"+previous_run+"' group by tct.tc_id,tc.tc_name " + Query
+        else:
+            final_query="select distinct tct.tc_id from test_case_tag tct, test_cases tc where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query
+        TestCasesIDs = DB.GetData(Conn,final_query )
     #The Run ID and test case may be given a status of submitted here.    
     for eachitem in TestCasesIDs:
         Dict = {'run_id':runid, 'tc_id':str(eachitem)}
