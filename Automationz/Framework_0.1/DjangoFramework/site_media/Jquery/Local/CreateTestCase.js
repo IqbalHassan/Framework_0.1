@@ -613,7 +613,7 @@ $(document).ready(function() {
                         alertify.log('Estimated time for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
-                    auto_step_create($('#searchbox'+i+'name').val());
+                    auto_step_create($('#searchbox'+i+'name').val().trim());
                     stepNameList.push($('#searchbox'+i+'name').val());
                     stepExpectedList.push($('#searchbox'+i+'expected').val());
                     stepDescriptionList.push($('#searchbox'+i+'info').val());
