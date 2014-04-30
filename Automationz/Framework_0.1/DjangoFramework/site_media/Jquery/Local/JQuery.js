@@ -104,7 +104,8 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 					continue;
 				}
 				
-				content += '<td style="border-left: 4px solid ' + colors['pass'] + ';">' + table_item[data] + '</font></td>';
+				content += "<td >" + table_item[data];
+				+ '</font></td>';
 			}
 		else
 			{
