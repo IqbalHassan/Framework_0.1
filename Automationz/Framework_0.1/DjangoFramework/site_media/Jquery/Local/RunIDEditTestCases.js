@@ -259,6 +259,16 @@ function draw_table(row,column){
     message+='</table>';
     return message;
 }
+
+colors = {
+	'pass' : '#65bd10',
+	'fail' : '#fd0006',
+	'block' : '#ff9e00',
+	'submitted' : '#808080',
+    'in-progress':'#0000ff',
+    'skipped':'#cccccc'
+};
+
 function DataFetch(){
     var run_id=$('#runid').text().trim();
     var test_case_id=$('#testcaseid').text().trim();
@@ -276,6 +286,31 @@ function DataFetch(){
         //console.log(message);
         $('#testcasestatus').html(data['test_case_status']);
         $('#testcase').append(data['test_case_status']);
+        
+        var css = '';
+        switch (data['test_case_status']) {
+        case 'Passed':
+        	css = "4px solid " + colors['pass'];
+        	break;
+        case 'Failed':
+        	css = "4px solid " + colors['fail'];
+        	break;
+        case 'Blocked':
+        	css = "4px solid " + colors['blocked'];
+        	break;
+        case 'In-Progress':
+        	css = "4px solid " + colors['in-progress'];
+        	break;
+        case 'Submitted':
+        	css = "4px solid " + colors['submitted'];
+        	break;
+        case 'Skipped':
+        	css = "4px solid " + colors['skipped'];
+        	break;
+        }
+        
+        $("#breadcrumb_header").css("border-left", css);
+        
         $('#RunIDTestCaseData').html(message);
         TestDataFetch();
         MakeStatusSelectable();
