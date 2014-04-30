@@ -99,22 +99,22 @@ function makeTable(data,col){
         	if (once === true) {
 	        	switch (data[i][3]) {
         		case 'Passed':
-        			message+='<td><span style="background-color: ' + colors['pass'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+        			message+='<td style="border-left: 4px solid ' + colors['pass'] + '">' + data[i][j]+'</td>';
         			break;
         		case 'Failed':
-        			message+='<td><span style="background-color: ' + colors['fail'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+        			message+='<td style="border-left: 4px solid ' + colors['fail'] + '">' + data[i][j]+'</td>';
         			break;
         		case 'Submitted':
-        			message+='<td><span style="background-color: ' + colors['submitted'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+        			message+='<td style="border-left: 4px solid ' + colors['submitted'] + '">' + data[i][j]+'</td>';
         			break;
         		case 'Blocked':
-        			message+='<td><span style="background-color: ' + colors['block'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+        			message+='<td style="border-left: 4px solid ' + colors['block'] + '">' + data[i][j]+'</td>';
         			break;
                 case 'In-Progress':
-                   message+='<td><span style="background-color: ' + colors['in-progress'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+                	message+='<td style="border-left: 4px solid ' + colors['in-progress'] + '">' + data[i][j]+'</td>';
                    break;
-                case 'In-Progress':
-                    message+='<td><span style="background-color: ' + colors['skipped'] + '; display: table-cell; width: 5%;"></span><span style="display: table-cell; width: 95%;">'+data[i][j]+'</span></td>';
+                case 'Skipped':
+                	message+='<td style="border-left: 4px solid ' + colors['skipped'] + '">' + data[i][j]+'</td>';
                     break;
                 }
 	        	

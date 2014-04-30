@@ -41,7 +41,9 @@ colors = {
 	'pass' : '#65bd10',
 	'fail' : '#fd0006',
 	'block' : '#ff9e00',
-	'submitted' : '#808080'
+	'submitted' : '#808080',
+    'in-progress':'#0000ff',
+    'skipped':'#cccccc'
 };
 
 function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
@@ -65,7 +67,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	head = []
 	for (head in Heading) {
 
-		content += "<th >" + Heading[head] + '</th>';
+		content += "<th>" + Heading[head] + '</th>';
 	}
 	content += '</tr>'
 
@@ -94,10 +96,15 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 				case 'Blocked':
 					content += '<td style="border-left: 4px solid ' + colors['block'] + ';">' + table_item[data] + '</font></td>';
 					continue;
+				case 'In-Progress':
+					content += '<td style="border-left: 4px solid ' + colors['in-progress'] + ';">' + table_item[data] + '</font></td>';
+					continue;
+				case 'Skipped':
+					content += '<td style="border-left: 4px solid ' + colors['skipped'] + ';">' + table_item[data] + '</font></td>';
+					continue;
 				}
 				
-				content += "<td >" + table_item[data]
-				+ '</font></td>';
+				content += '<td style="border-left: 4px solid ' + colors['pass'] + ';">' + table_item[data] + '</font></td>';
 			}
 		else
 			{
