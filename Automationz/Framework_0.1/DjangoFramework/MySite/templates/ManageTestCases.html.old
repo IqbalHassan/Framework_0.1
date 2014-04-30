@@ -1,0 +1,105 @@
+{% extends "BaseTemplate.html" %} 
+{% block title%} Test Case Management {%endblock%} 
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/SearchEdit.js"></script>
+
+<article>
+
+<p class='text' id="question_text" style="color: black; display: block; font-family: Arial, sans-serif; font-size: 25px; font-weight: 900; text-align: center">
+	<a>What operation would you like to perform?</a>
+</p>
+
+<table id="ActionChoose" style="margin-left: auto; margin-right: auto;">
+	<tr>
+		<td style="height: 150px; width: 150px">
+			<!-- Following Code is for Create Flip button  -->
+			<p class='flip'
+				style='color: black; display: block; margin: 10px auto; padding: 15px; height: 90%; width: 30%'
+				title='Create_New'>
+				<img style='width: 200%; margin-bottom: 10px;'
+					src="/site_media/create_new_test_case.png"> Create New
+			</p>
+			<div id='create_test' style='display: none'></div>
+		</td>
+
+
+		<td style="height: 150px; width: 150px">
+			<!-- Following Code is for edit Platform Flip button  -->
+			<p class='flip'
+				style='color: black; display: block; margin: 10px auto; padding: 15px; height: 90%; width: 25%'
+				title='Edit'>
+				<img style='width: 220%; margin-bottom: 10px;'
+					src="/site_media/edit_case.png">Copy OR Edit</p>
+			<div id='edit_test' style='display: none'></div> 
+
+		</td>
+
+		<td style="height: 150px; width: 150px">
+			<!-- Following Code is for edit Platform Flip button  -->
+			<p class='flip'
+				style='color: black; display: block; margin: 10px auto; padding: 15px; height: 90%; width: 25%'
+				title='Create_Sections'>
+				<img style='width: 220%; margin-bottom: 10px;'
+					src="/site_media/organize.jpg">Manage Sections</p>
+			<div id='create_sections' style='display: none'></div> 
+
+		</td>
+
+        <td style="height: 150px; width: 150px">
+            <!-- Following Code is for Test Set Flip button  -->
+            <p class='flip'
+               style='color: black; display: block; margin: 10px auto; padding: 15px; height: 90%; width: 25%'
+               title='Create_Test_Set'>
+                <img style='width: 220%; margin-bottom: 10px;'
+                     src="/site_media/edit_case_old.png">Manage Set & Tag</p>
+            <div id='create_sections' style='display: none'></div>
+
+        </td>
+        <td style="height: 150px; width: 150px">
+            <!-- Following Code is for Test Set Flip button  -->
+            <p class='flip'
+               style='color: black; display: block; margin: 10px auto; padding: 15px; height: 90%; width: 25%'
+               title='Create_Test_Step'>
+                <img style='width: 220%; margin-bottom: 10px;'
+                     src="/site_media/edit_test_step.png">Manage Test Steps</p>
+            <div id='create_test_step' style='display: none'></div>
+
+        </td>
+        <td style="height: 150px; width: 150px">
+			<!-- Following Code is for Create Flip button  -->
+			<p class='flip'
+				style='color: black; display: block; margin: 10px auto; padding: 15px; height: 90%; width: 30%'
+				title='Delete_Existing'>
+				<img style='width: 200%; margin-bottom: 10px;'
+					src="/site_media/delete_existing_test_case.png"> Delete Test Cases
+			</p>
+			<div id='create_test' style='display: none'></div>
+		</td>
+	</tr>
+</table>
+</article>
+
+<script>
+$(".flip[title='Create_New']").click(function() {
+	window.location.href = '/Home/ManageTestCases/Create/';
+});
+
+$(".flip[title='Edit']").click(function() {
+	window.location.href = '/Home/ManageTestCases/SearchEdit/';
+});
+
+$(".flip[title='Create_Sections']").click(function() {
+	window.location.href = '/Home/ManageTestCases/CreateProductSections/';
+});
+
+$(".flip[title='Delete_Existing']").click(function() {
+	window.location.href = '/Home/ManageTestCases/DeleteExisting/';
+});
+$(".flip[title='Create_Test_Set']").click(function() {
+    window.location.href = '/Home/ManageTestCases/TestSet/';
+});
+$(".flip[title='Create_Test_Step']").click(function() {
+    window.location.href = '/Home/ManageTestCases/TestStep/';
+});
+</script>
+{% endblock %}

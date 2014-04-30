@@ -65,5 +65,12 @@ $(document).ready(function() {
 			$("#tree_container").jstree(true).search(v);
 		}, 250);
 	});
+	
+	$("btn").click(function() {
+		$.get('/Home/ManageTestCases', {'id': 1}, function(data, status) {
+			console.log(status);
+			console.log(data);
+		});
+	});
 
 });

@@ -55,7 +55,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/createTablefromString/$', createTablefromString),
     
     # override the old one as its no more required
-    url(r'^Home/ManageTestCases/$', manage_tc),
+    url(r'^Home/ManageTestCases/$', manage_test_cases),
     url(r'^Home/ManageTestCases/getData/$', manage_tc_data),
     
     # For now, let's keep away this buggy page
