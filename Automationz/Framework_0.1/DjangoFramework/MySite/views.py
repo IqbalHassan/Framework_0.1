@@ -23,7 +23,12 @@ from django.template import RequestContext
 
 from django.template.loader import get_template
 from django.utils import simplejson
-import json
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
+
 from models import GetData, GetColumnNames, GetQueryData, GetConnection
 import DataBaseUtilities as DB
 
@@ -5974,8 +5979,12 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
     tabledata = []
     if request.is_ajax():
         if request.method == 'GET':
+            print '-------------------------------------------------------------------'
             UserData = request.GET.get(u'Query', '')
+            print UserData
             UserText = UserData.split(":");
+            print UserText
+            print '-------------------------------------------------------------------'
             #Environment = request.GET.get(u'Env', '')
             RefinedData=[]
             platform=['PC','Mac']
@@ -6124,70 +6133,65 @@ def manage_tc(request):
             print "-----------It's not an ajax request-------------"
             return render(request, 'jsTree/index.html', {})
 
-def manage_tc_data(request):
-    if request.method == 'GET':
-        if request.is_ajax():
-            print "-----------It's an ajax request-----------"
-            section_id = request.GET.get('id')
-            processed_data = []
-            
-            print "Request ID is: %s" % section_id
-            query = '''
-            SELECT 
-              * 
-            FROM 
-              test_case_tag
-            WHERE 
-              test_case_tag.property = 'section_id' AND 
-              test_case_tag.name = '%s';
-            ''' % section_id
-            data = DB.GetData(Conn, query, False)
-            
-            query = '''
-            SELECT 
-              * 
-            FROM 
-              test_case_tag
-            WHERE 
-              test_case_tag.name = 'Status';
-            '''
-            test_case_statuses = DB.GetData(Conn, query, False)
-            
-            query = '''
-            SELECT 
-              * 
-            FROM 
-              test_cases;
-            '''
-            test_cases = DB.GetData(Conn, query, False)
-            
+# def manage_tc_data(request):
+#     if request.method == 'GET':
+#         if request.is_ajax():
+#             print "-----------It's an ajax request-----------"
+#             section_id = request.GET.get('id')
+#             processed_data = []
+#             
+#             print "Request ID is: %s" % section_id
+#             query = '''
+#             SELECT 
+#               * 
+#             FROM 
+#               test_case_tag
+#             WHERE 
+#               test_case_tag.property = 'section_id' AND 
+#               test_case_tag.name = '%s';
+#             ''' % section_id
+#             data = DB.GetData(Conn, query, False)
+#             
+#             query = '''
+#             SELECT 
+#               * 
+#             FROM 
+#               test_case_tag
+#             WHERE 
+#               test_case_tag.name = 'Status';
+#             '''
+#             test_case_statuses = DB.GetData(Conn, query, False)
+#             
+#             query = '''
+#             SELECT 
+#               * 
+#             FROM 
+#               test_cases;
+#             '''
+#             test_cases = DB.GetData(Conn, query, False)
+#             
+# 
+#             for i in data:
+#                 for test_case_status in test_case_statuses:
+#                     for test_case in test_cases:
+#                         # match against each row's test case ID
+#                         if i[0] == test_case_status[0] == test_case[0]:
+#                             row = {}
+#                             row['id'] = "children_%s_%s" % (section_id, i[0])
+#                             
+#                             row['text'] = r'''<code>
+#                             <span style="color:#000000;">%s</span> ----->
+#                             <span style="color:blue;">%s</span> ----->
+#                             <span style="color:red;">%s</span>
+#                             </code>''' % (i[0], test_case[1], test_case_status[2])
+#                             
+#                             row['type'] = 'children'
+#                             row['parent'] = section_id
+#                             processed_data.append(row)
+#          
+#             result = json.dumps(processed_data)
+#             return HttpResponse(result, mimetype="application/json")
 
-            for i in data:
-                for test_case_status in test_case_statuses:
-                    for test_case in test_cases:
-                        # match against each row's test case ID
-                        if i[0] == test_case_status[0] == test_case[0]:
-                            row = {}
-                            row['id'] = "children_%s_%s" % (section_id, i[0])
-                            
-                            row['text'] = r'''<code>
-                            <span style="color:#000000;">%s</span> ----->
-                            <span style="color:blue;">%s</span> ----->
-                            <span style="color:red;">%s</span>
-                            </code>''' % (i[0], test_case[1], test_case_status[2])
-                            
-                            row['type'] = 'children'
-                            row['parent'] = section_id
-                            processed_data.append(row)
-         
-            result = json.dumps(processed_data)
-            return HttpResponse(result, mimetype="application/json")
-# =======
-#             query="select distinct value from config_values where type='tag'"
-#             tag_list=DB.GetData(Conn,query,False)
-#             Dict={'test_steps':test_steps_list,'tag_list':tag_list}
-#     result=simplejson.dumps(Dict)
-#     return HttpResponse(result,mimetype='appliction/json')
 def Result(request):
     return render_to_response('Result.html',{},context_instance=RequestContext(request))
 def GetResultAuto(request):
@@ -6405,3 +6409,136 @@ def GetData(run_id,index):
     DataReturn={'allData':AllTestCases,'count':len(DataCount)}
     return DataReturn
 # >>>>>>> 72469b69a9f7e281bdf335494f6719e3a83b2de0
+
+def manage_test_cases(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            print "------------------------- AJAX REQUEST -------------------------"
+
+            # Fetch the data from product_sections table
+            query = '''
+            SELECT * FROM product_sections ORDER BY section_path
+            '''
+            # Convert the data into a list
+            data = list(DB.GetData(Conn, query, False))
+            sections = []
+            parent_sections = []
+            child_sections = []
+            temp_list = []
+            result = []
+
+            for i in data:
+                sections.append(i[1])
+            
+            parent_sections = list(set(i.split('.', 1)[0] for i in sections))
+            
+            for i in data:
+                temp = {}
+                for section_name in parent_sections:
+                    # If its a parent section, save it one way
+                    if section_name == i[1]:
+                        temp['id'] = i[0]
+                        temp['text'] = i[1]
+                        temp['children'] = True
+                        temp['type'] = 'section'
+                        temp_list.append(temp)
+                        data.remove(i)
+                        
+            parent_sections = temp_list
+            
+            for i in data:
+                temp = {}
+                section = i[1].split('.')
+                for parent_section in parent_sections:
+                    if section[0] == parent_section['text']:
+                        temp['id'] = i[0]
+                        temp['text'] = section[-1]
+                        temp['type'] = 'section'
+                        if len(section) == 2:
+                            temp['parent'] = parent_section['id']
+                            temp['parent_text'] = parent_section['text']
+                        else:
+                            temp['parent_text'] = section[-2]
+                        
+                        child_sections.append(temp)
+            
+            for child_section in child_sections:
+                for parent_section in child_sections:
+                    if 'parent' not in child_section.keys() and parent_section['text'] == child_section['parent_text']:
+                        child_section['parent'] = parent_section['id']
+                        parent_section['children'] = True
+            
+            
+            # Remove the unnecessary item, in order to make data sent, smaller and faster
+            # and replace underscores with spaces
+            for i in child_sections:
+                i['id'] = str(i['id'])
+                i.pop('parent_text')
+                i['text'] = i['text'].replace('_', ' ')
+
+            for i in parent_sections:
+                i['text'] = i['text'].replace('_', ' ')
+
+            requested_id = request.GET.get('id', '')
+            
+            if requested_id == '#':
+                result = json.dumps(parent_sections)
+            else:
+                print "Node with id %s is being loaded" % requested_id
+                
+                if requested_id != '':
+                    for section in child_sections:
+                        if unicode(section['parent']) == requested_id:
+                            result.append(section)
+                    result = json.dumps(result)
+                    
+            
+            return HttpResponse(result, mimetype="application/json")
+
+        else:
+            return render(request, 'ManageTestCases.html', {})
+
+def manage_tc_data(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            test_case_ids = ''
+            decoded_string = json.loads(request.GET.get('selected_section_ids', []))
+            selected_section_ids = list( decoded_string )
+            print '--------'
+            print selected_section_ids
+            
+            if selected_section_ids != []:
+                for i in range(0, len(selected_section_ids)):
+                    selected_section_ids[i] = int(selected_section_ids[i])
+                
+                print "Selected section ids", selected_section_ids
+                
+                encoded_for_sql = "name='%s'" % selected_section_ids[0]
+                
+                if not len(selected_section_ids) == 1:
+                    for i in range(1, len(selected_section_ids)):
+                        encoded_for_sql += " OR name='%s'" % selected_section_ids[i]
+                
+                print encoded_for_sql
+                
+                query = '''
+                SELECT * FROM test_case_tag WHERE property='%s' AND %s
+                ''' % ('section_id', encoded_for_sql)
+                
+                data = DB.GetData(Conn, query, False, True)
+                
+                first = True
+                for row in data:
+                    print row['tc_id']
+                    if first:
+                        test_case_ids = row['tc_id'] + ':'
+                        first = False
+                    else:
+                        test_case_ids += ' %s:' % row['tc_id'] 
+                
+                result = json.dumps(test_case_ids)
+                print result
+                
+                return HttpResponse(result, mimetype='application/json')
+            else:
+                return HttpResponse('', mimetype='application/json')

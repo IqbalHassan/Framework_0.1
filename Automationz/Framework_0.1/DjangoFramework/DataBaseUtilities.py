@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import psycopg2, inspect, sys, time
 import Global
+from psycopg2.extras import DictCursor
 
 
 
@@ -67,8 +68,15 @@ def DropTable(oConn, sTableName):
     except Exception, e:
         return "Error: %s" % e
 
-def GetData(oConn, sQuery, bList=True):
-    cur = oConn.cursor()
+def GetData(oConn, sQuery, bList=True, dict_cursor=False):
+    cur = None
+    
+    # if the user wants the dictionary like cursor
+    if dict_cursor:
+        cur = oConn.cursor(cursor_factory=DictCursor)
+    else:
+        cur = oConn.cursor()
+    
     NameList = []
     try:
         cur.execute(
