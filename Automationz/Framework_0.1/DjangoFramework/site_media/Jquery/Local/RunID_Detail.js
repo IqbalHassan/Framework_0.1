@@ -401,13 +401,16 @@ function LoadAllTestCases(divname){
         });
     });
     $('#'+divname+' tr td:nth-child(3)').each(function(){
-        $(this).css({'textAlign':'center'});
+        $(this).css({'textAlign':'left'});
+    });
+    $('#'+divname+' tr td').each(function(){
+        $(this).css({'textAlign':'left'});
     });
     ////////////**********************\\\\\\\\\\\\\\\
     //////////////// To change the textbox in fail reason
     $('#'+divname+' tr td:nth-child(7)').each(function(){
         var data=$(this).text().trim();
-        $(this).html('<textarea rows="3" cols="30" readonly="readonly" style="border: none;text-align: center; vertical-align: middle;color: #669;display:inline-block;">'+data+'</textarea>');
+        $(this).html('<textarea rows="3" cols="30" readonly="readonly" style="border: none;text-align: left; vertical-align: middle;color: #669;display:inline-block;">'+data+'</textarea>');
     });
     /////////////////////////////////////////////////////
     /*$('#'+divname+' tr td:last-child').each(function(){
