@@ -46,11 +46,12 @@ $(document).ready(function() {
 	
 	$("#tree").on("changed.jstree", function(e, data) {
 		var selected_sections = JSON.stringify(data.selected);
-		console.log(selected_sections);
+//		console.log(selected_sections);
+		$(this).jstree(true).open_node(data.selected);
 		
 		$.get('/Home/ManageTestCases/getData/', { 'selected_section_ids': selected_sections }, function(data, status) {
 			if (status === 'success') {
-				console.log(data);
+//				console.log(data);
 				var query_string = data;
 				loadTable(query_string);
 			} else {
@@ -92,7 +93,6 @@ $(document).ready(function() {
 	        else
 	        {
 	            ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
-
 	            $("#RunTestResultTable").fadeIn(1000);
 	            $("p:contains('Show/Hide Test Cases')").fadeIn(0);
 	            implementDropDown("#RunTestResultTable");

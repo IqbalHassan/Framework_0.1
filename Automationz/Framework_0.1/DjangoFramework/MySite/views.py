@@ -5968,42 +5968,6 @@ def ReRun(request):
 def LoginPage(request):
     return render_to_response('login.html',{},context_instance=RequestContext(request))
 
-"""def ProcessLogin(request):
-    from django.contrib.auth.models import User
-    from django.http import HttpResponse
-    import AuthBackEnd
-    if request.method=='POST':
-        username=request.POST['username']
-        password=request.POST['password']
-        print username
-        print password
-        if AuthBackEnd.Get_User(username):
-            user=AuthBackEnd.authenticate_user(username=username,password=password)
-        print user
-        if user is not None:
-            if user.is_active:
-                login(request,user)
-                return HttpResponseRedirect('/Home/')
-            else:
-                return HttpResponse("User Disabled")
-        else:    
-            return HttpResponse("User not present")
-        
-def checkusername(request):
-    from django.contrib.auth.models import User
-    from django.http import HttpResponse
-    username = request.GET.get(u'username', '')
-    if username:
-        u = User.objects.filter(username=username).count()
-        if u != 0:
-            res = "Already In Use"
-        else:
-            res = "OK"
-    else:
-        res = ""
-
-    return HttpResponse('%s' % res)"""
-
 def User_Login(request):
     
     if request.is_ajax() and request.method=='GET':
@@ -6133,13 +6097,11 @@ def MileStoneOperation(request):
 
 def TableDataTestCasesOtherPages(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
     Conn = GetConnection()
-    propertyValue = "Ready"
-    tabledata = []
+    test_status_request = request.GET.get(u'test_status_request', False)
     if request.is_ajax():
         if request.method == 'GET':
             print '-------------------------------------------------------------------'
             UserData = request.GET.get(u'Query', '')
-            test_status_request = request.GET.get(u'test_status_request', False)
             print UserData
             UserText = UserData.split(":");
             print UserText
@@ -6245,27 +6207,20 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
         print '--------------------------- INSIDE HERE -------------------------------------'
         for i in dataWithTime:
             query = '''
-            SELECT run_id FROM result_master_data WHERE id LIKE '%s'
-            ''' % (i[0] + '%')
-            data = DB.GetData(Conn, query, False, True)
+            SELECT property FROM test_case_tag WHERE name='%s' AND tc_id='%s'
+            ''' % ('Status', i[0])
             
             try:
-                print data[0][0]
-                i[4] = data[0][0]
-                query = '''
-                SELECT status FROM test_case_results WHERE run_id='%s' AND tc_id='%s'
-                ''' % (data[0][0], i[0])
                 data = DB.GetData(Conn, query, False, True)
-                print data[0][0]
+                print data
                 i[3] = data[0][0]
             except:
                 print ''
                 i[3] = ' - '
-                i[4] = ' - '
     
-        Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Status','Run ID']
+        Heading = ['ID', 'Title','Type','Status', 'Time']
     else:
-        Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform','Time Reqd.']
+        Heading = ['ID', 'Title','Type','Platform','Time Reqd.']
     RefinedData=dataWithTime
 #     print RefinedData
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         

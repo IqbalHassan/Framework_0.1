@@ -55,8 +55,8 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	var mAddress = '';
 
 	if (ResultName != '') {
-		content += "<p class = 'Text' style=' color:black; font-size:12px; padding-left: 10px;'><b>" + tabledata.length + " " + ResultName
-				+ "</b></p>"
+		content += "<p class = 'Text' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + tabledata.length + " " + ResultName
+				+ "</p>"
 
 	}
 	
@@ -67,7 +67,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	head = []
 	for (head in Heading) {
 
-		content += "<th>" + Heading[head] + '</th>';
+		content += "<th style='text-align: center;'>" + Heading[head] + '</th>';
 	}
 	content += '</tr>'
 
