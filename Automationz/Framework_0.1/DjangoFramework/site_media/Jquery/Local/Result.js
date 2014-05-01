@@ -127,7 +127,7 @@ function AutoComplete(){
             .data( "ui-autocomplete-item", item )
             .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
             .appendTo( ul );
-    };;
+    };
 }
 function PaginationButton(){
     $('.previous_page').click(function(){

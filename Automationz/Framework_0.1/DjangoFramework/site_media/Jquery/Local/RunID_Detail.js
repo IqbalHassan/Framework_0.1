@@ -2,6 +2,8 @@ var stepCount=5;
 $(document).ready(function(){
     RESPONSIVEUI.responsiveTabs();
     GetAllData();
+    EnableAutocomplete();
+    DeleteFilterData();
     PaginationButton();
     /*LoadAllTestCases("AllTestCasesTable");
     connectLogFile("AllTestCasesTable");
@@ -25,6 +27,44 @@ $(document).ready(function(){
     });
     ReRunTab();
 });
+function EnableAutocomplete(){
+    $('#searchinput').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"FilterDataForRunID",
+                dataType:"json",
+                data:{
+                    term:request.term,
+                    run_id:$('#run_id').text().trim()
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(request,ui){
+            var value=ui.item[0].trim();
+            if(value!=""){
+                $('#searchedFilter').append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>' +
+                    '<td class="Text"><b>'+value+':<b style="display: none;">'+ui.item[1].trim()+'</b>&nbsp;</b></td>');
+                $('#pagination_no').text(1);
+                GetAllData();
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
+            .appendTo( ul );
+    };
+}
+function DeleteFilterData(){
+    $('#searchedFilter td .delete').live('click',function(){
+        $(this).parent().next().remove();
+        $(this).remove();
+        GetAllData();
+    });
+}
 function PaginationButton(){
     $('.previous_page').click(function(){
         var index=$("#runpagination_no").text().trim();
@@ -48,32 +88,36 @@ function PaginationButton(){
     });
 }
 function GetAllData(){
-    //var pathname=$('#run_id').text().trim();
-    var pathname=window.location.pathname;
-    pathname=pathname.split("/");
-    pathname=pathname[3].trim();
-    var currentPagination=$('#runpagination_no').text().trim()
-    $.get("RunID_New",{run_id:pathname.trim(),pagination:currentPagination},function(data){
-        //alert(data);
-        if(data['runData'].length>0){
-            var message=makeTable(data['runData'],data['runCol']);
-            $('#allData').html(message);
-            $('#total').text(data['total']);
-            $('#start').html((currentPagination-1)*stepCount+1);
-            if(parseInt((currentPagination)*stepCount)>parseInt(data['total'])){
-                $('#end').html(data['total']);
+    var currentPagination=$('#pagination_no').text().trim();
+    $('#searchedFilter').each(function(){
+        var UserText = $(this).find("td").text();
+        //UserText+='|';
+        UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
+        console.log(UserText);
+        var pathname=window.location.pathname;
+        pathname=pathname.split("/")[3];
+        $.get("RunID_New",{run_id:pathname.trim(),pagination:currentPagination,UserText:UserText},function(data){
+            //alert(data);
+            if(data['runData'].length>0){
+                var message=makeTable(data['runData'],data['runCol']);
+                $('#allData').html(message);
+                $('#total').text(data['total']);
+                $('#start').html((currentPagination-1)*stepCount+1);
+                if(parseInt((currentPagination)*stepCount)>parseInt(data['total'])){
+                    $('#end').html(data['total']);
+                }
+                else{
+                    $('#end').html((currentPagination)*stepCount);
+                }
+                $('#UpperDiv').css({'display':'block'});
+                LoadAllTestCases("allData");
+                connectLogFile("allData");
             }
             else{
-                $('#end').html((currentPagination)*stepCount);
+                $('#allData').html('<div align="center" style="margin-top: 20%"><b style="font-size: 200%;font-weight: bolder">No Data Available</b></div>');
             }
-            $('#UpperDiv').css({'display':'block'});
-            LoadAllTestCases("allData");
-            connectLogFile("allData");
-        }
-        else{
-            $('#allData').html('<div align="center" style="margin-top: 20%"><b style="font-size: 200%;font-weight: bolder">No Data Available</b></div>');
-        }
 
+        });
     });
 }
 function makeTable(data,col){

@@ -134,12 +134,12 @@ def make_status_array(Conn,refined_list):
         progress=DB.GetData(Conn,progress_query)
         submitted=DB.GetData(Conn,notrun_query)
         skipped=DB.GetData(Conn,skipped_query)
-        pass_percent = str((passed[0]*100/total[0]))+'%'
-        fail=str((failed[0]*100/total[0]))+'%'
-        block=str((blocked[0]*100/total[0]))+'%'
-        progress=str((progress[0]*100/total[0]))+'%'
-        submitted=str((submitted[0]*100/total[0]))+'%'
-        pending=str((skipped[0]*100/total[0]))+'%'
+        pass_percent = str((int(passed[0])*100/int(total[0])))+'%'
+        fail=str((int(failed[0])*100/int(total[0])))+'%'
+        block=str((int(blocked[0])*100/int(total[0])))+'%'
+        progress=str((int(progress[0])*100/int(total[0])))+'%'
+        submitted=str((int(submitted[0])*100/int(total[0])))+'%'
+        pending=str((int(skipped[0])*100/int(total[0])))+'%'
         temp.append(pass_percent)
         temp.append(fail)
         temp.append(block)
@@ -998,17 +998,17 @@ def ConvertTime(total_time):
     timeformat=hour+':'+minuate+':'+seconds
     timeformat=timeformat.strip()
     return timeformat
-def AddEstimatedTime(TestCaseList):
+def AddEstimatedTime(TestCaseList,run_id):
     ModifiedTestCaseList=[]
     for each in TestCaseList:
         print each[0]
-        query="select count(*) from test_steps where tc_id='%s'" %each[0]
+        query="select count(*) from result_test_steps where tc_id='%s' and run_id='%s'" %(each[0],run_id)
         Conn=GetConnection()
         step_count=DB.GetData(Conn,query)
         total_time=0
         for eachstep in range(1,step_count[0]+1):
             step_id=each[0]+'_s'+str(eachstep)
-            time_query="select description from master_data where field='estimated' and value='time' and id='%s'"%step_id
+            time_query="select description from result_master_data where field='estimated' and value='time' and id='%s' and run_id='%s'"%(step_id,run_id)
             step_time=DB.GetData(Conn,time_query)
             total_time+=int(step_time[0])
         format_time=ConvertTime(total_time)
@@ -6365,12 +6365,33 @@ def RunID_New(request):
             run_id=request.GET.get(u'run_id','')
             run_id=run_id.replace("%3A",":")
             index=request.GET.get(u'pagination','')
-            runData=GetData(run_id,index)
+            userText=request.GET.get(u'UserText','')
+            if(userText==""):
+                runData=GetData(run_id,index)
+            else:
+                userText=FormCondition(userText)
+                runData=GetData(run_id,index,userText)
             Col = ['ID', 'Title','Type', 'Status', 'Duration', 'Estd. Time','Comment', 'Log', 'Automation ID']
             runDetail={'runData':runData['allData'],'runCol':Col,'total':runData['count']}
     result=simplejson.dumps(runDetail)
     return HttpResponse(result,mimetype='application/json')
-def GetData(run_id,index):
+def FormCondition(userText):
+    UserText=userText.replace(u'\xa0',u'|')
+    UserText=UserText.split('|')
+    for each in UserText:
+        if each=="":
+            UserText.remove(each)
+    print UserText
+    condition=""
+    for each in UserText:
+        eachitem=each.split(":")
+        if eachitem[1].strip()=='Status':
+            condition+=("tr.status='%s' and "%eachitem[0])
+        if len(eachitem[0].strip())==8:
+            condition+=("tr.tc_id='%s' and "%eachitem[0])
+    condition=condition[:-5].strip()
+    return condition
+def GetData(run_id,index,userText=""):
     step=5
     limit=("limit "+str(step))
     #offset
@@ -6391,12 +6412,19 @@ def GetData(run_id,index):
     query+="tc.tc_id "
     query+="from test_case_results tr, result_test_cases tc, result_test_case_tag tct "
     query+="where tr.run_id = '%s' and "%run_id
-    query+="tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id) "
+    query+="tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' "
+    if userText!="":
+        query+="and "
+        query+=userText
+    query+=" ORDER BY tr.id) "
     query+="union all "
     query+="(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
     query+="from test_run tr,result_test_cases tc, result_test_case_tag tct "
-    query+="where tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "%run_id
-    query+="tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )) AS A" %run_id
+    query+="where tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s'"%run_id
+    if userText!="":
+        query+=" and "
+        query+=userText
+    query+=" and tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )) AS A" %run_id
     count_query=query
     query+=" %s"%condition
     print query
@@ -6404,7 +6432,7 @@ def GetData(run_id,index):
     runData=DB.GetData(Conn,query,False)
     print runData
     AllTestCases=Modify(runData)
-    AllTestCases=AddEstimatedTime(AllTestCases)
+    AllTestCases=AddEstimatedTime(AllTestCases,run_id)
     DataCount=DB.GetData(Conn,count_query,False)
     DataReturn={'allData':AllTestCases,'count':len(DataCount)}
     return DataReturn
@@ -6542,3 +6570,25 @@ def manage_tc_data(request):
                 return HttpResponse(result, mimetype='application/json')
             else:
                 return HttpResponse('', mimetype='application/json')
+def FilterDataForRunID(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            term=request.GET.get('term','')
+            run_id=request.GET.get('run_id','')
+            print run_id
+            print term
+            Conn=GetConnection()
+            status_query="select distinct status,'Status' from test_case_results where run_id='%s' and status Ilike '%%%s%%'"%(run_id,term)
+            status=DB.GetData(Conn,status_query,False)
+            test_case_name_query="select distinct tc.tc_id,tc_name from result_test_cases tc,test_case_results tcr where tc.run_id=tcr.run_id and tcr.run_id='%s' and (tc.tc_id Ilike'%%%s%%' or tc.tc_name Ilike '%%%s%%')"%(run_id,term,term)
+            test_case_name=DB.GetData(Conn,test_case_name_query,False)
+            final=[]
+            for each in status:
+                if each not in final:
+                    final.append(each)
+            for each in test_case_name:
+                if each not in final:
+                    final.append(each)
+    result=simplejson.dumps(final)
+    return HttpResponse(result, mimetype='application/json')
+    
