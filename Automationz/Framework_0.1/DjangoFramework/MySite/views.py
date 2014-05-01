@@ -6060,7 +6060,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 print ''
                 i[3] = ' - '
     
-        Heading = ['ID', 'Title','Type','Status', 'Required Time']
+        Heading = ['ID', 'Title','Type','Status', 'Time']
     else:
         Heading = ['ID', 'Title','Type','Platform','Time Reqd.']
     RefinedData=dataWithTime
