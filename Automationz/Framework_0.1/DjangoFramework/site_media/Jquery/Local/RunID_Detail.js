@@ -57,6 +57,7 @@ function GetAllData(){
         //alert(data);
         if(data['runData'].length>0){
             var message=makeTable(data['runData'],data['runCol']);
+            console.log(data['runData'], data['runCol'])
             $('#allData').html(message);
             $('#total').text(data['total']);
             $('#start').html((currentPagination-1)*stepCount+1);

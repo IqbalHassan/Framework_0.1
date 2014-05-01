@@ -39,7 +39,7 @@ $(document).ready(function() {
 				}
 			},
 			
-			"plugins" : [ "search", "checkbox", "types" ]
+			"plugins" : [ "search", "checkbox", "types", "wholerow" ]
 	};
 	
 	$("#tree").jstree(config_object);
@@ -81,14 +81,13 @@ $(document).ready(function() {
 	}
 	
 	function loadTable(query_string) {
-		$.get("TableDataTestCasesOtherPages", {Query: query_string}, function(data) {
+		$.get("TableDataTestCasesOtherPages", {'Query': query_string, 'test_status_request': true}, function(data) {
 
 	        if (data['TableData'].length == 0)
 	        {
 	            $('#RunTestResultTable').children().remove();
-	            $('#RunTestResultTable').append("<p class = 'Text' style=\"text-align: center;\"><b>No Test Cases to view :(<br>It's either because you have not selected any section(s) or there are not any test case(s) with the selected section(s).</b></p>");
+	            $('#RunTestResultTable').append("<p class = 'Text' style=\"text-align: center;\">No Test Cases to view :(<br>It's either because you have not selected any section(s) or there are no test case(s) for the selected section(s).</p>");
 	            $("#DepandencyCheckboxes").children().remove();
-	            //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
 	        }
 	        else
 	        {
@@ -126,9 +125,5 @@ $(document).ready(function() {
 	$("#select_all_and_open_btn").click(function(e) {
 		$("#tree").jstree(true).select_all();
 		$("#tree").jstree(true).open_all();
-	});
-	
-	$("#select_all_btn").click(function(e) {
-		$("#tree").jstree(true).select_all();
 	});
 });

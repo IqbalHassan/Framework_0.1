@@ -55,7 +55,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	var mAddress = '';
 
 	if (ResultName != '') {
-		content += "<p class = 'Text' style=' color:black; font-size:12px'><b>" + tabledata.length + " " + ResultName
+		content += "<p class = 'Text' style=' color:black; font-size:12px; padding-left: 10px;'><b>" + tabledata.length + " " + ResultName
 				+ "</b></p>"
 
 	}

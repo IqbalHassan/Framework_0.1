@@ -13,20 +13,31 @@
 
 
 <div>
-	<button id="select_all_btn">Select all visible sections</button>
 	<button id="select_all_and_open_btn">Select and Open all sections</button>
 </div>
 <br><br>
 
 <table style="width: 100%;">
-	<td>
-		<div id="tree"></div>
-	</td>
-	<td>
-		<div id = "RunTestResultTable">
-			<p style="font-weight: bold;" class="Text">Select any section to display the corresponding Test Cases</p>
-		</div>
-	</td>
+	<thead>
+		<tr>
+			<td style="border-bottom: 2px solid #ccc; text-align: center;" class="Text">Sections</td>
+			<td></td>
+			<td style="text-align: center; border-bottom: 2px solid #ccc; text-align: center;" class="Text">Test Cases</td>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td style="width: 30%; border-right: 2px solid #ccc;">
+				<div id="tree"></div>
+			</td>
+			<td style="width: 2%;"></td>
+			<td style="width: 68%; border-left: 2px solid #ccc;">
+				<div id = "RunTestResultTable">
+					<p style="font-weight: bold; text-align: center;" class="Text">Select any section to display the corresponding Test Cases</p>
+				</div>
+			</td>
+		</tr>
+	</tbody>
 </table>
 
 {% endblock %}
