@@ -168,6 +168,7 @@ urlpatterns = patterns('',
     url(r'^Home/BundleReport/$', BundleReport),
     url(r'^Home/BundleReport/get?$', BundleReport),
     url(r'^Home/.*/BundleReport_Table/$',BundleReport_Table),
+    url(r'^Home/.*/BundleReport_Table_Latest/$',BundleReport_Table_Latest),
     url(r'^Home/.*/Bundle_Report/$',Bundle_Report),
     #url(r'^Home/.*/Single_Env/$',Single_Env),
     

@@ -2744,7 +2744,7 @@ def Selected_TestCaseID_History(request):
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_TC_Analysis', '')
 
-    query="select run_id,status,failreason from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc"%UserData
+    query="select tcr.run_id,tcr.status,tcr.failreason from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc"%UserData
     TestCase_Analysis_Result = DB.GetData(Conn, query, False)
     Col = ["Run ID", "Status", "Fail Reason"]
 
@@ -3507,6 +3507,164 @@ def BundleReport_Table(request):
       
                     
     Heading = ['Section','Passed','Failed','Blocked','Not run','Defected','Total']
+    results = {'Heading':Heading,'Env':env_details, 'ReportTable':ReportTable}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def BundleReport_Table_Latest(request):
+    
+    env_details = []
+    ReportTable = []
+    sections = []
+    passed_cases = []
+
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            version = request.GET.get(u'Product_Version', '')
+            if version == 'Nil':
+                version = ''
+            elif version == 'Nil(None)':
+                version = None
+            elif version == 'Nil(Space)':
+                version = ' '
+            platform = request.GET.get(u'Platform', '')
+            if platform == 'PC':
+                OSName = 'Win'
+            else:
+                OSName = 'Darwin'
+            os_query = "select distinct machine_os from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by machine_os"
+            browser_query = "select distinct client from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by client"
+            section_query = "select distinct subpath(section_path,0,1) from product_sections"
+            sect_sub_q = "select ps.section_path from product_sections ps, result_test_case_tag rtct where ps.section_id::text = rtct.name and rtct.property='section_id' group by ps.section_path order by ps.section_path"
+            OS_client_query = "select distinct machine_os,client from test_run_env where machine_os ~ '"+OSName+".*' and product_version = '"+version+"' order by machine_os"
+            OS = DB.GetData(Conn, os_query, False)
+            browsers = DB.GetData(Conn, browser_query, False)
+            env_details = DB.GetData(Conn, OS_client_query, False)
+            sections = DB.GetData(Conn, sect_sub_q, False)
+            #env_details.append("Total")
+            #Total = ["Total"]
+            #sections.append(Total)
+            
+    """for each in OS:
+        for item in browsers:
+            temp = []
+            temp.append(each[0])
+            temp.append(item[0])
+            env_details.append(tuple(temp))"""
+            
+        
+    for i in env_details:
+        #CountPerSection(sections,sel_cases,ReportTable)
+        Data = []
+        for s in sections:
+            temp = []
+            temp.append(s[0])
+            latest_cases = DB.GetData(Conn, "select tcr.tc_id,tcr.status,tcr.teststarttime from test_case_results tcr,test_run_env tre where tcr.run_id=tre.run_id and tre.product_version='"+version+"' and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' order by tcr.teststarttime desc", False)
+            #selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
+            passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'" , False)
+            pass_count = len(passed_cases)
+            for m in passed_cases:
+                for n in latest_cases:
+                    if m[0]==n[0]:
+                        if n[1]=='Passed':
+                            break;
+                        else:
+                            pass_count = pass_count -1;
+                            break;
+            temp.append(pass_count)
+            failed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Failed'" , False)
+            """same = 0
+            for j in failed_cases:
+                for k in passed_cases:
+                    if j[0]==k[0]:
+                        same = same+1"""
+            fail_count = len(failed_cases)
+            for m in failed_cases:
+                for n in latest_cases:
+                    if m[0]==n[0]:
+                        if n[1]=='Failed':
+                            break;
+                        else:
+                            fail_count = fail_count -1;
+                            break;
+            temp.append(fail_count)
+            blocked_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Blocked'" , False)
+            """same1 = 0
+            for j in blocked_cases:
+                for k in passed_cases:
+                    if j[0]==k[0]:
+                        same1 = same1 + 1
+                for h in failed_cases:
+                    if j[0]==h[0]:
+                        same1 = same1 + 1"""                        
+            block_count = len(blocked_cases)
+            for m in blocked_cases:
+                for n in latest_cases:
+                    if m[0]==n[0]:
+                        if n[1]=='Blocked':
+                            break;
+                        else:
+                            block_count = block_count -1;
+                            break;
+            temp.append(block_count)
+            """notrun_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and (tcr.status = 'In-Progress' or tcr.status = 'Skipped' or tcr.status = 'Submitted')" , False)
+            notrun_count = len(notrun_cases)
+            temp.append(notrun_count)"""
+            """defected_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tct.property = 'JiraId' and tct.name != ''" , False)
+            defect_count = len(defected_cases)
+            temp.append(defect_count)
+            temp.append(pass_count + fail_count - same + block_count - same1 + notrun_count + defect_count)"""
+            submitted_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Submitted'" , False)
+            submitted_count = len(submitted_cases)
+            for m in submitted_cases:
+                for n in latest_cases:
+                    if m[0]==n[0]:
+                        if n[1]=='Submitted':
+                            break;
+                        else:
+                            submitted_count = submitted_count -1;
+                            break;
+            temp.append(submitted_count)
+            inprogress_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'In-Progress'" , False)
+            inprogress_count = len(inprogress_cases)
+            for m in inprogress_cases:
+                for n in latest_cases:
+                    if m[0]==n[0]:
+                        if n[1]=='In-Progress':
+                            break;
+                        else:
+                            inprogress_count = inprogress_count -1;
+                            break;
+            temp.append(inprogress_count)
+            skipped_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Skipped'" , False)
+            skipped_count = len(skipped_cases)
+            for m in skipped_cases:
+                for n in latest_cases:
+                    if m[0]==n[0]:
+                        if n[1]=='Skipped':
+                            break;
+                        else:
+                            skipped_count = skipped_count -1;
+                            break;
+            temp.append(skipped_count)
+            temp.append(pass_count + fail_count + block_count + submitted_count + inprogress_count + skipped_count)
+            
+            Data.append(tuple(temp))
+            
+        sum = []
+        Total = ["Total"]
+        sum.append(Total)
+        for y in range(1,len(temp)):
+            huda = 0
+            for z in range(len(sections)):
+                huda = huda + Data[z][y]
+            sum.append(huda)
+        Data.append(sum)
+        ReportTable.append(tuple(Data))
+      
+                    
+    Heading = ['Section','Passed','Failed','Blocked','Submitted','In-Progress','Skipped','Total']
     results = {'Heading':Heading,'Env':env_details, 'ReportTable':ReportTable}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')

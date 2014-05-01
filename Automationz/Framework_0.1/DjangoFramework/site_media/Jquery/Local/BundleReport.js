@@ -34,7 +34,7 @@ $(document).ready(function(){
         var version = $(".version").val();
         if(version != 0)
         {
-            $.get("BundleReport_Table",{Platform : platform, Product_Version : version},function(data)
+            $.get("BundleReport_Table_Latest",{Platform : platform, Product_Version : version},function(data)
             {
                 //ResultTable(BundleReportTable,data['Heading'], data['Env'],"Bundle Report");
                 for(var i=0;i<data['Env'].length;i++)
