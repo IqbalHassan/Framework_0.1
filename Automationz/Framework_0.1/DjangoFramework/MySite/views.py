@@ -5810,42 +5810,6 @@ def ReRun(request):
 def LoginPage(request):
     return render_to_response('login.html',{},context_instance=RequestContext(request))
 
-"""def ProcessLogin(request):
-    from django.contrib.auth.models import User
-    from django.http import HttpResponse
-    import AuthBackEnd
-    if request.method=='POST':
-        username=request.POST['username']
-        password=request.POST['password']
-        print username
-        print password
-        if AuthBackEnd.Get_User(username):
-            user=AuthBackEnd.authenticate_user(username=username,password=password)
-        print user
-        if user is not None:
-            if user.is_active:
-                login(request,user)
-                return HttpResponseRedirect('/Home/')
-            else:
-                return HttpResponse("User Disabled")
-        else:    
-            return HttpResponse("User not present")
-        
-def checkusername(request):
-    from django.contrib.auth.models import User
-    from django.http import HttpResponse
-    username = request.GET.get(u'username', '')
-    if username:
-        u = User.objects.filter(username=username).count()
-        if u != 0:
-            res = "Already In Use"
-        else:
-            res = "OK"
-    else:
-        res = ""
-
-    return HttpResponse('%s' % res)"""
-
 def User_Login(request):
     
     if request.is_ajax() and request.method=='GET':
@@ -6105,9 +6069,9 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 i[3] = ' - '
                 i[4] = ' - '
     
-        Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Status','Run ID']
+        Heading = ['ID', 'Title','Type','Status','Run ID']
     else:
-        Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform','Time Reqd.']
+        Heading = ['ID', 'Title','Type','Platform','Time Reqd.']
     RefinedData=dataWithTime
 #     print RefinedData
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
