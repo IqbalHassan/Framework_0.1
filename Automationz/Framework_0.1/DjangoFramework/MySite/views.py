@@ -5939,13 +5939,11 @@ def MileStoneOperation(request):
 
 def TableDataTestCasesOtherPages(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
     Conn = GetConnection()
-    propertyValue = "Ready"
-    tabledata = []
+    test_status_request = request.GET.get(u'test_status_request', False)
     if request.is_ajax():
         if request.method == 'GET':
             print '-------------------------------------------------------------------'
             UserData = request.GET.get(u'Query', '')
-            test_status_request = request.GET.get(u'test_status_request', False)
             print UserData
             UserText = UserData.split(":");
             print UserText
@@ -6051,25 +6049,19 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
         print '--------------------------- INSIDE HERE -------------------------------------'
         for i in dataWithTime:
             query = '''
-            SELECT run_id FROM result_master_data WHERE id LIKE '%s'
-            ''' % (i[0] + '%')
-            data = DB.GetData(Conn, query, False, True)
+            SELECT property FROM test_case_tag WHERE name='%s' AND tc_id='%s'
+            ''' % ('Status', i[0])
             
             try:
-                print data[0][0]
-                i[4] = data[0][0]
-                query = '''
-                SELECT status FROM test_case_results WHERE run_id='%s' AND tc_id='%s'
-                ''' % (data[0][0], i[0])
                 data = DB.GetData(Conn, query, False, True)
-                print data[0][0]
+                print data
                 i[3] = data[0][0]
+                del(i[4])
             except:
                 print ''
                 i[3] = ' - '
-                i[4] = ' - '
     
-        Heading = ['ID', 'Title','Type','Status','Run ID']
+        Heading = ['ID', 'Title','Type','Status']
     else:
         Heading = ['ID', 'Title','Type','Platform','Time Reqd.']
     RefinedData=dataWithTime

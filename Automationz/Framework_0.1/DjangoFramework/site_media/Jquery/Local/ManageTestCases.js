@@ -93,10 +93,6 @@ $(document).ready(function() {
 	        else
 	        {
 	            ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
-	            
-	            console.log(data['Heading']);
-	            console.log(data['TableData']);
-
 	            $("#RunTestResultTable").fadeIn(1000);
 	            $("p:contains('Show/Hide Test Cases')").fadeIn(0);
 	            implementDropDown("#RunTestResultTable");
