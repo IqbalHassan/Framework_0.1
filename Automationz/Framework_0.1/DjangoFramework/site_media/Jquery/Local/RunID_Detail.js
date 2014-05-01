@@ -111,8 +111,7 @@ function GetAllData(){
                 }
                 $('#UpperDiv').css({'display':'block'});
                 LoadAllTestCases("allData");
-                connectLogFile("allData");
-            }
+                connectLogFile("allData");}
             else{
                 $('#allData').html('<div align="center" style="margin-top: 20%"><b style="font-size: 200%;font-weight: bolder">No Data Available</b></div>');
             }

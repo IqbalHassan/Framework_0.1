@@ -5972,7 +5972,7 @@ def MileStoneOperation(request):
              }
     result=simplejson.dumps(results)
     return HttpResponse(result,mimetype='application/json')    
-############################################
+
 def TableDataTestCasesOtherPages(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
     Conn = GetConnection()
     propertyValue = "Ready"
@@ -5981,6 +5981,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
         if request.method == 'GET':
             print '-------------------------------------------------------------------'
             UserData = request.GET.get(u'Query', '')
+            test_status_request = request.GET.get(u'test_status_request', False)
             print UserData
             UserText = UserData.split(":");
             print UserText
@@ -6047,6 +6048,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
                     query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name "+Query
                     TableData = DB.GetData(Conn,query,False)
+            
+                
                 TempTableData=[]
                 RefinedDataTemp=[]
                 Check_TestCase(TableData, RefinedDataTemp)
@@ -6062,6 +6065,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 for each in TempTableData:
                     if each not in RefinedData:
                         RefinedData.append(each)
+                        
     dataWithTime=[]
     for each in RefinedData:
         query="select count(*) from test_steps where tc_id='%s'"%each[0].strip()
@@ -6076,10 +6080,36 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
         for eachitem in each:
             temp.append(eachitem)
         temp.append(ConvertTime(test_case_time))
-        temp=tuple(temp)
+#         temp=tuple(temp)
         dataWithTime.append(temp)
-    Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform','Time Reqd.']
+    
+    if test_status_request:
+        print '--------------------------- INSIDE HERE -------------------------------------'
+        for i in dataWithTime:
+            query = '''
+            SELECT run_id FROM result_master_data WHERE id LIKE '%s'
+            ''' % (i[0] + '%')
+            data = DB.GetData(Conn, query, False, True)
+            
+            try:
+                print data[0][0]
+                i[4] = data[0][0]
+                query = '''
+                SELECT status FROM test_case_results WHERE run_id='%s' AND tc_id='%s'
+                ''' % (data[0][0], i[0])
+                data = DB.GetData(Conn, query, False, True)
+                print data[0][0]
+                i[3] = data[0][0]
+            except:
+                print ''
+                i[3] = ' - '
+                i[4] = ' - '
+    
+        Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Status','Run ID']
+    else:
+        Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform','Time Reqd.']
     RefinedData=dataWithTime
+#     print RefinedData
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
     results = {'Heading':Heading, 'TableData':RefinedData}
 
@@ -6091,106 +6121,10 @@ def GetStepNameType(request):
             Conn=GetConnection()
             query="select stepname,steptype from test_steps_list"
             test_steps_list=DB.GetData(Conn, query, False)
-# <<<<<<< HEAD
-#     result=simplejson.dumps(test_steps_list)
-#     Dict={'test_steps':test_steps_list}
-#     result=simplejson.dumps(Dict)
-#     result=simplejson.dumps(test_steps_list)
-#     Dict={'test_steps':test_steps_list}
-#     result=simplejson.dumps(Dict)
-# =======
-# <<<<<<< HEAD
-#     result=simplejson.dumps(test_steps_list)
-# =======
-# # <<<<<<< HEAD
+
     Dict={'test_steps':test_steps_list}
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='appliction/json')
-
-def manage_tc(request):
-    if request.method == 'GET':
-        if request.is_ajax():
-            print "-----------It's an ajax request-----------"
-            
-            try:
-                query = "SELECT * FROM product_sections ORDER BY section_path"
-                data = DB.GetData(Conn, query, False)
-                processed_data = []
-                
-                for i in data:
-                    row = {}
-                    row['id'] = i[0]
-                    row['text'] = i[1]
-                    row['type'] = 'parent'
-                    row['children'] = True
-                    processed_data.append(row)
-                
-                result = json.dumps(processed_data)
-                return HttpResponse(result, mimetype="application/json")
-            except Exception, e:
-                return render("Sorry, data from the server could not be retrieved.")
-        else:
-            print "-----------It's not an ajax request-------------"
-            return render(request, 'jsTree/index.html', {})
-
-# def manage_tc_data(request):
-#     if request.method == 'GET':
-#         if request.is_ajax():
-#             print "-----------It's an ajax request-----------"
-#             section_id = request.GET.get('id')
-#             processed_data = []
-#             
-#             print "Request ID is: %s" % section_id
-#             query = '''
-#             SELECT 
-#               * 
-#             FROM 
-#               test_case_tag
-#             WHERE 
-#               test_case_tag.property = 'section_id' AND 
-#               test_case_tag.name = '%s';
-#             ''' % section_id
-#             data = DB.GetData(Conn, query, False)
-#             
-#             query = '''
-#             SELECT 
-#               * 
-#             FROM 
-#               test_case_tag
-#             WHERE 
-#               test_case_tag.name = 'Status';
-#             '''
-#             test_case_statuses = DB.GetData(Conn, query, False)
-#             
-#             query = '''
-#             SELECT 
-#               * 
-#             FROM 
-#               test_cases;
-#             '''
-#             test_cases = DB.GetData(Conn, query, False)
-#             
-# 
-#             for i in data:
-#                 for test_case_status in test_case_statuses:
-#                     for test_case in test_cases:
-#                         # match against each row's test case ID
-#                         if i[0] == test_case_status[0] == test_case[0]:
-#                             row = {}
-#                             row['id'] = "children_%s_%s" % (section_id, i[0])
-#                             
-#                             row['text'] = r'''<code>
-#                             <span style="color:#000000;">%s</span> ----->
-#                             <span style="color:blue;">%s</span> ----->
-#                             <span style="color:red;">%s</span>
-#                             </code>''' % (i[0], test_case[1], test_case_status[2])
-#                             
-#                             row['type'] = 'children'
-#                             row['parent'] = section_id
-#                             processed_data.append(row)
-#          
-#             result = json.dumps(processed_data)
-#             return HttpResponse(result, mimetype="application/json")
 
 def Result(request):
     return render_to_response('Result.html',{},context_instance=RequestContext(request))
@@ -6371,6 +6305,11 @@ def RunID_New(request):
             else:
                 userText=FormCondition(userText)
                 runData=GetData(run_id,index,userText)
+            print '--------------------------- INSIDE -------------------------------------'
+            print run_id
+            print index
+            print runData['allData'][0][3]
+            print '--------------------------- INSIDE -------------------------------------'
             Col = ['ID', 'Title','Type', 'Status', 'Duration', 'Estd. Time','Comment', 'Log', 'Automation ID']
             runDetail={'runData':runData['allData'],'runCol':Col,'total':runData['count']}
     result=simplejson.dumps(runDetail)
@@ -6436,7 +6375,6 @@ def GetData(run_id,index,userText=""):
     DataCount=DB.GetData(Conn,count_query,False)
     DataReturn={'allData':AllTestCases,'count':len(DataCount)}
     return DataReturn
-# >>>>>>> 72469b69a9f7e281bdf335494f6719e3a83b2de0
 
 def manage_test_cases(request):
     if request.method == 'GET':
@@ -6532,8 +6470,8 @@ def manage_tc_data(request):
             test_case_ids = ''
             decoded_string = json.loads(request.GET.get('selected_section_ids', []))
             selected_section_ids = list( decoded_string )
-            print '--------'
-            print selected_section_ids
+#             print '--------'
+#             print selected_section_ids
             
             if selected_section_ids != []:
                 for i in range(0, len(selected_section_ids)):
@@ -6547,7 +6485,7 @@ def manage_tc_data(request):
                     for i in range(1, len(selected_section_ids)):
                         encoded_for_sql += " OR name='%s'" % selected_section_ids[i]
                 
-                print encoded_for_sql
+#                 print encoded_for_sql
                 
                 query = '''
                 SELECT * FROM test_case_tag WHERE property='%s' AND %s
@@ -6565,7 +6503,7 @@ def manage_tc_data(request):
                         test_case_ids += ' %s:' % row['tc_id'] 
                 
                 result = json.dumps(test_case_ids)
-                print result
+#                 print result
                 
                 return HttpResponse(result, mimetype='application/json')
             else:
