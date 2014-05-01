@@ -6056,12 +6056,11 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 data = DB.GetData(Conn, query, False, True)
                 print data
                 i[3] = data[0][0]
-                del(i[4])
             except:
                 print ''
                 i[3] = ' - '
     
-        Heading = ['ID', 'Title','Type','Status']
+        Heading = ['ID', 'Title','Type','Status', 'Required Time']
     else:
         Heading = ['ID', 'Title','Type','Platform','Time Reqd.']
     RefinedData=dataWithTime
