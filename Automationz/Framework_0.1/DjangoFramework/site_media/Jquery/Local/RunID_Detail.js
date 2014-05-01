@@ -67,23 +67,23 @@ function DeleteFilterData(){
 }
 function PaginationButton(){
     $('.previous_page').click(function(){
-        var index=$("#runpagination_no").text().trim();
+        var index=$("#pagination_no").text().trim();
         index=parseInt(index);
         if(index>=2){
             index--;
         }
-        $('#runpagination_no').text(index);
+        $('#pagination_no').text(index);
         GetAllData();
     });
     $('.next_page').click(function(){
-        var index=$('#runpagination_no').text().trim();
+        var index=$('#pagination_no').text().trim();
         index=parseInt(index);
         var end=$('#end').text().trim();
         var total_entry=$('#total').text().trim();
         if (parseInt(end)<parseInt(total_entry)){
             index++;
         }
-        $('#runpagination_no').text(index);
+        $('#pagination_no').text(index);
         GetAllData();
     });
 }
