@@ -1239,7 +1239,7 @@ function GenerateMainRow()
             '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '<td>'+step_num+'</td>' +
             '<td><input class="textbox" id="searchbox'+step_num+'name"style="width: auto" value=""/></td>' +
-            '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator hint--bottom hint--bounce hint--rounded" data-gotokey="n">' +
+            '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" data-hint="Insert Data Set" class="data-popup notification-indicator hint--right hint--bounce hint--rounded" data-gotokey="n">' +
             '<span class="mail-status"></span>' +
             '</a></td>' +
             '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
@@ -1250,7 +1250,7 @@ function GenerateMainRow()
             '<input id="searchbox'+step_num+'time" type="text" class="input-small textbox timepicker">' +
             '<span class="add-on"><i class="icon-time"></i></span></div></td>' +
             //'<td><img class="new_tc_form est_time_img" id="searchbox'+step_num+'step_est_time" type=\'image\' src=\'/site_media/clock.png\' style=\"background-color: transparent; width:16px; height:16px;cursor:pointer\"></td>' +
-            '<td><a id="searchbox'+step_num+'step_desc" class="descriptionpop notification-indicator tooltipped downwards" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
+            '<td><a id="searchbox'+step_num+'step_desc" data-hint="Information about this step" class="descriptionpop notification-indicator hint--left hint--bounce hint--rounded" data-gotokey="n" style="cursor:pointer;"><span class="mail-status"></span></a></td>' +
             '<td><input class="new_tc_form add_after_img" type=\'image\' src=\'/site_media/new.png\' name=\'Add Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '</tr>'
         )
