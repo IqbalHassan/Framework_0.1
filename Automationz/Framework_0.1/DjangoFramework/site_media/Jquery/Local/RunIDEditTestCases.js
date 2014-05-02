@@ -296,7 +296,7 @@ function DataFetch(){
         	css = "4px solid " + colors['fail'];
         	break;
         case 'Blocked':
-        	css = "4px solid " + colors['blocked'];
+        	css = "4px solid " + colors['block'];
         	break;
         case 'In-Progress':
         	css = "4px solid " + colors['in-progress'];
