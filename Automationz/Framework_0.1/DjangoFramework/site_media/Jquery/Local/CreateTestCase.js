@@ -1239,7 +1239,7 @@ function GenerateMainRow()
             '<td><input id="'+step_num+'" class="new_tc_form remove_img" type=\'image\' src=\'/site_media/minus2.png\' name=\'Remove Step\' style=\"background-color: transparent; width:18px; height:18px\"></td>' +
             '<td>'+step_num+'</td>' +
             '<td><input class="textbox" id="searchbox'+step_num+'name"style="width: auto" value=""/></td>' +
-            '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="hint--bottom hint--bounce hint--rounded" data-gotokey="n">' +
+            '<td style="cursor: pointer"><a id="searchbox'+step_num+'data" class="data-popup notification-indicator hint--bottom hint--bounce hint--rounded" data-gotokey="n">' +
             '<span class="mail-status"></span>' +
             '</a></td>' +
             '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
