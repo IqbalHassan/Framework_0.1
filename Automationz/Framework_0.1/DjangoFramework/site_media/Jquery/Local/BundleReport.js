@@ -43,26 +43,13 @@ $(document).ready(function(){
                         '<br/>' +
                         '<hr/>' +
                         '<h4 class="Text" style="text-align: center;font-weight: normal; line-height: 1.1;font-size: 25px;">'+data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]+'</h4>' +
-                    '<div id="env'+i+'"></div>' +
-                        '<div id="chart'+i+'"></div>');
+                    '<div id="env'+i+'"></div>');
                     ResultTable("#env"+i+"", data['Heading'],data['ReportTable'][i],"");
                     /*$.get("Single_Env",{Platform : platform, Product_Version : version,OS : data['Env'][i][0], Client : data['Env'][i][1]},function(env_data)
                     {
                         ResultTable("#env"+i+"", env_data['Heading'],"");
                     });*/
-                    /***************pie chart***********************/
-                    RenderPieChart('chart'+i, [
-                        ['Passed ('+data['ReportTable'][i][4][1]+')', data['ReportTable'][i][4][1]],
-                        ['Failed ('+data['ReportTable'][i][4][2]+')', data['ReportTable'][i][4][2]],
-                        ['Blocked ('+data['ReportTable'][i][4][3]+')',  data['ReportTable'][i][4][3]],
-                        ['Submitted ('+data['ReportTable'][i][4][4]+')', data['ReportTable'][i][4][4]],
-                        ['In-Progress ('+data['ReportTable'][i][4][5]+')',  data['ReportTable'][i][4][5]],
-                        ['Skipped ('+data['ReportTable'][i][4][6]+')', data['ReportTable'][i][4][6]]
-                    ],data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]);
-
-                    /***************pie chart*********************/
                 }
-
             });
         }
         //event.stopPropagation();
@@ -70,43 +57,4 @@ $(document).ready(function(){
 
 });
 
-function RenderPieChart(elementId, dataList, title) {
-    Highcharts.setOptions({
-        colors: ['green', 'red', 'orange', 'grey', 'blue', '#D7D7D7']
-    });
-    new Highcharts.Chart({
-        chart: {
-            renderTo: elementId,
-            plotBackgroundColor: null,
-            plotBorderWidth: null,
-            plotShadow: false
-        }, title: {
-            text: 'Summary - ' + title
-        },
-        tooltip: {
-            formatter: function () {
-                return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
-            }
-        },
-        plotOptions: {
-            pie: {
-                allowPointSelect: true,
-                cursor: 'pointer',
-                dataLabels: {
-                    enabled: true,
-                    color: '#000000',
-                    connectorColor: '#000000',
-                    formatter: function () {
-                        return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
-                    }
-                }
-            }
-        },
-        series: [{
-            type: 'pie',
-            name: 'Bundle Report',
-            data: dataList
-        }]
-    });
-};
 
