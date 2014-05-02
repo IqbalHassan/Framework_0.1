@@ -23,6 +23,7 @@ from django.template import RequestContext
 
 from django.template.loader import get_template
 from django.utils import simplejson
+import TestCaseCreateEdit
 
 try:
     import simplejson as json
@@ -46,7 +47,7 @@ from mimetypes import MimeTypes
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
 
-
+import inspect
 Conn = GetConnection()
 #import logging
 
@@ -2928,6 +2929,7 @@ def Create_Submit_New_TestCase(request):
         return HttpResponse(json, mimetype='application/json')
 
     try:
+        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         Conn = GetConnection()
         error = ''
         if request.is_ajax() and request.method == 'GET':
@@ -2956,7 +2958,7 @@ def Create_Submit_New_TestCase(request):
 
         #1
         ##########Data Validation: Check if all required input fields have data
-        test_case_validation_result = TestCaseOperations.TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
+        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
         if test_case_validation_result != "Pass":
             return returnResult(test_case_validation_result)
 
@@ -2965,25 +2967,24 @@ def Create_Submit_New_TestCase(request):
         if 'create' in Is_Edit:
             #Automation Test Case Id - automatically picked up from db
             tmp_id = DB.GetData(Conn, "select nextval('testcase_testcaseid_seq')")
-            TC_Id = TestCaseOperations.Generate_TCId(Section_Path, tmp_id[0])
-
+            TC_Id = TestCaseCreateEdit.Generate_TCId(Section_Path, tmp_id[0])
             #Check if test case id is used before
             tmp_id = DB.GetData(Conn, "select tc_id from test_cases where tc_id = '%s'" % TC_Id)
             if len(tmp_id) > 0:
-                #Implement finding a new id
-                #just fail it for now
                 print "Error. Test case id already used"
                 error = "TEST CASE CREATION Failed. Test case id already used:%s***********************" % (TC_Name)
+                TestCaseCreateEdit.LogMessage(sModuleInfo, error, 3)
                 return returnResult(error)
             #Insert Test Case
-            test_cases_result = TestCaseOperations.Insert_TestCaseName(Conn, TC_Id, TC_Name, TC_Creator)
+            test_cases_result = TestCaseCreateEdit.Insert_TestCaseName(Conn, TC_Id, TC_Name, TC_Creator)
             if test_cases_result != 'Pass':
-                TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+                #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+                error="Returns from TestCaseCreateEdit Module by Failing to enter test case id %s"%TC_Id
+                print error
+                TestCaseCreateEdit.LogMessage(sModuleInfo,test_cases_result,3)
                 return returnResult(test_cases_result)
         else:
             TC_Id = Is_Edit
-        ######
-
         #3
         ##########Test Case DataSet
         #tcdatasetid should be unique. And creating a test case, make sure there is no tcdatasetid existing for that test case
@@ -3000,14 +3001,18 @@ def Create_Submit_New_TestCase(request):
             Test_Case_DataSet_Id = '%sds' % (TC_Id)
 
         if Test_Case_DataSet_Id == 0:
-            print "Error. Test case Dataset id error"
-            TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            error="Error. Test case Dataset id error"
+            print error
+            #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            TestCaseCreateEdit.LogMessage(sModuleInfo, error, 3)
             return returnResult("Unable to create dataset for this test case")
-
         #Insert Test Case DataSet
-        test_case_dataset_result = TestCaseOperations.Insert_TestCaseDataSet(Conn, Test_Case_DataSet_Id, TC_Id)
+        test_case_dataset_result = TestCaseCreateEdit.Insert_TestCaseDataSet(Conn, Test_Case_DataSet_Id, TC_Id)
         if test_case_dataset_result != 'Pass':
-            TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)\
+            msg=("Returns from TestCaseCreateEdit Module by Failing to enter test case id %s"%Test_Case_DataSet_Id)
+            print msg
+            TestCaseCreateEdit.LogMessage(sModuleInfo,test_case_dataset_result, 3)
             return returnResult(test_case_dataset_result)
 
         #4
@@ -3017,36 +3022,42 @@ def Create_Submit_New_TestCase(request):
         if len(tmp_id) > 0:
             #We should be able to clean up test steps for this TC_Id
             #for now, just error out
-            print "Error. Test case steps already existing error"
-            TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
-            return returnResult("Test Case steps already exists for this test case")
-
+            error=("Test Steps existing already for the test case %s"%TC_Id)
+            TestCaseCreateEdit.LogMessage(sModuleInfo,error,2)
+            #Here the test cases steps will be cleaned. We need to write a function there.
+            #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            #return returnResult("Test Case steps already exists for this test case")
+            #Function for the cleaning the test steps will be here.
         #Insert Test Case Steps & Data
-        test_case_steps_result = TestCaseOperations.Insert_TestSteps_StepsData(Conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_List)
+        test_case_steps_result = TestCaseCreateEdit.Insert_TestSteps_StepsData(Conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_List)
 
         if test_case_steps_result != 'Pass':
-            TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            TestCaseCreateEdit.LogMessage(sModuleInfo, test_case_steps_result,3)
             return returnResult(test_case_steps_result)
 
         #5
         ##########Test Case Tags
         #Enter tags for the test case
         #Insert Test Case Tags
-        test_case_tags_result = TestCaseOperations.Insert_TestCase_Tags(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List)
+        test_case_tags_result = TestCaseCreateEdit.Insert_TestCase_Tags(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List)
 
         if test_case_steps_result == "Pass":
             msg="==========================================================================================================="
-            TestCaseOperations.LogMessage("Create Test Case", msg, 4)
+            TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
             return returnResult(TC_Id)
         else:
-            TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+            error_message="Tag is not added for the test case %s"%TC_Id
+            TestCaseOperations.LogMessage(sModuleInfo, error_message, 2)
             msg="==========================================================================================================="
-            TestCaseOperations.LogMessage("Create Test Case", msg, 4)
+            TestCaseOperations.LogMessage(sModuleInfo, msg, 1)
             return returnResult(test_case_tags_result)
 
     except Exception, e:
         print "Exception:", e
-        TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+        TestCaseOperations.LogMessage(sModuleInfo, e, 2)
+        #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
         return "Critical"
 
 def ViewTestCase(TC_Id):

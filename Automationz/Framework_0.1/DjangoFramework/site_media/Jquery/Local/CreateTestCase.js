@@ -448,7 +448,7 @@ $(document).ready(function() {
                                 for(var k=0;k<currentdataset.length;k++){
                                     if(currentdataset[k][1] instanceof Array){
                                         for(var l=0;l<currentdataset[k][1].length;l++){
-                                            var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][0]};
+                                            var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][1]};
                                             temp.push(tempObject);
                                         }
                                     }
