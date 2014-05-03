@@ -67,7 +67,11 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	head = []
 	for (head in Heading) {
 
-		content += "<th style='text-align: center;'>" + Heading[head] + '</th>';
+		if (Heading[head] == "Title") {
+			content += "<th class='hint--left hint--bounce hint--rounded' data-hint='Click a title to expand' style='text-align: center;'>" + Heading[head] + '</th>';
+		} else {
+			content += "<th style='text-align: center;'>" + Heading[head] + '</th>';
+		}
 	}
 	content += '</tr>'
 
@@ -78,6 +82,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 
 		table_item = tabledata[items]
 		
+		var i = 1;
 		for (data in table_item) {
 			var mStr = table_item[data];
 			if ((String(mStr).indexOf("[") !== -1) == false)

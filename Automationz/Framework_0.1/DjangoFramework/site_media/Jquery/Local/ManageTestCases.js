@@ -101,8 +101,8 @@ $(document).ready(function() {
 	            $('#RunTestResultTable tr>td:nth-child(5)').each(function(){
 	                var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-	                $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/>');
-	                $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25"/>');
+	                $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/></span>');
+	                $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25"/></span>');
 
 	                indx++;
 	            });
