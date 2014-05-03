@@ -24,6 +24,7 @@ from django.template import RequestContext
 from django.template.loader import get_template
 from django.utils import simplejson
 import TestCaseCreateEdit
+from TestCaseCreateEdit import LogMessage
 
 try:
     import simplejson as json
@@ -47,7 +48,8 @@ from mimetypes import MimeTypes
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
 from psycopg2.extras import DictCursor
-import inspectConn = GetConnection()
+import inspect
+Conn = GetConnection()
 #import logging
 
 """ Misc functions """
@@ -3186,6 +3188,7 @@ def EditTestCase(request):
         return HttpResponse(json, mimetype='application/json')
 
     try:
+        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         Conn = GetConnection()
         err_msg = ''
         if request.is_ajax() and request.method == 'GET':
@@ -3215,33 +3218,59 @@ def EditTestCase(request):
 
         #0
         ##########Data Validation: Check if all required input fields have data
-        test_case_validation_result = TestCaseOperations.TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
+        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
         if test_case_validation_result != "Pass":
             return returnResult(test_case_validation_result)
 
         #1
         #Find if this is a new format test case created from web page or a manually created test case in backend
-        DeleteTestCaseData = False
+        #DeleteTestCaseData = False
         if '-' in TC_Id:
-            #this is a new format test case
+            """#this is a new format test case
             DeleteTestCaseData = True
             New_TC_Id = TC_Id
-            TestCaseOperations.Cleanup_TestCase(Conn, TC_Id, True, False, TC_Id)
+            #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id, True, False, TC_Id)
             #if we are recreating a new format test case, then update details in test_case table
-            test_cases_result = TestCaseOperations.Update_TestCaseDetails(Conn, New_TC_Id, TC_Name, TC_Creator)
+            test_cases_result = TestCaseOperations.Update_TestCaseDetails(Conn, New_TC_Id, TC_Name, TC_Creator)"""
+            ##Test Case is existing.should be edited.
+            #first update the test case name
+            New_TC_Id=TC_Id
+            if DB.IsDBConnectionGood(Conn)==False:
+                time.sleep(1)
+                Conn=GetConnection()
+            test_cases_update_result=TestCaseCreateEdit.Update_TestCaseDetails(Conn, New_TC_Id, TC_Name, TC_Creator)
+            if test_cases_update_result!="Pass":
+                err_msg="Test Case Detail is not updated successfully for test case %s"%New_TC_Id
+                LogMessage(sModuleInfo,err_msg,3)
+                return err_msg
+            #form the test case datasets
+            test_case_datasets='%sds'%New_TC_Id
+            if DB.IsDBConnectionGood(Conn)==False:
+                time.sleep(1)
+                Conn=GetConnection()
+            test_case_datasets_result=TestCaseCreateEdit.Update_Test_Case_Datasets(Conn,test_case_datasets, New_TC_Id)
+            if test_case_datasets_result!="Pass":
+                err_msg="Test Case Datasets is not updated successfully for test case %s"%New_TC_Id
+                LogMessage(sModuleInfo,err_msg,3)
+                return err_msg
+            test_case_stepdata_result=TestCaseCreateEdit.Update_Test_Steps_Data(Conn, New_TC_Id, test_case_datasets, Steps_Data_List)
+            if test_case_stepdata_result!="Pass":
+                err_msg="Test Case Step Data is not updated successfully for the test case %s"%New_TC_Id
+                LogMessage(sModuleInfo,err_msg,3)
+                return err_msg
         else:
             #this is an old format test case
             tmp_id = DB.GetData(Conn, "select nextval('testcase_testcaseid_seq')")
             New_TC_Id = TestCaseOperations.Generate_TCId(Section_Path, tmp_id[0])
             test_cases_result = TestCaseOperations.Insert_TestCaseName(Conn, New_TC_Id, TC_Name, TC_Creator)
-            TestCaseOperations.Cleanup_TestCase(Conn, TC_Id, True, True, New_TC_Id)
+            #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id, True, True, New_TC_Id)
 
 
         #3
         #Recreate the new test case
 
         if test_cases_result != 'Pass':
-            TestCaseOperations.Cleanup_TestCase(Conn, New_TC_Id)
+            #TestCaseOperations.Cleanup_TestCase(Conn, New_TC_Id)
             return test_cases_result
 
         GET_values = request.GET.copy()
@@ -3251,7 +3280,7 @@ def EditTestCase(request):
 
     except Exception, e:
         print "Exception:", e
-        TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+        #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
         return "Critical"
 
 def Documentation(request):
