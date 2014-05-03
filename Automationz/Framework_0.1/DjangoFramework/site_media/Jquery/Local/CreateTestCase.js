@@ -439,6 +439,33 @@ $(document).ready(function() {
                             //$('#searchbox'+(i+1)+'data').html("");
                             $('#searchbox'+(i+1)+'data').parent().css({'cursor':'none'});
                         }
+                        else if(steps_and_data[i][8]){
+                            var fromdata=datasets[0][0];
+                            var todata=datasets[0][1];
+                            console.log(fromdata);
+                            console.log(todata);
+                            var divname='#searchbox'+(i+1)+'data_table';
+                            $(divname).attr('data-id','edit');
+                            editTypeRow(divname,i+1,1,"From");
+                            editTypeRow(divname,i+1,1,"To");
+                            var temp=[];
+                            for(var j=0;j<fromdata.length;i++){
+                                if(fromdata[j][1] instanceof  Array){
+                                    for(var k=0;k<fromdata[j][1].length;k++){
+                                        var tempObject={field:fromdata[j][0],sub_field:fromdata[j][1][k][0],value:fromdata[j][1][k][1]};
+                                        temp.push(tempObject);
+                                    }
+                                }
+                                else{
+                                    var tempobject={field:fromdata[j][0],sub_field:"",value:fromdata[j][1]};
+                                    temp.push(tempobject);
+                                }
+                            }
+                            console.log(temp);
+                            popupdivrowcount[i]=1;
+                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
+                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+                        }
                         else{
                             for(var j=0;j<datasets.length;j++){
                                 var temp=[];
@@ -642,8 +669,11 @@ $(document).ready(function() {
                                 var tempArray=[];
                                 for(var k=0;k<row_number;k++){
                                     var field=row.find('td:eq(0) input:eq(0)').val();
+                                    field=field.trim();
                                     var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                                    sub_field=sub_field.trim();
                                     var value=row.find('td:eq(2) textarea:eq(0)').val();
+                                    value=value.trim();
                                     var tempObject={field:field , sub_field:sub_field ,value:value};
                                     tempArray.push(tempObject);
                                     row=row.next();
@@ -661,8 +691,11 @@ $(document).ready(function() {
                                 var row=tableid.find('tr:eq(1)');
                                 for(var k=0;k<tableLength-1;k++){
                                     var field=row.find('td:eq(0) input:eq(0)').val();
+                                    field=field.trim();
                                     var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                                    sub_field=sub_field.trim();
                                     var value=row.find('td:eq(2) textarea:eq(0)').val();
+                                    value=value.trim();
                                     var tempObject={field:field , sub_field:sub_field ,value:value};
                                     dataset.push(tempObject);
                                     row=row.next();
@@ -719,7 +752,7 @@ $(document).ready(function() {
                                 }
                                 else{
                                     for(var n=0;n<subFieldskey.length;n++){
-                                        var mainField=subFieldskey[k];
+                                        var mainField=subFieldskey[n];
                                         temp+=("("+mainField+",[");
                                         for(var o=0;o<withsubFields.length;o++){
                                             if(mainField==withsubFields[o].field){

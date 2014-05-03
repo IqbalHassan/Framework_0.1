@@ -3058,6 +3058,7 @@ def Create_Submit_New_TestCase(request):
         print "Exception:", e
         TestCaseOperations.LogMessage(sModuleInfo, e, 2)
         #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+        Conn=GetConnection()
         return "Critical"
 
 def ViewTestCase(TC_Id):
@@ -3114,7 +3115,7 @@ def ViewTestCase(TC_Id):
             
             #find all steps and data for the test case
             Steps_Data_List = []
-            test_case_step_details = DB.GetData(Conn, "select ts.step_id,stepname,teststepsequence,data_required,steptype from test_steps ts, test_steps_list tsl where ts.step_id = tsl.step_id and tc_id = '%s' order by teststepsequence" % TC_Id, False)
+            test_case_step_details = DB.GetData(Conn, "select ts.step_id,stepname,teststepsequence,data_required,steptype,step_editable from test_steps ts, test_steps_list tsl where ts.step_id = tsl.step_id and tc_id = '%s' order by teststepsequence" % TC_Id, False)
             Step_Iteration=1
             for each_test_step in test_case_step_details:
                 print "step %s - %s" %(Step_Iteration,each_test_step[1])
@@ -3122,6 +3123,7 @@ def ViewTestCase(TC_Id):
                 Step_Name = each_test_step[1]
                 Step_Seq = each_test_step[2]
                 Step_Type=each_test_step[4]
+                Step_Edit=each_test_step[5]
                 Step_Data = []
                 query="select description from master_data where id Ilike '%s_s" % (TC_Id)
                 query+="%s"% (str(Step_Iteration))
@@ -3149,33 +3151,21 @@ def ViewTestCase(TC_Id):
                 #is data required for this step
                 if each_test_step[3]:
                     #Is this a verify step
-                    if 'Verify' not in Step_Name:
-                        container_data_id_details = DB.GetData(Conn, "select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd "
-                         "where tsd.testdatasetid = ctd.dataid and tcdatasetid = '%s' and teststepseq = %s" % (Test_Case_DataSet_Id, Step_Seq), False)
-
-                        #check if its a edit step
-                        if 'Edit' in Step_Name:
-                            for each_data_id in container_data_id_details:
-                                From_Data = TestCaseOperations.Get_PIM_Data_By_Id(Conn, each_data_id[0])
-                                To_Data = TestCaseOperations.Get_PIM_Data_By_Id(Conn, each_data_id[1])
+                    container_data_id_query="select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = '%s' and teststepseq = %s" % (Test_Case_DataSet_Id, Step_Seq)
+                    container_data_id_details = DB.GetData(Conn, container_data_id_query, False)
+                    if Step_Edit:
+                        for each_data_id in container_data_id_details:
+                            if len(each_data_id)==2:
+                                From_Data = TestCaseCreateEdit.Get_PIM_Data_By_Id(Conn, each_data_id[0])
+                                To_Data = TestCaseCreateEdit.Get_PIM_Data_By_Id(Conn, each_data_id[1])
                                 Step_Data.append((From_Data, To_Data))
-                        else:
-                            #curname contains the data id
-                            for each_data_id in container_data_id_details:
-                                From_Data = TestCaseOperations.Get_PIM_Data_By_Id(Conn, each_data_id[0])
-                                Step_Data.append(From_Data)
-
                     else:
-                        exp_container_data_id_details = DB.GetData(Conn, "select ctd.curname from expected_datasets ed, expected_container ec, container_type_data ctd "
-                         "where ed.expectedrefid = ec.exprefid and ec.container_name = ctd.dataid and ed.datasetid = '%s' and ed.stepsseq = %s" % (Test_Case_DataSet_Id, Step_Seq), False)
-
-                        for each_data_id in exp_container_data_id_details:
-                            From_Data = TestCaseOperations.Get_PIM_Data_By_Id(Conn, each_data_id[0])
+                        #curname contains the data id
+                        for each_data_id in container_data_id_details:
+                            From_Data = TestCaseCreateEdit.Get_PIM_Data_By_Id(Conn, each_data_id[0])
                             Step_Data.append(From_Data)
-
                 #append step name and data to send it back
-                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0],Step_Expected[0][0],Step_Verified[0][0],Step_General_Description[0][0],Step_Time[0][0]))
-
+                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0],Step_Expected[0][0],Step_Verified[0][0],Step_General_Description[0][0],Step_Time[0][0],Step_Edit,each_test_step[3]))
             #return values
             results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List}
 
