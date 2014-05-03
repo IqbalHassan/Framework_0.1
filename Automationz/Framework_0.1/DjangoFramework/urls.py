@@ -2,6 +2,7 @@ from django.conf.urls import *  # @UnusedWildImport
 
 import os
 from MySite.views import *  # @UnusedWildImport
+from MySite.views import create_section
 site_media = os.path.join(os.path.dirname(__file__),'site_media')
 
 # Uncomment the next two lines to enable the admin:
@@ -55,9 +56,11 @@ urlpatterns = patterns('',
     url(r'^Home/.*/TestStep_Detail_Table/$', TestStep_Detail_Table),
     url(r'^Home/.*/createTablefromString/$', createTablefromString),
     
-    # override the old one as its no more required
     url(r'^Home/ManageTestCases/$', manage_test_cases),
     url(r'^Home/ManageTestCases/getData/$', manage_tc_data),
+    url(r'^Home/ManageTestCases/setData/createSection/$', create_section),
+    url(r'^Home/ManageTestCases/setData/renameSection/$', rename_section),
+    url(r'^Home/ManageTestCases/setData/deleteSection/[^/]*$', delete_section),
     
     # For now, let's keep away this buggy page
     url(r'^Home/ManageTestCases/CreateProductSections/$', CreateProductSections),

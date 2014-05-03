@@ -5,6 +5,8 @@
 
 $(document).ready(function() {
 	
+	window.section_has_no_tc = true;
+	
 	// code for jstree --------------------
 
 	var config_object = {
@@ -26,39 +28,133 @@ $(document).ready(function() {
 			
 			"types" : {
 				"#" : {
+					"valid_children" : [ "parent_section" ]
+				},
+				
+				"parent_section" : {
+					"icon" : "fa fa-list-alt",
 					"valid_children" : [ "section" ]
 				},
 				
 				"section" : {
-					"icon" : "glyphicon glyphicon-list",
-					"valid_children" : [ "section", "test_case" ]
-				},
-				
-				"test_case" : {
-					"valid_children" : []
+					"icon" : "fa fa-list",
+					"valid_children" : [ "section" ]
 				}
 			},
 			
-			"plugins" : [ "search", "checkbox", "types", "wholerow" ]
+			"contextmenu" : {
+				"items" : function(node) {
+					return {
+						"Create" : {
+							"separator_before": false,
+							"separator_after": false,
+							"label": "Create Section",
+							"icon": "fa fa-plus",
+							"action": function(obj) {
+								createNode();
+							}
+						},
+						"Rename" : {
+							"separator_before": false,
+							"separator_after": false,
+							"label": "Rename Section",
+							"icon": "fa fa-edit",
+							"action": function(obj) {
+								renameNode(node, node.id);
+							}
+						},
+						"Delete" : {
+							"separator_before": true,
+							"separator_after": false,
+							"icon": "fa fa-trash-o",
+							"label": "Delete Section",
+							"action": function(obj) {
+								deleteNode(node);
+							}
+						}
+					}
+				}
+			},
+			
+			"plugins" : [ "search", "checkbox", "types", "wholerow", "contextmenu" ]
 	};
 	
-	$("#tree").jstree(config_object);
-	
-	$("#tree").on("changed.jstree", function(e, data) {
+	$("#tree").jstree(config_object)
+	.on("changed.jstree", function(e, data) {
 		var selected_sections = JSON.stringify(data.selected);
 //		console.log(selected_sections);
 		$(this).jstree(true).open_node(data.selected);
 		
 		$.get('/Home/ManageTestCases/getData/', { 'selected_section_ids': selected_sections }, function(data, status) {
 			if (status === 'success') {
-//				console.log(data);
 				var query_string = data;
 				loadTable(query_string);
 			} else {
 				alertify.error("Could not eastablish connection to the server.");
 			}
 		});
-	});	
+	});
+	
+	
+	function initiateRefresh(tree) {
+		$(tree).jstree(true).refresh();
+	}
+	
+	function createNode() {
+		var node_text = '';
+		
+		alertify.prompt("Name of the new section (put a dot(.) before a parent section name to make a child section):", function(e, str) {
+			if (e) {
+				node_text = str.split(' ').join('_');
+				
+				$.get("/Home/ManageTestCases/setData/createSection/", { 'section_text': node_text }, function(data, status) {
+					if (status === 'success' && data === "1") {
+						alertify.success("Section '" + node_text + "' created successfully.");
+						initiateRefresh("#tree");
+					} else {
+						alertify.error("Could not eastablish connection to the server :(");
+					}
+				});
+			} else {
+				alertify.error("No text was provided", 3000);
+			}
+		}, "Parent Section.Child Section");
+	}
+	
+	function renameNode(node, node_id) {
+		alertify.prompt("New name of the section:", function(e, str) {
+			if (e) {
+				new_node_text = str.split(' ').join('_');
+				old_node_text = node.text.split(' ').join('_');
+				$.get("/Home/ManageTestCases/setData/renameSection/", { 'old_section_text': old_node_text, 'new_section_text': new_node_text, 'node_id': node_id }, function(data, status) {
+					if (status === 'success' && data === "1") {
+						alertify.success("Section '" + node.text + "' renamed to '" + new_node_text + "' successfully.");
+						initiateRefresh("#tree");
+					} else {
+						alertify.error("Could not eastablish connection to the server :(");
+					}
+				});
+			} else {
+				alertify.error("No text was provided", 3000);
+			}
+		}, node.text);
+	}
+	
+	function deleteNode(node) {
+		if (window.section_has_no_tc && node.children.length === 0) {
+			$.get("/Home/ManageTestCases/setData/deleteSection/", { 'section_id': node.id }, function(data, status) {
+				if (status === 'success') {
+					alertify.success("Section with ID '" + data + "' deleted successfully");
+					initiateRefresh("#tree");
+					$("#tree").jstree(true).delete_node(node);
+				} else {
+					alertify.error("Could not eastablish connection to the server.");
+				}
+			});
+		} else {
+			alertify.error("Could not delete node as it has child section(s)/test cases.");
+		}
+	}
 	
 	
 	function implementDropDown(wheretoplace){
@@ -86,12 +182,14 @@ $(document).ready(function() {
 
 	        if (data['TableData'].length == 0)
 	        {
+	        	window.section_has_no_tc = true;
 	            $('#RunTestResultTable').children().remove();
 	            $('#RunTestResultTable').append("<p class = 'Text' style=\"text-align: center;\">No Test Cases to view :(<br>It's either because you have not selected any section(s) or there are no test case(s) for the selected section(s).</p>");
 	            $("#DepandencyCheckboxes").children().remove();
 	        }
 	        else
 	        {
+	        	window.section_has_no_tc = false;
 	            ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
 	            $("#RunTestResultTable").fadeIn(1000);
 	            $("p:contains('Show/Hide Test Cases')").fadeIn(0);
@@ -121,9 +219,14 @@ $(document).ready(function() {
 	}
 	
 	
-	// Handle button events
-	$("#select_all_and_open_btn").click(function(e) {
-		$("#tree").jstree(true).select_all();
-		$("#tree").jstree(true).open_all();
+	// If dev mode is turned on show the button to create a new section
+	if (sessionStorage.getItem('devmode')) {
+		$("#create_section_btn").css("display", "");
+	}
+	
+	$("#create_section_btn").click(function(e) {
+		e.preventDefault();
+		
+		createNode();
 	});
 });

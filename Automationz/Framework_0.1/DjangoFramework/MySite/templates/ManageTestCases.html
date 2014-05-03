@@ -2,8 +2,6 @@
 {% block title %} Manage Test Cases {% endblock %}
 {% block content %}
 
-<!-- Include bootstrap -->
-<link rel="stylesheet" href="/site_media/bootstrap/css/bootstrap.min.css">
 
 <!-- Include jsTree -->
 <link rel="stylesheet" href="/site_media/Jquery/jstree/themes/default/style.css">
@@ -11,17 +9,13 @@
 
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageTestCases.js"></script>
 
-
-<div>
-	<button id="select_all_and_open_btn">Select and Open all sections</button>
-</div>
-<br><br>
+<button style="display: none;" id="create_section_btn">Create a new section</button>
 
 <table style="width: 100%;">
 	<thead>
 		<tr>
-			<td style="border-bottom: 2px solid #ccc; text-align: center;" class="Text">Sections</td>
-			<td style="text-align: center; border-bottom: 2px solid #ccc; text-align: center;" class="Text">Test Cases</td>
+			<td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Sections</td>
+			<td style="text-align: center; border-bottom: 4px solid #ccc; text-align: center;" class="Text">Test Cases</td>
 		</tr>
 	</thead>
 	<tbody>
