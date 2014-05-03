@@ -3309,6 +3309,28 @@ def Get_Browsers(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Go_TestCaseID(request):
+    Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        runid = request.GET.get(u'runid', '')
+        tcid = request.GET.get(u'tcid', '')
+        go = request.GET.get(u'go', '')
+        cases = DB.GetData(Conn, "select tc_id from test_case_results where run_id='"+runid+"' order by id", False)
+
+    for c in cases:
+        if c[0]==tcid:
+            indx = cases.index(c)
+            
+    if go == 'previous' and indx>0:
+        results.append(cases[indx-1])
+    if go == 'next' and len(cases)>indx+1:
+        results.append(cases[indx+1])
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def Auto_Step_Create(request):
     Conn = GetConnection()
     results = []
