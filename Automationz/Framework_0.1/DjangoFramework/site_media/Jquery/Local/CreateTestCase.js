@@ -449,7 +449,7 @@ $(document).ready(function() {
                             editTypeRow(divname,i+1,1,"From");
                             editTypeRow(divname,i+1,1,"To");
                             var temp=[];
-                            for(var j=0;j<fromdata.length;i++){
+                            for(var j=0;j<fromdata.length;j++){
                                 if(fromdata[j][1] instanceof  Array){
                                     for(var k=0;k<fromdata[j][1].length;k++){
                                         var tempObject={field:fromdata[j][0],sub_field:fromdata[j][1][k][0],value:fromdata[j][1][k][1]};
@@ -462,9 +462,58 @@ $(document).ready(function() {
                                 }
                             }
                             console.log(temp);
+                            for(var j=0;j<temp.length-1;j++){
+                                adddataentry('step'+(i+1)+'Fromentrytable');
+                            }
+                            var currentrow=$('#step'+(i+1)+'Fromentrytable tr:eq(1)');
+                            for(var k=0;k<temp.length;k++){
+                                currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
+                                currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
+                                currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
+                                currentrow=currentrow.next();
+                            }
+                            if(temp.length>0){
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+                            }
+                            else{
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                            }
+                            var temp=[];
+                            for(var j=0;j<todata.length;j++){
+                                if(todata[j][1] instanceof  Array){
+                                    for(var k=0;k<todata[j][1].length;k++){
+                                        var tempObject={field:todata[j][0],sub_field:todata[j][1][k][0],value:todata[j][1][k][1]};
+                                        temp.push(tempObject);
+                                    }
+                                }
+                                else{
+                                    var tempobject={field:todata[j][0],sub_field:"",value:todata[j][1]};
+                                    temp.push(tempobject);
+                                }
+                            }
+                            console.log(temp);
+                            for(var j=0;j<temp.length-1;j++){
+                                adddataentry('step'+(i+1)+'Toentrytable');
+                            }
+                            var currentrow=$('#step'+(i+1)+'Toentrytable tr:eq(1)');
+                            for(var k=0;k<temp.length;k++){
+                                currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
+                                currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
+                                currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
+                                currentrow=currentrow.next();
+                            }
+                            if(temp.length>0){
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+                            }
+                            else{
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                            }
                             popupdivrowcount[i]=1;
-                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
-                            $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+
                         }
                         else{
                             for(var j=0;j<datasets.length;j++){
