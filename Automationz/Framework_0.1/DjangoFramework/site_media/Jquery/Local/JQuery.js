@@ -46,8 +46,8 @@ colors = {
     'skipped':'#cccccc'
 };
 
-function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
-	
+function ResultTable(HtmlElementID, Heading, tabledata, ResultName, tooltip) {
+	var tooltip = tooltip || ':)';
 	$(HtmlElementID).children().remove();
 	
 	var content = '';
@@ -55,7 +55,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	var mAddress = '';
 
 	if (ResultName != '') {
-		content += "<p class='Text hint--right hint--bounce hint--rounded' data-hint='Number of test cases for the selected criteria' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + tabledata.length + " " + ResultName
+		content += "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + tabledata.length + " " + ResultName
 				+ "</p>"
 
 	}

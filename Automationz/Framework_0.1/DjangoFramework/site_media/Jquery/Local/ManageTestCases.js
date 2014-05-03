@@ -32,12 +32,12 @@ $(document).ready(function() {
 				},
 				
 				"parent_section" : {
-					"icon" : "fa fa-list-alt",
+					"icon" : "fa fa-th",
 					"valid_children" : [ "section" ]
 				},
 				
 				"section" : {
-					"icon" : "fa fa-list",
+					"icon" : "fa fa-th-list",
 					"valid_children" : [ "section" ]
 				}
 			},
@@ -190,7 +190,7 @@ $(document).ready(function() {
 	        else
 	        {
 	        	window.section_has_no_tc = false;
-	            ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
+	            ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases", "Number of test cases for the selected section(s)");
 	            $("#RunTestResultTable").fadeIn(1000);
 	            $("p:contains('Show/Hide Test Cases')").fadeIn(0);
 	            implementDropDown("#RunTestResultTable");

@@ -96,7 +96,7 @@ function MKSReportFolderSearchBox()
 function MKSReport_Query_Submit()
 
 {
-	$(".Buttons[title='Submit MKS Query']").live('click',function(){
+	$(".Buttons[title='Submit MKS Query']").on('click',function(){
 		
 		
 		if ( $("#FolderName").val() == "" )
