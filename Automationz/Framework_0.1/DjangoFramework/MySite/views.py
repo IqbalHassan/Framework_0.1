@@ -46,9 +46,8 @@ from django.contrib.auth.models import User
 from mimetypes import MimeTypes
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
-
-import inspect
-Conn = GetConnection()
+from psycopg2.extras import DictCursor
+import inspectConn = GetConnection()
 #import logging
 
 """ Misc functions """
@@ -6101,12 +6100,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
     test_status_request = request.GET.get(u'test_status_request', False)
     if request.is_ajax():
         if request.method == 'GET':
-            print '-------------------------------------------------------------------'
             UserData = request.GET.get(u'Query', '')
-            print UserData
             UserText = UserData.split(":");
-            print UserText
-            print '-------------------------------------------------------------------'
             #Environment = request.GET.get(u'Env', '')
             RefinedData=[]
             platform=['PC','Mac']
@@ -6205,7 +6200,6 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
         dataWithTime.append(temp)
     
     if test_status_request:
-        print '--------------------------- INSIDE HERE -------------------------------------'
         for i in dataWithTime:
             query = '''
             SELECT property FROM test_case_tag WHERE name='%s' AND tc_id='%s'
@@ -6213,7 +6207,6 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
             
             try:
                 data = DB.GetData(Conn, query, False, True)
-                print data
                 i[3] = data[0][0]
             except:
                 print ''
@@ -6493,8 +6486,6 @@ def GetData(run_id,index,userText=""):
 def manage_test_cases(request):
     if request.method == 'GET':
         if request.is_ajax():
-            print "------------------------- AJAX REQUEST -------------------------"
-
             # Fetch the data from product_sections table
             query = '''
             SELECT * FROM product_sections ORDER BY section_path
@@ -6520,7 +6511,7 @@ def manage_test_cases(request):
                         temp['id'] = i[0]
                         temp['text'] = i[1]
                         temp['children'] = True
-                        temp['type'] = 'section'
+                        temp['type'] = 'parent_section'
                         temp_list.append(temp)
                         data.remove(i)
                         
@@ -6566,11 +6557,14 @@ def manage_test_cases(request):
             else:
                 print "Node with id %s is being loaded" % requested_id
                 
-                if requested_id != '':
-                    for section in child_sections:
-                        if unicode(section['parent']) == requested_id:
-                            result.append(section)
-                    result = json.dumps(result)
+                try:
+                    if requested_id != '':
+                        for section in child_sections:
+                            if unicode(section['parent']) == requested_id:
+                                result.append(section)
+                        result = json.dumps(result)
+                except:
+                    return HttpResponse("NULL")
                     
             
             return HttpResponse(result, mimetype="application/json")
@@ -6584,9 +6578,7 @@ def manage_tc_data(request):
             test_case_ids = ''
             decoded_string = json.loads(request.GET.get('selected_section_ids', []))
             selected_section_ids = list( decoded_string )
-#             print '--------'
-#             print selected_section_ids
-            
+
             if selected_section_ids != []:
                 for i in range(0, len(selected_section_ids)):
                     selected_section_ids[i] = int(selected_section_ids[i])
@@ -6598,8 +6590,6 @@ def manage_tc_data(request):
                 if not len(selected_section_ids) == 1:
                     for i in range(1, len(selected_section_ids)):
                         encoded_for_sql += " OR name='%s'" % selected_section_ids[i]
-                
-#                 print encoded_for_sql
                 
                 query = '''
                 SELECT * FROM test_case_tag WHERE property='%s' AND %s
@@ -6627,8 +6617,6 @@ def FilterDataForRunID(request):
         if request.method=='GET':
             term=request.GET.get('term','')
             run_id=request.GET.get('run_id','')
-            print run_id
-            print term
             Conn=GetConnection()
             status_query="select distinct status,'Status' from test_case_results where run_id='%s' and status Ilike '%%%s%%'"%(run_id,term)
             status=DB.GetData(Conn,status_query,False)
@@ -6643,4 +6631,87 @@ def FilterDataForRunID(request):
                     final.append(each)
     result=simplejson.dumps(final)
     return HttpResponse(result, mimetype='application/json')
-    
+
+def create_section(request):
+    if request.method == 'GET' and request.is_ajax():
+        section_text = request.GET.get('section_text', '')
+        empty_section_id = None
+        
+        cur = Conn.cursor()
+        query = '''
+        SELECT section_id FROM product_sections
+        '''
+        
+        data = DB.GetData(Conn, query, False, False)
+        data = sorted(data)
+        empty_section_id = data[-1][0] + 1
+
+        try:
+            query = '''
+            INSERT INTO product_sections VALUES (%d, '%s')
+            ''' % (empty_section_id, section_text)
+            
+            cur.execute(query)
+            Conn.commit()
+            cur.close()
+
+            return HttpResponse(1)
+        except:
+            cur.close()
+            return HttpResponse(0)
+        
+
+def rename_section(request):
+    if request.method == 'GET' and request.is_ajax():
+        new_section_text = request.GET.get('new_section_text', '')
+        old_section_text = request.GET.get('old_section_text', '')
+        node_id = int(request.GET.get('node_id', ''))
+        
+        try:
+            query = '''
+            SELECT * FROM product_sections WHERE section_path ~ '*.%s.*'
+            ''' % old_section_text
+            cur = Conn.cursor(cursor_factory=DictCursor)
+            cur.execute(query)
+            
+            product_sections = cur.fetchall()
+            
+            for row in product_sections:
+                splitted_text = row['section_path'].split('.')
+                for i in range(0, len(splitted_text)):
+                    if splitted_text[i] == old_section_text and node_id == row['section_id']:
+                        splitted_text[i] = splitted_text[i].replace(old_section_text, new_section_text)
+                
+                row['section_path'] = '.'.join(splitted_text)
+                
+                query = '''
+                UPDATE product_sections SET section_path='%s' WHERE section_id=%d
+                ''' % ( row['section_path'], row['section_id'] )
+                
+                cur.execute(query)
+                Conn.commit()
+                        
+                query = '''
+                UPDATE test_case_tag SET name='%s' WHERE name='%s' AND property='%s'
+                ''' % ( new_section_text, old_section_text, 'Section' )
+                 
+                cur.execute(query) 
+                Conn.commit()
+                cur.close()
+        except:
+            return HttpResponse(0)
+        
+        return HttpResponse(1)
+
+
+def delete_section(request):
+    if request.method == 'GET' and request.is_ajax():
+        section_id = int(request.GET.get('section_id', 0))
+        query = '''
+        DELETE FROM product_sections WHERE section_id=%d 
+        ''' % section_id
+        cur = Conn.cursor()
+        cur.execute(query)
+        Conn.commit()
+        cur.close()
+        return HttpResponse(section_id)

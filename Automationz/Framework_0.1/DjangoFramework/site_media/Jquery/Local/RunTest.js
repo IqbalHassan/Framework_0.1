@@ -252,7 +252,7 @@ function machine_div(){
     //$("#AvailableTestMachine").slideToggle("slow");
     var SearchUser = "True"
     $.get("Table_Data_UserList",{UserListRequest : SearchUser, Env: Env},function(data) {
-        ResultTable('#AvailableTestMachine', data['Heading'],data['TableData'], "Available User/s");
+        ResultTable('#AvailableTestMachine', data['Heading'],data['TableData'], "Available User(s)", "Number of users available");
     });
 }
 function populate_manual_test_div(environment,browserdata,productVersion){

@@ -46,8 +46,8 @@ colors = {
     'skipped':'#cccccc'
 };
 
-function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
-	
+function ResultTable(HtmlElementID, Heading, tabledata, ResultName, tooltip) {
+	var tooltip = tooltip || ':)';
 	$(HtmlElementID).children().remove();
 	
 	var content = '';
@@ -55,7 +55,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	var mAddress = '';
 
 	if (ResultName != '') {
-		content += "<p class = 'Text' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + tabledata.length + " " + ResultName
+		content += "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + tabledata.length + " " + ResultName
 				+ "</p>"
 
 	}
@@ -67,7 +67,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName) {
 	head = []
 	for (head in Heading) {
 
-		if (Heading[head] == "Title") {
+		if (Heading[head] === "Title") {
 			content += "<th class='hint--left hint--bounce hint--rounded' data-hint='Click a title to expand' style='text-align: center;'>" + Heading[head] + '</th>';
 		} else {
 			content += "<th style='text-align: center;'>" + Heading[head] + '</th>';
