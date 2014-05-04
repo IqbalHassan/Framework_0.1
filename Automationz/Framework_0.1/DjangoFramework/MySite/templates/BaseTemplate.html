@@ -47,6 +47,11 @@
 
 
 <body>
+<div id="loading">
+	<i id="loading-image" class="fa fa-cog fa-spin fa-5x fa-lg"></i>
+	<h1 style="text-align: center;">Loading</h1>
+</div>
+
 <div id="master_wrap">
     <header class="main_header">
         <!--a id="logo" href="/Home/">
@@ -270,6 +275,12 @@ $(document).ready(function() {
 
         $(".selectdrop").selectBoxIt();
     });
+</script>
+
+<script type="text/javascript">
+	$(window).load(function() {
+		$("#loading").hide();
+	});
 </script>
 
 </body>
