@@ -76,6 +76,10 @@ $(document).ready(function() {
 				}
 			},
 			
+			"checkbox" : {
+				"keep_selected_style" : false
+			},
+			
 			"plugins" : [ "search", "checkbox", "types", "wholerow", "contextmenu" ]
 	};
 	
