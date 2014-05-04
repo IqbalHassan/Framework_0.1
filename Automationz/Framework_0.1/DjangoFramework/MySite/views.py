@@ -3148,11 +3148,10 @@ def ViewTestCase(TC_Id):
                 query+="%s"% (str(Step_Iteration))
                 query+="%' and field='estimated' and value='time'"
                 Step_Time=DB.GetData(Conn,query,False)
-                Step_Iteration=Step_Iteration+1
                 #is data required for this step
                 if each_test_step[3]:
                     #Is this a verify step
-                    container_data_id_query="select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = '%s' and teststepseq = %s" % (Test_Case_DataSet_Id, Step_Seq)
+                    container_data_id_query="select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = '%s' and teststepseq = %s and ctd.curname Ilike '%%_s%s%%'" % (Test_Case_DataSet_Id, Step_Seq,Step_Iteration)
                     container_data_id_details = DB.GetData(Conn, container_data_id_query, False)
                     if Step_Edit:
                         for each_data_id in container_data_id_details:
@@ -3167,6 +3166,7 @@ def ViewTestCase(TC_Id):
                             Step_Data.append(From_Data)
                 #append step name and data to send it back
                 Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0],Step_Expected[0][0],Step_Verified[0][0],Step_General_Description[0][0],Step_Time[0][0],Step_Edit,each_test_step[3]))
+                Step_Iteration=Step_Iteration+1
             #return values
             results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List}
 
