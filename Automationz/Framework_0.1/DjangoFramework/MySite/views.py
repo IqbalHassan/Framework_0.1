@@ -3331,6 +3331,26 @@ def Go_TestCaseID(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Go_TestCaseStatus(request):
+    Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        runid = request.GET.get(u'runid', '')
+        tcid = request.GET.get(u'tcid', '')
+        cases = DB.GetData(Conn, "select tc_id from test_case_results where run_id='"+runid+"' order by id", False)
+
+    for c in cases:
+        if c[0]==tcid:
+            indx = cases.index(c)
+            
+    results.append(indx+1)
+    total = len(cases)
+    results.append(total)
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def Auto_Step_Create(request):
     Conn = GetConnection()
     results = []
