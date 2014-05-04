@@ -683,7 +683,27 @@ function change_notify(message){
 
 function go_change(){
     var run_id = $("#runid").text();
-    var tcid = $("#testcaseid").text()
+    var tcid = $("#testcaseid").text();
+
+    $.ajax({
+        url:'Go_TestCaseStatus/',
+        dataType : "json",
+        data : {
+            runid : run_id,
+            tcid : tcid
+        },
+        success: function( json ) {
+
+            if(json[0] == '1'){
+                $("#go_previous").hide();
+            }
+            if(json[0] == json[1]){
+                $("#go_next").hide();
+            }
+
+            $("#go_status").text(json[0]+'/'+json[1]);
+        }
+    });
 
     $("#go_next").click(function(){
         $.ajax({

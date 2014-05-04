@@ -46,7 +46,22 @@
 </head>
 
 
-<body>
+<body style="height: 100%;">
+<div id="loading">
+	<!-- <i id="loading-image" class="fa fa-cog fa-spin fa-5x fa-lg"></i> -->
+	<img src="/site_media/loading-bubbles.svg">
+	<h1 style="text-align: center;">Loading</h1>
+	<h3 style="text-align: center; color: #aaa;">Automation Solutionz</h3>
+</div>
+
+<script type="text/javascript">
+	$(window).load(function() {
+		setTimeout(function() {
+			$("#loading").hide();
+		}, 1500);
+	});
+</script>
+
 <div id="master_wrap">
     <header class="main_header">
         <!--a id="logo" href="/Home/">

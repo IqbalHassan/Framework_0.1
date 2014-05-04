@@ -3707,3 +3707,25 @@ body.avgrund-active {
     background-image: -ms-linear-gradient(#3072b3, #599bdc);
     background-image: linear-gradient(#3072b3, #599bdc);
 }
+
+/* Page load waiting */
+#loading {
+	width: 100%;
+	hieght: 100%;
+	top: 0px;
+	left: 0px;
+	position: fixed;
+	display: block;
+	opacity: 1;
+	min-height: 100%;
+	background-color: #fff;
+	z-index: 9999999999999999999;
+	text-align: center;
+}
+
+#loading-image {
+	text-align: center;
+	position: absolute;
+	margin: auto;
+	z-index: 100000000000000000000;
+}
