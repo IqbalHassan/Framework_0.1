@@ -92,6 +92,7 @@ $(document).ready(function(){
 
     related_items();
     history();
+    go_change();
 });
 function UIChange(){
     /*$('#data_table tr td:nth-child(5)').each(function(){
@@ -680,4 +681,45 @@ function change_notify(message){
 
 }
 
+function go_change(){
+    var run_id = $("#runid").text();
+    var tcid = $("#testcaseid").text()
 
+    $("#go_next").click(function(){
+        $.ajax({
+            url:'Go_TestCaseID/',
+            dataType : "json",
+            data : {
+                runid : run_id,
+                tcid : tcid,
+                go : 'next'
+            },
+            success: function( json ) {
+
+                if(json[0] != undefined){
+                    window.location = '/Home/RunID/'+run_id+'/TC/'+json[0]+'/';
+                }
+            }
+        });
+
+    });
+
+    $("#go_previous").click(function(){
+        $.ajax({
+            url:'Go_TestCaseID/',
+            dataType : "json",
+            data : {
+                runid : run_id,
+                tcid : tcid,
+                go : 'previous'
+            },
+            success: function( json ) {
+
+                if(json[0] != undefined){
+                    window.location = '/Home/RunID/'+run_id+'/TC/'+json[0]+'/';
+                }
+            }
+        });
+
+    });
+}
