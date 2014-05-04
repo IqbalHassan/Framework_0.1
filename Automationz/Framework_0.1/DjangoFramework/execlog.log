@@ -41,3 +41,44 @@
 2014-05-03 11:55:09,338 - INFO - AddTag : TestCaseOperations - Inserted  - PRDId in test_case_tag table
 2014-05-03 11:55:09,338 - INFO - Insert_TestCase_Tags : TestCaseOperations - Entered test case tags BTE-0301
 2014-05-03 11:55:09,338 - INFO - Create Test Case - ===========================================================================================================
+2014-05-04 23:59:11,999 - INFO - TestCase_DataValidation : TestCaseOperations - TEST CASE CREATION Failed:Invalid test case name
+2014-05-05 00:11:09,779 - INFO - Insert_TestCaseName : TestCaseOperations - Entered test case AUT-0302: Test for browser automation
+2014-05-05 00:11:09,858 - INFO - Insert_TestCaseDataSet : TestCaseOperations - Entered test case dataset AUT-0302: AUT-0302ds
+2014-05-05 00:11:09,921 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Added test step to test case id AUT-0302: Open Browser
+2014-05-05 00:11:09,921 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Added test step without data: Open Browser
+2014-05-05 00:11:09,999 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted step Description in master_data
+2014-05-05 00:11:09,999 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted expected in master_data
+2014-05-05 00:11:09,999 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted verification in master_data
+2014-05-05 00:11:09,999 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted estimated in master_data
+2014-05-05 00:11:10,015 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Added test step to test case id AUT-0302: Go to webpage
+2014-05-05 00:11:10,029 - INFO - Insert_PIMMasterData : TestCaseOperations - inserted data in master_data data id: google - http://google.com
+2014-05-05 00:11:10,029 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted step Description in master_data
+2014-05-05 00:11:10,046 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted expected in master_data
+2014-05-05 00:11:10,046 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted verification in master_data
+2014-05-05 00:11:10,046 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted estimated in master_data
+2014-05-05 00:11:10,140 - INFO - Insert_ContainerTypeData : TestCaseOperations - Inserted Container data set for [u'AUT-0302_s2_d1']
+2014-05-05 00:11:10,201 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Added test step data: Go to webpage
+2014-05-05 00:11:10,201 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Added test step to test case id AUT-0302: Close Browser
+2014-05-05 00:11:10,217 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Added test step without data: Close Browser
+2014-05-05 00:11:10,217 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted step Description in master_data
+2014-05-05 00:11:10,217 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted expected in master_data
+2014-05-05 00:11:10,217 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted verification in master_data
+2014-05-05 00:11:10,233 - INFO - Insert_TestSteps_StepsData : TestCaseOperations - Inserted estimated in master_data
+2014-05-05 00:11:10,249 - INFO - AddTag : TestCaseOperations - Inserted AUT-0302 - tcid in test_case_tag table
+2014-05-05 00:11:10,249 - INFO - AddTag : TestCaseOperations - Inserted AUT-0302 - MKS in test_case_tag table
+2014-05-05 00:11:10,265 - INFO - AddTag : TestCaseOperations - Inserted Default - Data_Type in test_case_tag table
+2014-05-05 00:11:10,265 - INFO - AddTag : TestCaseOperations - Inserted PC - machine_os in test_case_tag table
+2014-05-05 00:11:10,265 - INFO - AddTag : TestCaseOperations - Inserted Status - Dev in test_case_tag table
+2014-05-05 00:11:10,279 - INFO - AddTag : TestCaseOperations - Inserted smoke - test_run_type in test_case_tag table
+2014-05-05 00:11:10,279 - INFO - AddTag : TestCaseOperations - Inserted P1 - Priority in test_case_tag table
+2014-05-05 00:11:10,279 - INFO - AddTag : TestCaseOperations - Inserted  - CustomTag in test_case_tag table
+2014-05-05 00:11:10,279 - INFO - AddTag : TestCaseOperations - Inserted 13 - section_id in test_case_tag table
+2014-05-05 00:11:10,296 - INFO - AddTag : TestCaseOperations - Inserted Automation_Solutionz - Section in test_case_tag table
+2014-05-05 00:11:10,296 - INFO - AddTag : TestCaseOperations - Inserted Test_Case_Execution - Section in test_case_tag table
+2014-05-05 00:11:10,296 - INFO - AddTag : TestCaseOperations - Inserted Automation - Section in test_case_tag table
+2014-05-05 00:11:10,311 - INFO - AddTag : TestCaseOperations - Inserted Dependency - Chrome in test_case_tag table
+2014-05-05 00:11:10,311 - INFO - AddTag : TestCaseOperations - Inserted Chrome - client in test_case_tag table
+2014-05-05 00:11:10,311 - INFO - AddTag : TestCaseOperations - Inserted  - JiraId in test_case_tag table
+2014-05-05 00:11:10,311 - INFO - AddTag : TestCaseOperations - Inserted  - PRDId in test_case_tag table
+2014-05-05 00:11:10,326 - INFO - Insert_TestCase_Tags : TestCaseOperations - Entered test case tags AUT-0302
+2014-05-05 00:11:10,326 - INFO - Create Test Case - ===========================================================================================================
