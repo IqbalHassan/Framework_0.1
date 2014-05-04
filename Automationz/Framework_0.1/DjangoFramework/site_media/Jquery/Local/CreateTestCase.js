@@ -42,11 +42,15 @@ $(document).ready(function() {
 
         });
         $('#remove_test_step').live('click',function(){
-            var id=$('#steps_table tr:last').attr('id').split('_')[1].trim();
-            $('#searchbox'+id+'datapop').remove();
-            $('#steps_table tr:last').remove();
-            step_num--;
-            popupdivrowcount.pop();
+        	alertify.confirm("Are you sure you want to delete the test step?", function(e) {
+        		if (e) {
+        			var id=$('#steps_table tr:last').attr('id').split('_')[1].trim();
+                    $('#searchbox'+id+'datapop').remove();
+                    $('#steps_table tr:last').remove();
+                    step_num--;
+                    popupdivrowcount.pop();        			
+        		}
+        	});
         });
         /********************For Specific Index Change********************************************/
         $('.add_after_img').live('click',function(){
@@ -58,15 +62,20 @@ $(document).ready(function() {
             popupdivrowcount.splice(step_id,0,temp);
             reOrganize();
         });
-        $('.remove_img').live('click',function(){
-            var step_id=$(this).closest('tr');
-            var index=step_id.attr('id').split('_')[1].trim();
-            $('#searchbox'+index+'datapop').remove();
-            $('#searchbox'+index+'descriptionpop').remove();
-            step_id.remove();
-            step_num--;
-            resetArray(index);
-            reOrganize();
+        $('.remove_img').on('click',function(){
+        	var this_obj = $(this);
+        	alertify.confirm("Are you sure you want to delete the test step?", function(e) {
+        		if (e) {
+        			var step_id=$(this_obj).closest('tr');
+                    var index=step_id.attr('id').split('_')[1].trim();
+                    $('#searchbox'+index+'datapop').remove();
+                    $('#searchbox'+index+'descriptionpop').remove();
+                    step_id.remove();
+                    step_num--;
+                    resetArray(index);
+                    reOrganize();
+        		}
+        	});
         });
         /********************For Specific Index Change END********************************************/
         /********************DataPopUP Function********************************************/
