@@ -51,13 +51,14 @@ $(document).ready(function(){
                      ResultTable("#env"+i+"", env_data['Heading'],"");
                      });*/
                     /***************pie chart***********************/
+                    var sc = data['ReportTable'][i].length -1;
                     RenderPieChart('chart'+i, [
-                        ['Passed ('+data['ReportTable'][i][4][1]+')', data['ReportTable'][i][4][1]],
-                        ['Failed ('+data['ReportTable'][i][4][2]+')', data['ReportTable'][i][4][2]],
-                        ['Blocked ('+data['ReportTable'][i][4][3]+')',  data['ReportTable'][i][4][3]],
-                        ['Submitted ('+data['ReportTable'][i][4][4]+')', data['ReportTable'][i][4][4]],
-                        ['In-Progress ('+data['ReportTable'][i][4][5]+')',  data['ReportTable'][i][4][5]],
-                        ['Skipped ('+data['ReportTable'][i][4][6]+')', data['ReportTable'][i][4][6]]
+                        ['Passed ('+data['ReportTable'][i][sc][1]+')', data['ReportTable'][i][sc][1]],
+                        ['Failed ('+data['ReportTable'][i][sc][2]+')', data['ReportTable'][i][sc][2]],
+                        ['Blocked ('+data['ReportTable'][i][sc][3]+')',  data['ReportTable'][i][sc][3]],
+                        ['Submitted ('+data['ReportTable'][i][sc][4]+')', data['ReportTable'][i][sc][4]],
+                        ['In-Progress ('+data['ReportTable'][i][sc][5]+')',  data['ReportTable'][i][sc][5]],
+                        ['Skipped ('+data['ReportTable'][i][sc][6]+')', data['ReportTable'][i][sc][6]]
                     ],data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]);
 
                     /***************pie chart*********************/
@@ -79,14 +80,16 @@ function RenderPieChart(elementId, dataList, title) {
             renderTo: elementId,
             plotBackgroundColor: null,
             plotBorderWidth: null,
-            plotShadow: false
+            plotShadow: false,
+            height: 450
         }, title: {
             text: 'Summary - ' + title
         },
         tooltip: {
-            formatter: function () {
+            /*formatter: function () {
                 return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
-            }
+            }*/
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
         },
         plotOptions: {
             pie: {
@@ -100,6 +103,11 @@ function RenderPieChart(elementId, dataList, title) {
                         return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
                     }
                 }
+                /*dataLabels: {
+                    enabled: false
+                }*/,
+                showInLegend: true,
+                size : '95%'
             }
         },
         series: [{
