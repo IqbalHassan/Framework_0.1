@@ -3258,7 +3258,16 @@ def EditTestCase(request):
                 err_msg="Test Case Step Data is not updated successfully for the test case %s"%New_TC_Id
                 LogMessage(sModuleInfo,err_msg,3)
                 return err_msg
-            
+            test_case_tag_result=TestCaseCreateEdit.Update_Test_Case_Tag(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type,Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List)
+            if test_case_tag_result!="Pass":
+                err_msg="Test Case Step Data is not updated successfully for the test case %s"%New_TC_Id
+                LogMessage(sModuleInfo,err_msg,3)
+                return err_msg
+            if test_case_tag_result == "Pass":
+                msg="==========================================================================================================="
+                TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
+                return returnResult(New_TC_Id)
+        
         else:
             #this is an old format test case
             tmp_id = DB.GetData(Conn, "select nextval('testcase_testcaseid_seq')")
@@ -3266,19 +3275,19 @@ def EditTestCase(request):
             test_cases_result = TestCaseOperations.Insert_TestCaseName(Conn, New_TC_Id, TC_Name, TC_Creator)
             #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id, True, True, New_TC_Id)
 
-
+        return ViewTestCase(New_TC_Id)
         #3
         #Recreate the new test case
 
-        if test_case_stepdata_result != 'Pass':
+        """if test_case_stepdata_result != 'Pass':
             #TestCaseOperations.Cleanup_TestCase(Conn, New_TC_Id)
-            return test_cases_result
-
+            return test_case_stepdata_result
+        """
         #GET_values = request.GET.copy()
         #GET_values['Is_Edit'] = New_TC_Id
         #request.GET = GET_values
         #return Create_Submit_New_TestCase(request)
-        return ViewTestCase(New_TC_Id)
+        
     except Exception, e:
         print "Exception:", e
         #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)

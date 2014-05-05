@@ -14,6 +14,121 @@ from TestCaseOperations import LogMessage
     2 - warning
     3 - error
 """
+def Update_Test_Case_Tag(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List):
+    sModuleInfo = inspect.stack()[0][3] + " : " +inspect.getmoduleinfo(__file__).name
+    Tag_List = []
+    #Add test case id tag
+    Tag_List.append(('%s' % TC_Id, 'tcid'))
+    ManualTCIDFound = False
+    for eachManual_Id in [Manual_TC_Id]:
+        if eachManual_Id.strip() != '':
+            Tag_List.append(('%s' % eachManual_Id, 'MKS'))
+            ManualTCIDFound = True
+    if ManualTCIDFound == False:
+        Tag_List.append(('%s' % TC_Id, 'MKS'))
+
+    #hard coded tags for now
+    Tag_List.append(('Default', 'Data_Type'))
+
+    #Add Section names & initialize variables
+    if Platform.lower() == 'pc':
+        Tag_List.append(('PC', 'machine_os'))
+        Section_Tag = 'Section'
+        Custom_Tag = 'CustomTag'
+        Section_Path_Tag = 'section_id'
+        TestRunType_Tag = 'test_run_type'
+        Priority_Tag = 'Priority'
+        Dependency_Tag = 'Dependency'
+        Tag_List.append(('Status', Status))
+        if Status=="Forced":
+            Tag_List.append(('Status', 'Ready'))
+    elif Platform.lower() == 'mac':
+        Tag_List.append(('MAC', 'machine_os'))
+        Section_Tag = 'MacSection'
+        Custom_Tag = 'MacCustomTag'
+        Section_Path_Tag = 'mac_section_id'
+        TestRunType_Tag = 'Mac_test_run_type'
+        Priority_Tag = 'MacPriority'
+        Dependency_Tag = 'MacDependency'
+        Tag_List.append(('MacStatus', Status))
+        if Status=="Forced":
+            Tag_List.append(('Status', 'Ready'))
+    else:
+        err_msg = LogMessage(sModuleInfo, "Unknown platform value for the test case: %s" % (Platform), 4)
+        return err_msg
+
+    #Add test case type, priority, Data Type
+    for each_TC_Type in TC_Type.split("|"):
+        Tag_List.append(('%s' % each_TC_Type, TestRunType_Tag))
+    Tag_List.append(('%s' % Priority, Priority_Tag))
+
+    #Add custom tags
+    for eachTag in Custom_Tag_List:
+        Tag_List.append(('%s' % eachTag, Custom_Tag))
+
+    #Add Section id based on hierarchy
+    if DBUtil.IsDBConnectionGood(Conn)==False:
+        time.sleep(1)
+        Conn=GetConnection()
+    Section_Id = DBUtil.GetData(Conn, "select section_id from product_sections where section_path = '%s'" % Section_Path)
+    if len(Section_Id) > 0:
+        Tag_List.append(('%d' % Section_Id[0], Section_Path_Tag))
+
+    #Work around to display section names in run page
+    for eachSection in Section_Path.split('.'):
+        Tag_List.append(('%s' % eachSection, Section_Tag))
+
+    #Add Dependency tags
+    for eachDependency in Dependency_List:
+        Tag_List.append(('%s' % Dependency_Tag, eachDependency))
+        if eachDependency in ['Outlook', 'MacNative', 'iTunes', 'iPhoto', 'WMP', 'Chrome', 'FireFox', 'IE']:
+            Tag_List.append(('%s' % eachDependency, 'client'))
+        elif eachDependency in ['BBX', 'SD']:
+            Tag_List.append(('%s' % eachDependency, 'device_memory'))
+
+    #Add Associated Bugs
+    for eachBugId in Associated_Bugs_List:
+        Tag_List.append(('%s' % eachBugId, 'JiraId'))
+
+    #Add Associated Requirements
+    for eachReqId in Requirement_ID_List:
+        Tag_List.append(('%s' % eachReqId, 'PRDId'))
+    test_case_tag_query="select tc_id,name,property from test_case_tag where tc_id='%s'"%TC_Id
+    if DBUtil.IsDBConnectionGood(Conn)==False:
+        time.sleep(1)
+        Conn=GetConnection()
+    test_case_tag_collected_data=DBUtil.GetData(Conn,test_case_tag_query,False)
+    print test_case_tag_collected_data
+    print Tag_List
+    test_case_tag_dict={}
+    for each in Tag_List:
+        if (TC_Id,each[0],each[1]) not in test_case_tag_collected_data:
+            test_case_tag_dict.update({'tc_id':TC_Id,'name':each[0],'property':each[1]})
+            if DBUtil.IsDBConnectionGood(Conn)==False:
+                time.sleep(1)
+                Conn=GetConnection()
+            result=DBUtil.InsertNewRecordInToTable(Conn, "test_case_tag",**test_case_tag_dict)
+            if result==True:
+                LogMessage(sModuleInfo,"Added %s in test case tag for test case %s"%(str(test_case_tag_dict),TC_Id),1)
+            else:
+                LogMessage(sModuleInfo,result,3)
+        else:
+            test_case_tag_collected_data.remove((TC_Id,each[0],each[1]))
+            LogMessage(sModuleInfo,"%s is present already for the test case %s"%(str((TC_Id,each[0],each[1])),TC_Id),1)
+    test_case_tag_column=['tc_id','name','property']
+    for each in test_case_tag_collected_data:
+        test_case_tag_dict={}
+        for eachitem in zip(test_case_tag_column,each):
+            test_case_tag_dict.update({eachitem[0]:eachitem[1]})
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        result=DBUtil.DeleteRecord(Conn,"test_case_tag",**test_case_tag_dict)
+        if result==True:
+            LogMessage(sModuleInfo,"Deleting Unnecessary %s tuple from test case tag for test case %s"%(str(test_case_tag_dict),TC_Id),1)
+        else:
+            LogMessage(sModuleInfo,result,3)
+    return "Pass"
 def Update_Test_Steps_Data(Conn,tc_id,dataset_id,steps_data_list):
     sModuleInfo = inspect.stack()[0][3] + " : " +inspect.getmoduleinfo(__file__).name
     #Collect the master data table entry and the test_steps_table_entry
