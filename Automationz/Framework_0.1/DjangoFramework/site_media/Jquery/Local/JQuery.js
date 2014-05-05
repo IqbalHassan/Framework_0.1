@@ -68,9 +68,9 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName, tooltip) {
 	for (head in Heading) {
 
 		if (Heading[head] === "Title") {
-			content += "<th class='hint--left hint--bounce hint--rounded' data-hint='Click a title to expand' style='text-align: center;'>" + Heading[head] + '</th>';
+			content += "<th class='hint--left hint--bounce hint--rounded' data-hint='Click a title to expand'>" + Heading[head] + '</th>';
 		} else {
-			content += "<th style='text-align: center;'>" + Heading[head] + '</th>';
+			content += "<th>" + Heading[head] + '</th>';
 		}
 	}
 	content += '</tr>'

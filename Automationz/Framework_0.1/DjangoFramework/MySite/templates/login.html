@@ -130,7 +130,6 @@ body {
 		
 		// Restore the states for the checkbox and username field
 		$("#username").val(localStorage.getItem("username") || "");
-		console.log(localStorage.getItem("username_saved"));
 		if (localStorage.getItem("username_saved")) {
 			$("#username_checkbox").prop("checked", true);
 		}
