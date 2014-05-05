@@ -3274,7 +3274,8 @@ def EditTestCase(request):
             New_TC_Id = TestCaseOperations.Generate_TCId(Section_Path, tmp_id[0])
             test_cases_result = TestCaseOperations.Insert_TestCaseName(Conn, New_TC_Id, TC_Name, TC_Creator)
             #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id, True, True, New_TC_Id)
-
+        msg="==========================================================================================================="
+        TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)        
         return ViewTestCase(New_TC_Id)
         #3
         #Recreate the new test case
@@ -3290,6 +3291,8 @@ def EditTestCase(request):
         
     except Exception, e:
         print "Exception:", e
+        msg="==========================================================================================================="
+        TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)        
         #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
         return "Critical"
 
