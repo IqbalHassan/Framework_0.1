@@ -96,15 +96,15 @@ $(document).ready(function(){
 });
 function UIChange(){
     /*$('#data_table tr td:nth-child(5)').each(function(){
-       $(this).css({
-           'textAlign':'left'
-       })
-    });
-    $('#data_table tr td:nth-child(6)').each(function(){
-        $(this).css({
-            'textAlign':'left'
-        })
-    });*/
+     $(this).css({
+     'textAlign':'left'
+     })
+     });
+     $('#data_table tr td:nth-child(6)').each(function(){
+     $(this).css({
+     'textAlign':'left'
+     })
+     });*/
     $('#data_table, .one-column-emphasis').each(function(){
         $(this).css({
             'textAlign':'left',
@@ -146,8 +146,8 @@ function UIChange(){
     });
     $('#data_table tr td:nth-child(11)').each(function(){
         /*$(this).css({
-            'textAlign':'center'
-        })*/
+         'textAlign':'center'
+         })*/
         var value=$(this).text().trim();
         $(this).html(convertToString(value));
     });
@@ -262,10 +262,10 @@ function draw_table(row,column){
 }
 
 colors = {
-	'pass' : '#65bd10',
-	'fail' : '#fd0006',
-	'block' : '#ff9e00',
-	'submitted' : '#808080',
+    'pass' : '#65bd10',
+    'fail' : '#fd0006',
+    'block' : '#ff9e00',
+    'submitted' : '#808080',
     'in-progress':'#0000ff',
     'skipped':'#cccccc'
 };
@@ -280,38 +280,38 @@ function DataFetch(){
         'test_case_id':test_case_id
     },function(data){
         /*console.log(data['data_collected']);
-        console.log(data['data_column']);*/
+         console.log(data['data_column']);*/
         var datatable=data['data_collected'];
         var datacolumn=data['data_column'];
         var message=table_message(datacolumn,datatable);
         //console.log(message);
         $('#testcasestatus').html(data['test_case_status']);
         $('#testcase').append(data['test_case_status']);
-        
+
         var css = '';
         switch (data['test_case_status']) {
-        case 'Passed':
-        	css = "4px solid " + colors['pass'];
-        	break;
-        case 'Failed':
-        	css = "4px solid " + colors['fail'];
-        	break;
-        case 'Blocked':
-        	css = "4px solid " + colors['block'];
-        	break;
-        case 'In-Progress':
-        	css = "4px solid " + colors['in-progress'];
-        	break;
-        case 'Submitted':
-        	css = "4px solid " + colors['submitted'];
-        	break;
-        case 'Skipped':
-        	css = "4px solid " + colors['skipped'];
-        	break;
+            case 'Passed':
+                css = "4px solid " + colors['pass'];
+                break;
+            case 'Failed':
+                css = "4px solid " + colors['fail'];
+                break;
+            case 'Blocked':
+                css = "4px solid " + colors['block'];
+                break;
+            case 'In-Progress':
+                css = "4px solid " + colors['in-progress'];
+                break;
+            case 'Submitted':
+                css = "4px solid " + colors['submitted'];
+                break;
+            case 'Skipped':
+                css = "4px solid " + colors['skipped'];
+                break;
         }
-        
+
         $("#breadcrumb_header").css("border-left", css);
-        
+
         $('#RunIDTestCaseData').html(message);
         TestDataFetch();
         MakeStatusSelectable();
@@ -366,8 +366,8 @@ function ExecutionLog(){
         }
     });
     /*$('#data_table tr td:nth-child(3)').each(function(){
-        $(this).css({'text-align':'left'});
-    })*/
+     $(this).css({'text-align':'left'});
+     })*/
 }
 function InputFailReason(){
     $('#data_table tr td:nth-child(7)').each(function(){
@@ -377,10 +377,10 @@ function InputFailReason(){
         var tc_id=$('#testcaseid').text().trim();
         var step_id=tc_id+"_s"+step_no+"_reason";
         step_id=step_id.trim();
-       if($(this).text().trim()!="FailReason"){
-           $(this).html('<textarea id="'+step_id+'" column="100"/></textarea>');
-           $('#'+step_id).val(failreason);
-       }
+        if($(this).text().trim()!="FailReason"){
+            $(this).html('<textarea id="'+step_id+'" column="100"/></textarea>');
+            $('#'+step_id).val(failreason);
+        }
     });
 }
 function MakeStatusSelectable(){
