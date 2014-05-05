@@ -1,8 +1,0 @@
-2014-05-05 00:09:49,877 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
-2014-05-05 00:09:49,907 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
-2014-05-05 00:18:07,453 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
-2014-05-05 00:18:07,480 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
-2014-05-05 00:21:26,160 - INFO - __init__ : FWUpdate - Exception:No section: 'AutoUpdate'
-2014-05-05 00:21:26,180 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled
-2014-05-05 00:22:46,447 - INFO - __init__ : FWUpdate - Exception:AutoUpdate instance has no attribute 'ServerSourcePath'
-2014-05-05 00:22:47,673 - INFO - UpdateProcess : FWUpdate - Framework update check is disabled

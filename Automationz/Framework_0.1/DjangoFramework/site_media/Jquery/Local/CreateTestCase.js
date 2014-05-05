@@ -62,12 +62,13 @@ $(document).ready(function() {
             popupdivrowcount.splice(step_id,0,temp);
             reOrganize();
         });
-        $('.remove_img').on('click',function(){
-        	var this_obj = $(this);
-        	alertify.confirm("Are you sure you want to delete the test step?", function(e) {
+        $('.remove_img').live('click',function(){
+//        	var this_obj = $(this);
+			var step_id = $(this).closest('tr');
+            var index = step_id.attr('id').split('_')[1].trim();
+            var step_number = $(step_id[0]).attr("id").split('_')[1];
+        	alertify.confirm("Are you sure you want to delete the test step - " + step_number + "?", function(e) {
         		if (e) {
-        			var step_id=$(this_obj).closest('tr');
-                    var index=step_id.attr('id').split('_')[1].trim();
                     $('#searchbox'+index+'datapop').remove();
                     $('#searchbox'+index+'descriptionpop').remove();
                     step_id.remove();
