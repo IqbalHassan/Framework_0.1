@@ -3258,6 +3258,7 @@ def EditTestCase(request):
                 err_msg="Test Case Step Data is not updated successfully for the test case %s"%New_TC_Id
                 LogMessage(sModuleInfo,err_msg,3)
                 return err_msg
+            
         else:
             #this is an old format test case
             tmp_id = DB.GetData(Conn, "select nextval('testcase_testcaseid_seq')")
@@ -3269,15 +3270,15 @@ def EditTestCase(request):
         #3
         #Recreate the new test case
 
-        if test_cases_result != 'Pass':
+        if test_case_stepdata_result != 'Pass':
             #TestCaseOperations.Cleanup_TestCase(Conn, New_TC_Id)
             return test_cases_result
 
-        GET_values = request.GET.copy()
-        GET_values['Is_Edit'] = New_TC_Id
-        request.GET = GET_values
-        return Create_Submit_New_TestCase(request)
-
+        #GET_values = request.GET.copy()
+        #GET_values['Is_Edit'] = New_TC_Id
+        #request.GET = GET_values
+        #return Create_Submit_New_TestCase(request)
+        return ViewTestCase(New_TC_Id)
     except Exception, e:
         print "Exception:", e
         #TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
