@@ -623,7 +623,6 @@ $(document).ready(function() {
                 }
             }
             if(checked_count<=0){
-                //alert("Atleast One step is to be set as Verfication point");
                 alertify.log("Atleast One step is to be set as Verfication point","",0);
                 $('#submit').attr("disabled", false);
                 return false;

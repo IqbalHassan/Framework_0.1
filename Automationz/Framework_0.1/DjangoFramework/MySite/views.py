@@ -6622,13 +6622,6 @@ def manage_test_cases(request):
                     if 'parent' not in child_section.keys() and parent_section['text'] == child_section['parent_text']:
                         child_section['parent'] = parent_section['id']
                         parent_section['children'] = True
-            
-            
-            # Remove the unnecessary item, in order to make data sent, smaller and faster
-            # and replace underscores with spaces
-#             for i in child_sections:
-#                 i['id'] = str(i['id'])
-#                 i.pop('parent_text')
 
             for i in parent_sections:
                 i['text'] = i['text'].replace('_', ' ')
@@ -6646,16 +6639,13 @@ def manage_test_cases(request):
                             if unicode(section['parent']) == requested_id:
                                 for i in data:
                                     temp = i[1].split('.')[-1]
-#                                     print temp
-                                    if temp == section['text']:
-                                        print "############################"
+                                    if temp == section['text'] and section['id'] == i[0]:
                                         section['text'] = section['text'] + '<span style="display:none;">' + i[1] + '</span>'
                                         
                                         section['id'] = str( section['id'] )
                                         section.pop('parent_text')
                                         section['text'] = section['text'].replace('_', ' ')
                                         
-                                        print section['text']
                                         result.append(section)
                         result = json.dumps(result)
                 except:
@@ -6694,7 +6684,6 @@ def manage_tc_data(request):
                 
                 first = True
                 for row in data:
-                    print row['tc_id']
                     if first:
                         test_case_ids = row['tc_id'] + ':'
                         first = False
@@ -6758,44 +6747,39 @@ def create_section(request):
 
 def rename_section(request):
     if request.method == 'GET' and request.is_ajax():
-        new_section_text = request.GET.get('new_section_text', '')
-        old_section_text = request.GET.get('old_section_text', '')
-        node_id = int(request.GET.get('node_id', ''))
+        
+        section_id = int( request.GET.get('section_id', '') )
+        section_path = request.GET.get('section_path', '')
+        new_text = request.GET.get('new_text', '')
+        
+        old_section_text = ''
+        
+        cur = Conn.cursor()
+        
+        temp = section_path.split('.')
+        old_section_text = temp[-1]
+        temp[-1] = new_text
+        temp = '.'.join(temp)
+        new_section_path = temp
         
         try:
             query = '''
-            SELECT * FROM product_sections WHERE section_path ~ '*.%s.*'
-            ''' % old_section_text
-            cur = Conn.cursor(cursor_factory=DictCursor)
+            UPDATE product_sections SET section_path='%s' WHERE section_id=%d
+            ''' % ( new_section_path, section_id )
+             
             cur.execute(query)
-            
-            product_sections = cur.fetchall()
-            
-            for row in product_sections:
-                splitted_text = row['section_path'].split('.')
-                for i in range(0, len(splitted_text)):
-                    if splitted_text[i] == old_section_text and node_id == row['section_id']:
-                        splitted_text[i] = splitted_text[i].replace(old_section_text, new_section_text)
-                
-                row['section_path'] = '.'.join(splitted_text)
-                
-                query = '''
-                UPDATE product_sections SET section_path='%s' WHERE section_id=%d
-                ''' % ( row['section_path'], row['section_id'] )
-                
-                cur.execute(query)
-                Conn.commit()
-                        
-                query = '''
-                UPDATE test_case_tag SET name='%s' WHERE name='%s' AND property='%s'
-                ''' % ( new_section_text, old_section_text, 'Section' )
-                 
-                cur.execute(query) 
-                Conn.commit()
-                cur.close()
+            Conn.commit()
+                     
+            query = '''
+            UPDATE test_case_tag SET name='%s' WHERE name='%s' AND property='%s'
+            ''' % ( new_text, old_section_text, 'Section' )
+              
+            cur.execute(query) 
+            Conn.commit()
+            cur.close()
         except:
-            return HttpResponse(0)
-        
+            cur.close()
+            return HttpResponse(0)                  
         return HttpResponse(1)
 
 

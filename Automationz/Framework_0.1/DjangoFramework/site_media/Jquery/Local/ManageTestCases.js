@@ -143,23 +143,23 @@ $(document).ready(function() {
 	}
 	
 	function renameNode(node, node_id) {
-		var text = "";
+		var x, y, section_path;
 		
 		try {
-			var x = node.text.split('<span style="display:none;">');
-			var y = x[1].split("</span>");
-			text = y[0];
+			x = node.text.split('<span style="display:none;">');
+			new_text = x[0];
+			
+			y = x[1].split("</span>");
+			section_path = y[0].split(' ').join('_');
 		} catch (TypeError) {
 			text = node.text;
 		}
 		
 		alertify.prompt("New name of the section:", function(e, str) {
-			if (e) {
-				new_node_text = str.split(' ').join('_');
-				old_node_text = node.text.split(' ').join('_');
-				$.get("/Home/ManageTestCases/setData/renameSection/", { 'old_section_text': old_node_text, 'new_section_text': new_node_text, 'node_id': node_id }, function(data, status) {
+			if (e) {		
+				$.get("/Home/ManageTestCases/setData/renameSection/", { 'section_id': node.id, 'section_path': section_path, 'new_text': str }, function(data, status) {
 					if (status === 'success' && data === "1") {
-						alertify.success("Section '" + node.text + "' renamed to '" + new_node_text + "' successfully.");
+						alertify.success("Section '" + node.text + "' renamed to '" + str + "' successfully.");
 						initiateRefresh("#tree");
 					} else {
 						alertify.error("Could not eastablish connection to the server :(");
@@ -168,7 +168,7 @@ $(document).ready(function() {
 			} else {
 				alertify.error("No text was provided", 3000);
 			}
-		}, text);
+		}, new_text);
 	}
 	
 	function deleteNode(node) {
