@@ -63,7 +63,6 @@ $(document).ready(function() {
             reOrganize();
         });
         $('.remove_img').live('click',function(){
-//        	var this_obj = $(this);
 			var step_id = $(this).closest('tr');
             var index = step_id.attr('id').split('_')[1].trim();
             var step_number = $(step_id[0]).attr("id").split('_')[1];
@@ -449,6 +448,82 @@ $(document).ready(function() {
                             //$('#searchbox'+(i+1)+'data').html("");
                             $('#searchbox'+(i+1)+'data').parent().css({'cursor':'none'});
                         }
+                        else if(steps_and_data[i][8]){
+                            var fromdata=datasets[0][0];
+                            var todata=datasets[0][1];
+                            console.log(fromdata);
+                            console.log(todata);
+                            var divname='#searchbox'+(i+1)+'data_table';
+                            $(divname).attr('data-id','edit');
+                            editTypeRow(divname,i+1,1,"From");
+                            editTypeRow(divname,i+1,1,"To");
+                            var temp=[];
+                            for(var j=0;j<fromdata.length;j++){
+                                if(fromdata[j][1] instanceof  Array){
+                                    for(var k=0;k<fromdata[j][1].length;k++){
+                                        var tempObject={field:fromdata[j][0],sub_field:fromdata[j][1][k][0],value:fromdata[j][1][k][1]};
+                                        temp.push(tempObject);
+                                    }
+                                }
+                                else{
+                                    var tempobject={field:fromdata[j][0],sub_field:"",value:fromdata[j][1]};
+                                    temp.push(tempobject);
+                                }
+                            }
+                            console.log(temp);
+                            for(var j=0;j<temp.length-1;j++){
+                                adddataentry('step'+(i+1)+'Fromentrytable');
+                            }
+                            var currentrow=$('#step'+(i+1)+'Fromentrytable tr:eq(1)');
+                            for(var k=0;k<temp.length;k++){
+                                currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
+                                currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
+                                currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
+                                currentrow=currentrow.next();
+                            }
+                            if(temp.length>0){
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+                            }
+                            else{
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                            }
+                            var temp=[];
+                            for(var j=0;j<todata.length;j++){
+                                if(todata[j][1] instanceof  Array){
+                                    for(var k=0;k<todata[j][1].length;k++){
+                                        var tempObject={field:todata[j][0],sub_field:todata[j][1][k][0],value:todata[j][1][k][1]};
+                                        temp.push(tempObject);
+                                    }
+                                }
+                                else{
+                                    var tempobject={field:todata[j][0],sub_field:"",value:todata[j][1]};
+                                    temp.push(tempobject);
+                                }
+                            }
+                            console.log(temp);
+                            for(var j=0;j<temp.length-1;j++){
+                                adddataentry('step'+(i+1)+'Toentrytable');
+                            }
+                            var currentrow=$('#step'+(i+1)+'Toentrytable tr:eq(1)');
+                            for(var k=0;k<temp.length;k++){
+                                currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
+                                currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
+                                currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
+                                currentrow=currentrow.next();
+                            }
+                            if(temp.length>0){
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('unfilled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('filled');
+                            }
+                            else{
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').removeClass('filled');
+                                $('#searchbox'+(i+1)+'data').find('span:eq(0)').addClass('unfilled');
+                            }
+                            popupdivrowcount[i]=1;
+
+                        }
                         else{
                             for(var j=0;j<datasets.length;j++){
                                 var temp=[];
@@ -458,7 +533,7 @@ $(document).ready(function() {
                                 for(var k=0;k<currentdataset.length;k++){
                                     if(currentdataset[k][1] instanceof Array){
                                         for(var l=0;l<currentdataset[k][1].length;l++){
-                                            var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][0]};
+                                            var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][1]};
                                             temp.push(tempObject);
                                         }
                                     }
@@ -495,29 +570,36 @@ $(document).ready(function() {
 
         $('#submit').live('click',function(){
             /*****************************Validation Check Here***********************************/
+        	$('#submit').attr("disabled", true);
+        	
             if($('#section-flag').hasClass('unfilled')){
                 //alert("Section Path is not defined Correctly");
                 alertify.log("Section Path is not defined Correctly","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#platform-flag').hasClass('unfilled')){
                 //alert("Platform is not selected correctly");
                 alertify.log("Platform is not selected correctly","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#browser-flag').hasClass('unfilled')){
                 //alert("Browser is not selected correctly");
                 alertify.log("Browser is not selected correctly","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#type-flag').hasClass('unfilled')){
                 //alert("Test Type is not defined correctly");
                 alertify.log("Test Type is not defined correctly","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#tag_txtbox').val()!=""){
                 //alert("Tag Field must be empty as you have to select from the suggestion provided");
                 alertify.log("Tag Field must be empty as you have to select from the suggestion provided","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             var row_count=$('#steps_table tr').length;
@@ -529,6 +611,7 @@ $(document).ready(function() {
                     if($('#searchbox'+(i+1)+'data').find('span:eq(0)').hasClass('unfilled')){
                         //alert("Data in the Step #"+(i+1)+" is not complete");
                         alertify.log("Data in the Step #"+(i+1)+" is not complete","",0);
+                        $('#submit').attr("disabled", false);
                         return false;
                     }
                 }
@@ -540,8 +623,8 @@ $(document).ready(function() {
                 }
             }
             if(checked_count<=0){
-                //alert("Atleast One step is to be set as Verfication point");
                 alertify.log("Atleast One step is to be set as Verfication point","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             /******************************END Validation Check here*******************************/
@@ -652,8 +735,11 @@ $(document).ready(function() {
                                 var tempArray=[];
                                 for(var k=0;k<row_number;k++){
                                     var field=row.find('td:eq(0) input:eq(0)').val();
+                                    field=field.trim();
                                     var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                                    sub_field=sub_field.trim();
                                     var value=row.find('td:eq(2) textarea:eq(0)').val();
+                                    value=value.trim();
                                     var tempObject={field:field , sub_field:sub_field ,value:value};
                                     tempArray.push(tempObject);
                                     row=row.next();
@@ -671,8 +757,11 @@ $(document).ready(function() {
                                 var row=tableid.find('tr:eq(1)');
                                 for(var k=0;k<tableLength-1;k++){
                                     var field=row.find('td:eq(0) input:eq(0)').val();
+                                    field=field.trim();
                                     var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                                    sub_field=sub_field.trim();
                                     var value=row.find('td:eq(2) textarea:eq(0)').val();
+                                    value=value.trim();
                                     var tempObject={field:field , sub_field:sub_field ,value:value};
                                     dataset.push(tempObject);
                                     row=row.next();
@@ -729,7 +818,7 @@ $(document).ready(function() {
                                 }
                                 else{
                                     for(var n=0;n<subFieldskey.length;n++){
-                                        var mainField=subFieldskey[k];
+                                        var mainField=subFieldskey[n];
                                         temp+=("("+mainField+",[");
                                         for(var o=0;o<withsubFields.length;o++){
                                             if(mainField==withsubFields[o].field){

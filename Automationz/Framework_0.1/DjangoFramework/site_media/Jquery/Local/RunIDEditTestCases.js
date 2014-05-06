@@ -49,6 +49,8 @@ $(document).ready(function(){
             if(data=="true"){
                 //var message = "All Step status changed as submitted";
                 //change_notify(message);
+                //var message = "All Step status changed as submitted";
+                //change_notify(message);
                 window.location="/Home/RunID/"+run_id+"/TC/"+test_case_id+"/";
             }
         });
@@ -82,6 +84,8 @@ $(document).ready(function(){
         },function(data){
             //console.log(data);
             if(data=="true"){
+                //var message = "All Test Steps Status are changed to 'Passed'";
+                /pass_notify(message);
                 //var message = "All Test Steps Status are changed to 'Passed'";
                 //pass_notify(message);
                 window.location="/Home/RunID/"+run_id+"/TC/"+test_case_id+"/";
@@ -378,7 +382,7 @@ function InputFailReason(){
         var step_id=tc_id+"_s"+step_no+"_reason";
         step_id=step_id.trim();
         if($(this).text().trim()!="FailReason"){
-            $(this).html('<textarea id="'+step_id+'" column="100"/></textarea>');
+            $(this).html('<textarea id="'+step_id+'" column="100" maxlength="200"/></textarea>');
             $('#'+step_id).val(failreason);
         }
     });

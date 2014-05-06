@@ -51,7 +51,13 @@ $(document).ready(function() {
 							"label": "Create Section",
 							"icon": "fa fa-plus",
 							"action": function(obj) {
-								createNode();
+								try {
+									var x = node.text.split('<span style="display:none;">');
+									var y = x[1].split("</span>");
+									createNode(y[0] + ".");
+								} catch (TypeError) {
+									createNode(node.text + ".");
+								}
 							}
 						},
 						"Rename" : {
@@ -80,14 +86,22 @@ $(document).ready(function() {
 				"keep_selected_style" : false
 			},
 			
-			"plugins" : [ "search", "checkbox", "types", "wholerow", "contextmenu" ]
+			"plugins" : [ "search", "checkbox", "types", "wholerow", "contextmenu", "sort" ]
 	};
 	
 	$("#tree").jstree(config_object)
 	.on("changed.jstree", function(e, data) {
 		var selected_sections = JSON.stringify(data.selected);
-//		console.log(selected_sections);
 		$(this).jstree(true).open_node(data.selected);
+		
+		try {
+			var text = $("#tree").jstree(true).get_selected(data.selected);
+			var x = text[0].text.split('<span style="display:none;">');
+			var processed_text = x[1].split("</span>")[0].split('.').join(' > ');
+			$("#selected_path").text( processed_text );
+		} catch (TypeError) {
+			$("#selected_path").text("");
+		}
 		
 		$.get('/Home/ManageTestCases/getData/', { 'selected_section_ids': selected_sections }, function(data, status) {
 			if (status === 'success') {
@@ -99,21 +113,32 @@ $(document).ready(function() {
 		});
 	});
 	
+	var to = false;
+	$("#searchbox").keyup(function() {
+		if (to) { clearTimeout(to); }
+		
+		to = setTimeout(function() {
+			var v = $("#searchbox").val();
+			$("#tree").jstree(true).search(v);
+		}, 150);
+	});
+	
 	
 	function initiateRefresh(tree) {
 		$(tree).jstree(true).refresh();
 	}
 	
-	function createNode() {
+	function createNode(text) {
 		var node_text = '';
 		
-		alertify.prompt("Name of the new section (put a dot(.) before a parent section name to make a child section):", function(e, str) {
+		alertify.prompt("Name of the new section:<br><span style='font-size: 10px;'>" + text.split('.').join(' > ') + "</span>", function(e, str) {
 			if (e) {
-				node_text = str.split(' ').join('_');
-				
+				node_text = text + str;
+				node_text = node_text.split(' ').join('_');
+
 				$.get("/Home/ManageTestCases/setData/createSection/", { 'section_text': node_text }, function(data, status) {
 					if (status === 'success' && data === "1") {
-						alertify.success("Section '" + node_text + "' created successfully.");
+						alertify.success("Section '" + str + "' created successfully.");
 						initiateRefresh("#tree");
 					} else {
 						alertify.error("Could not eastablish connection to the server :(");
@@ -122,17 +147,27 @@ $(document).ready(function() {
 			} else {
 				alertify.error("No text was provided", 3000);
 			}
-		}, "Parent Section.Child Section");
+		});
 	}
 	
 	function renameNode(node, node_id) {
+		var x, y, section_path;
+		
+		try {
+			x = node.text.split('<span style="display:none;">');
+			new_text = x[0];
+			
+			y = x[1].split("</span>");
+			section_path = y[0].split(' ').join('_');
+		} catch (TypeError) {
+			text = node.text;
+		}
+		
 		alertify.prompt("New name of the section:", function(e, str) {
-			if (e) {
-				new_node_text = str.split(' ').join('_');
-				old_node_text = node.text.split(' ').join('_');
-				$.get("/Home/ManageTestCases/setData/renameSection/", { 'old_section_text': old_node_text, 'new_section_text': new_node_text, 'node_id': node_id }, function(data, status) {
+			if (e) {		
+				$.get("/Home/ManageTestCases/setData/renameSection/", { 'section_id': node.id, 'section_path': section_path, 'new_text': str }, function(data, status) {
 					if (status === 'success' && data === "1") {
-						alertify.success("Section '" + node.text + "' renamed to '" + new_node_text + "' successfully.");
+						alertify.success("Section '" + node.text + "' renamed to '" + str + "' successfully.");
 						initiateRefresh("#tree");
 					} else {
 						alertify.error("Could not eastablish connection to the server :(");
@@ -141,7 +176,7 @@ $(document).ready(function() {
 			} else {
 				alertify.error("No text was provided", 3000);
 			}
-		}, node.text);
+		}, new_text);
 	}
 	
 	function deleteNode(node) {
