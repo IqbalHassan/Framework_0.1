@@ -94,6 +94,15 @@ $(document).ready(function() {
 		var selected_sections = JSON.stringify(data.selected);
 		$(this).jstree(true).open_node(data.selected);
 		
+		try {
+			var text = $("#tree").jstree(true).get_selected(data.selected);
+			var x = text[0].text.split('<span style="display:none;">');
+			var processed_text = x[1].split("</span>")[0].split('.').join(' > ');
+			$("#selected_path").text( processed_text );
+		} catch (TypeError) {
+			$("#selected_path").text("");
+		}
+		
 		$.get('/Home/ManageTestCases/getData/', { 'selected_section_ids': selected_sections }, function(data, status) {
 			if (status === 'success') {
 				var query_string = data;
@@ -103,7 +112,6 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
 	
 	var to = false;
 	$("#searchbox").keyup(function() {
@@ -130,7 +138,7 @@ $(document).ready(function() {
 
 				$.get("/Home/ManageTestCases/setData/createSection/", { 'section_text': node_text }, function(data, status) {
 					if (status === 'success' && data === "1") {
-						alertify.success("Section '" + node_text + "' created successfully.");
+						alertify.success("Section '" + str + "' created successfully.");
 						initiateRefresh("#tree");
 					} else {
 						alertify.error("Could not eastablish connection to the server :(");
