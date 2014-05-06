@@ -51,7 +51,13 @@ $(document).ready(function() {
 							"label": "Create Section",
 							"icon": "fa fa-plus",
 							"action": function(obj) {
-								createNode();
+								try {
+									var x = node.text.split('<span style="display:none;">');
+									var y = x[1].split("</span>");
+									createNode(y[0] + ".");
+								} catch (TypeError) {
+									createNode(node.text + ".");
+								}
 							}
 						},
 						"Rename" : {
@@ -114,7 +120,8 @@ $(document).ready(function() {
 		$(tree).jstree(true).refresh();
 	}
 	
-	function createNode() {
+	function createNode(text) {
+		var text = text || "Parent Section.Child Section";
 		var node_text = '';
 		
 		alertify.prompt("Name of the new section (put a dot(.) before a parent section name to make a child section):", function(e, str) {
@@ -132,10 +139,20 @@ $(document).ready(function() {
 			} else {
 				alertify.error("No text was provided", 3000);
 			}
-		}, "Parent Section.Child Section");
+		}, text);
 	}
 	
 	function renameNode(node, node_id) {
+		var text = "";
+		
+		try {
+			var x = node.text.split('<span style="display:none;">');
+			var y = x[1].split("</span>");
+			text = y[0];
+		} catch (TypeError) {
+			text = node.text;
+		}
+		
 		alertify.prompt("New name of the section:", function(e, str) {
 			if (e) {
 				new_node_text = str.split(' ').join('_');
@@ -151,7 +168,7 @@ $(document).ready(function() {
 			} else {
 				alertify.error("No text was provided", 3000);
 			}
-		}, node.text);
+		}, text);
 	}
 	
 	function deleteNode(node) {

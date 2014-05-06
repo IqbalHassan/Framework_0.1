@@ -6626,10 +6626,9 @@ def manage_test_cases(request):
             
             # Remove the unnecessary item, in order to make data sent, smaller and faster
             # and replace underscores with spaces
-            for i in child_sections:
-                i['id'] = str(i['id'])
-                i.pop('parent_text')
-                i['text'] = i['text'].replace('_', ' ')
+#             for i in child_sections:
+#                 i['id'] = str(i['id'])
+#                 i.pop('parent_text')
 
             for i in parent_sections:
                 i['text'] = i['text'].replace('_', ' ')
@@ -6645,7 +6644,19 @@ def manage_test_cases(request):
                     if requested_id != '':
                         for section in child_sections:
                             if unicode(section['parent']) == requested_id:
-                                result.append(section)
+                                for i in data:
+                                    temp = i[1].split('.')[-1]
+#                                     print temp
+                                    if temp == section['text']:
+                                        print "############################"
+                                        section['text'] = section['text'] + '<span style="display:none;">' + i[1] + '</span>'
+                                        
+                                        section['id'] = str( section['id'] )
+                                        section.pop('parent_text')
+                                        section['text'] = section['text'].replace('_', ' ')
+                                        
+                                        print section['text']
+                                        result.append(section)
                         result = json.dumps(result)
                 except:
                     return HttpResponse("NULL")
