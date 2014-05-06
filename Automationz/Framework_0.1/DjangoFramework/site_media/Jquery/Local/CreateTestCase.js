@@ -1010,7 +1010,7 @@ $(document).ready(function() {
                             function(data) {
                                 //alert(data+" edited successfully");
                                 alertify.log("Test Case '"+data+"' successfully edited!","",0);
-                                desktop_notify("Test Case '"+data+"'-'"+title+"' successfully edited!");
+                                desktop_notify("Test Case '"+data+"' successfully edited!");
                                 $("#submit").removeAttr('disabled');
                                 var location='/Home/ManageTestCases/Edit/'+data;
                                 window.location=location;
