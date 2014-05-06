@@ -80,13 +80,12 @@ $(document).ready(function() {
 				"keep_selected_style" : false
 			},
 			
-			"plugins" : [ "search", "checkbox", "types", "wholerow", "contextmenu" ]
+			"plugins" : [ "search", "checkbox", "types", "wholerow", "contextmenu", "sort" ]
 	};
 	
 	$("#tree").jstree(config_object)
 	.on("changed.jstree", function(e, data) {
 		var selected_sections = JSON.stringify(data.selected);
-//		console.log(selected_sections);
 		$(this).jstree(true).open_node(data.selected);
 		
 		$.get('/Home/ManageTestCases/getData/', { 'selected_section_ids': selected_sections }, function(data, status) {

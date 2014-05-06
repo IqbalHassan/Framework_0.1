@@ -63,7 +63,6 @@ $(document).ready(function() {
             reOrganize();
         });
         $('.remove_img').live('click',function(){
-//        	var this_obj = $(this);
 			var step_id = $(this).closest('tr');
             var index = step_id.attr('id').split('_')[1].trim();
             var step_number = $(step_id[0]).attr("id").split('_')[1];
