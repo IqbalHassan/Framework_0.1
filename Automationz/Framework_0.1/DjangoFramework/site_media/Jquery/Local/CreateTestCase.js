@@ -570,29 +570,36 @@ $(document).ready(function() {
 
         $('#submit').live('click',function(){
             /*****************************Validation Check Here***********************************/
+        	$('#submit').attr("disabled", true);
+        	
             if($('#section-flag').hasClass('unfilled')){
                 //alert("Section Path is not defined Correctly");
                 alertify.log("Section Path is not defined Correctly","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#platform-flag').hasClass('unfilled')){
                 //alert("Platform is not selected correctly");
                 alertify.log("Platform is not selected correctly","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#browser-flag').hasClass('unfilled')){
                 //alert("Browser is not selected correctly");
                 alertify.log("Browser is not selected correctly","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#type-flag').hasClass('unfilled')){
                 //alert("Test Type is not defined correctly");
                 alertify.log("Test Type is not defined correctly","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#tag_txtbox').val()!=""){
                 //alert("Tag Field must be empty as you have to select from the suggestion provided");
                 alertify.log("Tag Field must be empty as you have to select from the suggestion provided","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             var row_count=$('#steps_table tr').length;
@@ -604,6 +611,7 @@ $(document).ready(function() {
                     if($('#searchbox'+(i+1)+'data').find('span:eq(0)').hasClass('unfilled')){
                         //alert("Data in the Step #"+(i+1)+" is not complete");
                         alertify.log("Data in the Step #"+(i+1)+" is not complete","",0);
+                        $('#submit').attr("disabled", false);
                         return false;
                     }
                 }
@@ -617,6 +625,7 @@ $(document).ready(function() {
             if(checked_count<=0){
                 //alert("Atleast One step is to be set as Verfication point");
                 alertify.log("Atleast One step is to be set as Verfication point","",0);
+                $('#submit').attr("disabled", false);
                 return false;
             }
             /******************************END Validation Check here*******************************/
