@@ -215,7 +215,7 @@ def Update_Test_Steps_Data(Conn,tc_id,dataset_id,steps_data_list):
                 LogMessage(sModuleInfo,"Dataset is found in test case datasets table for test case %s"%tc_id,1)
             else:
                 #insert the datsets
-                test_case_dataset_dict={'tcdatasetid':datasetid,'tc_id':tc_id,'execornot':'Yes','data_type':'Default'}
+                test_case_dataset_dict={'tcdatasetid':dataset_id,'tc_id':tc_id,'execornot':'Yes','data_type':'Default'}
                 if DBUtil.IsDBConnectionGood(Conn)==False:
                     time.sleep(1)
                     Conn=GetConnection()
