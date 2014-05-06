@@ -1564,7 +1564,7 @@ function vertical_sidebar(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/CreateStep/'
         }
-    });*/
+    });
     $('#add_step_tip').avgrund({
         height: 200,
         holderClass: 'custom',
@@ -1575,12 +1575,20 @@ function vertical_sidebar(){
             '<div style="margin-top: 10%">' +
             '<a href="/Home/ManageTestCases/CreateStep/" class="twitter" style="margin-left: 40%">Yes</a>' +
             '</div>'
+    });*/
+    $("#add_step_tip").click(function(){
+        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+            if (e) {
+                window.location = '/Home/ManageTestCases/CreateStep/'
+            }
+        });
     });
+
     /*$("#edit_step_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/CreateStep/'
         }
-    });*/
+    });
     $('#edit_step_tip').avgrund({
         height: 200,
         holderClass: 'custom',
@@ -1591,12 +1599,20 @@ function vertical_sidebar(){
             '<div style="margin-top: 10%">' +
             '<a href="/Home/ManageTestCases/CreateStep/" class="twitter" style="margin-left: 40%">Yes</a>' +
             '</div>'
+    });*/
+    $("#edit_step_tip").click(function(){
+        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+            if (e) {
+                window.location = '/Home/ManageTestCases/CreateStep/'
+            }
+        });
     });
+
     /*$("#set_tag_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/TestSet/'
         }
-    });*/
+    });
     $('#set_tag_tip').avgrund({
         height: 200,
         holderClass: 'custom',
@@ -1607,12 +1623,19 @@ function vertical_sidebar(){
             '<div style="margin-top: 10%">' +
             '<a href="/Home/ManageTestCases/TestSet/" class="twitter" style="margin-left: 40%">Yes</a>' +
             '</div>'
+    });*/
+    $("#set_tag_tip").click(function(){
+        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+            if (e) {
+                window.location = '/Home/ManageTestCases/TestSet/'
+            }
+        });
     });
     /*$("#copy_edit_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/SearchEdit/'
         }
-    });*/
+    });
     $('#copy_edit_tip').avgrund({
         height: 200,
         holderClass: 'custom',
@@ -1623,12 +1646,19 @@ function vertical_sidebar(){
             '<div style="margin-top: 10%">' +
             '<a href="/Home/ManageTestCases/SearchEdit/" class="twitter" style="margin-left: 40%">Yes</a>' +
             '</div>'
+    });*/
+    $("#copy_edit_tip").click(function(){
+        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+            if (e) {
+                window.location = '/Home/ManageTestCases/SearchEdit/'
+            }
+        });
     });
     /*$("#history_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/Analysis/'
         }
-    });*/
+    });
     $('#history_tip').avgrund({
         height: 200,
         holderClass: 'custom',
@@ -1639,12 +1669,19 @@ function vertical_sidebar(){
             '<div style="margin-top: 10%">' +
             '<a href="/Home/Analysis/" class="twitter" style="margin-left: 40%">Yes</a>' +
             '</div>'
+    });*/
+    $("#history_tip").click(function(){
+        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+            if (e) {
+                window.location = '/Home/Analysis/'
+            }
+        });
     });
     /*$("#organize_tip").click(function(){
         if(confirm("Are you sure about leaving before saving?")){
             window.location = '/Home/ManageTestCases/CreateProductSections/'
         }
-    });*/
+    });
     $('#organize_tip').avgrund({
         height: 200,
         holderClass: 'custom',
@@ -1655,6 +1692,13 @@ function vertical_sidebar(){
             '<div style="margin-top: 10%">' +
             '<a href="/Home/ManageTestCases/CreateProductSections/" class="twitter" style="margin-left: 40%">Yes</a>' +
             '</div>'
+    });*/
+    $("#organize_tip").click(function(){
+        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+            if (e) {
+                window.location = '/Home/ManageTestCases/'
+            }
+        });
     });
 }
 function reset () {

@@ -85,7 +85,7 @@ $(document).ready(function(){
             //console.log(data);
             if(data=="true"){
                 //var message = "All Test Steps Status are changed to 'Passed'";
-                /pass_notify(message);
+                //pass_notify(message);
                 //var message = "All Test Steps Status are changed to 'Passed'";
                 //pass_notify(message);
                 window.location="/Home/RunID/"+run_id+"/TC/"+test_case_id+"/";
