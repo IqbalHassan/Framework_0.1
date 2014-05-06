@@ -99,6 +99,17 @@ $(document).ready(function() {
 	});
 	
 	
+	var to = false;
+	$("#searchbox").keyup(function() {
+		if (to) { clearTimeout(to); }
+		
+		to = setTimeout(function() {
+			var v = $("#searchbox").val();
+			$("#tree").jstree(true).search(v);
+		}, 150);
+	});
+	
+	
 	function initiateRefresh(tree) {
 		$(tree).jstree(true).refresh();
 	}
