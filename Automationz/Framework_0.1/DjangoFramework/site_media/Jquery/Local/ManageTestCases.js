@@ -121,13 +121,13 @@ $(document).ready(function() {
 	}
 	
 	function createNode(text) {
-		var text = text || "Parent Section.Child Section";
 		var node_text = '';
 		
-		alertify.prompt("Name of the new section (put a dot(.) before a parent section name to make a child section):", function(e, str) {
+		alertify.prompt("Name of the new section:<br><span style='font-size: 10px;'>" + text.split('.').join(' > ') + "</span>", function(e, str) {
 			if (e) {
-				node_text = str.split(' ').join('_');
-				
+				node_text = text + str;
+				node_text = node_text.split(' ').join('_');
+
 				$.get("/Home/ManageTestCases/setData/createSection/", { 'section_text': node_text }, function(data, status) {
 					if (status === 'success' && data === "1") {
 						alertify.success("Section '" + node_text + "' created successfully.");
@@ -139,7 +139,7 @@ $(document).ready(function() {
 			} else {
 				alertify.error("No text was provided", 3000);
 			}
-		}, text);
+		});
 	}
 	
 	function renameNode(node, node_id) {
