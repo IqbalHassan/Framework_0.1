@@ -631,7 +631,10 @@ def Update_TestCaseDetails(Conn, New_TC_Id, TC_Name, TC_Creator):
         return "Pass"
     else:
         err_msg = LogMessage(sModuleInfo, "Failed to Update test case %s: %s" % (New_TC_Id, TC_Name),3)
-        return err_msg
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        return "Pass"
 def Get_PIM_Data_By_Id(conn, Data_Id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
 
