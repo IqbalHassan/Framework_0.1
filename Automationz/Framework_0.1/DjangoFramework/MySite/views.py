@@ -3131,23 +3131,39 @@ def ViewTestCase(TC_Id):
                 query+="%' and field='step' and value='description'"
                 #query="select description from master_data where id Ilike '%s_s%s%' and field='step' and value='description'" %(TC_Id,str(Step_Iteration))
                 Step_Description=DB.GetData(Conn,query,False)
-                print Step_Description[0][0]
+                if len(Step_Description)==0:
+                    step_description=""
+                else:
+                    step_description=Step_Description[0][0]
+                #print Step_Description[0][0]
                 #select expected Result from the master data
                 query="select description from master_data where id Ilike '%s_s" % (TC_Id)
                 query+="%s"% (str(Step_Iteration))
                 query+="%' and field='expected' and value='result'"
                 Step_Expected=DB.GetData(Conn,query,False)
+                if len(Step_Expected)==0:
+                    step_expected=""
+                else:
+                    step_expected=Step_Expected[0][0]
                 #select verification point from master_data
                 query="select description from master_data where id Ilike '%s_s" % (TC_Id)
                 query+="%s"% (str(Step_Iteration))
                 query+="%' and field='verification' and value='point'"
                 Step_Verified=DB.GetData(Conn,query,False)
+                if len(Step_Verified)==0:
+                    step_verified=""
+                else:
+                    step_verified=Step_Verified[0][0]
                 query="select description from test_steps_list where stepname='%s'"%(Step_Name.strip())
                 Step_General_Description=DB.GetData(Conn,query,False)
                 query="select description from master_data where id Ilike '%s_s" % (TC_Id)
                 query+="%s"% (str(Step_Iteration))
                 query+="%' and field='estimated' and value='time'"
                 Step_Time=DB.GetData(Conn,query,False)
+                if len(Step_Time)==0:
+                    step_time=""
+                else:
+                    step_time=Step_Time[0][0]
                 #is data required for this step
                 if each_test_step[3]:
                     #Is this a verify step
@@ -3165,7 +3181,7 @@ def ViewTestCase(TC_Id):
                             From_Data = TestCaseCreateEdit.Get_PIM_Data_By_Id(Conn, each_data_id[0])
                             Step_Data.append(From_Data)
                 #append step name and data to send it back
-                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,Step_Description[0][0],Step_Expected[0][0],Step_Verified[0][0],Step_General_Description[0][0],Step_Time[0][0],Step_Edit,each_test_step[3]))
+                Steps_Data_List.append((Step_Name, Step_Data,Step_Type,step_description,step_expected,step_verified,Step_General_Description[0][0],step_time,Step_Edit,each_test_step[3]))
                 Step_Iteration=Step_Iteration+1
             #return values
             results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List}
