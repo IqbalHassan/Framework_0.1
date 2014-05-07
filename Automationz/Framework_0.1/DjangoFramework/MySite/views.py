@@ -288,7 +288,7 @@ def ManageTestCases(request):
 
 @csrf_protect
 def DeleteExisting(request):
-    if request.method == 'GET':
+    """if request.method == 'GET':
         TC_Id = request.GET.get('TC_Id', '')
         print TC_Id
         if TC_Id != '':
@@ -319,7 +319,8 @@ def DeleteExisting(request):
             c = Context({'TC_ids': tc_ids, 'TC_names': tc_names})
             c.update(csrf(request))
             return HttpResponse(t.render(c))
-    
+    """
+    return render_to_response('DeleteExisting.html',{})
 
 def CreateProductSections(request):
     templ = get_template('CreateProductSections.html')
@@ -6203,6 +6204,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
             UserData = request.GET.get(u'Query', '')
             UserText = UserData.split(":");
             #Environment = request.GET.get(u'Env', '')
+            propertyValue="Ready"
             RefinedData=[]
             platform=['PC','Mac']
             for Environment in platform:
@@ -6291,7 +6293,11 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
             temp_id=each[0]+'_s'+str(count+1)
             step_time_query="select description from master_data where id='%s' and field='estimated' and value='time'"%temp_id.strip()
             step_time=DB.GetData(Conn,step_time_query)
-            test_case_time+=int(step_time[0])
+            if len(step_time)==0:
+                stepTime=0
+            else:
+                stepTime=step_time[0]
+            test_case_time+=int(stepTime)
         temp=[]
         for eachitem in each:
             temp.append(eachitem)
@@ -6810,3 +6816,11 @@ def delete_section(request):
         Conn.commit()
         cur.close()
         return HttpResponse(section_id)
+def DeleteTestCase(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            test_case_list=request.GET.get(u'Query','')
+            test_case_list=test_case_list.split("|")
+            modified_test_case_list=TestCaseCreateEdit.Delete_Test_Case(Conn,test_case_list)
+    result=simplejson.dumps(modified_test_case_list)
+    return HttpResponse(result,mimetype='application/json')

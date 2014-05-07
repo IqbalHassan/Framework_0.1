@@ -14,6 +14,132 @@ from TestCaseOperations import LogMessage
     2 - warning
     3 - error
 """
+def Delete_Test_Case(Conn,tc_list):
+    sModuleInfo = inspect.stack()[0][3] + " : " +inspect.getmoduleinfo(__file__).name
+    deleted_test_case=[]
+    for each in tc_list:
+        test_case=each.strip()
+        test_case_tag_query="select * from test_case_tag where tc_id='%s'"%each
+        test_caset_tag_column_query="select column_name from information_schema.columns where table_name='test_case_tag'"
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        test_case_tag_entry=DBUtil.GetData(Conn, test_case_tag_query,False)
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        test_case_column=DBUtil.GetData(Conn,test_caset_tag_column_query)
+        for each in test_case_tag_entry:
+            test_case_tag_dict={}
+            for eachitem in zip(test_case_column,each):
+                test_case_tag_dict.update({eachitem[0]:eachitem[1]})
+            if DBUtil.IsDBConnectionGood(Conn)==False:
+                time.sleep(1)
+                Conn=GetConnection()
+            result=DBUtil.DeleteRecord(Conn, "test_case_tag",**test_case_tag_dict)
+            if result==True:
+                LogMessage(sModuleInfo,"Deleted entry %s from test_case_tag for test case %s"%(str(test_case_tag_dict),test_case),1)
+            else:
+                LogMessage(sModuleInfo,result,3)
+            #form test case datasets
+        dataset=test_case+'ds'
+        test_steps_data_query="select * from test_steps_data where tcdatasetid='%s'"%(dataset.strip())
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        test_steps_data_entry=DBUtil.GetData(Conn,test_steps_data_query,False)
+        test_steps_data_column_query="select column_name from information_schema.columns where table_name='test_steps_data'"
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        test_steps_data_column=DBUtil.GetData(Conn,test_steps_data_column_query)
+        for each in test_steps_data_entry:
+            container_type_query="select id,dataid,curname from container_type_data where dataid='%s'"%each[2].strip()
+            if DBUtil.IsDBConnectionGood(Conn)==False:
+                time.sleep(1)
+                Conn=GetConnection()
+            container_data=DBUtil.GetData(Conn,container_type_query,False)
+            """container_type_column_query="select column_name from information_schema.columns where table_name='container_type_data'"
+            if DBUtil.IsDBConnectionGood(Conn)==False:
+                time.sleep(1)
+                Conn=GetConnection()
+            container_type_column=DBUtil.GetData(Conn,container_type_column_query)"""
+            container_type_column=['id','dataid','curname']
+            for data in container_data:
+                container_data_dict={}
+                for dataitem in zip(container_type_column,data):
+                    container_data_dict.update({dataitem[0]:dataitem[1]})
+                result=DBUtil.DeleteRecord(Conn,"container_type_data",**container_data_dict)
+                if result==True:
+                    LogMessage(sModuleInfo,"Deleted entry %s from container_type_data for test case %s"%(str(container_data_dict),test_case),1)
+                else:
+                    LogMessage(sModuleInfo,result,3)    
+        for each in test_steps_data_entry:
+            test_steps_data_dict={}
+            for eachitem in zip(test_steps_data_column,each):
+                test_steps_data_dict.update({eachitem[0]:eachitem[1]})
+            result=DBUtil.DeleteRecord(Conn,"test_steps_data",**test_steps_data_dict)
+            if result==True:
+                LogMessage(sModuleInfo,"Deleted entry %s from test_steps_data for test case %s"%(str(test_steps_data_dict),test_case),1)
+            else:
+                LogMessage(sModuleInfo,result,3)
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        result=DBUtil.DeleteRecord(Conn, "test_case_datasets",tcdatasetid=dataset.strip())
+        if result==True:
+            LogMessage(sModuleInfo,"Deleted entry %s from test_case_datasets for test case %s"%(dataset.strip(),test_case),1)
+        else:
+            LogMessage(sModuleInfo,result,3)
+        master_data_query="select id,field,value from master_data where id Ilike '%s%%'"%test_case
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        master_data=DBUtil.GetData(Conn, master_data_query,False)
+        """master_data_column_query="select column_name from information_schema.columns where table_name='master_data'"
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        master_data_column=DBUtil.GetData(Conn, master_data_column_query)"""
+        master_data_column=['id','field','value']
+        for each in master_data:
+            master_data_dict={}
+            for eachitem in zip(master_data_column,each):
+                master_data_dict.update({eachitem[0]:eachitem[1]})
+            result=DBUtil.DeleteRecord(Conn,"master_data",**master_data_dict)
+            if result==True:
+                LogMessage(sModuleInfo,"Deleted entry %s from master_data for test case %s"%(str(master_data_dict),test_case),1)
+            else:
+                LogMessage(sModuleInfo,result,3)
+        test_steps_query="select id,tc_id,step_id,teststepsequence from test_steps where tc_id='%s'"%test_case
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        test_steps=DBUtil.GetData(Conn, test_steps_query,False)
+        """test_steps_column_query="select column_name from information_schema.columns where table_name='test_steps'"
+        if DBUtil.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        test_steps_column=DBUtil.GetData(Conn, test_steps_column_query)
+    """ 
+        test_steps_column=['id','tc_id','step_id','teststepsequence']
+        for each in test_steps:
+            test_steps_dict={}
+            for eachitem in zip(test_steps_column,each):
+                test_steps_dict.update({eachitem[0]:eachitem[1]})
+            result=DBUtil.DeleteRecord(Conn,"test_steps",**test_steps_dict)
+            if result==True:
+                LogMessage(sModuleInfo,"Deleted entry %s from test_steps for test case %s"%(str(test_steps_dict),test_case),1)
+            else:
+                LogMessage(sModuleInfo,result,3)
+        result=DBUtil.DeleteRecord(Conn, "test_cases",tc_id=test_case)
+        if result==True:
+            LogMessage(sModuleInfo,"Deleted entry %s from test_cases"%(test_case),1)
+        else:
+            LogMessage(sModuleInfo,result,3)
+        deleted_test_case.append(test_case)
+        LogMessage(sModuleInfo,"==============================================================================================",1)
+    return deleted_test_case
 def Update_Test_Case_Tag(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List):
     sModuleInfo = inspect.stack()[0][3] + " : " +inspect.getmoduleinfo(__file__).name
     Tag_List = []

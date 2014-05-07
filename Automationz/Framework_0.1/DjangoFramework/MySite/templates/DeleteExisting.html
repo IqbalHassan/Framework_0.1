@@ -15,70 +15,21 @@
 <article>
     <div align="left">
         <h3 style="font-size: 19px;"><a style="font-weight: bold">Delete Test Cases</a></h3>
+        <input type="text" class="textbox" id='searchbox' placeholder="Search & Select Filter"/>
     </div>
-	<!--
-	<p>Hello!</p>
-	<form action="." method="GET">
-		Enter the name of test case: <input type="text" placeholder="Test Case name" name="TC_Id" />
-		<input type="submit" value="Delete Test Case" onClick="confirmDelete();" />
-	</form>
-	-->
-	
-		<!-- Following Code is for Available Test Machine Flip button  -->
-		<header>
-		<p class='flip' style='color: black;' title='Available Test Machine' style="display: none;">Available Test Machine</p>
-		</header>
-		<div id = 'AvailableTestMachine' style="display: none;"></div>
-		<!-- *********************** -->
-		
-		
-		
-		<!-- AutoComplete Search Box -->
-		<div id = "Place_AutoComplete_Here">
-		
-		</div>
-		
-		<!-- Following code is for Result Table -->
-		<p> </p>
-		
-		<p class='flip'>Test Cases</p>
-		
-		<div id = "RunTestResultTable" style="display: none;" >
-			
-		</div>
-		
-		
-		<div id = "RunTestSubTable" style="display: none;">
-	
-		</div>
-		<!-- *********************** -->
-		
-		
-		
-		<!-- {% include "ResultTable.html" %}  -->
-		
-			
-			<form action="." method="POST">
-			{% csrf_token %}
-				<button style="background-color: #c53727; font-size: 1.2em; padding: 6px; margin: 20px; cursor: pointer;" class="button minbutton danger">Delete Multiple Test Cases</button>
-			</form>
-		
-				
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp; </font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			<p style="margin-left: 20"><font color="#FFFFFF">&nbsp;</font></p>
-			
-			
+    <div align="left">
+        <table>
+            <tr align="left" id="filteredText">
+                <th><b class="Text">Filtered By:</b></th>
+            </tr>
+        </table>
+    </div>
+    <div id="resultDiv">
+
+    </div>
+    <div align="center" id="buttonDiv" style="display: none;margin-top: 5%;">
+        <input type="button" class="button  danger" id="deleteButton" value="Select Checkboxes to Delete"/>
+    </div>
 </article>
 {% endblock %}
 
