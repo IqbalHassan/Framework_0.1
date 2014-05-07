@@ -58,7 +58,9 @@ $(document).ready(function(){
                         ['Blocked ('+data['ReportTable'][i][sc][3]+')',  data['ReportTable'][i][sc][3]],
                         ['Submitted ('+data['ReportTable'][i][sc][4]+')', data['ReportTable'][i][sc][4]],
                         ['In-Progress ('+data['ReportTable'][i][sc][5]+')',  data['ReportTable'][i][sc][5]],
-                        ['Skipped ('+data['ReportTable'][i][sc][6]+')', data['ReportTable'][i][sc][6]]
+                        ['Skipped ('+data['ReportTable'][i][sc][6]+')', data['ReportTable'][i][sc][6]],
+                        ['Not Run ('+data['ReportTable'][i][sc][7]+')', data['ReportTable'][i][sc][7]]
+
                     ],data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]);
 
                     /***************pie chart*********************/
@@ -73,7 +75,7 @@ $(document).ready(function(){
 
 function RenderPieChart(elementId, dataList, title) {
     Highcharts.setOptions({
-        colors: ['green', 'red', 'orange', 'grey', 'blue', '#D7D7D7']
+        colors: ['green', 'red', 'orange', 'grey', 'blue', '#D7D7D7','black']
     });
     new Highcharts.Chart({
         chart: {

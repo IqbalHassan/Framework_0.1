@@ -3750,7 +3750,31 @@ def BundleReport_Table_Latest(request):
                             skipped_count = skipped_count -1;
                             break;
             temp.append(skipped_count)
-            temp.append(pass_count + fail_count + block_count + submitted_count + inprogress_count + skipped_count)
+            env_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag where name='"+platform+"'", False)
+            section_cases = DB.GetData(Conn, "select distinct tc_id from result_test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path = '"+s[0]+"'", False)
+            if "FireFox" in i[1]:
+                cquery = "select distinct tc_id from test_case_tag where property='FireFox'"
+            if "Chrome" in i[1]:
+                cquery = "select distinct tc_id from test_case_tag where property='Chrome'"
+            if "IE" in i[1]:
+                cquery = "select distinct tc_id from test_case_tag where property='IE'"
+            if "Safari" in i[1]:
+                cquery = "select distinct tc_id from test_case_tag where property='Safari'"
+            browser_cases = DB.GetData(Conn, cquery, False)
+            all_count = 0
+            for a in env_cases:
+                for b in section_cases:
+                    if a[0]==b[0]:
+                        for c in browser_cases:
+                            if a[0]==c[0]:
+                                all_count = all_count + 1
+            run_count = pass_count + fail_count + block_count + submitted_count + inprogress_count + skipped_count
+            if all_count>run_count:
+                notrun_count = all_count - run_count
+            else:
+                notrun_count = 0
+            temp.append(notrun_count)
+            temp.append(run_count + notrun_count)
             
             Data.append(tuple(temp))
             
@@ -3766,7 +3790,7 @@ def BundleReport_Table_Latest(request):
         ReportTable.append(tuple(Data))
       
                     
-    Heading = ['Section','Passed','Failed','Blocked','Submitted','In-Progress','Skipped','Total']
+    Heading = ['Section','Passed','Failed','Blocked','Submitted','In-Progress','Skipped','Not Run','Total']
     results = {'Heading':Heading,'Env':env_details, 'ReportTable':ReportTable}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
