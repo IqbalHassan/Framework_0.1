@@ -32,7 +32,7 @@ $(document).ready(function() {
 				},
 				
 				"parent_section" : {
-					"icon" : "fa fa-th",
+					"icon" : "fa fa-folder",
 					"valid_children" : [ "section" ]
 				},
 				
