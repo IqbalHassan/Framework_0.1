@@ -6308,18 +6308,32 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
     
     if test_status_request:
         for i in dataWithTime:
-            query = '''
-            SELECT property FROM test_case_tag WHERE name='%s' AND tc_id='%s'
-            ''' % ('Status', i[0])
             
             try:
+                query = '''
+                SELECT property FROM test_case_tag WHERE name='%s' AND tc_id='%s'
+                ''' % ('Status', i[0])
                 data = DB.GetData(Conn, query, False, True)
                 i[3] = data[0][0]
+                
+                query = '''
+                SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
+                ''' % ('section_id', i[0])
+                data = DB.GetData(Conn, query, False, False)
+                section_id = int( data[0][0] )
+                
+                query = '''
+                SELECT section_path FROM product_sections WHERE section_id=%d
+                ''' % section_id
+                data = DB.GetData(Conn, query, False, False)
+                section_path = '/'.join( data[0][0].replace('_', ' ').split('.') )
+                
+                i[4] = section_path
             except:
                 print ''
                 i[3] = ' - '
     
-        Heading = ['ID', 'Title','Type','Status', 'Time']
+        Heading = ['ID', 'Title', 'Type', 'Status', 'Section']
     else:
         Heading = ['ID', 'Title','Type','Platform','Time Reqd.']
     RefinedData=dataWithTime
