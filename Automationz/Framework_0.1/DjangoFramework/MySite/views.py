@@ -50,6 +50,7 @@ from mimetypes import MimeTypes
 from psycopg2.extras import DictCursor
 import inspect
 Conn = GetConnection()
+import time
 #import logging
 
 """ Misc functions """
@@ -6597,7 +6598,12 @@ def manage_test_cases(request):
             SELECT * FROM product_sections ORDER BY section_path
             '''
             # Convert the data into a list
-            data = list(DB.GetData(Conn, query, False))
+#             data = list(DB.GetData(Conn, query, False))
+            cur = Conn.cursor()
+            cur.execute(query)
+            data = cur.fetchall()
+            time.sleep(0.5)
+            
             sections = []
             parent_sections = []
             child_sections = []
@@ -6750,12 +6756,14 @@ def create_section(request):
         
         data = DB.GetData(Conn, query, False, False)
         data = sorted(data)
-        empty_section_id = data[-1][0] + 1
+        time.sleep(0.5)
+        empty_section_id = int(data[-1][0]) + 1
 
         try:
             query = '''
             INSERT INTO product_sections VALUES (%d, '%s')
             ''' % (empty_section_id, section_text)
+            time.sleep(0.5)
             
             cur.execute(query)
             Conn.commit()
@@ -6788,6 +6796,7 @@ def rename_section(request):
             query = '''
             UPDATE product_sections SET section_path='%s' WHERE section_id=%d
             ''' % ( new_section_path, section_id )
+            time.sleep(0.5)
              
             cur.execute(query)
             Conn.commit()
@@ -6795,6 +6804,7 @@ def rename_section(request):
             query = '''
             UPDATE test_case_tag SET name='%s' WHERE name='%s' AND property='%s'
             ''' % ( new_text, old_section_text, 'Section' )
+            time.sleep(0.5)
               
             cur.execute(query) 
             Conn.commit()
@@ -6814,6 +6824,7 @@ def delete_section(request):
         cur = Conn.cursor()
         cur.execute(query)
         Conn.commit()
+        time.sleep(1)
         cur.close()
         return HttpResponse(section_id)
 def DeleteTestCase(request):
