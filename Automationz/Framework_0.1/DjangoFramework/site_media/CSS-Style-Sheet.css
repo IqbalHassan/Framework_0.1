@@ -1642,7 +1642,7 @@ article header{
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 13px;
     width: 99%;
-    text-align: center;
+    text-align: left;
     border-collapse: collapse;
     margin: 5px;
 }
