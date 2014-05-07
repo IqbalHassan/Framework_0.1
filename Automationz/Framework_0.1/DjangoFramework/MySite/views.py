@@ -6624,6 +6624,7 @@ def manage_test_cases(request):
                         temp['text'] = i[1]
                         temp['children'] = True
                         temp['type'] = 'parent_section'
+                        temp['undetermined'] = True
                         temp_list.append(temp)
                         data.remove(i)
                         

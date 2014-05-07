@@ -83,7 +83,7 @@ $(document).ready(function() {
 			},
 			
 			"checkbox" : {
-				"keep_selected_style" : false
+				"visible" : false
 			},
 			
 			"plugins" : [ "search", "checkbox", "types", "wholerow", "contextmenu", "sort" ]
