@@ -32,12 +32,12 @@ $(document).ready(function() {
 				},
 				
 				"parent_section" : {
-					"icon" : "fa fa-folder",
+					"icon" : "fa fa-folder-open-o",
 					"valid_children" : [ "section" ]
 				},
 				
 				"section" : {
-					"icon" : "fa fa-th-list",
+					"icon" : "fa fa-folder-o",
 					"valid_children" : [ "section" ]
 				}
 			},
@@ -93,15 +93,6 @@ $(document).ready(function() {
 	.on("changed.jstree", function(e, data) {
 		var selected_sections = JSON.stringify(data.selected);
 		$(this).jstree(true).open_node(data.selected);
-		
-		try {
-			var text = $("#tree").jstree(true).get_selected(data.selected);
-			var x = text[0].text.split('<span style="display:none;">');
-			var processed_text = x[1].split("</span>")[0].split('.').join(' > ');
-			$("#selected_path").text( processed_text );
-		} catch (TypeError) {
-			$("#selected_path").text("");
-		}
 		
 		$.get('/Home/ManageTestCases/getData/', { 'selected_section_ids': selected_sections }, function(data, status) {
 			if (status === 'success') {
