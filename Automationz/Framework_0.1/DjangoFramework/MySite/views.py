@@ -464,17 +464,21 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
                                      "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') "
                                      "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) ",False
                                      )
-
+        status_result=DB.GetData(Conn,"select distinct property,name from test_case_tag "
+                                   "where property Ilike '%" + value + "%' "
+                                     "and name ='"+TCStatusName+"'"
+                                     "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) ",False
+                                     ,False)
         tcidresults = DB.GetData(Conn, "select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc "
                                    "where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%" + value + "%' or tc.tc_name Ilike '%" + value + "%')"
                                      "and property in('tcid') "
                                      "and tct.tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) ",False
                                      )
 
-        results = list(set(results + tcidresults))
+        results = list(set(results + tcidresults+status_result))
 
-        if len(results) > 0:
-            results.append(("*Dev","Status"))
+        #if len(results) > 0:
+        #   results.append(("*Dev","Status"))
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -503,16 +507,18 @@ def AutoCompleteTestCasesSearchOtherPages(request):#===============Returns Avail
                 Client='client'
                 tag_query="select distinct name,property from test_case_tag where name Ilike '%" + value + "%' and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
                 id_query="select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%" + value + "%' or tc.tc_name Ilike '%" + value + "%') and property in('tcid') and tct.tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "            
+                status_query="select distinct property,name from test_case_tag where name='%s' and property Ilike '%%%s%%'"%(TCStatusName,value)
                 Conn=GetConnection()
                 results=DB.GetData(Conn, tag_query, False)
                 tcidresults=DB.GetData(Conn,id_query,False)
-                results=list(set(results+tcidresults))
+                tc_status=DB.GetData(Conn,status_query,False)
+                results=list(set(results+tcidresults+tc_status))
                 for eachitem in results:
                     final_results.append(eachitem)
             final_results=list(set(final_results))
             results=final_results
-            if len(results) > 0:
-                results.append(("*Dev","Status"))
+            """if len(results) > 0:
+                results.append(("*Dev","Status"))"""
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -640,7 +646,7 @@ def AutoCompleteTestStepSearch(request):
 
 def Table_Data_TestCases(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
     Conn = GetConnection()
-    propertyValue = "Ready"
+    #propertyValue = "Ready"
     tabledata = []
     if request.is_ajax():
         if request.method == 'GET':
@@ -670,9 +676,9 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 if len(eachitem) != 0 and  len(eachitem) != 1:
                     QueryText.append(eachitem.strip())
 
-    if "*Dev" in QueryText:
-        QueryText.remove("*Dev")
-        propertyValue = "Dev"
+    """if "*Dev" in QueryText:
+        QueryText.remove("*Dev")"""
+        #propertyValue = "Dev"
 
 
     #In case if user search test cases using test case ids    
@@ -698,17 +704,41 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         count = 1
         for eachitem in QueryText:
             if count == 1:
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
+                if eachitem in ('Dev','Ready'):
+                    Query = "HAVING COUNT(CASE WHEN property = '" + eachitem + "' and name='"+TCStatusName+"'  THEN 1 END) > 0 "
+                else:
+                    Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
-        Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
+                if eachitem in ('Dev','Ready'):
+                    Query = Query+ "AND COUNT(CASE WHEN property = '" + eachitem + "' and name='"+TCStatusName+"'  THEN 1 END) > 0 "
+                else:
+                    Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
+        #Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name "+Query
         TableData = DB.GetData(Conn, "select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc "
                         "where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query, False)
     TempTableData=[]
     Check_TestCase(TableData, RefinedData)
+    final=[]
+    for each in RefinedData:
+        if DB.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        query="select property from test_case_tag where tc_id='%s' and name='Status'"%each[0].strip()
+        temp=[]
+        for eachitem in each:
+            temp.append(eachitem)
+        test_case_status=DB.GetData(Conn,query)
+        if len(test_case_status)==0:
+            status=""
+        else: 
+            status=test_case_status[0]
+        temp.append(status)
+        temp=tuple(temp)
+        final.append(temp)
+    RefinedData=final
     for each in RefinedData:
         temp=[]
         for eachitem in each:
@@ -743,7 +773,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         temp=tuple(temp)
         data_temp.append(temp)
     RefinedData=data_temp
-    Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Platform','Time Required']
+    Heading = ['Test Case ID', 'Test Case Name','Test Case Type','Status','Platform','Time Required']
 
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
     results = {'Heading':Heading, 'TableData':RefinedData,'TimeEstimated':formatTime}
@@ -1556,7 +1586,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
     results = {}
     Eid = []
     QueryText = []
-    propertyValue = "Ready"
+    #propertyValue = "Ready"
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get('RunTestQuery', '')
@@ -1628,9 +1658,9 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                 if len(eachitem) != 0 and  eachitem!="":
                     QueryText.append(str(eachitem.strip()))
 
-    if "*Dev" in QueryText:
-        QueryText.remove("*Dev")
-        propertyValue = "Dev"
+    """if "*Dev" in QueryText:
+        QueryText.remove("*Dev")"""
+        #propertyValue = "Dev"
 
     TesterId = QueryText.pop() # pop function will remove last item of the list (userid) and will assign to Testerid
     #Add the manual Test Machine to the test_run_env table
@@ -1697,13 +1727,20 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
         count = 1
         for eachitem in QueryText:
             if count == 1:
+                if eachitem in ('Dev','Ready'):
+                    Query="HAVING COUNT(CASE WHEN name = '" + TCStatusName + "' and property ='" +eachitem+"' THEN 1 END) > 0 "
+                            
                 #Query = "HAVING COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
+                else:
+                    Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
-                #Query = Query + "AND COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
-        Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0" % (TCStatusName, propertyValue)
+                if eachitem in ('Dev','Ready'):
+                    Query=Query+ "AND COUNT(CASE WHEN name = '" + TCStatusName + "' and property ='" +eachitem+"' THEN 1 END) > 0 "
+                else:  
+                    #Query = Query + "AND COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
+                    Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
+        #Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0" % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         if is_rerun=="rerun":
             final_query="select distinct tct.tc_id from result_test_case_tag tct, result_test_cases tc where tct.run_id=tc.run_id and tct.tc_id = tc.tc_id and tc.run_id='"+previous_run+"' group by tct.tc_id,tc.tc_name " + Query
@@ -1746,20 +1783,32 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
 
     TestSetName = ""
     for eachitem in QueryText:
-        TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s' and property in ('%s','%s')" % (eachitem, Section, CustomTag))
+        if eachitem in ('Dev','Ready'):
+            TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'"%(TCStatusName,eachitem))
+        else:
+            TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s' and property in ('%s','%s')" % (eachitem, Section, CustomTag))
         if len(TagName) > 0:
             TagName = TagName[0]
         else:
-            TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s'" % (eachitem))
+            if eachitem in ('Dev','Ready'):
+                TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'"%(TCStatusName,eachitem))
+            else:
+                TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s'" % (eachitem))
             if len(TagName) > 0:
                 TagName = TagName[0]
 
         if is_rerun=="rerun":
-            TagName = DB.GetData(Conn, "Select DISTINCT property from result_test_case_tag where name = '%s' and property in ('%s','%s') and run_id='%s'" % (eachitem, Section, CustomTag,previous_run))
+            if eachitem in ('Dev','Ready'):
+                TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'"%(TCStatusName,eachitem))
+            else:
+                TagName = DB.GetData(Conn, "Select DISTINCT property from result_test_case_tag where name = '%s' and property in ('%s','%s') and run_id='%s'" % (eachitem, Section, CustomTag,previous_run))
             if len(TagName) > 0:
                 TagName = TagName[0]
             else:
-                TagName = DB.GetData(Conn, "Select DISTINCT property from result_test_case_tag where name = '%s' and run_id='%s'" % (eachitem,previous_run))
+                if eachitem in ('Dev','Ready'):
+                    TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'"%(TCStatusName,eachitem))
+                else:
+                    TagName = DB.GetData(Conn, "Select DISTINCT property from result_test_case_tag where name = '%s' and run_id='%s'" % (eachitem,previous_run))
                 if len(TagName) > 0 and 'tcid' in TagName:
                     TagName = 'tcid'
                 else:
@@ -1772,7 +1821,7 @@ def Run_Test(request): #==================Returns True/Error Message  When User 
                 eachitem = iclient
                 print "eachitem:"+eachitem
 
-        if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid' or TagName==CustomSet or TagName==Tag:
+        if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid' or TagName==CustomSet or TagName==Tag or TagName==TCStatusName:
             query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
             if is_rerun=='rerun':
                 query="where tester_id='%s' and run_id='%s' and status='Unassigned'" %(TesterId,runid)
@@ -6223,13 +6272,13 @@ def MileStoneOperation(request):
 
 def TableDataTestCasesOtherPages(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
     Conn = GetConnection()
-    test_status_request = request.GET.get(u'test_status_request', False)
+    test_status_request = request.GET.get(u'test_status_request', True)
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
             UserText = UserData.split(":");
             #Environment = request.GET.get(u'Env', '')
-            propertyValue="Ready"
+            #propertyValue="Ready"
             RefinedData=[]
             platform=['PC','Mac']
             for Environment in platform:
@@ -6256,10 +6305,10 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     if len(eachitem) != 0 and  len(eachitem) != 1:
                         QueryText.append(eachitem.strip())
 
-                if "*Dev" in QueryText:
+                """if "*Dev" in QueryText:
                     QueryText.remove("*Dev")
-                    propertyValue = "Dev"
-            
+                    #propertyValue = "Dev"
+                """
             
                 #In case if user search test cases using test case ids    
                 TestIDList = []
@@ -6283,11 +6332,17 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     count = 1
                     for eachitem in QueryText:
                         if count == 1:
-                            Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
+                            if eachitem in ('Dev','Ready'):
+                                Query="HAVING COUNT(CASE WHEN name = '" + TCStatusName + "' and property in ('" +eachitem+"') THEN 1 END) > 0 "
+                            else:
+                                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
                             count = count + 1
                         elif count >= 2:
-                            Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
-                    Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
+                            if eachitem in ('Dev','Ready'):
+                                Query=Query+"AND COUNT(CASE WHEN name = '" + TCStatusName + "' and property in ('" +eachitem+"') THEN 1 END) > 0 "
+                            else:
+                                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','"+ Test_Run_Type + "','" + Priority + "','"+CustomSet+"','"+Tag+"','"+Client+"') THEN 1 END) > 0 "
+                    #Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
                     Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
                     query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name "+Query
                     TableData = DB.GetData(Conn,query,False)
@@ -6361,7 +6416,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
     else:
         Heading = ['ID', 'Title','Type','Platform','Time Reqd.']
     RefinedData=dataWithTime
-#     print RefinedData
+    #print RefinedData
     #results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
     results = {'Heading':Heading, 'TableData':RefinedData}
 
