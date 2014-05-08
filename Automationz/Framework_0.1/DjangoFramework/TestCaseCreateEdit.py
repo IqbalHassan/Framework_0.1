@@ -14,6 +14,43 @@ from TestCaseOperations import LogMessage
     2 - warning
     3 - error
 """
+def Result_Get_PIM_Data_By_Id(conn, RunID,Data_Id):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+
+    Data_List = []
+    SQLQuery = ("select "
+    " pmd.id,"
+    " pmd.field,"
+    " pmd.value"
+    " from result_master_data pmd"
+    " where"
+    " pmd.id = '%s' and pmd.run_id='%s'; " % (Data_Id,RunID))
+
+    Data_List = DBUtil.GetData(conn, SQLQuery, False)
+    Data_List = [tuple(x[1:3])for x in Data_List]
+
+    AddressList = []
+    for i in range(len(Data_List) - 1, -1, -1):
+        eachTuple = Data_List[i]
+        if eachTuple[1].startswith(Data_Id):# or eachTuple[0] == 'Home Address' or eachTuple[0] == 'Other Address':
+            if eachTuple[1] != "":
+                address_find_SQLQuery = ("select "
+                " pmd.field,"
+                " pmd.value"
+                " from result_master_data pmd"
+                " where"
+                " pmd.id = '%s' and pmd.run_id='%s'"
+                " ;" % (eachTuple[1],RunID))
+                AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
+            else:
+                AddressData = ''
+            Data_List.pop(i)
+            AddressList.append((eachTuple[0], AddressData))
+    for eachAddrData in AddressList:
+        Data_List.append(eachAddrData)
+
+    return Data_List
+
 def Delete_Test_Case(Conn,tc_list):
     sModuleInfo = inspect.stack()[0][3] + " : " +inspect.getmoduleinfo(__file__).name
     deleted_test_case=[]

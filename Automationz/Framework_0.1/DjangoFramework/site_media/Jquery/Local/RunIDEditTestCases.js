@@ -201,9 +201,16 @@ function TestDataFetch(){
                 var datasetid=tc_id+"_s"+step_no;
                 $.get("TestDataFetch",{
                     'run_id':$('#runid').text().trim(),
-                    'data_set_id':datasetid.trim()
+                    'tc_id':tc_id.trim(),
+                    'step_sequence':step_no
                 },function(data){
-                    console.log(data['row_array']);
+                    console.log(data);
+                    var column=["DataSet","Data"];
+                    var message=drawPopUp(data,column);
+                    $('#inside_back').html("");
+                    var div_name=step_name+"(Data Details)";
+                    $('#inside_back').append(message);
+                    /*console.log(data['row_array']);
                     console.log(data['data_array']);
                     var column=["DataSet","Data"];
                     var message=draw_table(data['row_array'],column);
@@ -221,7 +228,8 @@ function TestDataFetch(){
                     });
                     $('#data_detail tr>td:first-child:eq(0)').each(function(){
                         //$(this).css({'textAlign':'center'});
-                    })
+                    })*/;
+
                     $("#inside_back").dialog({
                         buttons : {
                             "OK" : function() {
@@ -246,6 +254,43 @@ function TestDataFetch(){
     });
 }
 
+function drawPopUp(data,column){
+    var message="";
+    message+='<table id="data_detail" class="one-column-emphasis" width="100%">';
+    message+='<tr>';
+    for(var i=0;i<column.length;i++){
+        message+='<th>'+column[i]+'</th>';
+    }
+    message+='</tr>';
+    var column_data=['field','subfield','value']
+    for (var i=0;i<data.length;i++){
+        for(var l=0;l<data[i].length;l++){
+            message+='<tr>';
+            var dataset=data[i][l][0];
+            message+='<td>'+dataset+'</td>';
+            var group_data=data[i][l][1];
+            message+='<td>';
+            message+='<table class="one-column-emphasis" width="100%">';
+            message+='<tr>';
+            for(var j=0;j<column_data.length;j++){
+                message+='<th>'+column_data[j]+'</th>';
+            }
+            message+='</tr>';
+            for(var j=0;j<group_data.length;j++){
+                message+='<tr>';
+                for(var k=0;k<group_data[j].length;k++){
+                    message+='<td>'+group_data[j][k]+'</td>';
+                }
+                message+='</tr>';
+            }
+            message+='</table>';
+            message+='</td>';
+            message+='</tr>';
+        }
+    }
+    message+='</table>';
+    return message;
+}
 function draw_table(row,column){
     var message=""
     message+='<table id="data_detail" class="one-column-emphasis" width="100%">';
@@ -264,7 +309,6 @@ function draw_table(row,column){
     message+='</table>';
     return message;
 }
-
 colors = {
     'pass' : '#65bd10',
     'fail' : '#fd0006',

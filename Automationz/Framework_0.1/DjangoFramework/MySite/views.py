@@ -5661,9 +5661,36 @@ def TestDataFetch(request):
     if request.is_ajax():
         if request.method=='GET':
             run_id=request.GET.get(u'run_id','')
-            data_set_id=request.GET.get(u'data_set_id','')
+            step_sequence=request.GET.get(u'step_sequence','')
+            tc_id=request.GET.get(u'tc_id','')
             Conn=GetConnection()
-            query="select distinct id from result_master_data where id Ilike '%s" %data_set_id
+            #get the step_sequence
+            print step_sequence
+            test_steps_get_query="select step_editable,data_required,teststepsequence from result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and ts.step_id=tsl.step_id and ts.run_id='%s' and ts.tc_id='%s' order by ts.teststepsequence"%(run_id,tc_id)
+            test_steps=DB.GetData(Conn,test_steps_get_query,False)
+            print test_steps
+            step_sequence=int(step_sequence)
+            step_editable=test_steps[step_sequence-1][0]
+            data_required=test_steps[step_sequence-1][1]
+            test_step_sequence=test_steps[step_sequence-1][2]
+            dataset=tc_id+'ds'
+            Step_Data=[]
+            if data_required:
+                container_data_id_query="select ctd.curname,ctd.newname from result_test_steps_data tsd, result_container_type_data ctd where tsd.run_id=ctd.run_id and tsd.run_id='"+run_id+"' and tsd.testdatasetid = ctd.dataid and tcdatasetid = '"+dataset+"' and teststepseq = "+str(test_step_sequence)+"and ctd.curname Ilike '%_s"+str(step_sequence)+"%'"
+                container_data_id_details=DB.GetData(Conn,container_data_id_query,False)
+                if step_editable:
+                    for each_data_id in container_data_id_details:
+                        if len(each_data_id)==2:
+                            From_Data = TestCaseCreateEdit.Result_Get_PIM_Data_By_Id(Conn, run_id,each_data_id[0])
+                            To_Data = TestCaseCreateEdit.Result_Get_PIM_Data_By_Id(Conn, run_id,each_data_id[1])
+                            Step_Data.append((From_Data, To_Data))
+                else:
+                    for each_data_id in container_data_id_details:
+                        From_Data = TestCaseCreateEdit.Result_Get_PIM_Data_By_Id(Conn, run_id,each_data_id[0])
+                        Step_Data.append(From_Data)
+            else:
+                print "wrong data"
+            """query="select distinct id from result_master_data where id Ilike '%s" %data_set_id
             query+=("_%' and run_id='"+run_id+"'")
             data_set=DB.GetData(Conn,query)
             temp_data=[]
@@ -5680,15 +5707,56 @@ def TestDataFetch(request):
                 query="select field,value from result_master_data where id Ilike '%s" %each
                 query+=("%%' and field!='step' and field!='' and value!='description' and run_id='"+run_id+"'")
                 data=DB.GetData(Conn,query,False)
-                data_array.append(data)
-    results={
-             'data_array':data_array,
-             'row_array': row_array
-             }
-    results=simplejson.dumps(results)
+                data_array.append(data)"""
+            print Step_Data
+            Step_Data=ProcessRunIDData(Step_Data)
+            print Step_Data
+    results=simplejson.dumps(Step_Data)
     return HttpResponse(results,mimetype='application/json')
 
-
+def ProcessRunIDData(Step_Data):
+    step_data=1
+    final_data=[]
+    for each in Step_Data:
+        temp=[]
+        if isinstance(each,tuple):
+            print "edit data"
+            from_data=each[0]
+            to_data=each[1]
+            tempData=[]
+            for eachitem in from_data:
+                if isinstance(eachitem[0],basestring) and isinstance(eachitem[1],basestring):
+                    tempData.append((eachitem[0],'',eachitem[1]))
+                if isinstance(eachitem[0],basestring) and isinstance(eachitem[1],list):
+                    group_name=eachitem[0]
+                    for dataitem in eachitem[1]:
+                        if isinstance(dataitem[0],basestring) and isinstance(dataitem[1],basestring):
+                            tempData.append((group_name,dataitem[0],dataitem[1]))
+            temp.append(('From Data',tempData))
+            tempData=[]
+            for eachitem in to_data:
+                if isinstance(eachitem[0],basestring) and isinstance(eachitem[1],basestring):
+                    tempData.append((eachitem[0],'',eachitem[1]))
+                if isinstance(eachitem[0],basestring) and isinstance(eachitem[1],list):
+                    group_name=eachitem[0]
+                    for dataitem in eachitem[1]:
+                        if isinstance(dataitem[0],basestring) and isinstance(dataitem[1],basestring):
+                            tempData.append((group_name,dataitem[0],dataitem[1]))
+            temp.append(('To Data',tempData))
+        if isinstance(each,list):
+            tempData=[]
+            for eachitem in each:
+                if isinstance(eachitem[0],basestring) and isinstance(eachitem[1],basestring):
+                    tempData.append((eachitem[0],'',eachitem[1]))
+                if isinstance(eachitem[0],basestring) and isinstance(eachitem[1],list):
+                    group_name=eachitem[0]
+                    for dataitem in eachitem[1]:
+                        if isinstance(dataitem[0],basestring) and isinstance(dataitem[1],basestring):
+                            tempData.append((group_name,dataitem[0],dataitem[1]))
+            temp.append((step_data,tempData))
+        step_data+=1
+        final_data.append(temp)    
+    return final_data
 def LogFetch(request):
     if request.is_ajax():
         if request.method=='GET':
