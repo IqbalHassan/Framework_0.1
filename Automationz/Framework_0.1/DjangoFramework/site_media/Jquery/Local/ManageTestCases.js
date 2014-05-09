@@ -32,12 +32,12 @@ $(document).ready(function() {
 				},
 				
 				"parent_section" : {
-					"icon" : "fa fa-folder-open-o",
+					"icon" : "fa fa-folder fa-lg fa-fw",
 					"valid_children" : [ "section" ]
 				},
 				
 				"section" : {
-					"icon" : "fa fa-folder-o",
+					"icon" : "fa fa-folder fa-fw fa-lg",
 					"valid_children" : [ "section" ]
 				}
 			},
@@ -83,7 +83,7 @@ $(document).ready(function() {
 			},
 			
 			"checkbox" : {
-				"visible" : false
+				"keep_selected_style": false
 			},
 			
 			"plugins" : [ "search", "checkbox", "types", "wholerow", "contextmenu", "sort" ]
@@ -121,6 +121,7 @@ $(document).ready(function() {
 	
 	function createNode(text) {
 		var node_text = '';
+		var text = text || "";
 		
 		alertify.prompt("Name of the new section:<br><span style='font-size: 10px;'>" + text.split('.').join(' > ') + "</span>", function(e, str) {
 			if (e) {
