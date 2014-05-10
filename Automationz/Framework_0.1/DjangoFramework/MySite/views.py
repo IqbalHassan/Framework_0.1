@@ -6476,7 +6476,6 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
             
             i.insert(2, section_path)
             
-#             Heading = ['ID', 'Title', 'Type', 'Platform', 'Time']
         except:
             print '-'
             
@@ -6488,9 +6487,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 data = DB.GetData(Conn, query, False, True)
                 
                 i[4] = data[0][0]
-                i.pop(5)
  
-                Heading = ['ID', 'Title', 'Section', 'Type', 'Status']
+                Heading = ['ID', 'Title', 'Section', 'Type', 'Status', 'Time']
             except:
                 i[4] = ' - '
 
