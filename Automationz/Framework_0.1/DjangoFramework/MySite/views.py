@@ -2,55 +2,58 @@
 # -*- coding: utf-8 -*-
 
 # Create your views here.
-from django.http import HttpResponse, HttpResponseRedirect
+import inspect
+import itertools
+from mimetypes import MimeTypes
+import operator
+import re
+import time
+import time
+
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-# #
 from django.db import connection
+from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
+from django.shortcuts import render_to_response
+from django.template import Context
+from django.template import RequestContext
+from django.template.loader import get_template
+from django.utils import simplejson
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
+from psycopg2.extras import DictCursor
+
+from CommonUtil import TimeStamp
+import DataBaseUtilities as DB
+from TestCaseCreateEdit import LogMessage
+import TestCaseCreateEdit
+from TestCaseOperations import Cleanup_TestCase
+import TestCaseOperations
+from models import GetData, GetColumnNames, GetQueryData, GetConnection
+
+
+# #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
 # from django.shortcuts import render_to_response
 #=======
-from django.views.decorators.csrf import csrf_protect
-from django.shortcuts import render_to_response
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
 # >>>>>>> 79295d8a9281fee2054c6e15061b281b41f17493
-
-from django.template import Context
-from django.template import RequestContext
-
-from django.template.loader import get_template
-from django.utils import simplejson
-import TestCaseCreateEdit
-from TestCaseCreateEdit import LogMessage
-
 try:
     import simplejson as json
 except ImportError:
     import json
 
-from models import GetData, GetColumnNames, GetQueryData, GetConnection
-import DataBaseUtilities as DB
 
-from CommonUtil import TimeStamp
 # import DjangoConstants
-import TestCaseOperations
-import re
-import time
-from TestCaseOperations import Cleanup_TestCase
-from django.core.context_processors import csrf
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from mimetypes import MimeTypes
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
-from psycopg2.extras import DictCursor
-import inspect
 Conn = GetConnection()
-import time
 # import logging
 
 """ Misc functions """
@@ -6340,7 +6343,7 @@ def MileStoneOperation(request):
 
 def TableDataTestCasesOtherPages(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
     Conn = GetConnection()
-    test_status_request = request.GET.get(u'test_status_request', True)
+    test_status_request = request.GET.get(u'test_status_request', False)
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
@@ -6453,36 +6456,45 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
 #         temp=tuple(temp)
         dataWithTime.append(temp)
     
-    if test_status_request:
-        for i in dataWithTime:
+    Heading = ['ID', 'Title', 'Section', 'Type', 'Platform', 'Time']
+        
+    for i in dataWithTime:
+        x = i[1]
+        print x
+        try:
+            query = '''
+            SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
+            ''' % ('section_id', i[0])
+            data = DB.GetData(Conn, query, False, False)
+            section_id = int(data[0][0])
             
+            query = '''
+            SELECT section_path FROM product_sections WHERE section_id=%d
+            ''' % section_id
+            data = DB.GetData(Conn, query, False, False)
+            section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
+            
+            i.insert(2, section_path)
+            
+#             Heading = ['ID', 'Title', 'Type', 'Platform', 'Time']
+        except:
+            print '-'
+            
+        if test_status_request:
             try:
                 query = '''
                 SELECT property FROM test_case_tag WHERE name='%s' AND tc_id='%s'
                 ''' % ('Status', i[0])
                 data = DB.GetData(Conn, query, False, True)
-                i[3] = data[0][0]
                 
-                query = '''
-                SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
-                ''' % ('section_id', i[0])
-                data = DB.GetData(Conn, query, False, False)
-                section_id = int(data[0][0])
-                
-                query = '''
-                SELECT section_path FROM product_sections WHERE section_id=%d
-                ''' % section_id
-                data = DB.GetData(Conn, query, False, False)
-                section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
-                
-                i[4] = section_path
+                i[4] = data[0][0]
+                i.pop(5)
+ 
+                Heading = ['ID', 'Title', 'Section', 'Type', 'Status']
             except:
-                print ''
-                i[3] = ' - '
+                i[4] = ' - '
+
     
-        Heading = ['ID', 'Title', 'Type', 'Status', 'Section']
-    else:
-        Heading = ['ID', 'Title', 'Type', 'Platform', 'Time Reqd.']
     RefinedData = dataWithTime
     # print RefinedData
     # results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         

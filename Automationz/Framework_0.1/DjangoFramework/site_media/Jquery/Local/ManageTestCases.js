@@ -242,9 +242,6 @@ $(document).ready(function() {
 	            $(".templateBtn").click(function (){
 	                window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id");
 	            });
-	            //VerifyQueryProcess();
-	            //$(".Buttons[title='Verify Query']").fadeIn(2000);
-	            $(".Buttons[title='Select User']").fadeOut();
 	        }
 	    });
 	}

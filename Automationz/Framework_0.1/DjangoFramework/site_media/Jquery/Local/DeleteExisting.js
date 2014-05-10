@@ -79,7 +79,7 @@ function PerformSearch() {
                 implementDropDown("#resultDiv");
                 // add edit btn
                 var indx = 0;
-                $('#resultDiv tr>td:nth-child(5)').each(function(){
+                $('#resultDiv tr>td:nth-child(6)').each(function(){
                     var ID = $("#resultDiv tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<input type="checkbox" id="'+ID+'"/>');
