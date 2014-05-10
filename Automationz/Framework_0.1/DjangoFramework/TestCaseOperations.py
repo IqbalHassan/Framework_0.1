@@ -2,10 +2,12 @@
 Created on May 13, 2013
 
 '''
-import DataBaseUtilities as DBUtil
-import CommonUtil
-import inspect
 import datetime
+import inspect
+
+import CommonUtil
+import DataBaseUtilities as DBUtil
+
 
 def Insert_TestCaseName(conn, TC_Id, TC_Name, TC_Creator):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name

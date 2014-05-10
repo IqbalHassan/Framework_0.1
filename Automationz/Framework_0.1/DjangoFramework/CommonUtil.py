@@ -1,13 +1,13 @@
-import time, datetime, inspect
-import os
-import win32pdh, win32api, win32con
-import DataBaseUtilities as DB
-import wmi
-import subprocess
-import win32com.client
 import logging
+import os
+import subprocess
+import time, datetime, inspect
 
+import win32com.client
+import win32pdh, win32api, win32con
+import wmi
 
+import DataBaseUtilities as DB
 
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,6 @@
 import os
 
 
-
 def pull_latest_git():
     try:
         g = git_repo()

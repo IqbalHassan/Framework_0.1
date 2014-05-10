@@ -1,8 +1,11 @@
+import os
+
 from django.conf.urls import *  # @UnusedWildImport 
 
-import os
 from MySite.views import *  # @UnusedWildImport
 from MySite.views import create_section
+
+
 site_media = os.path.join(os.path.dirname(__file__),'site_media')
 
 # Uncomment the next two lines to enable the admin:

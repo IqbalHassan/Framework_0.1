@@ -2,18 +2,22 @@
 Created on May 1, 2014
 Author: @Taitalus
 '''
-import DataBaseUtilities as DBUtil
-import CommonUtil
-import inspect
-import datetime
-from MySite.models import GetConnection
-import time
-from TestCaseOperations import LogMessage
 """
     1- info
     2 - warning
     3 - error
 """
+
+import datetime
+import inspect
+import time
+
+import CommonUtil
+import DataBaseUtilities as DBUtil
+from MySite.models import GetConnection
+from TestCaseOperations import LogMessage
+
+
 def Result_Get_PIM_Data_By_Id(conn, RunID,Data_Id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
 

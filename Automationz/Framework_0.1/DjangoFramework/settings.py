@@ -1,5 +1,8 @@
 import logging
+import os.path
+
 import Global
+
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -131,7 +134,6 @@ AUTHENTICATION_BACKENDS = (
 
 ROOT_URLCONF = 'DjangoFramework.urls'
 
-import os.path
 TEMPLATE_DIRS = (
                  os.path.join(os.path.dirname(__file__), 'templates')
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".

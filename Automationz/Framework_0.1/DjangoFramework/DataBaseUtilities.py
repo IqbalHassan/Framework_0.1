@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-import psycopg2, inspect, sys, time
-import Global
-from psycopg2.extras import DictCursor
-
-
-
 """
 To Rename the Table name: Alter Table OldTableName
                           Rename To NewTableName
@@ -19,6 +13,13 @@ To Drop Primary key: Alter Table test_run
 To Change the Column Data Type: Alter Table test_run
                                 Alter execution_time Type VARCHAR(255)
 """
+
+import psycopg2, inspect, sys, time
+from psycopg2.extras import DictCursor
+
+import Global
+
+
 ip = Global.get_ip()
 
 def ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost=ip):

@@ -8,8 +8,12 @@ https://docs.djangoproject.com/en/1.3/topics/db/sql/#executing-custom-sql-direct
 
 
 
+from django.db import models
+
 import DataBaseUtilities as DB
 import Global
+
+
 #import CommonUtil
 ip = Global.get_ip()
 
@@ -36,7 +40,6 @@ def GetColumnNames(sTableName):
 
 #print GetData("test_sets")
 
-from django.db import models
 
 #class Poll(models.Model):
 #    question = models.CharField(max_length=200)
