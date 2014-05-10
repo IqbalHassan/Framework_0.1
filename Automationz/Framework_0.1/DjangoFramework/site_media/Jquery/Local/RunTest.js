@@ -591,35 +591,37 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 							//Search Email Input Box
 							+"<td>"
 								+"<label  class = 'Text SearchEmail' style = 'display:none' > <b> Select Name for Email: </b></label>"
-								+"<input  id = 'EmailSearchBox' class='SearchEmail ui-corner-all textbox' style = 'display:none;margin-left: -.5%' size='42'type='text' title = 'Please Select Email by Keyword' />"
 							+ "</td>"
-						+"</tr>"
-                        +"<tr>" +
-                            "<td>" +
-                                "<label class='Text SearchEmail' style='display:none'><b>*Select a Tester:</b></label></td>" +
-                                "<td><input id='TesterSearchBox' class='SearchEmail ui-corner-all textbox' style=' display: none;margin-left: -104%' size='42' type='text' title='Please Select a tester'>" +
-                            "</td>" +
-                        "</tr>"
+							+ "<td>"
+								+"<input  id = 'EmailSearchBox' class='SearchEmail ui-corner-all textbox' style = 'display:none;' size='42' type='text' title = 'Please Select Email by Keyword' />"
+							+ "</td>"
+						+ "</tr>"
+                        + "<tr>"
+                            + "<td>"
+                                + "<label class='Text SearchEmail' style='display:none'><b>*Select a Tester:</b></label>"
+                            + "</td>"
+                            + "<td>"
+                                + "<input id='TesterSearchBox' class='SearchEmail ui-corner-all textbox' style=' display: none;' size='42' type='text' title='Please Select a tester'>"
+                            + "</td>"
+                        + "</tr>"
 						
 						+"<tr>"
+							+"<td >"
+								+"<label  style = 'display:none'   class = 'Text' id = 'TestObjective' > <b> *Test Objective: </b></label>"
+							+"</td>"
 						
-								+"<td >"
-									+"<label  style = 'display:none'   class = 'Text' id = 'TestObjective' > <b> *Test Objective: </b></label>"
-								+"</td>"
-							
-								+"<td>"
-									+"<input class = 'ui-corner-all textbox' id = 'TestObjective' style = 'display:none;margin-left: -104%'  size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
-								+"</td>"
+							+"<td>"
+								+"<input class = 'ui-corner-all textbox' id = 'TestObjective' style = 'display:none;' size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
+							+"</td>"
 						+"</tr>"
 
                         +"<tr>"
-
                             +"<td >"
                                 +"<label  style = 'display:none'   class = 'Text' id = 'TestMileStoneText' > <b> *Test MileStone: </b></label>"
                             +"</td>"
 
                             +"<td>"
-                                +"<input class = 'ui-corner-all textbox' id = 'TestMileStone' style = 'display:none;margin-left: -104%'  size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
+                                +"<input class = 'ui-corner-all textbox' id = 'TestMileStone' style = 'display:none;'  size = '42' maxlength = '50' type='text' title = 'Type Test Obejct' />"
                             +"</td>"
                         +"</tr>"
 					
@@ -629,60 +631,63 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
 								+ "<label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'>"
 								+ Label
 								+ " </b></label>"
+							+ "</td>"
+							+ "<td>"
 								+ "<input class = 'ui-corner-all textbox' id='searchbox' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' />"
 							+ "</td>"
 						+ "</tr>"
 						
 						
-					+ "</tbody>"
-				+ "</table>"
 				
-				
+				+ "<tr>"
 				+"<table id = 'AutoSearchResult' >"
 					+ "<tbody>"
 						
 						+ "<tr id = 'searchedtext'>"
 							+"<p> </p>"
-							+ "<th class = 'Text' style= 'text-align: left'> Test Data Set: </th>"
+							+ "<th class = 'Text' style= 'text-align: left'>Test Data Set:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>"
 						+ "</tr>"
 						
 					+ "</tbody>"	
 				+ "</table>"
-						
+				+ "</tr>"
 				
-				
-				
-				
+				+ "<tr>"
 				+"<table id = 'AutoSearchResult' >"
 					+ "<tbody>"
 						+ "<tr id = 'DependencyText' style = 'display:None' >"
-							+ "<th class = 'Text' style= 'text-align: left'> Parameters:&nbsp;&nbsp;&nbsp; </th>"
+							+ "<th class = 'Text' style= 'text-align: left'>Parameters:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>"
 						+ "</tr>"
-						
 					 + "</tbody>"	
 				+ "</table>"
+				+ "</tr>"
 				
-				
+				+ "<tr>"
 				+"<table id = 'AutoSearchResult' >"
 					+ "<tbody>"
 						+ "<tr id = 'SelectedEmail' class='SearchEmail' style='display:None'>"
 					    	
-							+ "<th class = 'Text' style= 'display:None ; text-align: left'>Email Name:&nbsp;&nbsp;&nbsp; </th>"
+							+ "<th class = 'Text' style= 'display:None ; text-align: left'>Email Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>"
 					    + "</tr>"
 				    + "</tbody>"	
 				+ "</table>"
+				+ "</tr>"
+				
+				+ "<tr>"
                 +"<table id = 'AutoSearchResult' >"
                     + "<tbody>"
                         + "<tr id = 'AssignedTester' class='SearchEmail' style='display:None'>"
 
-                        + "<th class = 'Text' style= 'display:None ; text-align: left'>Selected Tester:&nbsp;&nbsp;&nbsp; </th>"
+                        + "<th class = 'Text' style= 'display:None ; text-align: left'>Selected Tester:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>"
                         + "</tr>"
                     + "</tbody>"
                 + "</table>"
+                + "</tr>"
+                + "<tr>"
                 +"<table id = 'AutoSearchResult' >"
                     + "<tbody>" +
                             "<tr id='MileStoneHeader'>" +
-                                "<td><th class = 'Text' style= 'display:None ; text-align: left'>MileStone Added:&nbsp;&nbsp;&nbsp; </th>" +
+                                "<td><th class = 'Text' style= 'display:None ; text-align: left'>MileStone Added:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>" +
                             "</td>" +
                             "<td>" +
                                 "<table>"
@@ -694,6 +699,10 @@ function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
                             "</tr>"
                     + "</tbody>"
                 + "</table>"
+                + "</tr>"
+                + "</div>"
+			+ "</tbody>"
+		+ "</table>"
 	  + "</form>"
 			
 			
