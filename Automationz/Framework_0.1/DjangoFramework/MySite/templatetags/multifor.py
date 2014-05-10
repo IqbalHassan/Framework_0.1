@@ -40,7 +40,7 @@ class ForNode(Node):
             return revd and ' reversed' or ''
         rev_text_list = [make_rev_txt(revd) for revd in self.is_reversed_list]
         zip_list = zip(self.loopvars_list, self.sequence_list, rev_text_list)
-        sections = ['%s in %s%s'%(', '.join(l), s, r) for l, s, r in zip_list]
+        sections = ['%s in %s%s' % (', '.join(l), s, r) for l, s, r in zip_list]
         return "<For Node: for %s, tail_len: %d>" % \
             ('; '.join(sections), len(self.nodelist_loop))
 
@@ -84,7 +84,7 @@ class ForNode(Node):
         for i, items in enumerate(self.zip(*values_list)):
             # Shortcuts for current loop iteration number.
             loop_dict['counter0'] = i
-            loop_dict['counter'] = i+1
+            loop_dict['counter'] = i + 1
             # Reverse counter iteration numbers.
             loop_dict['revcounter'] = len_values - i
             loop_dict['revcounter0'] = len_values - i - 1
@@ -118,7 +118,7 @@ class ForLongestNode(ForNode):
         return izip_longest(fillvalue=settings.TEMPLATE_STRING_IF_INVALID, *args)
     get_overall_len = max
 
-#@register.tag(name="for")
+# @register.tag(name="for")
 def do_for(parser, token, ForNode=ForNode):
     all_bits = token.contents.split()[1:]
     sections = [s.strip() for s in ' '.join(all_bits).split(';')]
@@ -144,7 +144,7 @@ def do_for(parser, token, ForNode=ForNode):
                                               "invalid argument: %s" 
                                               % token.contents)
 
-        sequence_list.append(parser.compile_filter(bits[in_index+1]))
+        sequence_list.append(parser.compile_filter(bits[in_index + 1]))
     nodelist_loop = parser.parse(('empty', 'endfor',))
     token = parser.next_token()
     if token.contents == 'empty':

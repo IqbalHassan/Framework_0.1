@@ -23,12 +23,12 @@ MANAGERS = ADMINS
 ip = Global.get_ip()
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'postgres', # Or path to database file if using sqlite3.
-        'USER': 'postgres', # Not used with sqlite3.
-        'PASSWORD': 'password', # Not used with sqlite3.
-        'HOST': ip, # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '5432', # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'postgres',  # Or path to database file if using sqlite3.
+        'USER': 'postgres',  # Not used with sqlite3.
+        'PASSWORD': 'password',  # Not used with sqlite3.
+        'HOST': ip,  # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '5432',  # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -123,7 +123,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    #'django.middleware.csrf.CsrfResponseMiddleware'
+    # 'django.middleware.csrf.CsrfResponseMiddleware'
 
 )
 
@@ -150,7 +150,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'DjangoFramework.MySite'
     # Uncomment the next line to enable the admin:
-    #'django.contrib.admin',
+    # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -180,6 +180,6 @@ LOGGING = {
 
 
 ALLOWED_HOSTS = [
-    '135.23.123.67', # Allow domain and subdomains
+    '135.23.123.67',  # Allow domain and subdomains
 
 ]

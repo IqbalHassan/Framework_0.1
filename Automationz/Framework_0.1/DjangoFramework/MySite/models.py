@@ -14,7 +14,7 @@ import DataBaseUtilities as DB
 import Global
 
 
-#import CommonUtil
+# import CommonUtil
 ip = Global.get_ip()
 
 def GetConnection():
@@ -35,17 +35,17 @@ def GetColumnNames(sTableName):
     return [Col.upper() for Col in ColumnNames]
 
 #
-#print list(Reslt[0])
+# print list(Reslt[0])
 
 
-#print GetData("test_sets")
+# print GetData("test_sets")
 
 
-#class Poll(models.Model):
+# class Poll(models.Model):
 #    question = models.CharField(max_length=200)
 #    pub_date = models.DateTimeField('date published')
 #
-#class Choice(models.Model):
+# class Choice(models.Model):
 #    poll = models.ForeignKey(Poll)
 #    choice_text = models.CharField(max_length=200)
 #    votes = models.IntegerField(default=0)

@@ -29,7 +29,7 @@ def ExecLog(sModuleInfo, sDetails, iLogLevel=1, sStatus="",):
         logger.warning(sModuleInfo + ' - ' + sDetails + '' + sStatus)
     elif iLogLevel == 3:
         logger.error(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-    elif iLogLevel==4:
+    elif iLogLevel == 4:
         logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
     else:
         print "unknown log level"
@@ -77,7 +77,7 @@ def TimeStamp(frmt):
         minute = "%d" % now.minute
         second = "%d" % now.second
         TimeStamp = year + month + day + hour + minute + second
-        #TimeStamp = int (TimeStamp)
+        # TimeStamp = int (TimeStamp)
 
     return TimeStamp
 
@@ -90,7 +90,7 @@ def ReadFile(filename):
     return(x)
 
 def WriteToFile(fileName, cont):
-    fileObj = open(fileName, 'w')     # Writing permission
+    fileObj = open(fileName, 'w')  # Writing permission
     fileObj.write(cont)
     fileObj.close()
 

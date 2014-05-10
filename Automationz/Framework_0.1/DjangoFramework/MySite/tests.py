@@ -12,13 +12,13 @@ import DataBaseUtilities as DB
 from models import GetConnection
 
 
-#from django.shortcuts import render_to_response
-#from django.template import RequestContext
-#from CommonUtil import GetLocalOS,GetRegistryValue,TimeStamp,GetLocalUser
-#import DjangoConstants
-#import os
-#import FileUtilities as FL
-#import MKS_Report 
+# from django.shortcuts import render_to_response
+# from django.template import RequestContext
+# from CommonUtil import GetLocalOS,GetRegistryValue,TimeStamp,GetLocalUser
+# import DjangoConstants
+# import os
+# import FileUtilities as FL
+# import MKS_Report 
 Conn = GetConnection()
 tabledata = []
 UserData = ""
