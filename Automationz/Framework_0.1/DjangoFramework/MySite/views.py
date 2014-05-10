@@ -6485,10 +6485,10 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 SELECT property FROM test_case_tag WHERE name='%s' AND tc_id='%s'
                 ''' % ('Status', i[0])
                 data = DB.GetData(Conn, query, False, True)
-                
-                i[4] = data[0][0]
- 
-                Heading = ['ID', 'Title', 'Section', 'Type', 'Status', 'Time']
+                  
+                i.insert(4, data[0][0])
+   
+                Heading = ['ID', 'Title', 'Section', 'Type', 'Status', 'Platform', 'Time']
             except:
                 i[4] = ' - '
 
