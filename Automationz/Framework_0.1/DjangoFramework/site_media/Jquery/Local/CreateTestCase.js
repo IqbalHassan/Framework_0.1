@@ -574,31 +574,31 @@ $(document).ready(function() {
         	
             if($('#section-flag').hasClass('unfilled')){
                 //alert("Section Path is not defined Correctly");
-                alertify.log("Section Path is not defined Correctly","",0);
+                alertify.error("Section Path is not defined Correctly","",0);
                 $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#platform-flag').hasClass('unfilled')){
                 //alert("Platform is not selected correctly");
-                alertify.log("Platform is not selected correctly","",0);
+                alertify.error("Platform is not selected correctly","",0);
                 $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#browser-flag').hasClass('unfilled')){
                 //alert("Browser is not selected correctly");
-                alertify.log("Browser is not selected correctly","",0);
+                alertify.error("Browser is not selected correctly","",0);
                 $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#type-flag').hasClass('unfilled')){
                 //alert("Test Type is not defined correctly");
-                alertify.log("Test Type is not defined correctly","",0);
+                alertify.error("Test Type is not defined correctly","",0);
                 $('#submit').attr("disabled", false);
                 return false;
             }
             if($('#tag_txtbox').val()!=""){
                 //alert("Tag Field must be empty as you have to select from the suggestion provided");
-                alertify.log("Tag Field must be empty as you have to select from the suggestion provided","",0);
+                alertify.error("Tag Field must be empty as you have to select from the suggestion provided","",0);
                 $('#submit').attr("disabled", false);
                 return false;
             }
@@ -610,7 +610,7 @@ $(document).ready(function() {
                 else{
                     if($('#searchbox'+(i+1)+'data').find('span:eq(0)').hasClass('unfilled')){
                         //alert("Data in the Step #"+(i+1)+" is not complete");
-                        alertify.log("Data in the Step #"+(i+1)+" is not complete","",0);
+                        alertify.error("Data in the Step #"+(i+1)+" is incomplete","",0);
                         $('#submit').attr("disabled", false);
                         return false;
                     }
@@ -623,7 +623,7 @@ $(document).ready(function() {
                 }
             }
             if(checked_count<=0){
-                alertify.log("Atleast One step is to be set as Verfication point","",0);
+                alertify.error("Atleast One step is to be set as Verfication point","",0);
                 $('#submit').attr("disabled", false);
                 return false;
             }
@@ -687,23 +687,23 @@ $(document).ready(function() {
             for(var i=1;i<=step_num;i++){
                 if($('#searchbox'+i+'name').val()==""){
                     //alert('Step Name for step Number#'+i+' can not be empty');
-                    alertify.log('Step Name for step Number#'+i+' can not be empty',"",0);
+                    alertify.error('Step Name for step Number#'+i+' can not be empty',"",0);
                     return false;
                 }
                 else{
                     if($('#searchbox'+i+'info').val()==""){
                         //alert('Step Description for step Number#'+i+' can not be empty');
-                        alertify.log('Step Description for step Number#'+i+' can not be empty',"",0);
+                        alertify.error('Step Description for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
                     if($('#searchbox'+i+'expected').val()==""){
                         //alert('Expected Result for step Number#'+i+' can not be empty');
-                        alertify.log('Expected Result for step Number#'+i+' can not be empty',"",0);
+                        alertify.error('Expected Result for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
                     if($('#searchbox'+i+'time').val()==""){
                         //alert('Estimated time for step Number#'+i+' can not be empty');
-                        alertify.log('Estimated time for step Number#'+i+' can not be empty',"",0);
+                        alertify.error('Estimated time for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
                     auto_step_create($('#searchbox'+i+'name').val().trim());
@@ -938,7 +938,7 @@ $(document).ready(function() {
                             }
                             if(!tag_found){
                                 //alert("Tag Name Not present in the Database");
-                                alertify.log("Tag Name Not present in the Database","",0);
+                                alertify.error("Tag Name Not present in the Database","",0);
                                 tag_alert=1;
                                 return false;
                             }
@@ -977,7 +977,7 @@ $(document).ready(function() {
                             Steps_Time_List:stepTimeList.join("|"),
                             Status:"Dev"},function(data) {
                             //alert(data);
-                            alertify.log("Test Case '"+data+"' successfully created!","",0);
+                            alertify.success("Test Case '"+data+"' successfully created!","",0);
                             desktop_notify("Test Case '"+data+"'-'"+title+"' successfully created!");
                             $("#submit").removeAttr('disabled');
                             var location='/Home/ManageTestCases/Edit/'+data;
@@ -1009,7 +1009,7 @@ $(document).ready(function() {
                             },
                             function(data) {
                                 //alert(data+" edited successfully");
-                                alertify.log("Test Case '"+data+"' successfully edited!","",0);
+                                alertify.success("Test Case '"+data+"' successfully edited!","",0);
                                 desktop_notify("Test Case '"+data+"' successfully edited!");
                                 $("#submit").removeAttr('disabled');
                                 var location='/Home/ManageTestCases/Edit/'+data;
@@ -1018,7 +1018,7 @@ $(document).ready(function() {
                     }
                     else{
                         //alert("Wrong data in StepName,StepType");
-                        alertify.log("Wrong data in StepName,StepType","",0);
+                        alertify.error("Wrong data in StepName,StepType","",0);
                         return false;
                     }
                 });
@@ -1864,7 +1864,7 @@ function auto_step_create(step){
         },
         success: function( json ) {
             if(json[0]==0){
-                alertify.log("New step created with title '"+step+"'","",0)
+                alertify.success("New step created with title '"+step+"'","",0)
             }
         }
     });
