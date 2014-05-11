@@ -43,7 +43,9 @@ colors = {
 	'block' : '#ff9e00',
 	'submitted' : '#808080',
     'in-progress':'#0000ff',
-    'skipped':'#cccccc'
+    'skipped':'#cccccc',
+    'dev': '#aaaaaa',
+    'ready': '#65bd10'
 };
 
 function ResultTable(HtmlElementID, Heading, tabledata, ResultName, tooltip) {
@@ -106,6 +108,12 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName, tooltip) {
 					continue;
 				case 'Skipped':
 					content += '<td style="border-left: 4px solid ' + colors['skipped'] + ';">' + table_item[data] + '</font></td>';
+					continue;
+				case 'Dev':
+					content += '<td style="background-color: ' + colors['dev'] + '; color: #fff;">' + table_item[data] + '</font></td>';
+					continue;
+				case 'Ready':
+					content += '<td style="background-color: ' + colors['ready'] + '; color: #fff;">' + table_item[data] + '</font></td>';
 					continue;
 				}
 				
