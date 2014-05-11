@@ -5552,7 +5552,35 @@ def RunIDTestCases(request, Run_Id, TC_Id):
     requirementid = DB.GetData(Conn, rquery, False)
     requirementid = [x[0] for x in requirementid]
     id3 = ', '.join(requirementid)
-    return render_to_response('RunIDEditTestCases.html', {'runid':Run_Id, 'testcaseid':TC_Id, 'testcasename':testcasename[0][0], 'defectid':id1, 'mksid':id2, 'requirementid':id3})
+    
+    section_path = ''
+    
+    try:
+        query = '''
+        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
+        ''' % ('section_id', TC_Id)
+        data = DB.GetData(Conn, query, False, False)
+        section_id = int(data[0][0])
+        
+        query = '''
+        SELECT section_path FROM product_sections WHERE section_id=%d
+        ''' % section_id
+        data = DB.GetData(Conn, query, False, False)
+        section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
+        
+    except:
+        print '-'
+    
+    return render_to_response('RunIDEditTestCases.html',
+                              {
+                              'runid':Run_Id,
+                              'testcaseid':TC_Id,
+                              'testcasename':testcasename[0][0],
+                              'defectid':id1,
+                              'mksid':id2,
+                              'requirementid':id3,
+                              'section_path': section_path
+                              })
 
 def Update_RelatedItems(request):
     if request.is_ajax() and request.method == 'GET':
