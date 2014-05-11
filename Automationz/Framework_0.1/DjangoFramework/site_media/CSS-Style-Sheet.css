@@ -3782,3 +3782,34 @@ body.avgrund-active {
     -webkit-transform: scaleY(1.0);
   }
 }
+
+/* Contact link */
+#contact_link {
+	position: fixed;
+	bottom: -24px;
+	right: 30px;
+	transition: all 0.3s;
+}
+
+#contact_link:hover {
+	bottom: 0;
+}
+
+#contact_link a {
+	display: block;
+	background-color: #353535;
+	color: #fff;
+	padding-left: 16px;
+	padding-right: 16px;
+	padding-top: 6px;
+	padding-bottom: 4px;
+	border-radius: 3px 3px 0 0;
+	text-decoration: none;
+	font-size: 1.2em;
+	transition: all 0.3s;
+}
+
+#contact_link a:hover {
+	background-color: #353535;
+	color: #fff;
+}

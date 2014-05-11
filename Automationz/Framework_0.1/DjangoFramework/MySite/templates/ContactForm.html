@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<link rel="stylesheet" type="text/css" href="/site_media/Jquery/MinimalForm/css/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="/site_media/Jquery/MinimalForm/css/demo.css" />
+		<link rel="stylesheet" type="text/css" href="/site_media/Jquery/MinimalForm/css/component.css" />
+		<script src="/site_media/Jquery/MinimalForm/js/modernizr.custom.js"></script>
+		<script src="/site_media/Jquery/jquery-2.1.0.min.js"></script>
+		<title>Contact us</title>
+	</head>
+	
+	
+	<!--
+	 NOTE: The url is passed along with this page so that we can send it. You can access the
+	 	   url of the requested page like this (django template syntax): {{ url }}
+	 	   
+	 	   For convenience, you can also check the javascript console for the url. 
+	 -->
+	
+	
+	<body>
+		<div class="container">
+			<!-- Top Navigation -->
+			<header class="codrops-header">
+				<h1><a href="/Home/">Automation Solutionz</a></h1>	
+			</header>
+			<section>
+				<form id="theForm" class="simform" autocomplete="off">
+					<div class="simform-inner">
+						<ol class="questions">
+							<li>
+								<span><label for="q1">Comment/Suggest/Report a problem?</label></span>
+								<input id="q1" name="q1" type="text"/>
+							</li>
+							<li>
+								<span><label for="q2">Your comment:</label></span>
+								<input id="q2" name="q2" type="text"/>
+							</li>
+						</ol><!-- /questions -->
+						<button class="submit" type="submit">Send answers</button>
+						<div class="controls">
+							<button class="next"></button>
+							<div class="progress"></div>
+							<span class="number">
+								<span class="number-current"></span>
+								<span class="number-total"></span>
+							</span>
+							<span class="error-message"></span>
+						</div><!-- / controls -->
+					</div><!-- /simform-inner -->
+					<span class="final-message"></span>
+				</form><!-- /simform -->			
+			</section>
+		</div><!-- /container -->
+		<script src="/site_media/Jquery/MinimalForm/js/classie.js"></script>
+		<script src="/site_media/Jquery/MinimalForm/js/stepsForm.js"></script>
+		<script>
+			$(function() {
+				var current_path = window.location.pathname;
+				
+				if (current_path === '/Home/Login/') {
+					sessionStorage.setItem("path_to_redirect", '/Home/');
+				} else {
+					sessionStorage.setItem("path_to_redirect", current_path);
+				}
+
+			    if(window.sessionStorage.getItem('log') !== 'logged' && $(this).attr('title') !== 'Log In')
+			    {
+			        window.location = '/Home/Login/';
+			    }
+				
+				console.log("{{ url }}");
+			});
+		
+			var theForm = document.getElementById( 'theForm' );
+
+			new stepsForm( theForm, {
+				onSubmit : function( form ) {
+					// hide form
+					classie.addClass( theForm.querySelector( '.simform-inner' ), 'hide' );
+
+					/*
+					
+					-------------------> PUT CODE HERE FOR FORM SUBMISSION <--------------------
+					
+					form.submit()
+					or
+					AJAX request (maybe show loading indicator while we don't have an answer..)
+					*/
+
+					// let's just simulate something...
+					var messageEl = theForm.querySelector( '.final-message' );
+					messageEl.innerHTML = 'Thank you! We\'ll be in touch.';
+					classie.addClass( messageEl, 'show' );
+				}
+			} );
+		</script>
+	</body>
+</html>

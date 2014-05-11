@@ -7035,3 +7035,9 @@ def DeleteTestCase(request):
             modified_test_case_list = TestCaseCreateEdit.Delete_Test_Case(Conn, test_case_list)
     result = simplejson.dumps(modified_test_case_list)
     return HttpResponse(result, mimetype='application/json')
+
+def contact_page(request):
+    return render(request, 'ContactForm.html', {})
+
+def contact_page_with_url(request, url):
+    return render(request, 'ContactForm.html', {'url': url})
