@@ -568,8 +568,28 @@ $(document).ready(function() {
 
         }
 
-        $('#submit').live('click',function(){
+        $('#submit').live('click',function(e){
             /*****************************Validation Check Here***********************************/
+        	
+        	if ($("#titlebox").val() === "") {
+        		e.preventDefault();
+        		
+        		alertify.error("Sorry, you need to provide 'Test Case Title'", 1500);
+        		
+    			$("#titlebox").css({
+    				"border-color": "red",
+    				"box-shadow": "0 0 10px red"
+    			});
+    			
+    			setTimeout(function() {
+    				$("#titlebox").css({
+    					"border-color": "",
+    					"box-shadow": ""
+    				});
+    			}, 1500);
+    			
+    			return false;
+        	}
         	
             if($('#section-flag').hasClass('unfilled')){
                 //alert("Section Path is not defined Correctly");

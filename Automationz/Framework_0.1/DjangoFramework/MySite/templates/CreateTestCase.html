@@ -411,25 +411,6 @@
 <script>
     $(document).ready(function() {
         RESPONSIVEUI.responsiveTabs();
-    })
-    
-    $("#submit").click(function(e) {
-    	if ($("#titlebox").val() === "") {
-    		e.preventDefault();
-    		
-    		alertify.error("Sorry, you need to provide 'Test Case Title'");
-			$("#titlebox").css({
-				"border-color": "red",
-				"box-shadow": "0 0 10px red"
-			});
-			
-			setTimeout(function() {
-				$("#titlebox").css({
-					"border-color": "",
-					"box-shadow": ""
-				});
-			}, 1500);
-    	}
     });
 </script>
 
