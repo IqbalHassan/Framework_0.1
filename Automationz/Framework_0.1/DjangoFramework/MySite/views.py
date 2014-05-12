@@ -3696,6 +3696,8 @@ def BundleReport_Table_Latest(request):
             browsers = DB.GetData(Conn, browser_query, False)
             env_details = DB.GetData(Conn, OS_client_query, False)
             sections = DB.GetData(Conn, sect_sub_q, False)
+            ready_cases = DB.GetData(Conn, "select * from result_test_case_tag where name='Status' and property='Ready'", False)
+            ready_cases_fresh = DB.GetData(Conn, "select * from test_case_tag where name='Status' and property='Ready'", False)
             # env_details.append("Total")
             # Total = ["Total"]
             # sections.append(Total)
@@ -3719,13 +3721,15 @@ def BundleReport_Table_Latest(request):
             passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '" + i[0] + "' and tre.client = '" + i[1] + "' and tre.product_version = '" + version + "' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '" + s[0] + "' and tcr.status = 'Passed'" , False)
             pass_count = len(passed_cases)
             for m in passed_cases:
-                for n in latest_cases:
-                    if m[0] == n[0]:
-                        if n[1] == 'Passed':
-                            break;
-                        else:
-                            pass_count = pass_count - 1;
-                            break;
+                for o in ready_cases:
+                    if m[0] == o[0]:
+                        for n in latest_cases:
+                            if m[0] == n[0]:
+                                if n[1] == 'Passed':
+                                    break;
+                                else:
+                                    pass_count = pass_count - 1;
+                                    break;
             temp.append(pass_count)
             failed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '" + i[0] + "' and tre.client = '" + i[1] + "' and tre.product_version = '" + version + "' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '" + s[0] + "' and tcr.status = 'Failed'" , False)
             """same = 0
@@ -3735,13 +3739,15 @@ def BundleReport_Table_Latest(request):
                         same = same+1"""
             fail_count = len(failed_cases)
             for m in failed_cases:
-                for n in latest_cases:
-                    if m[0] == n[0]:
-                        if n[1] == 'Failed':
-                            break;
-                        else:
-                            fail_count = fail_count - 1;
-                            break;
+                for o in ready_cases:
+                    if m[0] == o[0]:
+                        for n in latest_cases:
+                            if m[0] == n[0]:
+                                if n[1] == 'Failed':
+                                    break;
+                                else:
+                                    fail_count = fail_count - 1;
+                                    break;
             temp.append(fail_count)
             blocked_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '" + i[0] + "' and tre.client = '" + i[1] + "' and tre.product_version = '" + version + "' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '" + s[0] + "' and tcr.status = 'Blocked'" , False)
             """same1 = 0
@@ -3754,13 +3760,15 @@ def BundleReport_Table_Latest(request):
                         same1 = same1 + 1"""                        
             block_count = len(blocked_cases)
             for m in blocked_cases:
-                for n in latest_cases:
-                    if m[0] == n[0]:
-                        if n[1] == 'Blocked':
-                            break;
-                        else:
-                            block_count = block_count - 1;
-                            break;
+                for o in ready_cases:
+                    if m[0] == o[0]:
+                        for n in latest_cases:
+                            if m[0] == n[0]:
+                                if n[1] == 'Blocked':
+                                    break;
+                                else:
+                                    block_count = block_count - 1;
+                                    break;
             temp.append(block_count)
             """notrun_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '"+i[0]+"' and tre.client = '"+i[1]+"' and tre.product_version = '"+version+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and (tcr.status = 'In-Progress' or tcr.status = 'Skipped' or tcr.status = 'Submitted')" , False)
             notrun_count = len(notrun_cases)
@@ -3772,38 +3780,44 @@ def BundleReport_Table_Latest(request):
             submitted_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '" + i[0] + "' and tre.client = '" + i[1] + "' and tre.product_version = '" + version + "' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '" + s[0] + "' and tcr.status = 'Submitted'" , False)
             submitted_count = len(submitted_cases)
             for m in submitted_cases:
-                for n in latest_cases:
-                    if m[0] == n[0]:
-                        if n[1] == 'Submitted':
-                            break;
-                        else:
-                            submitted_count = submitted_count - 1;
-                            break;
+                for o in ready_cases:
+                    if m[0] == o[0]:
+                        for n in latest_cases:
+                            if m[0] == n[0]:
+                                if n[1] == 'Submitted':
+                                    break;
+                                else:
+                                    submitted_count = submitted_count - 1;
+                                    break;
             temp.append(submitted_count)
             inprogress_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '" + i[0] + "' and tre.client = '" + i[1] + "' and tre.product_version = '" + version + "' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '" + s[0] + "' and tcr.status = 'In-Progress'" , False)
             inprogress_count = len(inprogress_cases)
             for m in inprogress_cases:
-                for n in latest_cases:
-                    if m[0] == n[0]:
-                        if n[1] == 'In-Progress':
-                            break;
-                        else:
-                            inprogress_count = inprogress_count - 1;
-                            break;
+                for o in ready_cases:
+                    if m[0] == o[0]:
+                        for n in latest_cases:
+                            if m[0] == n[0]:
+                                if n[1] == 'In-Progress':
+                                    break;
+                                else:
+                                    inprogress_count = inprogress_count - 1;
+                                    break;
             temp.append(inprogress_count)
             skipped_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os = '" + i[0] + "' and tre.client = '" + i[1] + "' and tre.product_version = '" + version + "' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '" + s[0] + "' and tcr.status = 'Skipped'" , False)
             skipped_count = len(skipped_cases)
             for m in skipped_cases:
-                for n in latest_cases:
-                    if m[0] == n[0]:
-                        if n[1] == 'Skipped':
-                            break;
-                        else:
-                            skipped_count = skipped_count - 1;
-                            break;
+                for o in ready_cases:
+                    if m[0] == o[0]:
+                        for n in latest_cases:
+                            if m[0] == n[0]:
+                                if n[1] == 'Skipped':
+                                    break;
+                                else:
+                                    skipped_count = skipped_count - 1;
+                                    break;
             temp.append(skipped_count)
             env_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag where name='" + platform + "'", False)
-            section_cases = DB.GetData(Conn, "select distinct tc_id from result_test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path = '" + s[0] + "'", False)
+            section_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path = '" + s[0] + "'", False)
             if "FireFox" in i[1]:
                 cquery = "select distinct tc_id from test_case_tag where property='FireFox'"
             if "Chrome" in i[1]:
@@ -3815,11 +3829,13 @@ def BundleReport_Table_Latest(request):
             browser_cases = DB.GetData(Conn, cquery, False)
             all_count = 0
             for a in env_cases:
-                for b in section_cases:
-                    if a[0] == b[0]:
-                        for c in browser_cases:
-                            if a[0] == c[0]:
-                                all_count = all_count + 1
+                for o in ready_cases_fresh:
+                    if a[0] == o[0]:
+                        for b in section_cases:
+                            if a[0] == b[0]:
+                                for c in browser_cases:
+                                    if a[0] == c[0]:
+                                        all_count = all_count + 1
             run_count = pass_count + fail_count + block_count + submitted_count + inprogress_count + skipped_count
             if all_count > run_count:
                 notrun_count = all_count - run_count
