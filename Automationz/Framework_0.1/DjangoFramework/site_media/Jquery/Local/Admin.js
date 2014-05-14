@@ -43,5 +43,11 @@ $(document).ready(function(){
             });
         }
     });
+    /*$("#send_mail").click(function(){
+        $.get('Send_Mail',function(json){
+            alertify.log(json,"",0);
+
+        });
+    });*/
 
 });
