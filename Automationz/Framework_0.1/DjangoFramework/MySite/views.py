@@ -1873,9 +1873,6 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
     sTestSetStartTime = str(now[0][0])
     print sTestSetStartTime
 
-    import EmailNotification    
-    EmailNotification.Send_Email(stEmailIds, runid)
-
     Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
     EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query, test_objective = TestObjective  )
@@ -4098,20 +4095,6 @@ def Process_Git(request):
             message = GitApi.pull_latest_git()
         elif command == 'Log':
             message = GitApi.git_log(-4)
-    json = simplejson.dumps(message)
-    return HttpResponse(json, mimetype='application/json')
-
-def Send_Mail(request):
-    import EmailNotification
-    #server.ehlo()
-    #server.starttls()
-    if request.method == "GET":
-        #import django.core.mail
-        #django.core.mail.send_mail('First test', 'Hi there', 'minar09.bd@gmail.com', '[minar_cse09@yahoo.com]', False, 'minar09.bd', 'patheticlife')
-        Subject= "hellow deal"
-        EmailNotification.Send_Email('minar09.bd@gmail.com', Subject)
-        
-    message = "Mail Sent"
     json = simplejson.dumps(message)
     return HttpResponse(json, mimetype='application/json')
 
