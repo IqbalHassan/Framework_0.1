@@ -4168,7 +4168,7 @@ def TestCase_Auto(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def TestSet(request, message=""):
+"""def TestSet(request, message=""):
     return render_to_response('TestSet_Tag.html', {'error_message':message}, context_instance=RequestContext(request))
 
 def Data_Process(request):
@@ -4393,7 +4393,7 @@ def DeleteTestCasesFromSet(request):
                 message = str(count) + " test cases are deleted from Test " + test_type + " '" + test_set_name + "'"
             return edit(request, test_set_name, test_type, message)
     return edit(request, test_set_name, test_type, output)
-
+"""
 
 # Test Step Management Section Functions
 def TestStep_Delete(request):
@@ -6388,6 +6388,7 @@ def MileStoneOperation(request):
 def TableDataTestCasesOtherPages(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
     Conn = GetConnection()
     test_status_request = request.GET.get(u'test_status_request', False)
+    total_time=request.GET.get(u'total_time','')
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
@@ -6480,6 +6481,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         RefinedData.append(each)
                         
     dataWithTime = []
+    if total_time=="true":
+        time_collected=0
     for each in RefinedData:
         query = "select count(*) from test_steps where tc_id='%s'" % each[0].strip()
         stepNumber = DB.GetData(Conn, query)
@@ -6493,6 +6496,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
             else:
                 stepTime = step_time[0]
             test_case_time += int(stepTime)
+            if total_time=="true":
+                time_collected+=int(stepTime)
         temp = []
         for eachitem in each:
             temp.append(eachitem)
@@ -6541,7 +6546,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
     # print RefinedData
     # results = {"Section":Section, "TestType":Test_Run_Type,"Priority":Priority}         
     results = {'Heading':Heading, 'TableData':RefinedData}
-
+    if total_time=="true":
+        results.update({'time':ConvertTime(time_collected)})
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 def GetStepNameType(request):
@@ -7057,3 +7063,201 @@ def contact_page(request):
 
 def contact_page_with_url(request, url):
     return render(request, 'ContactForm.html', {'url': url})
+
+
+#Test Set and Tag Redone.
+def TestSetTagHome(request):
+    return render_to_response('TestSetTag.html',{})
+
+def GetSetTag(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            value=request.GET.get(u'term','')
+            print value
+            list_value=["set","tag"]
+            conn=GetConnection()
+            final=[]
+            for each in list_value:
+                #form query
+                query="select distinct value from config_values where type='%s' and value iLike'%%%s%%'"%(each.strip(),value.strip())
+                if value=="":
+                    query="select distinct value from config_values where type='%s'"%(each.strip())
+                if DB.IsDBConnectionGood(conn)==False:
+                    time.sleep(1)
+                    conn=GetConnection()
+                get_list=DB.GetData(conn,query)
+                temp=[]
+                for eachitem in get_list:
+                    if eachitem not in temp:
+                        temp.append(eachitem)
+                if len(temp)!=0:
+                    final.append((each,temp))            
+    result=simplejson.dumps(final)
+    return HttpResponse(result,mimetype='application/json')
+def SetTagEdit(request,type,name):
+    return render_to_response('TestSetTagEdit.html',{})
+def createNewSetTag(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            type_tag=request.GET.get(u'type','')
+            name=request.GET.get(u'name','')
+            if type_tag=='SET':
+                type_tag='set'
+            if type_tag=='TAG':
+                type_tag='tag'
+            available_query="select count(*) from config_values where value='%s' and type='%s'"%(name.strip(),type_tag.strip())
+            Conn=GetConnection()
+            available_count=DB.GetData(Conn,available_query)
+            if available_count[0]==0:
+                #from dictionary
+                Dict={'type':type_tag.strip(),'value':name.strip()}
+                result=DB.InsertNewRecordInToTable(Conn, "config_values",**Dict)
+                if result==True:
+                    message="Test %s with name '%s' created successfully."%(type_tag.strip(),name.strip())
+                else:
+                    message="Failed DataBaseError."
+            else:
+                message="Failed to create.Test %s with name '%s' exists already."%(type_tag.strip(),name.strip())
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def DeleteSetTag(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            type_tag=request.GET.get(u'type','')
+            name=request.GET.get(u'name','')
+            if type_tag=='SET':
+                type_tag='set'
+            if type_tag=='TAG':
+                type_tag='tag'
+            available_query="select count(*) from config_values where value='%s' and type='%s'"%(name.strip(),type_tag.strip())
+            Conn=GetConnection()
+            available_count=DB.GetData(Conn,available_query)
+            if available_count[0]>0:
+                test_case_tag_result=DB.DeleteRecord(Conn, "test_case_tag",name=name.strip(), property=type_tag.strip())
+                config_values_result=DB.DeleteRecord(Conn, "config_values",value=name.strip(),type=type_tag.strip())
+                if test_case_tag_result ==True and config_values_result ==True: 
+                    message="Test %s with name %s is deleted succesfully"%(type_tag.strip(),name.strip())
+                else:
+                    message="Failed.DataBaseError."
+            else:
+                message="Failed.No Test %s with name %s is found in DataBase"%(type_tag.strip(),name.strip())
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def AddTestCasesSetTag(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            message=""
+            type_tag=request.GET.get(u'type','')
+            name=request.GET.get(u'name','')
+            #name = name.replace("%20", " ")
+            test_case_list=request.GET.get(u'list','').split('|')
+            print test_case_list
+            if type_tag=='SET':
+                type_tag='set'
+            if type_tag=='TAG':
+                type_tag='tag'
+            available_query="select count(*) from config_values where value='%s' and type='%s'"%(name.strip(),type_tag.strip())
+            Conn=GetConnection()
+            available_count=DB.GetData(Conn,available_query)
+            if available_count[0]>0:
+                added_list=[]
+                for each in test_case_list:
+                    #form directory
+                    query="select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'"%(each.strip(),name.strip(),type_tag.strip())
+                    if DB.IsDBConnectionGood(Conn)==False:
+                        time.sleep(1)
+                        Conn=GetConnection()
+                    count=DB.GetData(Conn,query)
+                    if count[0]==0:
+                        result=DB.InsertNewRecordInToTable(Conn,"test_case_tag",tc_id=each.strip(),name=name.strip(),property=type_tag.strip())
+                        if result==True:
+                            added_list.append(each)
+                    else:
+                        added_list.append(each)
+                if len(added_list)>0:
+                    message="%s added to Test %s:%s"%(",".join(added_list),type_tag.strip(),name.strip())
+                else:
+                    message="No Test Cases added to Test %s: %s"%(type_tag.strip(),name.strip())
+            else:
+                message="Failed.No Test %s with name %s exists."%(type_tag.strip(),name.strip())
+            
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def DeleteTestCasesSetTag(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            message=""
+            type_tag=request.GET.get(u'type','')
+            name=request.GET.get(u'name','')
+            #name = name.replace("%20", " ")
+            test_case_list=request.GET.get(u'list','').split('|')
+            print test_case_list
+            if type_tag=='SET':
+                type_tag='set'
+            if type_tag=='TAG':
+                type_tag='tag'
+            available_query="select count(*) from config_values where value='%s' and type='%s'"%(name.strip(),type_tag.strip())
+            Conn=GetConnection()
+            available_count=DB.GetData(Conn,available_query)
+            if available_count[0]>0:
+                added_list=[]
+                for each in test_case_list:
+                    #form directory
+                    query="select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'"%(each.strip(),name.strip(),type_tag.strip())
+                    if DB.IsDBConnectionGood(Conn)==False:
+                        time.sleep(1)
+                        Conn=GetConnection()
+                    count=DB.GetData(Conn,query)
+                    if count[0]>0:
+                        result=DB.DeleteRecord(Conn,"test_case_tag",tc_id=each.strip(),name=name.strip(),property=type_tag.strip())
+                        if result==True:
+                            added_list.append(each)
+                if len(added_list)>0:
+                    message="%s deleted from Test %s:%s"%(",".join(added_list),type_tag.strip(),name.strip())
+                else:
+                    message="No Test Cases deleted from Test %s: %s"%(type_tag.strip(),name.strip())
+            else:
+                message="Failed.No Test %s with name %s exists."%(type_tag.strip(),name.strip())
+            
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def UpdateSetTag(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            message=""
+            message=""
+            type_tag=request.GET.get(u'type','')
+            new_name=request.GET.get(u'new_name','')
+            old_name=request.GET.get(u'old_name','')
+            if type_tag=='SET':
+                type_tag='set'
+            if type_tag=='TAG':
+                type_tag='tag'
+            available_query="select count(*) from config_values where value='%s' and type='%s'"%(old_name.strip(),type_tag.strip())
+            Conn=GetConnection()
+            available_count=DB.GetData(Conn,available_query)
+            if available_count[0]>0:
+                test_case_get_query="select distinct tc_id from test_case_tag where name='%s' and property='%s'"%(old_name.strip(),type_tag.strip())
+                test_cases=DB.GetData(Conn,test_case_get_query)
+                added_list=[]
+                for each in test_cases:
+                    query="select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'"%(each.strip(),old_name.strip(),type_tag.strip())
+                    if DB.IsDBConnectionGood(Conn)==False:
+                        time.sleep(1)
+                        Conn=GetConnection()
+                    count=DB.GetData(Conn,query)
+                    if count[0]>0:
+                        whereQuery="where tc_id='%s' and name='%s' and property='%s'"%(each.strip(),old_name.strip(),type_tag.strip())
+                        result=DB.UpdateRecordInTable(Conn,"test_case_tag",whereQuery,tc_id=each.strip(),name=new_name.strip(),property=type_tag.strip())
+                        if result==True:
+                            added_list.append(each)
+                whereQuery="where value='%s' and type='%s'"%(old_name.strip(),type_tag.strip())
+                result=DB.UpdateRecordInTable(Conn,"config_values",whereQuery,value=new_name.strip())
+                if len(added_list)>0 and result==True:
+                    message="Updated Test %s:%s with %s"%(type_tag.strip(),old_name.strip(),new_name.strip())
+                else:
+                    message="Failed.Unable to update Test %s: %s"%(type_tag.strip(),old_name.strip())
+            else:
+                message="Failed.No Test %s with name %s exists."%(type_tag.strip(),old_name.strip())
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')

@@ -3566,7 +3566,7 @@ body.avgrund-active {
     text-align: justify;
 }
 
-.github, .twitter, .dribble {
+.github, .twitter, .dribble,.createnew {
     float: left;
     text-align: center;
     font-size: 12px;
@@ -3587,6 +3587,13 @@ body.avgrund-active {
 
 .github:hover {
     background: rgba(83, 83, 83, 1);
+}
+.createnew {
+    background: rgba(72, 183,25, 0.8);
+}
+
+.createnew:hover {
+    background: rgba(72,183, 25, 1);
 }
 
 .twitter {
