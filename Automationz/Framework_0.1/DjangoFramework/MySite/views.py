@@ -7261,3 +7261,6 @@ def UpdateSetTag(request):
                 message="Failed.No Test %s with name %s exists."%(type_tag.strip(),old_name.strip())
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
+
+def select2(request):
+    return render(request, 'select2.html', {})

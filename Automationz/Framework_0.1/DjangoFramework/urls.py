@@ -3,6 +3,7 @@ import os
 from django.conf.urls import *  # @UnusedWildImport 
 
 from MySite.views import *  # @UnusedWildImport
+from MySite.views import select2
 
 site_media = os.path.join(os.path.dirname(__file__), 'site_media')
 
@@ -18,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^Home/Contact/$', contact_page),
     url(r'^Home/Contact/URL/(?P<url>.+)/$', contact_page_with_url),
     
+    url(r'^Home/select2/$', select2),
         
     # Result Page
     # url(r'^Home/Search/$',Search),
