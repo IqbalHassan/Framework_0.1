@@ -122,39 +122,80 @@ def make_array(get_list):
 def make_status_array(Conn, refined_list):
     pass_list = []
     for each in refined_list:
-        # print each
-        run_id = each[0]
-        temp = []
-        total_query = "select count(*) from test_run where run_id='%s'" % run_id
-        pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
-        fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % run_id
-        blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
-        progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
-        notrun_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
-        skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
-        # Conn=GetConnection()
-        total = DB.GetData(Conn, total_query)
-        passed = DB.GetData(Conn, pass_query)
-        failed = DB.GetData(Conn, fail_query)
-        blocked = DB.GetData(Conn, blocked_query)
-        progress = DB.GetData(Conn, progress_query)
-        submitted = DB.GetData(Conn, notrun_query)
-        skipped = DB.GetData(Conn, skipped_query)
-        pass_percent = str((int(passed[0]) * 100 / int(total[0]))) + '%'
-        fail = str((int(failed[0]) * 100 / int(total[0]))) + '%'
-        block = str((int(blocked[0]) * 100 / int(total[0]))) + '%'
-        progress = str((int(progress[0]) * 100 / int(total[0]))) + '%'
-        submitted = str((int(submitted[0]) * 100 / int(total[0]))) + '%'
-        pending = str((int(skipped[0]) * 100 / int(total[0]))) + '%'
-        temp.append(pass_percent)
-        temp.append(fail)
-        temp.append(block)
-        temp.append(progress)
-        temp.append(submitted)
-        temp.append(pending)
-        temp = tuple(temp)
-        # Conn.close()    
-        pass_list.append(temp)
+        #print each
+        try:
+            run_id = each[0]
+            print "run id is: %s" %run_id
+            temp = []
+            total_query = "select count(*) from test_run where run_id='%s'" % run_id
+            print "tota_query: %s" %total_query
+            pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
+            print "pass_query: %s" %pass_query
+            fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % run_id
+            print "fail_query: %s" %fail_query
+            blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
+            print "blocked_query: %s" %blocked_query
+            progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
+            print "progress_query: %s" %progress_query
+            notrun_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
+            print "notrun_query: %s" %notrun_query
+            skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
+            print "skipped_query: %s" %skipped_query
+            # Conn=GetConnection()
+            total = DB.GetData(Conn, total_query)
+            print "total: %s"%total
+            for iTem in total:
+                print iTem
+            
+            passed = DB.GetData(Conn, pass_query)
+            print "passed: %s"%passed
+            for iTem in passed:
+                print iTem
+            
+            failed = DB.GetData(Conn, fail_query)
+            print "failed: %s"%failed
+            for iTem in failed:
+                print iTem
+            
+            blocked = DB.GetData(Conn, blocked_query)
+            print "blocked: %s"%blocked
+            for iTem in blocked:
+                print iTem
+            
+            progress = DB.GetData(Conn, progress_query)
+            print "progress: %s"%progress
+            for iTem in total:
+                print iTem
+            
+            submitted = DB.GetData(Conn, notrun_query)
+            print "submitted: %s"%submitted
+            for iTem in progress:
+                print iTem
+            
+            skipped = DB.GetData(Conn, skipped_query)
+            print "skipped: %s"%skipped
+            for iTem in skipped:
+                print iTem
+        
+            pass_percent = str((int(passed[0]) * 100 / int(total[0]))) + '%'
+            fail = str((int(failed[0]) * 100 / int(total[0]))) + '%'
+            block = str((int(blocked[0]) * 100 / int(total[0]))) + '%'
+            progress = str((int(progress[0]) * 100 / int(total[0]))) + '%'
+            submitted = str((int(submitted[0]) * 100 / int(total[0]))) + '%'
+            pending = str((int(skipped[0]) * 100 / int(total[0]))) + '%'
+            temp.append(pass_percent)
+            temp.append(fail)
+            temp.append(block)
+            temp.append(progress)
+            temp.append(submitted)
+            temp.append(pending)
+            temp = tuple(temp)
+            # Conn.close()    
+            pass_list.append(temp)
+        except Exception, e:
+            Conn = GetConnection()
+            print "Exception %s" % e
+            
     print pass_list
     return pass_list
 def ResultTableFetch(index):
