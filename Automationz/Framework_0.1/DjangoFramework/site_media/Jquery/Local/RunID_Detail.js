@@ -345,7 +345,17 @@ function drawGraph(RunID){
         function(data){
             console.log(data);
             /***************pie chart***********************/
-            google.load("visualization", "1", {packages:["corechart"], callback:drawChart});
+
+            RenderPieChart('chart', [
+                ['Passed ('+data[1]+')',     data[1]],
+                ['Failed ('+data[2]+')',      data[2]],
+                ['Blocked ('+data[3]+')',  data[3]],
+                ['In-Progress ('+data[4]+')', data[4]],
+                ['Submitted ('+data[5]+')',  data[5]],
+                ['Skipped ('+data[6]+')', data[6]]
+            ],'Run-ID Summary : ' + RunID);
+
+            /*google.load("visualization", "1", {packages:["corechart"], callback:drawChart});
 
             function drawChart() {
                 var piedata = google.visualization.arrayToDataTable([
@@ -368,7 +378,7 @@ function drawGraph(RunID){
                 };
                 var chart = new google.visualization.PieChart(document.getElementById('chart'));
                 chart.draw(piedata, options);
-            }
+            }*/
         });
 }
 function LoadAllTestCases(divname){
@@ -539,4 +549,52 @@ function desktop_notify(message){
     }
 
 
+}
+
+
+function RenderPieChart(elementId, dataList, title) {
+    Highcharts.setOptions({
+        colors: ['#65bd10','#FD0006','#FF8C00','blue','grey','#88a388']
+    });
+    new Highcharts.Chart({
+        chart: {
+            renderTo: elementId,
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            height: 500
+        }, title: {
+            text: title
+        },
+        tooltip: {
+            /*formatter: function () {
+             return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
+             }*/
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    formatter: function () {
+                        return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
+                    }
+                }
+                /*dataLabels: {
+                 enabled: false
+                 }*/,
+                showInLegend: true,
+                size : '95%'
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Bundle Report',
+            data: dataList
+        }]
+    });
 }

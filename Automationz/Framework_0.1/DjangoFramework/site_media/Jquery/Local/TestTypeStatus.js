@@ -26,13 +26,27 @@ $(document).ready(function(){
         var choice = $(".section").val();
         if(choice != 0)
         {
+            /*$("#space").append('' +
+                '<br/>' +
+                '<hr/>' );*/
+
             $.get("TestTypeStatus_Report",{choice : choice},function(data)
             {
                 ResultTable(TestTypeStatusTable,data['Heading'],data['TableData'],"Test Type Status Report");
 
 
                 /***************pie chart***********************/
-                 google.load("visualization", "1", {packages:["corechart"], callback:drawChart});
+
+                RenderPieChart('TestTypeStatusChart', [
+                    ['Manual ('+data['Summary'][2]+')', data['Summary'][2]],
+                    ['Manual in-progress ('+data['Summary'][3]+')', data['Summary'][3]],
+                    ['Automated ('+data['Summary'][4]+')',  data['Summary'][4]],
+                    ['Automated in-progress ('+data['Summary'][5]+')', data['Summary'][5]],
+                    ['Performance ('+data['Summary'][6]+')',  data['Summary'][6]],
+                    ['Performance in-progress ('+data['Summary'][7]+')', data['Summary'][7]]
+                ],choice);
+
+                 /*google.load("visualization", "1", {packages:["corechart"], callback:drawChart});
 
                  function drawChart() {
                     /*var jsonData = $.ajax({
@@ -41,7 +55,7 @@ $(document).ready(function(){
                         async: false
                     }).responseText;*/
 
-                var piedata = google.visualization.arrayToDataTable([
+                /*var piedata = google.visualization.arrayToDataTable([
                     ['Test Type', 'Total Case Number'],
                     ['Manual ('+data['Summary'][2]+')', data['Summary'][2]],
                     ['Manual in-progress ('+data['Summary'][3]+')', data['Summary'][3]],
@@ -66,7 +80,7 @@ $(document).ready(function(){
                 chart.draw(piedata, options);
 
                 //image = '<a href="' + chart.getImageURI() + '">Printable version</a>';
-            }
+            }*/
 
                 /***************pie chart*********************/
 
@@ -253,3 +267,49 @@ function AnalysisTableActions()
     });
 }
 
+function RenderPieChart(elementId, dataList, title) {
+    Highcharts.setOptions({
+        colors: ['#1240AB', 'red', 'orange', 'green', '#009999', '#7109AA']
+    });
+    new Highcharts.Chart({
+        chart: {
+            renderTo: elementId,
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            height: 500
+        }, title: {
+            text: 'Summary - ' + title
+        },
+        tooltip: {
+            /*formatter: function () {
+             return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
+             }*/
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    formatter: function () {
+                        return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
+                    }
+                }
+                /*dataLabels: {
+                 enabled: false
+                 }*/,
+                showInLegend: true,
+                size : '95%'
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Bundle Report',
+            data: dataList
+        }]
+    });
+}
