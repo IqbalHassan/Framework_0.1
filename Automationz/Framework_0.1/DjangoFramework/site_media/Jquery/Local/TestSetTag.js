@@ -129,12 +129,14 @@ function ClickButton(){
         $('#msg').css({'display':'none'});
         configureLinks($(this).closest('table').attr('data-id').trim(),name);
         $('#type').html('<p style="color: #4183c4;font-weight: bold; text-align:left;" class="Text">'+$(this).closest('table').attr('data-id').trim().toUpperCase()+' - </p>');
-        $('#name').html('<p style="font-weight: bold; text-align: left;margin-left: -10%" class="Text">'+name+'</p>');
+        $('#name').html('<p style="font-weight: bold; text-align: left;margin-left: -10%" class="Text">'+name+'<span id="time"></span></p>');
         name+=':';
         $('#infoDiv').css({'display':'block'});
-        $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:true},function(data){
+        $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:true,total_time:true},function(data){
             if(data['TableData'].length!=0){
                 ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
+                $('#time').html('<b> - '+data['time']+'</b>')
+
                 implementDropDown("#RunTestResultTable");
                 var indx = 0;
                 $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
@@ -156,6 +158,44 @@ function ClickButton(){
             else{
                 $('#RunTestResultTable').html('<p style="font-weight: bold; text-align: center;" class="Text">There is no test cases</p>');
             }
+        });
+    });
+    $('.new').click(function(event){
+        var temp=$(this).attr('data-id').trim();
+        event.preventDefault();
+        $('#inner_div').html(createDivInit(temp));
+        $("#inner_div").dialog({
+            /*buttons : {
+             "OK" : function() {
+             $(this).dialog("close");
+             }
+             },
+             */
+            show : {
+                effect : 'drop',
+                direction : "up"
+            },
+            modal : true,
+            width : 400,
+            height : 200,
+            title:"Create New "+temp.toLocaleUpperCase()
+        });
+        $('#create').click(function(event){
+            event.preventDefault();
+            var new_name=$('#inputText').val().trim();
+            //alert(temp.toLocaleUpperCase()+new_name);
+            $.get("createNewSetTag",{type:temp.toLocaleUpperCase(),name:new_name.trim()},function(data){
+                var str=data;
+                var substr='Failed'
+                if(str.lastIndexOf(substr, 0) == 0){
+                    alertify.error(data,"",0);
+                }
+                else{
+                    alertify.success(data,"",0);
+                }
+                var location='/Home/ManageSetTag/';
+                window.location=location;
+            });
         });
     });
 }
@@ -182,16 +222,19 @@ function formTable(data){
     var message="";
     message+='<table style="width: 100%;border-collapse: separate;border-spacing: 1.5em 3em;">';
     for(var i=0;i<data.length;i++){
-        message+='<tr style="margin-bottom: 2%;">';
-        message+='<td style="width: 22%; border-right: 2px solid #ccc;"><b style="font-weight: bolder;font-size: 125%">'+data[i][0]+'</b></td>';
-        message+='<td>';
-        message+='<table data-id="'+data[i][0]+'">'
-        for(var j=0;j<data[i][1].length;j++){
-            message+='<tr><td class="element back" style="cursor:pointer;width:100%;">'+data[i][1][j]+'</td></tr>';
+        message+='<tr><td colspan="2"><a class="createnew new" data-id="'+data[i][0]+'" href="">Create'+data[i][0].toLocaleUpperCase()+'</a></td></tr>';
+        if(data[i][1].length>0){
+            message+='<tr style="margin-bottom: 2%;">';
+            message+='<td style="width: 22%; border-right: 2px solid #ccc;"><b style="font-weight: bolder;font-size: 125%">'+data[i][0]+'</b></td>';
+            message+='<td>';
+            message+='<table data-id="'+data[i][0]+'">'
+            for(var j=0;j<data[i][1].length;j++){
+                message+='<tr><td class="element back" style="cursor:pointer;width:100%;">'+data[i][1][j]+'</td></tr>';
+            }
+            message+='</table>';
+            message+='</td>'
+            message+='</tr>';
         }
-        message+='</table>';
-        message+='</td>'
-        message+='</tr>';
     }
     message+='</table>';
     return message;

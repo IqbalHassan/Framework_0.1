@@ -7130,8 +7130,8 @@ def GetSetTag(request):
                 for eachitem in get_list:
                     if eachitem not in temp:
                         temp.append(eachitem)
-                if len(temp)!=0:
-                    final.append((each,temp))            
+                #if len(temp)!=0:
+                final.append((each,temp))            
     result=simplejson.dumps(final)
     return HttpResponse(result,mimetype='application/json')
 def SetTagEdit(request,type,name):
