@@ -7304,3 +7304,5 @@ def UpdateSetTag(request):
 
 def select2(request):
     return render(request, 'select2.html', {})
+def manageMilestone(request):
+    return render_to_response('Milestone.html',{})
