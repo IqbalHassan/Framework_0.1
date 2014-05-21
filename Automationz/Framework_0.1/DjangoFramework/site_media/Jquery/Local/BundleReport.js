@@ -75,7 +75,7 @@ $(document).ready(function(){
 
 function RenderPieChart(elementId, dataList, title) {
     Highcharts.setOptions({
-        colors: ['green', 'red', 'orange', 'grey', 'blue', '#D7D7D7','black']
+        colors: ['#65bd10','#FD0006','#FF8C00','grey','blue','#88a388','black']
     });
     new Highcharts.Chart({
         chart: {
