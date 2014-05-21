@@ -481,13 +481,15 @@ function SendingQueryAndDepandency()
 			}
 		
 			
-			//$("#DepandencyCheckboxes form#device_memory input").is(":checked")			
+			//$("#DepandencyCheckboxes form#device_memory input").is(":checked")
+            var client="";
 			$("input [type='radio'], #DepandencyCheckboxes").each(function()
 			{
 				$(this).live('click',function()
 				{	
 					var Text = "";
 					var DNL = DepandencyNameList
+                    client=$(this).val();
 					for (i in DNL)
 					{	
 						temp = $("#DepandencyCheckboxes form#" +DNL[i]+ " input:checked").val();
@@ -531,26 +533,45 @@ function SendingQueryAndDepandency()
 						DNL = ""
 						
 					}
-					
-					
-				});
-				
-			});
-					
-					
-				
-				
-			
-		});
-	});		
-				
-				
-					
-				
-			
-		
-	
-	
+                    });
+            });
+            $("#AutoSearchResult #searchedtext").each(function() {
+                var UserText = $(this).find("td").text();
+                UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+                UserText+=(' '+client+":");
+                Env = Get_Selected_Env_Name()
+                $.get("Table_Data_TestCases",{Query: UserText, Env: Env},function(data) {
+
+                    if (data['TableData'].length == 0)
+                    {
+                        $('#RunTestResultTable').children().remove();
+                        //$('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+                        $("#DepandencyCheckboxes").children().remove();
+                        //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
+                        $('#timeRequired').fadeOut(500);
+                        $('#timeRequired').html("");
+                    }
+                    else
+                    {
+                        ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
+
+                        $("#RunTestResultTable").fadeIn(1000);
+                        $("p:contains('Show/Hide Test Cases')").fadeIn(2000);
+                        var message=('<p align="center" style="font-size:150%;font-weight: bold;color:#003bb3;">TimeRequired:&nbsp;&nbsp;<b style="font-size: 150%;font-weight:bolder; color: #000000;">'+data['TimeEstimated']+'</b></p>');
+                        $('#timeRequired').html(message);
+                        $('#timeRequired').fadeIn(1000);
+                        implementDropDown('#RunTestResultTable');
+                        VerifyQueryProcess();
+                        //$(".Buttons[title='Verify Query']").fadeIn(2000);
+                        $(".Buttons[title='Select User']").fadeOut();
+                    }
+
+                });
+
+            });
+
+        });
+	});
 }
 
 
