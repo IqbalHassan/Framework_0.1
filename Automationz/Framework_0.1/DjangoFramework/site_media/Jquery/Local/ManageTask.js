@@ -8,9 +8,90 @@ $(document).ready(function(){
             $('#msg').slideUp("fast");
             $('#RunTestResultTable').html(initCreateDiv(data['project'],data['team'],data['manager']));
             ActivateNecessaryButton();
+            ButtonSet();
         });
     });
 });
+function ButtonSet(){
+    $("#assigned_tester").autocomplete({
+
+        source : 'AutoCompleteTesterSearch',
+        select : function(event, ui) {
+
+            var value = ui.item.value
+            $("#tester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td class="Text">'
+                + value
+                + ":&nbsp"
+                + '</td>');
+
+            //$("#tester th").css('display', 'block');
+
+            $("#assigned_tester").val("");
+            return false;
+
+        }
+    });
+    $("#assigned_tester").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteTester").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+    $('#milestone_list').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"AutoMileStone",
+                dataType:"json",
+                data:{term:request.term},
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(request,ui){
+            var value=ui.item[0].trim();
+            if (value!=""){
+                //$(this).val(value.trim());
+                $("#milestone").html('<td><img class="delete" id = "DeleteMileStone" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                    + '<td class="Text">'
+                    + value
+                    + ":&nbsp"
+                    + '</td>');
+
+                //$("#MileStoneHeader th").css('display', 'block');
+
+                $("#milestone_list").val("");
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
+            .appendTo( ul );
+    };
+    $("#milestone_list").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteMileStone").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+}
 function ActivateNecessaryButton(){
     $('#start_date').datepicker({ dateFormat: "dd-mm-yy" });
     $('#start_date').datepicker("option", "showAnim", "slide" );
@@ -64,8 +145,25 @@ function initCreateDiv(project,team,manager){
     message+='</tr>';
     message+='<tr>';
     message+='<td align="right"><b class="Text">Assigned To:</b></td>';
-    message+='<td><input class="textbox" id="tester" placeholder="Select Testers Here"></td>';
-    message+='<td><table><tr id="tester_list"></tr></table></td>';
+    message+='<td><input class="textbox" id="assigned_tester" placeholder="Select Testers Here"></td>';
+    message+='<td><table><tr id="tester"></tr></table></td>';
+    message+='</tr>';
+    message+='<tr>';
+    message+='<td align="right"><b class="Text">Priority:</b></td>';
+    message+='<td><select id="priority"><option selected value="1">P1(Highest)</option>';
+    message+='<option value="2">P2</option>';
+    message+='<option value="3">P3</option>';
+    message+='<option value="4">P4</option>';
+    message+='</select></td>';
+    message+='</tr>';
+    message+='<tr>';
+    message+='<td align="right"><b class="Text">Milestone</b></td>';
+    message+='<td><input type="text" id="milestone_list" class="textbox" placeholder="Milestone Here"></td>';
+    message+='<td><table><tr id="milestone"></tr></table></td>'
+    message+='</tr>';
+    message+='<tr>';
+    message+='<td>&nbsp;</td>';
+    message+='<td><input type="button" class="button primary" value="Submit"/></td>';
     message+='</tr>'
     message+='</table>';
     return message;
