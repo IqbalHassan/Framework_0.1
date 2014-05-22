@@ -1,0 +1,95 @@
+{% extends "BaseTemplate.html" %}
+
+{% block title%}Manage Task{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/ManageRequirement.js"></script>
+<style>
+    #searchbox {
+        width: 94%;
+        padding: 5px;
+        max-width: 95%;
+        outline-color: #000;
+        outline-style: none;
+        box-shadow: 0 6px 6px -6px black;
+        font-size: 1.2em;
+    }
+
+    #searchbox:focus {
+        box-shadow: 0 6px 6px -6px blue;
+    }
+</style>
+<article>
+    <table align="right">
+        <tr>
+            <td width="80%">
+                <div align="left">
+                    <h3 style="font-size: 19px;"><a style="font-weight: bold;margin-right: 105%;">Manage Requirement</a></h3>
+                </div>
+            </td>
+            <td width="20%"><a href="" class="createnew" style="text-align: center;width: 75%;" id="new_task">Create New Requirement</a></td>
+        </tr>
+    </table>
+    <table style="width: 100%;">
+        <thead>
+        <tr>
+            <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Requirements</td>
+            <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text">Details</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td style="width: 20%; border-right: 2px solid #ccc;">
+                <div style="width: 100%;">
+                    <input type="text" id="searchbox" placeholder="Search Requirements">
+                </div>
+                <div id="task"></div>
+            </td>
+            <td style="width: 80%; border-left: 2px solid #ccc; position: relative;">
+                <div style="position: absolute; min-width: 100%; top: 0;">
+                    <p id='msg' style="font-weight: bold; text-align: center;" class="Text">Select any Requirement to view</p>
+                    <div id="infoDiv" style="display: none;">
+                        <table>
+                            <tr>
+                                <td style="width:10%">
+                                    <div align="right">
+                                        <div id="type"></div>
+                                    </div>
+                                </td>
+                                <td style="width: 50%">
+                                    <div align="left">
+                                        <div id="name">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td width="40%">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <a class="createnew" id="createNew" href="">CreateNew</a>
+                                            </td>
+                                            <td>
+                                                <a class="github" id="rename" href="">Rename</a>
+                                            </td>
+                                            <td>
+                                                <a class="twitter" id="edit" href="">Add/Remove</a>
+                                            </td>
+                                            <td>
+                                                <a class="dribble" id="delete" href="">Delete</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="RunTestResultTable">
+
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</article>
+{% endblock %}

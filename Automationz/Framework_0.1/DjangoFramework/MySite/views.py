@@ -7323,3 +7323,5 @@ def FetchProject(request):
     return HttpResponse(result,mimetype='application/json')
 def ManageBug(request):
     return render_to_response('ManageBug.html',{})
+def ManageRequirement(request):
+    return render_to_response('ManageRequirement.html',{})

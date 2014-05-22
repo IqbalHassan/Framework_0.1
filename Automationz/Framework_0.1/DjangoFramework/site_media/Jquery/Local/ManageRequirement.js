@@ -1,5 +1,5 @@
 /**
- * Created by lent400 on 5/23/14.
+ * Created by lent400 on 5/22/14.
  */
 $(document).ready(function(){
     $('#new_task').click(function(event){
@@ -163,13 +163,10 @@ function initCreateDiv(project,team,manager){
     message+='</tr>';
     message+='<tr>';
     message+='<td align="right"><b class="Text">Status:</b></td>';
-    message+='<td><select id="status"><option selected value="Unconfirmed">Unconfirmed</option>';
-    message+='<option value="New">New</option>';
-    message+='<option value="Assigned">Assigned</option>';
-    message+='<option value="Reopened">Reopened</option>';
-    message+='<option value="Ready">Ready</option>';
-    message+='<option value="Resolved">Resolved</option>';
-    message+='<option value="Verified">Verified</option>';
+    message+='<td><select id="status"><option selected value="not_started">Not Started</option>';
+    message+='<option value="started">Started</option>';
+    message+='<option value="completed">Complete</option>';
+    message+='<option value="over_due">OverDue</option>';
     message+='</select></td>';
     message+='</tr>';
     message+='<tr>';

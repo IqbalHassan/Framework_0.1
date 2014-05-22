@@ -211,6 +211,7 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTask/$',ManageTask),
     url(r'^Home/.*/FetchProject/$',FetchProject),
     url(r'^Home/ManageBug/$',ManageBug),
+    url(r'^Home/ManageRequirement/$',ManageRequirement),
     
     
     
