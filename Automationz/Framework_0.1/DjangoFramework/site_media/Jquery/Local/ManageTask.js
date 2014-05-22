@@ -162,9 +162,17 @@ function initCreateDiv(project,team,manager){
     message+='<td><table><tr id="milestone"></tr></table></td>'
     message+='</tr>';
     message+='<tr>';
+    message+='<td align="right"><b class="Text">Status:</b></td>';
+    message+='<td><select id="status"><option selected value="not_started">Not Started</option>';
+    message+='<option value="started">Started</option>';
+    message+='<option value="completed">Complete</option>';
+    message+='<option value="over_due">OverDue</option>';
+    message+='</select></td>';
+    message+='</tr>';
+    message+='<tr>';
     message+='<td>&nbsp;</td>';
     message+='<td><input type="button" class="button primary" value="Submit"/></td>';
-    message+='</tr>'
+    message+='</tr>';
     message+='</table>';
     return message;
 }
