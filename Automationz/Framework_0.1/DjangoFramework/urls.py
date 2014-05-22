@@ -207,6 +207,10 @@ urlpatterns = patterns('',
     url(r'^Home/FeaDri/FeatureDriverDelete/$', FeatureDriverDelete),
     # url(r'^Home/.*/myview/$',myview), 
     
+    #For TaskManageMent
+    url(r'^Home/ManageTask/$',ManageTask),
+    url(r'^Home/.*/FetchProject/$',FetchProject),
+    
     
     
     

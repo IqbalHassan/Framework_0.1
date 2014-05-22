@@ -7306,3 +7306,18 @@ def select2(request):
     return render(request, 'select2.html', {})
 def manageMilestone(request):
     return render_to_response('Milestone.html',{})
+def ManageTask(request):
+    return render_to_response('ManageTask.html',{})
+def FetchProject(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            query="select distinct value from config_values where type='Project'"
+            Conn=GetConnection()
+            project=DB.GetData(Conn,query)
+            query="select distinct value from config_values where type='Team'"
+            team=DB.GetData(Conn,query)
+            query="select distinct user_names from permitted_user_list where user_level='manager'"
+            manager=DB.GetData(Conn,query)
+    result={'project':project,'team':team,'manager':manager}
+    result=simplejson.dumps(result)
+    return HttpResponse(result,mimetype='application/json')
