@@ -210,6 +210,7 @@ urlpatterns = patterns('',
     #For TaskManageMent
     url(r'^Home/ManageTask/$',ManageTask),
     url(r'^Home/.*/FetchProject/$',FetchProject),
+    url(r'^Home/ManageBug/$',ManageBug),
     
     
     

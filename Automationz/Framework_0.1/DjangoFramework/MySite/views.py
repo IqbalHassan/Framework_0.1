@@ -7321,3 +7321,5 @@ def FetchProject(request):
     result={'project':project,'team':team,'manager':manager}
     result=simplejson.dumps(result)
     return HttpResponse(result,mimetype='application/json')
+def ManageBug(request):
+    return render_to_response('ManageBug.html',{})
