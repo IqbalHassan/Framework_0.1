@@ -213,7 +213,7 @@ urlpatterns = patterns('',
     url(r'^Home/ManageBug/$',ManageBug),
     url(r'^Home/ManageRequirement/$',ManageRequirement),
     
-    
+     url(r'^Home/FeaDri/GetTestStepsAndTestCasesOnDriverValue/$', GetTestStepsAndTestCasesOnDriverValue),
     
     
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),

@@ -185,6 +185,7 @@ function populate_feature_driver_info_div(){
                     var value = ui.item[0];
                     if(value!=""){
                         $("#input2").val(value);
+                        
                         return false;
                     }
                 }
@@ -261,8 +262,19 @@ function populate_feature_driver_info_div(){
         }*/
         select: function(request,ui){
             var value = ui.item[0];
+            var id=ui.item[1];
             if(value!=""){
+                console.log(value);
+				if($("#type").val()=="driver"){
+					data_type="driver";
+					GetTestCasesAndSteps(value,data_type)
+				}
+				 if($("#type").val()=="feature"){
+					data_type="feature";
+					GetTestCasesAndSteps(value,data_type)
+				}
                 $("#input").val(value);
+                
                 return false;
             }
         }
@@ -798,4 +810,26 @@ function implementDropDown(wheretoplace){
 
         });
     });
+}
+function GetTestCasesAndSteps(value,data_type){
+	$.get('GetTestStepsAndTestCasesOnDriverValue', { "ToDelete": value,"data_type":data_type } , function(data, status){
+		console.log(data);
+		window.section_has_no_tc = false;
+	            ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases", "Number of test cases for the selected section(s)");
+	            $("#RunTestResultTable").fadeIn(1000);
+	            $("p:contains('Show/Hide Test Cases')").fadeIn(0);
+	            implementDropDown("#RunTestResultTable");
+	            // add edit btn
+	            var indx = 0;
+	            $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
+	                var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+	                $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/></span>');
+	                $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25"/></span>');
+
+	                indx++;
+	            });
+
+	           
+		});
 }

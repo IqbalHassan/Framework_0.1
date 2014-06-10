@@ -7325,3 +7325,53 @@ def ManageBug(request):
     return render_to_response('ManageBug.html',{})
 def ManageRequirement(request):
     return render_to_response('ManageRequirement.html',{})
+
+def GetTestStepsAndTestCasesOnDriverValue(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            ToDelete= request.GET.get('ToDelete', '')
+            data_type=request.GET.get('data_type', '')
+            if(data_type=='driver'):
+                query='''
+                SELECT  distinct  test_cases.tc_id , 
+                      test_cases.tc_name, 
+                      config_values.value, 
+                      test_steps_list.step_id,
+                      test_steps_list.stepname      
+                    FROM 
+                       public.config_values  join 
+                       public.test_steps_list on config_values.value = test_steps_list.driver join
+                       public.test_steps on test_steps.step_id = test_steps_list.step_id join
+                       public.test_cases on test_steps.tc_id=test_cases.tc_id  join
+                       public.test_case_tag on test_steps.tc_id=test_case_tag.tc_id 
+    
+                 WHERE
+                       config_values.value ='%s' 
+                    ''' %ToDelete 
+                    
+                tabledata= DB.GetData(Conn, query, False)                              
+                Heading = ['ID', 'Test Case Name', 'Value', 'Step ID', 'Step Name']
+            if(data_type=='feature'):
+                query='''
+                SELECT  distinct  test_cases.tc_id , 
+                      test_cases.tc_name, 
+                      config_values.value, 
+                      test_steps_list.step_id,
+                      test_steps_list.stepname      
+                    FROM 
+                       public.config_values  join 
+                       public.test_steps_list on config_values.value = test_steps_list.stepfeature join
+                       public.test_steps on test_steps.step_id = test_steps_list.step_id join
+                       public.test_cases on test_steps.tc_id=test_cases.tc_id  join
+                       public.test_case_tag on test_steps.tc_id=test_case_tag.tc_id 
+    
+                 WHERE
+                       config_values.value ='%s' 
+                    ''' %ToDelete 
+                    
+                tabledata= DB.GetData(Conn, query, False)                              
+                Heading = ['ID', 'Test Case Name', 'Value', 'Step ID', 'Step Name ']
+            results = {'Heading':Heading, 'TableData':tabledata}
+            print results
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')

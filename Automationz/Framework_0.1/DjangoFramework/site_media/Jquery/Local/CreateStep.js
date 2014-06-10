@@ -116,12 +116,14 @@ $(document).ready(function(){
         select: function(request,ui){
             var value=ui.item[0];
             if(value!=""){
+                console.log(value);
                 $("#step_name").val(value);
                 $.ajax({
                     url:"Populate_info_div",
                     dataType:"json",
                     data:{term:value},
                     success:function(data){
+                        console.log(data[0])
                         //info_div(data[0]);
                         var row=data[0];
                         $("#step_desc").val(row[2]);
