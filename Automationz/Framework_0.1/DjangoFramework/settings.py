@@ -181,5 +181,5 @@ LOGGING = {
 
 ALLOWED_HOSTS = [
     '135.23.123.67',  # Allow domain and subdomains
-
+    '127.0.0.1',
 ]

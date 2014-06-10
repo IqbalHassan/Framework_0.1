@@ -7325,3 +7325,107 @@ def ManageBug(request):
     return render_to_response('ManageBug.html',{})
 def ManageRequirement(request):
     return render_to_response('ManageRequirement.html',{})
+def ManageTeam(request):
+    return render_to_response('ManageTeam.html',{})
+def GetTesterManager(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            final=[]
+            Filters=['assigned_tester','manager']
+            Conn=GetConnection()
+            for each in Filters:
+                query="select user_names from permitted_user_list where user_level='%s'"%each.strip()
+                get_list=DB.GetData(Conn, query)
+                final.append((each,get_list))
+    result=simplejson.dumps(final)
+    return HttpResponse(result,mimetype='application/json')
+def Create_Team(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            manager=request.GET.get(u'manager','').split("|")
+            tester=request.GET.get(u'tester','').split("|")
+            team_name=request.GET.get(u'team_name','')
+            print manager
+            print tester
+            print team_name
+            Conn=GetConnection()
+            #check for existing team
+            query="select count(*) from config_values where type='Team' and value='%s'"%team_name.strip()
+            available_count=DB.GetData(Conn, query)
+            if(available_count[0]==0):
+                #form dict
+                Dict={'type':'Team','value':team_name.strip()}
+                result=DB.InsertNewRecordInToTable(Conn,"config_values",**Dict)
+                if result==True:
+                    query="select id from config_values where type='Team' and value='%s'"%team_name.strip()
+                    id_list=DB.GetData(Conn,query)
+                    if (len(id_list)!=0):
+                        id_list=str(id_list[0])
+                        for each in manager:
+                            #formDict
+                            Dict={}
+                            Dict.update({'team_id':id_list,'name':each.strip(),'rank':'leader'})
+                            if(DB.IsDBConnectionGood(Conn)==False):
+                                time.sleep(1)
+                                Conn=GetConnection()
+                            result=DB.InsertNewRecordInToTable(Conn,"team_info",**Dict)
+                            if result!=True:
+                                message="Failed inserting the team leader"
+                                
+                        for each in tester:
+                            #formDict
+                            Dict={}
+                            Dict.update({'team_id':id_list,'name':each.strip(),'rank':'tester'})
+                            if(DB.IsDBConnectionGood(Conn)==False):
+                                time.sleep(1)
+                                Conn=GetConnection()
+                            result=DB.InsertNewRecordInToTable(Conn,"team_info",**Dict)
+                            if result!=True:
+                                message="Failed inserting the member"
+                            
+                    else:
+                        message="Failed.Can't retrieve the Team name."
+                else:
+                    message="Failed.Team name insert Failure"    
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def GetAllTeam(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            query="select value from config_values where type='Team'"
+            Conn=GetConnection()
+            all_team=DB.GetData(Conn,query)
+    result=simplejson.dumps(all_team)
+    return HttpResponse(result,mimetype='application/json')
+def GetTeamInfo(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            team=request.GET.get(u'team','')
+            print team
+            list_value=['leader','tester']
+            Conn=GetConnection()
+            #Get team Id
+            final=[]
+            query="select id from config_values where type='Team' and value='%s'"%team.strip()
+            team_id=DB.GetData(Conn,query)
+            if len(team_id)==1:
+                team_id=str(team_id[0]).strip()
+                for each in list_value:
+                    query="select name from team_info where rank='%s' and team_id='%s'"%(each.strip(),team_id.strip())
+                    if(DB.IsDBConnectionGood(Conn)==False):
+                        time.sleep(1)
+                        Conn=GetConnection()
+                    list_data=[]
+                    list_data=DB.GetData(Conn,query)
+                    final.append((each.strip(),list_data))
+                message="Team Data Fetched"
+            else:
+                message="No team found"
+                final=[]
+    result_data={
+                 'message':message.strip(),
+                 'data':final,
+                 'teamname':team
+                 }    
+    result=simplejson.dumps(result_data)
+    return HttpResponse(result,mimetype='application/json')
