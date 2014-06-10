@@ -221,6 +221,7 @@ $(document).ready(function() {
 	        else
 	        {
 	        	window.section_has_no_tc = false;
+				console.log(data['TableData'])
 	            ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases", "Number of test cases for the selected section(s)");
 	            $("#RunTestResultTable").fadeIn(1000);
 	            $("p:contains('Show/Hide Test Cases')").fadeIn(0);

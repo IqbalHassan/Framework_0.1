@@ -218,7 +218,13 @@ urlpatterns = patterns('',
     url(r'^Home/.*/GetAllTeam/$',GetAllTeam),
     url(r'^Home/.*/GetTeamInfo/$',GetTeamInfo),
     
+     url(r'^Home/FeaDri/GetTestStepsAndTestCasesOnDriverValue/$', GetTestStepsAndTestCasesOnDriverValue),
     
+	url(r'^Home/ManageTeam/$',ManageTeam),
+    url(r'^Home/.*/GetTesterManager/$',GetTesterManager),
+    url(r'^Home/.*/Create_Team/$',Create_Team),
+    url(r'^Home/.*/GetAllTeam/$',GetAllTeam),
+    url(r'^Home/.*/GetTeamInfo/$',GetTeamInfo),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )
