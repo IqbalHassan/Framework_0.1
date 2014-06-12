@@ -14,6 +14,24 @@
     <!--div class="responsive-tabs" width="100%">
 
         <h2>All</h2-->
+
+    <!--a id="simple-menu" href="#sidr" class="button hint--right hint--bounce hint--rounded" data-hint="Apply Filter" style="text-decoration: none;float: left"><img class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
+    <div id="sidr" class="sidr">
+        <ul>
+            <li>
+                <input class="textbox" placeholder="Search & Select Filter Here" id="searchinput" style="padding-left: 10px; width: 95%; margin-top: 40%"/>
+            </li>
+            <li>
+        <table style="margin-top: 5%;margin-bottom: 1%; width: 100%">
+            <tr id="searchedFilter">
+                <th><p class="Text" style="color: #ffffff">Filtered By:</p></th>
+            </tr>
+            <tr><td style="display: none;" id="pagination_no">1</td></tr>
+        </table>
+            </li>
+        </ul>
+    </div-->
+
     <div align="left">
         <input type="text" class="textbox" placeholder="Search & Select Filter Here" id="searchinput"/>
         <br>
@@ -24,6 +42,8 @@
             <tr><td style="display: none;" id="pagination_no">1</td></tr>
         </table>
     </div>
+
+
     <table width="100%">
         <tr>
             <td>
@@ -521,7 +541,7 @@
             /*.filterTable({
                 quickList: ['Complete', 'Cancelled', 'Unassigned', 'In-progress', 'Submitted']
             });*/
-            $('#simple-menu').sidr();
+            //$('#simple-menu').sidr();
             //$('table').tablePagination({});
         })
     </script>

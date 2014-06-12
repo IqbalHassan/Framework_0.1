@@ -1428,6 +1428,27 @@ article header{
     color: #fff;
 }
 
+/**********Third-livel***********
+
+#nav ul ul ul
+{
+    visibility: hidden;
+    z-index:999999;
+    background-color: #fff;
+    background-clip: padding-box;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+}
+#nav ul ul ul li
+{
+    left: 100%;
+    top: -35px;
+}
+#nav ul ul li:hover ul {
+    visibility: visible;
+}
+
+************************************/
+
 @media only screen and ( min-width: 62.5em ) /* 1000 */
 {
     #toppanel
@@ -3820,3 +3841,4 @@ body.avgrund-active {
 	background-color: #353535;
 	color: #fff;
 }
+/********************************************************/

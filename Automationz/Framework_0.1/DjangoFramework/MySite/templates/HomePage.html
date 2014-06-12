@@ -14,172 +14,555 @@
 
     <!--<h1 class="Text" style="margin: 24%; text-align: center; font-weight: normal; line-height: 1.1;font-size: 38px;font-family: Satisfy, cursive; color: red">Under Construction!</h1>-->
 
-        <style type="text/css">
-            body
-            {
-                background-color: #f7f7f7;
-            }
 
-            .wrapper
-            {
-                width: 960px;
-                margin: 0px auto;
-                padding-top: 20px;
-                min-height: 600px;
-            }
+    <div id="wrapper">
 
-            .wrapper h1, .wrapper h4, .wrapper p, .wrapper pre, .wrapper ul, .wrapper li
-            {
-                margin: 0;
-                padding: 0;
-                border: 0;
-                vertical-align: baseline;
-                background: transparent;
-            }
+    <!-- Sidebar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">SB Admin</a>
+        </div>
 
-            .wrapper li
-            {
-                outline: 0;
-                text-decoration: none;
-                -webkit-transition-property: background color;
-                -moz-transition-property: background color;
-                -o-transition-property: background color;
-                -ms-transition-property: background color;
-                transition-property: background color;
-                -webkit-transition-duration: 0.12s;
-                -moz-transition-duration: 0.12s;
-                -o-transition-duration: 0.12s;
-                -ms-transition-duration: 0.12s;
-                transition-duration: 0.12s;
-                -webkit-transition-timing-function: ease-out;
-                -moz-transition-timing-function: ease-out;
-                -o-transition-timing-function: ease-out;
-                -ms-transition-timing-function: ease-out;
-                transition-timing-function: ease-out;
-            }
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav side-nav">
+                <li class="active"><a href="index.html"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                <li><a href="charts.html"><i class="fa fa-bar-chart-o"></i> Charts</a></li>
+                <li><a href="tables.html"><i class="fa fa-table"></i> Tables</a></li>
+                <li><a href="forms.html"><i class="fa fa-edit"></i> Forms</a></li>
+                <li><a href="typography.html"><i class="fa fa-font"></i> Typography</a></li>
+                <li><a href="bootstrap-elements.html"><i class="fa fa-desktop"></i> Bootstrap Elements</a></li>
+                <li><a href="bootstrap-grid.html"><i class="fa fa-wrench"></i> Bootstrap Grid</a></li>
+                <li><a href="blank-page.html"><i class="fa fa-file"></i> Blank Page</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-caret-square-o-down"></i> Dropdown <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Dropdown Item</a></li>
+                        <li><a href="#">Another Item</a></li>
+                        <li><a href="#">Third Item</a></li>
+                        <li><a href="#">Last Item</a></li>
+                    </ul>
+                </li>
+            </ul>
 
-            #v-nav
-            {
-                height: 100%;
-                margin: auto;
-                color: #333;
-                font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
-            }
+            <!--ul class="nav navbar-nav navbar-right navbar-user">
+                <li class="dropdown messages-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> Messages <span class="badge">7</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">7 New Messages</li>
+                        <li class="message-preview">
+                            <a href="#">
+                                <span class="avatar"><img src="http://placehold.it/50x50"></span>
+                                <span class="name">John Smith:</span>
+                                <span class="message">Hey there, I wanted to ask you something...</span>
+                                <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="message-preview">
+                            <a href="#">
+                                <span class="avatar"><img src="http://placehold.it/50x50"></span>
+                                <span class="name">John Smith:</span>
+                                <span class="message">Hey there, I wanted to ask you something...</span>
+                                <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="message-preview">
+                            <a href="#">
+                                <span class="avatar"><img src="http://placehold.it/50x50"></span>
+                                <span class="name">John Smith:</span>
+                                <span class="message">Hey there, I wanted to ask you something...</span>
+                                <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="#">View Inbox <span class="badge">7</span></a></li>
+                    </ul>
+                </li>
+                <li class="dropdown alerts-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> Alerts <span class="badge">3</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Default <span class="label label-default">Default</span></a></li>
+                        <li><a href="#">Primary <span class="label label-primary">Primary</span></a></li>
+                        <li><a href="#">Success <span class="label label-success">Success</span></a></li>
+                        <li><a href="#">Info <span class="label label-info">Info</span></a></li>
+                        <li><a href="#">Warning <span class="label label-warning">Warning</span></a></li>
+                        <li><a href="#">Danger <span class="label label-danger">Danger</span></a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">View All</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown user-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> John Smith <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#"><i class="fa fa-user"></i> Profile</a></li>
+                        <li><a href="#"><i class="fa fa-envelope"></i> Inbox <span class="badge">7</span></a></li>
+                        <li><a href="#"><i class="fa fa-gear"></i> Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#"><i class="fa fa-power-off"></i> Log Out</a></li>
+                    </ul>
+                </li>
+            </ul-->
+        </div><!-- /.navbar-collapse -->
+    </nav>
 
-            #v-nav >ul
-            {
-                float: left;
-                width: 210px;
-                display: block;
-                position: relative;
-                top: 0;
-                border: 1px solid #DDD;
-                border-right-width: 0;
-                margin: auto 0 !important;
-                padding:0;
-            }
+    <div id="page-wrapper">
 
-            #v-nav >ul >li
-            {
-                width: 180px;
-                list-style-type: none;
-                display: block;
-                text-shadow: 0px 1px 1px #F2F1F0;
-                cursor: pointer;
-                font-size: 1.11em;
-                position: relative;
-                border-right-width: 0;
-                border-bottom: 1px solid #DDD;
-                margin: auto;
-                padding: 10px 15px !important;
-                background: whiteSmoke; /* Old browsers */
-                background: -moz-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* FF3.6+ */
-                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100%, #f2f2f2)); /* Chrome,Safari4+ */
-                background: -webkit-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Chrome10+,Safari5.1+ */
-                background: -o-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Opera 11.10+ */
-                background: -ms-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* IE10+ */
-                background: linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* W3C */
-            }
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>Dashboard <small>Statistics Overview</small></h1>
+            <ol class="breadcrumb">
+                <li class="active"><i class="fa fa-dashboard"></i> Dashboard</li>
+            </ol>
+            <div class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                Welcome to Automation Solutionz Framework by <a class="alert-link" href="http://www.automationsolutionz.com/">Automation Solutionz</a>     </div>
+        </div>
+    </div><!-- /.row -->
 
-            #v-nav >ul >li.current
-            {
-                color: black;
-                border-right: none;
-                z-index: 10;
-                background: white !important;
-                position: relative;
-                moz-box-shadow: inset 0 0 35px 5px #fafbfd;
-                -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
-                box-shadow: inset 0 0 35px 5px #fafbfd;
-            }
-
-            #v-nav >ul >li.first.current
-            {
-                border-bottom: 1px solid #DDD;
-            }
-
-            #v-nav >ul >li.last
-            {
-                border-bottom: none;
-            }
-
-            #v-nav >div.tab-content
-            {
-                margin-left: 210px;
-                border: 1px solid #ddd;
-                background-color: #FFF;
-                min-height: 400px;
-                position: relative;
-                z-index: 9;
-                padding: 12px;
-                moz-box-shadow: inset 0 0 35px 5px #fafbfd;
-                -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
-                box-shadow: inset 0 0 35px 5px #fafbfd;
-                display: none;
-                padding: 25px;
-            }
-
-            #v-nav >div.tab-content >h4
-            {
-                font-size: 1.2em;
-                color: Black;
-                text-shadow: 0px 1px 1px #F2F1F0;
-                border-bottom: 1px dotted #EEEDED;
-                padding-top: 5px;
-                padding-bottom: 5px;
-            }
-
-        </style>
-        <section class="wrapper" id="wrapper">
-
-            <div align="left">
-                <h3 style="font-size: 19px;"><a style="font-weight: bold">Dashboard</a></h3>
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <i class="fa fa-comments fa-5x"></i>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <p class="announcement-heading">456</p>
+                            <p class="announcement-text">New Mentions!</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="#">
+                    <div class="panel-footer announcement-bottom">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                View Mentions
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <i class="fa fa-arrow-circle-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
             </div>
-            <div id="v-nav">
-                <ul>
-                    <li tab="tab1" class="first current">Design</li>
-                    <li tab="tab2">Specs</li>
-                    <li tab="tab3">Price</li>
-                    <li tab="tab4" class="last">Release Date</li>
-                </ul>
-                <div class="tab-content" style="display: block">
-                    <h4>Design</h4>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <i class="fa fa-check fa-5x"></i>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <p class="announcement-heading">12</p>
+                            <p class="announcement-text">To-Do Items</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="tab-content" style="display: none">
-                    <h4>Specs</h4>
+                <a href="#">
+                    <div class="panel-footer announcement-bottom">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                Complete Tasks
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <i class="fa fa-arrow-circle-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <i class="fa fa-tasks fa-5x"></i>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <p class="announcement-heading">18</p>
+                            <p class="announcement-text">Crawl Errors</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="tab-content" style="display: none">
-                    <h4>Price</h4>
+                <a href="#">
+                    <div class="panel-footer announcement-bottom">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                Fix Issues
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <i class="fa fa-arrow-circle-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <i class="fa fa-comments fa-5x"></i>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <p class="announcement-heading">56</p>
+                            <p class="announcement-text">New Orders!</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="tab-content" style="display: none">
-                    <h4>Release Date</h4>
+                <a href="#">
+                    <div class="panel-footer announcement-bottom">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                Complete Orders
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <i class="fa fa-arrow-circle-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div><!-- /.row -->
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> Traffic Statistics: October 1, 2013 - October 31, 2013</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="morris-chart-area"></div>
                 </div>
             </div>
-        </section>
+        </div>
+    </div><!-- /.row -->
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i> Traffic Sources: October 1, 2013 - October 31, 2013</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="morris-chart-donut"></div>
+                    <div class="text-right">
+                        <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-clock-o"></i> Recent Activity</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <span class="badge">just now</span>
+                            <i class="fa fa-calendar"></i> Calendar updated
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">4 minutes ago</span>
+                            <i class="fa fa-comment"></i> Commented on a post
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">23 minutes ago</span>
+                            <i class="fa fa-truck"></i> Order 392 shipped
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">46 minutes ago</span>
+                            <i class="fa fa-money"></i> Invoice 653 has been paid
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">1 hour ago</span>
+                            <i class="fa fa-user"></i> A new user has been added
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">2 hours ago</span>
+                            <i class="fa fa-check"></i> Completed task: "pick up dry cleaning"
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">yesterday</span>
+                            <i class="fa fa-globe"></i> Saved the world
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">two days ago</span>
+                            <i class="fa fa-check"></i> Completed task: "fix error on sales page"
+                        </a>
+                    </div>
+                    <div class="text-right">
+                        <a href="#">View All Activity <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-money"></i> Recent Transactions</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped tablesorter">
+                            <thead>
+                            <tr>
+                                <th>Order # <i class="fa fa-sort"></i></th>
+                                <th>Order Date <i class="fa fa-sort"></i></th>
+                                <th>Order Time <i class="fa fa-sort"></i></th>
+                                <th>Amount (USD) <i class="fa fa-sort"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>3326</td>
+                                <td>10/21/2013</td>
+                                <td>3:29 PM</td>
+                                <td>$321.33</td>
+                            </tr>
+                            <tr>
+                                <td>3325</td>
+                                <td>10/21/2013</td>
+                                <td>3:20 PM</td>
+                                <td>$234.34</td>
+                            </tr>
+                            <tr>
+                                <td>3324</td>
+                                <td>10/21/2013</td>
+                                <td>3:03 PM</td>
+                                <td>$724.17</td>
+                            </tr>
+                            <tr>
+                                <td>3323</td>
+                                <td>10/21/2013</td>
+                                <td>3:00 PM</td>
+                                <td>$23.71</td>
+                            </tr>
+                            <tr>
+                                <td>3322</td>
+                                <td>10/21/2013</td>
+                                <td>2:49 PM</td>
+                                <td>$8345.23</td>
+                            </tr>
+                            <tr>
+                                <td>3321</td>
+                                <td>10/21/2013</td>
+                                <td>2:23 PM</td>
+                                <td>$245.12</td>
+                            </tr>
+                            <tr>
+                                <td>3320</td>
+                                <td>10/21/2013</td>
+                                <td>2:15 PM</td>
+                                <td>$5663.54</td>
+                            </tr>
+                            <tr>
+                                <td>3319</td>
+                                <td>10/21/2013</td>
+                                <td>2:13 PM</td>
+                                <td>$943.45</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-right">
+                        <a href="#">View All Transactions <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.row -->
+
+    </div><!-- /#page-wrapper -->
+
+    </div><!-- /#wrapper -->
+
+    <link href="/site_media/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!--link href="/site_media/bootstrap/css/sb-admin.css" rel="stylesheet"-->
+
+    <script src="/site_media/bootstrap/js/bootstrap.js"></script>
+
+    <!--style type="text/css">
+        body
+        {
+            background-color: #f7f7f7;
+        }
+
+        .wrapper
+        {
+            width: 960px;
+            margin: 0px auto;
+            padding-top: 20px;
+            min-height: 600px;
+        }
+
+        .wrapper h1, .wrapper h4, .wrapper p, .wrapper pre, .wrapper ul, .wrapper li
+        {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            vertical-align: baseline;
+            background: transparent;
+        }
+
+        .wrapper li
+        {
+            outline: 0;
+            text-decoration: none;
+            -webkit-transition-property: background color;
+            -moz-transition-property: background color;
+            -o-transition-property: background color;
+            -ms-transition-property: background color;
+            transition-property: background color;
+            -webkit-transition-duration: 0.12s;
+            -moz-transition-duration: 0.12s;
+            -o-transition-duration: 0.12s;
+            -ms-transition-duration: 0.12s;
+            transition-duration: 0.12s;
+            -webkit-transition-timing-function: ease-out;
+            -moz-transition-timing-function: ease-out;
+            -o-transition-timing-function: ease-out;
+            -ms-transition-timing-function: ease-out;
+            transition-timing-function: ease-out;
+        }
+
+        #v-nav
+        {
+            height: 100%;
+            margin: auto;
+            color: #333;
+            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+        }
+
+        #v-nav >ul
+        {
+            float: left;
+            width: 210px;
+            display: block;
+            position: relative;
+            top: 0;
+            border: 1px solid #DDD;
+            border-right-width: 0;
+            margin: auto 0 !important;
+            padding:0;
+        }
+
+        #v-nav >ul >li
+        {
+            width: 180px;
+            list-style-type: none;
+            display: block;
+            text-shadow: 0px 1px 1px #F2F1F0;
+            cursor: pointer;
+            font-size: 1.11em;
+            position: relative;
+            border-right-width: 0;
+            border-bottom: 1px solid #DDD;
+            margin: auto;
+            padding: 10px 15px !important;
+            background: whiteSmoke; /* Old browsers */
+            background: -moz-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100%, #f2f2f2)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* IE10+ */
+            background: linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* W3C */
+        }
+
+        #v-nav >ul >li.current
+        {
+            color: black;
+            border-right: none;
+            z-index: 10;
+            background: white !important;
+            position: relative;
+            moz-box-shadow: inset 0 0 35px 5px #fafbfd;
+            -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
+            box-shadow: inset 0 0 35px 5px #fafbfd;
+        }
+
+        #v-nav >ul >li.first.current
+        {
+            border-bottom: 1px solid #DDD;
+        }
+
+        #v-nav >ul >li.last
+        {
+            border-bottom: none;
+        }
+
+        #v-nav >div.tab-content
+        {
+            margin-left: 210px;
+            border: 1px solid #ddd;
+            background-color: #FFF;
+            min-height: 400px;
+            position: relative;
+            z-index: 9;
+            padding: 12px;
+            moz-box-shadow: inset 0 0 35px 5px #fafbfd;
+            -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
+            box-shadow: inset 0 0 35px 5px #fafbfd;
+            display: none;
+            padding: 25px;
+        }
+
+        #v-nav >div.tab-content >h4
+        {
+            font-size: 1.2em;
+            color: Black;
+            text-shadow: 0px 1px 1px #F2F1F0;
+            border-bottom: 1px dotted #EEEDED;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+    </style>
+    <section class="wrapper" id="wrapper">
+
+        <div align="left">
+            <h3 style="font-size: 19px;"><a style="font-weight: bold">Dashboard</a></h3>
+        </div>
+        <div id="v-nav">
+            <ul>
+                <li tab="tab1" class="first current">Design</li>
+                <li tab="tab2">Specs</li>
+                <li tab="tab3">Price</li>
+                <li tab="tab4" class="last">Release Date</li>
+            </ul>
+            <div class="tab-content" style="display: block">
+                <h4>Design</h4>
+            </div>
+            <div class="tab-content" style="display: none">
+                <h4>Specs</h4>
+            </div>
+            <div class="tab-content" style="display: none">
+                <h4>Price</h4>
+            </div>
+            <div class="tab-content" style="display: none">
+                <h4>Release Date</h4>
+            </div>
+        </div>
+    </section>
 <pre>
-            <!-- Include Scripts -->
+        <!-- Include Scripts -->
 
-<script type="text/javascript">
+<!--script type="text/javascript">
     $(function () {
         var items = $('#v-nav>ul>li').each(function () {
             $(this).click(function () {
