@@ -6368,6 +6368,20 @@ def AutoMileStone(request):
             milestone_list = DB.GetData(Conn, query, False)
     result = simplejson.dumps(milestone_list)
     return HttpResponse(result, mimetype='application/json')
+
+def Get_MileStones(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            milestone = request.GET.get(u'term', '')
+            print milestone
+            query = "select value from config_values where type='milestone'"
+            milestone_list = DB.GetData(Conn, query, False)
+    Heading = ['Milestone Name']
+    results = {'Heading':Heading, 'TableData':milestone_list}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def MileStoneOperation(request):
     if request.is_ajax():
         if request.method == 'GET':
