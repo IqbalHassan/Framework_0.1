@@ -3,6 +3,13 @@
  */
 $(document).ready(function(){
    MileStoneTab();
+
+    $("#show_all_ms").click(function(){
+        $.get("GetMileStones",{term : ''},function(data)
+        {
+            ResultTable(all_milestones,data['Heading'],data['TableData'],"Milestones");
+        });
+    });
 });
 function MileStoneTab(){
     $('#msinput').autocomplete({
