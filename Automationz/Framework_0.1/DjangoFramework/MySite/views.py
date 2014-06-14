@@ -7265,7 +7265,6 @@ def UpdateSetTag(request):
     if request.is_ajax():
         if request.method=='GET':
             message=""
-            message=""
             type_tag=request.GET.get(u'type','')
             new_name=request.GET.get(u'new_name','')
             old_name=request.GET.get(u'old_name','')
@@ -7340,6 +7339,7 @@ def GetTesterManager(request):
     result=simplejson.dumps(final)
     return HttpResponse(result,mimetype='application/json')
 def Create_Team(request):
+    message=""
     if request.is_ajax():
         if request.method=='GET':
             manager=request.GET.get(u'manager','').split("|")
@@ -7348,6 +7348,12 @@ def Create_Team(request):
             print manager
             print tester
             print team_name
+            for each in tester:
+                if each=="":
+                    tester.remove(each)
+            for each in manager:
+                if each=="":
+                    manager.remove(each)
             Conn=GetConnection()
             #check for existing team
             query="select count(*) from config_values where type='Team' and value='%s'"%team_name.strip()
@@ -7392,7 +7398,11 @@ def Create_Team(request):
 def GetAllTeam(request):
     if request.is_ajax():
         if request.method=='GET':
-            query="select value from config_values where type='Team'"
+            value=request.GET.get(u'term','')
+            if value=='':
+                query="select value from config_values where type='Team'"
+            else:
+                query="select value from config_values where type='Team' and value Ilike '%%%s%%'"%value
             Conn=GetConnection()
             all_team=DB.GetData(Conn,query)
     result=simplejson.dumps(all_team)
@@ -7478,3 +7488,161 @@ def GetTestStepsAndTestCasesOnDriverValue(request):
             print results
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+def TeamData(request,team_name):
+    team_name=team_name.replace('_',' ')
+    #get the team name member
+    query="select name,rank from team_info where team_id =(select id from config_values where type='Team' and value='%s')"%team_name
+    print query
+    Conn=GetConnection()
+    getData=DB.GetData(Conn,query,False)
+    leader=[]
+    tester=[]
+    for each in getData:
+        if each[1]=='leader':
+            leader.append(each[0].strip())
+        if each[1]=='tester':
+            tester.append(each[0].strip())
+    query="select user_names,user_level from permitted_user_list where user_level in ('assigned_tester','manager')"
+    all_list=DB.GetData(Conn,query,False)
+    rest_tester=[]
+    rest_manager=[]
+    for each in all_list:
+        if each[0] in leader or each[0] in tester:
+            continue
+        else:
+            if each[1]=='assigned_tester':
+                rest_tester.append(each[0])
+            if each[1]=='manager':
+                rest_manager.append(each[0])
+        
+    Dict={
+          'team_name':team_name.strip(),
+          'leader':leader,
+          'tester':tester,
+          'rest_leader':rest_manager,
+          'rest_tester':rest_tester
+          }
+    return render_to_response('Team_Edit.html',Dict)
+def Add_Members(request):
+    message=""
+    if request.is_ajax():
+        if request.method=='GET':
+            managers=request.GET.get(u'manager','').split("|")
+            testers=request.GET.get(u'tester','').split("|")
+            team_name=request.GET.get(u'team_name','').strip()
+            #check the validity for the team name
+            query="select id from config_values where type='Team' and value='%s'"%team_name
+            Conn=GetConnection()
+            team_id=DB.GetData(Conn,query)
+            if len(team_id)==0:
+                message="Failed.No such Team Name"
+            else:
+                team_id=str(team_id[0])
+                tag=['assigned_tester','manager']
+                for each in tag:
+                    if each=='assigned_tester':
+                        array=testers
+                        temp_tag='tester'
+                    if each=='manager':
+                        array=managers
+                        temp_tag='leader'
+                    query="select user_names from permitted_user_list where user_level='%s'"%each
+                    temp_list=[]
+                    temp_list=DB.GetData(Conn,query)
+                    for eachitem in array:
+                        if eachitem in temp_list:
+                            if DB.IsDBConnectionGood(Conn)==False:
+                                time.sleep(1)
+                                Conn=GetConnection()
+                            result=DB.InsertNewRecordInToTable(Conn,"team_info",team_id=team_id,name=eachitem.strip(),rank=temp_tag)
+                            if result==False:
+                                break
+                            else:
+                                message="Successfully Updated."
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def Delete_Members(request):
+    message=""
+    if request.is_ajax():
+        if request.method=='GET':
+            managers=request.GET.get(u'manager','').split("|")
+            testers=request.GET.get(u'tester','').split("|")
+            team_name=request.GET.get(u'team_name','').strip()
+            #check the validity for the team name
+            query="select id from config_values where type='Team' and value='%s'"%team_name
+            Conn=GetConnection()
+            team_id=DB.GetData(Conn,query)
+            if len(team_id)==0:
+                message="Failed.No such Team Name"
+            else:
+                team_id=str(team_id[0])
+                tag=['tester','leader']
+                for each in tag:
+                    if each=='tester':
+                        array=testers
+                        temp_tag='assigned_tester'
+                    if each=='leader':
+                        array=managers
+                        temp_tag='manager'
+                    query="select user_names from permitted_user_list where user_level='%s'"%temp_tag
+                    temp_list=[]
+                    temp_list=DB.GetData(Conn,query)
+                    for eachitem in array:
+                        if eachitem in temp_list:
+                            if DB.IsDBConnectionGood(Conn)==False:
+                                time.sleep(1)
+                                Conn=GetConnection()
+                            result=DB.DeleteRecord(Conn,"team_info",team_id=team_id,name=eachitem.strip(),rank=each)
+                            if result==False:
+                                break
+                            else:
+                                message="Successfully Updated."
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def Delete_Team(request):
+    message=""
+    if request.is_ajax():
+        if request.method=='GET':
+            team_name=request.GET.get(u'team_name','').strip()
+            #check the validity for the team name
+            query="select id from config_values where type='Team' and value='%s'"%team_name
+            Conn=GetConnection()
+            team_id=DB.GetData(Conn,query)
+            if len(team_id)==0:
+                message="Failed.No such Team Name"
+            else:
+                team_id=str(team_id[0])
+                result=DB.DeleteRecord(Conn, "team_info",team_id=team_id.strip())
+                result1=DB.DeleteRecord(Conn,"config_values",id=team_id)
+                if result==True and result1==True:
+                    message="Success"
+                else:
+                    message="Failed."
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+def UpdateTeamName(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            message=""
+            type_tag=request.GET.get(u'type','')
+            new_name=request.GET.get(u'new_name','')
+            old_name=request.GET.get(u'old_name','')
+            print type_tag
+            print new_name
+            print old_name
+            if type_tag=='TEAM':
+                type_tag='Team'
+            query="select count(*) from config_values where value='%s' and type='%s'"%(old_name.strip(),type_tag.strip())
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            if count[0]==1 and len(count)==1:
+                sWhereQuery="where value='%s' and type='%s'"%(old_name.strip(),type_tag.strip())
+                result=DB.UpdateRecordInTable(Conn, "config_values", sWhereQuery,value=new_name.strip())
+                if result==True:
+                    message="Success"
+                else:
+                    message="Failed"
+            else:
+                message="Failed"    
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')

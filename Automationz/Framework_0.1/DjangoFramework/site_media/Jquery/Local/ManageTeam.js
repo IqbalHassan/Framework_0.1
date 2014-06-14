@@ -4,8 +4,17 @@
 $(document).ready(function(){
     GetAllTeam();
     CreateButtonInit();
-
+    Other();
 });
+function Other(){
+    $('#searchbox').on('input',function(){
+        $.get("GetAllTeam",{term:$(this).val().trim()},function(data){
+            $('#team').html(initTeamName(data));
+            MainButtonPreparation();
+        });
+
+    });
+}
 function MainButtonPreparation(){
     $('.team').click(function(){
         var team_name=$(this).attr('id').replace(/_/g,' ').trim();
@@ -14,37 +23,125 @@ function MainButtonPreparation(){
             if(data['message'].indexOf('No')!=0){
                 $('#msg').slideUp('slow');
                 $('#RunTestResultTable').html(initiateInfoDiv(data['data'],data['teamname']));
+                $('#RunTestResultTable').slideDown('slow');
             };
         });
+    });
+    OtherButtonPreparation();
+}
+function OtherButtonPreparation(){
+    $('#createNew').click(function(event){
+        event.preventDefault();
+        $.get('GetTesterManager',{},function(data){
+            $('#type').css({'display':'none'});
+            $('#name').css({'display':'none'});
+            $('#RunTestResultTable').html("");
+            $('#RunTestResultTable').html(initCreateDiv(data));
+            $('#RunTestResultTable').css({'display':'block'});
+            ButtonPreparation();
+        });
+    });
+    $('#edit').click(function(event){
+        event.preventDefault();
+        var team_name=$('#name').text().trim().replace(/ /g,'_').trim();
+        if(team_name!=""){
+            window.location='/Home/Team/'+team_name.trim()+'/';
+        }
 
+    });
+    $('#delete').click(function(event){
+       event.preventDefault();
+        var team_name=$('#name').text();
+        if(team_name!=""){
+            alertify.confirm("Are you sure you want to add the selected to the team '"+team_name.trim()+"'?", function(e) {
+                if (e) {
+                    $.get('Delete_Team',{
+                        'team_name':team_name.trim()
+                    },function(data){
+                        if(data.indexOf('Failed')!=0){
+                            window.location=('/Home/ManageTeam/');
+                        }
+                        else{
+                            window.location.reload(true);
+                        }
+                    });
+                }
+            });
+        }
+    });
+    $('#rename').click(function(event){
+        event.preventDefault();
+        var temp='Team';
+        var name=$('#name').text().trim();
+        $('#inner_div').html(renameDivInit(temp,name));
+        $("#inner_div").dialog({
+            /*buttons : {
+             "OK" : function() {
+             $(this).dialog("close");
+             }
+             },
+             */
+            show : {
+                effect : 'drop',
+                direction : "up"
+            },
+            modal : true,
+            width : 400,
+            height : 200,
+            title:"Rename: "+temp.toLocaleUpperCase()
+        });
+        $('#create').click(function(event){
+            event.preventDefault();
+            var new_name=$('#inputText').val().trim();
+            var old_name=name.trim();
+            //alert(temp.toLocaleUpperCase()+new_name);
+            $.get("UpdateTeamName",{type:temp.toLocaleUpperCase(),new_name:new_name.trim(),old_name:old_name.trim()},function(data){
+                if(data.indexOf('Failed')!=0){
+                    window.location=('/Home/ManageTeam/');
+                }
+                else{
+                    window.location.reload(true);
+                }
+            });
+        });
     });
 }
 function initiateInfoDiv(data,teamname){
+
+    $('#type').html('<b class="Text" style="color: #4183c4">Team:</b>');
+    $('#name').html('<b class="Text">'+teamname+'</b> ');
+    $('#infoDiv').slideDown('slow');
+    $('#new_team').slideUp('slow');
     var message="";
-    message+='<table width="100%" align="center">';
-    message+='<tbody>';
+    message+='<table style="margin-left: 3%;">';
     for(var i=0;i<data.length;i++){
         if(data[i][0]=='leader'){
-            var type_tag="Managers:";
+            var type_tag="Managers";
         }
         if(data[i][0]=='tester'){
-            var type_tag="Tester:";
+            var type_tag="Tester";
         }
         message+='<tr>';
-        message+='<td align="right" class="Text" style="vertical-align: 0%;"><b>'+type_tag+'</b></td>';
-        message+='<td><table width="100%">';
-        for(var j=0;j<data[i][1].length;j++){
-            message+='<tr><td>'+data[i][1][j].trim()+'</td></tr>';
+        if(data[i][1].length==0){
+            message+=('<td align="left" colspan="2"><b class="Text" style="color: #4183c4">No'+type_tag+' in this team</b></td>');
         }
-        message+='</table></td>';
+        else{
+            message+='<td width="25%" align="left" class="Text" style="vertical-align: 0%;color: #4183c4"><b>'+type_tag+':</b></td>';
+            message+='<td><table width="100%"   style="margin-top: -2%;">';
+            for(var j=0;j<data[i][1].length;j++){
+                message+='<tr><td width="65%" data-id="'+data[i][1][j].replace(/ /g,'_')+'"><b class="Text">'+data[i][1][j].trim()+'</b></td>';
+                //message+='<td align="center" width="10%"><i class="fa fa-minus-square fa-fw fa-lg remove" style="cursor: pointer;"></i></td></tr>';
+            }
+            message+='</table></td>';
+
+        }
         message+='</tr>';
     }
-    message+='</tbody>';
     message+='</table>';
     return message;
 }
 function GetAllTeam(){
-    $.get("GetAllTeam",{},function(data){
+    $.get("GetAllTeam",{term:''},function(data){
         $('#team').html(initTeamName(data));
         MainButtonPreparation();
     });
@@ -67,6 +164,7 @@ function CreateButtonInit(){
       event.preventDefault();
       $.get('GetTesterManager',{},function(data){
           $('#RunTestResultTable').html(initCreateDiv(data));
+          $('#RunTestResultTable').css({'display':'block'});
           ButtonPreparation();
       });
   });
@@ -86,11 +184,18 @@ function ButtonPreparation(){
             alertify.log("Some of the fields are empty","",0);
         }
         $.get("Create_Team",{'manager':manager.join("|"),'tester':tester.join("|"),'team_name':team_name},function(data){
-
+            if(data.indexOf('Failed')!=0){
+                window.location=('/Home/Team/'+team_name.trim().replace(/ /g,'_').trim()+'/');
+            }
+            else{
+                window.location.reload(true);
+            }
         });
     });
 }
 function initCreateDiv(data){
+    $('#msg').css({'display':'none'});
+
     var message="";
     if(data[0][0]=='assigned_tester'){
         var tester=data[0][1];
@@ -98,7 +203,7 @@ function initCreateDiv(data){
     if(data[1][0]=='manager'){
         var manager=data[1][1];
     }
-    message+='<table align="center" width="100%">';
+    message+='<table align="center" width="100%"style="margin-top:2%;">';
     message+='<tr>';
     message+='<td align="right"><b class="Text">Team Name:</b></td>';
     message+='<td align="left"><input type="text" class="textbox" placeholder="Team Name Here" id="team_name"/></td>';
@@ -129,3 +234,13 @@ function initCreateDiv(data){
     message+='</table>';
     return message;
 };
+function renameDivInit(temp,name){
+    var message="";
+    message+='<div align="center">';
+    message+='<table align="center">'+
+        '<tr><td>Old '+temp.toLocaleUpperCase()+' Name:</td><td><span>'+name.trim()+'</span></td></tr>' +
+        '<tr><td>Enter New '+temp.toLocaleUpperCase()+' Name:</td><td><input id="inputText" type="text" class="Text"/></td></tr>' +
+        '<tr><td>&nbsp;</td><td colspan="1" align="right"><input style="margin-right: 0%;" type="button" class="createnew" id="create" value="Rename '+temp.toLocaleUpperCase()+'" /></td></tr></table>';
+    message+='</div>';
+    return message;
+}

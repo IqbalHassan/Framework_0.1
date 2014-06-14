@@ -1,0 +1,127 @@
+{% extends "BaseTemplate.html" %}
+
+{% block title%}Team Edit{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/Team_Edit.js"></script>
+<div align="left">
+    <h3 style="font-size: 19px;"><a href="/Home/ManageTeam/">Team</a> / <a href="" id="name" style="font-weight: bolder">{{team_name}}</a></h3>
+</div>
+<table align="left" width="100%">
+    <thead>
+    <tr>
+        <td width=40% style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Current Team</td>
+        <td width="20%">&nbsp;</td>
+        <td width=40% style="text-align: center; border-bottom: 4px solid #ccc;" class="Text">Select To Add</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td width="40%">
+            <table width="100%" style="border-bottom: 1px dashed #cecece;">
+                <tr>
+                    {% if leader%}
+                    <td width="10%" style="vertical-align: 0%;" align="right"><b class="Text">Managers:</b></td>
+                    <td>
+                        <table width="100%">
+                            {%for x in leader%}
+                            <tr>
+                                <td width="40%" style="vertical-align: 0%;"><b>{{x}}</b></td>
+                                <td width="60%" align="left"><input class="remove_manager" type="checkbox" value="{{x}}"/></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                    {%else%}
+                    <td>&nbsp;</td>
+                    <td align="center"><b class="Text">No Manager in the Team</b></td>
+                    {%endif%}
+                </tr>
+            </table>
+        </td>
+        <td width="20%">
+            &nbsp;
+        </td>
+        <td width="40%">
+            <table width="100%" style="border-bottom: 1px dashed #cecece;">
+                <tr>
+                    {% if rest_leader %}
+                    <td width="10%" style="vertical-align: 0%;" align="right"><b class="Text">Managers:</b></td>
+                    <td>
+                        <table width="100%">
+                            {%for x in rest_leader%}
+                                <tr>
+                                    <td width="40%" style="vertical-align: 0%;"><b>{{x}}</b></td>
+                                    <td width="60%" align="left"><input class="add_manager" type="checkbox" value="{{x}}"/></td>
+                                </tr>
+                            {% endfor %}
+
+                        </table>
+                    </td>
+                    {%else%}
+                    <td>&nbsp;</td>
+                    <td align="center"><b class="Text">No Managers Available</b></td>
+                    {%endif%}
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr style="vertical-align: 0%;">
+        <td width="40%">
+            <table width="100%" style="border-bottom: 1px dashed #cecece;">
+                <tr>
+                    {% if  tester%}
+                    <td width="10%" style="vertical-align: 0%;" align="right"><b class="Text">Testers:</b></td>
+                    <td>
+                        <table width="100%">
+                            {%for x in tester%}
+                            <tr>
+                                <td width="40%" style="vertical-align: 0%;"><b>{{x}}</b></td>
+                                <td width="60%" align="left"><input class="remove_tester" type="checkbox" value="{{x}}" style="margin-left: 5%;"/></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                    {% else %}
+                    <td>&nbsp</td>
+                    <td align="center"><b class="Text">No Tester in this Team</b></td>
+                    {% endif %}
+                </tr>
+            </table>
+        </td>
+        <td widht="20%">
+            &nbsp;
+        </td>
+        <td width="40%">
+            <table width="100%" style="border-bottom: 1px dashed #cecece;">
+                <tr>
+                    {% if rest_tester %}
+                    <td width="10%" style="vertical-align: 0%;" align="right"><b class="Text">Testers:</b></td>
+                    <td>
+                        <table width="100%">
+                            {%for x in rest_tester%}
+                            <tr>
+                                <td width="40%" style="vertical-align: 0%;"><b>{{x}}</b></td>
+                                <td width="60%" align="left"><input class="add_tester" type="checkbox" value="{{x}}" style="margin-left: 5%;"/></td>
+                            </tr>
+                            {% endfor %}
+
+                        </table>
+                    </td>
+                    {% else %}
+                    <td>&nbsp;</td>
+                    <td align="center"><b class="Text">No Testers Available</b></td>
+                    {% endif %}
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="3">
+            <input class="button primary" type="button" value="Add" id="add"/>
+            <input class="button danger" type="button" value="Remove" id="remove"/>
+        </td>
+    </tr>
+    </tbody>
+</table>
+{% endblock %}
