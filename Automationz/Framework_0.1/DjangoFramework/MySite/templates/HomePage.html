@@ -4,7 +4,8 @@
 {% block title%} Automation Home {% endblock %}
   
 {% block content %}
-	
+
+
 	<div id="about_us">
 
 
@@ -124,7 +125,7 @@
             </ol>
             <div class="alert alert-success alert-dismissable">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                Welcome to Automation Solutionz Framework by <a class="alert-link" href="http://www.automationsolutionz.com/">Automation Solutionz</a>     </div>
+                Welcome <a class="logged_user"></a> to Automation Solutionz Framework by <a class="alert-link" href="http://www.automationsolutionz.com/">Automation Solutionz</a>     </div>
         </div>
     </div><!-- /.row -->
 
@@ -164,7 +165,7 @@
                             <i class="fa fa-check fa-5x"></i>
                         </div>
                         <div class="col-xs-6 text-right">
-                            <p class="announcement-heading">12</p>
+                            <p id="task_count" class="announcement-heading">12</p>
                             <p class="announcement-text">To-Do Items</p>
                         </div>
                     </div>
@@ -173,7 +174,7 @@
                     <div class="panel-footer announcement-bottom">
                         <div class="row">
                             <div class="col-xs-6">
-                                Complete Tasks
+                                Assigned Tasks
                             </div>
                             <div class="col-xs-6 text-right">
                                 <i class="fa fa-arrow-circle-right"></i>
@@ -182,6 +183,9 @@
                     </div>
                 </a>
             </div>
+        </div>
+        <!-- Modal HTML embedded directly into document -->
+        <div class="modal" id="task_prompt" style="display:none;">
         </div>
         <div class="col-lg-3">
             <div class="panel panel-danger">
@@ -392,9 +396,11 @@
 
     </div><!-- /#wrapper -->
 
+
     <link href="/site_media/bootstrap/css/bootstrap.css" rel="stylesheet">
     <!--link href="/site_media/bootstrap/css/sb-admin.css" rel="stylesheet"-->
 
+    <script src="/site_media/Jquery/Local/HomePage.js"></script>
     <script src="/site_media/bootstrap/js/bootstrap.js"></script>
     <script src="/site_media/bootstrap/js/raphael-min.js"></script>
     <script src="/site_media/bootstrap/js/morris-0.4.3.min.js"></script>
