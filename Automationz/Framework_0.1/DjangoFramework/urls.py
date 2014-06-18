@@ -223,7 +223,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Delete_Members/$',Delete_Members),
     url(r'^Home/.*/Delete_Team/$',Delete_Team),
     url(r'^Home/.*/UpdateTeamName/$',UpdateTeamName),
-    
+    url(r'^Home/CreateProject/$',CreateProject),
     
     url(r'^Home/FeaDri/GetTestStepsAndTestCasesOnDriverValue/$', GetTestStepsAndTestCasesOnDriverValue),
     

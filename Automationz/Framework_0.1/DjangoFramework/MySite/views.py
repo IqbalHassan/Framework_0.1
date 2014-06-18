@@ -7660,3 +7660,8 @@ def UpdateTeamName(request):
                 message="Failed"    
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
+def CreateProject(request):
+    query="select distinct value from config_values where type='Team'"
+    Conn=GetConnection()
+    team_name=
+    return render_to_response('Project.html',{})
