@@ -7674,6 +7674,11 @@ def UpdateTeamName(request):
                 message="Failed"    
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
+def SearchEditDev(request):
+    templ = get_template('SearchEdit-Dev.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
 def CreateProject(request):
     query="select distinct value from config_values where type='Team'"
     Conn=GetConnection()
