@@ -6382,6 +6382,20 @@ def Get_MileStones(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Get_AssignedTasks(request):
+    if request.is_ajax():
+        if request.method == "GET":
+            Conn = GetConnection()
+            user = request.GET.get(u'user', '').strip()    
+            print user    
+            TableData = DB.GetData(Conn, "select run_id,rundescription,tester_id,status from test_run_env where assigned_tester like '"+user+"' and status not in ('Complete','Cancelled')", False)
+
+    Heading = ['Run ID', 'Description', 'Tester', 'Status']
+    results = {'Heading':Heading, 'TableData':TableData}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+
 def MileStoneOperation(request):
     if request.is_ajax():
         if request.method == 'GET':
