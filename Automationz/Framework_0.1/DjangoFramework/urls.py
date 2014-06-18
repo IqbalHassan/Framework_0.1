@@ -225,7 +225,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Delete_Team/$',Delete_Team),
     url(r'^Home/.*/UpdateTeamName/$',UpdateTeamName),
     
-    
+    url(r'^Home/ManageTestCases/SearchEdit-Dev/$',SearchEditDev),
     url(r'^Home/FeaDri/GetTestStepsAndTestCasesOnDriverValue/$', GetTestStepsAndTestCasesOnDriverValue),
     
 	url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),

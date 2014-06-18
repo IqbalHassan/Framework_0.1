@@ -7675,3 +7675,8 @@ def UpdateTeamName(request):
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
 
+def SearchEditDev(request):
+    templ = get_template('SearchEdit-Dev.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
