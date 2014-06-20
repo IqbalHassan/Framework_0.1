@@ -3842,7 +3842,7 @@ body.avgrund-active {
 	color: #fff;
 }
 /**************************slider******************************/
-.ui-autocomplete .ui-corner-all { position: absolute; cursor: default;z-index:3090 !important;}
+.ui-autocomplete .ui-corner-all {z-index:3090 !important;}
 
 .rslides {
     position: relative;

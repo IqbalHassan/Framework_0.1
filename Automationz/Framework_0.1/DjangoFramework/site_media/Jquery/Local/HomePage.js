@@ -6,17 +6,17 @@ $(document).ready(function(){
     var user = $(".welcome").text();
     $(".logged_user").text(user);
 
-    /*$("#assigned_tasks").click(function(){
+    /*$("#GetAssignedTests").click(function(){
         $.get("GetAssignedTasks",{user : user},function(data)
         {
-            //$("#task_count").text(data['TableData'].length);
+            //$("#test_count").text(data['TableData'].length);
             ResultTable(ass_tasks,data['Heading'],data['TableData'],"Assigned Tasks");
         });
     });*/
 
-    $.get("GetAssignedTasks",{user : user},function(data)
+    $.get("GetAssignedTests",{user : user},function(data)
     {
-        $("#task_count").text(data['TableData'].length);
+        $("#test_count").text(data['TableData'].length);
         //ResultTable(ass_tasks,data['Heading'],data['TableData'],"Assigned Tasks");
     });
 
@@ -34,7 +34,7 @@ $(document).ready(function(){
 
         );
         $("#task_prompt").modal();
-        $.get("GetAssignedTasks",{user : user},function(data)
+        $.get("GetAssignedTests",{user : user},function(data)
         {
             ResultTable(task_prompt,data['Heading'],data['TableData'],"Assigned Tasks");
 

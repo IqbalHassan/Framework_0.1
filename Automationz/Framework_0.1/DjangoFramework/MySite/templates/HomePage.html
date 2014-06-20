@@ -138,8 +138,8 @@
                             <i class="fa fa-comments fa-5x"></i>
                         </div>
                         <div class="col-xs-6 text-right">
-                            <p class="announcement-heading">456</p>
-                            <p class="announcement-text">New Mentions!</p>
+                            <p id="test_count" class="announcement-heading">456</p>
+                            <p class="announcement-text">Testings</p>
                         </div>
                     </div>
                 </div>
@@ -147,7 +147,7 @@
                     <div class="panel-footer announcement-bottom">
                         <div class="row">
                             <div class="col-xs-6">
-                                View Mentions
+                                Assigned Tests
                             </div>
                             <div class="col-xs-6 text-right">
                                 <i class="fa fa-arrow-circle-right"></i>
@@ -165,12 +165,12 @@
                             <i class="fa fa-check fa-5x"></i>
                         </div>
                         <div class="col-xs-6 text-right">
-                            <p id="task_count" class="announcement-heading">12</p>
-                            <p class="announcement-text">To-Do Items</p>
+                            <p class="announcement-heading">12</p>
+                            <p class="announcement-text">Tasks</p>
                         </div>
                     </div>
                 </div>
-                <a id="assigned_tasks" href="#">
+                <a href="#">
                     <div class="panel-footer announcement-bottom">
                         <div class="row">
                             <div class="col-xs-6">
@@ -185,8 +185,8 @@
             </div>
         </div>
         <!-- Modal HTML embedded directly into document -->
-        <div class="modal" id="task_prompt" style="display:none;">
-        </div>
+        <!--div class="modal" id="task_prompt" style="display:none;">
+        </div-->
         <div class="col-lg-3">
             <div class="panel panel-danger">
                 <div class="panel-heading">
@@ -196,7 +196,7 @@
                         </div>
                         <div class="col-xs-6 text-right">
                             <p class="announcement-heading">18</p>
-                            <p class="announcement-text">Crawl Errors</p>
+                            <p class="announcement-text">Bugs</p>
                         </div>
                     </div>
                 </div>
@@ -223,7 +223,7 @@
                         </div>
                         <div class="col-xs-6 text-right">
                             <p class="announcement-heading">56</p>
-                            <p class="announcement-text">New Orders!</p>
+                            <p class="announcement-text">Requirements</p>
                         </div>
                     </div>
                 </div>
@@ -243,7 +243,7 @@
         </div>
     </div><!-- /.row -->
 
-    <div class="row">
+    <!--div class="row">
         <div class="col-lg-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -257,7 +257,7 @@
     </div><!-- /.row -->
 
     <div class="row">
-        <div class="col-lg-4">
+        <!--div class="col-lg-4">
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i> Traffic Sources: October 1, 2013 - October 31, 2013</h3>
@@ -269,7 +269,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div-->
         <div class="col-lg-4">
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -391,20 +391,24 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-8">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-money"></i> Recent Transactions</h3>
+                    <h3 class="panel-title"><i class="fa fa-money"></i> Today's Activity</h3>
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped tablesorter">
                             <thead>
                             <tr>
-                                <th>Order # <i class="fa fa-sort"></i></th>
-                                <th>Order Date <i class="fa fa-sort"></i></th>
-                                <th>Order Time <i class="fa fa-sort"></i></th>
-                                <th>Amount (USD) <i class="fa fa-sort"></i></th>
+                                <th>Executed Cases # <i class="fa fa-sort"></i></th>
+                                <th>Passed Cases <i class="fa fa-sort"></i></th>
+                                <th>Failed Cases <i class="fa fa-sort"></i></th>
+                                <th>Blocked Cases <i class="fa fa-sort"></i></th>
+                                <th>Submitted Cases <i class="fa fa-sort"></i></th>
+                                <th>In-Progress Cases <i class="fa fa-sort"></i></th>
+                                <th>Skipped Cases <i class="fa fa-sort"></i></th>
+                                <th>Not Run Cases <i class="fa fa-sort"></i></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -413,8 +417,16 @@
                                 <td>10/21/2013</td>
                                 <td>3:29 PM</td>
                                 <td>$321.33</td>
+                                <td>3325</td>
+                                <td>10/21/2013</td>
+                                <td>3:20 PM</td>
+                                <td>$234.34</td>
                             </tr>
                             <tr>
+                                <td>3325</td>
+                                <td>10/21/2013</td>
+                                <td>3:20 PM</td>
+                                <td>$234.34</td>
                                 <td>3325</td>
                                 <td>10/21/2013</td>
                                 <td>3:20 PM</td>
@@ -425,36 +437,60 @@
                                 <td>10/21/2013</td>
                                 <td>3:03 PM</td>
                                 <td>$724.17</td>
+                                <td>3325</td>
+                                <td>10/21/2013</td>
+                                <td>3:20 PM</td>
+                                <td>$234.34</td>
                             </tr>
                             <tr>
                                 <td>3323</td>
                                 <td>10/21/2013</td>
                                 <td>3:00 PM</td>
                                 <td>$23.71</td>
+                                <td>3325</td>
+                                <td>10/21/2013</td>
+                                <td>3:20 PM</td>
+                                <td>$234.34</td>
                             </tr>
                             <tr>
                                 <td>3322</td>
                                 <td>10/21/2013</td>
                                 <td>2:49 PM</td>
                                 <td>$8345.23</td>
+                                <td>3325</td>
+                                <td>10/21/2013</td>
+                                <td>3:20 PM</td>
+                                <td>$234.34</td>
                             </tr>
                             <tr>
                                 <td>3321</td>
                                 <td>10/21/2013</td>
                                 <td>2:23 PM</td>
                                 <td>$245.12</td>
+                                <td>3325</td>
+                                <td>10/21/2013</td>
+                                <td>3:20 PM</td>
+                                <td>$234.34</td>
                             </tr>
                             <tr>
                                 <td>3320</td>
                                 <td>10/21/2013</td>
                                 <td>2:15 PM</td>
                                 <td>$5663.54</td>
+                                <td>3325</td>
+                                <td>10/21/2013</td>
+                                <td>3:20 PM</td>
+                                <td>$234.34</td>
                             </tr>
                             <tr>
                                 <td>3319</td>
                                 <td>10/21/2013</td>
                                 <td>2:13 PM</td>
                                 <td>$943.45</td>
+                                <td>3325</td>
+                                <td>10/21/2013</td>
+                                <td>3:20 PM</td>
+                                <td>$234.34</td>
                             </tr>
                             </tbody>
                         </table>
