@@ -1913,6 +1913,9 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
     sTestSetStartTime = str(now[0][0])
     print sTestSetStartTime
 
+    import EmailNotify
+    EmailNotify.Send_Email(stEmailIds,runid,'','')
+
     Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
     EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
 #    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query, test_objective = TestObjective  )
