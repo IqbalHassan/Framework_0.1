@@ -8,7 +8,7 @@ from mimetypes import MimeTypes
 import operator
 import re
 import time
-import time
+import datetime
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -7682,5 +7682,165 @@ def SearchEditDev(request):
 def CreateProject(request):
     query="select distinct value from config_values where type='Team'"
     Conn=GetConnection()
-    team_name=
-    return render_to_response('Project.html',{})
+    team_name=DB.GetData(Conn, query)
+    final=[]
+    count=0
+    temp=[]
+    for x in team_name:
+        temp.append(x)
+        count+=1
+        if count>5:
+            final.append(temp)
+            temp=[]
+            count=0
+    final.append(temp)
+    team_name=final
+    query="select distinct user_names,user_level from permitted_user_list where user_level in ('manager','assigned_tester')"
+    owners=DB.GetData(Conn,query,False)
+    final=[]
+    count=0
+    temp=[]
+    for x in owners:
+        temp.append(x)
+        count+=1
+        if count>5:
+            final.append(temp)
+            temp=[]
+            count=0
+    final.append(temp)
+    owners=final            
+    Dict={'teams':team_name,'owners':owners}
+    return render_to_response('Project.html',Dict)
+def Create_New_Project(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            message=""
+            user_name=request.GET.get('user_name','')
+            name=request.GET.get('name','')
+            description=request.GET.get('description','')
+            start_date=request.GET.get('start_date','')
+            start_date=start_date.split("-")
+            start_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip()))
+            end_date=request.GET.get('end_date','')
+            end_date=end_date.split("-")
+            end_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip()))
+            team=request.GET.get('team').split("|")
+            owners=request.GET.get('owners').strip()
+            #generate Project id
+            Conn=GetConnection()
+            tmp_id = DB.GetData(Conn, "select nextval('projectid_seq')")
+            project_id=('PROJ-')+str(tmp_id[0])
+            query="select count(*) from projects where project_name='%s' and project_id='%s'"%(name.strip(),project_id.strip())
+            count=DB.GetData(Conn,query)
+            now=datetime.datetime.now().date()
+            current_date=now
+            if len(count)==1 and count[0]==0:
+                #create the new projects
+                team_array=[]
+                for each in team:
+                    query="select id from config_values where type='Team' and value='%s'"%(each.strip())
+                    team_id=DB.GetData(Conn,query)
+                    if type(team_id[0])!= int or len(team_id)!=1:
+                        continue
+                    else:
+                        team_id=team_id[0]
+                        team_array.append(team_id)
+                Dict={
+                    'project_id':project_id.strip(),
+                    'project_name':name.strip(),
+                    'project_description':description.strip(),
+                    'project_startingdate':start_date,
+                    'project_endingdate':end_date,
+                    'project_owners':owners.strip(),
+                    'project_createdby':user_name.strip(),
+                    'project_creationdate':current_date,
+                    'project_modifiedby':user_name.strip(),
+                    'project_modifydate':current_date
+                }
+                result=DB.InsertNewRecordInToTable(Conn, "projects",**Dict)
+                if result==False:
+                    message="Failed"
+                    Conn=GetConnection()
+                else:
+                    message="Success"
+                for each in team_array:
+                    #form Dict
+                    Dict={}
+                    Dict={
+                          'project_id':project_id.strip(),
+                          'team_id':str(each).strip(),
+                          'status':False
+                    }
+                    result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
+                    if result==False:
+                        Conn=GetConnection()
+                        message="Failed"
+                    else:
+                        message="Success"
+        result_dict={
+             'message':message,
+             'project_id':project_id.strip()
+             }                 
+    result=simplejson.dumps(result_dict)
+    return HttpResponse(result,mimetype='application/json')        
+def Project_Detail(request,project_id):
+    return HttpResponse(project_id)
+def Small_Project_Detail(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            message=""
+            name=request.GET.get(u'name','')
+            query="select * from projects where project_name='%s'"%name.strip()
+            project_metadata=DB.GetData(Conn,query,False)
+            project_column_query="select column_name from information_schema.columns where table_name='projects'"
+            project_column=DB.GetData(Conn,project_column_query)
+            Dict={}
+            for each in project_metadata:
+                for eachitem in zip(project_column,each):
+                    Dict.update({eachitem[0]:eachitem[1]})
+            temp=Dict['project_owners']
+            first_colon=temp.find(":",0)
+            second_colon=temp.find(":",first_colon+1)
+            first_hiphen=temp.find("-",first_colon+1)
+            testers=temp[first_colon+1:first_hiphen]
+            testers=testers.split(",")
+            managers=temp[second_colon+1:]
+            managers=managers.split(",")
+            del Dict['project_owners']
+            Dict.update({'testers':testers,'managers':managers})
+            due_in=Dict['project_endingdate']-Dict['project_startingdate']
+            if due_in.days==0:
+                due_message="Today"
+            elif due_in.days<0:
+                if due_in.days<-1:
+                    due_message="Over "+str(str(due_in.days)[1:])+" days"
+                else:
+                    due_message="Over "+str(str(due_in.days)[1:])+" day"
+            else:
+                if due_in.days>1:
+                    due_message="In "+str(due_in.days)+" days"
+                else:
+                    due_message="In "+str(due_in.days)+" days"
+            query="select value from config_values where type='Team' and id in (select cast(team_id as int) from project_team_map where project_id='%s')"%(Dict['project_id'].strip())
+            team_name=DB.GetData(Conn,query)
+            Dict.update({
+                         'project_startingdate':str(Dict['project_startingdate']),
+                         'project_endingdate':str(Dict['project_endingdate']),
+                         'project_creationdate':str(Dict['project_creationdate']),
+                         'project_modifydate':str(Dict['project_modifydate']),
+                         'due_message':due_message,
+                         'team_name':team_name
+                         })     
+    result=simplejson.dumps(Dict)        
+    return HttpResponse(result,mimetype='application/json')        
+def Get_Projects(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            name=request.GET.get(u'team_name','')
+            if name=="":
+                query="select project_name from projects"
+            else:
+                query="select project_name from projects where project_name Ilike'%%%s%%'"%name.strip()
+            team_name=DB.GetData(Conn,query)
+    result=simplejson.dumps(team_name)
+    return HttpResponse(result,mimetype='application/json')

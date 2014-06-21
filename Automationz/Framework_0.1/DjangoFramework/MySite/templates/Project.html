@@ -46,11 +46,43 @@
                         <div style="width: 100%;">
                             <input type="text" id="searchbox" placeholder="Search For Projects">
                         </div>
-                        <div id="projects"></div>
+                        <div id="projects">
+
+                        </div>
                     </td>
                     <td style="width: 80%; border-left: 2px solid #ccc; position: relative;">
-                        <div style="position: absolute; min-width: 100%; top: 0; margin-top:-3%;margin-left: 5%;">
+                        <div style="position: absolute; min-width: 100%; top: 0; margin-top:0%;margin-left: 0%;">
+                            <table align="left">
+                                <tr>
+                                    <td width="50%">
+                                        <table align="left">
+                                            <tr>
+                                                <td>
+                                                    <div id="id">
 
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div id="name">
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        &nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <div id="detail_div">
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            </table>
                         </div>
                     </td>
                 </tr>
@@ -62,11 +94,11 @@
             <table align="center" style="margin-top: 2%;">
                 <tr>
                     <td align="right"><b class="Text">Project Name:</b></td>
-                    <td align="left"><input type="text" class="textbox" placeholder="Project Name"/></td>
+                    <td align="left"><input type="text" class="textbox" placeholder="Project Name" id="project_name"/></td>
                 </tr>
                 <tr>
                     <td align="right" style="vertical-align: 0%;"><b class="Text">Description:</b> </td>
-                    <td align="left"><textarea placeholder="Write something on this project" rows="4" cols="70"></textarea></td>
+                    <td align="left"><textarea placeholder="Write something on this project" rows="4" cols="70" id="project_desc"></textarea></td>
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Starting Date:</b></td>
@@ -77,8 +109,44 @@
                     <td align="left"><input id="end_date" placeholder="Project Ending Date" class="textbox"/></td>
                 </tr>
                 <tr>
-                    <td align="right"></td>
-                    <td align="left"></td>
+                    <td align="right" style="vertical-align: 0%"><b class="Text">Select Team(s):</b></td>
+                    <td align="left">
+                        <table>
+                            <tr>
+                                {% for x in teams %}
+                                <td style="vertical-align: 0%">
+                                    <table>
+                                        {% for y in x %}
+                                        <tr><td><input type="checkbox" name="team" value="{{y}}"/>{{y}}</td></tr>
+                                        {% endfor %}
+                                    </table>
+                                </td>
+                                {% endfor%}
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right" style="vertical-align: 0%"><b class="Text">Select Owner(s):</b></td>
+                    <td align="left">
+                        <table>
+                            <tr>
+                                {% for x in owners%}
+                                <td style="vertical-align: 0%;">
+                                    <table>
+                                        {% for y in x %}
+                                            <tr><td><input type="checkbox" name="owner" value="{{y.0}}" data-id="{{y.1}}"/>{{y.0}}</td></tr>
+                                        {% endfor %}
+                                    </table>
+                                </td>
+                                {% endfor%}
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">&nbsp;</td>
+                    <td align="left"><input type="button" class="button primary" value="Create Project" id="create_project"/></td>
                 </tr>
             </table>
         </div>

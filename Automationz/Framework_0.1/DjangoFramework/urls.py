@@ -224,13 +224,13 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Delete_Members/$',Delete_Members),
     url(r'^Home/.*/Delete_Team/$',Delete_Team),
     url(r'^Home/.*/UpdateTeamName/$',UpdateTeamName),
-<<<<<<< HEAD
     url(r'^Home/CreateProject/$',CreateProject),
-    
-=======
+    url(r'^Home/.*/Create_New_Project/$',Create_New_Project),
+    url(r'^Home/Project/(?P<project_id>[^/]*)/$',Project_Detail),
+    url(r'^Home/.*/Small_Project_Detail/$',Small_Project_Detail),
+    url(r'^Home/.*/Get_Projects/$',Get_Projects),
     
     url(r'^Home/ManageTestCases/SearchEdit-Dev/$',SearchEditDev),
->>>>>>> 7ebf0e4bd6172f8684a93bef58215d2e3bbf1a66
     url(r'^Home/FeaDri/GetTestStepsAndTestCasesOnDriverValue/$', GetTestStepsAndTestCasesOnDriverValue),
     
 	url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
