@@ -6382,7 +6382,7 @@ def Get_MileStones(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def Get_AssignedTasks(request):
+def Get_AssignedTests(request):
     if request.is_ajax():
         if request.method == "GET":
             Conn = GetConnection()
