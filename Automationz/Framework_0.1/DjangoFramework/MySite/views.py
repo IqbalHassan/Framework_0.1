@@ -7784,11 +7784,13 @@ def Create_New_Project(request):
     result=simplejson.dumps(result_dict)
     return HttpResponse(result,mimetype='application/json')        
 def Project_Detail(request,project_id):
-    return HttpResponse(project_id)
+    Dict={
+          'project_id':project_id
+    }
+    return render_to_response('Project_Detail.html',Dict)
 def Small_Project_Detail(request):
     if request.is_ajax():
         if request.method=='GET':
-            message=""
             name=request.GET.get(u'name','')
             query="select * from projects where project_name='%s'"%name.strip()
             project_metadata=DB.GetData(Conn,query,False)
