@@ -1913,8 +1913,15 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
     sTestSetStartTime = str(now[0][0])
     print sTestSetStartTime
 
+    for i in Testers:
+        tmail = DB.GetData(Conn, "select email from permitted_user_list where user_level like '%assigned%tester%' and user_names='"+i+"'")
+        if len(tmail)>0:
+            Emails.append(tmail[0])
+            
+    allEmailIds = ','.join(Emails)        
+
     import EmailNotify
-    EmailNotify.Send_Email(stEmailIds,runid,'','')
+    EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
 
     Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
     EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
