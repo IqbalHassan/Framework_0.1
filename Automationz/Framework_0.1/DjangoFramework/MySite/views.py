@@ -7787,9 +7787,25 @@ def Create_New_Project(request):
     result=simplejson.dumps(result_dict)
     return HttpResponse(result,mimetype='application/json')        
 def Project_Detail(request,project_id):
-    Dict={
-          'project_id':project_id
-    }
+    query="select * from projects where project_id='%s'"%project_id
+    Conn=GetConnection()
+    project_data=DB.GetData(Conn,query,False)
+    query="select column_name from information_schema.columns where table_name='projects'"
+    project_column=DB.GetData(Conn,query)
+    Dict={}
+    for eachitem in project_data:
+        for each in zip(project_column,eachitem):
+            Dict.update({each[0]:each[1]})
+    temp=Dict['project_owners']
+    first_colon=temp.find(":",0)
+    second_colon=temp.find(":",first_colon+1)
+    first_hiphen=temp.find("-",first_colon+1)
+    testers=temp[first_colon+1:first_hiphen]
+    testers=testers.split(",")
+    managers=temp[second_colon+1:]
+    managers=managers.split(",")
+    del Dict['project_owners']
+    Dict.update({'testers':testers,'managers':managers})        
     return render_to_response('Project_Detail.html',Dict)
 def Small_Project_Detail(request):
     if request.is_ajax():

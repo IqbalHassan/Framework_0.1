@@ -18,18 +18,108 @@
     <div class="responsive-tabs" align="left">
         <h3><b>Details</b></h3>
         <div class="tabs-div" align="center">
-            <table align="center" width="100%">
+            <table width="100%">
                 <tr>
-                    <td>
-                        <table width="100%">
+                    <td  width="50%" style="border-right: 2px solid #ccc;border-bottom: 2px solid #ccc">
+                        <table width="100%" align="left">
                             <tr>
-
+                                <td align="right"><b class="Text" style="color: #4183c4">Project ID:</b></td>
+                                <td align="left">{{project_id}}</td>
+                            </tr>
+                            <tr>
+                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Project Name:</b></td>
+                                <td align="left">{{project_name}}</td>
+                            </tr>
+                            <tr>
+                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Description:</b></td>
+                                <td align="left">{{project_description}}</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                             </tr>
                         </table>
                     </td>
-                    <td>
-                        <table width="100%">
+                    <td width="50%" style="border-bottom: 2px solid #ccc">
+                        <table width="100%" align="right">
+                            <tr>
+                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Project Creator:</b></td>
+                                <td align="left">{{project_createdby}}</td>
+                            </tr>
+                            <tr>
+                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Creation Date:</b></td>
+                                <td align="left">{{project_creationdate}}</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td  width="50%" style="border-right: 2px solid #ccc;border-bottom: 2px solid #ccc">
+                        <table width="100%" align="left">
+                            <tr>
+                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Starting Date:</b></td>
+                                <td align="left">{{project_startingdate}}</td>
+                            </tr>
 
+                            <tr>
+                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Ending Date:</b></td>
+                                <td align="left">{{project_endingdate}}</td>
+                            </tr>
+                            <tr>
+                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Project Owners:</b></td>
+                                <td align="left">
+                                    {% for x in testers%}
+                                        {% if forloop.last %}
+                                            {{x}}
+                                        {% else %}
+                                            {{x}} ,
+                                        {% endif  %}
+                                    {% endfor %}
+                                    {% if managers %}
+                                        ,
+                                        {% for x in managers %}
+                                            {% if forloop.last %}
+                                                {{x}}
+                                            {% else %}
+                                                {{x}} ,
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+
+                        </table>
+                    </td>
+                    <td width="50%" style="border-bottom: 2px solid #ccc">
+                        <table width="100%" align="right">
+                            <tr>
+                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Last Modified By:</b></td>
+                                <td align="left">{{project_modifiedby}}</td>
+                            </tr>
+                            <tr>
+                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Last Modification Date:</b></td>
+                                <td align="left">{{project_modifydate}}</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
                         </table>
                     </td>
                 </tr>
