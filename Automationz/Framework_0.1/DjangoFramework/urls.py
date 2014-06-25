@@ -230,6 +230,8 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Small_Project_Detail/$',Small_Project_Detail),
     url(r'^Home/.*/Get_Projects/$',Get_Projects),
     
+    url(r'^Home/Project/(?P<project_id>[^/]*)/Comment/$',FileUpload),
+    
     url(r'^Home/ManageTestCases/SearchEdit-Dev/$',SearchEditDev),
     url(r'^Home/FeaDri/GetTestStepsAndTestCasesOnDriverValue/$', GetTestStepsAndTestCasesOnDriverValue),
     

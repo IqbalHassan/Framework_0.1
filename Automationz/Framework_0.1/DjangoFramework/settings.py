@@ -3,6 +3,8 @@ import os.path
 
 import Global
 
+import os
+PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -68,12 +70,13 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/DjangoFramework/MySite/images/static/'
-
+#MEDIA_ROOT = '/DjangoFramework/MySite/images/static/'
+MEDIA_ROOT= os.path.join(PROJECT_ROOT, 'site_media')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = 'http://localhost:8081/static/'
+#MEDIA_URL = 'http://localhost:8081/static/'
+MEDIA_URL='/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files

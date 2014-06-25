@@ -3,7 +3,7 @@
 {% block title%}Manage Project{% endblock %}
 
 {% block content %}
-<script type="text/javascript" src="/site_media/Jquery/Local/Project.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/Local/Project_Detail.js"></script>
 <article>
     <table align="left">
         <tr>
@@ -127,7 +127,46 @@
         </div>
         <h3><b>Comments</b></h3>
         <div class="tabs-div" align="center">
+            <table width="100%">
+                <tr>
+                    <td width="100%">
+                        {% if final_comment %}
+                        <table width="100%" align="left">
+                            {% for x in final_comment%}
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr><td colspan="2"><b style="color: #4183c4">{{x.1}}</b></td></tr>
+                                        <tr><td><b>{{x.3}}</b></td><td>{{x.2}}</td></tr>
+                                        <tr><td colspan="2">{{x.0}}</td></tr>
+                                        <tr><td><a media="all" target="_blank" href="{{x.5}}">Show Attachment</a> </td><td>&nbsp;</td></tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        {% else %}
+                        <table width="100%">
+                            <tr><td><b class="Text">No Comments on this project till now</b> </td></tr>
+                        </table>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="100%">
+                        <form action="{% url 'MySite.views.FileUpload' project_id %}" method="post" enctype="multipart/form-data">
+                            {%csrf_token%}
+                            <div style="width:50%;background-color: #cccccc;margin-top: 2%">
+                                <table>
+                                    {{comment}}
+                                </table>
+                                <input type="submit" class="button primary" value="Comment"/>
+                            </div>
+                        </form>
 
+                    </td>
+                </tr>
+            </table>
         </div>
         <h3><b>Teams</b></h3>
         <div class="tabs-div" align="center">
