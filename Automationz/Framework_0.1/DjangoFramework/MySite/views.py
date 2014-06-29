@@ -5956,6 +5956,10 @@ def update_runid(run_id, test_case_id):
         status = 'Complete'
         endtime = DB.GetData(oConn, "select current_timestamp", False)
         Dict.update({'testendtime':str(endtime[0][0])})
+        """allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'", False)
+        TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'", False)
+        import EmailNotify
+        EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')"""
         
     elif progress > 0 or submit_count > 0:
         status = 'In-Progress'
@@ -5990,6 +5994,12 @@ def update_runid(run_id, test_case_id):
         print DB.DeleteRecord(oConn, "test_run_env", tester_id=machine_info[0][3].strip(), status='Unassigned')
         Dict = {'tester_id':machine_info[0][3].strip(), 'status':'Unassigned', 'machine_os':machine_info[0][6].strip(), 'client':machine_info[0][7].strip(), 'last_updated_time':updated_time.strip(), 'os_bit':machine_info[0][16].strip(), 'os_name':machine_info[0][15].strip(), 'os_version':machine_info[0][14].strip(), 'machine_ip':machine_info[0][11].strip(), 'product_version':machine_info[0][10].strip()}
         print DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
+    if status == 'Complete':
+        run_id = str(run_id)
+        allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'", False)
+        TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
+        import EmailNotify
+        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,'','')
     #########################################################################################
 def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReason):
     """test_step_id_list=[]
