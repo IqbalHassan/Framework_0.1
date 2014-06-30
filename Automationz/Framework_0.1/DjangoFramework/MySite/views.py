@@ -7827,7 +7827,7 @@ def Project_Detail(request,project_id):
     managers=managers.split(",")
     del Dict['project_owners']
     #get top 5 comments
-    query="select comment_id,attachment from comments where project_id='%s' order by comment_date limit 5"%(project_id)
+    query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc limit 5"%(project_id)
     top_five_comment=DB.GetData(Conn,query,False)
     final=[]
     for each in top_five_comment:
@@ -7844,24 +7844,37 @@ def Project_Detail(request,project_id):
             query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)
             temp=DB.GetData(Conn,query,False)
             temp=temp[0]
-            #temp_other=[]
-            #for each in temp:
-            #    temp_other.append(each)
-            #modify_url=temp_other.pop()
-            #modify_url=str(modify_url)
-            #new_url=modify_url[len(PROJECT_ROOT):]
-            #temp=[]
-            #for each in temp_other:
-            #    temp.append(each)
-            #temp.append(new_url)
             temp=tuple(temp)
         final.append(temp)
     comment=Comment()
     print comment
+    query="select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and project_id='%s'"%project_id
+    team_number=DB.GetData(Conn,query,False)
+    fullTeamDetail=GetProjectTeamInfo(team_number)
+    query="select id,value from config_values where type='Team' and id not in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
+    restTeam=DB.GetData(Conn,query,False)
+    restTeamDetail=GetProjectTeamInfo(restTeam)
+    Dict.update({'team_detail':fullTeamDetail,'rest_team':restTeamDetail})
     Dict.update({'comment':comment})
     Dict.update({'testers':testers,'managers':managers})        
     Dict.update({'final_comment':final})
     return render_to_response('Project_Detail.html',Dict,context_instance=RequestContext(request))
+def GetProjectTeamInfo(team_number):
+    fullTeamDetail=[]
+    for each in team_number:
+        team={}
+        query="select name,rank from team_info where team_id='%s'"%str(each[0])
+        team_members=DB.GetData(Conn,query,False)
+        leader=[]
+        tester=[]
+        for eachitem in team_members:
+            if eachitem[1]=='leader':
+                leader.append(eachitem[0])
+            if eachitem[1]=='tester':
+                tester.append(eachitem[0])
+        team.update({'leader':leader,'tester':tester})
+        fullTeamDetail.append((each[0],each[1],each[1].replace(' ','_'),team))
+    return fullTeamDetail
 def Small_Project_Detail(request):
     if request.is_ajax():
         if request.method=='GET':
@@ -7996,7 +8009,7 @@ def FileUpload(request,project_id):
                   }
             result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
             if result==True:
-                return HttpResponseRedirect('/Home/Project/'+project_id+'/')
+                return HttpResponseRedirect(reverse('comment_view', kwargs={'project_id':project_id}))
         elif len(request.FILES)==0 and request.POST['comment']!="":
             #form Dict
             attachment=False
@@ -8011,7 +8024,7 @@ def FileUpload(request,project_id):
                   }
             result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
             if result==True:
-                return HttpResponseRedirect('/Home/Project/'+project_id+'/')
+                return HttpResponseRedirect(reverse('comment_view', kwargs={'project_id':project_id}))
         elif len(request.FILES)!=0 and request.POST['comment']=="":
             file_name=request.FILES['docfile']
             path=default_storage.save(os.path.join(dateFolder,str(file_name)),ContentFile(file_name.read()))
@@ -8038,8 +8051,62 @@ def FileUpload(request,project_id):
                   }
             result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
             if result==True:
-                return HttpResponseRedirect('/Home/Project/'+project_id+'/')
+                return HttpResponseRedirect(reverse('comment_view', kwargs={'project_id':project_id}))
         else:
             print "no comment"
     else:
         print "not autorized to comment"
+def commentView(request,project_id):
+    query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc"%project_id
+    Conn=GetConnection()
+    all_comments=DB.GetData(Conn,query,False)
+    final=[]
+    for each in all_comments:
+        if each[1]==False:
+            query="select comment_text,commented_by,comment_date,rank,c.attachment from comments c where c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)    
+            temp_comment=DB.GetData(Conn,query,False)
+            temp=[]
+            for each in temp_comment:
+                for eachitem in each:
+                    temp.append(eachitem)
+            temp.append('')
+            temp=tuple(temp)
+        if each[1]==True:
+            query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)
+            temp=DB.GetData(Conn,query,False)
+            temp=temp[0]
+            temp=tuple(temp)
+        final.append(temp)
+    comment=Comment()
+    query="select project_name from projects where project_id='%s'"%project_id
+    project_name=DB.GetData(Conn,query)
+    project_name=project_name[0]
+    Dict={'all_comments':final,'comment':comment,'project_id':project_id,'project_name':project_name}
+    return render_to_response('Project_Comment.html',Dict,context_instance=RequestContext(request))
+
+def AddTeamtoProject(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            Conn=GetConnection()
+            teams=request.GET.get(u'teams').split("|")
+            project_id=request.GET.get(u'project_id').strip()
+            for each in teams:
+                query="select count(*) from project_team_map where project_id='%s' and team_id='%s'"%(project_id,str(each))
+                project_count=DB.GetData(Conn,query)
+                if len(project_count)==1 and project_count[0]==1:
+                    continue
+                else:
+                    #form Dict
+                    Dict={
+                          'project_id':project_id.strip(),
+                          'team_id':str(each).strip(),
+                          'status':False
+                          }
+                    result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
+                    if result==False:
+                        time.sleep(1)
+                        Conn=GetConnection()
+    message="Success"
+    result=simplejson.dumps(message)
+    return HttpResponse(result,mimetype='application/json')
+    #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    

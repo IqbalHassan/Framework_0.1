@@ -1,0 +1,74 @@
+{% extends "BaseTemplate.html" %}
+
+{% block title%}Project Comments{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/Project_Comment.js"></script>
+<table align="center" width="100%">
+    <tr>
+        <td align="left">
+            <table align="left">
+                <tr>
+                    <td width="80%">
+                        <div align="left">
+                            <h3 style="font-size: 19px;"><a href="{% url 'MySite.views.CreateProject' %}" style="font-weight: bold;">Projects</a> / <a href="{% url 'MySite.views.Project_Detail' project_id%}" style="font-weight: bold;">{{project_id}} - {{project_name}}</a> / <a href="#" style="font-weight: bold;">Comments</a></h3>
+                        </div>
+                    </td>
+                    <!--<td width="20%"><a href="" class="createnew" style="text-align: center;width: 75%;" id="new_team">Create New Team</a></td>-->
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+
+            <div align="center" style="margin: auto">
+                <table width="100%" align="center">
+                    {% if all_comments%}
+                        {% for x in all_comments %}
+                        <tr>
+                            <td width="100%">
+                                <table>
+                                    <tr><td colspan="2"><b style="color: #4183c4" class="Text">{{x.1}}</b></td></tr>
+                                    <tr>
+                                        <td align="left" width="40%"><b style="font-size: 105%;font-weight: bolder">{{x.3}}</b></td>
+                                        <td style="font-weight: bold;" align="right" width="60%">{{x.2}}</td>
+                                    </tr>
+                                    <tr><td colspan="2" style="font-size: 120%;font-family:Consolas;">{{x.0}}</td></tr>
+                                    {% if x.4 %}
+                                    <tr><td><a media="all" target="_blank" href="{{x.5}}">Show Attachment</a> </td><td>&nbsp;</td></tr>
+                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                    {% else %}
+                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                    {% endif %}
+
+                                </table>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td><b class="Text">No Comments on this project till now</b> </td></tr>
+                    {% endif %}
+                    <tr>
+                        <td colspan="2">
+                            <form action="{% url 'MySite.views.FileUpload' project_id %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div style="width:50%;background-color: #cccccc;margin-top: 2%">
+
+                                    <table>
+                                        {{comment}}
+                                    </table>
+                                    <input type="submit" class="button primary" value="Comment"/>
+                                </div>
+                            </form>
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </td>
+    </tr>
+</table>
+{% endblock%}

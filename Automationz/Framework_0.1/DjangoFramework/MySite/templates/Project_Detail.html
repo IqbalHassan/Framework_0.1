@@ -9,7 +9,7 @@
         <tr>
             <td width="80%">
                 <div align="left">
-                    <h3 style="font-size: 19px;"><a href="/Home/CreateProject/" style="font-weight: bold;">Projects</a> / <a href="#" style="font-weight: bold;">{{project_id}}</a></h3>
+                    <h3 style="font-size: 19px;"><a href="/Home/CreateProject/" style="font-weight: bold;">Projects</a> / <a href="#" style="font-weight: bold;"><span id="project_id">{{project_id}}</span> - {{project_name}}</a></h3>
                 </div>
             </td>
             <!--<td width="20%"><a href="" class="createnew" style="text-align: center;width: 75%;" id="new_team">Create New Team</a></td>-->
@@ -139,11 +139,17 @@
                                         <tr><td colspan="2"><b style="color: #4183c4">{{x.1}}</b></td></tr>
                                         <tr><td><b>{{x.3}}</b></td><td>{{x.2}}</td></tr>
                                         <tr><td colspan="2">{{x.0}}</td></tr>
-                                        <tr><td><a media="all" target="_blank" href="{{x.5}}">Show Attachment</a> </td><td>&nbsp;</td></tr>
+                                        {% if x.4 %}
+                                            <tr><td><a media="all" target="_blank" href="{{x.5}}">Show Attachment</a> </td><td>&nbsp;</td></tr>
+                                        {% else %}
+                                            <tr><td>&nbsp;</td></tr>
+                                        {% endif %}
+
                                     </table>
                                 </td>
                             </tr>
                             {% endfor %}
+                            <tr><td><a href="{% url 'MySite.views.commentView' project_id %}">See All Comments</a></td></tr>
                         </table>
                         {% else %}
                         <table width="100%">
@@ -169,8 +175,134 @@
             </table>
         </div>
         <h3><b>Teams</b></h3>
-        <div class="tabs-div" align="center">
+        <div class="tabs-div" align="left" width="100%">
+            <table width="100%">
+                <thead>
+                <tr>
+                    <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Current Teams</td>
+                    <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text">Select Team(s) to add </td>
+                </tr>
+                </thead>
 
+                <tbody>
+                <tr>
+                    <td align="left" width="50%" style="border-right: 2px solid #ccc;vertical-align: 0%;">
+                        <table width="100%" align="left">
+                            {% for x in team_detail%}
+                            <tr>
+                                <td width="100%">
+                                    <table>
+                                        <tr><td><b class="Text" style="font-size: 150%;"><a href="{% url 'MySite.views.TeamData' x.2%}">{{x.0}} - {{x.1}}</a></b></td></tr>
+                                        {% if x.3.leader %}
+                                            <tr>
+                                                <td>
+                                                    <table>
+                                                        <tr>
+                                                            <td><b style="font-size: 120%;">Managers:</b></td>
+                                                            {% for z in x.3.leader%}
+                                                                {% if forloop.last %}
+                                                                    <td>{{z}}</td>
+                                                                {% else %}
+                                                                    <td>{{z}},</td>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr><td><b class="Text" style="font-size: 110%;">No Manager in this team</b></td></tr>
+                                        {% endif %}
+                                        {% if x.3.tester %}
+                                        <tr>
+                                            <td>
+                                                <table>
+                                                    <tr>
+                                                        <td><b style="font-size: 120%;">Testers:</b></td>
+                                                        {% for z in x.3.tester%}
+                                                            {% if forloop.last %}
+                                                                 <td>{{z}}</td>
+                                                            {% else %}
+                                                                <td>{{z}},</td>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr><td><b class="Text" style="font-size: 110%">No Tester in this team</b></td></tr>
+                                        {% endif %}
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr><td><a href="">see assignments</a></td></tr>
+                            <tr><td>&nbsp;</td></tr>
+                            <tr><td>&nbsp;</td></tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                    <td align="50%" style="vertical-align: 0%;">
+                        <table width="100%" align="left" style="vertical-align: 0%;">
+                            {% for x in rest_team %}
+                            <tr>
+                                <td width="100%" style="vertical-align: 0%;">
+                                    <table>
+                                        <tr><td><b class="Text" style="font-size: 150%;"><input name="rest_team" value="{{x.0}}" type="checkbox" class="button primary"/><a href="{% url 'MySite.views.TeamData' x.2%}">{{x.0}} - {{x.1}}</a></b></td></tr>
+                                        {% if x.3.leader %}
+                                        <tr>
+                                            <td>
+                                                <table>
+                                                    <tr>
+                                                        <td><b style="font-size: 120%;">Managers:</b></td>
+                                                        {% for z in x.3.leader%}
+                                                            {% if forloop.last %}
+                                                                <td>{{z}}</td>
+                                                            {% else %}
+                                                                <td>{{z}},</td>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr><td><b class="Text" style="font-size: 110%;">No Manager in this team</b></td></tr>
+                                        {% endif %}
+                                        {% if x.3.tester %}
+                                        <tr>
+                                            <td>
+                                                <table>
+                                                    <tr>
+                                                        <td><b style="font-size: 120%;">Testers:</b></td>
+                                                        {% for z in x.3.tester%}
+                                                            {% if forloop.last %}
+                                                                <td>{{z}}</td>
+                                                            {% else %}
+                                                                <td>{{z}},</td>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                            <tr><td><b class="Text" style="font-size: 110%">No Tester in this team</b></td></tr>
+                                        {% endif %}
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr><td>&nbsp;</td></tr>
+                            <tr><td>&nbsp;</td></tr>
+                            {% endfor %}
+                            <tr><td><input type="button" class="button primary" id="add_selected" value="Add Selected"></td></tr>
+                        </table>
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
         </div>
     </div>
     <script>
