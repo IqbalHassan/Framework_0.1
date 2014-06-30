@@ -7834,16 +7834,16 @@ def Project_Detail(request,project_id):
             query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)
             temp=DB.GetData(Conn,query,False)
             temp=temp[0]
-            temp_other=[]
-            for each in temp:
-                temp_other.append(each)
-            modify_url=temp_other.pop()
-            modify_url=str(modify_url)
-            new_url=modify_url[len(PROJECT_ROOT):]
-            temp=[]
-            for each in temp_other:
-                temp.append(each)
-            temp.append(new_url)
+            #temp_other=[]
+            #for each in temp:
+            #    temp_other.append(each)
+            #modify_url=temp_other.pop()
+            #modify_url=str(modify_url)
+            #new_url=modify_url[len(PROJECT_ROOT):]
+            #temp=[]
+            #for each in temp_other:
+            #    temp.append(each)
+            #temp.append(new_url)
             temp=tuple(temp)
         final.append(temp)
     comment=Comment()
@@ -7966,6 +7966,7 @@ def FileUpload(request,project_id):
             print path
             #print "Attachment Comment"
             #new_path=
+            path=path[len(PROJECT_ROOT):]
             result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
             if result==False:
                 print "unable to save the attachments"
@@ -8007,6 +8008,7 @@ def FileUpload(request,project_id):
             print path
             #print "Attachment Comment"
             #new_path=
+            path=path[len(PROJECT_ROOT):]
             result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
             if result==False:
                 print "unable to save the attachments"
