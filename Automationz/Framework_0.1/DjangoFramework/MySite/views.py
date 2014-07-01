@@ -7848,11 +7848,11 @@ def Project_Detail(request,project_id):
         final.append(temp)
     comment=Comment()
     print comment
-    query="select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and project_id='%s'"%project_id
-    team_number=DB.GetData(Conn,query,False)
+    team_query="select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and ptm.project_id='%s'"%project_id
+    team_number=DB.GetData(Conn,team_query,False)
     fullTeamDetail=GetProjectTeamInfo(team_number)
-    query="select id,value from config_values where type='Team' and id not in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
-    restTeam=DB.GetData(Conn,query,False)
+    other_query="(select cast(id as text),value from config_values where type='Team') except (select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and project_id='%s')" %project_id
+    restTeam=DB.GetData(Conn,other_query,False)
     restTeamDetail=GetProjectTeamInfo(restTeam)
     Dict.update({'team_detail':fullTeamDetail,'rest_team':restTeamDetail})
     Dict.update({'comment':comment})
@@ -7863,7 +7863,7 @@ def GetProjectTeamInfo(team_number):
     fullTeamDetail=[]
     for each in team_number:
         team={}
-        query="select name,rank from team_info where team_id='%s'"%str(each[0])
+        query="select name,rank from team_info where team_id='%s'"%int(each[0])
         team_members=DB.GetData(Conn,query,False)
         leader=[]
         tester=[]
