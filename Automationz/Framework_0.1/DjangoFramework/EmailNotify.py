@@ -40,12 +40,34 @@ def Send_Email(Reciever, Subject, Objective, Body=None , type=None):
     sender.send(message)
     
     
-def Complete_Email(Reciever, Subject, Objective, Status, Body=None , type=None):
+def Complete_Email(Reciever, Subject, Objective, Status, List, Body=None , type=None):
     from mailer import Mailer
     from mailer import Message
 
     #server.ehlo()
     #server.starttls()
+    
+    from pygooglechart import PieChart2D
+
+    # Create a chart object of 250x100 pixels
+    chart = PieChart2D(550, 400)
+    
+    # Add some data
+    chart.set_colours(['65BD10','FD0006','FF8C00','0000FF','5E5E5E','88A388'])
+    chart.add_data([List[0], List[1], List[2], List[3], List[4], List[5]])
+    
+    # Assign the labels to the pie data
+    chart.set_pie_labels(['Passed', 'Failed', 'Blocked', 'In-Progress', 'Submitted', 'Skipped'])
+    
+    # Print the chart URL
+    print chart.get_url()
+    
+    # Download the chart
+    chart.download('pie-hello-world.png')
+    
+    """from django.core.files import File
+    with open('pie-hello-world.png', 'r') as f:
+        myfile = File(f)"""
                
     ToAddr = Reciever
     message = Message(From="AutomationReport@automationsolutionz.com",
@@ -57,13 +79,15 @@ def Complete_Email(Reciever, Subject, Objective, Status, Body=None , type=None):
     message.Html = """<div id=":1ox" class="ii gt m146ced87dfe81da1 adP adO">
         <div id=":1np" class="a3s" style="overflow: hidden;">
         <div>
-        <div style="border:solid 1px #dfdfdf;color:#686868;font:13px Arial;max-width:638px">
+        <div style="border:solid 1px #dfdfdf;color:#686868;font:13px Arial;max-width:650px">
         <div style="padding:0 20px;background-color:#f5f5f5"><span style="vertical-align:middle">
         <img src="http://i.imgur.com/BqzPRSr.png" style="padding:6px;padding-top:12px;padding-left:1px;border-style:none"></span>
         </div>
-        <div style="padding:20px;min-height:140px"><img style="min-height:128px;width:128px;vertical-align:top;float:left;padding-right:15px;margin:1px;margin-bottom:15px" src="http://i.imgur.com/GJfLPHI.png" class="">
+        <div style="padding:20px;min-height:550px;min-width:600px"><img style="min-height:128px;width:128px;vertical-align:top;float:left;padding-right:15px;margin:1px;margin-bottom:15px" src="http://i.imgur.com/GJfLPHI.png" class="">
         <span style="color:#686868;margin-top:2px;padding-bottom:6px"><p style="font-size:18px">Deployed Run-ID: %s </p><p style="font-size:18px">  Run Objective: %s</p><p style="font-size:18px">  Run Status: %s</p>
         <p><a style="display:inline-block;padding:7px 15px;margin-right:10px;background-color:#d44b38;color:#fff;font-size:15px;font-weight:bold;border:solid 1px #c43b28;white-space:normal;text-decoration:none" href="http://135.23.123.67:8080/Home/RunID/%s/" target="_blank">Open RunID Detail</a></p>
+        <img src="%s" class="">
+        <p><a style="display:inline-block;padding:7px 15px;margin-right:10px;background-color:#d44b38;color:#fff;font-size:15px;font-weight:bold;border:solid 1px #c43b28;white-space:normal;text-decoration:none" href="http://135.23.123.67:8080/Home/RunID/%s/" target="_blank">Go To RunID Detail</a></p>        
         </span>
         </div>
         <div style="border-top:solid 1px #dfdfdf;color:#636363;font:11px Arial;line-height:1.5em;padding:3px 20px;background-color:#f5f5f5">&copy; Automation Solutionz, 1212 Countrystone Drive, Kitchener, N2N 3R4. 
@@ -71,7 +95,7 @@ def Complete_Email(Reciever, Subject, Objective, Status, Body=None , type=None):
         </div>
         </div>
         </div>
-        </div>""" % (Subject, Objective, Status, Subject)
+        </div>""" % (Subject, Objective, Status, Subject, chart.get_url(), Subject)
     #Body = "Deployed Run-ID: " + Subject + "<br/>" + "Run Objective: " + Objective + "<br/>"
     #link = "<a href='135.23.123.67:8080/Home/RunID/'" + Subject + ">" +Subject + "</a>"
     #message.Html = message.Html + Body + "<br/>" + "<br/>"
@@ -80,3 +104,5 @@ def Complete_Email(Reciever, Subject, Objective, Status, Body=None , type=None):
 
     sender = Mailer('smtp.automationsolutionz.com','25', True, username, password)
     sender.send(message)
+    
+    
