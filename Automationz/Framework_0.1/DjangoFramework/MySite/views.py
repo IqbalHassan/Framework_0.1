@@ -3553,7 +3553,13 @@ def Get_Users(request):
         message = results[0]
     else:
         message = "User Not Found!"
-    Dict={'message':message}
+    query="select project_id from projects order by project_id limit 1"
+    project_id=DB.GetData(Conn,query,False)
+    if len(project_id)==0:
+        project_id=""
+    else:
+        project_id=project_id[0][0]
+    Dict={'message':message,'project_id':project_id}
     json = simplejson.dumps(Dict)
     return HttpResponse(json, mimetype='application/json')
 

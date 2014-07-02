@@ -40,7 +40,7 @@ $(document).ready(function() {
 						$.session.set('username', username);
 	                    $.session.set('fullname', data['message']);
 	                    $.session.set('log', 'logged');
-	                    //$.session.set('project_id', 'PROJ-15');
+	                    $.session.set('project_id', data['project_id']);
 						setTimeout(function() {
 							window.location.href = path_to_redirect;
 						}, 1500);
