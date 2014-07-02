@@ -25,11 +25,11 @@ $(document).ready(function() {
 				type: "GET",
 				dataType: "json",
 				success: function(data) {
-					if (data === 'User Not Found!') {
+					if (data['message'] === 'User Not Found!') {
 						alertify.error("No user found with the provided details.");
 						$("#password").val("");
 					} else {
-						alertify.success("Welcome, " + data);
+						alertify.success("Welcome, " + data['message']);
 						var path_to_redirect = sessionStorage.getItem("path_to_redirect");
 						
 						setTimeout(function() {
@@ -38,9 +38,9 @@ $(document).ready(function() {
 						
 						
 						$.session.set('username', username);
-	                    $.session.set('fullname', data);
+	                    $.session.set('fullname', data['message']);
 	                    $.session.set('log', 'logged');
-	                    
+	                    //$.session.set('project_id', 'PROJ-15');
 						setTimeout(function() {
 							window.location.href = path_to_redirect;
 						}, 1500);

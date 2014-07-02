@@ -255,7 +255,7 @@
                                                     <td>
                                                         <table>
                                                             <tr>
-                                                                <td><b style="font-size: 120%;">Managers:</b></td>
+                                                                <td><b style="font-size: 120%;">Owners:</b></td>
                                                                 {% for z in x.3.leader%}
                                                                     {% if forloop.last %}
                                                                         <td>{{z}}</td>
@@ -268,7 +268,7 @@
                                                     </td>
                                                 </tr>
                                                 {% else %}
-                                                <tr><td><b class="Text" style="font-size: 110%;">No Manager in this team</b></td></tr>
+                                                <tr><td><b class="Text" style="font-size: 110%;">No Owner in this team</b></td></tr>
                                                 {% endif %}
                                                 {% if x.3.tester %}
                                                 <tr>

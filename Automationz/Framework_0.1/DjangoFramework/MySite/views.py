@@ -87,15 +87,22 @@ def TimeDiff(sYourTime):
 
 
 
-
+def GetProjectNameForTopBar(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            query="select project_id,project_name from projects"
+            Conn=GetConnection()
+            project_name_id=DB.GetData(Conn, query,False)
+            Dict={'projects':project_name_id,
+                  'default_project':project_name_id[0][0]}
+    result=simplejson.dumps(Dict)
+    return HttpResponse(result,mimetype='application/json')
 
 """ Main Pages functions """
 # @login_required(login_url='/Home/Login/')
 def HomePage(req):
     templ = get_template('HomePage.html')
-    variables = Context(
-                        {}
-                        )
+    variables = Context({})
     output = templ.render(variables)
     return HttpResponse(output)
 
@@ -3546,8 +3553,8 @@ def Get_Users(request):
         message = results[0]
     else:
         message = "User Not Found!"
-
-    json = simplejson.dumps(message)
+    Dict={'message':message}
+    json = simplejson.dumps(Dict)
     return HttpResponse(json, mimetype='application/json')
 
 def Get_RunTypes(request):
@@ -7375,7 +7382,12 @@ def FetchProject(request):
 def ManageBug(request):
     return render_to_response('ManageBug.html',{})
 def ManageRequirement(request):
-    return render_to_response('ManageRequirement.html',{})
+    #get the project name
+    query="select distinct project_id,project_name from projects"
+    Conn=GetConnection()
+    project_name_id=DB.GetData(Conn,query,False)
+    Dict={}
+    return render_to_response('ManageRequirement.html',Dict)
 def ManageTeam(request):
     return render_to_response('ManageTeam.html',{})
 def GetTesterManager(request):

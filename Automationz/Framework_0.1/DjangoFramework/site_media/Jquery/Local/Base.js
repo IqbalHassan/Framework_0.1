@@ -16,9 +16,19 @@ $(document).ready(function(){
     {
         window.location = '/Home/Login/';
     }
-    
     $(".welcome").text($.session.get('fullname'));
-    
+    $.get('GetProjectNameForTopBar',{},function(data){
+        var message="";
+        var projects=data['projects'];
+        for(var i=0;i<projects.length;i++){
+            message+=('<option value="'+projects[i][0]+'">'+projects[i][0]+' - '+projects[i][1]+'</option> ');
+        }
+        $('#project_identity').append(message);
+        $('#project_identity').val($.session.get('project_id'));
+    });
+    $('#project_identity').on('change',function(){
+        $.session.set('project_id',$(this).val());
+    });
     [].slice.call( document.querySelectorAll( '.progress-button' ) ).forEach( function( bttn, pos ) {
 		new UIProgressButton( bttn, {
 			callback : function( instance ) {

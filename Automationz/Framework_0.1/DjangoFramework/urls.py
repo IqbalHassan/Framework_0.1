@@ -15,7 +15,9 @@ urlpatterns = patterns('',
     # Home Page
 	url(r'^$', HomePage),
     url(r'^Home/$', HomePage),
-    
+    url(r'^GetProjectNameForTopBar/$',GetProjectNameForTopBar),
+    url(r'^Home/.*/GetProjectNameForTopBar/$',GetProjectNameForTopBar),
+    url(r'^Home/GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/Contact/$', contact_page),
     url(r'^Home/Contact/URL/(?P<url>.+)/$', contact_page_with_url),
     
