@@ -6005,8 +6005,31 @@ def update_runid(run_id, test_case_id):
         run_id = str(run_id)
         allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'", False)
         TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
+        list = []
+        """total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
+        total = DB.GetData(Conn, total_query)
+        list.append(total[0])"""
+        pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
+        passed = DB.GetData(Conn, pass_query)
+        list.append(passed[0])
+        fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % run_id
+        fail = DB.GetData(Conn, fail_query)
+        list.append(fail[0])
+        blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
+        blocked = DB.GetData(Conn, blocked_query)
+        list.append(blocked[0])
+        progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
+        progress = DB.GetData(Conn, progress_query)
+        list.append(progress[0])
+        submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
+        submitted = DB.GetData(Conn, submitted_query)
+        list.append(submitted[0])
+        skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
+        skipped = DB.GetData(Conn, skipped_query)
+        list.append(skipped[0])
+
         import EmailNotify
-        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,'','')
+        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,'','')
     #########################################################################################
 def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReason):
     """test_step_id_list=[]
