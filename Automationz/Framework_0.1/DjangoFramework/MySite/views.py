@@ -7412,10 +7412,12 @@ def ManageBug(request):
     return render_to_response('ManageBug.html',{})
 def ManageRequirement(request):
     #get the project name
-    query="select distinct project_id,project_name from projects"
+    query="select project_id,project_name from projects"
     Conn=GetConnection()
     project_name_id=DB.GetData(Conn,query,False)
-    Dict={}
+    milestone_query="select id,value from config_values where type='milestone'"
+    milestone=DB.GetData(Conn,milestone_query,False)
+    Dict={'projects':project_name_id,'milestone':milestone}
     return render_to_response('ManageRequirement.html',Dict)
 def ManageTeam(request):
     return render_to_response('ManageTeam.html',{})
@@ -8151,3 +8153,69 @@ def AddTeamtoProject(request):
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
     #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    
+def GetNewRequirementDetail(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            project_id=request.GET.get('project_id','')
+            team_query="select id,value from config_values c,project_team_map ptm where cast(c.id as text)=ptm.team_id and ptm.project_id='%s'"%project_id
+            Conn=GetConnection()
+            team_list=DB.GetData(Conn,team_query,False)
+            Dict={'teams':team_list}
+    result=simplejson.dumps(Dict)
+    return HttpResponse(result,mimetype='application/json')
+def CreateRequirement(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            title=request.GET.get(u'title','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'start_date','')
+            end_date=request.GET.get(u'end_date','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            status=request.GET.get(u'status','')
+            user_name=request.GET.get(u'username','')
+            temp_Dict={}
+            Dict={}
+            Conn=GetConnection()
+            req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
+            req_id=('REQ'+str(req_id[0]))
+            #check availability
+            query="select count(*) from requirements where requirement_id='%s'"%req_id
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            if count[0]>0 and len(count)==1:
+                print "duplicate requirement id"
+                message="Failed"
+                Dict.update({'message':message,'id':""})
+            else:
+                #form the dict
+                now=datetime.datetime.now().date()
+                start_date=start_date.split('-')
+                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip()))
+                end_date=end_date.split('-')
+                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip()))
+                temp_Dict={
+                           'project_id':project_id.strip(),
+                           'requirement_id':req_id.strip(),
+                           'requirement_title':title.strip(),
+                           'requirement_description':description.strip(),
+                           'requirement_startingdate':start_date,
+                           'requirement_endingdate':end_date,
+                           'requirement_priority':priority.strip(),
+                           'requirement_milestone':milestone.strip(),
+                           'requirement_createdby':user_name.strip(),
+                           'requirement_creationdate':now,
+                           'requirement_modifiedby':user_name.strip(),
+                           'requirement_modifydate':now
+                           }
+                result=DB.InsertNewRecordInToTable(Conn,"requirements",**temp_Dict)
+                if result==False:
+                    message="Failed"
+                    Dict.update({'message':message,'id':""})
+                else:
+                    message="Success"
+                    Dict.update({'message':message,'id':req_id.strip()})
+    result=simplejson.dumps(Dict)
+    return HttpResponse(result,mimetype='application/json')

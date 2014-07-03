@@ -101,15 +101,18 @@
                 <tr>
                     <td align="right"><b class="Text" style="text-align: right">Project Name:</b></td>
                     <td>
-                        <select id="project_name">
+                        <select id="project_id">
                             <option selected>Select Project</option>
+                            {% for x in projects%}
+                                <option value="{{x.0}}">{{x.0}} - {{x.1}}</option>
+                            {% endfor %}
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Team:</b></td>
                     <td>
-                        <select id="team_name">
+                        <select id="team_id">
                             <option selected>Select Team</option>
                         </select>
                     </td>
@@ -120,7 +123,7 @@
                 </tr>
                 <tr>
                     <td align="right" style="vertical-align: 0%"><b class="Text">Description:</b></td>
-                    <td><textarea  rows="5" cols="70" placeholder="Description for the task within 150 words"></textarea></td>
+                    <td><textarea  rows="5" cols="70" placeholder="Description for the task within 150 words" id="description"></textarea></td>
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Starting Date:</b></td>
@@ -130,19 +133,19 @@
                     <td align="right"><b class="Text">End Date:</b></td>
                     <td><input type="text"  class="textbox" id="end_date" placeholder="Completion Date Here"></td>
                 </tr>
-                <tr>
+                <!--<tr>
                     <td align="right"><b class="Text">Created By:</b></td>
                     <td>
                         <select id="created_by">
                             <option selected>Select name from the list</option>
                         </select>
                     </td>
-                </tr>
-                <tr>
+                </tr>-->
+                <!--<tr>
                     <td align="right"><b class="Text">Assigned To:</b></td>
                     <td><input class="textbox" id="assigned_tester" placeholder="Select Testers Here"></td>
                     <td><table><tr id="tester"></tr></table></td>
-                </tr>
+                </tr>-->
                 <tr>
                     <td align="right"><b class="Text">Priority:</b></td>
                     <td>
@@ -155,9 +158,15 @@
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Milestone</b></td>
-                    <td><input type="text" id="milestone_list" class="textbox" placeholder="Milestone Here"></td>
-                    <td><table><tr id="milestone"></tr></table></td>
-                </tr>
+                    <td>
+                        <select id="milestone">
+                            <option value="" selected>Select Milestone</option>
+                            {% for x in milestone%}
+                                <option value="{{x.0}}">{{x.1}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    </tr>
                 <tr>
                     <td align="right"><b class="Text">Status:</b></td>
                     <td>
@@ -171,7 +180,7 @@
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td><input type="button" class="button primary" value="Submit"/></td>
+                    <td><input type="button" class="button primary" value="Submit" id="submit_button"/></td>
                 </tr>
             </table>
         </div>

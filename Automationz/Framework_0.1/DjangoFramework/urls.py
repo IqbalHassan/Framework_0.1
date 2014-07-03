@@ -232,6 +232,8 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Small_Project_Detail/$',Small_Project_Detail),
     url(r'^Home/.*/Get_Projects/$',Get_Projects),
     url(r'^Home/.*/AddTeamtoProject/$',AddTeamtoProject),
+    url(r'^Home/.*/GetNewRequirementDetail/$',GetNewRequirementDetail),
+    url(r'^Home/.*/CreateRequirement/$',CreateRequirement),
     
     url(r'^Home/Project/(?P<project_id>[^/]*)/comment_post/$',FileUpload),
     url(r'^Home/Project/(?P<project_id>[^/]*)/comments/$',commentView,name='comment_view'),
