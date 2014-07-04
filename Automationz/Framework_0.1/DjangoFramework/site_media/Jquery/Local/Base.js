@@ -28,6 +28,7 @@ $(document).ready(function(){
     });
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val());
+        window.location.reload(true);
     });
     [].slice.call( document.querySelectorAll( '.progress-button' ) ).forEach( function( bttn, pos ) {
 		new UIProgressButton( bttn, {

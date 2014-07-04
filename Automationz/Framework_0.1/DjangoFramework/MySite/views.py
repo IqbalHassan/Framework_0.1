@@ -8175,12 +8175,12 @@ def CreateRequirement(request):
             priority=request.GET.get(u'priority','')
             milestone=request.GET.get(u'milestone','')
             status=request.GET.get(u'status','')
-            user_name=request.GET.get(u'username','')
+            user_name=request.GET.get(u'user_name','')
             temp_Dict={}
             Dict={}
             Conn=GetConnection()
             req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
-            req_id=('REQ'+str(req_id[0]))
+            req_id=('REQ-'+str(req_id[0]))
             #check availability
             query="select count(*) from requirements where requirement_id='%s'"%req_id
             Conn=GetConnection()
@@ -8193,16 +8193,16 @@ def CreateRequirement(request):
                 #form the dict
                 now=datetime.datetime.now().date()
                 start_date=start_date.split('-')
-                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip()))
+                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
                 end_date=end_date.split('-')
-                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip()))
+                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
                 temp_Dict={
                            'project_id':project_id.strip(),
                            'requirement_id':req_id.strip(),
                            'requirement_title':title.strip(),
                            'requirement_description':description.strip(),
-                           'requirement_startingdate':start_date,
-                           'requirement_endingdate':end_date,
+                           'requirement_startingdate':starting_date,
+                           'requirement_endingdate':ending_date,
                            'requirement_priority':priority.strip(),
                            'requirement_milestone':milestone.strip(),
                            'requirement_createdby':user_name.strip(),
@@ -8215,7 +8215,43 @@ def CreateRequirement(request):
                     message="Failed"
                     Dict.update({'message':message,'id':""})
                 else:
+                    #query=
+                    #form requirement team map
+                    team_Dict={
+                               'requirement_id':req_id,
+                               'parent_requirement_id':"",
+                               'team_id':team_id,
+                               'status':status.strip()
+                               }
+                    result=DB.InsertNewRecordInToTable(Conn,"requirement_team_map",**team_Dict)
                     message="Success"
                     Dict.update({'message':message,'id':req_id.strip()})
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json')
+def GetAllRequirements(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            project_id=request.GET.get(u'project_id','')
+            query="select requirement_title,requirement_description,case "
+            query+="when requirement_endingdate-requirement_startingdate=0 then 'Due Today'"
+            query+="when requirement_endingdate-requirement_startingdate>0 and requirement_endingdate-requirement_startingdate<=1 then 'In ' ||requirement_endingdate-requirement_startingdate ||' day'"
+            query+="when requirement_endingdate-requirement_startingdate>1 then 'In ' ||requirement_endingdate-requirement_startingdate ||' days'"
+            query+="when requirement_endingdate-requirement_startingdate=-1 then 'Over ' || (requirement_startingdate-requirement_endingdate) ||' day ago'"  
+            query+="when requirement_endingdate-requirement_startingdate<=-1 then 'Over ' || (requirement_startingdate-requirement_endingdate) ||' days ago'"  
+            query+="end,"
+            query+="case " 
+            query+="when rtm.status='started' then 'Started'"
+            query+="when rtm.status='complete' then 'Complete'"
+            query+="when rtm.status='over_due' then 'Overdue'"
+            query+="end"
+            query+=",project_id,r.requirement_id,"
+            query+="(select value from config_values where type='milestone' and id=cast(r.requirement_milestone  as int))"
+            query+="from requirements r,requirement_team_map rtm "
+            query+="where r.requirement_id=rtm.requirement_id and r.project_id='%s' order by r.requirement_creationdate desc"%project_id
+            Conn=GetConnection()
+            requirements=DB.GetData(Conn,query,False)
+            Dict={'requirement':requirements}
+    result=simplejson.dumps(Dict)
+    return HttpResponse(result,mimetype='application/json')
+def DetailRequirementView(request,project_id,req_id):
+    return HttpResponse(project_id+'/'+req_id)
