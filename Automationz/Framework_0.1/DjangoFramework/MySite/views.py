@@ -7969,12 +7969,16 @@ def Small_Project_Detail(request):
 def Get_Projects(request):
     if request.is_ajax():
         if request.method=='GET':
-            name=request.GET.get(u'team_name','')
-            if name=="":
-                query="select project_name from projects"
-            else:
-                query="select project_name from projects where project_name Ilike'%%%s%%'"%name.strip()
-            team_name=DB.GetData(Conn,query)
+            try:
+                name=request.GET.get(u'team_name','')
+                if name=="":
+                    query="select project_name from projects"
+                else:
+                    query="select project_name from projects where project_name Ilike'%%%s%%'"%name.strip()
+                team_name=DB.GetData(Conn,query)
+            except Exception,e:
+                team_name=[]
+                print "Exception:",e
     result=simplejson.dumps(team_name)
     return HttpResponse(result,mimetype='application/json')
 def FileUpload(request,project_id):
@@ -8256,3 +8260,43 @@ def GetAllRequirements(request):
     return HttpResponse(result,mimetype='application/json')
 def DetailRequirementView(request,project_id,req_id):
     return HttpResponse(project_id+'/'+req_id)
+def TeamWiseRequirementView(request,project_id,team_id):
+    query="select project_name from projects where project_id='%s'"%project_id
+    Conn=GetConnection()
+    project_name=DB.GetData(Conn,query)
+    if isinstance(project_name,list):
+        project_name=project_name[0]
+    else:
+        project_name=""
+    team_name_query="select c.value,ptm.status from project_team_map ptm,config_values c where cast(ptm.team_id as int)=c.id and ptm.project_id='%s' and ptm.team_id='%s'"%(project_id,team_id)
+    team_name_status=DB.GetData(Conn,team_name_query,False)
+    if isinstance(team_name_status,list):
+        status=True
+        url_name=str(team_name_status[0][0]).replace(' ', '_')
+    else:
+        status=False
+        url_name=""
+    if status==True:
+        query="select r.requirement_title,r.requirement_description,"
+        query+="case when requirement_endingdate-requirement_startingdate=0 then 'Due Today'"
+        query+=" when requirement_endingdate-requirement_startingdate>0 and requirement_endingdate-requirement_startingdate<=1 then 'In ' ||requirement_endingdate-requirement_startingdate ||' day'"
+        query+=" when requirement_endingdate-requirement_startingdate>1 then 'In ' ||requirement_endingdate-requirement_startingdate ||' days'"
+        query+=" when requirement_endingdate-requirement_startingdate=-1 then 'Over ' || (requirement_startingdate-requirement_endingdate) ||' day ago'" 
+        query+=" when requirement_endingdate-requirement_startingdate<=-1 then 'Over ' || (requirement_startingdate-requirement_endingdate) ||' days ago'"  
+        query+=" end,"
+        query+="case"
+        query+=" when rtm.status='started' then 'Started'"
+        query+=" when rtm.status='complete' then 'Complete'"
+        query+=" when rtm.status='over_due' then 'Overdue'"
+        query+=" end,(select value from config_values where cast(r.requirement_milestone as int)=id),r.requirement_id"
+        query+=" from requirement_team_map rtm,requirements r" 
+        query+=" where rtm.requirement_id=r.requirement_id and rtm.team_id='%s' and r.project_id='%s'"%(team_id,project_id)
+        requirement_detail=DB.GetData(Conn,query,False)
+    Dict={
+          'project_id':project_id,
+          'project_name':project_name,
+          'url_name':url_name,
+          'team_name':team_name_status[0][0].strip(),
+          'requirements':requirement_detail
+          }
+    return render_to_response('TeamWiseRequirementView.html',Dict,context_instance=RequestContext(request))

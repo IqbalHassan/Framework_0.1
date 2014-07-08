@@ -1,0 +1,68 @@
+{% extends "BaseTemplate.html" %}
+
+{% block title%}Requirement View | Team{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/TeamWiseRequirementView.js"></script>
+<article>
+    <table align="left">
+        <tr>
+            <td width="80%">
+                <div align="left">
+                    <h3 style="font-size: 19px;"><a href="{% url 'MySite.views.Project_Detail' project_id %}" style="font-weight: bold;">{{project_name}}</a> / <a href="{% url 'MySite.views.TeamData' team_name=url_name %}" style="font-weight: bold;">{{team_name}}</a> / <a href="" style="font-weight: bold;">Requirements</a></h3>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div align="center">
+        <table style="width: 100%; border-collapse: collapse;">
+            {% if requirements %}
+            <thead>
+            <tr><td align="center" style="font-weight: bolder;font-size: 150%;color:#4183c4;">Requirements</td></tr>
+            </thead>
+            <tbody id="requirements">
+            {% for x in requirements%}
+                <tr>
+                    <td width="90%" style="border-bottom: 2px solid #cccccc;">
+                        <table width="100%">
+                            <tr>
+                                <td><b class="Text requirement"style="cursor: pointer">{{x.0}}</b></td>
+                            </tr>
+                            <tr style="display: none;">
+                                <td>
+                                    <table width="100%" style="border-collapse: collapse;border-top: 1px solid #003bb3;margin-bottom: 5%;margin-top: 1%;font-size: 125%;">
+                                        <tr>
+                                            <td align="right" width="10%"><b style="color:#4183c4">Description:</b></td>
+                                            <td align="left" style="margin-left: 2%;">{{x.1}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right" width="10%"><b style="color:#4183c4">Due In:</b></td>
+                                            <td align="left" style="margin-left: 2%;">{{x.2}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right" width="10%"><b style="color:#4183c4">Status:</b></td>
+                                            <td align="left" style="margin-left: 2%;">{{x.3}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right" width="10%"><b style="color:#4183c4">Milestone:</b></td>
+                                            <td align="left" style="margin-left: 2%;">{{x.4}}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="vertical-align: 0%;width: 10%;border-bottom: 2px solid #cccccc" align="right"><a href="/Home/{{project_id}}/Requirements/{{x.5}}/">See Details</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            {% else %}
+            <thead>
+                <tr><td align="center" style="font-weight: bolder;font-size: 150%;color:#4183c4;">No Requirements</td></tr>
+            </thead>
+            {% endif %}
+        </table>
+    </div>
+
+</article>
+{% endblock %}

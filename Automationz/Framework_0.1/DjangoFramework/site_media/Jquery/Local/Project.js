@@ -8,10 +8,16 @@ function GetProjects(team_name){
     },function(data){
         var message="";
         message+='<table>';
-        for(var i=0;i<data.length;i++){
-            message+=('<tr><td style="cursor: pointer;" class="projects"><b>'+data[i].trim()+'</b></td></tr>');
+        if(data.length>0){
+            for(var i=0;i<data.length;i++){
+                message+=('<tr><td style="cursor: pointer;" class="projects"><b>'+data[i].trim()+'</b></td></tr>');
+            }
+            message+='</table>';
+
         }
-        message+='</table>';
+        else{
+            window.location.reload(true);
+        }
         $('#projects').html(message);
         PrepareOtherButton();
     });

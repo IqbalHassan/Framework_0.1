@@ -236,6 +236,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/CreateRequirement/$',CreateRequirement),
     url(r'^Home/.*/GetAllRequirements/$',GetAllRequirements),
     url(r'^Home/(?P<project_id>[^/]*)/Requirements/(?P<req_id>[^/]*)/$',DetailRequirementView),
+    url(r'^Home/Projects/(?P<project_id>[^/]*)/Requirements/(?P<team_id>[^/]*)/$',TeamWiseRequirementView),
     
     url(r'^Home/Project/(?P<project_id>[^/]*)/comment_post/$',FileUpload),
     url(r'^Home/Project/(?P<project_id>[^/]*)/comments/$',commentView,name='comment_view'),
