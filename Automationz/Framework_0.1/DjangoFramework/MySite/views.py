@@ -6011,6 +6011,7 @@ def update_runid(run_id, test_case_id):
         run_id = str(run_id)
         allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'", False)
         TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
+        Tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+run_id+"'")
         list = []
         
         pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
@@ -6036,7 +6037,7 @@ def update_runid(run_id, test_case_id):
         list.append(total[0])
 
         import EmailNotify
-        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,'','')
+        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,'','')
     #########################################################################################
 def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReason):
     """test_step_id_list=[]
