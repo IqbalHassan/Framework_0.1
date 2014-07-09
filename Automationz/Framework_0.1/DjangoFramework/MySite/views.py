@@ -1848,9 +1848,13 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'" % (TCStatusName, eachitem))
             else:
                 TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s'" % (eachitem))
-            if len(TagName) > 0:
-                TagName = TagName[0]
-
+            if len(TagName) > 0 and 'tcid' in TagName:
+                TagName="tcid"
+            else:
+                for each in TagName:
+                    if each!='mks':
+                        TagName = each
+                        break
         if is_rerun == "rerun":
             if eachitem in ('Dev', 'Ready'):
                 TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'" % (TCStatusName, eachitem))
@@ -1866,7 +1870,10 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 if len(TagName) > 0 and 'tcid' in TagName:
                     TagName = 'tcid'
                 else:
-                    TagName = TagName[0]
+                    for each in TagName:
+                        if each!='mks':
+                            TagName = each
+                            break
         # Checking if QuestyText has Client name. if yes geting client name and version from ClientInfo
         for iclient in ClientInfo:
             print "eachitem:" + eachitem
@@ -1924,13 +1931,20 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
     sTestSetStartTime = str(now[0][0])
     print sTestSetStartTime
 
+    #Testers should be a list here
+    if isinstance(Testers, basestring):
+        if "," not in Testers:
+            Testers=[Testers]
+        else:
+            Testers=Testers.split(",")
     for i in Testers:
         tmail = DB.GetData(Conn, "select email from permitted_user_list where user_level like '%assigned%tester%' and user_names='"+i+"'")
         if len(tmail)>0:
             Emails.append(tmail[0])
             
     allEmailIds = ','.join(Emails)        
-
+    
+    #don't import full file inside the code
     import EmailNotify
     EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
 
