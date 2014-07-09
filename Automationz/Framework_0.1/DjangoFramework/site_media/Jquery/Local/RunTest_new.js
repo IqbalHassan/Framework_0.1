@@ -113,7 +113,7 @@ function RunTest(){
             // alert(data['Result']);
             if(data['Result']){
                 run_notify("RunID-'"+data['runid']+"' got executed!");
-                var location='/Home/RunID/'+data['runid'];
+                var location='/Home/RunID/'+data['runid']+'/';
                 window.location=location;
             }
             else{
