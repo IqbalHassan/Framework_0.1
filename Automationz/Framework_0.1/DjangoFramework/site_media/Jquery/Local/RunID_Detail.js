@@ -26,6 +26,7 @@ $(document).ready(function(){
         drawGraph(RunID);
     });
     ReRunTab();
+    Report();
 });
 function EnableAutocomplete(){
     $('#searchinput').autocomplete({
@@ -596,5 +597,63 @@ function RenderPieChart(elementId, dataList, title) {
             name: 'Bundle Report',
             data: dataList
         }]
+    });
+}
+
+function Report(){
+    $("#email_list").autocomplete({
+
+        source : 'AutoCompleteEmailSearch',
+        select : function(event, ui) {
+
+            var value = ui.item.value
+            $("#email").append('<td><img class="delete" id = "DeleteEmail" title = "EmailDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td class="Text">'
+                + value
+                + ":&nbsp"
+                + '</td>');
+
+            //$("#SelectedEmail th").css('display', 'block');
+
+            $("#email_list").val("");
+            return false;
+
+        }
+    });
+
+    $("#email_list").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+
+    //Delete Seleted Email Ids
+    $("#DeleteEmail").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+
+    $("#send_report").click(function(){
+        var RunID=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+
+        var EmailQuery="";
+        $("#email").each( function()
+        {
+            EmailQuery = $(this).find("td").text();
+            EmailQuery = EmailQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        });
+        if(EmailQuery.length==0){
+            alertify.log("Email Receipient is to be selected from suggestion","",0);
+            return false;
+        }
+
+        $.get("Send_Report",{runid : RunID,EmailIds:EmailQuery},function(data)
+        {
+            alertify.log("Email Report is sent to the recipients","",0);
+        });
     });
 }

@@ -1848,13 +1848,9 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'" % (TCStatusName, eachitem))
             else:
                 TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s'" % (eachitem))
-            if len(TagName) > 0 and 'tcid' in TagName:
-                TagName="tcid"
-            else:
-                for each in TagName:
-                    if each!='mks':
-                        TagName = each
-                        break
+            if len(TagName) > 0:
+                TagName = TagName[0]
+
         if is_rerun == "rerun":
             if eachitem in ('Dev', 'Ready'):
                 TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'" % (TCStatusName, eachitem))
@@ -1870,10 +1866,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 if len(TagName) > 0 and 'tcid' in TagName:
                     TagName = 'tcid'
                 else:
-                    for each in TagName:
-                        if each!='mks':
-                            TagName = each
-                            break
+                    TagName = TagName[0]
         # Checking if QuestyText has Client name. if yes geting client name and version from ClientInfo
         for iclient in ClientInfo:
             print "eachitem:" + eachitem
@@ -1931,20 +1924,13 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
     sTestSetStartTime = str(now[0][0])
     print sTestSetStartTime
 
-    #Testers should be a list here
-    if isinstance(Testers, basestring):
-        if "," not in Testers:
-            Testers=[Testers]
-        else:
-            Testers=Testers.split(",")
     for i in Testers:
         tmail = DB.GetData(Conn, "select email from permitted_user_list where user_level like '%assigned%tester%' and user_names='"+i+"'")
         if len(tmail)>0:
             Emails.append(tmail[0])
             
     allEmailIds = ','.join(Emails)        
-    
-    #don't import full file inside the code
+
     import EmailNotify
     EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
 
@@ -6052,6 +6038,57 @@ def update_runid(run_id, test_case_id):
 
         import EmailNotify
         EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,'','')
+        
+def Send_Report(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            run_id = request.GET.get(u'runid', '')
+            run_id = str(run_id)
+            EmailIds = request.GET.get(u'EmailIds', '')
+            EmailIds = str(EmailIds.replace(u'\xa0', u''))
+            EmailIds = EmailIds.split(":")
+            Emails = []
+            for eachitem in EmailIds :
+                if eachitem != "":
+                    Eid = DB.GetData(Conn, "Select email from permitted_user_list where user_names = '%s'" % str(eachitem))
+                if len(Eid) > 0:
+                    Emails.append(Eid[0])
+
+            stEmailIds = ','.join(Emails)
+            status = DB.GetData(Conn, "select status from test_run_env where run_id = '"+run_id+"'")
+            TestObjective = DB.GetData(Conn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
+            Tester = DB.GetData(Conn, "select assigned_tester from test_run_env where run_id = '"+run_id+"'")
+            list = []
+            
+            pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
+            passed = DB.GetData(Conn, pass_query)
+            list.append(passed[0])
+            fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % run_id
+            fail = DB.GetData(Conn, fail_query)
+            list.append(fail[0])
+            blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
+            blocked = DB.GetData(Conn, blocked_query)
+            list.append(blocked[0])
+            progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
+            progress = DB.GetData(Conn, progress_query)
+            list.append(progress[0])
+            submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
+            submitted = DB.GetData(Conn, submitted_query)
+            list.append(submitted[0])
+            skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
+            skipped = DB.GetData(Conn, skipped_query)
+            list.append(skipped[0])
+            total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
+            total = DB.GetData(Conn, total_query)
+            list.append(total[0])
+
+            import EmailNotify
+            EmailNotify.Complete_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,'','')
+
+            results = ['OK']
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
     #########################################################################################
 def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReason):
     """test_step_id_list=[]

@@ -109,11 +109,11 @@ def Complete_Email(Reciever, Subject, Objective, Status, List, Tester, Body=None
         <td style="border-left: 1px solid #ccc;border-top: 1px solid #ccc;padding: 10px;text-align: left;-moz-border-radius: 0 0 6px 0;-webkit-border-radius: 0 0 6px 0;border-radius: 0 0 6px 0;">%s</td>
         </tr>        
         </table>
-        
-                <table style="border: solid #ccc 1px;-moz-border-radius: 6px;-webkit-border-radius: 6px;border-radius: 6px;-webkit-box-shadow: 0 1px 1px #ccc; -moz-box-shadow: 0 1px 1px #ccc; box-shadow: 0 1px 1px #ccc;">
+        </br>
+        <table style="border: solid #ccc 1px;-moz-border-radius: 6px;-webkit-border-radius: 6px;border-radius: 6px;-webkit-box-shadow: 0 1px 1px #ccc; -moz-box-shadow: 0 1px 1px #ccc; box-shadow: 0 1px 1px #ccc;">
         <thead>
         <tr>
-        <th style="border-left: 1px solid #ccc;border-top: 1px solid #ccc;padding: 10px;text-align: left;background-color: #dce9f9; background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);background-image:         linear-gradient(top, #ebf3fc, #dce9f9);-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset; box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;border-top: none;text-shadow: 0 1px 0 rgba(255,255,255,.5); -moz-border-radius: 6px 0 0 0;-webkit-border-radius: 6px 0 0 0;border-radius: 6px 0 0 0;"><div style="width:15px;height:10px;border:1px solid grey;background-color:#82D434"></div>Tester</th>        
+        <th style="border-left: 1px solid #ccc;border-top: 1px solid #ccc;padding: 10px;text-align: left;background-color: #dce9f9; background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);background-image:         linear-gradient(top, #ebf3fc, #dce9f9);-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset; box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;border-top: none;text-shadow: 0 1px 0 rgba(255,255,255,.5); -moz-border-radius: 6px 0 0 0;-webkit-border-radius: 6px 0 0 0;border-radius: 6px 0 0 0;">Tester</th>        
         <th style="border-left: 1px solid #ccc;border-top: 1px solid #ccc;padding: 10px;text-align: left;background-color: #dce9f9; background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);background-image:         linear-gradient(top, #ebf3fc, #dce9f9);-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset; box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;border-top: none;text-shadow: 0 1px 0 rgba(255,255,255,.5);-moz-border-radius: 0 6px 0 0;-webkit-border-radius: 0 6px 0 0;border-radius: 0 6px 0 0;">Execution Time</th>
         </tr>
         </thead>
@@ -131,7 +131,7 @@ def Complete_Email(Reciever, Subject, Objective, Status, List, Tester, Body=None
         </div>
         </div>
         </div>
-        </div>""" % (Subject, Objective, Status, chart.get_url(), List[0],List[1],List[2],List[3],List[4],List[5],List[6],Tester, Subject)
+        </div>""" % (Subject, Objective, Status, chart.get_url(), List[0],List[1],List[2],List[3],List[4],List[5],List[6],Tester[0], Subject)
     #Body = "Deployed Run-ID: " + Subject + "<br/>" + "Run Objective: " + Objective + "<br/>"
     #link = "<a href='135.23.123.67:8080/Home/RunID/'" + Subject + ">" +Subject + "</a>"
     #message.Html = message.Html + Body + "<br/>" + "<br/>"
