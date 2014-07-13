@@ -6035,9 +6035,11 @@ def update_runid(run_id, test_case_id):
         total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
         total = DB.GetData(Conn, total_query)
         list.append(total[0])
-
+        duration = DB.GetData(Conn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
+    
+        
         import EmailNotify
-        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,'','')
+        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
         
 def Send_Report(request):
     if request.is_ajax():
@@ -6082,9 +6084,11 @@ def Send_Report(request):
             total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
             total = DB.GetData(Conn, total_query)
             list.append(total[0])
+            duration = DB.GetData(Conn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
+
 
             import EmailNotify
-            EmailNotify.Complete_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,'','')
+            EmailNotify.Complete_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,duration,'','')
 
             results = ['OK']
     json = simplejson.dumps(results)
