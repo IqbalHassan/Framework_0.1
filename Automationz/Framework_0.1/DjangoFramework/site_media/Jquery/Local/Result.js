@@ -116,8 +116,8 @@ function AutoComplete(){
         select:function(request,ui){
             var value=ui.item[0].trim();
             if(value!=""){
-                $('#searchedFilter').append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>' +
-                    '<td class="Text"><b>'+value+':<b style="display: none;">'+ui.item[1].trim()+'</b>&nbsp;</b></td>');
+                $('#searchedFilter').append('<tr><td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>' +
+                    '<td class="Text"><b>'+value+':<b style="display: none;">'+ui.item[1].trim()+'</b>&nbsp;</b></td></tr>');
                 $('#pagination_no').text(1);
                 PerformSearch();
             }

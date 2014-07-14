@@ -9,6 +9,8 @@ import operator
 import re
 import time
 import datetime
+import EmailNotify
+            
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -1931,7 +1933,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
             
     allEmailIds = ','.join(Emails)        
 
-    import EmailNotify
+    #import EmailNotify
     EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
 
     Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
@@ -6038,7 +6040,7 @@ def update_runid(run_id, test_case_id):
         duration = DB.GetData(Conn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
     
         
-        import EmailNotify
+        #import EmailNotify
         EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
         
 def Send_Report(request):
@@ -6087,7 +6089,6 @@ def Send_Report(request):
             duration = DB.GetData(Conn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
 
 
-            import EmailNotify
             EmailNotify.Complete_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,duration,'','')
 
             results = ['OK']

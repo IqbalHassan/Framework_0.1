@@ -6,16 +6,27 @@ import inspect
 import DataBaseUtilities as DBUtil
 import FileUtilities as FL
 import Global, CommonUtil
-from Drivers import Futureshop 
+import Drivers
+import importlib
 #import FSDriver
 import Performance
 from distutils.tests.test_check import CheckTestCase
 
+ReRunTag="ReRun"
 if os.name == 'nt':
     location = "X:\\Actions\\Common Tasks\\PythonScripts\\"
     if location not in sys.path:
         sys.path.append(location)
-
+    current_location=os.getcwd()
+    current_location=current_location+('\\Drivers\\')
+    if current_location not in sys.path:
+        sys.path.append(current_location)
+def GetAllDriver():
+    query="select distinct driver from test_steps_list"
+    Conn=DBUtil.ConnectToDataBase()
+    driver_name=DBUtil.GetData(Conn,query)
+    driver_name.remove('Manual')
+    return driver_name
 def main():
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     def TimeStamp():
@@ -84,7 +95,9 @@ def main():
     if Userid not in UserList:
         CommonUtil.ExecLog(sModuleInfo, "User don't have permission to run the tests" , 3)
         return "You Don't Have Permission"
-
+    
+    #Get all the drivers
+    Driver_list=GetAllDriver()
     #Find Test Runs scheduled for this user from test_run_env table
     TestRunLists = DBUtil.GetData(conn, "Select run_id"
                                   ",rundescription"
@@ -101,6 +114,7 @@ def main():
     if len(TestRunLists) > 0:
         print "Running Test cases from Test Set : ", TestRunLists[0:len(TestRunLists)]
         CommonUtil.ExecLog(sModuleInfo, "Running Test cases from Test Set : %s" % TestRunLists[0:len(TestRunLists)], 1)
+        
     else:
         print "No Test Run Schedule found for the current user :", Userid
         CommonUtil.ExecLog(sModuleInfo, "No Test Run Schedule found for the current user : %s" % Userid, 2)
@@ -112,6 +126,31 @@ def main():
         #Update test_run_env table with status for the current TestRunId
         print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "where run_id = '%s'" % TestRunID[0], status='In-Progress')
         currentTestSetStatus = 'In-Progress'
+        """RunID=TestRunID[0]
+        rerun_determine_query="select rundescription from test_env_results where run_id='%s'"%TestRunID[0]
+        run_description=DBUtil.GetData(conn,rerun_determine_query)
+        if isinstance(run_description,list):
+            Run_Description=run_description[0]
+            if ReRunTag in Run_Description:
+                #find the referred run_id
+                first_occurance=Run_Description.find((' -')+ReRunTag)
+                basic_run_objective=Run_Description[0:first_occurance]
+                basic_run_objective=basic_run_objective.strip()
+                referred_run_id_query="select run_id from test_env_results where rundescription='%s'"%basic_run_objective.strip()
+                referred_run_id=DBUtil.GetData(conn,referred_run_id_query)
+                if isinstance(referred_run_id,list) and referred_run_id[0]!="":
+                    referred_run_id=str(referred_run_id[0]).strip()
+                    Rerun=True
+                else:
+                    referred_run_id=""
+                    Rerun=False
+            else:
+                referred_run_id=""
+                Rerun=False
+        else:
+            referred_run_id=""
+            Rerun=False
+            """
         #Insert an entry to the TestResultsEnv table
         sTimeStamp = TimeStamp() #used for run_id
         #sTestResultsRunId = TestRunID[0] + '-' + sTimeStamp
@@ -126,8 +165,10 @@ def main():
 
 
         # Find the type of dataset we want to run for given testset
-        DataTypeList = DBUtil.GetData(conn, "Select data_type From test_run_env Where run_id = '%s'" % TestRunID[0], False)
-        DataType = DataTypeList[0][0]
+        #no data Type is used in our framework thats why it is ommitted.
+        #DataTypeList = DBUtil.GetData(conn, "Select data_type From test_run_env Where run_id = '%s'" % TestRunID[0], False)
+        #DataType = DataTypeList[0][0]
+        DataType=""
 
         #Find Test Cases in this Test Set & add it to test_run table
         #TestCaseLists = DBUtil.GetData(conn, "Select TC_ID From Test_Sets Where testset_id = '%s' order by id" % TestRunID[1], False) #and data_type
@@ -145,7 +186,12 @@ def main():
             print each
             test_case_id=each[0]
             #check if its forced or not
-            query="select property from test_case_tag where tc_id='%s' and name='Status'"%test_case_id
+            """if Rerun==False:
+                query="select property from test_case_tag where tc_id='%s' and name='Status'"%test_case_id
+            else:
+                query="select property from result_test_case_tag where tc_id='%s' and name='Status' and run_id='%s'"%(test_case_id,referred_run_id)
+            """
+            query="select property from result_test_case_tag where tc_id='%s' and name='Status' and run_id='%s'"%(test_case_id,TestRunID[0])
             forced=DBUtil.GetData(conn,query)
             if forced[0]=='Forced':
                 continue
@@ -156,7 +202,12 @@ def main():
                 AutomationList.append(temp)
         AutomationListWithType=[]
         for each in AutomationList:
-            query="select tsl.steptype from test_cases tc,test_steps_list tsl,test_steps ts where tc.tc_id=ts.tc_id and tsl.step_id=ts.step_id and tc.tc_id='%s' order by ts.teststepsequence"%each[0]
+            """if Rerun==False:
+                query="select tsl.steptype from test_cases tc,test_steps_list tsl,test_steps ts where tc.tc_id=ts.tc_id and tsl.step_id=ts.step_id and tc.tc_id='%s' order by ts.teststepsequence"%each[0]
+            else:
+                query="select tsl.steptype from result_test_cases tc,result_test_steps_list tsl,result_test_steps ts where tsl.run_id=ts.run_id and tc.tc_id=ts.tc_id and tc.run_id=ts.run_id and tsl.step_id=ts.step_id and tc.tc_id='%s' and tc.run_id='%s' order by ts.teststepsequence"%(each[0],referred_run_id)
+            """
+            query="select tsl.steptype from result_test_cases tc,result_test_steps_list tsl,result_test_steps ts where tsl.run_id=ts.run_id and tc.tc_id=ts.tc_id and tc.run_id=ts.run_id and tsl.step_id=ts.step_id and tc.tc_id='%s' and tc.run_id='%s' order by ts.teststepsequence"%(each[0],TestRunID[0])
             status_list=DBUtil.GetData(conn,query)
             for eachstatus in status_list:
                 if eachstatus=='manual':
@@ -211,7 +262,12 @@ def main():
             StepSeq = 1
             TCID = list(TestCaseID)[0]
             print "-------------*************--------------"
-            TestCaseName = DBUtil.GetData(conn, "Select tc_name From test_cases Where tc_id = '%s'" % TCID, False)
+            """if Rerun==False:
+                TestCaseName = DBUtil.GetData(conn, "Select tc_name From test_cases Where tc_id = '%s'" % TCID, False)
+            else:
+                TestCaseName = DBUtil.GetData(conn, "Select tc_name From result_test_cases Where tc_id = '%s' and run_id='%s'" % (TCID,referred_run_id), False)
+            """
+            TestCaseName = DBUtil.GetData(conn, "Select tc_name From result_test_cases Where tc_id = '%s' and run_id='%s'" % (TCID,TestRunID[0]), False)
             print "Running Test case id : %s :: %s" % (TCID, TestCaseName[0])
             CommonUtil.ExecLog(sModuleInfo, "-------------*************--------------", 1)
             CommonUtil.ExecLog(sModuleInfo, "Running Test case id : %s :: %s" % (TCID, TestCaseName), 1)
@@ -240,7 +296,12 @@ def main():
 
             #get the test case steps for this test case
             #TestStepsList = DBUtil.GetData(conn,"Select teststepname From TestSteps where TC_ID = '%s' Order By teststepsequence" %TCID,False)
-            TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' Order By teststepsequence" % TCID, False)
+            """if Rerun==False:
+                TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' Order By teststepsequence" % TCID, False)
+            else:
+                TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' and ts.run_id='%s' Order By teststepsequence" % (TCID,referred_run_id), False)
+            """
+            TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' and ts.run_id='%s' Order By teststepsequence" % (TCID,TestRunID[0]), False)
             Stepscount = len(TestStepsList)
             sTestStepResultList = []
 
@@ -250,8 +311,13 @@ def main():
             sClientName = TestRunID[4]
             sClientName=(TestRunID[4].split("("))[0].strip()
             print sClientName
-
-            DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from test_case_datasets where tc_id='%s' and data_type='%s'" % (TCID, DataType), False) # Later we can add dataset tag like multilang here.
+            """if Rerun==False:
+                #DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from test_case_datasets where tc_id='%s' and data_type='%s'" % (TCID, DataType), False) # Later we can add dataset tag like multilang here.
+                DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from test_case_datasets where tc_id='%s'" % (TCID), False)
+            else:
+                DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from result_test_case_datasets where tc_id='%s' and run_id='%s'" % (TCID,referred_run_id), False)
+            """
+            DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from result_test_case_datasets where tc_id='%s' and run_id='%s'" % (TCID,TestRunID[0]), False)
             if len(DataSetList) == 0:
                 #This condition is for test cases which dont have any input data
                 DataSetList.append('NoDataSetFound')
@@ -295,12 +361,14 @@ def main():
                             #if Global.ThreadingEnabled:
                             q = Queue.Queue()
                             #Call Test Step
-                            if TestStepsList[StepSeq - 1][3] == "Futureshop":
+                            #if TestStepsList[StepSeq - 1][3] == "Futureshop":
+                            if TestStepsList[StepSeq-1][3] in Driver_list:    
                                 #If threading is enabled
+                                module_name=importlib.import_module(TestStepsList[StepSeq-1][3])
                                 if Global.ThreadingEnabled:
-                                    stepThread = threading.Thread(target=Futureshop.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q))
+                                    stepThread = threading.Thread(target=module_name.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q,TestRunID[0]))
                                 else:
-                                    sStepResult = Futureshop.ExecuteTestSteps(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q)
+                                    sStepResult = module_name.ExecuteTestSteps(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q,TestRunID[0])
 
 #                            elif TestStepsList[StepSeq - 1][3] == "FS":
 #                                #If threading is enabled

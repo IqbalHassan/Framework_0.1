@@ -4,9 +4,9 @@ import time
 
 
 ###########Production / Dev Config variables######################
-Environment = "Test"
-#Environment = "Production"
-
+#Environment = "Test"
+Environment = "Production"
+ 
 def get_ip():
     if Environment == "Test":
         print "Running on Test Environment..."
