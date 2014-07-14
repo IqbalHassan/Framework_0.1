@@ -49,6 +49,50 @@ def close_browser(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):
     print sTestStepReturnStatus
     return sTestStepReturnStatus
 
+def open_futureshop(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):
+    CommonUtil.ExecLog(sModuleInfo, "Opening futureshop site", 1)
+    link = "http://www.futureshop.ca"
+    sTestStepReturnStatus = WebProgram.OpenLink(link)
+    sTestStepReturnStatus = "Passed"
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus
+
+def select_main_menu(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):
+    DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
+    menu_name = DataSet[0][2]
+    sTestStepReturnStatus = WebProgram.SelectFirstLevelMenu(menu_name)
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus
+
+def select_sub_menu_one(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):
+    DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
+    menu_name = DataSet[0][2]
+    sTestStepReturnStatus = WebProgram.SelectSecondLevelMenu(menu_name)
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus
+
+def select_sub_menu_two(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):
+    DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
+    menu_name = DataSet[0][2]
+    sTestStepReturnStatus = WebProgram.SelectThirdLevelMenu(menu_name)
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus
+def select_filter_checkbox(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):
+    DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
+    for eachData in DataSet:
+        check_box_name = eachData[2]
+        sTestStepReturnStatus = WebProgram.FilterBySelection(check_box_name)
+        if sTestStepReturnStatus != "Passed":
+            return sTestStepReturnStatus
+        print sTestStepReturnStatus
+        return sTestStepReturnStatus
+def search_for_an_item(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):    
+    DataSet = DBUtil.GetData(conn, add_find_SQLQuery, False)
+    search_text = DataSet[0][2]
+    sTestStepReturnStatus = WebProgram.SearchItem(search_text)
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus
+
 #function for the query write
 #get the add_find_sql_query
 
@@ -56,16 +100,14 @@ function_mappings={
     'Open Browser':open_browser,
     'Go to webpage':go_to_webpage,
     'Close Browser':close_browser,
-    
-    #'Open Futureshop':
-    #'Select Main Menu':
-    #'Select Sub Menu 1':
-    #'Select Sub Menu 2':
-    #'Select Filter Checkbox':
-    #'Search For An Item':
+    'Open Futureshop':open_futureshop,
+    'Select Main Menu':select_main_menu,
+    'Select Sub Menu 1':select_sub_menu_one,
+    'Select Sub Menu 2':select_sub_menu_two,
+    'Select Filter Checkbox':select_filter_checkbox,
+    'Search For An Item':search_for_an_item
     #'Verify Filter Items Count':
-    #'Verify Product Details':
-    
+    #'Verify Product Details': 
 }
 
 def get_add_find_SQLQuery(TCID,StepSeq,DataSet,referred_run):
@@ -108,7 +150,6 @@ def get_edit_SQLQuery(TCID,StepSeq,Dataset,referred_run):
 def ExecuteTestSteps(conn, CurrentStep, TCID, sClientName, StepSeq, DataSet, q,run_id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        
         add_find_SQLQuery=get_add_find_SQLQuery(TCID, StepSeq, DataSet,run_id)
         edit_SQLQuery=get_edit_SQLQuery(TCID, StepSeq, DataSet,run_id)
         """if RerunTag==False:
