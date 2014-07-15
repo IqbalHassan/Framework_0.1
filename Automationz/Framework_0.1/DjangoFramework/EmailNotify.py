@@ -36,7 +36,7 @@ def Send_Email(Reciever, Subject, Objective, Body=None , type=None):
     username = "AutomationReport@automationsolutionz.com"
     password = "te@mWork"
 
-    sender = Mailer('smtp.automationsolutionz.com','25', True, username, password)
+    sender = Mailer('smtp.automationsolutionz.com','25', False, username, password)
     sender.send(message)
     
     
@@ -145,7 +145,7 @@ def Complete_Email(Reciever, Subject, Objective, Status, List, Tester,Duration, 
     username = "AutomationReport@automationsolutionz.com"
     password = "te@mWork"
 
-    sender = Mailer('smtp.automationsolutionz.com','25', True, username, password)
+    sender = Mailer('smtp.automationsolutionz.com','25', False, username, password)
     sender.send(message)
     
     
