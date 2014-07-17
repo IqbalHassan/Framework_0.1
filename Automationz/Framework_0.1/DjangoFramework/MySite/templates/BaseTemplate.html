@@ -83,37 +83,38 @@
             <a href="#nav" title="Show navigation">Show navigation</a>
             <a href="#" title="Hide navigation">Hide navigation</a>
             <ul style="width:100%">
-                <li style="width:4%"><a rel="prerender" href="/Home/" class="hint--right hint--bounce hint--rounded" data-hint="Home"><i class="fa fa-home fa-fw fa-lg"></i></a></li>
-                <li style="width:16%">
-                    <a rel="prerender" href="" aria-haspopup="true"><span><i class="fa fa-wrench fa-fw fa-lg"></i> Manage</span></a>
+                <li style="width:5%"><a rel="prerender" href="/Home/" class="hint--right hint--bounce hint--rounded" data-hint="Home"><i class="fa fa-home fa-fw fa-lg"></i></a></li>
+                <li style="width:17%">
+                    <a rel="prerender" href="" aria-haspopup="true"><span><i class="fa fa-wrench fa-fw fa-lg"></i> Testing</span></a>
                     <ul>
+                        <li><a rel="prerender" href = "/Home/RunTest/"><i class="fa fa-rocket fa-fw fa-lg"></i>Test Deployment</a></li>
+                        <li><a rel="prefetch" href = "/Home/Results/"><i class="fa fa-random fa-fw fa-lg"></i>Result & Execution</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/CreateNew/"><i class="fa fa-file-text fa-fw fa-lg"></i> Create New Test Case</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/SearchEdit/"><i class="fa fa-files-o fa-fw fa-lg"></i> Copy/Edit Test Case</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/"><i class="fa fa-camera-retro fa-fw fa-lg"></i> View & Organize Test Cases</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTestCases/CreateStep/"><i class="fa fa-pencil fa-fw fa-lg"></i> Create/Edit Test Step</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageSetTag/"><i class="fa fa-tags fa-fw fa-lg"></i> Manage Set & Tag</a>
-                        </li>
-                        <li><a rel="prefetch" href="/Home/ManageMilestone/"><i class="fa fa-archive fa-fw fa-lg"></i> Manage Milestone</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTask/"><i class="fa fa-book fa-fw fa-lg"></i> Manage Task (Development)</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageBug/"><i class="fa fa-bug fa-fw fa-lg"></i> Manage Bug (Development)</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageSetTag/"><i class="fa fa-tags fa-fw fa-lg"></i> Manage Set & Tag</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageBug/"><i class="fa fa-asterisk fa-fw fa-lg"></i> Manage Bug (Development)</a></li>
                         <li><a rel="prefetch" href="/Home/ManageRequirement/"><i class="fa fa-anchor fa-fw fa-lg"></i> Manage Requirement (Development)</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTeam/"><i class="fa fa-hand-o-up fa-fw fa-lg"></i> Manage Team (Development)</a></li>
 						<li><a rel="prefetch" href="/Home/ManageTestCases/SearchEdit-Dev/"><i class="fa fa-hand-o-up fa-fw fa-lg"></i> SearchEdit (Dev)</a></li>
                         <!--li><a rel="prefetch" href="/Home/ManageTestCases/TestStep/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Manage Test Steps</a></li-->
 
                         <!--li><a rel="prefetch" href="/Home/ManageTestCases/Create/">Create New Test Case (Old)</a></li-->
                     </ul>
                 </li>
-                <li style="width:15%">
-                    <a rel="prerender" href = "/Home/RunTest/"><i class="fa fa-rocket fa-fw fa-lg"></i>Test Deployment</a>
+                <li style="width:16%">
+                    <a rel="prerender" href = ""><span><i class="fa fa-tasks fa-fw fa-lg"></i>Tasks</span></a>
+                    <ul>
+                        <li><a rel="prefetch" href="/Home/ManageTask/"><i class="fa fa-book fa-fw fa-lg"></i> Manage Task (Development)</a></li>
+                    </ul>
                     <!--ul>
                         <li><a rel="prefetch" id="pc_menu" href=""><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/pc1.png" width="16"> PC</a></li>
                         <li><a rel="prerender" id="mac_menu" href=""><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/mac1.png" width="16"> MAC</a></li>
                     </ul-->
                 </li>
 
-                <li style="width:10%"><a rel="prefetch" href = "/Home/Results/"><i class="fa fa-random fa-fw fa-lg"></i>Result & Execution</a></li>
-                <li style="width:15%">
+                <li style="width:12.3%"><a rel="prefetch" href = ""><i class="fa fa-bug fa-fw fa-lg"></i>Bug</a></li>
+                <li style="width:16%">
                     <a rel="prerender" href="" aria-haspopup="true"><span><i class="fa fa-sort-amount-asc fa-fw fa-lg"></i> Reports</span></a>
                     <ul>
                         <li><a rel="prefetch" href="/Home/BundleReport/"><i class="fa fa-archive fa-fw fa-lg"></i> Bundle Report</a></li>
@@ -124,7 +125,7 @@
                         <li><a rel="prerender" href="/Home/Performance/"><i class="fa fa-tachometer fa-fw fa-lg"></i> Performance</a></li>
                     </ul>
                 </li>
-                <li style="width:13%">
+                <!--li style="width:13%">
                     <a rel="prefetch" href=""><span><i class="fa fa-user fa-fw fa-lg"></i> Admin</span></a>
                     <ul>
                         <li><a rel="prefetch" href="/Home/Admin/"><i class="fa fa-cloud-download fa-fw fa-lg"></i> Git Pull</a></li>
@@ -134,15 +135,28 @@
                         <li><a id="devmode" href="#"><i class="fa fa-code fa-lg fa-fw"></i> Dev mode</a></li>
                         <li><a id="project_new" href="/Home/CreateProject/"><i class="fa fa-book fa-lg fa-fw"></i>Manage Project</a></li>
                     </ul>
-                </li>
-                <li style="width:8%"><a rel="prefetch" class="welcome" id="user_name" href=""></a></li>
-                <li style="width:14%">
-                    <select rel="prefetch" class="project" id="project_identity">
+                </li-->
+                <li style="width:17.7%">
+                    <select rel="prefetch" class="project" id="project_identity" style="height: 100%">
                         <option>Select any project</option>
 
                     </select>
                 </li>
-                <li style="width:4%"><a rel="prefetch" href="/Home/Login/" class="hint--left hint--bounce hint--rounded" data-hint="Logout"><i class="fa fa-sign-out fa-fw fa-lg"></i></a></li>
+                <li style="width:16%">
+                    <a rel="prefetch" href=""><span class="welcome" id="user_name"></span></a>
+                    <ul><li><a rel="prefetch" href="/Home/Admin/"><i class="fa fa-cloud-download fa-fw fa-lg"></i> Git Pull</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTestCases/DeleteExisting/"><i class="fa fa-trash-o fa-fw fa-lg"></i> Delete Test Cases</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageStep/"><i class="fa fa-times-circle fa-fw fa-lg"></i> Delete Test Step</a></li>
+                        <li><a id="feadri" rel="prefetch" href="/Home/FeaDri/"><i class="fa fa-cogs fa-fw fa-lg"></i> Feature & Driver</a></li>
+                        <li><a id="devmode" href="#"><i class="fa fa-code fa-lg fa-fw"></i> Dev mode</a></li>
+                        <li><a id="project_new" href="/Home/CreateProject/"><i class="fa fa-book fa-lg fa-fw"></i>Manage Project</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageMilestone/"><i class="fa fa-archive fa-fw fa-lg"></i> Manage Milestone</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTeam/"><i class="fa fa-hand-o-up fa-fw fa-lg"></i> Manage Team (Development)</a></li>
+                        <hr>
+                        <li><a rel="prefetch" href="/Home/Login/" class="hint--left hint--bounce hint--rounded" data-hint="Logout"><i class="fa fa-sign-out fa-fw fa-lg"></i> Sign Out</a></li>
+                    </ul>
+                </li>
+
             </ul>
         </nav>
 
