@@ -8323,19 +8323,69 @@ def getRequirements(request,project_id):
                     parent_section.remove(each)
             print parent_section
             temp_list=[]
+            parent_listed=[]
+            child_sections=[]
+            result=[]
             for i in all_section:
+                print all_section
                 temp={}
                 for section in parent_section:
                     if section==i[1]:
                         temp['id']=i[0]
-                        temp['text']=i[1].replace('_','-')
+                        temp['text']=i[1]
                         temp['children']=True
                         temp['type'] = 'parent_section'
                         temp['undetermined'] = True
                         temp_list.append(temp)
-                        #all_section.remove(i)
+                        parent_listed.append(i)
             parent_section=temp_list
-            result=simplejson.dumps(parent_section)
+            for each in parent_listed:
+                all_section.remove(each)
+            #now assigning the child
+            for i in all_section:
+                temp={}
+                section = i[1].split('.')
+                print section
+                for section_element in parent_section:
+                    if section[0] == section_element['text']:
+                        temp['id'] = i[0]
+                        temp['text'] = section[-1]
+                        temp['type'] = 'section'
+                        if len(section) == 2:
+                            temp['parent'] = section_element['id']
+                            temp['parent_text'] = section_element['text']
+                        else:
+                            temp['parent_text'] = section[-2]
+                        child_sections.append(temp)
+            for each in parent_section:
+                each['text']=each['text'].replace('_','-')  
+                  
+            requested_id=request.GET.get('id','')
+            if requested_id=='#':
+                result=simplejson.dumps(parent_section)
+            else:
+                for child_section in child_sections:
+                    for parent_section in child_sections:
+                        if 'parent' not in child_section.keys() and child_section['parent_text']==parent_section['text']:
+                            child_section['parent']=parent_section['id']
+                            parent_section['children']=True
+                try:
+                    if requested_id != '':
+                        for section in child_sections:
+                            if unicode(section['parent']) == requested_id:
+                                for i in all_section:
+                                    temp = i[1].split('.')[-1]
+                                    if temp == section['text'] and section['id'] == i[0]:
+                                        section['text'] = section['text'] + '<span style="display:none;">' + i[1] + '</span>'
+                                        
+                                        section['id'] = str(section['id'])
+                                        section.pop('parent_text')
+                                        section['text'] = section['text'].replace('_', '-')
+                                        
+                                        result.append(section)
+                        result = json.dumps(result)
+                except:
+                    return HttpResponse("NULL")
             return HttpResponse(result,mimetype='application/json')
         else:
             return render(request,'ManageRequirement.html',{})

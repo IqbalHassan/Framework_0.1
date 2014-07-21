@@ -23,12 +23,12 @@ $(document).ready(function(){
             },
 
             "parent_section" : {
-                "icon" : "fa fa-folder fa-lg fa-fw",
+                "icon" : "fa fa-file fa-lg fa-fw",
                 "valid_children" : [ "section" ]
             },
 
             "section" : {
-                "icon" : "fa fa-folder fa-fw fa-lg",
+                "icon" : "fa fa-file fa-fw fa-lg",
                 "valid_children" : [ "section" ]
             }
         },
@@ -71,16 +71,22 @@ $(document).ready(function(){
                     }
                 }
             }
-        },*/
+        },
 
         "checkbox" : {
             "keep_selected_style": false
-        },
+        },*/
 
-        "plugins" : [ "search", "checkbox", "types", "wholerow", "contextmenu", "sort" ]
+        "plugins" : [ "search", "types", "wholerow", "contextmenu", "sort" ]
     };
-    $('#tree').jstree(config_object);
-});
+    //$('#tree').jstree(config_object);
+    $("#tree").jstree(config_object)
+        .on("changed.jstree", function(e, data) {
+            var selected_sections = JSON.stringify(data.selected);
+            $(this).jstree(true).open_node(data.selected);
+        });
+    });
+
 function PopulateGeneralInfo(){
     //Setting the project code dynamically
     $('#project_code').html($.session.get('project_id'));
