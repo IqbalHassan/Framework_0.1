@@ -1,0 +1,99 @@
+{% extends 'BaseTemplate.html' %}
+{% block title %}Create New Requirement{% endblock %}
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/CreateNewRequirement.js"></script>
+<table style="width: 100%">
+    <tr>
+        <td width="50%" align="left"><b class="Text" style="color:#4183c4">Create New Requirement</b></td>
+    </tr>
+</table>
+<table width="100%" style="margin-top: 2%;padding-bottom: 1%;" >
+    <tr>
+        <td align="right" style="margin-right: 2%;"><b class="Text" style="text-align: right">Project Name:</b></td>
+        <td>
+            <select id="project_id">
+            {% for x in project_list%}
+                <option value="{{x.0}}"{% if x.0 == project_id %} selected="selected"{% endif %}>
+                    {{x.0}} - {{x.1|capfirst}}
+                </option>
+            {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right" style="margin-right: 2%;"><b class="Text" style="text-align: right">Parent Requirement:</b></td>
+        <td>
+            <select id="parent_req_id">
+                <option value="#">No Parent</option>
+                {% for x in requirement_list%}
+                    <option value="{{x.0}}">{{x.0}} - {{x.1}}</option>
+                {% endfor %}
+                <!-- populate with the requirement that is in this project-->
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right" style="margin-right: 2%;"><b class="Text" style="text-align: right">Project Name:</b></td>
+        <td>
+            <select id="team_id">
+                {% for x in team_list %}
+                    <option value="{{x.0}}">{{x.1|capfirst}}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><b class="Text">Title:</b></td>
+        <td><input type="text" class="textbox" placeholder="Title Here" id="title"></td>
+    </tr>
+    <tr>
+        <td align="right" style="vertical-align: 0%"><b class="Text">Description:</b></td>
+        <td><textarea  rows="5" cols="70" placeholder="Description for the task within 150 words" id="description"></textarea></td>
+    </tr>
+    <tr>
+        <td align="right"><b class="Text">Starting Date:</b></td>
+        <td><input type="text"  class="textbox" id="start_date" placeholder="Starting Date Here"></td>
+    </tr>
+    <tr>
+        <td align="right"><b class="Text">End Date:</b></td>
+        <td><input type="text"  class="textbox" id="end_date" placeholder="Completion Date Here"></td>
+    </tr>
+    <tr>
+        <td align="right"><b class="Text">Priority:</b></td>
+        <td>
+            <select id="priority"><option selected value="1">P1(Highest)</option>
+                <option value="2">P2</option>
+                <option value="3">P3</option>
+                <option value="4">P4</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right" style="margin-right: 2%;"><b class="Text" style="text-align: right">Milestone:</b></td>
+        <td>
+            <select id="milestone">
+                {% for x in milestone_list %}
+                    <option value="{{x.0}}">{{x.1|capfirst}}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><b class="Text">Status:</b></td>
+        <td>
+            <select id="status">
+                <option selected value="not_started">Not Started</option>
+                <option value="started">Started</option>
+                <option value="completed">Complete</option>
+                <option value="over_due">OverDue</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <td>&nbsp;</td>
+        <td><input type="button" class="button primary" value="Submit" id="submit_button"/></td>
+    </tr>
+
+</table>
+{% endblock %}

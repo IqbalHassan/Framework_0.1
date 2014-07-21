@@ -95,8 +95,11 @@ def GetProjectNameForTopBar(request):
             query="select project_id,project_name from projects"
             Conn=GetConnection()
             project_name_id=DB.GetData(Conn, query,False)
-            Dict={'projects':project_name_id,
-                  'default_project':project_name_id[0][0]}
+            #be sure that there will be a project name other wise the page will refresh
+            Dict={
+                  'projects':project_name_id,
+                  'default_project':project_name_id[0][0]
+                  }
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json')
 
@@ -7040,6 +7043,7 @@ def manage_test_cases(request):
             for i in data:
                 temp = {}
                 section = i[1].split('.')
+                print section
                 for parent_section in parent_sections:
                     if section[0] == parent_section['text']:
                         temp['id'] = i[0]
@@ -7469,14 +7473,7 @@ def FetchProject(request):
 def ManageBug(request):
     return render_to_response('ManageBug.html',{})
 def ManageRequirement(request):
-    #get the project name
-    query="select project_id,project_name from projects"
-    Conn=GetConnection()
-    project_name_id=DB.GetData(Conn,query,False)
-    milestone_query="select id,value from config_values where type='milestone'"
-    milestone=DB.GetData(Conn,milestone_query,False)
-    Dict={'projects':project_name_id,'milestone':milestone}
-    return render_to_response('ManageRequirement.html',Dict)
+    return render_to_response('ManageRequirement.html',{})
 def ManageTeam(request):
     return render_to_response('ManageTeam.html',{})
 def GetTesterManager(request):
@@ -8215,81 +8212,7 @@ def AddTeamtoProject(request):
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
     #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    
-def GetNewRequirementDetail(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            project_id=request.GET.get('project_id','')
-            team_query="select id,value from config_values c,project_team_map ptm where cast(c.id as text)=ptm.team_id and ptm.project_id='%s'"%project_id
-            Conn=GetConnection()
-            team_list=DB.GetData(Conn,team_query,False)
-            Dict={'teams':team_list}
-    result=simplejson.dumps(Dict)
-    return HttpResponse(result,mimetype='application/json')
-def CreateRequirement(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            project_id=request.GET.get(u'project_id','')
-            team_id=request.GET.get(u'team_id','')
-            title=request.GET.get(u'title','')
-            description=request.GET.get(u'description','')
-            start_date=request.GET.get(u'start_date','')
-            end_date=request.GET.get(u'end_date','')
-            priority=request.GET.get(u'priority','')
-            milestone=request.GET.get(u'milestone','')
-            status=request.GET.get(u'status','')
-            user_name=request.GET.get(u'user_name','')
-            temp_Dict={}
-            Dict={}
-            Conn=GetConnection()
-            req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
-            req_id=('REQ-'+str(req_id[0]))
-            #check availability
-            query="select count(*) from requirements where requirement_id='%s'"%req_id
-            Conn=GetConnection()
-            count=DB.GetData(Conn,query)
-            if count[0]>0 and len(count)==1:
-                print "duplicate requirement id"
-                message="Failed"
-                Dict.update({'message':message,'id':""})
-            else:
-                #form the dict
-                now=datetime.datetime.now().date()
-                start_date=start_date.split('-')
-                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
-                end_date=end_date.split('-')
-                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
-                temp_Dict={
-                           'project_id':project_id.strip(),
-                           'requirement_id':req_id.strip(),
-                           'requirement_title':title.strip(),
-                           'requirement_description':description.strip(),
-                           'requirement_startingdate':starting_date,
-                           'requirement_endingdate':ending_date,
-                           'requirement_priority':priority.strip(),
-                           'requirement_milestone':milestone.strip(),
-                           'requirement_createdby':user_name.strip(),
-                           'requirement_creationdate':now,
-                           'requirement_modifiedby':user_name.strip(),
-                           'requirement_modifydate':now
-                           }
-                result=DB.InsertNewRecordInToTable(Conn,"requirements",**temp_Dict)
-                if result==False:
-                    message="Failed"
-                    Dict.update({'message':message,'id':""})
-                else:
-                    #query=
-                    #form requirement team map
-                    team_Dict={
-                               'requirement_id':req_id,
-                               'parent_requirement_id':"",
-                               'team_id':team_id,
-                               'status':status.strip()
-                               }
-                    result=DB.InsertNewRecordInToTable(Conn,"requirement_team_map",**team_Dict)
-                    message="Success"
-                    Dict.update({'message':message,'id':req_id.strip()})
-    result=simplejson.dumps(Dict)
-    return HttpResponse(result,mimetype='application/json')
+"""
 def GetAllRequirements(request):
     if request.is_ajax():
         if request.method=='GET':
@@ -8315,6 +8238,7 @@ def GetAllRequirements(request):
             Dict={'requirement':requirements}
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json')
+"""
 def DetailRequirementView(request,project_id,req_id):
     return HttpResponse(project_id+'/'+req_id)
 def TeamWiseRequirementView(request,project_id,team_id):
@@ -8357,3 +8281,174 @@ def TeamWiseRequirementView(request,project_id,team_id):
           'requirements':requirement_detail
           }
     return render_to_response('TeamWiseRequirementView.html',Dict,context_instance=RequestContext(request))
+
+#New Requirement Page Done Functions
+
+#to the new requirement page
+def ToNewRequirementPage(request,project_id):
+    Conn=GetConnection()
+    query="select project_id, project_name from projects"
+    project_info=DB.GetData(Conn,query,False)
+    query="select id,value from config_values where type='milestone'"
+    milestone_info=DB.GetData(Conn,query,False)
+    #get the current projects team info
+    query="select c.id,c.value from project_team_map ptm, config_values c where cast(ptm.team_id as int)=c.id and ptm.project_id='%s'"%project_id
+    team_info=DB.GetData(Conn,query,False)
+    #get the existing requirement id for parenting
+    query="select distinct requirement_id,requirement_title from requirements"
+    requirement_list=DB.GetData(Conn,query,False)
+    Dict={
+          'project_id':project_id,
+          'project_list':project_info,
+          'milestone_list':milestone_info,
+          'team_list':team_info,
+          'requirement_list':requirement_list
+    }
+    return render(request,'CreateNewRequirement.html',Dict)
+
+#getting the tree information for the requirements
+def getRequirements(request,project_id):
+    if request.method=='GET':
+        if request.is_ajax():
+            print project_id
+            Conn=GetConnection()
+            query="select * from requirement_sections"
+            all_section=DB.GetData(Conn,query,False)
+            parent_section=list(set(each[1].split('.')[0] for each in all_section))
+            #filter at first for the current projects
+            query="select distinct requirement_id from requirements where project_id='%s'"%project_id
+            current_project_requirement_list=DB.GetData(Conn,query)
+            for each in parent_section:
+                if each.replace('_','-') not in current_project_requirement_list:
+                    parent_section.remove(each)
+            print parent_section
+            temp_list=[]
+            for i in all_section:
+                temp={}
+                for section in parent_section:
+                    if section==i[1]:
+                        temp['id']=i[0]
+                        temp['text']=i[1].replace('_','-')
+                        temp['children']=True
+                        temp['type'] = 'parent_section'
+                        temp['undetermined'] = True
+                        temp_list.append(temp)
+                        #all_section.remove(i)
+            parent_section=temp_list
+            result=simplejson.dumps(parent_section)
+            return HttpResponse(result,mimetype='application/json')
+        else:
+            return render(request,'ManageRequirement.html',{})
+        
+#function for creating the new requirements
+def CreateRequirement(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            #getting all the info from the messages
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            title=request.GET.get(u'title','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'start_date','')
+            end_date=request.GET.get(u'end_date','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            status=request.GET.get(u'status','')
+            user_name=request.GET.get(u'user_name','')
+            parent_requirement_id=request.GET.get(u'requirement_id','')
+            temp_Dict={}
+            Dict={}
+            Conn=GetConnection()
+            req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
+            req_id=('REQ-'+str(req_id[0]))
+            if parent_requirement_id.strip()=='#':
+                new_requirement_path=req_id.strip()
+            else:
+                #get the path for the old requirement_path
+                query="select requirement_path from requirement_sections where requirement_path ~ '*.%s' limit 1"%parent_requirement_id.replace('-','_')
+                requirement_paths=DB.GetData(Conn,query,False)
+                if len(requirement_paths)>0:
+                    new_requirement_path=str(requirement_paths[0][0]).strip().replace('_', '-')+"."+req_id.strip()
+                else:
+                    new_requirement_path=req_id.strip()                        
+            #check availability
+            query="select count(*) from requirements where requirement_id='%s'"%req_id
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            if count[0]>0 and len(count)==1:
+                print "duplicate requirement id"
+                message="Failed"
+                Dict.update({'message':message,'id':""})
+            else:
+                #form the dict
+                now=datetime.datetime.now().date()
+                start_date=start_date.split('-')
+                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
+                end_date=end_date.split('-')
+                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
+                temp_Dict={
+                           'project_id':project_id.strip(),
+                           'requirement_id':req_id.strip(),
+                           'requirement_title':title.strip(),
+                           'requirement_description':description.strip(),
+                           'requirement_startingdate':starting_date,
+                           'requirement_endingdate':ending_date,
+                           'requirement_priority':priority.strip(),
+                           'requirement_milestone':milestone.strip(),
+                           'requirement_createdby':user_name.strip(),
+                           'requirement_creationdate':now,
+                           'requirement_modifiedby':user_name.strip(),
+                           'requirement_modifydate':now
+                           }
+                result=DB.InsertNewRecordInToTable(Conn,"requirements",**temp_Dict)
+                if result==False:
+                    message="Failed"
+                    Dict.update({'message':message,'id':""})
+                else:
+                    #insert and get the new path requirement
+                    query="select count(*) from requirement_sections where cast(requirement_path as text)='%s'"%new_requirement_path.replace('-','_')
+                    count=DB.GetData(Conn,query)
+                    if isinstance(count,list) and count[0]==0:
+                        # not exists insert the path
+                        query="select requirement_path_id from requirement_sections"
+                        ids=DB.GetData(Conn,query,False)
+                        ids=sorted(ids)
+                        if(len(ids)==0) and isinstance(ids,list):
+                            new_id=1
+                        else:
+                            new_id=int(ids[-1][0])+1
+                    if isinstance(count,list) and count[0]>=1:
+                        #exists take them as path
+                        query="select requirement_path_id from requirement_sections where cast(requirement_path as text)='%s'"%new_requirement_path.replace('-','_')
+                        ids=DB.GetData(Conn,query,False)
+                        new_id=ids[0]
+                    #form requirement team map
+                    cur=Conn.cursor()
+                    query = "INSERT INTO requirement_sections VALUES (%d, '%s') "% (new_id, new_requirement_path.replace('-','_'))
+                    time.sleep(0.5)
+                    
+                    cur.execute(query)
+                    Conn.commit()
+                    cur.close()
+                    team_Dict={
+                                   'requirement_id':req_id,
+                                   'parent_requirement_id':new_id,
+                                   'team_id':team_id,
+                                   'status':status.strip()
+                                   }
+                    result=DB.InsertNewRecordInToTable(Conn,"requirement_team_map",**team_Dict)
+                    message="Success"
+                    Dict.update({'message':message,'id':req_id.strip()})
+    result=simplejson.dumps(Dict)
+    return HttpResponse(result,mimetype='application/json')
+##getting required requirement and team info on the project_id change
+def GetTeamInfoToCreateRequirement(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            project_id=request.GET.get('project_id','')
+            team_query="select id,value from config_values c,project_team_map ptm where cast(c.id as text)=ptm.team_id and ptm.project_id='%s'"%project_id
+            Conn=GetConnection()
+            team_list=DB.GetData(Conn,team_query,False)
+            Dict={'teams':team_list}
+    result=simplejson.dumps(Dict)
+    return HttpResponse(result,mimetype='application/json')
