@@ -84,6 +84,59 @@ $(document).ready(function(){
         .on("changed.jstree", function(e, data) {
             var selected_sections = JSON.stringify(data.selected);
             $(this).jstree(true).open_node(data.selected);
+            $.get('SmallViewRequirements',{
+                'selected_section_ids':selected_sections,
+                'project_id': $.session.get('project_id')
+            },function(data){
+                var parent=data['parent_id'];
+                var detail=data['requirement_detail'][0];
+                $('#msg').css({'display':'none'});
+                var message="";
+                message+='<table width="100%" align="left">';
+                message+='<tr>';
+                message+='<td width="45%" align="right" style="vertical-align: 0%;"><b class="Text" style="font-size: 150%;">Requirement ID:</b></td>';
+                message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%"><b>'+detail[6]+'</b></td>');
+                message+='</tr>';
+                message+='<tr>';
+                message+='<td width="45%" align="right" style="vertical-align: 0%;"><b class="Text" style="font-size: 150%;">Title:</b></td>';
+                message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%">'+detail[0]+'</td>');
+                message+='</tr>';
+                message+='<tr>';
+                message+='<td width="45%" align="right" style="vertical-align: 0%;"><b class="Text" style="font-size: 150%;">Description:</b></td>';
+                message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%">'+detail[1]+'</td>');
+                message+='</tr>';
+                message+='<tr>';
+                message+='<td width="45%" align="right" style="vertical-align: 0%;"><b class="Text" style="font-size: 150%;">Parent Requirement:</b></td>';
+                if(parent instanceof(Array)){
+                    message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%"><b>'+parent[0][0] +'</b> - '+parent[0][1]+'</td>');
+
+                }else{
+                    message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%">'+parent+'</td>');
+                }
+                message+='</tr>';
+                message+='<tr>';
+                message+='<td width="45%" align="right" style="vertical-align: 0%;"><b class="Text" style="font-size: 150%;">Due Date:</b></td>';
+                message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%">'+detail[2]+'</td>');
+                message+='</tr>';
+                message+='<tr>';
+                message+='<td width="45%" align="right" style="vertical-align: 0%;"><b class="Text" style="font-size: 150%;">Status:</b></td>';
+                message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%;color: '+detail[4]+';">'+detail[3]+'</td>');
+                message+='</tr>';
+                message+='<tr>';
+                message+='<td width="45%" align="right" style="vertical-align: 0%;"><b class="Text" style="font-size: 150%;">Milestone:</b></td>';
+                message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%">'+detail[5]+'</td>');
+                message+='</tr>';
+                message+='<tr>';
+                message+='<td width="45%" align="right" style="vertical-align: 0%;"><b class="Text" style="font-size: 150%;">Team Name:</b></td>';
+                message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%">'+detail[7]+'</td>');
+                message+='</tr>';
+                message+='<tr>';
+                message+='<td width="45%" align="right" style="vertical-align: 0%;">&nbsp;</td>';
+                message+=('<td width="55%" align="left" style="vertical-align: 0%;font-size: 125%"><table align="right"><tr><td align="right"><a href="/Home/'+$('#project_code').text().trim()+'/Requirements/'+detail[6]+'/"><b>See Details</b></a></td></tr></table></td>');
+                message+='</tr>';
+                message+='</table>';
+                $('#RunTestResultTable').html(message);
+            })
         });
     });
 

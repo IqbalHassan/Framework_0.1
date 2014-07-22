@@ -8212,33 +8212,6 @@ def AddTeamtoProject(request):
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
     #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    
-"""
-def GetAllRequirements(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            project_id=request.GET.get(u'project_id','')
-            query="select requirement_title,requirement_description,case "
-            query+="when requirement_endingdate-requirement_startingdate=0 then 'Due Today'"
-            query+="when requirement_endingdate-requirement_startingdate>0 and requirement_endingdate-requirement_startingdate<=1 then 'In ' ||requirement_endingdate-requirement_startingdate ||' day'"
-            query+="when requirement_endingdate-requirement_startingdate>1 then 'In ' ||requirement_endingdate-requirement_startingdate ||' days'"
-            query+="when requirement_endingdate-requirement_startingdate=-1 then 'Over ' || (requirement_startingdate-requirement_endingdate) ||' day ago'"  
-            query+="when requirement_endingdate-requirement_startingdate<=-1 then 'Over ' || (requirement_startingdate-requirement_endingdate) ||' days ago'"  
-            query+="end,"
-            query+="case " 
-            query+="when rtm.status='started' then 'Started'"
-            query+="when rtm.status='complete' then 'Complete'"
-            query+="when rtm.status='over_due' then 'Overdue'"
-            query+="end"
-            query+=",project_id,r.requirement_id,"
-            query+="(select value from config_values where type='milestone' and id=cast(r.requirement_milestone  as int))"
-            query+="from requirements r,requirement_team_map rtm "
-            query+="where r.requirement_id=rtm.requirement_id and r.project_id='%s' order by r.requirement_creationdate desc"%project_id
-            Conn=GetConnection()
-            requirements=DB.GetData(Conn,query,False)
-            Dict={'requirement':requirements}
-    result=simplejson.dumps(Dict)
-    return HttpResponse(result,mimetype='application/json')
-"""
 def DetailRequirementView(request,project_id,req_id):
     return HttpResponse(project_id+'/'+req_id)
 def TeamWiseRequirementView(request,project_id,team_id):
@@ -8333,7 +8306,7 @@ def getRequirements(request,project_id):
                     if section==i[1]:
                         temp['id']=i[0]
                         temp['text']=i[1]
-                        temp['children']=True
+                        #temp['children']=True
                         temp['type'] = 'parent_section'
                         temp['undetermined'] = True
                         temp_list.append(temp)
@@ -8341,6 +8314,10 @@ def getRequirements(request,project_id):
             parent_section=temp_list
             for each in parent_listed:
                 all_section.remove(each)
+            for each in parent_section:
+                for eachitem in all_section:
+                    if each['text'] in eachitem[1].split('.'):
+                        each.update({'children':True})
             #now assigning the child
             for i in all_section:
                 temp={}
@@ -8358,8 +8335,7 @@ def getRequirements(request,project_id):
                             temp['parent_text'] = section[-2]
                         child_sections.append(temp)
             for each in parent_section:
-                each['text']=each['text'].replace('_','-')  
-                  
+                each['text']=each['text'].replace('_','-')                
             requested_id=request.GET.get('id','')
             if requested_id=='#':
                 result=simplejson.dumps(parent_section)
@@ -8502,3 +8478,52 @@ def GetTeamInfoToCreateRequirement(request):
             Dict={'teams':team_list}
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json')
+#function to get the small detail of the requirements
+def SmallViewRequirements(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            Conn=GetConnection()
+            project_id=request.GET.get('project_id','')
+            decoded_string = json.loads(request.GET.get('selected_section_ids', []))
+            requested_requirement_section_id=int(list(decoded_string)[0])
+            query="select requirement_path from requirement_sections where requirement_path_id=%d"%(requested_requirement_section_id)
+            requested_path=DB.GetData(Conn,query)
+            requested_path=requested_path[0].split('.')
+            if len(requested_path)==1:
+                main_requirement=requested_path[0].replace('_','-')
+                parent_requirement="No Parent"
+            else:
+                main_requirement=requested_path[-1].replace('_','-')
+                parent_requirement=requested_path[-2].replace('_','-')
+            query="select r.requirement_title,r.requirement_description,"
+            query+="case when requirement_endingdate-requirement_startingdate=0 then 'Due Today'"
+            query+=" when requirement_endingdate-requirement_startingdate>0 and requirement_endingdate-requirement_startingdate<=1 then 'In ' ||requirement_endingdate-requirement_startingdate ||' day'"
+            query+=" when requirement_endingdate-requirement_startingdate>1 then 'In ' ||requirement_endingdate-requirement_startingdate ||' days'"
+            query+=" when requirement_endingdate-requirement_startingdate=-1 then 'Over ' || (requirement_startingdate-requirement_endingdate) ||' day ago'" 
+            query+=" when requirement_endingdate-requirement_startingdate<=-1 then 'Over ' || (requirement_startingdate-requirement_endingdate) ||' days ago'"  
+            query+=" end,"
+            query+="case"
+            query+=" when rtm.status='not_started' then 'Not Started'"
+            query+=" when rtm.status='started' then 'Started'"
+            query+=" when rtm.status='complete' then 'Complete'"
+            query+=" when rtm.status='over_due' then 'Overdue'"
+            query+=" end,"
+            query+="case"
+            query+=" when rtm.status='not_started' then '#bbbbbb'"
+            query+=" when rtm.status='started' then '#0000ff'"
+            query+=" when rtm.status='complete' then '#00ff00'"
+            query+=" when rtm.status='over_due' then '#ff0000'"
+            query+=" end,"
+            query+="(select value from config_values where cast(r.requirement_milestone as int)=id),r.requirement_id,(select value from config_values where type='Team' and id=cast(rtm.team_id as int))"
+            query+=" from requirement_team_map rtm,requirements r" 
+            query+=" where rtm.requirement_id=r.requirement_id and rtm.requirement_id='%s' and r.project_id='%s'"%(main_requirement,project_id)
+            requirement_detail=DB.GetData(Conn,query,False)
+            if parent_requirement!='No Parent':
+                query="select requirement_id,requirement_title from requirements where requirement_id='%s'"%parent_requirement
+                parent_requirement=DB.GetData(Conn,query,False)
+            Dict={
+                  'requirement_detail':requirement_detail,
+                  'parent_id':parent_requirement
+            }
+    result=simplejson.dumps(Dict)
+    return HttpResponse(result,mimetype='application/json') 
