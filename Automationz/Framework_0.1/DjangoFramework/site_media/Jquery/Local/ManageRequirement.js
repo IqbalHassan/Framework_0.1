@@ -96,6 +96,6 @@ function PopulateGeneralInfo(){
     $('#create_new_requirement').attr('href',newRequirementLocation);
 
     $('#project_code').click(function(){
-        window.location= ("/Home/Project/"+ $.session.get('project_id'));
+        window.location= ("/Home/ManageRequirement/");
     });
 }
