@@ -32,7 +32,9 @@ function BasicPreparation(){
             'milestone':milestone.trim(),
             'user_name': $('#user_name').text().trim()
         },function(data){
-            window.location.reload(true);
+            if(data['message'].indexOf('Failed')!=0){
+                window.location=("/Home/ManageRequirement/");
+            }
         });
     });
     $('#project_id').on('change',function(){
