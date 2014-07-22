@@ -25,20 +25,24 @@
         <td>
             <select id="parent_req_id">
                 <option value="#">No Parent</option>
-                {% for x in requirement_list%}
-                    <option value="{{x.0}}">{{x.0}} - {{x.1}}</option>
-                {% endfor %}
+                {% if requirement_list%}
+                    {% for x in requirement_list%}
+                        <option value="{{x.0}}">{{x.0}} - {{x.1}}</option>
+                    {% endfor %}
+                {% endif %}
                 <!-- populate with the requirement that is in this project-->
             </select>
         </td>
     </tr>
     <tr>
-        <td align="right" style="margin-right: 2%;"><b class="Text" style="text-align: right">Project Name:</b></td>
+        <td align="right" style="margin-right: 2%;"><b class="Text" style="text-align: right">Team Name:</b></td>
         <td>
             <select id="team_id">
-                {% for x in team_list %}
-                    <option value="{{x.0}}">{{x.1|capfirst}}</option>
-                {% endfor %}
+                {% if team_list %}
+                    {% for x in team_list %}
+                        <option value="{{x.0}}">{{x.1|capfirst}}</option>
+                    {% endfor %}
+                {% endif %}
             </select>
         </td>
     </tr>

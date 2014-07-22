@@ -8295,7 +8295,7 @@ def ToNewRequirementPage(request,project_id):
     query="select c.id,c.value from project_team_map ptm, config_values c where cast(ptm.team_id as int)=c.id and ptm.project_id='%s'"%project_id
     team_info=DB.GetData(Conn,query,False)
     #get the existing requirement id for parenting
-    query="select distinct requirement_id,requirement_title from requirements"
+    query="select distinct requirement_id,requirement_title from requirements where project_id='%s' order by requirement_id"%project_id
     requirement_list=DB.GetData(Conn,query,False)
     Dict={
           'project_id':project_id,
