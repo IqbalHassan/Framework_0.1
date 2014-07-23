@@ -8213,7 +8213,7 @@ def AddTeamtoProject(request):
     return HttpResponse(result,mimetype='application/json')
     #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    
 def DetailRequirementView(request,project_id,req_id):
-    return HttpResponse(project_id+'/'+req_id)
+    return HttpResponse(project_id+' '+req_id)
 def TeamWiseRequirementView(request,project_id,team_id):
     query="select project_name from projects where project_id='%s'"%project_id
     Conn=GetConnection()
