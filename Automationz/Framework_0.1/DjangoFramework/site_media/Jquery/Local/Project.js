@@ -15,9 +15,9 @@ function GetProjects(team_name){
             message+='</table>';
 
         }
-        else{
+        /*else{
             window.location.reload(true);
-        }
+        }*/
         $('#projects').html(message);
         PrepareOtherButton();
     });
