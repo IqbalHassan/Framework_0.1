@@ -1369,7 +1369,7 @@ article header{
 
 /* second level */
 
-#nav li ul
+#nav > ul > li ul
 {
     /*background-color: #cc470d;
     background-color: #999999;*/
@@ -1383,7 +1383,7 @@ article header{
     /*border: 1px solid rgba(0,0,0,0.15);
     border-radius: 5px;*/
 }
-#nav li:hover ul
+#nav > ul > li:hover ul
 {
     display: block;
     left: 0;
@@ -1428,26 +1428,32 @@ article header{
     color: #fff;
 }
 
-/**********Third-livel***********
+/**********Third-level***********
 
-#nav ul ul ul
+#nav > ul > li > ul > li > ul
 {
     visibility: hidden;
-    z-index:999999;
+    display: none;
+    z-index:9999999;
     background-color: #fff;
     background-clip: padding-box;
     box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-}
-#nav ul ul ul li
-{
+    position:absolute;
+    top: 0;
     left: 100%;
-    top: -35px;
-}
-#nav ul ul li:hover ul {
-    visibility: visible;
 }
 
-************************************/
+#nav > ul > li > ul > li:hover > ul {
+    visibility: visible;
+    display:block;
+
+}
+#nav > ul > li > ul > li > ul > li{
+    display:block;
+    white-space:nowrap;
+}
+
+/************************************/
 
 @media only screen and ( min-width: 62.5em ) /* 1000 */
 {
