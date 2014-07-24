@@ -4,6 +4,7 @@
 <script type="text/javascript" src="/site_media/jquery/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript" src="/site_media/jquery/tiny_mce/tiny_mce_popup.js"></script>
 <script type="text/javascript" src="/site_media/jquery/tiny_mce/tinymce.min.js"></script>
+<script type="text/javascript" src="/site_media/jquery/Local/RequirementDetail.js"></script>
 <script type="text/javascript">
     tinymce.init({
         selector: "textarea",
@@ -16,14 +17,76 @@
     });
 </script>
 <div align="center" style="margin: auto;">
-    <table align="center">
-        <form method="post" action="/Home/{{project}}/Requirements/{{requirement}}/post_comment/">
-            {% csrf_token %}
-            <textarea name="content" rows="10" cols="75"></textarea>
-            <button type="submit" style="background-color: #4183c4;border-collapse: collapse;" class="primary Buttons"><b>POST</b></button>
-        </form>
+    <table align="center" width="100%">
+        <tr>
+            <td align="25%">
+                <table align="center">
+                    <tbody>
+                        <tr><td align="right" style="vertical-align: 0%;"><b class="Text">Status:</b></td><td align="left" style="color: {{color}};vertical-align: 0%;">{{status}}</td></tr>
+                        <tr><td align="right" style="vertical-align: 0%;"><b class="Text">Milestone:</b></td><td align="left" style="vertical-align: 0%;">{{milestone}}</td></tr>
+                        <tr><td align="right" style="vertical-align: 0%;"><b class="Text">Team:</b></td><td align="left" style="vertical-align: 0%;">{{team}}</td></tr>
+                        <tr><td align="right" style="vertical-align: 0%;"><b class="Text">Started On:</b></td><td align="left" style="vertical-align: 0%;">{{start_date}}</td></tr>
+                        <tr><td align="right" style="vertical-align: 0%;"><b class="Text">Ending In:</b></td><td align="left" style="vertical-align: 0%;">{{end_date}}</td></tr>
+
+                    </tbody>
+                </table>
+            </td>
+            <td width="50%">
+                <table align="center">
+                    <tr>
+                        <td style="vertical-align: 0%;"><a href="#"><h2>{{requirement_id}}</h2></a></td>
+                        <td style="vertical-align: 0%;"><h2> - {{requirement_title}}</h2></td>
+                    </tr>
+                    <tr>
+                        <td align="left" style="font-size: 125%;vertical-align: 0%;" colspan="2">
+                            {{requirement_description}}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td align="25%">
+                <table align="center">
+                    <tbody>
+                        <tr><td align="right" style="vertical-align: 0%;"><b class="Text">Created By:</b></td><td align="left" style="vertical-align: 0%;">{{creator}}</td></tr>
+                        <tr><td align="right" style="vertical-align: 0%;"><b class="Text">Creation Date:</b></td><td align="left" style="vertical-align: 0%;">{{creation_date}}</td></tr>
+                        <tr><td align="right" style="vertical-align: 0%;"><b class="Text">Modified By:</b></td><td align="left" style="vertical-align: 0%;">{{modifier}}</td></tr>
+                        <tr><td align="right" style="vertical-align: 0%;"><b class="Text">Modification Date:</b></td><td align="left" style="vertical-align: 0%;">{{last_modified}}</td></tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td align="25%">&nbsp;</td>
+            <td width="50%">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <table>
+                        {{comment}}
+                        <tr><td>&nbsp</td><td><input type="submit" value="Comment" class="primary button"/></td></tr>
+                    </table>
+
+                </form>
+            </td>
+            <td align="25%">
+                &nbsp;
+            </td>
+        </tr>
     </table>
-
-
 </div>
 {% endblock %}

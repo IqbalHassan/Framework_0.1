@@ -3,6 +3,20 @@
 {% block title%}Manage Project{% endblock %}
 
 {% block content %}
+<script type="text/javascript" src="/site_media/jquery/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="/site_media/jquery/tiny_mce/tiny_mce_popup.js"></script>
+<script type="text/javascript" src="/site_media/jquery/tiny_mce/tinymce.min.js"></script>
+<script type="text/javascript">
+    tinymce.init({
+        'selector':'textarea',
+        plugins: [
+            "advlist autolink lists charmap print preview anchor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime table contextmenu paste"
+        ]
+
+    });
+</script>
 <script type="text/javascript" src="/site_media/Jquery/Local/Project_Detail.js"></script>
 <article>
     <table align="left">
@@ -138,7 +152,7 @@
                                     <table>
                                         <tr><td colspan="2"><b style="color: #4183c4">{{x.1}}</b></td></tr>
                                         <tr><td><b>{{x.3}}</b></td><td>{{x.2}}</td></tr>
-                                        <tr><td colspan="2">{{x.0}}</td></tr>
+                                        <tr><td colspan="2">{{x.0|removetags:""|safe}}</td></tr>
                                         {% if x.4 %}
                                             <tr><td><a media="all" target="_blank" href="{{x.5}}">Show Attachment</a> </td><td>&nbsp;</td></tr>
                                         {% else %}
@@ -162,11 +176,11 @@
                     <td width="100%">
                         <form action="{% url 'MySite.views.FileUpload' project_id %}" method="post" enctype="multipart/form-data">
                             {%csrf_token%}
-                            <div style="width:50%;background-color: #cccccc;margin-top: 2%">
+                            <div style="width:50%;margin-top: 2%">
                                 <table>
                                     {{comment}}
+                                    <tr><td>&nbsp;</td><td><input type="submit" class="button primary" value="Comment"/></td></tr>
                                 </table>
-                                <input type="submit" class="button primary" value="Comment"/>
                             </div>
                         </form>
 

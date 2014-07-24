@@ -8233,10 +8233,62 @@ def AddTeamtoProject(request):
     return HttpResponse(result,mimetype='application/json')
     #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    
 def DetailRequirementView(request,project_id,req_id):
-    Dict={
-          'project':project_id,
-          'requirement':req_id
-    }
+    Conn=GetConnection()
+    Dict={}
+    #data retrieval from requirements table
+    cols=['requirement_id','requirement_title','requirement_description','start_date','end_date','priority','milestone','creator','creation_date','modifier','last_modified','project_id','status','requirement_path','team','color']
+    requirement_query="select r.requirement_id,"
+    requirement_query+="requirement_title,"
+    requirement_query+="requirement_description,"
+    requirement_query+="requirement_startingdate,"
+    requirement_query+="requirement_endingdate,"
+    requirement_query+="'P'||cast(requirement_priority as text),"
+    requirement_query+="(select value from config_values where id=cast(requirement_milestone as int) and type='milestone'),"
+    requirement_query+="requirement_createdby,"
+    requirement_query+="requirement_creationdate,"
+    requirement_query+="requirement_modifiedby,"
+    requirement_query+="requirement_modifydate,"
+    requirement_query+="project_id,"
+    requirement_query+="case"
+    requirement_query+=" when rtm.status='not_started' then 'Not Started'"
+    requirement_query+=" when rtm.status='started' then 'Started'"
+    requirement_query+=" when rtm.status='complete' then 'Complete'"
+    requirement_query+=" when rtm.status='over_due' then 'Overdue'"
+    requirement_query+=" end,"
+    requirement_query+="parent_requirement_id,"
+    requirement_query+="(select value from config_values where type='Team' and id= cast(rtm.team_id as int)),"
+    requirement_query+="case"
+    requirement_query+=" when rtm.status='not_started' then '#bbbbbb'"
+    requirement_query+=" when rtm.status='started' then '#0000ff'"
+    requirement_query+=" when rtm.status='complete' then '#00ff00'"
+    requirement_query+=" when rtm.status='over_due' then '#ff0000'"
+    requirement_query+=" end "
+    requirement_query+="from requirements r,requirement_team_map rtm "
+    requirement_query+="where r.requirement_id=rtm.requirement_id and r.requirement_id='%s'"%req_id
+    try:
+        requirement_data=DB.GetData(Conn,requirement_query,False)
+        for each in requirement_data:
+            for eachitem in zip(cols,each):
+                Dict.update({eachitem[0]:eachitem[1]})
+        requirement_path_id=Dict['requirement_path']
+        parent_query="select requirement_path from requirement_sections where requirement_path_id=%d"%int(requirement_path_id)
+        parent_path=DB.GetData(Conn,parent_query,False)
+        parent_path=parent_path[0][0].split(".")
+        if len(parent_path)>=2 and isinstance(parent_path,list):
+            parent=str(parent_path[0][0].split(".")[-2]).replace('_','-')
+            parent_name_id_query="select requirement_id,requirement_title from requirements where requirement_id='%s'"%parent
+            parent_name_id=DB.GetData(Conn,parent_name_id_query,False)
+            Dict.update({'parent_id':parent_name_id[0][0],'parent_name':parent_name_id[0][1],'parent':True})
+        elif len(parent_path)==1 and isinstance(parent_path, list):
+            Dict.update({'parent':False})
+        else:
+            Dict.update({'parent':False})        
+    except Exception,e:
+        print "Exception:",e
+    
+    comment=Comment()
+    Dict.update({'comment':comment})
+    #get all the comments of this requirement_id
     return render(request,'RequirementDetail.html',Dict)
 def TeamWiseRequirementView(request,project_id,team_id):
     query="select project_name from projects where project_id='%s'"%project_id
