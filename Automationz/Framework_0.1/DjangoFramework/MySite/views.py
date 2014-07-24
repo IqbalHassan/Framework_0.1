@@ -8234,7 +8234,7 @@ def AddTeamtoProject(request):
     #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    
 def DetailRequirementView(request,project_id,req_id):
     Conn=GetConnection()
-    Dict={}
+    Dict={'project_id':project_id}
     #data retrieval from requirements table
     cols=['requirement_id','requirement_title','requirement_description','start_date','end_date','priority','milestone','creator','creation_date','modifier','last_modified','project_id','status','requirement_path','team','color']
     requirement_query="select r.requirement_id,"
@@ -8285,7 +8285,32 @@ def DetailRequirementView(request,project_id,req_id):
             Dict.update({'parent':False})        
     except Exception,e:
         print "Exception:",e
-    
+    try:
+        if DB.IsDBConnectionGood(Conn)==False:
+            time.sleep(1)
+            Conn=GetConnection()
+        query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc"%req_id
+        all_comments=DB.GetData(Conn,query,False)
+        final=[]
+        for each in all_comments:
+            if each[1]==False:
+                query="select comment_text,commented_by,comment_date,rank,c.attachment from comments c where c.comment_id='%s' and c.project_id='%s'"%(each[0],req_id)    
+                temp_comment=DB.GetData(Conn,query,False)
+                temp=[]
+                for each in temp_comment:
+                    for eachitem in each:
+                        temp.append(eachitem)
+                temp.append('')
+                temp=tuple(temp)
+            if each[1]==True:
+                query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],req_id)
+                temp=DB.GetData(Conn,query,False)
+                temp=temp[0]
+                temp=tuple(temp)
+            final.append(temp)
+        Dict.update({'all_comments':final})
+    except Exception,e:
+        print "Exception:",e
     comment=Comment()
     Dict.update({'comment':comment})
     #get all the comments of this requirement_id
@@ -8603,7 +8628,127 @@ def SmallViewRequirements(request):
             }
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json') 
-def PostRequirementComment(request,project,requirement):
-    if request.method=='POST':
-        feed=request.POST['content']
-        print feed
+def PostRequirementComment(request,project_id,requirement_id):
+    print request
+    print project_id
+    #Get the rank of the person
+    query="select project_owners from projects where project_id='%s'"%(project_id)
+    Conn=GetConnection()
+    project_owners=DB.GetData(Conn, query)
+    temp=project_owners[0]
+    first_colon=temp.find(":",0)
+    second_colon=temp.find(":",first_colon+1)
+    first_hiphen=temp.find("-",first_colon+1)
+    testers=temp[first_colon+1:first_hiphen]
+    testers=testers.split(",")
+    managers=temp[second_colon+1:]
+    managers=managers.split(",")
+    owners=[]
+    for each in testers:
+        if each not in owners:
+            owners.append(each)
+    for each in managers:
+        if each not in owners:
+            owners.append(each)
+    query="select distinct name,rank from team_info where cast(team_id as text) in(select team_id from requirement_team_map where requirement_id='%s')"%requirement_id
+    rest_rank=DB.GetData(Conn,query,False)
+    members=[]
+    for each in rest_rank:
+        if each[0] not in owners:
+            members.append(each[0])
+    user_name=request.POST['commented_by']
+    rank=""
+    if user_name in owners:
+        rank="Owner"
+    if user_name in members:
+        rank="Member"
+    query="select requirement_createdby from requirements where requirement_id='%s'"%requirement_id
+    created_by=DB.GetData(Conn,query)
+    if user_name in created_by:
+        rank="Creator"
+    #form file name
+    if rank!="":
+        now=datetime.datetime.now().date()
+        dateFolder=os.path.join(MEDIA_ROOT,str(now.year))
+        dateFolder=os.path.join(dateFolder,str(now.month))
+        dateFolder=os.path.join(dateFolder,str(now.day))
+        #fullfileName=(str(now.year)+'/'+str(now.month)+'/'+str(now.day)+'/'+request.FILES['docfile'])
+        #print fullfileName
+        comment_time=datetime.datetime.now()
+        #Genereate Comment ID
+        tmp_id = DB.GetData(Conn, "select nextval('commentid_seq')")
+        comment_id=('COM-'+str(tmp_id[0]))
+        if len(request.FILES)!=0 and request.POST['comment']!="":
+            file_name=request.FILES['docfile']
+            path=default_storage.save(os.path.join(dateFolder,str(file_name)),ContentFile(file_name.read()))
+            print path
+            #print "Attachment Comment"
+            #new_path=
+            path=path[len(PROJECT_ROOT):]
+            result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
+            if result==False:
+                print "unable to save the attachments"
+                attachment=False
+
+            else:
+                attachment=True
+            #form Dict
+            Dict={
+                  'project_id':requirement_id.strip(),
+                  'comment_id':comment_id.strip(),
+                  'comment_text':request.POST['comment'].strip(),
+                  'commented_by':user_name.strip(),
+                  'comment_date':comment_time,
+                  'rank':rank.strip(),
+                  'attachment':attachment
+                  }
+            result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
+            if result==True:
+                return HttpResponseRedirect(reverse('detail_requirement', args=(project_id,requirement_id)))
+        elif len(request.FILES)==0 and request.POST['comment']!="":
+            #form Dict
+            attachment=False
+            Dict={
+                  'project_id':requirement_id.strip(),
+                  'comment_id':comment_id.strip(),
+                  'comment_text':request.POST['comment'].strip(),
+                  'commented_by':user_name.strip(),
+                  'comment_date':comment_time,
+                  'rank':rank.strip(),
+                  'attachment':attachment
+                  }
+            result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
+            if result==True:
+                return HttpResponseRedirect(reverse('detail_requirement', args=(project_id,requirement_id)))
+        elif len(request.FILES)!=0 and request.POST['comment']=="":
+            file_name=request.FILES['docfile']
+            path=default_storage.save(os.path.join(dateFolder,str(file_name)),ContentFile(file_name.read()))
+            print path
+            #print "Attachment Comment"
+            #new_path=
+            path=path[len(PROJECT_ROOT):]
+            result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
+            if result==False:
+                print "unable to save the attachments"
+                attachment=False
+
+            else:
+                attachment=True
+            #form Dict
+            Dict={
+                  'project_id':requirement_id.strip(),
+                  'comment_id':comment_id.strip(),
+                  'comment_text':'',
+                  'commented_by':user_name.strip(),
+                  'comment_date':comment_time,
+                  'rank':rank.strip(),
+                  'attachment':attachment
+                  }
+            result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
+            if result==True:
+                return HttpResponseRedirect(reverse('detail_requirement', args=(project_id,requirement_id)))
+        else:
+            print "no comment"
+    else:
+        print "not autorized to comment"
+

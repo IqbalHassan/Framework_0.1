@@ -64,16 +64,48 @@
             <td>&nbsp;</td>
             <td>&nbsp;</td>
         </tr>
-
         <tr>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
+            <td>&nbsp;</td>
+            <td>
+                <table width="100%">
+                    {% if all_comments%}
+                        {% for x in all_comments %}
+                        <tr>
+                            <td width="100%">
+                                <table>
+                                    <tr><td colspan="2"><b style="color: #4183c4" class="Text">{{x.1}}</b></td></tr>
+                                    <tr>
+                                        <td align="left" width="40%"><b style="font-size: 105%;font-weight: bolder">{{x.3}}</b></td>
+                                        <td style="font-weight: bold;" align="right" width="60%">{{x.2}}</td>
+                                    </tr>
+                                    <tr><td colspan="2" style="font-size: 120%;font-family:Consolas;">{{x.0|removetags:""|safe}}</td></tr>
+                                    {% if x.4 %}
+                                    <tr><td><a media="all" target="_blank" href="{{x.5}}">Show Attachment</a> </td><td>&nbsp;</td></tr>
+                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                    {% else %}
+                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                    {% endif %}
+
+                                </table>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr><td><b class="Text">Be the first one to comment..</b> </td></tr>
+                    {% endif %}
+                </table>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
             <td align="25%">&nbsp;</td>
             <td width="50%">
-                <form method="post" action="">
+                <form method="post" action="{% url 'MySite.views.PostRequirementComment' project_id requirement_id%}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <table>
                         {{comment}}
