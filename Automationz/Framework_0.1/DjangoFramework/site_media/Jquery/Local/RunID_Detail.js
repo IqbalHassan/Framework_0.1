@@ -653,7 +653,14 @@ function Report(){
 
         $.get("Send_Report",{runid : RunID,EmailIds:EmailQuery},function(data)
         {
-            alertify.log("Email Report is sent to the recipients","",0);
+            if(data[0]=="OK")
+            {
+                alertify.log("Email Report is sent to the recipients","",0);
+            }
+            else
+            {
+                alertify.log("Email Report is not sent. Server disconnected","",0);
+            }
         });
     });
 }

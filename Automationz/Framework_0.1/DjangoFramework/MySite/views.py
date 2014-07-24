@@ -10,6 +10,7 @@ import re
 import time
 import datetime
 import EmailNotify
+import urllib2
             
 
 from django.contrib.auth import authenticate, login
@@ -1936,8 +1937,14 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
             
     allEmailIds = ','.join(Emails)        
 
-    #import EmailNotify
-    EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
+    try:
+        urllib2.urlopen("http://www.google.com").close()
+        #import EmailNotify
+        EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
+        print "connected"
+    except urllib2.URLError:
+        print "disconnected"
+    
 
     Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
     EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
@@ -6042,9 +6049,14 @@ def update_runid(run_id, test_case_id):
         list.append(total[0])
         duration = DB.GetData(Conn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
     
+        try:
+            urllib2.urlopen("http://www.google.com").close()
+            #import EmailNotify
+            EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
+            print "connected"
+        except urllib2.URLError:
+            print "disconnected"
         
-        #import EmailNotify
-        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
         
 def Send_Report(request):
     if request.is_ajax():
@@ -6092,9 +6104,17 @@ def Send_Report(request):
             duration = DB.GetData(Conn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
 
 
-            EmailNotify.Complete_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,duration,'','')
+            
+            try:
+                urllib2.urlopen("http://www.google.com").close()
+                #import EmailNotify
+                EmailNotify.Complete_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,duration,'','')
+                print "connected"
+                results = ['OK']
+            except urllib2.URLError:
+                print "disconnected"
+                results = ['NOK']
 
-            results = ['OK']
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
     #########################################################################################
