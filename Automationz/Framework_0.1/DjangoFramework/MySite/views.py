@@ -8213,7 +8213,11 @@ def AddTeamtoProject(request):
     return HttpResponse(result,mimetype='application/json')
     #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    
 def DetailRequirementView(request,project_id,req_id):
-    return render(request,'RequirementDetail.html',{})
+    Dict={
+          'project':project_id,
+          'requirement':req_id
+    }
+    return render(request,'RequirementDetail.html',Dict)
 def TeamWiseRequirementView(request,project_id,team_id):
     query="select project_name from projects where project_id='%s'"%project_id
     Conn=GetConnection()
@@ -8527,3 +8531,7 @@ def SmallViewRequirements(request):
             }
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json') 
+def PostRequirementComment(request,project,requirement):
+    if request.method=='POST':
+        feed=request.POST['content']
+        print feed

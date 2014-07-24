@@ -240,6 +240,7 @@ urlpatterns = patterns('',
     url(r'^Home/(?P<project_id>[^/]*)/getRequirements/$',getRequirements),
     url(r'^Home/(?P<project_id>[^/]*)/Requirements/(?P<req_id>[^/]*)/$',DetailRequirementView),
     url(r'^Home/Projects/(?P<project_id>[^/]*)/Requirements/(?P<team_id>[^/]*)/$',TeamWiseRequirementView),
+    url(r'^Home/(?P<project>[^/]*)/Requirements/(?P<requirement>[^/]*)/post_comment/$',PostRequirementComment),
     
     url(r'^Home/Project/(?P<project_id>[^/]*)/comment_post/$',FileUpload),
     url(r'^Home/Project/(?P<project_id>[^/]*)/comments/$',commentView,name='comment_view'),

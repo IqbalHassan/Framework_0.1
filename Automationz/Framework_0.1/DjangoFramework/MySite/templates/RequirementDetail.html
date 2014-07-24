@@ -1,0 +1,29 @@
+{% extends 'BaseTemplate.html' %}
+{% block title %} Manage Test Cases {% endblock %}
+{% block content %}
+<script type="text/javascript" src="/site_media/jquery/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="/site_media/jquery/tiny_mce/tiny_mce_popup.js"></script>
+<script type="text/javascript" src="/site_media/jquery/tiny_mce/tinymce.min.js"></script>
+<script type="text/javascript">
+    tinymce.init({
+        selector: "textarea",
+        plugins: [
+            "advlist autolink lists link image charmap print preview anchor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime media table contextmenu paste"
+        ],
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+    });
+</script>
+<div align="center" style="margin: auto;">
+    <table align="center">
+        <form method="post" action="/Home/{{project}}/Requirements/{{requirement}}/post_comment/">
+            {% csrf_token %}
+            <textarea name="content" rows="10" cols="75"></textarea>
+            <button type="submit" style="background-color: #4183c4;border-collapse: collapse;" class="primary Buttons"><b>POST</b></button>
+        </form>
+    </table>
+
+
+</div>
+{% endblock %}

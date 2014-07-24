@@ -3,7 +3,21 @@
 {% block title%}Project Comments{% endblock %}
 
 {% block content %}
+<script type="text/javascript" src="/site_media/jquery/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="/site_media/jquery/tiny_mce/tiny_mce_popup.js"></script>
+<script type="text/javascript" src="/site_media/jquery/tiny_mce/tinymce.min.js"></script>
 <script type="text/javascript" src="/site_media/Jquery/Local/Project_Comment.js"></script>
+<script type="text/javascript">
+    tinymce.init({
+        'selector':'textarea',
+        plugins: [
+            "advlist autolink lists charmap print preview anchor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime table contextmenu paste"
+        ]
+
+    });
+</script>
 <table align="center" width="100%">
     <tr>
         <td align="left">
