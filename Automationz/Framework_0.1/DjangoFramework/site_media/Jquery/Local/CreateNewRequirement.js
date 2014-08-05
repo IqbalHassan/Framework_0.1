@@ -1,4 +1,4 @@
-$(document).ready(function(){
+/*$(document).ready(function(){
     BasicPreparation();
 });
 function BasicPreparation(){
@@ -45,4 +45,4 @@ function BasicPreparation(){
             $('#team_id').html(message);
         });
     });
-}
+}*/

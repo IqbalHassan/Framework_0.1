@@ -145,8 +145,8 @@ function PopulateGeneralInfo(){
     $('#project_code').html($.session.get('project_id'));
 
     //setting the newRequirementLocation dynamically
-    var newRequirementLocation=("/Home/"+ $.session.get('project_id')+"/CreateNewRequirement/");
-    $('#create_new_requirement').attr('href',newRequirementLocation);
+   // var newRequirementLocation=("/Home/"+ $.session.get('project_id')+"/CreateNewRequirement/");
+    //$('#create_new_requirement').attr('href',newRequirementLocation);
 
     $('#project_code').click(function(){
         window.location= ("/Home/Project/"+ $.session.get('project_id'));

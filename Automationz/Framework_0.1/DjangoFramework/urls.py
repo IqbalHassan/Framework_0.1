@@ -233,8 +233,8 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Small_Project_Detail/$',Small_Project_Detail),
     url(r'^Home/.*/Get_Projects/$',Get_Projects),
     url(r'^Home/.*/AddTeamtoProject/$',AddTeamtoProject),
-    url(r'^Home/.*/GetTeamInfoToCreateRequirement/$',GetTeamInfoToCreateRequirement),
-    url(r'^Home/.*/CreateRequirement/$',CreateRequirement),
+    #url(r'^Home/.*/GetTeamInfoToCreateRequirement/$',GetTeamInfoToCreateRequirement),
+    #url(r'^Home/.*/CreateRequirement/$',CreateRequirement),
     url(r'^Home/.*/SmallViewRequirements/$',SmallViewRequirements),
     url(r'^Home/(?P<project_id>[^/]*)/CreateNewRequirement/$',ToNewRequirementPage),
     url(r'^Home/(?P<project_id>[^/]*)/getRequirements/$',getRequirements),
@@ -247,6 +247,9 @@ urlpatterns = patterns('',
     
     url(r'^Home/ManageTestCases/SearchEdit-Dev/$',SearchEditDev),
     url(r'^Home/FeaDri/GetTestStepsAndTestCasesOnDriverValue/$', GetTestStepsAndTestCasesOnDriverValue),
+    
+    
+    #new requirement page implemenation ulrls
     
 	url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     

@@ -8315,6 +8315,7 @@ def DetailRequirementView(request,project_id,req_id):
     Dict.update({'comment':comment})
     #get all the comments of this requirement_id
     return render(request,'RequirementDetail.html',Dict)
+
 def TeamWiseRequirementView(request,project_id,team_id):
     query="select project_name from projects where project_id='%s'"%project_id
     Conn=GetConnection()
@@ -8359,6 +8360,7 @@ def TeamWiseRequirementView(request,project_id,team_id):
 #New Requirement Page Done Functions
 
 #to the new requirement page
+
 def ToNewRequirementPage(request,project_id):
     Conn=GetConnection()
     query="select project_id, project_name from projects"
@@ -8381,6 +8383,7 @@ def ToNewRequirementPage(request,project_id):
     return render(request,'CreateNewRequirement.html',Dict)
 
 #getting the tree information for the requirements
+
 def getRequirements(request,project_id):
     if request.method=='GET':
         if request.is_ajax():
@@ -8569,6 +8572,7 @@ def CreateRequirement(request):
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json')
 ##getting required requirement and team info on the project_id change
+
 def GetTeamInfoToCreateRequirement(request):
     if request.is_ajax():
         if request.method=='GET':
@@ -8579,6 +8583,8 @@ def GetTeamInfoToCreateRequirement(request):
             Dict={'teams':team_list}
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json')
+
+
 #function to get the small detail of the requirements
 def SmallViewRequirements(request):
     if request.method=='GET':
@@ -8628,6 +8634,7 @@ def SmallViewRequirements(request):
             }
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json') 
+
 def PostRequirementComment(request,project_id,requirement_id):
     print request
     print project_id
