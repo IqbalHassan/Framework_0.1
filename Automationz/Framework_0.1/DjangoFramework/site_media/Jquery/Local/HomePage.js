@@ -4,7 +4,8 @@
 $(document).ready(function(){
 
     var user = $(".welcome").text();
-    $(".logged_user").text(user);
+    $(".logged_user").text($.session.get('fullname'));
+    $(".test_count").text($.session.get('testing'));
 
     /*$("#GetAssignedTests").click(function(){
         $.get("GetAssignedTasks",{user : user},function(data)
@@ -14,11 +15,11 @@ $(document).ready(function(){
         });
     });*/
 
-    $.get("GetAssignedTests",{user : user},function(data)
+    /*$.get("GetAssignedTests",{user : user},function(data)
     {
         $("#test_count").text(data['TableData'].length);
         //ResultTable(ass_tasks,data['Heading'],data['TableData'],"Assigned Tasks");
-    });
+    });*/
 
     /*$("#assigned_tasks").click(function(){
         $("#task_prompt").html(

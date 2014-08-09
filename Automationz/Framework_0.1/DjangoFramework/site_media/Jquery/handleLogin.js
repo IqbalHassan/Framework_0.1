@@ -45,6 +45,12 @@ $(document).ready(function() {
 							window.location.href = path_to_redirect;
 						}, 1500);
 					}
+                    var user = $.session.get('fullname');
+                    $.get("GetAssignedTests",{user : user},function(data)
+                    {
+                        $.session.set('testing',data['TableData'].length);
+                        //ResultTable(ass_tasks,data['Heading'],data['TableData'],"Assigned Tasks");
+                    });
 				}
 		});
 	});
