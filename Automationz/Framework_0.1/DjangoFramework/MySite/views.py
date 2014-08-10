@@ -6529,9 +6529,22 @@ def Get_AssignedTests(request):
             Conn = GetConnection()
             user = request.GET.get(u'user', '').strip()    
             print user    
-            TableData = DB.GetData(Conn, "select run_id,rundescription,tester_id,status from test_run_env where assigned_tester like '"+user+"' and status not in ('Complete','Cancelled')", False)
+            TableData = DB.GetData(Conn, "select run_id,rundescription,tester_id,status from test_run_env where assigned_tester like '%"+user+"%' and status not in ('Complete','Cancelled')", False)
 
     Heading = ['Run ID', 'Description', 'Tester', 'Status']
+    results = {'Heading':Heading, 'TableData':TableData}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Get_Requirements(request):
+    if request.is_ajax():
+        if request.method == "GET":
+            Conn = GetConnection()
+            user = request.GET.get(u'user', '').strip()    
+            print user    
+            TableData = DB.GetData(Conn, "select r.requirement_id,r.requirement_title,r.requirement_description,rtm.team_id from requirements r, requirement_team_map rtm,team_info ti where r.requirement_id=rtm.requirement_id and rtm.team_id::int=ti.team_id and ti.name like '%"+user+"%'", False)
+
+    Heading = ['Requirement ID', 'Requirement Title', 'Requirement Description', 'Team ID']
     results = {'Heading':Heading, 'TableData':TableData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')

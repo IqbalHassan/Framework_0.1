@@ -51,6 +51,10 @@ $(document).ready(function() {
                         $.session.set('testing',data['TableData'].length);
                         //ResultTable(ass_tasks,data['Heading'],data['TableData'],"Assigned Tasks");
                     });
+                    $.get("GetRequirements",{user : user},function(data)
+                    {
+                        $.session.set('requires',data['TableData'].length);
+                    });
 				}
 		});
 	});

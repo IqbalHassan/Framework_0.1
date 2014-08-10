@@ -3,9 +3,10 @@
  */
 $(document).ready(function(){
 
-    var user = $(".welcome").text();
+    //var user = $(".welcome").text();
     $(".logged_user").text($.session.get('fullname'));
     $(".test_count").text($.session.get('testing'));
+    $(".require_count").text($.session.get('requires'));
 
     /*$("#GetAssignedTests").click(function(){
         $.get("GetAssignedTasks",{user : user},function(data)
