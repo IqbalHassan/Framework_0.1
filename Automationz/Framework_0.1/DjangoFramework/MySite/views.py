@@ -45,6 +45,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from settings import MEDIA_ROOT,PROJECT_ROOT
 import os
+import RequirementOperations
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -8250,18 +8251,18 @@ def DetailRequirementView(request,project_id,req_id):
     requirement_query+="requirement_modifydate,"
     requirement_query+="project_id,"
     requirement_query+="case"
-    requirement_query+=" when rtm.status='not_started' then 'Not Started'"
-    requirement_query+=" when rtm.status='started' then 'Started'"
-    requirement_query+=" when rtm.status='complete' then 'Complete'"
-    requirement_query+=" when rtm.status='over_due' then 'Overdue'"
+    requirement_query+=" when r.status='not_started' then 'Not Started'"
+    requirement_query+=" when r.status='started' then 'Started'"
+    requirement_query+=" when r.status='complete' then 'Complete'"
+    requirement_query+=" when r.status='over_due' then 'Overdue'"
     requirement_query+=" end,"
     requirement_query+="parent_requirement_id,"
     requirement_query+="(select value from config_values where type='Team' and id= cast(rtm.team_id as int)),"
     requirement_query+="case"
-    requirement_query+=" when rtm.status='not_started' then '#bbbbbb'"
-    requirement_query+=" when rtm.status='started' then '#0000ff'"
-    requirement_query+=" when rtm.status='complete' then '#00ff00'"
-    requirement_query+=" when rtm.status='over_due' then '#ff0000'"
+    requirement_query+=" when r.status='not_started' then '#bbbbbb'"
+    requirement_query+=" when r.status='started' then '#0000ff'"
+    requirement_query+=" when r.status='complete' then '#00ff00'"
+    requirement_query+=" when r.status='over_due' then '#ff0000'"
     requirement_query+=" end "
     requirement_query+="from requirements r,requirement_team_map rtm "
     requirement_query+="where r.requirement_id=rtm.requirement_id and r.requirement_id='%s'"%req_id
@@ -8476,7 +8477,7 @@ def CreateRequirement(request):
         if request.method=='GET':
             #getting all the info from the messages
             project_id=request.GET.get(u'project_id','')
-            team_id=request.GET.get(u'team_id','')
+            team_id=request.GET.get(u'team','').split("|")
             title=request.GET.get(u'title','')
             description=request.GET.get(u'description','')
             start_date=request.GET.get(u'start_date','')
@@ -8486,90 +8487,10 @@ def CreateRequirement(request):
             status=request.GET.get(u'status','')
             user_name=request.GET.get(u'user_name','')
             parent_requirement_id=request.GET.get(u'requirement_id','')
-            temp_Dict={}
-            Dict={}
-            Conn=GetConnection()
-            req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
-            req_id=('REQ-'+str(req_id[0]))
-            if parent_requirement_id.strip()=='#':
-                new_requirement_path=req_id.strip()
-            else:
-                #get the path for the old requirement_path
-                query="select requirement_path from requirement_sections where requirement_path ~ '*.%s' limit 1"%parent_requirement_id.replace('-','_')
-                requirement_paths=DB.GetData(Conn,query,False)
-                if len(requirement_paths)>0:
-                    new_requirement_path=str(requirement_paths[0][0]).strip().replace('_', '-')+"."+req_id.strip()
-                else:
-                    new_requirement_path=req_id.strip()                        
-            #check availability
-            query="select count(*) from requirements where requirement_id='%s'"%req_id
-            Conn=GetConnection()
-            count=DB.GetData(Conn,query)
-            if count[0]>0 and len(count)==1:
-                print "duplicate requirement id"
-                message="Failed"
-                Dict.update({'message':message,'id':""})
-            else:
-                #form the dict
-                now=datetime.datetime.now().date()
-                start_date=start_date.split('-')
-                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
-                end_date=end_date.split('-')
-                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
-                temp_Dict={
-                           'project_id':project_id.strip(),
-                           'requirement_id':req_id.strip(),
-                           'requirement_title':title.strip(),
-                           'requirement_description':description.strip(),
-                           'requirement_startingdate':starting_date,
-                           'requirement_endingdate':ending_date,
-                           'requirement_priority':priority.strip(),
-                           'requirement_milestone':milestone.strip(),
-                           'requirement_createdby':user_name.strip(),
-                           'requirement_creationdate':now,
-                           'requirement_modifiedby':user_name.strip(),
-                           'requirement_modifydate':now
-                           }
-                result=DB.InsertNewRecordInToTable(Conn,"requirements",**temp_Dict)
-                if result==False:
-                    message="Failed"
-                    Dict.update({'message':message,'id':""})
-                else:
-                    #insert and get the new path requirement
-                    query="select count(*) from requirement_sections where cast(requirement_path as text)='%s'"%new_requirement_path.replace('-','_')
-                    count=DB.GetData(Conn,query)
-                    if isinstance(count,list) and count[0]==0:
-                        # not exists insert the path
-                        query="select requirement_path_id from requirement_sections"
-                        ids=DB.GetData(Conn,query,False)
-                        ids=sorted(ids)
-                        if(len(ids)==0) and isinstance(ids,list):
-                            new_id=1
-                        else:
-                            new_id=int(ids[-1][0])+1
-                    if isinstance(count,list) and count[0]>=1:
-                        #exists take them as path
-                        query="select requirement_path_id from requirement_sections where cast(requirement_path as text)='%s'"%new_requirement_path.replace('-','_')
-                        ids=DB.GetData(Conn,query,False)
-                        new_id=ids[0]
-                    #form requirement team map
-                    cur=Conn.cursor()
-                    query = "INSERT INTO requirement_sections VALUES (%d, '%s') "% (new_id, new_requirement_path.replace('-','_'))
-                    time.sleep(0.5)
-                    
-                    cur.execute(query)
-                    Conn.commit()
-                    cur.close()
-                    team_Dict={
-                                   'requirement_id':req_id,
-                                   'parent_requirement_id':new_id,
-                                   'team_id':team_id,
-                                   'status':status.strip()
-                                   }
-                    result=DB.InsertNewRecordInToTable(Conn,"requirement_team_map",**team_Dict)
-                    message="Success"
-                    Dict.update({'message':message,'id':req_id.strip()})
-    result=simplejson.dumps(Dict)
+            if parent_requirement_id=="":
+                result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name)
+                
+    result=simplejson.dumps("")
     return HttpResponse(result,mimetype='application/json')
 ##getting required requirement and team info on the project_id change
 
@@ -8610,16 +8531,16 @@ def SmallViewRequirements(request):
             query+=" when requirement_endingdate-requirement_startingdate<=-1 then 'Over ' || (requirement_startingdate-requirement_endingdate) ||' days ago'"  
             query+=" end,"
             query+="case"
-            query+=" when rtm.status='not_started' then 'Not Started'"
-            query+=" when rtm.status='started' then 'Started'"
-            query+=" when rtm.status='complete' then 'Complete'"
-            query+=" when rtm.status='over_due' then 'Overdue'"
+            query+=" when r.status='not_started' then 'Not Started'"
+            query+=" when r.status='started' then 'Started'"
+            query+=" when r.status='complete' then 'Complete'"
+            query+=" when r.status='over_due' then 'Overdue'"
             query+=" end,"
             query+="case"
-            query+=" when rtm.status='not_started' then '#bbbbbb'"
-            query+=" when rtm.status='started' then '#0000ff'"
-            query+=" when rtm.status='complete' then '#00ff00'"
-            query+=" when rtm.status='over_due' then '#ff0000'"
+            query+=" when r.status='not_started' then '#bbbbbb'"
+            query+=" when r.status='started' then '#0000ff'"
+            query+=" when r.status='complete' then '#00ff00'"
+            query+=" when r.status='over_due' then '#ff0000'"
             query+=" end,"
             query+="(select value from config_values where cast(r.requirement_milestone as int)=id),r.requirement_id,(select value from config_values where type='Team' and id=cast(rtm.team_id as int))"
             query+=" from requirement_team_map rtm,requirements r" 
@@ -8759,3 +8680,30 @@ def PostRequirementComment(request,project_id,requirement_id):
     else:
         print "not autorized to comment"
 
+#new Requirement page implementation(08.06.2014)
+def RequirementPage(request,project_id):
+    """
+    TC_Id = request.GET.get('TC_Id', '')
+    if TC_Id != "":
+        return ViewTestCase(TC_Id)
+    else:
+        templ = get_template('CreateNewRequirement.html')
+        variables = Context({ })
+        output = templ.render(variables)
+        return HttpResponse(output)"""
+    #Get the teams for this projects
+    Conn=GetConnection()
+    query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
+    team_info=DB.GetData(Conn,query,False)
+    query="select value from config_values where type='Priority'"
+    priority=DB.GetData(Conn,query,False)
+    query="select value from config_values where type='milestone'"
+    milestone_list=DB.GetData(Conn,query,False)
+    Dict={
+          'team_info':team_info,
+          'priority_list':priority,
+          'milestone_list':milestone_list
+    }
+    return render_to_response("CreateNewRequirement.html",Dict)
+
+        

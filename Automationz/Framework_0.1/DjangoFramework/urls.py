@@ -17,7 +17,6 @@ urlpatterns = patterns('',
     url(r'^Home/$', HomePage),
     url(r'^GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/.*/GetProjectNameForTopBar/$',GetProjectNameForTopBar),
-    url(r'^Home/GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/Contact/$', contact_page),
     url(r'^Home/Contact/URL/(?P<url>.+)/$', contact_page_with_url),
     
@@ -234,14 +233,12 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Get_Projects/$',Get_Projects),
     url(r'^Home/.*/AddTeamtoProject/$',AddTeamtoProject),
     #url(r'^Home/.*/GetTeamInfoToCreateRequirement/$',GetTeamInfoToCreateRequirement),
-    #url(r'^Home/.*/CreateRequirement/$',CreateRequirement),
     url(r'^Home/.*/SmallViewRequirements/$',SmallViewRequirements),
     url(r'^Home/(?P<project_id>[^/]*)/CreateNewRequirement/$',ToNewRequirementPage),
     url(r'^Home/(?P<project_id>[^/]*)/getRequirements/$',getRequirements),
     url(r'^Home/(?P<project_id>[^/]*)/Requirements/(?P<req_id>[^/]*)/$',DetailRequirementView,name='detail_requirement'),
     url(r'^Home/Projects/(?P<project_id>[^/]*)/Requirements/(?P<team_id>[^/]*)/$',TeamWiseRequirementView),
-    url(r'^Home/(?P<project_id>[^/]*)/Requirements/(?P<requirement_id>[^/]*)/post_comment/$',PostRequirementComment),
-    
+    url(r'^Home/(?P<project_id>[^/]*)/Requirements/(?P<requirement_id>[^/]*)/post_comment/$',PostRequirementComment),    
     url(r'^Home/Project/(?P<project_id>[^/]*)/comment_post/$',FileUpload),
     url(r'^Home/Project/(?P<project_id>[^/]*)/comments/$',commentView,name='comment_view'),
     
@@ -251,7 +248,10 @@ urlpatterns = patterns('',
     
     #new requirement page implemenation ulrls
     
-	url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
+    url(r'^Home/(?P<project_id>[^/]*)/CreateRequirement/[^/]*$',RequirementPage),
+    url(r'^Home/.*/SubmitCreateRequirement/$',CreateRequirement),
+    
+    url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )
 

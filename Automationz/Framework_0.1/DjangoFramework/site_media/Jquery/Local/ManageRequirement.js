@@ -33,46 +33,49 @@ $(document).ready(function(){
             }
         },
 
-        /*"contextmenu" : {
+        "contextmenu" : {
+            "select_node":true,
             "items" : function(node) {
                 return {
                     "Create" : {
                         "separator_before": false,
                         "separator_after": false,
-                        "label": "Create Section",
+                        "label": "Create Sub Requirement",
                         "icon": "fa fa-plus",
                         "action": function(obj) {
-                            try {
+                            /*try {
                                 var x = node.text.split('<span style="display:none;">');
                                 var y = x[1].split("</span>");
                                 createNode(y[0] + ".");
                             } catch (TypeError) {
                                 createNode(node.text + ".");
-                            }
+                            }*/
+                            //create a child requirement under this requirement
+                            window.location=('/Home/'+ $.session.get('project_id')+'/CreateRequirement/'+ node.text);
                         }
                     },
-                    "Rename" : {
+                    "Edit" : {
                         "separator_before": false,
                         "separator_after": false,
-                        "label": "Rename Section",
+                        "label": "Edit",
                         "icon": "fa fa-edit",
                         "action": function(obj) {
-                            renameNode(node, node.id);
+
                         }
                     },
                     "Delete" : {
                         "separator_before": true,
                         "separator_after": false,
                         "icon": "fa fa-trash-o",
-                        "label": "Delete Section",
+                        "label": "Delete Requirement",
                         "action": function(obj) {
-                            deleteNode(node);
+
                         }
                     }
                 }
             }
         },
-
+        /*
         "checkbox" : {
             "keep_selected_style": false
         },*/
@@ -81,7 +84,7 @@ $(document).ready(function(){
     };
     //$('#tree').jstree(config_object);
     $("#tree").jstree(config_object)
-        .on("changed.jstree", function(e, data) {
+        .on("select_node.jstree", function(e, data) {
             var selected_sections = JSON.stringify(data.selected);
             $(this).jstree(true).open_node(data.selected);
             $.get('SmallViewRequirements',{
@@ -141,14 +144,12 @@ $(document).ready(function(){
     });
 
 function PopulateGeneralInfo(){
-    //Setting the project code dynamically
     $('#project_code').html($.session.get('project_id'));
-
-    //setting the newRequirementLocation dynamically
-   // var newRequirementLocation=("/Home/"+ $.session.get('project_id')+"/CreateNewRequirement/");
-    //$('#create_new_requirement').attr('href',newRequirementLocation);
-
     $('#project_code').click(function(){
         window.location= ("/Home/Project/"+ $.session.get('project_id'));
+    });
+    $('#create_new_requirement').click(function(event){
+        event.preventDefault();
+        window.location=("/Home/"+ $.session.get('project_id')+"/CreateRequirement/");
     });
 }
