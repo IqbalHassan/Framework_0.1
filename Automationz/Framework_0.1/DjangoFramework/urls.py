@@ -14,7 +14,7 @@ site_media = os.path.join(os.path.dirname(__file__), 'site_media')
 urlpatterns = patterns('',
     # Home Page
 	url(r'^$', HomePage),
-    url(r'^Home/$', HomePage),
+    url(r'^Home/User/$', HomePage),
     url(r'^GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/.*/GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/Contact/$', contact_page),

@@ -45,7 +45,8 @@ $(document).ready(function() {
 							window.location.href = path_to_redirect;
 						}, 1500);
 					}
-                    var user = $.session.get('fullname');
+
+                    /*var user = $.session.get('fullname');
                     $.get("GetAssignedTests",{user : user},function(data)
                     {
                         $.session.set('testing',data['TableData'].length);
@@ -54,7 +55,7 @@ $(document).ready(function() {
                     $.get("GetRequirements",{user : user},function(data)
                     {
                         $.session.set('requires',data['TableData'].length);
-                    });
+                    });*/
 				}
 		});
 	});
