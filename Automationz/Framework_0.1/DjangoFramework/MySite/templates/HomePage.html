@@ -1,719 +1,718 @@
-
 {% extends "BaseTemplate.html" %}
 
 {% block title%} Automation Home {% endblock %}
-  
+
 {% block content %}
 
 
-	<div id="about_us">
+<div id="about_us">
 
 
-    <!--link href="http://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet" /-->
+<!--link href="http://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet" /-->
 
-	<article>
+<article>
 
-    <!--<h1 class="Text" style="margin: 24%; text-align: center; font-weight: normal; line-height: 1.1;font-size: 38px;font-family: Satisfy, cursive; color: red">Under Construction!</h1>-->
+<!--<h1 class="Text" style="margin: 24%; text-align: center; font-weight: normal; line-height: 1.1;font-size: 38px;font-family: Satisfy, cursive; color: red">Under Construction!</h1>-->
 
 
-    <div id="wrapper">
+<div id="wrapper">
 
-    <!-- Sidebar -->
-    <!--nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <!--div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="index.html">SB Admin</a>
-        </div>
+<!-- Sidebar -->
+<!--nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+<!--div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="index.html">SB Admin</a>
+</div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <!--div class="collapse navbar-collapse navbar-ex1-collapse">
-            <ul class="nav navbar-nav side-nav">
-                <li class="active"><a href="index.html"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                <li><a href="charts.html"><i class="fa fa-bar-chart-o"></i> Charts</a></li>
-                <li><a href="tables.html"><i class="fa fa-table"></i> Tables</a></li>
-                <li><a href="forms.html"><i class="fa fa-edit"></i> Forms</a></li>
-                <li><a href="typography.html"><i class="fa fa-font"></i> Typography</a></li>
-                <li><a href="bootstrap-elements.html"><i class="fa fa-desktop"></i> Bootstrap Elements</a></li>
-                <li><a href="bootstrap-grid.html"><i class="fa fa-wrench"></i> Bootstrap Grid</a></li>
-                <li><a href="blank-page.html"><i class="fa fa-file"></i> Blank Page</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-caret-square-o-down"></i> Dropdown <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Dropdown Item</a></li>
-                        <li><a href="#">Another Item</a></li>
-                        <li><a href="#">Third Item</a></li>
-                        <li><a href="#">Last Item</a></li>
-                    </ul>
-                </li>
+<!-- Collect the nav links, forms, and other content for toggling -->
+<!--div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav side-nav">
+        <li class="active"><a href="index.html"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="charts.html"><i class="fa fa-bar-chart-o"></i> Charts</a></li>
+        <li><a href="tables.html"><i class="fa fa-table"></i> Tables</a></li>
+        <li><a href="forms.html"><i class="fa fa-edit"></i> Forms</a></li>
+        <li><a href="typography.html"><i class="fa fa-font"></i> Typography</a></li>
+        <li><a href="bootstrap-elements.html"><i class="fa fa-desktop"></i> Bootstrap Elements</a></li>
+        <li><a href="bootstrap-grid.html"><i class="fa fa-wrench"></i> Bootstrap Grid</a></li>
+        <li><a href="blank-page.html"><i class="fa fa-file"></i> Blank Page</a></li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-caret-square-o-down"></i> Dropdown <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="#">Dropdown Item</a></li>
+                <li><a href="#">Another Item</a></li>
+                <li><a href="#">Third Item</a></li>
+                <li><a href="#">Last Item</a></li>
             </ul>
+        </li>
+    </ul>
 
-            <!--ul class="nav navbar-nav navbar-right navbar-user">
-                <li class="dropdown messages-dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> Messages <span class="badge">7</span> <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li class="dropdown-header">7 New Messages</li>
-                        <li class="message-preview">
-                            <a href="#">
-                                <span class="avatar"><img src="http://placehold.it/50x50"></span>
-                                <span class="name">John Smith:</span>
-                                <span class="message">Hey there, I wanted to ask you something...</span>
-                                <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
-                            </a>
-                        </li>
-                        <li class="divider"></li>
-                        <li class="message-preview">
-                            <a href="#">
-                                <span class="avatar"><img src="http://placehold.it/50x50"></span>
-                                <span class="name">John Smith:</span>
-                                <span class="message">Hey there, I wanted to ask you something...</span>
-                                <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
-                            </a>
-                        </li>
-                        <li class="divider"></li>
-                        <li class="message-preview">
-                            <a href="#">
-                                <span class="avatar"><img src="http://placehold.it/50x50"></span>
-                                <span class="name">John Smith:</span>
-                                <span class="message">Hey there, I wanted to ask you something...</span>
-                                <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
-                            </a>
-                        </li>
-                        <li class="divider"></li>
-                        <li><a href="#">View Inbox <span class="badge">7</span></a></li>
-                    </ul>
+    <!--ul class="nav navbar-nav navbar-right navbar-user">
+        <li class="dropdown messages-dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> Messages <span class="badge">7</span> <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li class="dropdown-header">7 New Messages</li>
+                <li class="message-preview">
+                    <a href="#">
+                        <span class="avatar"><img src="http://placehold.it/50x50"></span>
+                        <span class="name">John Smith:</span>
+                        <span class="message">Hey there, I wanted to ask you something...</span>
+                        <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
+                    </a>
                 </li>
-                <li class="dropdown alerts-dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> Alerts <span class="badge">3</span> <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Default <span class="label label-default">Default</span></a></li>
-                        <li><a href="#">Primary <span class="label label-primary">Primary</span></a></li>
-                        <li><a href="#">Success <span class="label label-success">Success</span></a></li>
-                        <li><a href="#">Info <span class="label label-info">Info</span></a></li>
-                        <li><a href="#">Warning <span class="label label-warning">Warning</span></a></li>
-                        <li><a href="#">Danger <span class="label label-danger">Danger</span></a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">View All</a></li>
-                    </ul>
+                <li class="divider"></li>
+                <li class="message-preview">
+                    <a href="#">
+                        <span class="avatar"><img src="http://placehold.it/50x50"></span>
+                        <span class="name">John Smith:</span>
+                        <span class="message">Hey there, I wanted to ask you something...</span>
+                        <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
+                    </a>
                 </li>
-                <li class="dropdown user-dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> John Smith <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#"><i class="fa fa-user"></i> Profile</a></li>
-                        <li><a href="#"><i class="fa fa-envelope"></i> Inbox <span class="badge">7</span></a></li>
-                        <li><a href="#"><i class="fa fa-gear"></i> Settings</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#"><i class="fa fa-power-off"></i> Log Out</a></li>
-                    </ul>
+                <li class="divider"></li>
+                <li class="message-preview">
+                    <a href="#">
+                        <span class="avatar"><img src="http://placehold.it/50x50"></span>
+                        <span class="name">John Smith:</span>
+                        <span class="message">Hey there, I wanted to ask you something...</span>
+                        <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
+                    </a>
                 </li>
-            </ul-->
-        <!--/div><!-- /.navbar-collapse -->
-    <!--/nav-->
+                <li class="divider"></li>
+                <li><a href="#">View Inbox <span class="badge">7</span></a></li>
+            </ul>
+        </li>
+        <li class="dropdown alerts-dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> Alerts <span class="badge">3</span> <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="#">Default <span class="label label-default">Default</span></a></li>
+                <li><a href="#">Primary <span class="label label-primary">Primary</span></a></li>
+                <li><a href="#">Success <span class="label label-success">Success</span></a></li>
+                <li><a href="#">Info <span class="label label-info">Info</span></a></li>
+                <li><a href="#">Warning <span class="label label-warning">Warning</span></a></li>
+                <li><a href="#">Danger <span class="label label-danger">Danger</span></a></li>
+                <li class="divider"></li>
+                <li><a href="#">View All</a></li>
+            </ul>
+        </li>
+        <li class="dropdown user-dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> John Smith <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="#"><i class="fa fa-user"></i> Profile</a></li>
+                <li><a href="#"><i class="fa fa-envelope"></i> Inbox <span class="badge">7</span></a></li>
+                <li><a href="#"><i class="fa fa-gear"></i> Settings</a></li>
+                <li class="divider"></li>
+                <li><a href="#"><i class="fa fa-power-off"></i> Log Out</a></li>
+            </ul>
+        </li>
+    </ul-->
+<!--/div><!-- /.navbar-collapse -->
+<!--/nav-->
 
-    <div id="page-wrapper">
+<div id="page-wrapper">
 
-    <div class="row">
-        <div class="col-lg-12">
-            <h1>Dashboard <small>Statistics Overview</small></h1>
-            <ol class="breadcrumb">
-                <li class="active"><i class="fa fa-dashboard"></i> Dashboard</li>
-            </ol>
-            <div class="alert alert-success alert-dismissable">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                Welcome <a class="logged_user"></a> to Automation Solutionz Framework by <a class="alert-link" href="http://www.automationsolutionz.com/">Automation Solutionz</a>     </div>
-        </div>
-    </div><!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <h1>Dashboard <small>Statistics Overview</small></h1>
+        <ol class="breadcrumb">
+            <li class="active"><i class="fa fa-dashboard"></i> Dashboard</li>
+        </ol>
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            Welcome <a class="logged_user"></a> to Automation Solutionz Framework by <a class="alert-link" href="http://www.automationsolutionz.com/">Automation Solutionz</a>     </div>
+    </div>
+</div><!-- /.row -->
 
-    <div class="row">
-        <div class="col-lg-3">
-            <div class="panel panel-info">
-                <div class="panel-heading">
+<div class="row">
+    <div class="col-lg-3">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <i class="fa fa-comments fa-5x"></i>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <p class="announcement-heading test_count"></p>
+                        <p class="announcement-text">Testings</p>
+                    </div>
+                </div>
+            </div>
+            <a href="#">
+                <div class="panel-footer announcement-bottom">
                     <div class="row">
                         <div class="col-xs-6">
-                            <i class="fa fa-comments fa-5x"></i>
+                            Assigned Tests
                         </div>
                         <div class="col-xs-6 text-right">
-                            <p class="announcement-heading test_count"></p>
-                            <p class="announcement-text">Testings</p>
+                            <i class="fa fa-arrow-circle-right"></i>
                         </div>
                     </div>
                 </div>
-                <a href="#">
-                    <div class="panel-footer announcement-bottom">
-                        <div class="row">
-                            <div class="col-xs-6">
-                                Assigned Tests
-                            </div>
-                            <div class="col-xs-6 text-right">
-                                <i class="fa fa-arrow-circle-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            </a>
         </div>
-        <div class="col-lg-3">
-            <div class="panel panel-warning">
-                <div class="panel-heading">
+    </div>
+    <div class="col-lg-3">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <i class="fa fa-check fa-5x"></i>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <p class="announcement-heading task_count"></p>
+                        <p class="announcement-text">Tasks</p>
+                    </div>
+                </div>
+            </div>
+            <a href="#">
+                <div class="panel-footer announcement-bottom">
                     <div class="row">
                         <div class="col-xs-6">
-                            <i class="fa fa-check fa-5x"></i>
+                            Assigned Tasks
                         </div>
                         <div class="col-xs-6 text-right">
-                            <p class="announcement-heading task_count"></p>
-                            <p class="announcement-text">Tasks</p>
+                            <i class="fa fa-arrow-circle-right"></i>
                         </div>
                     </div>
                 </div>
-                <a href="#">
-                    <div class="panel-footer announcement-bottom">
-                        <div class="row">
-                            <div class="col-xs-6">
-                                Assigned Tasks
-                            </div>
-                            <div class="col-xs-6 text-right">
-                                <i class="fa fa-arrow-circle-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            </a>
         </div>
-        <!-- Modal HTML embedded directly into document -->
-        <!--div class="modal" id="task_prompt" style="display:none;">
-        </div-->
-        <div class="col-lg-3">
-            <div class="panel panel-danger">
-                <div class="panel-heading">
+    </div>
+    <!-- Modal HTML embedded directly into document -->
+    <!--div class="modal" id="task_prompt" style="display:none;">
+    </div-->
+    <div class="col-lg-3">
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <i class="fa fa-tasks fa-5x"></i>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <p class="announcement-heading bug_count"></p>
+                        <p class="announcement-text">Bugs</p>
+                    </div>
+                </div>
+            </div>
+            <a href="#">
+                <div class="panel-footer announcement-bottom">
                     <div class="row">
                         <div class="col-xs-6">
-                            <i class="fa fa-tasks fa-5x"></i>
+                            Fix Issues
                         </div>
                         <div class="col-xs-6 text-right">
-                            <p class="announcement-heading bug_count"></p>
-                            <p class="announcement-text">Bugs</p>
+                            <i class="fa fa-arrow-circle-right"></i>
                         </div>
                     </div>
                 </div>
-                <a href="#">
-                    <div class="panel-footer announcement-bottom">
-                        <div class="row">
-                            <div class="col-xs-6">
-                                Fix Issues
-                            </div>
-                            <div class="col-xs-6 text-right">
-                                <i class="fa fa-arrow-circle-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            </a>
         </div>
-        <div class="col-lg-3">
-            <div class="panel panel-success">
-                <div class="panel-heading">
+    </div>
+    <div class="col-lg-3">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <i class="fa fa-comments fa-5x"></i>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <p class="announcement-heading require_count"></p>
+                        <p class="announcement-text">Requirements</p>
+                    </div>
+                </div>
+            </div>
+            <a href="#">
+                <div class="panel-footer announcement-bottom">
                     <div class="row">
                         <div class="col-xs-6">
-                            <i class="fa fa-comments fa-5x"></i>
+                            Complete Orders
                         </div>
                         <div class="col-xs-6 text-right">
-                            <p class="announcement-heading require_count"></p>
-                            <p class="announcement-text">Requirements</p>
+                            <i class="fa fa-arrow-circle-right"></i>
                         </div>
                     </div>
                 </div>
-                <a href="#">
-                    <div class="panel-footer announcement-bottom">
-                        <div class="row">
-                            <div class="col-xs-6">
-                                Complete Orders
-                            </div>
-                            <div class="col-xs-6 text-right">
-                                <i class="fa fa-arrow-circle-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+            </a>
+        </div>
+    </div>
+</div><!-- /.row -->
+
+<!--div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> Traffic Statistics: October 1, 2013 - October 31, 2013</h3>
+            </div>
+            <div class="panel-body">
+                <div id="morris-chart-area"></div>
             </div>
         </div>
-    </div><!-- /.row -->
+    </div>
+</div><!-- /.row -->
 
-    <!--div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> Traffic Statistics: October 1, 2013 - October 31, 2013</h3>
-                </div>
-                <div class="panel-body">
-                    <div id="morris-chart-area"></div>
-                </div>
+<div class="row">
+<!--div class="col-lg-4">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i> Traffic Sources: October 1, 2013 - October 31, 2013</h3>
+        </div>
+        <div class="panel-body">
+            <div id="morris-chart-donut"></div>
+            <div class="text-right">
+                <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
-    </div><!-- /.row -->
+    </div>
+</div-->
+<div class="col-lg-4">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-clock-o"></i> Recent Activity</h3>
+        </div>
+        <div class="panel-body">
 
-    <div class="row">
-        <!--div class="col-lg-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i> Traffic Sources: October 1, 2013 - October 31, 2013</h3>
+            <ul class="rslides">
+                <li><div class="list-group">
+                    <a href="#" class="list-group-item">
+                        <span class="badge">just now</span>
+                        <i class="fa fa-calendar"></i> Calendar updated
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">4 minutes ago</span>
+                        <i class="fa fa-comment"></i> Commented on a post
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">23 minutes ago</span>
+                        <i class="fa fa-truck"></i> Order 392 shipped
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">46 minutes ago</span>
+                        <i class="fa fa-money"></i> Invoice 653 has been paid
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">1 hour ago</span>
+                        <i class="fa fa-user"></i> A new user has been added
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">2 hours ago</span>
+                        <i class="fa fa-check"></i> Completed task: "pick up dry cleaning"
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">yesterday</span>
+                        <i class="fa fa-globe"></i> Saved the world
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">two days ago</span>
+                        <i class="fa fa-check"></i> Completed task: "fix error on sales page"
+                    </a>
                 </div>
-                <div class="panel-body">
-                    <div id="morris-chart-donut"></div>
-                    <div class="text-right">
-                        <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div-->
-        <div class="col-lg-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-clock-o"></i> Recent Activity</h3>
-                </div>
-                <div class="panel-body">
+                    <p class="caption">Bug</p></li>
+                <li><div class="list-group">
 
-                    <ul class="rslides">
-                        <li><div class="list-group">
-                            <a href="#" class="list-group-item">
-                                <span class="badge">just now</span>
-                                <i class="fa fa-calendar"></i> Calendar updated
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">4 minutes ago</span>
-                                <i class="fa fa-comment"></i> Commented on a post
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">23 minutes ago</span>
-                                <i class="fa fa-truck"></i> Order 392 shipped
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">46 minutes ago</span>
-                                <i class="fa fa-money"></i> Invoice 653 has been paid
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">1 hour ago</span>
-                                <i class="fa fa-user"></i> A new user has been added
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">2 hours ago</span>
-                                <i class="fa fa-check"></i> Completed task: "pick up dry cleaning"
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">yesterday</span>
-                                <i class="fa fa-globe"></i> Saved the world
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">two days ago</span>
-                                <i class="fa fa-check"></i> Completed task: "fix error on sales page"
-                            </a>
-                        </div>
-                        <p class="caption">Bug</p></li>
-                        <li><div class="list-group">
-
-                            <a href="#" class="list-group-item">
-                                <span class="badge">46 minutes ago</span>
-                                <i class="fa fa-money"></i> Invoice 653 has been paid
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">1 hour ago</span>
-                                <i class="fa fa-user"></i> A new user has been added
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">2 hours ago</span>
-                                <i class="fa fa-check"></i> Completed task: "pick up dry cleaning"
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">yesterday</span>
-                                <i class="fa fa-globe"></i> Saved the world
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">two days ago</span>
-                                <i class="fa fa-check"></i> Completed task: "fix error on sales page"
-                            </a>
-                        </div>
-                        <p class="caption">Test Case Creation</p></li>
-                        <li><div class="list-group">
-                            <a href="#" class="list-group-item">
-                                <span class="badge">just now</span>
-                                <i class="fa fa-calendar"></i> Calendar updated
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">4 minutes ago</span>
-                                <i class="fa fa-comment"></i> Commented on a post
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">23 minutes ago</span>
-                                <i class="fa fa-truck"></i> Order 392 shipped
-                            </a>
-
-                            <a href="#" class="list-group-item">
-                                <span class="badge">yesterday</span>
-                                <i class="fa fa-globe"></i> Saved the world
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">two days ago</span>
-                                <i class="fa fa-check"></i> Completed task: "fix error on sales page"
-                            </a>
-                        </div>
-                        <p class="caption">Bug Creation</p></li>
-                        <li><div class="list-group">
-                            <a href="#" class="list-group-item">
-                                <span class="badge">just now</span>
-                                <i class="fa fa-calendar"></i> Calendar updated
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">4 minutes ago</span>
-                                <i class="fa fa-comment"></i> Commented on a post
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">23 minutes ago</span>
-                                <i class="fa fa-truck"></i> Order 392 shipped
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">46 minutes ago</span>
-                                <i class="fa fa-money"></i> Invoice 653 has been paid
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <span class="badge">1 hour ago</span>
-                                <i class="fa fa-user"></i> A new user has been added
-                            </a>
-                        </div>
-                        <p class="caption">Requirement Creation</p></li>
-                    </ul>
-                    <div class="text-right">
-                        <a href="#">View All Activity <i class="fa fa-arrow-circle-right"></i></a>
-                    </div>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">46 minutes ago</span>
+                        <i class="fa fa-money"></i> Invoice 653 has been paid
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">1 hour ago</span>
+                        <i class="fa fa-user"></i> A new user has been added
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">2 hours ago</span>
+                        <i class="fa fa-check"></i> Completed task: "pick up dry cleaning"
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">yesterday</span>
+                        <i class="fa fa-globe"></i> Saved the world
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">two days ago</span>
+                        <i class="fa fa-check"></i> Completed task: "fix error on sales page"
+                    </a>
                 </div>
+                    <p class="caption">Test Case Creation</p></li>
+                <li><div class="list-group">
+                    <a href="#" class="list-group-item">
+                        <span class="badge">just now</span>
+                        <i class="fa fa-calendar"></i> Calendar updated
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">4 minutes ago</span>
+                        <i class="fa fa-comment"></i> Commented on a post
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">23 minutes ago</span>
+                        <i class="fa fa-truck"></i> Order 392 shipped
+                    </a>
+
+                    <a href="#" class="list-group-item">
+                        <span class="badge">yesterday</span>
+                        <i class="fa fa-globe"></i> Saved the world
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">two days ago</span>
+                        <i class="fa fa-check"></i> Completed task: "fix error on sales page"
+                    </a>
+                </div>
+                    <p class="caption">Bug Creation</p></li>
+                <li><div class="list-group">
+                    <a href="#" class="list-group-item">
+                        <span class="badge">just now</span>
+                        <i class="fa fa-calendar"></i> Calendar updated
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">4 minutes ago</span>
+                        <i class="fa fa-comment"></i> Commented on a post
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">23 minutes ago</span>
+                        <i class="fa fa-truck"></i> Order 392 shipped
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">46 minutes ago</span>
+                        <i class="fa fa-money"></i> Invoice 653 has been paid
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span class="badge">1 hour ago</span>
+                        <i class="fa fa-user"></i> A new user has been added
+                    </a>
+                </div>
+                    <p class="caption">Requirement Creation</p></li>
+            </ul>
+            <div class="text-right">
+                <a href="#">View All Activity <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
-        <div class="col-lg-8">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-money"></i> Today's Activity</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-striped tablesorter">
-                            <thead>
-                            <tr>
-                                <th>Executed Cases # <i class="fa fa-sort"></i></th>
-                                <th>Passed Cases <i class="fa fa-sort"></i></th>
-                                <th>Failed Cases <i class="fa fa-sort"></i></th>
-                                <th>Blocked Cases <i class="fa fa-sort"></i></th>
-                                <th>Submitted Cases <i class="fa fa-sort"></i></th>
-                                <th>In-Progress Cases <i class="fa fa-sort"></i></th>
-                                <th>Skipped Cases <i class="fa fa-sort"></i></th>
-                                <th>Not Run Cases <i class="fa fa-sort"></i></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>3326</td>
-                                <td>10/21/2013</td>
-                                <td>3:29 PM</td>
-                                <td>$321.33</td>
-                                <td>3325</td>
-                                <td>10/21/2013</td>
-                                <td>3:20 PM</td>
-                                <td>$234.34</td>
-                            </tr>
-                            <tr>
-                                <td>3325</td>
-                                <td>10/21/2013</td>
-                                <td>3:20 PM</td>
-                                <td>$234.34</td>
-                                <td>3325</td>
-                                <td>10/21/2013</td>
-                                <td>3:20 PM</td>
-                                <td>$234.34</td>
-                            </tr>
-                            <tr>
-                                <td>3324</td>
-                                <td>10/21/2013</td>
-                                <td>3:03 PM</td>
-                                <td>$724.17</td>
-                                <td>3325</td>
-                                <td>10/21/2013</td>
-                                <td>3:20 PM</td>
-                                <td>$234.34</td>
-                            </tr>
-                            <tr>
-                                <td>3323</td>
-                                <td>10/21/2013</td>
-                                <td>3:00 PM</td>
-                                <td>$23.71</td>
-                                <td>3325</td>
-                                <td>10/21/2013</td>
-                                <td>3:20 PM</td>
-                                <td>$234.34</td>
-                            </tr>
-                            <tr>
-                                <td>3322</td>
-                                <td>10/21/2013</td>
-                                <td>2:49 PM</td>
-                                <td>$8345.23</td>
-                                <td>3325</td>
-                                <td>10/21/2013</td>
-                                <td>3:20 PM</td>
-                                <td>$234.34</td>
-                            </tr>
-                            <tr>
-                                <td>3321</td>
-                                <td>10/21/2013</td>
-                                <td>2:23 PM</td>
-                                <td>$245.12</td>
-                                <td>3325</td>
-                                <td>10/21/2013</td>
-                                <td>3:20 PM</td>
-                                <td>$234.34</td>
-                            </tr>
-                            <tr>
-                                <td>3320</td>
-                                <td>10/21/2013</td>
-                                <td>2:15 PM</td>
-                                <td>$5663.54</td>
-                                <td>3325</td>
-                                <td>10/21/2013</td>
-                                <td>3:20 PM</td>
-                                <td>$234.34</td>
-                            </tr>
-                            <tr>
-                                <td>3319</td>
-                                <td>10/21/2013</td>
-                                <td>2:13 PM</td>
-                                <td>$943.45</td>
-                                <td>3325</td>
-                                <td>10/21/2013</td>
-                                <td>3:20 PM</td>
-                                <td>$234.34</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="text-right">
-                        <a href="#">View All Transactions <i class="fa fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
+    </div>
+</div>
+<div class="col-lg-8">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-money"></i> Today's Activity</h3>
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped tablesorter">
+                    <thead>
+                    <tr>
+                        <th>Executed Cases # <i class="fa fa-sort"></i></th>
+                        <th>Passed Cases <i class="fa fa-sort"></i></th>
+                        <th>Failed Cases <i class="fa fa-sort"></i></th>
+                        <th>Blocked Cases <i class="fa fa-sort"></i></th>
+                        <th>Submitted Cases <i class="fa fa-sort"></i></th>
+                        <th>In-Progress Cases <i class="fa fa-sort"></i></th>
+                        <th>Skipped Cases <i class="fa fa-sort"></i></th>
+                        <th>Not Run Cases <i class="fa fa-sort"></i></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>3326</td>
+                        <td>10/21/2013</td>
+                        <td>3:29 PM</td>
+                        <td>$321.33</td>
+                        <td>3325</td>
+                        <td>10/21/2013</td>
+                        <td>3:20 PM</td>
+                        <td>$234.34</td>
+                    </tr>
+                    <tr>
+                        <td>3325</td>
+                        <td>10/21/2013</td>
+                        <td>3:20 PM</td>
+                        <td>$234.34</td>
+                        <td>3325</td>
+                        <td>10/21/2013</td>
+                        <td>3:20 PM</td>
+                        <td>$234.34</td>
+                    </tr>
+                    <tr>
+                        <td>3324</td>
+                        <td>10/21/2013</td>
+                        <td>3:03 PM</td>
+                        <td>$724.17</td>
+                        <td>3325</td>
+                        <td>10/21/2013</td>
+                        <td>3:20 PM</td>
+                        <td>$234.34</td>
+                    </tr>
+                    <tr>
+                        <td>3323</td>
+                        <td>10/21/2013</td>
+                        <td>3:00 PM</td>
+                        <td>$23.71</td>
+                        <td>3325</td>
+                        <td>10/21/2013</td>
+                        <td>3:20 PM</td>
+                        <td>$234.34</td>
+                    </tr>
+                    <tr>
+                        <td>3322</td>
+                        <td>10/21/2013</td>
+                        <td>2:49 PM</td>
+                        <td>$8345.23</td>
+                        <td>3325</td>
+                        <td>10/21/2013</td>
+                        <td>3:20 PM</td>
+                        <td>$234.34</td>
+                    </tr>
+                    <tr>
+                        <td>3321</td>
+                        <td>10/21/2013</td>
+                        <td>2:23 PM</td>
+                        <td>$245.12</td>
+                        <td>3325</td>
+                        <td>10/21/2013</td>
+                        <td>3:20 PM</td>
+                        <td>$234.34</td>
+                    </tr>
+                    <tr>
+                        <td>3320</td>
+                        <td>10/21/2013</td>
+                        <td>2:15 PM</td>
+                        <td>$5663.54</td>
+                        <td>3325</td>
+                        <td>10/21/2013</td>
+                        <td>3:20 PM</td>
+                        <td>$234.34</td>
+                    </tr>
+                    <tr>
+                        <td>3319</td>
+                        <td>10/21/2013</td>
+                        <td>2:13 PM</td>
+                        <td>$943.45</td>
+                        <td>3325</td>
+                        <td>10/21/2013</td>
+                        <td>3:20 PM</td>
+                        <td>$234.34</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-right">
+                <a href="#">View All Transactions <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
-    </div><!-- /.row -->
+    </div>
+</div>
+</div><!-- /.row -->
 
-    </div><!-- /#page-wrapper -->
+</div><!-- /#page-wrapper -->
 
-    </div><!-- /#wrapper -->
+</div><!-- /#wrapper -->
 
 
-    <link href="/site_media/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <!--link href="/site_media/bootstrap/css/sb-admin.css" rel="stylesheet"-->
+<link href="/site_media/bootstrap/css/bootstrap.css" rel="stylesheet">
+<!--link href="/site_media/bootstrap/css/sb-admin.css" rel="stylesheet"-->
 
-    <script src="/site_media/Jquery/Local/HomePage.js"></script>
-    <script src="/site_media/bootstrap/js/bootstrap.js"></script>
-    <script src="/site_media/bootstrap/js/raphael-min.js"></script>
-    <script src="/site_media/bootstrap/js/morris-0.4.3.min.js"></script>
-    <script src="/site_media/bootstrap/js/chart-data-morris.js"></script>
-    <script>
-        /*! http://responsiveslides.com v1.54 by @viljamis */
-        (function(c,I,B){c.fn.responsiveSlides=function(l){var a=c.extend({auto:!0,speed:500,timeout:4E3,pager:!1,nav:!1,random:!1,pause:!1,pauseControls:!0,prevText:"Previous",nextText:"Next",maxwidth:"",navContainer:"",manualControls:"",namespace:"rslides",before:c.noop,after:c.noop},l);return this.each(function(){B++;var f=c(this),s,r,t,m,p,q,n=0,e=f.children(),C=e.size(),h=parseFloat(a.speed),D=parseFloat(a.timeout),u=parseFloat(a.maxwidth),g=a.namespace,d=g+B,E=g+"_nav "+d+"_nav",v=g+"_here",j=d+"_on",
-                w=d+"_s",k=c("<ul class='"+g+"_tabs "+d+"_tabs' />"),x={"float":"left",position:"relative",opacity:1,zIndex:2},y={"float":"none",position:"absolute",opacity:0,zIndex:1},F=function(){var b=(document.body||document.documentElement).style,a="transition";if("string"===typeof b[a])return!0;s=["Moz","Webkit","Khtml","O","ms"];var a=a.charAt(0).toUpperCase()+a.substr(1),c;for(c=0;c<s.length;c++)if("string"===typeof b[s[c]+a])return!0;return!1}(),z=function(b){a.before(b);F?(e.removeClass(j).css(y).eq(b).addClass(j).css(x),
-                        n=b,setTimeout(function(){a.after(b)},h)):e.stop().fadeOut(h,function(){c(this).removeClass(j).css(y).css("opacity",1)}).eq(b).fadeIn(h,function(){c(this).addClass(j).css(x);a.after(b);n=b})};a.random&&(e.sort(function(){return Math.round(Math.random())-0.5}),f.empty().append(e));e.each(function(a){this.id=w+a});f.addClass(g+" "+d);l&&l.maxwidth&&f.css("max-width",u);e.hide().css(y).eq(0).addClass(j).css(x).show();F&&e.show().css({"-webkit-transition":"opacity "+h+"ms ease-in-out","-moz-transition":"opacity "+
-                h+"ms ease-in-out","-o-transition":"opacity "+h+"ms ease-in-out",transition:"opacity "+h+"ms ease-in-out"});if(1<e.size()){if(D<h+100)return;if(a.pager&&!a.manualControls){var A=[];e.each(function(a){a+=1;A+="<li><a href='#' class='"+w+a+"'>"+a+"</a></li>"});k.append(A);l.navContainer?c(a.navContainer).append(k):f.after(k)}a.manualControls&&(k=c(a.manualControls),k.addClass(g+"_tabs "+d+"_tabs"));(a.pager||a.manualControls)&&k.find("li").each(function(a){c(this).addClass(w+(a+1))});if(a.pager||a.manualControls)q=
-                k.find("a"),r=function(a){q.closest("li").removeClass(v).eq(a).addClass(v)};a.auto&&(t=function(){p=setInterval(function(){e.stop(!0,!0);var b=n+1<C?n+1:0;(a.pager||a.manualControls)&&r(b);z(b)},D)},t());m=function(){a.auto&&(clearInterval(p),t())};a.pause&&f.hover(function(){clearInterval(p)},function(){m()});if(a.pager||a.manualControls)q.bind("click",function(b){b.preventDefault();a.pauseControls||m();b=q.index(this);n===b||c("."+j).queue("fx").length||(r(b),z(b))}).eq(0).closest("li").addClass(v),
-                a.pauseControls&&q.hover(function(){clearInterval(p)},function(){m()});if(a.nav){g="<a href='#' class='"+E+" prev'>"+a.prevText+"</a><a href='#' class='"+E+" next'>"+a.nextText+"</a>";l.navContainer?c(a.navContainer).append(g):f.after(g);var d=c("."+d+"_nav"),G=d.filter(".prev");d.bind("click",function(b){b.preventDefault();b=c("."+j);if(!b.queue("fx").length){var d=e.index(b);b=d-1;d=d+1<C?n+1:0;z(c(this)[0]===G[0]?b:d);if(a.pager||a.manualControls)r(c(this)[0]===G[0]?b:d);a.pauseControls||m()}});
-            a.pauseControls&&d.hover(function(){clearInterval(p)},function(){m()})}}if("undefined"===typeof document.body.style.maxWidth&&l.maxwidth){var H=function(){f.css("width","100%");f.width()>u&&f.css("width",u)};H();c(I).bind("resize",function(){H()})}})}})(jQuery,this,0);
+<script src="/site_media/Jquery/Local/HomePage.js"></script>
+<script src="/site_media/bootstrap/js/bootstrap.js"></script>
+<script src="/site_media/bootstrap/js/raphael-min.js"></script>
+<script src="/site_media/bootstrap/js/morris-0.4.3.min.js"></script>
+<script src="/site_media/bootstrap/js/chart-data-morris.js"></script>
+<script>
+    /*! http://responsiveslides.com v1.54 by @viljamis */
+    (function(c,I,B){c.fn.responsiveSlides=function(l){var a=c.extend({auto:!0,speed:500,timeout:4E3,pager:!1,nav:!1,random:!1,pause:!1,pauseControls:!0,prevText:"Previous",nextText:"Next",maxwidth:"",navContainer:"",manualControls:"",namespace:"rslides",before:c.noop,after:c.noop},l);return this.each(function(){B++;var f=c(this),s,r,t,m,p,q,n=0,e=f.children(),C=e.size(),h=parseFloat(a.speed),D=parseFloat(a.timeout),u=parseFloat(a.maxwidth),g=a.namespace,d=g+B,E=g+"_nav "+d+"_nav",v=g+"_here",j=d+"_on",
+            w=d+"_s",k=c("<ul class='"+g+"_tabs "+d+"_tabs' />"),x={"float":"left",position:"relative",opacity:1,zIndex:2},y={"float":"none",position:"absolute",opacity:0,zIndex:1},F=function(){var b=(document.body||document.documentElement).style,a="transition";if("string"===typeof b[a])return!0;s=["Moz","Webkit","Khtml","O","ms"];var a=a.charAt(0).toUpperCase()+a.substr(1),c;for(c=0;c<s.length;c++)if("string"===typeof b[s[c]+a])return!0;return!1}(),z=function(b){a.before(b);F?(e.removeClass(j).css(y).eq(b).addClass(j).css(x),
+                    n=b,setTimeout(function(){a.after(b)},h)):e.stop().fadeOut(h,function(){c(this).removeClass(j).css(y).css("opacity",1)}).eq(b).fadeIn(h,function(){c(this).addClass(j).css(x);a.after(b);n=b})};a.random&&(e.sort(function(){return Math.round(Math.random())-0.5}),f.empty().append(e));e.each(function(a){this.id=w+a});f.addClass(g+" "+d);l&&l.maxwidth&&f.css("max-width",u);e.hide().css(y).eq(0).addClass(j).css(x).show();F&&e.show().css({"-webkit-transition":"opacity "+h+"ms ease-in-out","-moz-transition":"opacity "+
+            h+"ms ease-in-out","-o-transition":"opacity "+h+"ms ease-in-out",transition:"opacity "+h+"ms ease-in-out"});if(1<e.size()){if(D<h+100)return;if(a.pager&&!a.manualControls){var A=[];e.each(function(a){a+=1;A+="<li><a href='#' class='"+w+a+"'>"+a+"</a></li>"});k.append(A);l.navContainer?c(a.navContainer).append(k):f.after(k)}a.manualControls&&(k=c(a.manualControls),k.addClass(g+"_tabs "+d+"_tabs"));(a.pager||a.manualControls)&&k.find("li").each(function(a){c(this).addClass(w+(a+1))});if(a.pager||a.manualControls)q=
+            k.find("a"),r=function(a){q.closest("li").removeClass(v).eq(a).addClass(v)};a.auto&&(t=function(){p=setInterval(function(){e.stop(!0,!0);var b=n+1<C?n+1:0;(a.pager||a.manualControls)&&r(b);z(b)},D)},t());m=function(){a.auto&&(clearInterval(p),t())};a.pause&&f.hover(function(){clearInterval(p)},function(){m()});if(a.pager||a.manualControls)q.bind("click",function(b){b.preventDefault();a.pauseControls||m();b=q.index(this);n===b||c("."+j).queue("fx").length||(r(b),z(b))}).eq(0).closest("li").addClass(v),
+            a.pauseControls&&q.hover(function(){clearInterval(p)},function(){m()});if(a.nav){g="<a href='#' class='"+E+" prev'>"+a.prevText+"</a><a href='#' class='"+E+" next'>"+a.nextText+"</a>";l.navContainer?c(a.navContainer).append(g):f.after(g);var d=c("."+d+"_nav"),G=d.filter(".prev");d.bind("click",function(b){b.preventDefault();b=c("."+j);if(!b.queue("fx").length){var d=e.index(b);b=d-1;d=d+1<C?n+1:0;z(c(this)[0]===G[0]?b:d);if(a.pager||a.manualControls)r(c(this)[0]===G[0]?b:d);a.pauseControls||m()}});
+        a.pauseControls&&d.hover(function(){clearInterval(p)},function(){m()})}}if("undefined"===typeof document.body.style.maxWidth&&l.maxwidth){var H=function(){f.css("width","100%");f.width()>u&&f.css("width",u)};H();c(I).bind("resize",function(){H()})}})}})(jQuery,this,0);
 
-    </script>
-    <script>
-        $(function() {
-            $(".rslides").responsiveSlides({
-                auto: true,             // Boolean: Animate automatically, true or false
-                speed: 500,            // Integer: Speed of the transition, in milliseconds
-                timeout: 4000,          // Integer: Time between slide transitions, in milliseconds
-                pager: true,           // Boolean: Show pager, true or false
-                nav: false,             // Boolean: Show navigation, true or false
-                random: false,          // Boolean: Randomize the order of the slides, true or false
-                pause: false,           // Boolean: Pause on hover, true or false
-                pauseControls: true,    // Boolean: Pause when hovering controls, true or false
-                prevText: "Previous",   // String: Text for the "previous" button
-                nextText: "Next",       // String: Text for the "next" button
-                maxwidth: "",           // Integer: Max-width of the slideshow, in pixels
-                navContainer: "",       // Selector: Where controls should be appended to, default is after the 'ul'
-                manualControls: "",     // Selector: Declare custom pager navigation
-                namespace: "rslides",   // String: Change the default namespace used
-                before: function(){},   // Function: Before callback
-                after: function(){}     // Function: After callback
-            });
+</script>
+<script>
+    $(function() {
+        $(".rslides").responsiveSlides({
+            auto: true,             // Boolean: Animate automatically, true or false
+            speed: 500,            // Integer: Speed of the transition, in milliseconds
+            timeout: 4000,          // Integer: Time between slide transitions, in milliseconds
+            pager: true,           // Boolean: Show pager, true or false
+            nav: false,             // Boolean: Show navigation, true or false
+            random: false,          // Boolean: Randomize the order of the slides, true or false
+            pause: false,           // Boolean: Pause on hover, true or false
+            pauseControls: true,    // Boolean: Pause when hovering controls, true or false
+            prevText: "Previous",   // String: Text for the "previous" button
+            nextText: "Next",       // String: Text for the "next" button
+            maxwidth: "",           // Integer: Max-width of the slideshow, in pixels
+            navContainer: "",       // Selector: Where controls should be appended to, default is after the 'ul'
+            manualControls: "",     // Selector: Declare custom pager navigation
+            namespace: "rslides",   // String: Change the default namespace used
+            before: function(){},   // Function: Before callback
+            after: function(){}     // Function: After callback
         });
-    </script>
+    });
+</script>
 
-    <!--style type="text/css">
-        body
-        {
-            background-color: #f7f7f7;
-        }
+<!--style type="text/css">
+    body
+    {
+        background-color: #f7f7f7;
+    }
 
-        .wrapper
-        {
-            width: 960px;
-            margin: 0px auto;
-            padding-top: 20px;
-            min-height: 600px;
-        }
+    .wrapper
+    {
+        width: 960px;
+        margin: 0px auto;
+        padding-top: 20px;
+        min-height: 600px;
+    }
 
-        .wrapper h1, .wrapper h4, .wrapper p, .wrapper pre, .wrapper ul, .wrapper li
-        {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            vertical-align: baseline;
-            background: transparent;
-        }
+    .wrapper h1, .wrapper h4, .wrapper p, .wrapper pre, .wrapper ul, .wrapper li
+    {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        vertical-align: baseline;
+        background: transparent;
+    }
 
-        .wrapper li
-        {
-            outline: 0;
-            text-decoration: none;
-            -webkit-transition-property: background color;
-            -moz-transition-property: background color;
-            -o-transition-property: background color;
-            -ms-transition-property: background color;
-            transition-property: background color;
-            -webkit-transition-duration: 0.12s;
-            -moz-transition-duration: 0.12s;
-            -o-transition-duration: 0.12s;
-            -ms-transition-duration: 0.12s;
-            transition-duration: 0.12s;
-            -webkit-transition-timing-function: ease-out;
-            -moz-transition-timing-function: ease-out;
-            -o-transition-timing-function: ease-out;
-            -ms-transition-timing-function: ease-out;
-            transition-timing-function: ease-out;
-        }
+    .wrapper li
+    {
+        outline: 0;
+        text-decoration: none;
+        -webkit-transition-property: background color;
+        -moz-transition-property: background color;
+        -o-transition-property: background color;
+        -ms-transition-property: background color;
+        transition-property: background color;
+        -webkit-transition-duration: 0.12s;
+        -moz-transition-duration: 0.12s;
+        -o-transition-duration: 0.12s;
+        -ms-transition-duration: 0.12s;
+        transition-duration: 0.12s;
+        -webkit-transition-timing-function: ease-out;
+        -moz-transition-timing-function: ease-out;
+        -o-transition-timing-function: ease-out;
+        -ms-transition-timing-function: ease-out;
+        transition-timing-function: ease-out;
+    }
 
-        #v-nav
-        {
-            height: 100%;
-            margin: auto;
-            color: #333;
-            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
-        }
+    #v-nav
+    {
+        height: 100%;
+        margin: auto;
+        color: #333;
+        font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+    }
 
-        #v-nav >ul
-        {
-            float: left;
-            width: 210px;
-            display: block;
-            position: relative;
-            top: 0;
-            border: 1px solid #DDD;
-            border-right-width: 0;
-            margin: auto 0 !important;
-            padding:0;
-        }
+    #v-nav >ul
+    {
+        float: left;
+        width: 210px;
+        display: block;
+        position: relative;
+        top: 0;
+        border: 1px solid #DDD;
+        border-right-width: 0;
+        margin: auto 0 !important;
+        padding:0;
+    }
 
-        #v-nav >ul >li
-        {
-            width: 180px;
-            list-style-type: none;
-            display: block;
-            text-shadow: 0px 1px 1px #F2F1F0;
-            cursor: pointer;
-            font-size: 1.11em;
-            position: relative;
-            border-right-width: 0;
-            border-bottom: 1px solid #DDD;
-            margin: auto;
-            padding: 10px 15px !important;
-            background: whiteSmoke; /* Old browsers */
-            background: -moz-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100%, #f2f2f2)); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* IE10+ */
-            background: linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* W3C */
-        }
+    #v-nav >ul >li
+    {
+        width: 180px;
+        list-style-type: none;
+        display: block;
+        text-shadow: 0px 1px 1px #F2F1F0;
+        cursor: pointer;
+        font-size: 1.11em;
+        position: relative;
+        border-right-width: 0;
+        border-bottom: 1px solid #DDD;
+        margin: auto;
+        padding: 10px 15px !important;
+        background: whiteSmoke; /* Old browsers */
+        background: -moz-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100%, #f2f2f2)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* IE10+ */
+        background: linear-gradient(top, #ffffff 0%, #f2f2f2 100%); /* W3C */
+    }
 
-        #v-nav >ul >li.current
-        {
-            color: black;
-            border-right: none;
-            z-index: 10;
-            background: white !important;
-            position: relative;
-            moz-box-shadow: inset 0 0 35px 5px #fafbfd;
-            -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
-            box-shadow: inset 0 0 35px 5px #fafbfd;
-        }
+    #v-nav >ul >li.current
+    {
+        color: black;
+        border-right: none;
+        z-index: 10;
+        background: white !important;
+        position: relative;
+        moz-box-shadow: inset 0 0 35px 5px #fafbfd;
+        -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
+        box-shadow: inset 0 0 35px 5px #fafbfd;
+    }
 
-        #v-nav >ul >li.first.current
-        {
-            border-bottom: 1px solid #DDD;
-        }
+    #v-nav >ul >li.first.current
+    {
+        border-bottom: 1px solid #DDD;
+    }
 
-        #v-nav >ul >li.last
-        {
-            border-bottom: none;
-        }
+    #v-nav >ul >li.last
+    {
+        border-bottom: none;
+    }
 
-        #v-nav >div.tab-content
-        {
-            margin-left: 210px;
-            border: 1px solid #ddd;
-            background-color: #FFF;
-            min-height: 400px;
-            position: relative;
-            z-index: 9;
-            padding: 12px;
-            moz-box-shadow: inset 0 0 35px 5px #fafbfd;
-            -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
-            box-shadow: inset 0 0 35px 5px #fafbfd;
-            display: none;
-            padding: 25px;
-        }
+    #v-nav >div.tab-content
+    {
+        margin-left: 210px;
+        border: 1px solid #ddd;
+        background-color: #FFF;
+        min-height: 400px;
+        position: relative;
+        z-index: 9;
+        padding: 12px;
+        moz-box-shadow: inset 0 0 35px 5px #fafbfd;
+        -webkit-box-shadow: inset 0 0 35px 5px #fafbfd;
+        box-shadow: inset 0 0 35px 5px #fafbfd;
+        display: none;
+        padding: 25px;
+    }
 
-        #v-nav >div.tab-content >h4
-        {
-            font-size: 1.2em;
-            color: Black;
-            text-shadow: 0px 1px 1px #F2F1F0;
-            border-bottom: 1px dotted #EEEDED;
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
+    #v-nav >div.tab-content >h4
+    {
+        font-size: 1.2em;
+        color: Black;
+        text-shadow: 0px 1px 1px #F2F1F0;
+        border-bottom: 1px dotted #EEEDED;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
 
-    </style>
-    <section class="wrapper" id="wrapper">
+</style>
+<section class="wrapper" id="wrapper">
 
-        <div align="left">
-            <h3 style="font-size: 19px;"><a style="font-weight: bold">Dashboard</a></h3>
+    <div align="left">
+        <h3 style="font-size: 19px;"><a style="font-weight: bold">Dashboard</a></h3>
+    </div>
+    <div id="v-nav">
+        <ul>
+            <li tab="tab1" class="first current">Design</li>
+            <li tab="tab2">Specs</li>
+            <li tab="tab3">Price</li>
+            <li tab="tab4" class="last">Release Date</li>
+        </ul>
+        <div class="tab-content" style="display: block">
+            <h4>Design</h4>
         </div>
-        <div id="v-nav">
-            <ul>
-                <li tab="tab1" class="first current">Design</li>
-                <li tab="tab2">Specs</li>
-                <li tab="tab3">Price</li>
-                <li tab="tab4" class="last">Release Date</li>
-            </ul>
-            <div class="tab-content" style="display: block">
-                <h4>Design</h4>
-            </div>
-            <div class="tab-content" style="display: none">
-                <h4>Specs</h4>
-            </div>
-            <div class="tab-content" style="display: none">
-                <h4>Price</h4>
-            </div>
-            <div class="tab-content" style="display: none">
-                <h4>Release Date</h4>
-            </div>
+        <div class="tab-content" style="display: none">
+            <h4>Specs</h4>
         </div>
-    </section>
+        <div class="tab-content" style="display: none">
+            <h4>Price</h4>
+        </div>
+        <div class="tab-content" style="display: none">
+            <h4>Release Date</h4>
+        </div>
+    </div>
+</section>
 <pre>
-        <!-- Include Scripts -->
+    <!-- Include Scripts -->
 
 <!--script type="text/javascript">
     $(function () {
@@ -754,58 +753,52 @@
 
 
         <!--h1 class="Text" style="margin: 24%; text-align: center; font-weight: normal; line-height: 1.1;font-size: 38px;font-family: Satisfy, cursive; color: red">Under Construction!</h1-->
-	<!--header id="about_us_header" style="font-family: Open Sans;">
-	Why We Built It!
-	</header-->
-	<!--p id="about_us_statement" style="font-family: Open Sans;">
-	</p>
-	Automation Solutionz provides Web Based test case management and execution.  Our team is composed of one of the most talented individuals with vast knowledge in software development life cycle.
-	<br>
-	<br>
-	During our 10+ years of venture in software automation, we have developed framework around QTP, Unit testing, Applescript with Automator, Ration Robot, Robot, Fitness and various other customized framework.
-	<br>
-	<br>
-	Code based driven testing (unit testing) provides best solution for finding bugs before they are introduced to the product.  It allows developers to detect bug at the very early stages of the software development life cycle.  It requires decent level coding and good code flow knowledge of the product.
-	<br>
-	<br>
-	However when it comes to complex testing which requires integration with multiple modules, it does not meet the testing requirements.  It also does not produce good reporting matrix and does not keep execution history.  It does extremely poor with end user testing as it does not drive the application.
-	<br>
-	<br>
-	On the other hand, record and playback automation framework (QTP) may provide solution for testers with very little or no coding experience to create automation testing.  This type of framework proves to be one of the most expensive when it comes to reliability and maintenance.  However, these types of frameworks are focused with end-end testing and provide a better reporting.
-	<br>
-	<br>
-	Our approach of automation framework combines best of both worlds.  We have analyzed all the bad and good of various framework and came up with a solution that would satisfy both developers and testers requirements.
-	<br>
-	<br>
-	We are able to execute white box testing or black box testing.  We achieved this by allowing developers to write unit testing and integrating the unit testing directly into our framework with very little work. Developers are able to run their testing before they submit the code and manual testers also able to write keyword based testing that would drive the UI to simulate end user testing.
-	<br>
-	<br>
-	Our reporting structure provides one of the most comprehensive reporting in the market. We focused most on our reporting during our research prior to designing the framework.  We are able to pin point root case of failure with screen captures and detailed logs that are organized with various log level. This allows testers to view results without going into too much detail of failure reason and at the same time allows developers to drill deep in finding the root cause.  All this is done with dynamic table with clear and concise reporting.
-	<br>
-	<br>
-	We believe that with our intelligent reporting and advanced cloud based test case management, execution and reporting, your software will be able to deliver the highest quality with lowest price point.  We are always learning new technology and would enjoy any challenges your developers or testers faces.  
-	<div id="about_us_list">
-	<ul class="pros">
-	<li>Minimal setup time (less than 15 minutes)</li>
-	<li>Execute same test cases on various platforms Automated build test with email reporting</li>
-	<li>Test Case management by tag, id, sections, etc.</li>
-	<li>View live results and test case execution from Mobile devices or work station</li>
-	<li>Grouping of test cases on the basis of test session results and by root cause failure</li>
-	<li>Re-Run the failed test cases (helps to reproduce failed test cases)</li>
-	<li>Log Collection at central server (helps with analyzing failure causes while the session is in progress)</li>
-	<li>Track the execution history of an individual test case (gives a quick over view of when the test case last failed/passed)</li>
-	<li>Generate execution reports dynamically</li>
-	<li>Integrate the results into graphs for analysis</li>
-	<li>3rd party software (JIRA, MKS and others) integration </li>
-	</ul>
-	</div-->
-	</article>
-	
-	</div>			
+<!--header id="about_us_header" style="font-family: Open Sans;">
+Why We Built It!
+</header-->
+<!--p id="about_us_statement" style="font-family: Open Sans;">
+</p>
+Automation Solutionz provides Web Based test case management and execution.  Our team is composed of one of the most talented individuals with vast knowledge in software development life cycle.
+<br>
+<br>
+During our 10+ years of venture in software automation, we have developed framework around QTP, Unit testing, Applescript with Automator, Ration Robot, Robot, Fitness and various other customized framework.
+<br>
+<br>
+Code based driven testing (unit testing) provides best solution for finding bugs before they are introduced to the product.  It allows developers to detect bug at the very early stages of the software development life cycle.  It requires decent level coding and good code flow knowledge of the product.
+<br>
+<br>
+However when it comes to complex testing which requires integration with multiple modules, it does not meet the testing requirements.  It also does not produce good reporting matrix and does not keep execution history.  It does extremely poor with end user testing as it does not drive the application.
+<br>
+<br>
+On the other hand, record and playback automation framework (QTP) may provide solution for testers with very little or no coding experience to create automation testing.  This type of framework proves to be one of the most expensive when it comes to reliability and maintenance.  However, these types of frameworks are focused with end-end testing and provide a better reporting.
+<br>
+<br>
+Our approach of automation framework combines best of both worlds.  We have analyzed all the bad and good of various framework and came up with a solution that would satisfy both developers and testers requirements.
+<br>
+<br>
+We are able to execute white box testing or black box testing.  We achieved this by allowing developers to write unit testing and integrating the unit testing directly into our framework with very little work. Developers are able to run their testing before they submit the code and manual testers also able to write keyword based testing that would drive the UI to simulate end user testing.
+<br>
+<br>
+Our reporting structure provides one of the most comprehensive reporting in the market. We focused most on our reporting during our research prior to designing the framework.  We are able to pin point root case of failure with screen captures and detailed logs that are organized with various log level. This allows testers to view results without going into too much detail of failure reason and at the same time allows developers to drill deep in finding the root cause.  All this is done with dynamic table with clear and concise reporting.
+<br>
+<br>
+We believe that with our intelligent reporting and advanced cloud based test case management, execution and reporting, your software will be able to deliver the highest quality with lowest price point.  We are always learning new technology and would enjoy any challenges your developers or testers faces.
+<div id="about_us_list">
+<ul class="pros">
+<li>Minimal setup time (less than 15 minutes)</li>
+<li>Execute same test cases on various platforms Automated build test with email reporting</li>
+<li>Test Case management by tag, id, sections, etc.</li>
+<li>View live results and test case execution from Mobile devices or work station</li>
+<li>Grouping of test cases on the basis of test session results and by root cause failure</li>
+<li>Re-Run the failed test cases (helps to reproduce failed test cases)</li>
+<li>Log Collection at central server (helps with analyzing failure causes while the session is in progress)</li>
+<li>Track the execution history of an individual test case (gives a quick over view of when the test case last failed/passed)</li>
+<li>Generate execution reports dynamically</li>
+<li>Integrate the results into graphs for analysis</li>
+<li>3rd party software (JIRA, MKS and others) integration </li>
+</ul>
+</div-->
+</article>
+
+</div>
 {% endblock %}
-			
-
-
-
-
-
