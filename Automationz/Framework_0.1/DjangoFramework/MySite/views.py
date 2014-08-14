@@ -7517,8 +7517,8 @@ def GetTesterManager(request):
             Filters=['assigned_tester','manager']
             Conn=GetConnection()
             for each in Filters:
-                query="select user_names from permitted_user_list where user_level='%s'"%each.strip()
-                get_list=DB.GetData(Conn, query)
+                query="select distinct user_id,user_names from permitted_user_list where user_level='%s'"%each.strip()
+                get_list=DB.GetData(Conn, query,False)
                 final.append((each,get_list))
     result=simplejson.dumps(final)
     return HttpResponse(result,mimetype='application/json')
@@ -7526,18 +7526,9 @@ def Create_Team(request):
     message=""
     if request.is_ajax():
         if request.method=='GET':
-            manager=request.GET.get(u'manager','').split("|")
-            tester=request.GET.get(u'tester','').split("|")
+            member_list=request.GET.get(u'member').split("|")
             team_name=request.GET.get(u'team_name','')
-            print manager
-            print tester
             print team_name
-            for each in tester:
-                if each=="":
-                    tester.remove(each)
-            for each in manager:
-                if each=="":
-                    manager.remove(each)
             Conn=GetConnection()
             #check for existing team
             query="select count(*) from config_values where type='Team' and value='%s'"%team_name.strip()
@@ -7551,28 +7542,15 @@ def Create_Team(request):
                     id_list=DB.GetData(Conn,query)
                     if (len(id_list)!=0):
                         id_list=str(id_list[0])
-                        for each in manager:
-                            #formDict
+                        for each in member_list:
                             Dict={}
-                            Dict.update({'team_id':id_list,'name':each.strip(),'rank':'leader'})
-                            if(DB.IsDBConnectionGood(Conn)==False):
-                                time.sleep(1)
-                                Conn=GetConnection()
-                            result=DB.InsertNewRecordInToTable(Conn,"team_info",**Dict)
-                            if result!=True:
-                                message="Failed inserting the team leader"
-                                
-                        for each in tester:
-                            #formDict
-                            Dict={}
-                            Dict.update({'team_id':id_list,'name':each.strip(),'rank':'tester'})
+                            Dict.update({'team_id':id_list,'user_id':int(each.strip())})
                             if(DB.IsDBConnectionGood(Conn)==False):
                                 time.sleep(1)
                                 Conn=GetConnection()
                             result=DB.InsertNewRecordInToTable(Conn,"team_info",**Dict)
                             if result!=True:
                                 message="Failed inserting the member"
-                            
                     else:
                         message="Failed.Can't retrieve the Team name."
                 else:
@@ -7597,6 +7575,7 @@ def GetTeamInfo(request):
             team=request.GET.get(u'team','')
             print team
             list_value=['leader','tester']
+            other_value=['manager','assigned_tester']
             Conn=GetConnection()
             #Get team Id
             final=[]
@@ -7604,14 +7583,14 @@ def GetTeamInfo(request):
             team_id=DB.GetData(Conn,query)
             if len(team_id)==1:
                 team_id=str(team_id[0]).strip()
-                for each in list_value:
-                    query="select name from team_info where rank='%s' and team_id='%s'"%(each.strip(),team_id.strip())
+                for each in zip(other_value,list_value):
+                    query="select user_id,user_names,user_level from permitted_user_list where user_id in (select user_id from team_info where team_id =(select id from config_values where value='%s')) and user_level='%s'"%(team,each[0].strip())
                     if(DB.IsDBConnectionGood(Conn)==False):
                         time.sleep(1)
                         Conn=GetConnection()
                     list_data=[]
-                    list_data=DB.GetData(Conn,query)
-                    final.append((each.strip(),list_data))
+                    list_data=DB.GetData(Conn,query,False)
+                    final.append((each[1].strip(),list_data))
                 message="Team Data Fetched"
             else:
                 message="No team found"
@@ -7675,29 +7654,30 @@ def GetTestStepsAndTestCasesOnDriverValue(request):
 def TeamData(request,team_name):
     team_name=team_name.replace('_',' ')
     #get the team name member
-    query="select name,rank from team_info where team_id =(select id from config_values where type='Team' and value='%s')"%team_name
+    #query="select name,rank from team_info where team_id =(select id from config_values where type='Team' and value='%s')"%team_name
+    query="select user_id,user_names,user_level from permitted_user_list where user_id in(select user_id from team_info where team_id=(select id from config_values where type='Team' and value='%s'))"%team_name
     print query
     Conn=GetConnection()
     getData=DB.GetData(Conn,query,False)
     leader=[]
     tester=[]
     for each in getData:
-        if each[1]=='leader':
-            leader.append(each[0].strip())
-        if each[1]=='tester':
-            tester.append(each[0].strip())
-    query="select user_names,user_level from permitted_user_list where user_level in ('assigned_tester','manager')"
+        if each[2]=='manager':
+            leader.append((each[0],each[1].strip()))
+        if each[2]=='assigned_tester':
+            tester.append((each[0],each[1].strip()))
+    query="select user_id,user_names,user_level from permitted_user_list where user_level in ('assigned_tester','manager')"
     all_list=DB.GetData(Conn,query,False)
     rest_tester=[]
     rest_manager=[]
     for each in all_list:
-        if each[0] in leader or each[0] in tester:
+        if (each[0],each[1].strip()) in leader or (each[0],each[1].strip()) in tester:
             continue
         else:
-            if each[1]=='assigned_tester':
-                rest_tester.append(each[0])
-            if each[1]=='manager':
-                rest_manager.append(each[0])
+            if each[2]=='assigned_tester':
+                rest_tester.append((each[0],each[1].strip()))
+            if each[2]=='manager':
+                rest_manager.append((each[0],each[1].strip()))
         
     Dict={
           'team_name':team_name.strip(),
@@ -7705,14 +7685,13 @@ def TeamData(request,team_name):
           'tester':tester,
           'rest_leader':rest_manager,
           'rest_tester':rest_tester
-          }
+    }
     return render_to_response('Team_Edit.html',Dict)
 def Add_Members(request):
     message=""
     if request.is_ajax():
         if request.method=='GET':
-            managers=request.GET.get(u'manager','').split("|")
-            testers=request.GET.get(u'tester','').split("|")
+            member=request.GET.get(u'member','').split("|")
             team_name=request.GET.get(u'team_name','').strip()
             #check the validity for the team name
             query="select id from config_values where type='Team' and value='%s'"%team_name
@@ -7722,35 +7701,22 @@ def Add_Members(request):
                 message="Failed.No such Team Name"
             else:
                 team_id=str(team_id[0])
-                tag=['assigned_tester','manager']
-                for each in tag:
-                    if each=='assigned_tester':
-                        array=testers
-                        temp_tag='tester'
-                    if each=='manager':
-                        array=managers
-                        temp_tag='leader'
-                    query="select user_names from permitted_user_list where user_level='%s'"%each
-                    temp_list=[]
-                    temp_list=DB.GetData(Conn,query)
-                    for eachitem in array:
-                        if eachitem in temp_list:
-                            if DB.IsDBConnectionGood(Conn)==False:
-                                time.sleep(1)
-                                Conn=GetConnection()
-                            result=DB.InsertNewRecordInToTable(Conn,"team_info",team_id=team_id,name=eachitem.strip(),rank=temp_tag)
-                            if result==False:
-                                break
-                            else:
-                                message="Successfully Updated."
+                for each in member:
+                    if DB.IsDBConnectionGood(Conn)==False:
+                        time.sleep(1)
+                        Conn=GetConnection()
+                    result=DB.InsertNewRecordInToTable(Conn,"team_info",team_id=team_id,user_id=each)
+                    if result==False:
+                        break
+                    else:
+                        message="Successfully Updated."
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
 def Delete_Members(request):
     message=""
     if request.is_ajax():
         if request.method=='GET':
-            managers=request.GET.get(u'manager','').split("|")
-            testers=request.GET.get(u'tester','').split("|")
+            member_list=request.GET.get(u'member','').split("|")
             team_name=request.GET.get(u'team_name','').strip()
             #check the validity for the team name
             query="select id from config_values where type='Team' and value='%s'"%team_name
@@ -7760,27 +7726,15 @@ def Delete_Members(request):
                 message="Failed.No such Team Name"
             else:
                 team_id=str(team_id[0])
-                tag=['tester','leader']
-                for each in tag:
-                    if each=='tester':
-                        array=testers
-                        temp_tag='assigned_tester'
-                    if each=='leader':
-                        array=managers
-                        temp_tag='manager'
-                    query="select user_names from permitted_user_list where user_level='%s'"%temp_tag
-                    temp_list=[]
-                    temp_list=DB.GetData(Conn,query)
-                    for eachitem in array:
-                        if eachitem in temp_list:
-                            if DB.IsDBConnectionGood(Conn)==False:
-                                time.sleep(1)
-                                Conn=GetConnection()
-                            result=DB.DeleteRecord(Conn,"team_info",team_id=team_id,name=eachitem.strip(),rank=each)
-                            if result==False:
-                                break
-                            else:
-                                message="Successfully Updated."
+                for each in member_list:
+                    if DB.IsDBConnectionGood(Conn)==False:
+                        time.sleep(1)
+                        Conn=GetConnection()
+                    result=DB.DeleteRecord(Conn,"team_info",team_id=team_id,user_id=each)
+                    if result==False:
+                        break
+                    else:
+                        message="Successfully Updated."
     result=simplejson.dumps(message)
     return HttpResponse(result,mimetype='application/json')
 def Delete_Team(request):
@@ -8720,3 +8674,40 @@ def RequirementPage(request,project_id):
     return render_to_response("CreateNewRequirement.html",Dict)
 
         
+def TaskPage(request,project_id):
+    Conn=GetConnection()
+    query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
+    team_info=DB.GetData(Conn,query,False)
+    query="select value from config_values where type='Priority'"
+    priority=DB.GetData(Conn,query,False)
+    query="select value from config_values where type='milestone'"
+    milestone_list=DB.GetData(Conn,query,False)
+    #get the names from permitted_user_list
+    query="select distinct user_id,user_names from permitted_user_list where user_level='assigned_tester'" 
+    user_list=DB.GetData(Conn,query,False)
+    Dict={
+          'team_info':team_info,
+          'priority_list':priority,
+          'milestone_list':milestone_list,
+          'user_list':user_list
+    }
+    return render_to_response("CreateNewTask.html",Dict)
+
+def Get_RequirementSections(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
+    Conn = GetConnection()
+    results = []
+    # if request.is_ajax():
+    if request.method == "GET":
+        section = request.GET.get(u'section', '')
+        if section == '':
+            results = DB.GetData(Conn, "select distinct subpath(requirement_path,0,1) from requirement_sections", False)
+            levelnumber = 0
+        else:
+            levelnumber = section.count('.') + 1
+            results = DB.GetData(Conn, "select distinct subltree(requirement_path,%d,%d) FROM requirement_sections WHERE requirement_path ~ '*.%s.*' and nlevel(requirement_path) > %d" % (levelnumber, levelnumber + 1, section, levelnumber), False)
+
+    results.insert(0, (str(levelnumber),))
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+

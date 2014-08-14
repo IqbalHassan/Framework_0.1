@@ -26,8 +26,8 @@
                         <table width="100%">
                             {%for x in leader%}
                             <tr>
-                                <td width="40%" style="vertical-align: 0%;"><b>{{x}}</b></td>
-                                <td width="60%" align="left"><input class="remove_manager" type="checkbox" value="{{x}}"/></td>
+                                <td width="40%" style="vertical-align: 0%;"><b>{{x.1}}</b></td>
+                                <td width="60%" align="left"><input class="remove_manager" type="checkbox" value="{{x.0}}"/></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -51,8 +51,8 @@
                         <table width="100%">
                             {%for x in rest_leader%}
                                 <tr>
-                                    <td width="40%" style="vertical-align: 0%;"><b>{{x}}</b></td>
-                                    <td width="60%" align="left"><input class="add_manager" type="checkbox" value="{{x}}"/></td>
+                                    <td width="40%" style="vertical-align: 0%;"><b>{{x.1}}</b></td>
+                                    <td width="60%" align="left"><input class="add_manager" type="checkbox" value="{{x.0}}"/></td>
                                 </tr>
                             {% endfor %}
 
@@ -76,8 +76,8 @@
                         <table width="100%">
                             {%for x in tester%}
                             <tr>
-                                <td width="40%" style="vertical-align: 0%;"><b>{{x}}</b></td>
-                                <td width="60%" align="left"><input class="remove_tester" type="checkbox" value="{{x}}" style="margin-left: 5%;"/></td>
+                                <td width="40%" style="vertical-align: 0%;"><b>{{x.1}}</b></td>
+                                <td width="60%" align="left"><input class="remove_tester" type="checkbox" value="{{x.0}}" style="margin-left: 5%;"/></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -101,8 +101,8 @@
                         <table width="100%">
                             {%for x in rest_tester%}
                             <tr>
-                                <td width="40%" style="vertical-align: 0%;"><b>{{x}}</b></td>
-                                <td width="60%" align="left"><input class="add_tester" type="checkbox" value="{{x}}" style="margin-left: 5%;"/></td>
+                                <td width="40%" style="vertical-align: 0%;"><b>{{x.1}}</b></td>
+                                <td width="60%" align="left"><input class="add_tester" type="checkbox" value="{{x.0}}" style="margin-left: 5%;"/></td>
                             </tr>
                             {% endfor %}
 

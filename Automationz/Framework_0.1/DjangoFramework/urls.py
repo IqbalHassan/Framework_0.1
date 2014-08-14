@@ -252,6 +252,9 @@ urlpatterns = patterns('',
     url(r'^Home/(?P<project_id>[^/]*)/CreateRequirement/[^/]*$',RequirementPage),
     url(r'^Home/.*/SubmitCreateRequirement/$',CreateRequirement),
     
+    #function for the task management page
+    url(r'^Home/(?P<project_id>[^/]*)/CreateTask/[^/]*$',TaskPage),
+    url(r'^Home/.*/Get_RequirementSections/$',Get_RequirementSections),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )

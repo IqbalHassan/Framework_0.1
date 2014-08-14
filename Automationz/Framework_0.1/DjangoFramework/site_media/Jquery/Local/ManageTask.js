@@ -1,7 +1,7 @@
 /**
  * Created by lent400 on 5/22/14.
  */
-$(document).ready(function(){
+/*$(document).ready(function(){
     $('#new_task').click(function(event){
         event.preventDefault();
         $.get('FetchProject',{},function(data){
@@ -175,4 +175,17 @@ function initCreateDiv(project,team,manager){
     message+='</tr>';
     message+='</table>';
     return message;
+}*/
+
+$(document).ready(function(){
+    primarySettings();
+});
+
+function primarySettings(){
+    $('#project_code').text($.session.get('project_id'));
+    $('#create_new_task').click(function(event){
+        event.preventDefault();
+        window.location=('/Home/'+ $.session.get('project_id')+'/CreateTask/');
+    });
 }
+

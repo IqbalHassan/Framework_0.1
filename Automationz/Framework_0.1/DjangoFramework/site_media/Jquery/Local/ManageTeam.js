@@ -127,9 +127,9 @@ function initiateInfoDiv(data,teamname){
         }
         else{
             message+='<td width="25%" align="left" class="Text" style="vertical-align: 0%;color: #4183c4"><b>'+type_tag+':</b></td>';
-            message+='<td><table width="100%"   style="margin-top: -2%;">';
+            message+='<td style="vertical-align: 0%;"><table width="100%"   style="margin-top: -2%;">';
             for(var j=0;j<data[i][1].length;j++){
-                message+='<tr><td width="65%" data-id="'+data[i][1][j].replace(/ /g,'_')+'"><b class="Text">'+data[i][1][j].trim()+'</b></td>';
+                message+='<tr><td width="65%"  style="vertical-align:0%" data-id="'+data[i][1][j][0]+'"><b class="Text">'+data[i][1][j][1].trim()+'</b></td>';
                 //message+='<td align="center" width="10%"><i class="fa fa-minus-square fa-fw fa-lg remove" style="cursor: pointer;"></i></td></tr>';
             }
             message+='</table></td>';
@@ -171,19 +171,18 @@ function CreateButtonInit(){
 };
 function ButtonPreparation(){
     $('#submit_team').click(function(){
-        var manager=[];
-        var tester=[];
+        var member=[];
         var team_name=$('#team_name').val().trim();
         $('input[class="manager"]:checked').each(function(){
-            manager.push($(this).val().replace(/_/g,' ').trim());
+            member.push($(this).val().trim());
         });
         $('input[class="tester"]:checked').each(function(){
-            tester.push($(this).val().replace(/_/g,' ').trim());
+            member.push($(this).val().trim());
         });
-        if(manager.length==0 || tester.length==0 || team_name.trim()==""){
+        if(member.length==0 || team_name.trim()==""){
             alertify.log("Some of the fields are empty","",0);
         }
-        $.get("Create_Team",{'manager':manager.join("|"),'tester':tester.join("|"),'team_name':team_name},function(data){
+        $.get("Create_Team",{'member':member.join("|"),'team_name':team_name},function(data){
             if(data.indexOf('Failed')!=0){
                 window.location=('/Home/Team/'+team_name.trim().replace(/ /g,'_').trim()+'/');
             }
@@ -214,7 +213,7 @@ function initCreateDiv(data){
     message+='<td align="left">';
     message+='<table>';
     for(var i=0;i<manager.length;i++){
-        message+='<tr><td><input type="checkbox" class="manager" value="'+manager[i].replace(/ /g,'_')+'"/>'+manager[i]+'</td></tr>';
+        message+='<tr><td><input type="checkbox" class="manager" value="'+manager[i][0]+'"/>'+manager[i][1]+'</td></tr>';
     }
     message+='</table>';
     message+='</td>';
@@ -225,7 +224,7 @@ function initCreateDiv(data){
     message+='<td align="left">';
     message+='<table>';
     for(var i=0;i<tester.length;i++){
-        message+='<tr><td><input type="checkbox" class="tester" value="'+tester[i].replace(/ /g,'_')+'"/>'+tester[i]+'</td></tr>';
+        message+='<tr><td><input type="checkbox" class="tester" value="'+tester[i][0]+'"/>'+tester[i][1]+'</td></tr>';
     }
     message+='</table>';
     message+='</td>';
