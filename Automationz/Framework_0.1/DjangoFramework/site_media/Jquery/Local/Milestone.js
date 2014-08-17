@@ -21,6 +21,7 @@ function MileStoneTab(){
                     data:{term:request.term},
                     success:function(data){
                         response(data);
+
                     }
                 });
             }
@@ -29,18 +30,32 @@ function MileStoneTab(){
             var value=ui.item[0].trim();
             if (value!=""){
                 $(this).val(value.trim());
+                $("#starting_date").val(ui.item[1]);
+                $("#ending_date").val(ui.item[2]);
                 return false;
             }
         }
     }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
         return $( "<li></li>" )
             .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+ " - " + item[2] +"</a>" )
             .appendTo( ul );
     };
     $('#operation_milestone').live('change',function(){
         // autoCompleteMilestone();
         var selection=$('#operation_milestone option:selected').val();
+        if(selection==1 || selection==2){
+            $("#start_field").css({'display':'inline-block'});
+            $("#end_field").css({'display':'inline-block'});
+            $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
+            $('#ending_date').datepicker({ dateFormat: "yy-mm-dd" });
+        }
+        else {
+            $("#start_field").css({'display':'none'});
+            $("#end_field").css({'display':'none'});
+            //$('#starting_date').datepicker('disable');
+            //$('#ending_date').datepicker('disable');
+        }
         if(selection==2){
             $('#renamebox').css({'display':'inline-block'});
             $('#msinput2').autocomplete({
@@ -76,13 +91,22 @@ function MileStoneTab(){
     });
     $('#ms_button').live('click',function(){
         var operation=$('#operation_milestone option:selected').val();
-        if(operation==2){
+        if(operation==1){
+            var new_name=$('#msinput').val();
+            var start_date = $("#starting_date").val();
+            var end_date = $("#ending_date").val();
+        }
+        else if(operation==2){
             var new_name=$('#msinput2').val();
             var old_name=$('#msinput').val();
+            var start_date = $("#starting_date").val();
+            var end_date = $("#ending_date").val();
         }
         else{
             var new_name=$('#msinput').val();
             var old_name="";
+            var start_date = "";
+            var end_date = "";
         }
         if(operation=="0"){
             var title_msg = "Fields are Empty!"
@@ -91,7 +115,7 @@ function MileStoneTab(){
             title_msg = "Milestone Created"
         }
         else if(operation=="2"){
-            title_msg = "Milestone Renamed"
+            title_msg = "Milestone Modified"
         }
         else if(operation=="3"){
             title_msg = "Milestone Deleted"
@@ -103,7 +127,7 @@ function MileStoneTab(){
             $('#error_milestone').css({'display':'block'});
         }
         else {
-            $.get('MileStoneOperation',{old_name:old_name,new_name:new_name,operation:operation},function(data){
+            $.get('MileStoneOperation',{old_name:old_name,new_name:new_name,operation:operation,start_date:start_date.trim(),end_date:end_date.trim()},function(data){
                 if(data['confirm_message']==""){
                     var color='red';
                 }

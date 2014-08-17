@@ -28,7 +28,7 @@
                                     <select id="operation_milestone" name="operation" class="selectdrop">
                                         <option value="0" selected="selected">Select from list</option>
                                         <option value="1">Create</option>
-                                        <option value="2">Rename</option>
+                                        <option value="2">Modify</option>
                                         <option value="3">Delete</option>
                                     </select>
                                 </div>
@@ -47,16 +47,46 @@
 
                                 </div>
                             </td>
+
+                        </tr>
+                        <tr>
                             <td align="center">
-                                <!--div id="error">
-                                    <p><b>No Operation is selected</b></p>
-                                </div-->
-                                <div id="button_id">
-                                    <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
-                                    <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
+                                <div id="start_field" style="display: none">
+                                    <table>
+                                        <tr>
+                                            <td align="right">
+                                                <b>Starting Date:</b>
+                                            </td>
+                                            <td>
+                                                <table>
+                                                    <tr><td><input class="textbox" style="width: auto" placeholder="Starting Date" id="starting_date"/></td></tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+
+                            &nbsp;&nbsp;&nbsp;
+
+                            <td align="center">
+                                <div id="end_field" style="display: none">
+                                    <table>
+                                        <tr>
+                                            <td align="right">
+                                                <b>Ending Date:</b>
+                                            </td>
+                                            <td>
+                                                <table>
+                                                    <tr><td><input class="textbox" style="width: auto" placeholder="Ending Date" id="ending_date"/></td></tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </td>
                         </tr>
+
                     </table>
                 </div>
                 <!--/fieldset-->
@@ -65,7 +95,11 @@
         </div>
     </div>
 
-    <div  align="center">
+    <div id="button_id" align="center">
+        <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
+        <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
+    </div>
+    <div  align="center" style="padding-top: 5%">
         <a id="show_all_ms" class="button minibutton">Show All >></a>
         <div id="all_milestones"></div>
     </div>
