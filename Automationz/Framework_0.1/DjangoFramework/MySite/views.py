@@ -46,6 +46,7 @@ from django.core.files.base import ContentFile
 from settings import MEDIA_ROOT,PROJECT_ROOT
 import os
 import RequirementOperations
+import TaskOperations
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -8683,7 +8684,7 @@ def TaskPage(request,project_id):
     query="select value from config_values where type='milestone'"
     milestone_list=DB.GetData(Conn,query,False)
     #get the names from permitted_user_list
-    query="select distinct user_id,user_names from permitted_user_list where user_level='assigned_tester'" 
+    query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=ti.user_id and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
     user_list=DB.GetData(Conn,query,False)
     Dict={
           'team_info':team_info,
@@ -8710,4 +8711,25 @@ def Get_RequirementSections(request):  #==================Returns Abailable User
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-
+def convert_date_from_string(given_date):
+    start_date=given_date.split('-')
+    starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
+    return starting_date                
+#function for the new task
+def SubmitNewTask(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            title=request.GET.get(u'title','')
+            status=request.GET.get(u'status','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'starting_date','')
+            end_date=request.GET.get(u'ending_date','')
+            start_date=convert_date_from_string(start_date)
+            end_date=convert_date_from_string(end_date)
+            teams=request.GET.get(u'team','').split("|")
+            tester=request.GET.get(u'tester','').split("|")
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            project_id=request.GET.get(u'project_id','')
+            section_path=request.GET.get(u'section_path','')
+            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path)

@@ -102,7 +102,7 @@
                                         <table>
                                             {% if user_list %}
                                                 {% for x in user_list %}
-                                                    <td><input type="checkbox" value="{{x.0}}"/>{{x.1}}</td>
+                                                    <td><input type="checkbox" name="tester" value="{{x.0}}"/>{{x.1}}</td>
                                                     {% if forloop.last %}
                                                         </tr>
                                                     {% else %}
