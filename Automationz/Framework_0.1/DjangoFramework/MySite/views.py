@@ -6507,7 +6507,7 @@ def AutoMileStone(request):
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select value,type from config_values where type='milestone' and value ilike'%%%s%%'" % milestone
+            query = "select name,cast(starting_date as text),cast(finishing_date as text) from milestone_info where name ilike'%%%s%%'" % milestone
             milestone_list = DB.GetData(Conn, query, False)
     result = simplejson.dumps(milestone_list)
     return HttpResponse(result, mimetype='application/json')
@@ -6518,9 +6518,9 @@ def Get_MileStones(request):
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select value from config_values where type='milestone'"
+            query = "select name,cast(starting_date as text),cast(finishing_date as text) from milestone_info order by name"
             milestone_list = DB.GetData(Conn, query, False)
-    Heading = ['Milestone Name']
+    Heading = ['Milestone Name', 'Starting Date', 'Finishing Date']
     results = {'Heading':Heading, 'TableData':milestone_list}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -6563,31 +6563,50 @@ def MileStoneOperation(request):
                 new_name = request.GET.get(u'new_name', '')
                 old_name = request.GET.get(u'old_name', '')
                 old_name = old_name.strip()
+                start_date = request.GET.get(u'start_date','').strip()
+                end_date = request.GET.get(u'end_date','').strip()
+                start_date=start_date.split('-')
+                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
+                end_date=end_date.split('-')
+                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
                 query = "select count(*) from config_values where type='milestone' and value='%s'" % old_name
                 available = DB.GetData(Conn, query)
                 if(available[0] > 0):
                     # check if old name is given again:
-                    againQuery = "select count(*) from config_values where type='milestone' and value='%s'" % new_name
+                    """againQuery = "select count(*) from milestone_info where name='%s' and starting_date='"+str(start_date)+"' and finishing_date='"+str(end_date)+"'" % new_name
                     again = DB.GetData(Conn, againQuery)
                     if(again[0] > 0):
-                        error_message = "MileStone already exists, can't rename"
-                    else:
-                        # start Rename Operation
-                        condition = "where type='milestone' and value='%s'" % old_name
-                        Dict = {'value':new_name.strip()}
-                        print DB.UpdateRecordInTable(Conn, "config_values", condition, **Dict)
-                        confirm_message = "MileStone is renamed"
+                        error_message = "MileStone already exists, can't modify"
+                    else:"""
+                    # start Rename Operation
+                    condition = "where type='milestone' and value='%s'" % old_name
+                    mid = DB.GetData(Conn,"select id from config_values where type='milestone' and value = '"+old_name+"'")
+                    Dict = {'value':new_name.strip()}
+                    print DB.UpdateRecordInTable(Conn, "config_values", condition, **Dict)            
+                    mcondition = "where id='%s' and name='%s'" % (mid[0],old_name)
+                    mDict = {'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date}
+                    print DB.UpdateRecordInTable(Conn, "milestone_info", mcondition, **mDict)
+                    confirm_message = "MileStone is modified"
                 else:
                     confirm_message = "No milestone is found"
             # start Create Operation
             if operation == "1":
                 new_name = request.GET.get(u'new_name', '')
                 new_name = new_name.strip()
+                start_date = request.GET.get(u'start_date','').strip()
+                end_date = request.GET.get(u'end_date','').strip()
+                start_date=start_date.split('-')
+                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
+                end_date=end_date.split('-')
+                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
                 query = "select count(*) from config_values where type='milestone' and value='%s'" % new_name
                 available = DB.GetData(Conn, query)
                 if(available[0] == 0):
                     Dict = {'type':'milestone', 'value':new_name.strip()}
                     print DB.InsertNewRecordInToTable(Conn, "config_values", **Dict)
+                    mid = DB.GetData(Conn,"select id from config_values where type='milestone' and value = '"+new_name+"'")
+                    mDict = {'id':mid[0], 'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date}
+                    print DB.InsertNewRecordInToTable(Conn, "milestone_info", **mDict)
                     confirm_message = "MileStone is created Successfully"
                 else:
                     error_message = "MileStone name exists. Can't create a new one"
@@ -6600,6 +6619,9 @@ def MileStoneOperation(request):
                 if(available[0] > 0):
                     Dict = {'type':'milestone', 'value':new_name.strip()}
                     print DB.DeleteRecord(Conn, "config_values", **Dict)
+                    mid = DB.GetData(Conn,"select id from config_values where type='milestone' and value = '"+new_name+"'")
+                    mDict = {'id':mid[0], 'name':new_name}
+                    print DB.DeleteRecord(Conn, "milestone_info", **mDict)
                     confirm_message = "MileStone is deleted Successfully"
                 else:
                     error_message = "MileStone Not Found"
