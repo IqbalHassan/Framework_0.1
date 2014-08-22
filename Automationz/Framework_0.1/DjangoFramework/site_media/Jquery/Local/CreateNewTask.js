@@ -51,9 +51,11 @@ function Submit_button_preparation(){
             'priority':priority,
             'milestone':milestone,
             'project_id':project_id,
-            'section_path':newSectionPath
-        },function(data){
+            'section_path':newSectionPath,
+            'user_name':$('#user_name').text().trim()
 
+        },function(data){
+            window.location=('/Home/'+ $.session.get('project_id')+'/Task/'+data);
         });
     });
 }

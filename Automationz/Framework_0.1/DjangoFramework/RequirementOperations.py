@@ -50,19 +50,20 @@ def CreateParentRequirement(title,description,project_id,team_list,start_date,en
                                'requirement_creationdate':now,
                                'requirement_modifiedby':username.strip(),
                                'requirement_modifydate':now,
-                               'status':status.strip()
+                               'status':status.strip(),
+                               'parent_requirement_id':sequence,
                         }
                     result=DB.InsertNewRecordInToTable(Conn,"requirements",**temp_Dict)
                     if result==True:
                         for each in team_list:
                             team_Dict={
                                        'requirement_id':req_id.strip(),
-                                       'parent_requirement_id':sequence,
                                        'team_id':each.strip(),
                             }
                             result=DB.InsertNewRecordInToTable(Conn,"requirement_team_map",**team_Dict)
                             if result==False:
                                 return False
+                        return req_id
                     else:
                         return False
                 except Exception,e:

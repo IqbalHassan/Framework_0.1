@@ -22,7 +22,7 @@ $(document).ready(function(){
         var message="";
         var projects=data['projects'];
         for(var i=0;i<projects.length;i++){
-            message+=('<option value="'+projects[i][0]+'">'+projects[i][0]+' - '+projects[i][1]+'</option> ');
+            message+=('<option value="'+projects[i][0]+'">'+projects[i][0]+'</option> ');
         }
         $('#project_identity').append(message);
         $('#project_identity').val($.session.get('project_id'));

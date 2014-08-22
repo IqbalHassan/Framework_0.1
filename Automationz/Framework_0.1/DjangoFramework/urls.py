@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     # Home Page
 	url(r'^$', HomePage),
     url(r'^Home/User/$', HomePage),
+    url(r'^Home/User/(?P<user_id>[^/]*)/$',GetProfileInfo),
     url(r'^GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/.*/GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/Contact/$', contact_page),
@@ -251,12 +252,13 @@ urlpatterns = patterns('',
     
     url(r'^Home/(?P<project_id>[^/]*)/CreateRequirement/[^/]*$',RequirementPage),
     url(r'^Home/.*/SubmitCreateRequirement/$',CreateRequirement),
-    
+    url(r'^Home/(?P<project_id>[^/]*)/Task/[^/]*$',ViewTaskPage),
     #function for the task management page
     url(r'^Home/(?P<project_id>[^/]*)/CreateTask/[^/]*$',TaskPage),
     url(r'^Home/.*/Get_RequirementSections/$',Get_RequirementSections),
     url(r'^Home/.*/SubmitNewTask/$',SubmitNewTask),
-    
+    url(r'^Home/.*/GetTeamInfoPerProject/$',GetTeamInfoPerProject),
+    url(r'^Home/.*/UpdateAccountInfo/$',updateAccountInfo),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )

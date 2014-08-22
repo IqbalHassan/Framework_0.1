@@ -58,7 +58,7 @@ $(document).ready(function(){
                 'project_id': $.session.get('project_id'),
                 'user_name':$('#user_name').text().trim()
             },function(data){
-
+                window.location=('/Home/'+ $.session.get('project_id')+'/Requirements/'+data);
             });
         });
     }

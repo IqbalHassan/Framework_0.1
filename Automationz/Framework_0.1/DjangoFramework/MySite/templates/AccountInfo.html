@@ -1,227 +1,57 @@
 {% extends 'BaseTemplate.html' %}
-{% block title %}Create New Task{% endblock %}
+{% block title %}Account Info{% endblock %}
 {% block content %}
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script type="text/javascript" src="/site_media/Jquery/Local/CreateNewTask.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/Local/AccountInfo.js"></script>
+<script type="text/javascript">
+    $('#user_id').attr('href','/Home/User/'+ $.session.get('user_id')+'/');
+</script>
 <article>
     <div align="left">
-        <h3 style="font-size: 19px;"><a style="font-weight: bold"><span id="project_id"></span> / CreateTask</a></h3>
+        <h3 style="font-size: 19px;"><a style="font-weight: bold">Account Information</a></h3>
     </div>
-    <table width="100%">
-        <tr>
-            <td colspan="2"><input class="textbox" placeholder="Title of the Task" id="title" /></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: 0%;">
-                <div class="responsive-tabs">
-                    <h2>Fields</h2>
-                    <div class="tabs-div" align="center">
-                        <form id="tc_enable" class="new_tc_form">
-                            <table>
-                                <tr>
-                                    <td class="tc_form_label_col" align="right">
-                                        <b class="Text">Status:</b>
-                                    </td>
-                                    <td class="tc_form_input_col">
-                                        <table class="status_radio" width="100%">
-                                            <tr>
-                                                <td>
-                                                    <a id="not_started" type="radio" name="status" value="not_started" class="button">Not Started</a>
-                                                </td>
-                                                <td >
-                                                    <a id="started" type="radio" name="status" value="started" class="button" style="width:auto">Started</a>
-                                                </td>
-                                                <td>
-                                                    <a id="complete" type="radio" name="status" value="complete" class="button" style="width:auto">Complete</a>
-                                                </td>
-                                                <td >
-                                                    <a id="over_due" type="radio" name="status" value="over_due" class="button" style="width:auto">Over Due</a>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
+    <div class="responsive-tabs">
+        <h2>Details</h2>
+        <div class="tabs-div" align="center">
+            <table width="100%" align="center" style="margin-top: 2%;padding-bottom: 2%;">
+                <tr>
+                    <td align="right" width="40%" style="vertical-align: 0%;font-size: 140%;"><b class="Text">Full Name:</b></td>
+                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;"><input id="full_name" type="text" class="textbox" value="{{FullName}}"/></td>
+                </tr>
+                <tr>
+                    <td align="right" width="40%" style="vertical-align: 0%;font-size: 140%;"><b class="Text">Designation:</b></td>
+                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;"><input type="text" id="designation" readonly="readonly" class="textbox" value="{{Designation}}"/></td>
+                </tr>
+                <tr>
+                    <td align="right" width="40%" style="vertical-align: 0%;font-size: 140%;"><b class="Text">User Name:</b></td>
+                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;"><input id="user_name" type="text" class="textbox" value="{{Username}}"/></td>
+                </tr>
+                <tr>
+                    <td align="right" width="40%" style="vertical-align: 0%;font-size: 140%;"><b class="Text">Projects:</b></td>
+                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;">
+                        <select id="selected_project_id">
+                            <option value="">Project ID</option>
+                            {% for x in projects %}
+                                <option value="{{x.0}}">{{x.0}} - {{x.1}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right" width="40%" style="vertical-align: 0%;font-size: 140%;"><b class="Text">Teams:</b></td>
+                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;">
+                        <select id="team_info">
+                            <option>Select Project to Get Team</option>
 
-                        <form class="new_tc_form">
-                            <table>
-                                <tr>
-                                    <td class="tc_form_label_col">
-                                        <!--span class="tc_form_required_field">*</span--><b class="Text">Section:</b>
-                                    </td>
-                                    <td class="tc_form_input_col" id="sectiongroup">
-                                        <select class="section select-drop" data-level="" id="1">
-                                            <option>Choose...</option>
-                                        </select>
-                                    </td>
-                                    <td><a class="notification-indicator" data-gotokey="n"><span id="section-flag" class="mail-status unfilled"></span></a></td>
-                                </tr>
-                            </table>
-                        </form>
-                        <HR class="tc_form_divider"/>
-                        <form class="new_tc_form">
-                            <table>
-                                <tr>
-                                    <td class="tc_form_label_col" align="right">
-                                        <b class="Text">Description:</b>
-                                    </td>
-                                    <td class="tc_form_input_col">
-                                        <textarea rows="5" cols="65" id="description"></textarea>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        <form class="new_tc_form">
-                            <table>
-                                <tr>
-                                    <td class="tc_form_label_col" align="right">
-                                        <b class="Text">Teams:</b>
-                                    </td>
-                                    <td class="tc_form_input_col">
-                                        <table>
-                                            {% if team_info %}
-                                            <tr>
-                                                {% for x in team_info %}
-                                                    <td><input type="checkbox" name="team" value="{{x.0}}"/>{{x.1}}</td>
-                                                {% endfor %}
-                                            </tr>
-                                            {% endif %}
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        <form class="new_tc_form">
-                            <table>
-                                <tr>
-                                    <td class="tc_form_label_col" align="right">
-                                        <b class="Text">Assigned Tester:</b>
-                                    </td>
-                                    <td class="tc_form_input_col">
-                                        <table>
-                                            {% if user_list %}
-                                                {% for x in user_list %}
-                                                    <td><input type="checkbox" name="tester" value="{{x.0}}"/>{{x.1}}</td>
-                                                    {% if forloop.last %}
-                                                        </tr>
-                                                    {% else %}
-                                                        {% if forloop.counter|divisibleby:"3" %}
-                                                            </tr><tr>
-                                                        {% endif %}
-                                                    {% endif %}
-                                                {% endfor %}
-                                            {% endif %}
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        <HR class="tc_form_divider"/>
-                        <form class="new_tc_form">
-                            <table>
-                                <tr>
-                                    <td class="tc_form_label_col" align="right">
-                                        <b class="Text">Starting Date:</b>
-                                    </td>
-                                    <td class="tc_form_input_col">
-                                        <table>
-                                            <tr><td><input class="textbox" placeholder="Starting Date" id="starting_date"/></td></tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        <form class="new_tc_form">
-                            <table>
-                                <tr>
-                                    <td class="tc_form_label_col" align="right">
-                                        <b class="Text">Ending Date:</b>
-                                    </td>
-                                    <td class="tc_form_input_col">
-                                        <table>
-                                            <tr><td><input class="textbox" placeholder="Ending Date" id="ending_date"/></td></tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        <HR class="tc_form_divider"/>
-                        <form class="new_tc_form">
-                            <table>
-                                <tr>
-                                    <td class="tc_form_label_col" align="right">
-                                        <b class="Text">Priority:</b>
-                                    </td>
-                                    <td class="tc_form_input_col">
-                                        <table>
-                                            <tr>
-                                                {% if priority_list %}
-                                                    {% for x in priority_list%}
-                                                        <td><input type="radio" name="priority" value="{{x.0.1}}">{{x.0}}</td>
-                                                    {% endfor %}
-                                                {% endif %}
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        <form class="new_tc_form">
-                            <table>
-                                <tr>
-                                    <td class="tc_form_label_col" align="right">
-                                        <b class="Text">Milestone:</b>
-                                    </td>
-                                    <td class="tc_form_input_col">
-                                        <select id="milestone">
-                                            {% if milestone_list %}
-                                                {% for x in milestone_list %}
-                                                    <option value="{{x.0}}"/>{{x.1}}</option>
-                                                {% endfor %}
-                                            {% endif %}
-                                        </select>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        <HR class="tc_form_divider"/>
-                        <div align="center">
-                            <input type='button' id='submit' class="new_tc_form button minibutton primary" value="Save" style="width:auto;"/>
-                        </div>
-
-                    </div>
-                    <h2>Tasks</h2>
-                    <div class="tabs-div">
-
-                    </div>
-                    <h2>Bugs</h2>
-                    <div class="tabs-div">
-
-                    </div>
-                    <h2>Test Cases</h2>
-                    <div class="tabs-div">
-
-                    </div>
-                    <h2>Discussion</h2>
-                    <div class="tabs-div">
-
-                    </div>
-                </div>
-            </td>
-            <td width="4%">
-                <div class="repository-sidebar">
-                    <div class="sunken-menu vertical-right repo-nav js-repo-nav js-repository-container-pjax js-octicon-loaders">
-                        <div class="sunken-menu-contents">
-                            <ul class="sunken-menu-group">
-                            </ul>
-                            <div class="sunken-menu-separator"></div>
-                        </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </table>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="40%" align="right">&nbsp;</td>
+                    <td width="40%" align="left"><input type="button" id="update" class="button primary" value="Update"/></td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </article>
 <script>
     var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
@@ -234,5 +64,4 @@
         RESPONSIVEUI.responsiveTabs();
     });
 </script>
-
 {% endblock %}

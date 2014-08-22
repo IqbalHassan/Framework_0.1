@@ -4,7 +4,9 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script type="text/javascript" src="/site_media/Jquery/Local/CreateTestCase.js" xmlns="http://www.w3.org/1999/html"></script>
-
+<script type="text/javascript">
+    $('#user_id').attr('href','/Home/User/'+ $.session.get('user_id')+'/');
+</script>
 <article>
 
 <!--p class='text' id="question_text" style="color: black; display: block; font-family: Arial, sans-serif; font-size: 25px; font-weight: 900; text-align: center">

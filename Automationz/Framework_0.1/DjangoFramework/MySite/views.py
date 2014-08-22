@@ -47,6 +47,7 @@ from settings import MEDIA_ROOT,PROJECT_ROOT
 import os
 import RequirementOperations
 import TaskOperations
+from TaskOperations import testConnection
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -95,7 +96,7 @@ def TimeDiff(sYourTime):
 def GetProjectNameForTopBar(request):
     if request.is_ajax():
         if request.method=='GET':
-            query="select project_id,project_name from projects"
+            query="select project_id from projects"
             Conn=GetConnection()
             project_name_id=DB.GetData(Conn, query,False)
             #be sure that there will be a project name other wise the page will refresh
@@ -125,6 +126,7 @@ def RunTest(request):
     variables = Context({ })
     output = templ.render(variables)
     return HttpResponse(output)"""
+
 def make_array(get_list):
     refined_list = []
     for each in get_list:
@@ -217,6 +219,7 @@ def make_status_array(Conn, refined_list):
             
     print pass_list
     return pass_list
+
 def ResultTableFetch(index):
     Conn = GetConnection()
     # interval="1"
@@ -263,6 +266,7 @@ def zipdata(data_array, status_array):
         temp = tuple(temp)
         data.append(temp)
     return data
+
 def GetPageCount(request):
     step = 10
     totalPage = 0
@@ -3561,7 +3565,8 @@ def Get_Users(request):
         username = request.GET.get(u'user', '').strip()
         password = request.GET.get(u'pwd', '').strip()
         # if username=='':
-        results = DB.GetData(Conn, "select full_name from user_info where username='" + username + "' and password='" + password + "'", False)
+        query="select user_id,full_name from user_info usr,permitted_user_list pul where pul.user_names = usr.full_name and pul.user_level in('manager','assigned_tester') and usr.username='%s' and usr.password='%s'"%(username,password)
+        results = DB.GetData(Conn,query,False)
 
     if len(results) > 0:
         message = results[0]
@@ -8479,8 +8484,9 @@ def CreateRequirement(request):
             parent_requirement_id=request.GET.get(u'requirement_id','')
             if parent_requirement_id=="":
                 result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name)
-                
-    result=simplejson.dumps("")
+                if result!=False:
+                    requirement_id=result
+    result=simplejson.dumps(requirement_id)
     return HttpResponse(result,mimetype='application/json')
 ##getting required requirement and team info on the project_id change
 
@@ -8703,7 +8709,7 @@ def TaskPage(request,project_id):
     team_info=DB.GetData(Conn,query,False)
     query="select value from config_values where type='Priority'"
     priority=DB.GetData(Conn,query,False)
-    query="select value from config_values where type='milestone'"
+    query="select id,value from config_values where type='milestone'"
     milestone_list=DB.GetData(Conn,query,False)
     #get the names from permitted_user_list
     query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=ti.user_id and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
@@ -8749,9 +8755,56 @@ def SubmitNewTask(request):
             start_date=convert_date_from_string(start_date)
             end_date=convert_date_from_string(end_date)
             teams=request.GET.get(u'team','').split("|")
-            tester=request.GET.get(u'tester','').split("|")
+            tester=request.GET.get(u'tester','')
             priority=request.GET.get(u'priority','')
             milestone=request.GET.get(u'milestone','')
             project_id=request.GET.get(u'project_id','')
             section_path=request.GET.get(u'section_path','')
-            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path)
+            user_name=request.GET.get(u'user_name','')
+            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,user_name)
+    results=simplejson.dumps(result)
+    return HttpResponse(results,mimetype='application/json')    
+def ViewTaskPage(request,project_id):
+    return HttpResponse(project_id)    
+def GetProfileInfo(request,user_id):
+    try:
+        query="select distinct user_id,full_name,user_level,username from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'"%user_id
+        Conn=GetConnection()
+        user_column=["UserID","FullName","Designation","Username"]
+        result=DB.GetData(Conn,query,False)
+        temp_dict={}
+        for idx,each in enumerate(zip(user_column,result[0])):
+            if idx==2:
+                temp_dict.update({each[0]:(" ").join(each[1].split("_")).title()})
+            else:
+                temp_dict.update({each[0]:each[1]})
+        
+        query="select project_id,project_name from projects"
+        project_id=DB.GetData(Conn,query,False)
+        temp_dict.update({'projects':project_id})
+
+        return render_to_response("AccountInfo.html",temp_dict)
+    except Exception,e:
+        print "Exception:",e
+def GetTeamInfoPerProject(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            project_id=request.GET.get(u'project_id','')
+            query="select id,value from project_team_map ptm,config_values c where cast(ptm.team_id as int)=c.id and ptm.project_id='%s'"%project_id
+            Conn=GetConnection()
+            try:
+                testConnection(Conn)
+                team_id=DB.GetData(Conn,query,False)
+                Dict={'teams':team_id}
+                message=simplejson.dumps(Dict)
+                return HttpResponse(message,mimetype='application/json')
+            except Exception,e:
+                print "Exception:",e
+def updateAccountInfo(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            full_name=request.GET.get(u'full_name','')
+            user_name=request.GET.get(u'user_name','')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            

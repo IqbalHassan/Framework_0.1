@@ -5,6 +5,7 @@ $(document).ready(function(){
 
     var user = $.session.get('fullname');
     $(".logged_user").text($.session.get('fullname'));
+    $('#user_id').attr('href','/Home/User/'+ $.session.get('user_id')+'/');
     //$(".test_count").text($.session.get('testing'));
     //$(".require_count").text($.session.get('requires'));
 
