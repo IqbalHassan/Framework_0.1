@@ -6530,6 +6530,7 @@ def Get_MileStones(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+
 def Get_AssignedTests(request):
     if request.is_ajax():
         if request.method == "GET":
@@ -7515,8 +7516,40 @@ def UpdateSetTag(request):
 
 def select2(request):
     return render(request, 'select2.html', {})
+"""def manageMilestone(request):
+    return render_to_response('Milestone.html',{})"""
 def manageMilestone(request):
-    return render_to_response('Milestone.html',{})
+    query="select distinct value from config_values where type='Team'"
+    Conn=GetConnection()
+    team_name=DB.GetData(Conn, query)
+    final=[]
+    count=0
+    temp=[]
+    for x in team_name:
+        temp.append(x)
+        count+=1
+        if count>5:
+            final.append(temp)
+            temp=[]
+            count=0
+    final.append(temp)
+    team_name=final
+    query="select distinct user_names,user_level from permitted_user_list where user_level in ('manager','assigned_tester')"
+    owners=DB.GetData(Conn,query,False)
+    final=[]
+    count=0
+    temp=[]
+    for x in owners:
+        temp.append(x)
+        count+=1
+        if count>5:
+            final.append(temp)
+            temp=[]
+            count=0
+    final.append(temp)
+    owners=final            
+    Dict={'teams':team_name,'owners':owners}
+    return render_to_response('Milestone.html',Dict)
 def ManageTask(request):
     return render_to_response('ManageTask.html',{})
 def FetchProject(request):
