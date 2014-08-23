@@ -7,27 +7,17 @@ var project_id="";
 var team_id="";
 $(document).ready(function(){
     //get all the other information
-    user_name=$('#user_name').val().trim();
+    user_name=$('#username').val().trim();
     full_name=$('#full_name').val().trim();
-    project_id=$('#project_id  option:selected').val();
-    team_id=$('#team_id option:selected').val();
-    Submit_button_preparation();
-});
-function Submit_button_preparation(){
-    $('#selected_project_id').on('change',function(){
-        $.get('GetTeamInfoPerProject/',{
-            'project_id':$(this).val().trim()
-        },function(data){
-            var team_info=data['teams'];
-            var message=createOption(team_info);
-            $('#team_info').html(message);
-        });
-    });
+    var old_full_name=full_name;
+    project_id=$('#selected_project_id  option:selected').val();
+    team_id=$('#selected_team_id option:selected').val();
+
     $('#update').click(function(){
-        var last_user_name=$('#user_name').val().trim();
+        var last_user_name=$('#username').val().trim();
         var last_full_name=$('#full_name').val().trim();
-        var last_project_id=$('#project_id option:selected').val();
-        var last_team_id=$('#team_id option:selected').val();
+        var last_project_id=$('#selected_project_id option:selected').val();
+        var last_team_id=$('#selected_team_id option:selected').val();
 
         if(user_name===last_user_name){
             user_name="";
@@ -35,6 +25,7 @@ function Submit_button_preparation(){
         else{
             user_name=last_user_name;
         }
+
         if(full_name===last_full_name){
             full_name="";
         }
@@ -47,19 +38,35 @@ function Submit_button_preparation(){
         else{
             project_id=last_project_id;
         }
-        if(team_id=last_team_id){
+        if(team_id===last_team_id){
             team_id="";
         }
         else{
             team_id=last_team_id;
         }
-        $.get('UpdateAccountInfo/',{
-            'user_name':user_name.trim(),
-            'full_name':full_name.trim(),
-            'project_id':project_id.trim(),
-            'team_id':team_id.trim()
+        $.get('UpdateAccountInfo',{
+            'old_full_name':old_full_name,
+            'user_name':user_name,
+            'full_name':full_name,
+            'project_id':project_id,
+            'team_id':team_id,
+            'user_id': $.session.get('user_id')
         },function(data){
-
+            if(data=='true'){
+                window.location.reload(true);
+            }
+        });
+    });
+    Submit_button_preparation();
+});
+function Submit_button_preparation(){
+    $('#selected_project_id').on('change',function(){
+        $.get('GetTeamInfoPerProject/',{
+            'project_id':$(this).val().trim()
+        },function(data){
+            var team_info=data['teams'];
+            var message=createOption(team_info);
+            $('#selected_team_id').html(message);
         });
     });
 }

@@ -7645,7 +7645,7 @@ def GetTeamInfo(request):
             if len(team_id)==1:
                 team_id=str(team_id[0]).strip()
                 for each in zip(other_value,list_value):
-                    query="select user_id,user_names,user_level from permitted_user_list where user_id in (select user_id from team_info where team_id =(select id from config_values where value='%s')) and user_level='%s'"%(team,each[0].strip())
+                    query="select user_id,user_names,user_level from permitted_user_list where user_id in (select cast(user_id as int) from team_info where team_id =(select id from config_values where value='%s'  and type='Team')) and user_level='%s'"%(team,each[0].strip())
                     if(DB.IsDBConnectionGood(Conn)==False):
                         time.sleep(1)
                         Conn=GetConnection()
@@ -7716,7 +7716,7 @@ def TeamData(request,team_name):
     team_name=team_name.replace('_',' ')
     #get the team name member
     #query="select name,rank from team_info where team_id =(select id from config_values where type='Team' and value='%s')"%team_name
-    query="select user_id,user_names,user_level from permitted_user_list where user_id in(select user_id from team_info where team_id=(select id from config_values where type='Team' and value='%s'))"%team_name
+    query="select user_id,user_names,user_level from permitted_user_list where user_id in(select cast(user_id as int) from team_info where team_id=(select id from config_values where type='Team' and value='%s'))"%team_name
     print query
     Conn=GetConnection()
     getData=DB.GetData(Conn,query,False)
@@ -8745,7 +8745,7 @@ def TaskPage(request,project_id):
     query="select id,value from config_values where type='milestone'"
     milestone_list=DB.GetData(Conn,query,False)
     #get the names from permitted_user_list
-    query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=ti.user_id and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
+    query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
     user_list=DB.GetData(Conn,query,False)
     Dict={
           'team_info':team_info,
@@ -8815,7 +8815,21 @@ def GetProfileInfo(request,user_id):
         query="select project_id,project_name from projects"
         project_id=DB.GetData(Conn,query,False)
         temp_dict.update({'projects':project_id})
-
+        #load default projects
+        
+        query="select default_project,default_team from default_choice where user_id='%s'"%user_id
+        testConnection(Conn)
+        projects=DB.GetData(Conn,query,False)
+        if isinstance(projects,list) and len(projects)==0:
+            temp_dict.update({'selected_project_id':"",'selected_team_id':""})
+        else:
+            temp_dict.update({'selected_project_id':projects[0][0],'selected_team_id':projects[0][1]})
+        #get team for the definite projects
+        if(temp_dict['selected_project_id']!=""):
+            query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%temp_dict['selected_project_id']
+            testConnection(Conn)
+            team_id=DB.GetData(Conn,query,False)
+            temp_dict.update({'teams':team_id})
         return render_to_response("AccountInfo.html",temp_dict)
     except Exception,e:
         print "Exception:",e
@@ -8836,8 +8850,60 @@ def GetTeamInfoPerProject(request):
 def updateAccountInfo(request):
     if request.is_ajax():
         if request.method=='GET':
+            old_full_name=request.GET.get(u'old_full_name','')
             full_name=request.GET.get(u'full_name','')
             user_name=request.GET.get(u'user_name','')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            
+            user_id=request.GET.get(u'user_id','')
+            try:
+                Conn=GetConnection()
+                #form dict according to the change
+                temp_dict={}
+                if full_name!="":
+                    temp_dict.update({'full_name':full_name.strip()})
+                if user_name!="":
+                    temp_dict.update({'username':user_name.strip()})
+                if len(temp_dict.keys())!=0:
+                    
+                    sWhereQuery="where full_name='%s'"%full_name
+                    result=DB.UpdateRecordInTable(Conn,"user_info",sWhereQuery,**temp_dict)
+                    if result==True:
+                        testConnection(Conn)
+                        if 'full_name' in temp_dict.keys() and 'username' in temp_dict.keys():
+                            del temp_dict['username']
+                        sWhereQuery="where user_id='%s'"%user_id
+                        result=DB.UpdateRecordInTable(Conn,"permitted_user_list",sWhereQuery,**temp_dict)
+                #check to update or create
+                query="select count(*) from default_choice where user_id='%s'"%user_id
+                testConnection(Conn)
+                result=DB.GetData(Conn,query)
+                if(isinstance(result,list) and result[0]==0):
+                    #create a new dict
+                    dict={
+                          'user_id':user_id,
+                          'default_project':project_id,
+                          'default_team':team_id
+                    }
+                    testConnection(Conn)
+                    result=DB.InsertNewRecordInToTable(Conn,"default_choice",**dict)
+                    if result==True:
+                        message= True
+                    else:
+                        message=False
+                else:                    
+                    dict={}
+                    if project_id!="":
+                        dict.update({'default_project':project_id})
+                    if team_id!="":
+                        dict.update({'default_team':team_id})
+                    sWhereQuery="where user_id='%s'"%user_id
+                    result=DB.UpdateRecordInTable(Conn,"default_choice",sWhereQuery,**dict)
+                    if result==True:
+                        message=True
+                    else:
+                        message=False
+                result=simplejson.dumps(message)
+                return HttpResponse(result,mimetype='application/json')
+            except Exception,e:
+                print "Exception:",e
