@@ -82,17 +82,13 @@
                     </td>
                     <td>
                         <table>
+                                {% if team_info %}
                             <tr>
-                                {% for x in teams %}
-                                <td style="vertical-align: 0%">
-                                    <table>
-                                        {% for y in x %}
-                                        <tr><td><input type="checkbox" name="team" value="{{y}}"/>{{y}}</td></tr>
-                                        {% endfor %}
-                                    </table>
-                                </td>
-                                {% endfor%}
+                                {% for x in team_info %}
+                                <td><input type="checkbox" name="team" value="{{x.0}}"/>{{x.1}}</td>
+                                {% endfor %}
                             </tr>
+                            {% endif %}
                         </table>
                     </td>
                 </tr>

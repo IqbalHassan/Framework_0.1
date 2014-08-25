@@ -39,15 +39,44 @@ function New_UI(){
                 $(this).val(value.trim());
                 operation = 2;
                 $("#renamebox").show();
-                $("#starting_date").val(ui.item[1]);
-                $("#ending_date").val(ui.item[2]);
+                if(ui.item[1]=="not_started")
+                {
+                    $('a[value="not_started"]').addClass('selected')
+                    $('a[value="started"]').removeClass('selected')
+                    $('a[value="complete"]').removeClass('selected')
+                    $('a[value="over_due"]').removeClass('selected')
+                }
+                else if(ui.item[1]=="started")
+                {
+                    $('a[value="not_started"]').removeClass('selected')
+                    $('a[value="started"]').addClass('selected')
+                    $('a[value="complete"]').removeClass('selected')
+                    $('a[value="over_due"]').removeClass('selected')
+                }
+                else if(ui.item[1]=="complete")
+                {
+                    $('a[value="not_started"]').removeClass('selected')
+                    $('a[value="started"]').removeClass('selected')
+                    $('a[value="complete"]').addClass('selected')
+                    $('a[value="over_due"]').removeClass('selected')
+                }
+                else if(ui.item[1]=="over_due")
+                {
+                    $('a[value="not_started"]').removeClass('selected')
+                    $('a[value="started"]').removeClass('selected')
+                    $('a[value="complete"]').removeClass('selected')
+                    $('a[value="over_due"]').addClass('selected')
+                }
+                $("#ms_desc").val(ui.item[2]);
+                $("#starting_date").val(ui.item[3]);
+                $("#ending_date").val(ui.item[4]);
                 return false;
             }
         }
     }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
         return $( "<li></li>" )
             .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+ " - " + item[2] +"</a>" )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[1] +"</a>" )
             .appendTo( ul );
     };
 
@@ -78,19 +107,43 @@ function New_UI(){
             .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
             .appendTo( ul );
     };
-    
+
     $('#ms_button').live('click',function(){
+
+        //get the statuses
+        var status="";
+        if($('a[value="not_started"]').hasClass('selected'))
+            status = "not_started";
+        if($('a[value="started"]').hasClass('selected'))
+            status = "started";
+        if($('a[value="complete"]').hasClass('selected'))
+            status = "complete";
+        if($('a[value="over_due"]').hasClass('selected'))
+            status = "over_due";
+
+        var description = $("#ms_desc").val();
+        var created_by = "";
+        var modified_by = "";
+
+        var team=[];
+        $('input[name="team"]:checked').each(function(){
+            team.push($(this).val());
+        });
+
        // var operation=$('#operation_milestone option:selected').val();
         if(operation==1){
             var new_name=$('#msinput').val();
             var start_date = $("#starting_date").val();
             var end_date = $("#ending_date").val();
+            created_by = $.session.get('fullname');
+
         }
         else if(operation==2){
             var new_name=$('#msinput2').val();
             var old_name=$('#msinput').val();
             var start_date = $("#starting_date").val();
             var end_date = $("#ending_date").val();
+            modified_by = $.session.get('fullname');
         }
         else{
             var new_name=$('#msinput').val();
@@ -117,7 +170,7 @@ function New_UI(){
             $('#error_milestone').css({'display':'block'});
         }
         else {
-            $.get('MileStoneOperation',{old_name:old_name,new_name:new_name,operation:operation,start_date:start_date.trim(),end_date:end_date.trim()},function(data){
+            $.get('MileStoneOperation',{status:status,description:description.trim(),old_name:old_name,new_name:new_name,operation:operation,'team':team.join("|").trim(),start_date:start_date.trim(),end_date:end_date.trim(),created_by:created_by,modified_by:modified_by},function(data){
                 if(data['confirm_message']==""){
                     var color='red';
                 }
@@ -174,7 +227,7 @@ function status_button_preparation(){
     });
 }
 
-function MileStoneTab(){
+/*function MileStoneTab(){
     $('#msinput').autocomplete({
         source:function(request,response){
             if($('#operation_milestone option:selected').val()!="0"){
@@ -317,7 +370,7 @@ function MileStoneTab(){
             })
         }
     });
-}
+}*/
 function milestone_notify(title_msg,message,icon){
     // At first, let's check if we have permission for notification
     // If not, let's ask for it
