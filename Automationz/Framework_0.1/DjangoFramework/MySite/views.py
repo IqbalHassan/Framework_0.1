@@ -11,6 +11,7 @@ import time
 import datetime
 import EmailNotify
 import urllib2
+import datetime
             
 
 from django.contrib.auth import authenticate, login
@@ -6512,7 +6513,7 @@ def AutoMileStone(request):
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select name,cast(starting_date as text),cast(finishing_date as text) from milestone_info where name ilike'%%%s%%'" % milestone
+            query = "select name,status,description,cast(starting_date as text),cast(finishing_date as text) from milestone_info where name ilike'%%%s%%'" % milestone
             milestone_list = DB.GetData(Conn, query, False)
     result = simplejson.dumps(milestone_list)
     return HttpResponse(result, mimetype='application/json')
@@ -6523,9 +6524,9 @@ def Get_MileStones(request):
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select name,cast(starting_date as text),cast(finishing_date as text) from milestone_info order by name"
+            query = "select name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by name"
             milestone_list = DB.GetData(Conn, query, False)
-    Heading = ['Milestone Name', 'Starting Date', 'Finishing Date']
+    Heading = ['Milestone Name','Description', 'Starting Date', 'Finishing Date', 'Status']
     results = {'Heading':Heading, 'TableData':milestone_list}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -6550,7 +6551,7 @@ def Get_Requirements(request):
             Conn = GetConnection()
             user = request.GET.get(u'user', '').strip()    
             print user    
-            TableData = DB.GetData(Conn, "select r.requirement_id,r.requirement_title,r.requirement_description,rtm.team_id from requirements r, requirement_team_map rtm,team_info ti where r.requirement_id=rtm.requirement_id and rtm.team_id::int=ti.team_id and ti.name like '%"+user+"%'", False)
+            TableData = DB.GetData(Conn, "select r.requirement_id,r.requirement_title,r.requirement_description,rtm.team_id from requirements r, requirement_team_map rtm,team_info ti, permitted_user_list pul where r.requirement_id=rtm.requirement_id and rtm.team_id::int=ti.team_id and ti.user_id::int=pul.user_id and pul.user_names like '%"+user+"%'", False)
 
     Heading = ['Requirement ID', 'Requirement Title', 'Requirement Description', 'Team ID']
     results = {'Heading':Heading, 'TableData':TableData}
@@ -6561,14 +6562,19 @@ def Get_Requirements(request):
 def MileStoneOperation(request):
     if request.is_ajax():
         if request.method == 'GET':
+            now=datetime.datetime.now().date()
             Conn = GetConnection()
             operation = request.GET.get(u'operation', '')
+            description = request.GET.get(u'description','')
+            status = request.GET.get(u'status','')
+            team_id=request.GET.get(u'team','').split("|")
             confirm_message = ""
             error_message = ""
             if operation == "2":
                 new_name = request.GET.get(u'new_name', '')
                 old_name = request.GET.get(u'old_name', '')
                 old_name = old_name.strip()
+                modified_by = request.GET.get(u'modified_by','')
                 start_date = request.GET.get(u'start_date','').strip()
                 end_date = request.GET.get(u'end_date','').strip()
                 start_date=start_date.split('-')
@@ -6590,8 +6596,15 @@ def MileStoneOperation(request):
                     Dict = {'value':new_name.strip()}
                     print DB.UpdateRecordInTable(Conn, "config_values", condition, **Dict)            
                     mcondition = "where id='%s' and name='%s'" % (mid[0],old_name)
-                    mDict = {'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date}
+                    mDict = {'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date,'status':status,'description':description,'modified_by':modified_by,'modified_date':now}
                     print DB.UpdateRecordInTable(Conn, "milestone_info", mcondition, **mDict)
+                    result = DB.DeleteRecord(Conn,"milestone_team_map",milestone_id=mid[0])
+                    for each in team_id:
+                        team_Dict={
+                                   'milestone_id':mid[0],
+                                   'team_id':each.strip(),
+                        }
+                        result=DB.InsertNewRecordInToTable(Conn,"milestone_team_map",**team_Dict)
                     confirm_message = "MileStone is modified"
                 else:
                     confirm_message = "No milestone is found"
@@ -6599,6 +6612,7 @@ def MileStoneOperation(request):
             if operation == "1":
                 new_name = request.GET.get(u'new_name', '')
                 new_name = new_name.strip()
+                created_by = request.GET.get(u'created_by','')
                 start_date = request.GET.get(u'start_date','').strip()
                 end_date = request.GET.get(u'end_date','').strip()
                 start_date=start_date.split('-')
@@ -6611,8 +6625,14 @@ def MileStoneOperation(request):
                     Dict = {'type':'milestone', 'value':new_name.strip()}
                     print DB.InsertNewRecordInToTable(Conn, "config_values", **Dict)
                     mid = DB.GetData(Conn,"select id from config_values where type='milestone' and value = '"+new_name+"'")
-                    mDict = {'id':mid[0], 'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date}
+                    mDict = {'id':mid[0], 'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date,'status':status,'description':description,'created_by':created_by,'created_date':now,'modified_by':created_by,'modified_date':now}
                     print DB.InsertNewRecordInToTable(Conn, "milestone_info", **mDict)
+                    for each in team_id:
+                        team_Dict={
+                                   'milestone_id':mid[0],
+                                   'team_id':each.strip(),
+                        }
+                        result=DB.InsertNewRecordInToTable(Conn,"milestone_team_map",**team_Dict)
                     confirm_message = "MileStone is created Successfully"
                 else:
                     error_message = "MileStone name exists. Can't create a new one"
@@ -7519,36 +7539,24 @@ def select2(request):
 """def manageMilestone(request):
     return render_to_response('Milestone.html',{})"""
 def manageMilestone(request):
-    query="select distinct value from config_values where type='Team'"
     Conn=GetConnection()
-    team_name=DB.GetData(Conn, query)
-    final=[]
-    count=0
-    temp=[]
-    for x in team_name:
-        temp.append(x)
-        count+=1
-        if count>5:
-            final.append(temp)
-            temp=[]
-            count=0
-    final.append(temp)
-    team_name=final
-    query="select distinct user_names,user_level from permitted_user_list where user_level in ('manager','assigned_tester')"
-    owners=DB.GetData(Conn,query,False)
-    final=[]
-    count=0
-    temp=[]
-    for x in owners:
-        temp.append(x)
-        count+=1
-        if count>5:
-            final.append(temp)
-            temp=[]
-            count=0
-    final.append(temp)
-    owners=final            
-    Dict={'teams':team_name,'owners':owners}
+    query="select project_id, project_name from projects"
+    project_info=DB.GetData(Conn,query,False)
+    query="select id,value from config_values where type='milestone'"
+    milestone_info=DB.GetData(Conn,query,False)
+    #get the current projects team info
+    query="select distinct id,value from config_values where type='Team'"
+    team_info=DB.GetData(Conn,query,False)
+    #get the existing requirement id for parenting
+    #query="select distinct requirement_id,requirement_title from requirements where project_id='%s' order by requirement_id"%project_id
+    #requirement_list=DB.GetData(Conn,query,False)
+    Dict={
+          #'project_id':project_id,
+          #'project_list':project_info,
+          #'milestone_list':milestone_info,
+          'team_info':team_info
+          #'requirement_list':requirement_list
+    }
     return render_to_response('Milestone.html',Dict)
 def ManageTask(request):
     return render_to_response('ManageTask.html',{})
