@@ -18,7 +18,9 @@ $(document).ready(function(){
         window.location = '/Home/Login/';
     }
     $(".welcome").text($.session.get('fullname'));
-    $.get('GetProjectNameForTopBar',{},function(data){
+    $.get('GetProjectNameForTopBar',{
+        'user_id': $.session.get('user_id')
+    },function(data){
         var message="";
         var projects=data['projects'];
         for(var i=0;i<projects.length;i++){
@@ -26,10 +28,39 @@ $(document).ready(function(){
         }
         $('#project_identity').append(message);
         $('#project_identity').val($.session.get('project_id'));
+        var message="";
+        var teams=data['teams'];
+        for(var i=0;i<teams.length;i++){
+            message+=('<option value="'+teams[i][0]+'">'+teams[i][1]+'</option>');
+        }
+        $('#default_team_identity').append(message);
+        $('#default_team_identity').val($.session.get('default_team_identity'));
     });
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val());
-        window.location.reload(true);
+        if($(this).val()!=""){
+            $.get('UpdateDefaultProjectForUser',{
+                'user_id': $.session.get('user_id'),
+                'project_id': $(this).val()
+            },function(data){
+                if(data==true){
+                    window.location.reload(true);
+                }
+            });
+        }
+    });
+    $('#default_team_identity').on('change',function(){
+        $.session.set('default_team_identity',$(this).val());
+        if($(this).val()!=""){
+            $.get('UpdateDefaultTeamForUser',{
+                'user_id': $.session.get('user_id'),
+                'team_id': $(this).val()
+            },function(data){
+                if(data==true){
+                    window.location.reload(true);
+                }
+            });
+        }
     });
     [].slice.call( document.querySelectorAll( '.progress-button' ) ).forEach( function( bttn, pos ) {
 		new UIProgressButton( bttn, {

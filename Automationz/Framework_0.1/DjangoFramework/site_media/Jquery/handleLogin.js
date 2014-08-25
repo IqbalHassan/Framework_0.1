@@ -41,6 +41,7 @@ $(document).ready(function() {
 	                    $.session.set('fullname', data['message'][1]);
 	                    $.session.set('log', 'logged');
 	                    $.session.set('project_id', data['project_id']);
+                        $.session.set('default_team_identity',data['team_id']);
                         $.session.set('user_id',data['message'][0]);
 						setTimeout(function() {
 							window.location.href = path_to_redirect;

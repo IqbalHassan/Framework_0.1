@@ -100,10 +100,16 @@ def GetProjectNameForTopBar(request):
             Conn=GetConnection()
             project_name_id=DB.GetData(Conn, query,False)
             #be sure that there will be a project name other wise the page will refresh
+            user_id=request.GET.get(u'user_id','')
             Dict={
                   'projects':project_name_id,
-                  'default_project':project_name_id[0][0]
                   }
+            query="select id,value from config_values where type='Team'"
+            testConnection(Conn)
+            all_teams=DB.GetData(Conn,query,False)
+            Dict.update({
+                'teams':all_teams
+            })
     result=simplejson.dumps(Dict)
     return HttpResponse(result,mimetype='application/json')
 
@@ -3572,13 +3578,21 @@ def Get_Users(request):
         message = results[0]
     else:
         message = "User Not Found!"
-    query="select project_id from projects order by project_id limit 1"
-    project_id=DB.GetData(Conn,query,False)
-    if len(project_id)==0:
-        project_id=""
+    Dict={'message':message}
+    #get the default_team and project id
+    query="select default_project,default_team from default_choice where user_id='%s'"%results[0][0]
+    testConnection(Conn)
+    default_choice=DB.GetData(Conn,query,False)
+    if isinstance(default_choice,list) and len(default_choice)==1:
+        Dict.update({
+            'project_id':default_choice[0][0],
+            'team_id':default_choice[0][1]
+        })
     else:
-        project_id=project_id[0][0]
-    Dict={'message':message,'project_id':project_id}
+        Dict.update({
+            'project_id':"",
+            'team_id':""
+        })
     json = simplejson.dumps(Dict)
     return HttpResponse(json, mimetype='application/json')
 
@@ -7551,7 +7565,20 @@ def manageMilestone(request):
     Dict={'teams':team_name,'owners':owners}
     return render_to_response('Milestone.html',Dict)
 def ManageTask(request):
-    return render_to_response('ManageTask.html',{})
+    #get the distinct milestone from the task table
+    query="select id,value from config_values where id in(select cast(tasks_milestone as int) from tasks)"
+    Conn=GetConnection()
+    tasks_milestone_id=DB.GetData(Conn,query,False)
+    final=[]
+    for each in tasks_milestone_id:
+        query="select tasks_id,tasks_title from tasks where tasks_milestone='%s'"%each[0]
+        testConnection(Conn)
+        task_id=DB.GetData(Conn,query,False)
+        final.append((each,task_id))
+    Dict={
+          'milestone_list':final
+    }    
+    return render_to_response('ManageTask.html',Dict)
 def FetchProject(request):
     if request.is_ajax():
         if request.method=='GET':
@@ -8907,3 +8934,32 @@ def updateAccountInfo(request):
                 return HttpResponse(result,mimetype='application/json')
             except Exception,e:
                 print "Exception:",e
+                
+def UpdateDefaultTeamForUser(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            user_id=request.GET.get(u'user_id','').strip()
+            team_id=request.GET.get(u'team_id','').strip()
+            sWhereQuery="where user_id='%s'"%user_id
+            Conn=GetConnection()
+            result=DB.UpdateRecordInTable(Conn, "default_choice", sWhereQuery,default_team=team_id)
+            if result==True:
+                message=True
+            else:
+                message=False
+            result=simplejson.dumps(message)
+            return HttpResponse(result,mimetype='application/json')
+def UpdateDefaultProjectForUser(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            user_id=request.GET.get(u'user_id','').strip()
+            project_id=request.GET.get(u'project_id','').strip()
+            sWhereQuery="where user_id='%s'"%user_id
+            Conn=GetConnection()
+            result=DB.UpdateRecordInTable(Conn, "default_choice", sWhereQuery,default_project=project_id)
+            if result==True:
+                message=True
+            else:
+                message=False
+            result=simplejson.dumps(message)
+            return HttpResponse(result,mimetype='application/json')

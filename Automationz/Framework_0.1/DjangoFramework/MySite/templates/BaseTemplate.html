@@ -123,7 +123,7 @@
                         <li><a rel="prefetch" href="/Home/ManageRequirement/"><i class="fa fa-anchor fa-fw fa-lg"></i> Manage Requirement (Development)</a></li>
                     </ul>
                 </li>
-                <li style="width:14%">
+                <li style="width:13%">
                     <a rel="prerender" href="" aria-haspopup="true"><span><i class="fa fa-sort-amount-asc fa-fw fa-lg"></i> Reports</span></a>
                     <ul>
                         <li><a rel="prefetch" href="/Home/BundleReport/"><i class="fa fa-archive fa-fw fa-lg"></i> Bundle Report</a></li>
@@ -145,13 +145,19 @@
                         <li><a id="project_new" href="/Home/CreateProject/"><i class="fa fa-book fa-lg fa-fw"></i>Manage Project</a></li>
                     </ul>
                 </li-->
-                <li style="width:16.4%">
+                <li style="width:10.2%">
                     <select rel="prefetch" class="project" id="project_identity" style="height: 100%">
-                        <option>Select any project</option>
+                        <option value="">Select any project</option>
 
                     </select>
                 </li>
-                <li style="width:15%">
+                <li style="width:10.2%">
+                    <select rel="prefetch" class="project" id="default_team_identity" style="height: 100%">
+                        <option value="">Select any Team</option>
+
+                    </select>
+                </li>
+                <li style="width:12%">
                     <a rel="prefetch" href=""><span class="welcome" id="user_name"></span></a>
 
                     <ul>
@@ -163,7 +169,7 @@
                         <li><a id="devmode" href="#"><i class="fa fa-code fa-lg fa-fw"></i> Dev mode</a></li>
                         <li><a id="project_new" href="/Home/CreateProject/"><i class="fa fa-book fa-lg fa-fw"></i> Manage Project</a></li>
                         <li><a rel="prefetch" href="/Home/ManageMilestone/"><i class="fa fa-archive fa-fw fa-lg"></i> Manage Milestone</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTeam/"><i class="fa fa-hand-o-up fa-fw fa-lg"></i> Manage Team (Development)</a></li>
+                        <li><a rel="prefetch" href="/Home/ManageTeam/"><i class="fa fa-hand-o-up fa-fw fa-lg"></i> Manage Team</a></li>
                         <hr>
                         <li><a rel="prefetch" href="/Home/Login/" class="hint--left hint--bounce hint--rounded" data-hint="Logout"><i class="fa fa-sign-out fa-fw fa-lg"></i> Sign Out</a></li>
                     </ul>
@@ -282,7 +288,9 @@
         </footer>
     </div>
 </div>
-
+<script type="text/javascript">
+    $('#user_id').attr('href','/Home/User/'+ $.session.get('user_id')+'/');
+</script>
 <script src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.js"></script>
 <script src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.min.js"></script>
 <script>
