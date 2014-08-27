@@ -93,11 +93,25 @@ function New_UI(){
                     $('a[value="complete"]').removeClass('selected')
                     $('a[value="over_due"]').addClass('selected')
                 }
+
                 $("#ms_desc").val(ui.item[2]);
                 $("#starting_date").val(ui.item[3]);
                 $("#ending_date").val(ui.item[4]);
 
-                $.get("MilestoneRequirements/",{term : value},function(data)
+
+                $('input[name="team"]:checked').removeAttr('checked')
+                $.get("MilestoneTeams",{term : value},function(data)
+                {
+                    $('input[name="team"]').each(function(){
+                        if($(this).val().find(data))
+                        {
+                            $(this).attr('checked', true)
+                        }
+                    });
+                });
+
+
+                $.get("MilestoneRequirements",{term : value},function(data)
                 {
                     ResultTable(milereqs,data['Heading'],data['TableData'],"Milestone Requirements");
                     make_req_clickable();

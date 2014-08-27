@@ -6558,6 +6558,17 @@ def Milestone_Requirements(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Milestone_Teams(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            milestone = request.GET.get(u'term', '')
+            print milestone
+            query = "select distinct mtm.team_id from milestone_team_map mtm, milestone_info mi where mi.id=mtm.milestone_id and mi.name like '%"+milestone+"%'"
+            teams_list = DB.GetData(Conn, query, False)
+    json = simplejson.dumps(teams_list)
+    return HttpResponse(json, mimetype='application/json')
+
 
 def Get_AssignedTests(request):
     if request.is_ajax():
