@@ -103,9 +103,12 @@ function New_UI(){
                 $.get("MilestoneTeams",{term : value},function(data)
                 {
                     $('input[name="team"]').each(function(){
-                        if($(this).val().find(data))
+                        for(var i=0;i<data.length;i++)
                         {
-                            $(this).attr('checked', true)
+                            if($(this).val()==data[i])
+                            {
+                                $(this).attr('checked', true)
+                            }
                         }
                     });
                 });
