@@ -20,7 +20,7 @@ $(document).ready(function() {
     show_radio_button();
     vertical_sidebar();
     AutoCompleteSearchForPrompt();
-
+    //GetBrowserSections();
     /*****************Shetu's Function************************/
     AutoCompleteTag();
     /*****************End Shetu************************/
@@ -43,7 +43,7 @@ $(document).ready(function() {
     if (indx != -1 || indx2 != -1) {
         //Here the things will be added
         //AutoCompleteTagSearch
-
+        //GetBrowserSections();
         $('#add_test_step').live('click',function(){
             addMainTableRow('#steps_table');
 
@@ -196,58 +196,7 @@ $(document).ready(function() {
         });
 
         //Sections
-        $.ajax({
-            url:'GetSections/',
-            dataType : "json",
-            data : {
-                section : ''
-            },
-            success: function( json ) {
-                if(json.length > 1)
-                    for(var i = 1; i < json.length; i++)
-                        json[i] = json[i][0].replace(/_/g,' ')
-                $.each(json, function(i, value) {
-                    if(i == 0)return;
-                    $(".section[data-level='']").append($('<option>').text(value).attr('value', value));
-                });
-            }
-        });
-        $(".section[data-level='']").change(function(){
-            isAtLowestSection = false;
-            recursivelyAddSection(this);
-            $("#section-flag").removeClass("filled");
-            $("#section-flag").addClass("unfilled");
-        });
-
-        //Browsers
-        $.ajax({
-            url:'GetBrowsers/',
-            dataType : "json",
-            data : {
-                browser : ''
-            },
-            success: function( json ) {
-                if(json.length > 1)
-                    for(var i = 1; i < json.length; i++)
-                        json[i] = json[i][0].replace(/_/g,' ')
-                $.each(json, function(i, value) {
-
-                    //$(".browser[data-level='']").append($('<option>').text(value).attr('value', value));
-                    $(".browser").append('<td width="25%">' +
-                        '<input id=' +
-                        value +
-                        ' type="checkbox" name="dependancy" value=' +
-                        value +
-                        '>' +
-                        '<label for=' +
-                        value +
-                        '>' +
-                        value +
-                        '</label>' +
-                        '</td>');
-                });
-            }
-        });
+        GetBrowserSections();
         DeleteSearchQueryText();
         if(indx2 != -1 || template){
             $.get("TestCase_EditData",
@@ -415,12 +364,16 @@ $(document).ready(function() {
                     var req_id = data['Requirement Ids'];
                     var assoc_bugs = data['Associated Bugs'];
                     var tc_id = data['Manual_TC_Id'];
+                    var get_project_id=data['project_id'];
+                    var get_team_id=data['team_id'];
                     //AssociatedBug
                     $('#defectid_txtbox').val(assoc_bugs);
                     //Manual Test Case Id
                     $('#id_txtbox').val(tc_id);
                     //Requirement Id
                     $('#reqid_txtbox').val(req_id);
+                    $('#project_identity').val(get_project_id);
+                    $('#default_team_identity').val(get_team_id);
                     if(!template){
                         var auto_id=data['TC_Id'];
                         var title=data['TC_Name'];
@@ -624,6 +577,15 @@ $(document).ready(function() {
                 alertify.error("Tag Field must be empty as you have to select from the suggestion provided","",0);
                 return false;
             }
+
+            if($('#project_identity option:selected').val()==""){
+                alertify.error("Please select a project topbar",1500);
+                return false;
+            }
+            if($('#default_team_identity option:selected').val()==""){
+                alertify.error("Please select a team from topbar",1500);
+                return false;
+            }
             var row_count=$('#steps_table tr').length;
             for(var i=0;i<row_count;i++){
                 if($('#searchbox'+(i+1)+'data').html()==""){
@@ -695,6 +657,8 @@ $(document).ready(function() {
             var test_case_Id=$('#id_txtbox').val().trim();
             var required_Id=$('#reqid_txtbox').val().trim();
             var title=$('#titlebox').val().trim();
+            var project_id=$('#project_identity option:selected').val().trim();
+            var team_id=$('#default_team_identity option:selected').val().trim();
             /**************************End Related Item *************************************************/
             /***************************DataFetching From the Pop UP*********************************************/
             var stepNameList=[];
@@ -995,7 +959,10 @@ $(document).ready(function() {
                             Steps_Expected_List:stepExpectedList.join("|"),
                             Steps_Verify_List:stepVerificationList.join("|"),
                             Steps_Time_List:stepTimeList.join("|"),
-                            Status:"Dev"},function(data) {
+                            Status:"Dev",
+                            Project_Id:project_id,
+                            Team_Id: team_id
+                        },function(data) {
                             //alert(data);
                             alertify.success("Test Case '"+data+"' successfully created!","",0);
                             desktop_notify("Test Case '"+data+"'-'"+title+"' successfully created!");
@@ -1025,7 +992,9 @@ $(document).ready(function() {
                                 Steps_Description_List:stepDescriptionList.join("|"),
                                 Steps_Expected_List:stepExpectedList.join("|"),
                                 Steps_Verify_List:stepVerificationList.join("|"),
-                                Steps_Time_List:stepTimeList.join("|")
+                                Steps_Time_List:stepTimeList.join("|"),
+                                Project_Id:project_id,
+                                Team_Id: team_id
                             },
                             function(data) {
                                 //alert(data+" edited successfully");
@@ -1045,6 +1014,60 @@ $(document).ready(function() {
         });
     }
 });
+function GetBrowserSections(){
+    $.ajax({
+        url:'GetSections/',
+        dataType : "json",
+        data : {
+            section : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".section[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+    $(".section[data-level='']").change(function(){
+        isAtLowestSection = false;
+        recursivelyAddSection(this);
+        $("#section-flag").removeClass("filled");
+        $("#section-flag").addClass("unfilled");
+    });
+
+    //Browsers
+    $.ajax({
+        url:'GetBrowsers/',
+        dataType : "json",
+        data : {
+            browser : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+
+                //$(".browser[data-level='']").append($('<option>').text(value).attr('value', value));
+                $(".browser").append('<td width="25%">' +
+                    '<input id=' +
+                    value +
+                    ' type="checkbox" name="dependancy" value=' +
+                    value +
+                    '>' +
+                    '<label for=' +
+                    value +
+                    '>' +
+                    value +
+                    '</label>' +
+                    '</td>');
+            });
+        }
+    });
+}
 /**************************************Database Works**************************************************/
 /***********Autocomplete Step name*****************/
 function AutoCompleteTestStep(){

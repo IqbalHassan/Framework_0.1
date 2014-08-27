@@ -44,7 +44,8 @@ $(document).ready(function(){
                 'project_id': $(this).val()
             },function(data){
                 if(data==true){
-                    window.location.reload(true);
+                    //window.location.reload(true);
+                    console.log('changed');
                 }
             });
         }
@@ -57,7 +58,8 @@ $(document).ready(function(){
                 'team_id': $(this).val()
             },function(data){
                 if(data==true){
-                    window.location.reload(true);
+                    //window.location.reload(true);
+                    console.log('changed');
                 }
             });
         }

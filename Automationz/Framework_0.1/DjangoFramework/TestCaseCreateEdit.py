@@ -181,7 +181,7 @@ def Delete_Test_Case(Conn, tc_list):
         deleted_test_case.append(test_case)
         LogMessage(sModuleInfo, "==============================================================================================", 1)
     return deleted_test_case
-def Update_Test_Case_Tag(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List):
+def Update_Test_Case_Tag(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     Tag_List = []
     # Add test case id tag
@@ -228,7 +228,10 @@ def Update_Test_Case_Tag(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Ta
     for each_TC_Type in TC_Type.split("|"):
         Tag_List.append(('%s' % each_TC_Type, TestRunType_Tag))
     Tag_List.append(('%s' % Priority, Priority_Tag))
-
+    #Add project and team id
+    Tag_List.append(('%s'%Project_Id,'Project'))
+    Tag_List.append(('%s'%Team_Id,'Team'))
+    
     # Add custom tags
     for eachTag in Custom_Tag_List:
         Tag_List.append(('%s' % eachTag, Custom_Tag))
@@ -970,7 +973,7 @@ def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Depe
                         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Expected Normal or Edit Data", 3)
                         return err_msg
     return "Pass"
-def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List):
+def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     Tag_List = []
     # Add test case id tag
@@ -1014,7 +1017,9 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Ta
     for each_TC_Type in TC_Type:
         Tag_List.append(('%s' % each_TC_Type, TestRunType_Tag))
     Tag_List.append(('%s' % Priority, Priority_Tag))
-
+    #Add project and team id
+    Tag_List.append(('%s'%Project_Id,'Project'))
+    Tag_List.append(('%s'%Team_Id,'Team'))
     # Add custom tags
     for eachTag in Custom_Tag_List:
         Tag_List.append(('%s' % eachTag, Custom_Tag))
