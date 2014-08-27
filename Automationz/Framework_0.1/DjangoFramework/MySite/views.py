@@ -346,15 +346,17 @@ def Create(request):
         return HttpResponse(output)
     
 def CreateNew(request):
-    TC_Id = request.GET.get('TC_Id', '')
-    if TC_Id != "":
-        return ViewTestCase(TC_Id)
-    else:
-        templ = get_template('CreateTestCase.html')
-        variables = Context({ })
-        output = templ.render(variables)
-        return HttpResponse(output)
+    templ = get_template('CreateTestCase.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
 
+def CopyTestCase(request,tc_id):
+    templ = get_template('CreateTestCase.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
+    
 def ManageTestCases(request):
     templ = get_template('ManageTestCases.html')
     variables = Context({ })
@@ -433,7 +435,7 @@ def SearchEdit(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
-def Edit(request):
+def Edit(request,tc_id):
     TC_Id = request.GET.get('TC_Id', '')
     if TC_Id != "":
         return ViewTestCase(TC_Id)
@@ -3208,9 +3210,10 @@ def ViewTestCase(TC_Id):
         return HttpResponse(json, mimetype='application/json')
 
     try:
+        TC_Id=TC_Id.GET.get('TC_Id')
         Conn = GetConnection()
         err_msg = ''
-
+        
         # Search for TC_ID
         tmp_id = DB.GetData(Conn, "select tc_id from test_cases where tc_id = '%s'" % TC_Id)
         if len(tmp_id) > 0:

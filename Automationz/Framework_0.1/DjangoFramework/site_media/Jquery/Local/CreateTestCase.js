@@ -13,6 +13,7 @@ var Env = "PC";
 var lowest_section = 0;
 var isAtLowestSection = false;
 var popupdivrowcount=[];
+var referred_test_case="";
 $(document).ready(function() {
     addMainTableRow('#steps_table');
     check_required_data();
@@ -30,7 +31,13 @@ $(document).ready(function() {
     console.log("Create Index:"+indx);
     indx2 = URL.indexOf("Edit");
     console.log("Edit Index:"+indx2);
-    var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf("CreateNew") != -1;
+    var template = URL.length > (URL.lastIndexOf("CreateNew/")+("CreateNew/").length) && URL.indexOf("CreateNew") != -1;
+    if(indx!=-1 && template){
+        referred_test_case=URL.substring((URL.lastIndexOf("CreateNew/")+("CreateNew/").length),(URL.length-1));
+    }
+    if(indx2!=-1){
+        referred_test_case=URL.substring((URL.lastIndexOf("Edit/")+("Edit/").length),(URL.length-1));
+    }
     console.log("Url Length:"+URL.length);
     console.log("Template:"+template);
     if (indx != -1 || indx2 != -1) {
@@ -245,7 +252,8 @@ $(document).ready(function() {
         if(indx2 != -1 || template){
             $.get("TestCase_EditData",
                 {
-                    TC_Id : URL.substring(URL.lastIndexOf("/")+1,URL.length)
+                    //TC_Id : URL.substring(URL.lastIndexOf("/")+1,URL.length)
+                    TC_Id:referred_test_case
                 },
                 function(data){
                     console.log(data);
