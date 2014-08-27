@@ -6558,6 +6558,19 @@ def Get_MileStones(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Milestone_Requirements(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            milestone = request.GET.get(u'term', '')
+            print milestone
+            query = "select r.requirement_id, r.requirement_title, r.status from requirements r, milestone_info mi where mi.id::varchar=r.requirement_milestone and mi.name like '%"+milestone+"%'"
+            requirements_list = DB.GetData(Conn, query, False)
+    Heading = ['Requirement ID','Requirement Name', 'Status']
+    results = {'Heading':Heading, 'TableData':requirements_list}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 
 def Get_AssignedTests(request):
     if request.is_ajax():

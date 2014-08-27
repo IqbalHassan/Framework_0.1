@@ -4,9 +4,34 @@
 var operation = 1;
 $(document).ready(function(){
    //MileStoneTab();
-
     New_UI();
+
 });
+
+function make_ms_clickable(){
+    $('#all_milestones tr>td:first-child').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor':'pointer'
+        });
+        /*$(this).click(function(){
+            var location='/Home/ManageMilestone/'+$(this).text().trim()+'/';
+            window.location=location;
+        });*/
+    });
+}
+function make_req_clickable(){
+    $('#milereqs tr>td:first-child').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor':'pointer'
+        });
+        $(this).click(function(){
+         var location='/Home/'+$.session.get('project_id')+'/Requirements/'+$(this).text().trim()+'/';
+         window.location=location;
+         });
+    });
+}
 
 function New_UI(){
     status_button_preparation();
@@ -14,6 +39,7 @@ function New_UI(){
     $.get("GetMileStones",{term : ''},function(data)
     {
         ResultTable(all_milestones,data['Heading'],data['TableData'],"Milestones");
+        make_ms_clickable();
     });
 
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
@@ -70,6 +96,13 @@ function New_UI(){
                 $("#ms_desc").val(ui.item[2]);
                 $("#starting_date").val(ui.item[3]);
                 $("#ending_date").val(ui.item[4]);
+
+                $.get("MilestoneRequirements/",{term : value},function(data)
+                {
+                    ResultTable(milereqs,data['Heading'],data['TableData'],"Milestone Requirements");
+                    make_req_clickable();
+                });
+
                 return false;
             }
         }
