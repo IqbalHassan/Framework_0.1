@@ -33,6 +33,32 @@ function make_req_clickable(){
     });
 }
 
+function make_test_clickable(){
+    $('#miletests tr>td:first-child').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor':'pointer'
+        });
+        $(this).click(function(){
+            var location='/Home/RunID/'+$(this).text().trim()+'/';
+            window.location=location;
+        });
+    });
+}
+
+function make_task_clickable(){
+    $('#miletasks tr>td:first-child').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor':'pointer'
+        });
+        /*$(this).click(function(){
+            var location='/Home/'+$.session.get('project_id')+'/Tasks/'+$(this).text().trim()+'/';
+            window.location=location;
+        });*/
+    });
+}
+
 function New_UI(){
     status_button_preparation();
 
@@ -118,6 +144,18 @@ function New_UI(){
                 {
                     ResultTable(milereqs,data['Heading'],data['TableData'],"Milestone Requirements");
                     make_req_clickable();
+                });
+
+                $.get("MilestoneTestings",{term : value},function(data)
+                {
+                    ResultTable(miletests,data['Heading'],data['TableData'],"Milestone Testings");
+                    make_test_clickable();
+                });
+
+                $.get("MilestoneTasks",{term : value},function(data)
+                {
+                    ResultTable(miletasks,data['Heading'],data['TableData'],"Milestone Tasks");
+                    make_task_clickable();
                 });
 
                 return false;

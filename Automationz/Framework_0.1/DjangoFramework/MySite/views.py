@@ -6571,6 +6571,32 @@ def Milestone_Requirements(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Milestone_Tasks(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            milestone = request.GET.get(u'term', '')
+            print milestone
+            query = "select t.tasks_id,t.tasks_title,t.status from tasks t,milestone_info mi where t.tasks_milestone::int=mi.id and mi.name like '%"+milestone+"%'"
+            tasks_list = DB.GetData(Conn, query, False)
+    Heading = ['Task ID','Task title', 'Status']
+    results = {'Heading':Heading, 'TableData':tasks_list}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Milestone_Testings(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            milestone = request.GET.get(u'term', '')
+            print milestone
+            query = "select run_id,test_objective,assigned_tester,run_type,status from test_run_env where test_milestone like '%"+milestone+"%'"
+            testings_list = DB.GetData(Conn, query, False)
+    Heading = ['Run ID','Run objective','Assigned Tester','Test Type', 'Status']
+    results = {'Heading':Heading, 'TableData':testings_list}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def Milestone_Teams(request):
     if request.is_ajax():
         if request.method == 'GET':
