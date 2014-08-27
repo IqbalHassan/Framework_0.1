@@ -134,10 +134,10 @@ function PerformSearch() {
                 });
 
                 $(".editBtn").click(function (){
-                    window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id");
+                    window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id")+'/';
                 });
                 $(".templateBtn").click(function (){
-                    window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id");
+                    window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id")+'/';
                 });
                 //VerifyQueryProcess();
                 //$(".Buttons[title='Verify Query']").fadeIn(2000);

@@ -346,15 +346,17 @@ def Create(request):
         return HttpResponse(output)
     
 def CreateNew(request):
-    TC_Id = request.GET.get('TC_Id', '')
-    if TC_Id != "":
-        return ViewTestCase(TC_Id)
-    else:
-        templ = get_template('CreateTestCase.html')
-        variables = Context({ })
-        output = templ.render(variables)
-        return HttpResponse(output)
+    templ = get_template('CreateTestCase.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
 
+def CopyTestCase(request,tc_id):
+    templ = get_template('CreateTestCase.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
+    
 def ManageTestCases(request):
     templ = get_template('ManageTestCases.html')
     variables = Context({ })
@@ -433,7 +435,7 @@ def SearchEdit(request):
     output = templ.render(variables)
     return HttpResponse(output)
 
-def Edit(request):
+def Edit(request,tc_id):
     TC_Id = request.GET.get('TC_Id', '')
     if TC_Id != "":
         return ViewTestCase(TC_Id)
@@ -569,7 +571,6 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
                     Priority = "MacPriority"
                     TCStatusName = "MacStatus"
                     CustomTag = "MacCustomTag"
-
                 if Environment == "PC":
                     Section = "Section"
                     Test_Run_Type = "test_run_type"
@@ -579,14 +580,18 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
                     CustomSet = "set"
                     Tag = 'tag'
                 Client = 'client'
-                tag_query = "select distinct name,property from test_case_tag where name Ilike '%" + value + "%' and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
+                tag_query = "select distinct name,property from test_case_tag where name Ilike '%" + value + "%' and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client +"') and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
                 id_query = "select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%" + value + "%' or tc.tc_name Ilike '%" + value + "%') and property in('tcid') and tct.tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "            
                 status_query = "select distinct property,name from test_case_tag where name='%s' and property Ilike '%%%s%%'" % (TCStatusName, value)
+                project_query="select distinct name || ' - ' || project_name,property from test_case_tag tct,projects p where p.project_id=tct.name and (p.project_name iLike '%%%s%%' or p.project_id iLike '%%%s%%' or tct.name iLike '%%%s%%')"%(value,value,value)
+                team_query="select distinct name|| ' - '|| value,property from config_values c,test_case_tag tct where cast(c.id as text)=tct.name and (name iLike '%%%s%%' or value Ilike '%%%s%%')"%(value,value)
                 Conn = GetConnection()
                 results = DB.GetData(Conn, tag_query, False)
                 tcidresults = DB.GetData(Conn, id_query, False)
                 tc_status = DB.GetData(Conn, status_query, False)
-                results = list(set(results + tcidresults + tc_status))
+                projects=DB.GetData(Conn,project_query,False)
+                teams=DB.GetData(Conn,team_query,False)
+                results = list(set(results + tcidresults+tc_status+projects+teams))
                 for eachitem in results:
                     final_results.append(eachitem)
             final_results = list(set(final_results))
@@ -3095,6 +3100,8 @@ def Create_Submit_New_TestCase(request):
             Step_Expected_Result = request.GET.get(u'Steps_Expected_List', '').split('|')
             Step_Verification_Point = request.GET.get(u'Steps_Verify_List', '').split('|')
             Step_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
+            Project_id=request.GET.get(u'Project_Id','')
+            Team_id=request.GET.get(u'Team_Id','')
             Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected_Result, Step_Verification_Point, Step_Time_List)
 
         # 1
@@ -3181,7 +3188,7 @@ def Create_Submit_New_TestCase(request):
         ##########Test Case Tags
         # Enter tags for the test case
         # Insert Test Case Tags
-        test_case_tags_result = TestCaseCreateEdit.Insert_TestCase_Tags(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List)
+        test_case_tags_result = TestCaseCreateEdit.Insert_TestCase_Tags(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_id,Team_id)
 
         if test_case_steps_result == "Pass":
             msg = "==========================================================================================================="
@@ -3208,9 +3215,10 @@ def ViewTestCase(TC_Id):
         return HttpResponse(json, mimetype='application/json')
 
     try:
+        TC_Id=TC_Id.GET.get('TC_Id')
         Conn = GetConnection()
         err_msg = ''
-
+        
         # Search for TC_ID
         tmp_id = DB.GetData(Conn, "select tc_id from test_cases where tc_id = '%s'" % TC_Id)
         if len(tmp_id) > 0:
@@ -3220,7 +3228,7 @@ def ViewTestCase(TC_Id):
             test_case_details = DB.GetData(Conn, "select tc_name,tc_createdby from test_cases where tc_id = '%s'" % TC_Id, False)
             TC_Name = test_case_details[0][0]
             TC_Creator = test_case_details[0][1]
-
+            
             # Test Case dataset details
             test_case_dataset_details = DB.GetData(Conn, "select tcdatasetid,data_type from test_case_datasets where tc_id = '%s'" % TC_Id, False)
             if len(test_case_dataset_details) > 0:
@@ -3234,6 +3242,9 @@ def ViewTestCase(TC_Id):
             Manual_TC_Id = ','.join(Manual_TC_Id_List)
 
             Platform = [x[0] for x in test_case_tag_details if x[1] == 'machine_os']
+            
+            TC_Project=[x[0] for x in test_case_tag_details if x[1] == 'Project']
+            TC_Team=[x[0] for x in test_case_tag_details if x[1] == 'Team']
             TC_Type = [x[0] for x in test_case_tag_details if x[1] == 'test_run_type' or x[1] == 'Mac_test_run_type']
             Tag_List = [x[0] for x in test_case_tag_details if x[1] == 'CustomTag' or x[1] == 'MacCustomTag']
             Dependency_List = [x[1] for x in test_case_tag_details if x[0] == 'Dependency' or x[0] == 'MacDependency']
@@ -3324,7 +3335,7 @@ def ViewTestCase(TC_Id):
                 Steps_Data_List.append((Step_Name, Step_Data, Step_Type, step_description, step_expected, step_verified, Step_General_Description[0][0], step_time, Step_Edit, each_test_step[3]))
                 Step_Iteration = Step_Iteration + 1
             # return values
-            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List}
+            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team}
 
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -3368,6 +3379,8 @@ def EditTestCase(request):
             Step_Expected_Result = request.GET.get(u'Steps_Expected_List', '').split('|')
             Step_Verification_Point = request.GET.get(u'Steps_Verify_List', '').split('|')
             Steps_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
+            Project_Id=request.GET.get(u'Project_Id','')
+            Team_Id=request.GET.get(u'Team_Id','')
             Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected_Result, Step_Verification_Point, Steps_Time_List)
             Section_Path = request.GET.get(u'Section_Path', '')
         # LogMessage(sModuleInfo,"TEST CASE Edit START:%s"%(TC_Name),4)
@@ -3414,7 +3427,7 @@ def EditTestCase(request):
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
                 return err_msg
-            test_case_tag_result = TestCaseCreateEdit.Update_Test_Case_Tag(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List)
+            test_case_tag_result = TestCaseCreateEdit.Update_Test_Case_Tag(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id)
             if test_case_tag_result != "Pass":
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
@@ -6717,6 +6730,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     CustomSet = "set"
                     Tag = 'tag'
                     Client = 'client'
+                    Project='Project'
+                    Team='Team'
                 if Environment == "PC":
                     Section = "Section"
                     Test_Run_Type = "test_run_type"
@@ -6726,6 +6741,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     CustomSet = "set"
                     Tag = 'tag'
                     Client = 'client'
+                    Project='Project'
+                    Team='Team'
                 QueryText = []
                 for eachitem in UserText:
                     if len(eachitem) != 0 and  len(eachitem) != 1:
@@ -6761,13 +6778,13 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                             if eachitem in ('Dev', 'Ready'):
                                 Query = "HAVING COUNT(CASE WHEN name = '" + TCStatusName + "' and property in ('" + eachitem + "') THEN 1 END) > 0 "
                             else:
-                                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') THEN 1 END) > 0 "
+                                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client +"','" + Project +"','" + Team + "') THEN 1 END) > 0 "
                             count = count + 1
                         elif count >= 2:
                             if eachitem in ('Dev', 'Ready'):
                                 Query = Query + "AND COUNT(CASE WHEN name = '" + TCStatusName + "' and property in ('" + eachitem + "') THEN 1 END) > 0 "
                             else:
-                                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') THEN 1 END) > 0 "
+                                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "','" + Project +"','" + Team + "') THEN 1 END) > 0 "
                     # Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
                     Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
                     query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name " + Query
