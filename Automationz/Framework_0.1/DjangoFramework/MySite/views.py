@@ -1135,7 +1135,7 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
     Conn = GetConnection()
     RunId = RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID", "Mahchine", "Tester", "Estd. Time", "Status", "Product", "Machine OS", "Client", "Machine IP", "Objective", "MileStone", "Email"]
+    Env_Details_Col = ["Run ID", "Mahchine", "Tester", "Estd. Time", "Status", "Product", "Machine OS", "Client", "Machine IP", "Objective", "MileStone", "Email","Project","Team"]
     run_id_status = GetRunIDStatus(RunId)
     query = "Select DISTINCT run_id,tester_id,assigned_tester,'" + run_id_status + "',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip,test_objective,test_milestone from test_run_env Where run_id = '%s'" % RunId
     Env_Details_Data = DB.GetData(Conn, query, False)
@@ -1172,98 +1172,22 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
             email_receiver.append(name[0])
     print email_receiver
     email_name = ",".join(email_receiver)
+    query="select p.project_id||' - '||p.project_name from projects p, test_run_env tre where p.project_id=tre.project_id and tre.run_id='%s'"%RunId
+    project_name=DB.GetData(Conn,query,False)
+    query="select c.id|| ' - ' ||value from config_values c,test_run_env tre where c.id=tre.team_id and c.type='Team' and tre.run_id='%s'"%RunId
+    team_name=DB.GetData(Conn,query,False)
     temp = []
     for each in Env_Details_Data[0]:
         temp.append(each)
     temp.insert(3, formatTime)
     temp.append(email_name)
+    temp.append(project_name[0][0])
+    temp.append(team_name[0][0])
     temp = tuple(temp)
     Env_Details_Data = []
     Env_Details_Data.append(temp)
     print Env_Details_Data
     #####################################
-    """ AllTestCases1 = DB.GetData(Conn, "(select "
-                                            "tc.tc_id as MKSId, "
-                                            "tc.tc_name, "
-                                            "tr.status, "
-                                            "to_char(tr.duration,'HH24:MI:SS'), "
-                                            "tr.failreason, "
-                                            "tr.logid, "
-                                            "tc.tc_id "
-                                            "from test_case_results tr, test_cases tc, test_case_tag tct "
-                                            "where tr.run_id = '%s' and "
-                                            "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id) "
-                                            "union all "
-                                            "(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
-                                            "from test_run tr,test_cases tc, test_case_tag tct "
-                                            "where tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s' and "
-                                            "tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )" % (RunId, RunId, RunId) , False)
-    Col = ['ID', 'Title','Type', 'Status', 'Duration', 'Estd. Time','Comment', 'Log', 'Automation ID']
-    AllTestCases=Modify(AllTestCases1)
-    AllTestCases=AddEstimatedTime(AllTestCases)
-    Pass_TestCases1 = DB.GetData(Conn, "select "
-                                            "tc.tc_id as mksid, "
-                                            "tc.tc_name, "
-                                            "tr.status, "
-                                            "to_char(tr.duration,'HH24:MI:SS'), "
-                                            "tr.failreason, "
-                                            "tr.logid, "
-                                            "tc.tc_id "
-                                            "from test_case_results tr, test_cases tc, test_case_tag tct "
-                                             "where tr.run_id = '%s' and tr.status = 'Passed' and "
-                                            "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % (RunId), False)
-
-
-    Pass_TestCases=Modify(Pass_TestCases1)
-    Pass_TestCases=AddEstimatedTime(Pass_TestCases)
-    Fail_TestCases1= DB.GetData(Conn, "select "
-                                            "tc.tc_id as mksid, "
-                                            "tc.tc_name, "
-                                            "tr.status, "
-                                            "to_char(tr.duration,'HH24:MI:SS'), "
-                                            "tr.failreason, "
-                                            "tr.logid, "
-                                            "tc.tc_id "
-                                            "from test_case_results tr, test_cases tc, test_case_tag tct "
-                                            "where tr.run_id = '%s' and tr.status in('Failed','Blocked') and "
-                                            "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % RunId, False)
-    Fail_TestCases=Modify(Fail_TestCases1)
-    Fail_TestCases=AddEstimatedTime(Fail_TestCases)
-    Submitted_TestCases1=DB.GetData(Conn,"select "
-                                            "tc.tc_id as mksid, "
-                                            "tc.tc_name, "
-                                            "tr.status, "
-                                            "to_char(tr.duration,'HH24:MI:SS'), "
-                                            "tr.failreason, "
-                                            "tr.logid, "
-                                            "tc.tc_id "
-                                            "from test_case_results tr, test_cases tc, test_case_tag tct "
-                                            "where tr.run_id = '%s' and tr.status ='Submitted' and "
-                                            "tr.tc_id = tc.tc_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' ORDER BY tr.id" % RunId, False)
-    Submitted_TestCases=Modify(Submitted_TestCases1)
-    Submitted_TestCases=AddEstimatedTime(Submitted_TestCases)
-    failsteps = DB.GetData(Conn, "select DISTINCT tsl.stepname from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
-
-                          "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id and tr.tc_id = tsr.tc_id "
-
-                           "and tsr.status = 'Failed' and tsr.teststep_id = tsl.step_id and tr.tc_id = tc.tc_id" % RunId, False
-                    )
-
-    #Adding Test Case Count with Fails Steps Name
-    FailsStepsWithCount = []
-    for eachstep in failsteps:
-        failstep = list(eachstep)[0]
-        FailStep_TestCases = DB.GetData(Conn, "select tc.tc_name from test_case_results tr, test_step_results tsr, test_steps_list tsl, test_cases tc "
-                                                "where tr.run_id = '%s' and tr.status = 'Failed' and tr.run_id = tsr.run_id "
-                                                "and tr.tc_id = tsr.tc_id and tsr.status in ('Failed') and tsr.teststep_id = tsl.step_id "
-                                                "and tr.tc_id = tc.tc_id and tsl.stepname = '%s' " % (RunId, failstep)
-                                            )
-        Count = len(FailStep_TestCases)
-        L = []
-        L.append("%s (%s)" % (failstep, Count))
-        FailsStepsWithCount.append(L)
-
-    failsteps_Col = ["Step Name"]"""
     ReRunColumn = ['Test Case ID', 'Test Case Name', 'Type', 'Status']
     query = "select tc.tc_id,tc.tc_name,tcr.status from result_test_cases tc,test_case_results tcr where tc.run_id=tcr.run_id and tc.tc_id=tcr.tc_id and tcr.run_id='%s'" % RunId
     ReRunList = DB.GetData(Conn, query, False)

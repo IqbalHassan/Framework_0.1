@@ -276,6 +276,8 @@ function ReRunTab(){
         var email=$('input[name="email"]').val();
         var os=$('input[name="os"]').val();
         var objective=$('input[name="test_objective"]').val();
+        var project_id=$('input[name="project_id"]').val().split(" - ")[0].trim();
+        var team_id=$('input[name="team_id"]').val().split(" - ")[0].trim();
         os=os.split("-")[0].trim();
         os=os.split(" ")[0].trim();
         var environment="";
@@ -326,7 +328,9 @@ function ReRunTab(){
             TestObjective:objective,
             Env:environment,
             ReRun:"rerun",
-            RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim()
+            RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim(),
+            project_id:project_id.trim(),
+            team_id:team_id
         },function(data){
             if(data['Result']){
                 var oldid = $("#run_id").text().trim();
