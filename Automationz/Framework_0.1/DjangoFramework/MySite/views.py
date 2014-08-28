@@ -7063,7 +7063,11 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     print condition
     total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter " 
-    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and tre.project_id='%s' and tre.team_id=%d"%(project_id,int(team_id))
+    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
+    if project_id!="ALL":
+        total_query+=" and tre.project_id='%s'"%project_id
+    if team_id!="ALL":
+        total_query+=" and tre.team_id=%d"%int(team_id)
     if condition != "":
         total_query += " and "
         total_query += condition
@@ -7071,7 +7075,11 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     total_query += "union all "
     total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter " 
-    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')and tre.project_id='%s' and tre.team_id=%d"%(project_id,int(team_id))
+    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
+    if project_id!="ALL":
+        total_query+=" and tre.project_id='%s'"%project_id
+    if team_id!="ALL":
+        total_query+=" and tre.team_id=%d"%int(team_id)
     if condition != "":
         total_query += " and "
         total_query += condition

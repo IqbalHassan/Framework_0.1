@@ -1,5 +1,7 @@
 var stepCount=10;
 $(document).ready(function(){
+    $('#project_identity').append('<option value="ALL">See All</option>');
+    $('#default_team_identity').append('<option value="ALL">See All</option>');
     AutoComplete();
     DeleteFilterData();
     PerformSearch();
