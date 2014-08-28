@@ -124,6 +124,12 @@ function New_UI(){
                 $("#starting_date").val(ui.item[3]);
                 $("#ending_date").val(ui.item[4]);
 
+                $("#ms_info").show();
+                $("#created_by").text(ui.item[5]);
+                $("#created_date").text(ui.item[6]);
+                $("#modified_by").text(ui.item[7]);
+                $("#modified_date").text(ui.item[8]);
+
 
                 $('input[name="team"]:checked').removeAttr('checked')
                 $.get("MilestoneTeams",{term : value},function(data)

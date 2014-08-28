@@ -6553,7 +6553,7 @@ def AutoMileStone(request):
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select name,status,description,cast(starting_date as text),cast(finishing_date as text) from milestone_info where name ilike'%%%s%%'" % milestone
+            query = "select name,status,description,cast(starting_date as text),cast(finishing_date as text),created_by,cast(created_date as text),modified_by,cast(modified_date as text) from milestone_info where name ilike'%%%s%%'" % milestone
             milestone_list = DB.GetData(Conn, query, False)
     result = simplejson.dumps(milestone_list)
     return HttpResponse(result, mimetype='application/json')
