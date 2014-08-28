@@ -44,6 +44,10 @@ function make_test_clickable(){
             window.location=location;
         });
     });
+
+    $('#miletests table').filterTable({ // apply filterTable to all tables on this page
+        quickList: ['Submitted', 'In-Progress', 'Complete', 'Cancelled'] // add some shortcut searches
+    });
 }
 
 function make_task_clickable(){
