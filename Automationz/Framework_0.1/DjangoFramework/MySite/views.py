@@ -1688,6 +1688,9 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
             is_rerun = request.GET.get(u'ReRun', '')
             previous_run = request.GET.get('RunID', '')    
             Environment = request.GET.get('Env', '')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            
             if Environment == "Mac":
                 Section = "MacSection"
                 Test_Run_Type = "Mac_test_run_type"
@@ -1933,7 +1936,9 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                                      test_objective=TestObjective,
                                      Status='Submitted',
                                      run_type='Manual',
-                                     test_milestone=TestMileStone
+                                     test_milestone=TestMileStone,
+                                     project_id=project_id,
+                                     team_id=int(team_id)
                                      )
     print DB.UpdateRecordInTable(Conn, "test_run_env", query,
                                      email_notification=stEmailIds,
@@ -1941,7 +1946,9 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                                      test_objective=TestObjective,
                                      Status='Submitted',
                                      run_type='Manual',
-                                     test_milestone=TestMileStone
+                                     test_milestone=TestMileStone,
+                                     project_id=project_id,
+                                     team_id=int(team_id)
                                      )
     # NJ-Insert into run env results to display submitted runs
     now = DB.GetData(Conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -1953,16 +1960,19 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
         if len(tmail)>0:
             Emails.append(tmail[0])
             
-    allEmailIds = ','.join(Emails)        
+    allEmailIds = ','.join(Emails)  
+    
+    #EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
+              
 
-    try:
+    """try:
         urllib2.urlopen("http://www.google.com").close()
         #import EmailNotify
         EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
         print "connected"
     except urllib2.URLError:
         print "disconnected"
-    
+    """
 
     Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
     EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
@@ -6083,15 +6093,17 @@ def update_runid(run_id, test_case_id):
         total = DB.GetData(Conn, total_query)
         list.append(total[0])
         duration = DB.GetData(Conn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
-    
-        try:
+        
+        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
+            
+        """try:
             urllib2.urlopen("http://www.google.com").close()
             #import EmailNotify
             EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
             print "connected"
         except urllib2.URLError:
             print "disconnected"
-        
+        """
         
 def Send_Report(request):
     if request.is_ajax():
@@ -6138,9 +6150,10 @@ def Send_Report(request):
             list.append(total[0])
             duration = DB.GetData(Conn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
 
-
+            EmailNotify.Complete_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,duration,'','')
+            results = ['OK']
             
-            try:
+            """try:
                 urllib2.urlopen("http://www.google.com").close()
                 #import EmailNotify
                 EmailNotify.Complete_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,duration,'','')
@@ -6149,7 +6162,7 @@ def Send_Report(request):
             except urllib2.URLError:
                 print "disconnected"
                 results = ['NOK']
-
+            """
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
     #########################################################################################
@@ -7006,6 +7019,8 @@ def GetFilteredDataResult(request):
             final = []
             UserText = request.GET.get(u'UserText', '')
             currentPagination = request.GET.get(u'pagination', '')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
             print currentPagination
             # UserText=str(UserText)
             UserText = UserText.replace(u'\xa0', u'|')
@@ -7033,10 +7048,10 @@ def GetFilteredDataResult(request):
                 condition += " and "
             condition = condition[:-5].strip()
             print condition
-            final = NewResultFetch(condition, currentPagination)
+            final = NewResultFetch(condition, currentPagination,project_id,team_id)
     result = simplejson.dumps(final)
     return HttpResponse(result, mimetype='application/json')
-def NewResultFetch(condition, currentPagination):
+def NewResultFetch(condition, currentPagination,project_id,team_id):
     # pagination Code
     step = 10
     limit = ""
@@ -7048,7 +7063,7 @@ def NewResultFetch(condition, currentPagination):
     print condition
     total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter " 
-    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
+    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress') and tre.project_id='%s' and tre.team_id=%d"%(project_id,int(team_id))
     if condition != "":
         total_query += " and "
         total_query += condition
@@ -7056,7 +7071,7 @@ def NewResultFetch(condition, currentPagination):
     total_query += "union all "
     total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter " 
-    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
+    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')and tre.project_id='%s' and tre.team_id=%d"%(project_id,int(team_id))
     if condition != "":
         total_query += " and "
         total_query += condition

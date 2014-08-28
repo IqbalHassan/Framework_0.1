@@ -97,6 +97,8 @@ function RunTest(){
     console.log(TestObjective);
     console.log(milestoneQuery);
     console.log(Env);
+    var project_id=$('#project_identity option:selected').val().trim();
+    var team_id=$('#default_team_identity option:selected').val().trim();
     $.get("Run_Test",
         {
             RunTestQuery : RunTestQuery,
@@ -105,7 +107,10 @@ function RunTest(){
             DependencyText:client,
             TestObjective:TestObjective,
             TestMileStone:milestoneQuery,
-            Env: Env},
+            Env: Env,
+            project_id:project_id,
+            team_id:team_id
+        },
         function(data)
         {
 

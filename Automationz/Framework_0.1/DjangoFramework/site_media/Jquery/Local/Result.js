@@ -4,6 +4,14 @@ $(document).ready(function(){
     DeleteFilterData();
     PerformSearch();
     PaginationButton();
+    $('#project_identity').on('change',function(){
+        $.session.set('project_id',$(this).val());
+        window.location.reload(true);
+    });
+    $('#default_team_identity').on('change',function(){
+        $.session.set('default_team_identity',$(this).val());
+        window.location.reload(true);
+    });
 });
 function PerformSearch(){
     var currentPagination=$('#pagination_no').text().trim();
@@ -12,7 +20,14 @@ function PerformSearch(){
         //UserText+='|';
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
         console.log(UserText);
-        $.get("GetFilteredDataResult",{UserText:UserText,pagination:currentPagination},function(data){
+        $.get("GetFilteredDataResult",
+            {
+                UserText:UserText,
+                pagination:currentPagination,
+                project_id: $.session.get('project_id'),
+                team_id: $.session.get('default_team_identity')
+            },
+        function(data){
             if(data['total'].length>0){
                 //make a table column
                 var message="";
