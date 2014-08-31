@@ -583,15 +583,11 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
                 tag_query = "select distinct name,property from test_case_tag where name Ilike '%" + value + "%' and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client +"') and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "
                 id_query = "select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%" + value + "%' or tc.tc_name Ilike '%" + value + "%') and property in('tcid') and tct.tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) "            
                 status_query = "select distinct property,name from test_case_tag where name='%s' and property Ilike '%%%s%%'" % (TCStatusName, value)
-                project_query="select distinct name || ' - ' || project_name,property from test_case_tag tct,projects p where p.project_id=tct.name and (p.project_name iLike '%%%s%%' or p.project_id iLike '%%%s%%' or tct.name iLike '%%%s%%')"%(value,value,value)
-                team_query="select distinct name|| ' - '|| value,property from config_values c,test_case_tag tct where cast(c.id as text)=tct.name and (name iLike '%%%s%%' or value Ilike '%%%s%%')"%(value,value)
                 Conn = GetConnection()
                 results = DB.GetData(Conn, tag_query, False)
                 tcidresults = DB.GetData(Conn, id_query, False)
                 tc_status = DB.GetData(Conn, status_query, False)
-                projects=DB.GetData(Conn,project_query,False)
-                teams=DB.GetData(Conn,team_query,False)
-                results = list(set(results + tcidresults+tc_status+projects+teams))
+                results = list(set(results + tcidresults+tc_status))
                 for eachitem in results:
                     final_results.append(eachitem)
             final_results = list(set(final_results))
@@ -6681,6 +6677,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
             UserText = UserData.split(":");
             # Environment = request.GET.get(u'Env', '')
             # propertyValue="Ready"
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
             RefinedData = []
             platform = ['PC', 'Mac']
             for Environment in platform:
@@ -6729,8 +6727,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 TableData = []
                 if len(TestIDList) > 0:
                     for eachitem in TestIDList:
-                        tabledata = DB.GetData(Conn, "select distinct tc_id,tc_name from test_cases "
-                                    "where tc_id = '%s'" % eachitem, False)
+                        query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,team_id)
+                        tabledata = DB.GetData(Conn,query, False)
                         TableData.append(tabledata[0])
             
             
@@ -6750,7 +6748,9 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                                 Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "','" + Project +"','" + Team + "') THEN 1 END) > 0 "
                     # Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
                     Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
-                    query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name " + Query
+                    Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+                    Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+                    query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
                     TableData = DB.GetData(Conn, query, False)
             
                 
