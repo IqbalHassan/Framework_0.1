@@ -106,7 +106,11 @@ function PerformSearch() {
     $("#AutoSearchResult #searchedtext").each(function() {
         var UserText = $(this).find("td").text();
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
-        $.get("TableDataTestCasesOtherPages",{Query: UserText},function(data) {
+        $.get("TableDataTestCasesOtherPages",{
+            Query: UserText,
+            project_id:$('#project_identity option:selected').val().trim(),
+            team_id:$('#default_team_identity option:selected').val().trim()
+        },function(data) {
 
             if (data['TableData'].length == 0)
             {
