@@ -6691,8 +6691,6 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     CustomSet = "set"
                     Tag = 'tag'
                     Client = 'client'
-                    Project='Project'
-                    Team='Team'
                 if Environment == "PC":
                     Section = "Section"
                     Test_Run_Type = "test_run_type"
@@ -6702,8 +6700,6 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     CustomSet = "set"
                     Tag = 'tag'
                     Client = 'client'
-                    Project='Project'
-                    Team='Team'
                 QueryText = []
                 for eachitem in UserText:
                     if len(eachitem) != 0 and  len(eachitem) != 1:
@@ -6739,13 +6735,13 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                             if eachitem in ('Dev', 'Ready'):
                                 Query = "HAVING COUNT(CASE WHEN name = '" + TCStatusName + "' and property in ('" + eachitem + "') THEN 1 END) > 0 "
                             else:
-                                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client +"','" + Project +"','" + Team + "') THEN 1 END) > 0 "
+                                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client +"') THEN 1 END) > 0 "
                             count = count + 1
                         elif count >= 2:
                             if eachitem in ('Dev', 'Ready'):
                                 Query = Query + "AND COUNT(CASE WHEN name = '" + TCStatusName + "' and property in ('" + eachitem + "') THEN 1 END) > 0 "
                             else:
-                                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "','" + Project +"','" + Team + "') THEN 1 END) > 0 "
+                                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client +"') THEN 1 END) > 0 "
                     # Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
                     Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
                     Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
