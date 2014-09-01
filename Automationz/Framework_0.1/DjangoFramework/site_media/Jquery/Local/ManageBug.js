@@ -13,6 +13,7 @@ $(document).ready(function(){
     });
 });
 function ButtonSet(){
+
     $("#assigned_tester").autocomplete({
 
         source : 'AutoCompleteTesterSearch',
@@ -97,6 +98,7 @@ function ActivateNecessaryButton(){
     $('#start_date').datepicker("option", "showAnim", "slide" );
     $('#end_date').datepicker({ dateFormat: "dd-mm-yy" });
     $('#end_date').datepicker("option", "showAnim", "slide" );
+    $(".selectdrop").selectBoxIt();
 }
 function initCreateDiv(project,team,manager){
     var message="";
@@ -150,7 +152,7 @@ function initCreateDiv(project,team,manager){
     message+='</tr>';
     message+='<tr>';
     message+='<td align="right"><b class="Text">Priority:</b></td>';
-    message+='<td><select id="priority"><option selected value="1">P1(Highest)</option>';
+    message+='<td><select id="priority" class="selectdrop"><option selected value="1">P1(Highest)</option>';
     message+='<option value="2">P2</option>';
     message+='<option value="3">P3</option>';
     message+='<option value="4">P4</option>';
@@ -163,7 +165,7 @@ function initCreateDiv(project,team,manager){
     message+='</tr>';
     message+='<tr>';
     message+='<td align="right"><b class="Text">Status:</b></td>';
-    message+='<td><select id="status"><option selected value="Unconfirmed">Unconfirmed</option>';
+    message+='<td><select id="status" class="selectdrop"><option selected value="Unconfirmed">Unconfirmed</option>';
     message+='<option value="New">New</option>';
     message+='<option value="Assigned">Assigned</option>';
     message+='<option value="Reopened">Reopened</option>';

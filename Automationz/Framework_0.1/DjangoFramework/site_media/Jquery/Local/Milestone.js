@@ -6,6 +6,7 @@ $(document).ready(function(){
    //MileStoneTab();
     New_UI();
 
+    $('.combo-box').combobox();
 });
 
 function make_ms_clickable(){

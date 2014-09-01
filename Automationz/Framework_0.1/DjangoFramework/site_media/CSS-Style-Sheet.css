@@ -1979,7 +1979,7 @@ hr, .rule {
 }
 .button.blue, .minibutton.blue {
     color: #fff;
-    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);*/
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
     background-color: #3072b3;
     background-image: -moz-linear-gradient(#599bcd, #3072b3);
     background-image: -webkit-linear-gradient(#599bcd, #3072b3);
@@ -4012,3 +4012,5 @@ body.avgrund-active {
     margin: 0;
     max-width: none;
 }
+
+

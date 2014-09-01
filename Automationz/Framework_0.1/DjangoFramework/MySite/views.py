@@ -7604,7 +7604,7 @@ def ManageTask(request):
 def FetchProject(request):
     if request.is_ajax():
         if request.method=='GET':
-            query="select distinct value from config_values where type='Project'"
+            query="select project_id from projects"
             Conn=GetConnection()
             project=DB.GetData(Conn,query)
             query="select distinct value from config_values where type='Team'"
