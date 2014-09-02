@@ -7,10 +7,10 @@ $(document).ready(function(){
 	current_path = window.location.pathname;
 	// Save it to session storage rather than local storage
 	if (current_path === '/Home/Login/') {
-		sessionStorage.setItem("path_to_redirect", '/Home/User/');
+		sessionStorage.setItem("path_to_redirect", '/Home/');
 	} else {
-        sessionStorage.setItem("path_to_redirect", '/Home/User/');
-		//sessionStorage.setItem("path_to_redirect", current_path);
+        //sessionStorage.setItem("path_to_redirect", '/Home/User/');
+		sessionStorage.setItem("path_to_redirect", current_path);
 	}
 
     if($.session.get('log') !== 'logged' && $(this).attr('title') !== 'Log In')

@@ -7612,6 +7612,16 @@ def FetchProject(request):
     return HttpResponse(result,mimetype='application/json')
 def ManageBug(request):
     return render_to_response('ManageBug.html',{})
+def CreateBug(request):
+    query="select project_id from projects"
+    Conn=GetConnection()
+    project=DB.GetData(Conn,query)
+    query="select distinct value from config_values where type='Team'"
+    team=DB.GetData(Conn,query)
+    query="select distinct user_names from permitted_user_list where user_level='manager'"
+    manager=DB.GetData(Conn,query)
+    Dict={'project':project,'team':team,'manager':manager}
+    return render_to_response('CreateBug.html',Dict)
 def ManageRequirement(request):
     return render_to_response('ManageRequirement.html',{})
 def ManageTeam(request):
