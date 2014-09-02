@@ -20,7 +20,6 @@ $(document).ready(function() {
     show_radio_button();
     vertical_sidebar();
     AutoCompleteSearchForPrompt();
-    //GetBrowserSections();
     /*****************Shetu's Function************************/
     AutoCompleteTag();
     /*****************End Shetu************************/
@@ -41,9 +40,6 @@ $(document).ready(function() {
     console.log("Url Length:"+URL.length);
     console.log("Template:"+template);
     if (indx != -1 || indx2 != -1) {
-        //Here the things will be added
-        //AutoCompleteTagSearch
-        //GetBrowserSections();
         $('#add_test_step').live('click',function(){
             addMainTableRow('#steps_table');
 
@@ -241,7 +237,9 @@ $(document).ready(function() {
                             url:'GetSections/',
                             dataType : "json",
                             data : {
-                                section : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_')
+                                section : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_'),
+                                project_id: $.session.get('project_id'),
+                                team_id: $.session.get('default_team_identity')
                             },
                             success: function( json ) {
                                 if(json.length != 1){
@@ -946,7 +944,7 @@ $(document).ready(function() {
                             Platform:platformList.join("|"),
                             Manual_TC_Id:test_case_Id,
                             TC_Name:title,
-                            TC_Creator:'Test',
+                            TC_Creator:$('#user_name').text().trim(),
                             Associated_Bugs_List:defectId,
                             Requirement_ID_List:required_Id,
                             TC_Type:typeList.join("|"),
@@ -979,7 +977,7 @@ $(document).ready(function() {
                                 Platform:platformList.join("|"),
                                 Manual_TC_Id:test_case_Id,
                                 TC_Name:title,
-                                TC_Creator:'Test',
+                                TC_Creator:$('#user_name').text().trim(),
                                 Associated_Bugs_List:defectId,
                                 Requirement_ID_List:required_Id,
                                 Status:status,
@@ -1019,7 +1017,9 @@ function GetBrowserSections(){
         url:'GetSections/',
         dataType : "json",
         data : {
-            section : ''
+            section : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
         },
         success: function( json ) {
             if(json.length > 1)
@@ -1043,7 +1043,9 @@ function GetBrowserSections(){
         url:'GetBrowsers/',
         dataType : "json",
         data : {
-            browser : ''
+            browser : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
         },
         success: function( json ) {
             if(json.length > 1)
@@ -1500,7 +1502,10 @@ function recursivelyAddSection(_this){
         url:'GetSections/',
         dataType : "json",
         data : {
-            section : (fatherHeirarchy+father).replace(/ /g,'_')
+            section : (fatherHeirarchy+father).replace(/ /g,'_'),
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+
         },
         success: function( json ) {
             if(json.length != 1){

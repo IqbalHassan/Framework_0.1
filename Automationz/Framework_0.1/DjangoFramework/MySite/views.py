@@ -3408,12 +3408,16 @@ def Get_Sections(request):  #==================Returns Abailable User Name in Li
     # if request.is_ajax():
     if request.method == "GET":
         section = request.GET.get(u'section', '')
+        project_id=request.GET.get(u'project_id','')
+        team_id=request.GET.get(u'team_id','')
         if section == '':
-            results = DB.GetData(Conn, "select distinct subpath(section_path,0,1) from product_sections", False)
+            query="select distinct subltree(section_path,0,1) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d"%(project_id,int(team_id))
+            results = DB.GetData(Conn, query, False)
             levelnumber = 0
         else:
             levelnumber = section.count('.') + 1
-            results = DB.GetData(Conn, "select distinct subltree(section_path,%d,%d) FROM product_sections WHERE section_path ~ '*.%s.*' and nlevel(section_path) > %d" % (levelnumber, levelnumber + 1, section, levelnumber), False)
+            query="select distinct subltree(section_path,%d,%d) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d and section_path~'*.%s.*' and nlevel(section_path)>%d"%(int(levelnumber),int(levelnumber+1),project_id,int(team_id),section,int(levelnumber))
+            results = DB.GetData(Conn, query, False)
 
     results.insert(0, (str(levelnumber),))
     json = simplejson.dumps(results)
@@ -3443,8 +3447,11 @@ def Get_Browsers(request):
     # if request.is_ajax():
     if request.method == "GET":
         browser = request.GET.get(u'browser', '')
+        project_id=request.GET.get(u'project_id','')
+        team_id=request.GET.get(u'team_id','')
         if browser == '':
-            results = DB.GetData(Conn, "select value from config_values where type = 'Browser'", False)
+            query="select c.value from team_wise_settings tws,config_values c where c.id=tws.parameters and c.type=tws.type and c.type='Browser' and tws.project_id='%s' and tws.team_id=%d"%(project_id,int(team_id))
+            results = DB.GetData(Conn, query, False)
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
