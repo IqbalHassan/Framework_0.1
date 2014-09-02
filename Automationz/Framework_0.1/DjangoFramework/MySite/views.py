@@ -7118,9 +7118,9 @@ def manage_test_cases(request):
     if request.method == 'GET':
         if request.is_ajax():
             # Fetch the data from product_sections table
-            query = '''
-            SELECT * FROM product_sections ORDER BY section_path
-            '''
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            query = "select ps.section_id,ps.section_path from product_sections ps ,team_wise_settings tws where tws.parameters=ps.section_id and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d"%(project_id,int(team_id))
             # Convert the data into a list
 #             data = list(DB.GetData(Conn, query, False))
             cur = Conn.cursor()

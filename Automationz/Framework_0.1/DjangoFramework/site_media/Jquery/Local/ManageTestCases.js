@@ -19,7 +19,11 @@ $(document).ready(function() {
 					},
 					
 					"data" : function(node) {
-						return { "id" : node.id };
+						return {
+                            "id" : node.id,
+                            "project_id": $.session.get('project_id'),
+                            "team_id": $.session.get('default_team_identity')
+                        };
 					}
 				},
 				
