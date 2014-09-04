@@ -49,6 +49,7 @@ import os
 import RequirementOperations
 import TaskOperations
 from TaskOperations import testConnection
+import BugOperations
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -444,6 +445,16 @@ def Edit(request,tc_id):
         variables = Context({ })
         output = templ.render(variables)
         return HttpResponse(output)
+    
+def EditBug(request,bug_id):
+    bug_id = request.GET.get('bug_id', '')
+    if bug_id != "":
+        return render_to_response('ManageBug.html')
+    else:
+        templ = get_template('CreateBug.html')
+        variables = Context({ })
+        output = templ.render(variables)
+        return HttpResponse(output)    
 
 def Performance(request):
     templ = get_template('Performance.html')
@@ -7629,6 +7640,30 @@ def CreateBug(request):
     manager=DB.GetData(Conn,query)
     Dict={'project':project,'team':team,'manager':manager}
     return render_to_response('CreateBug.html',Dict)
+
+def LogBug(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            #getting all the info from the messages
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team','')
+            title=request.GET.get(u'title','')
+            description=request.GET.get(u'bug_desc','')
+            start_date=request.GET.get(u'start_date','')
+            end_date=request.GET.get(u'end_date','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            status=request.GET.get(u'status','')
+            user_name=request.GET.get(u'user_name','')
+            testers=request.GET.get(u'testers','').split("|")
+            created_by=request.GET.get(u'created_by','')
+            
+            result=BugOperations.CreateNewBug(title,status,description,start_date,end_date,team_id,priority,milestone,project_id,user_name,created_by,testers)
+            if result!=False:
+                bug_id=result
+    result=simplejson.dumps(bug_id)
+    return HttpResponse(result,mimetype='application/json')
+
 def ManageRequirement(request):
     return render_to_response('ManageRequirement.html',{})
 def ManageTeam(request):

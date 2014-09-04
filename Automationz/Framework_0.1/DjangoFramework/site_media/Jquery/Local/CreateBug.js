@@ -6,7 +6,48 @@ $(document).ready(function(){
     ActivateNecessaryButton();
     ButtonSet();
 
+    $("#submit").click(function(){
+
+        var project = $("#project_name").val();
+        var bug_desc=$("#bug_desc").val();
+        var start_date=$('#start_date').val();
+        var end_date=$('#end_date').val();
+        var team=$("#team_name").val();
+        var priority= 'P' + $('#priority').val();
+        var milestone=$('#milestone').text();
+        var title=$('#title').val();
+        var creator = $("#created_by").val();
+        var testers=[];
+        $('.selected').each(function(){
+            testers.push($(this).text().trim());
+        });
+        var status = $('#status').val();
+
+
+        if(title!=""){
+            $.get("LogNewBug/",{
+                'title':title.trim(),
+                'description':bug_desc.trim(),
+                'status':status.trim(),
+                'start_date':start_date.trim(),
+                'end_date':end_date.trim(),
+                'team':team.trim(),
+                'tester':testers.join("|").trim(),
+                'priority':priority.trim(),
+                'milestone':milestone.trim(),
+                'project_id': project.trim(),
+                'user_name':$('#user_name').text().trim(),
+                'created_by':creator.trim()
+            },function(data){
+                window.location='/Home/CreateBug/';
+            });
+        }
+        else{
+            alertify.error("Fields are empty!", 5500);
+        }
+    });
 });
+
 
 function ButtonSet(){
 
@@ -17,9 +58,9 @@ function ButtonSet(){
 
             var value = ui.item.value
             $("#tester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
-                + '<td class="Text">'
+                + '<td class="Text selected">'
                 + value
-                + ":&nbsp"
+                + "&nbsp"
                 + '</td>');
 
             //$("#tester th").css('display', 'block');
@@ -60,7 +101,7 @@ function ButtonSet(){
                 $("#milestone").html('<td><img class="delete" id = "DeleteMileStone" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
                     + '<td class="Text">'
                     + value
-                    + ":&nbsp"
+                    + "&nbsp"
                     + '</td>');
 
                 //$("#MileStoneHeader th").css('display', 'block');

@@ -1,6 +1,6 @@
 {% extends "BaseTemplate.html" %}
 
-{% block title%}Manage Bug{% endblock %}
+{% block title%}Create Bug{% endblock %}
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/CreateBug.js"></script>
@@ -20,7 +20,7 @@
                     <td><select id="project_name" class="selectdrop">
                         <option selected>Select Project</option>
                         {% for x in project %}
-                        <option value="{{x}}.replace(/ /g,'_')">{{x}}</option>
+                            <option value="{{x}}">{{x}}</option>
                         {% endfor %}
                     </select>
                     </td>
@@ -30,7 +30,7 @@
                     <td><select id="team_name" class="selectdrop">
                         <option selected>Select Team</option>
                         {% for x in team %}
-                        <option value="{{x}}.replace(/ /g,'_')">{{x}}</option>
+                        <option value="{{x}}">{{x}}</option>
                         {% endfor %}
                     </select>
                     </td>
@@ -41,7 +41,7 @@
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Description:</b></td>
-                    <td><textarea  rows="5" cols="70" placeholder="Description for the task within 150 words"></textarea></td>
+                    <td><textarea  id="bug_desc" rows="5" cols="70" placeholder="Description for the task within 150 words"></textarea></td>
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Starting Date:</b></td>
@@ -55,7 +55,7 @@
                     <td align="right"><b class="Text">Created By:</b></td>
                     <td><select id="created_by" class="selectdrop"><option selected>Select name from the list</option>
                         {% for x in manager %}
-                        <option value="{{x}}.replace(/ /g,'_')">{{x}}</option>
+                        <option value="{{x}}">{{x}}</option>
                         {% endfor %}
                     </select>
                     </td>
@@ -74,7 +74,7 @@
                     </select></td>
                 </tr>
                 <tr>
-                    <td align="right"><b class="Text">Milestone</b></td>
+                    <td align="right"><b class="Text">Milestone:</b></td>
                     <td><input type="text" id="milestone_list" class="textbox" placeholder="Milestone Here"></td>
                     <td><table><tr id="milestone"></tr></table></td>
                 </tr>
@@ -89,27 +89,20 @@
                         <option value="Verified">Verified</option>
                     </select></td>
                 </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td><input type="button" class="button primary" value="Submit"/></td>
-                </tr>
+
             </table>
         </div>
 
-        <h2>Testing</h2>
+        <h2>Test Case</h2>
         <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
 
         </div>
 
-        <h2>Tasks</h2>
-        <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
+    </div>
 
-        </div>
-
-        <h2>Requirements</h2>
-        <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
-
-        </div>
+    <div align="center">
+        &nbsp;
+        <input type="button" id="submit" class="button minibutton primary" value="Submit"/>
     </div>
 
 
