@@ -37,8 +37,8 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
               'project_id':project_id
         }
         testConnection(Conn)
-        #result=DB.InsertNewRecordInToTable(Conn,"bugs",**Dict)
-        result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
+        result=DB.InsertNewRecordInToTable(Conn,"bugs",**Dict)
+        #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
         return bug_id
         """if result==True:
             for each in teams:
