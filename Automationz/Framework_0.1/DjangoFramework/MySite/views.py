@@ -101,14 +101,17 @@ def GetProjectNameForTopBar(request):
             query="select project_id from projects"
             Conn=GetConnection()
             project_name_id=DB.GetData(Conn, query,False)
+            Conn.close()
             #be sure that there will be a project name other wise the page will refresh
             user_id=request.GET.get(u'user_id','')
             Dict={
                   'projects':project_name_id,
                   }
             query="select id,value from config_values where type='Team'"
-            testConnection(Conn)
+            #testConnection(Conn)
+            Conn=GetConnection()
             all_teams=DB.GetData(Conn,query,False)
+            Conn.close()
             Dict.update({
                 'teams':all_teams
             })
@@ -170,38 +173,45 @@ def make_status_array(Conn, refined_list):
             print "notrun_query: %s" %notrun_query
             skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
             print "skipped_query: %s" %skipped_query
-            # Conn=GetConnection()
+            Conn=GetConnection()
             total = DB.GetData(Conn, total_query)
+            Conn.close()
             print "total: %s"%total
             for iTem in total:
                 print iTem
-            
+            Conn=GetConnection()
             passed = DB.GetData(Conn, pass_query)
+            Conn.close()
             print "passed: %s"%passed
             for iTem in passed:
                 print iTem
-            
+            Conn=GetConnection()
             failed = DB.GetData(Conn, fail_query)
+            Conn.close()
             print "failed: %s"%failed
             for iTem in failed:
                 print iTem
-            
+            Conn=GetConnection()
             blocked = DB.GetData(Conn, blocked_query)
+            Conn.close()
             print "blocked: %s"%blocked
             for iTem in blocked:
                 print iTem
-            
+            Conn=GetConnection()
             progress = DB.GetData(Conn, progress_query)
+            Conn.close()
             print "progress: %s"%progress
             for iTem in total:
                 print iTem
-            
+            Conn=GetConnection()
             submitted = DB.GetData(Conn, notrun_query)
+            Conn.close()
             print "submitted: %s"%submitted
             for iTem in progress:
                 print iTem
-            
+            Conn=GetConnection()
             skipped = DB.GetData(Conn, skipped_query)
+            Conn.close()
             print "skipped: %s"%skipped
             for iTem in skipped:
                 print iTem
@@ -219,52 +229,59 @@ def make_status_array(Conn, refined_list):
             temp.append(submitted)
             temp.append(pending)
             temp = tuple(temp)
-            # Conn.close()    
             pass_list.append(temp)
         except Exception, e:
-            Conn = GetConnection()
             print "Exception %s" % e
-            
     print pass_list
     return pass_list
 
 def ResultTableFetch(index):
-    Conn = GetConnection()
+    
     # interval="1"
-    step = 10
-    limit = "limit " + str(step)
-    ########Code for selecting offset#########
-    index = int(index)
-    index = index - 1
-    index = index * step
-    offset = "offset " + str(index)
-    offset = offset.strip()
-    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
-    total_query += "from test_run_env tre, test_env_results ter " 
-    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')) "
-    total_query += "union all "
-    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
-    total_query += "from test_run_env tre, test_env_results ter " 
-    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress'))) as A order by starttime desc,run_id asc "
-    count_query = total_query
-    total_query += (limit + ' ' + offset)
-    get_list = DB.GetData(Conn, total_query, False)
-    refine_list = []
-    for each in get_list:
-        if each not in refine_list:
-            refine_list.append(each)
-    total_run = make_array(refine_list)
-    print total_run
-    all_status = make_status_array(Conn, total_run)
-    dataCount = DB.GetData(Conn, count_query, False)
-    data = {
-          'total':total_run,
-          'all_status':all_status,
-          'totalCount':len(dataCount),
-          'start':index + 1,
-          'end':index + step
-          }
-    return data
+    try:
+        step = 10
+        limit = "limit " + str(step)
+        ########Code for selecting offset#########
+        index = int(index)
+        index = index - 1
+        index = index * step
+        offset = "offset " + str(index)
+        offset = offset.strip()
+        total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+        total_query += "from test_run_env tre, test_env_results ter " 
+        total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')) "
+        total_query += "union all "
+        total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+        total_query += "from test_run_env tre, test_env_results ter " 
+        total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress'))) as A order by starttime desc,run_id asc "
+        count_query = total_query
+        total_query += (limit + ' ' + offset)
+        Conn = GetConnection()
+        get_list = DB.GetData(Conn, total_query, False)
+        Conn.close()
+        refine_list = []
+        for each in get_list:
+            if each not in refine_list:
+                refine_list.append(each)
+        total_run = make_array(refine_list)
+        print total_run
+        Conn = GetConnection()
+        all_status = make_status_array(Conn, total_run)
+        Conn.close()
+        time.sleep(0.5)
+        Conn = GetConnection()
+        dataCount = DB.GetData(Conn, count_query, False)
+        Conn.close()
+        data = {
+              'total':total_run,
+              'all_status':all_status,
+              'totalCount':len(dataCount),
+              'start':index + 1,
+              'end':index + step
+              }
+        return data
+    except Exception, e:
+        print "Exception %s" % e
 def zipdata(data_array, status_array):
     data = []
     for each in zip(data_array, status_array):
@@ -280,9 +297,11 @@ def GetPageCount(request):
     totalPage = 0
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            
             query = "select count(*) from test_run_env tre,test_env_results ter where tre.run_id=ter.run_id"
+            Conn = GetConnection()
             totalEntry = DB.GetData(Conn, query)
+            Conn.close()
             totalPage = totalEntry[0] / step
             if((totalEntry[0] % step) > 0):
                 totalPage += 1
@@ -314,7 +333,6 @@ def ResultPage(request, Page_No):
     return HttpResponse(output)
 
 def Result_Table(request):
-    Conn = GetConnection()
     results = []
     if request.method == "GET":
         tester = request.GET.get(u'tester', '')
@@ -521,7 +539,7 @@ def MKS_Report_Table(request):
 
 def AutoCompleteTestCasesSearch(request):  #==================Returns Data in List as user Type on Run Test Page==============================
 
-    Conn = GetConnection()
+    
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -545,12 +563,15 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             CustomSet = "set"
             Tag = 'tag'
             Client = 'client'
-
+        
+        Conn = GetConnection()
         results = DB.GetData(Conn, "select distinct name,property from test_case_tag "
                                    "where name Ilike '%" + value + "%' "
                                      "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') "
                                      "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) ", False
                                      )
+
+        
         status_result = DB.GetData(Conn, "select distinct property,name from test_case_tag "
                                    "where property Ilike '%" + value + "%' "
                                      "and name ='" + TCStatusName + "'"
