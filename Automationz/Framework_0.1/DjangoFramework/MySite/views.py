@@ -8100,7 +8100,7 @@ def Project_Detail(request,project_id):
         project_data=DB.GetData(Conn,query,False)
         Conn.close()
         print project_data
-        time.sleep(0.5)
+        #time.sleep(0.5)
         query="select column_name from information_schema.columns where table_name='projects'"
         Conn=GetConnection()
         project_column=DB.GetData(Conn,query)
@@ -8134,7 +8134,7 @@ def Project_Detail(request,project_id):
                 Conn=GetConnection()
                 temp_comment=DB.GetData(Conn,query,False)
                 Conn.close()
-                time.sleep(0.5)
+                #time.sleep(0.5)
                 for each in temp_comment:
                     for eachitem in each:
                         temp.append(eachitem)
@@ -8145,7 +8145,7 @@ def Project_Detail(request,project_id):
                 Conn=GetConnection()
                 temp=DB.GetData(Conn,query,False)
                 Conn.close()
-                time.sleep(0.5)
+                #time.sleep(0.5)
                 temp=temp[0]
                 temp=tuple(temp)
             final.append(temp)
@@ -8155,19 +8155,19 @@ def Project_Detail(request,project_id):
         Conn=GetConnection()
         team_number=DB.GetData(Conn,team_query,False)
         Conn.close()
-        time.sleep(0.5)
+        #time.sleep(0.5)
         fullTeamDetail=GetProjectTeamInfo(team_number)
         other_query="(select cast(id as text),value from config_values where type='Team') except (select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and project_id='%s')" %project_id
         Conn=GetConnection()
         restTeam=DB.GetData(Conn,other_query,False)
         Conn.close()
-        time.sleep(0.5)
+        #time.sleep(0.5)
         restTeamDetail=GetProjectTeamInfo(restTeam)
         Dict.update({'team_detail':fullTeamDetail,'rest_team':restTeamDetail})
         Dict.update({'comment':comment})
         Dict.update({'testers':testers,'managers':managers})        
         Dict.update({'final_comment':final})
-        time.sleep(1)
+        #time.sleep(1)
         return render_to_response('Project_Detail.html',Dict,context_instance=RequestContext(request))
     except Exception,e:
         print "Exception:", e
@@ -8201,12 +8201,12 @@ def Small_Project_Detail(request):
                 Conn=GetConnection()
                 project_metadata=DB.GetData(Conn,query,False)
                 Conn.close()
-                time.sleep(0.5)
+                #time.sleep(0.5)
                 project_column_query="select column_name from information_schema.columns where table_name='projects'"
                 Conn=GetConnection()
                 project_column=DB.GetData(Conn,project_column_query)
                 Conn.close()
-                time.sleep(0.5)
+                #time.sleep(0.5)
                 Dict={}
                 for each in project_metadata:
                     for eachitem in zip(project_column,each):
@@ -8477,7 +8477,7 @@ def AddTeamtoProject(request):
                         result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
                         Conn.close()
                         if result==False:
-                            time.sleep(1)
+                            #time.sleep(1)
                             Conn=GetConnection()
         message="Success"
         result=simplejson.dumps(message)
