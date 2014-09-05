@@ -7931,8 +7931,10 @@ def UpdateTeamName(request):
             query="select count(*) from config_values where value='%s' and type='%s'"%(old_name.strip(),type_tag.strip())
             Conn=GetConnection()
             count=DB.GetData(Conn,query)
+            
             if count[0]==1 and len(count)==1:
                 sWhereQuery="where value='%s' and type='%s'"%(old_name.strip(),type_tag.strip())
+                
                 result=DB.UpdateRecordInTable(Conn, "config_values", sWhereQuery,value=new_name.strip())
                 if result==True:
                     message="Success"
@@ -7948,418 +7950,543 @@ def SearchEditDev(request):
     output = templ.render(variables)
     return HttpResponse(output)
 def CreateProject(request):
-    query="select distinct value from config_values where type='Team'"
-    Conn=GetConnection()
-    team_name=DB.GetData(Conn, query)
-    final=[]
-    count=0
-    temp=[]
-    for x in team_name:
-        temp.append(x)
-        count+=1
-        if count>5:
-            final.append(temp)
-            temp=[]
-            count=0
-    final.append(temp)
-    team_name=final
-    query="select distinct user_names,user_level from permitted_user_list where user_level in ('manager','assigned_tester')"
-    owners=DB.GetData(Conn,query,False)
-    final=[]
-    count=0
-    temp=[]
-    for x in owners:
-        temp.append(x)
-        count+=1
-        if count>5:
-            final.append(temp)
-            temp=[]
-            count=0
-    final.append(temp)
-    owners=final            
-    Dict={'teams':team_name,'owners':owners}
-    return render_to_response('Project.html',Dict)
-def Create_New_Project(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            message=""
-            user_name=request.GET.get('user_name','')
-            name=request.GET.get('name','')
-            description=request.GET.get('description','')
-            start_date=request.GET.get('start_date','')
-            start_date=start_date.split("-")
-            start_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip()))
-            end_date=request.GET.get('end_date','')
-            end_date=end_date.split("-")
-            end_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip()))
-            team=request.GET.get('team').split("|")
-            owners=request.GET.get('owners').strip()
-            #generate Project id
+    try:
+        print "Create project was called"
+        query="select distinct value from config_values where type='Team'"
+        try:
+            team_name = []
             Conn=GetConnection()
-            tmp_id = DB.GetData(Conn, "select nextval('projectid_seq')")
-            project_id=('PROJ-')+str(tmp_id[0])
-            query="select count(*) from projects where project_name='%s' and project_id='%s'"%(name.strip(),project_id.strip())
-            count=DB.GetData(Conn,query)
-            now=datetime.datetime.now().date()
-            current_date=now
-            if len(count)==1 and count[0]==0:
-                #create the new projects
-                team_array=[]
-                for each in team:
-                    query="select id from config_values where type='Team' and value='%s'"%(each.strip())
-                    team_id=DB.GetData(Conn,query)
-                    if type(team_id[0])!= int or len(team_id)!=1:
-                        continue
-                    else:
-                        team_id=team_id[0]
-                        team_array.append(team_id)
-                Dict={
-                    'project_id':project_id.strip(),
-                    'project_name':name.strip(),
-                    'project_description':description.strip(),
-                    'project_startingdate':start_date,
-                    'project_endingdate':end_date,
-                    'project_owners':owners.strip(),
-                    'project_createdby':user_name.strip(),
-                    'project_creationdate':current_date,
-                    'project_modifiedby':user_name.strip(),
-                    'project_modifydate':current_date
-                }
-                result=DB.InsertNewRecordInToTable(Conn, "projects",**Dict)
-                if result==False:
-                    message="Failed"
-                    Conn=GetConnection()
-                else:
-                    message="Success"
-                for each in team_array:
-                    #form Dict
-                    Dict={}
-                    Dict={
-                          'project_id':project_id.strip(),
-                          'team_id':str(each).strip(),
-                          'status':False
-                    }
-                    result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
-                    if result==False:
+            team_name=DB.GetData(Conn, query)
+            print team_name
+            Conn.close()
+        except Exception,e:
+            print "Exception:", e
+        
+        final=[]
+        count=0
+        temp=[]
+        for x in team_name:
+            temp.append(x)
+            count+=1
+            if count>5:
+                final.append(temp)
+                temp=[]
+                count=0
+        final.append(temp)
+        team_name=final
+        query="select distinct user_names,user_level from permitted_user_list where user_level in ('manager','assigned_tester')"
+        try:
+            owners = []
+            Conn=GetConnection()
+            owners=DB.GetData(Conn,query,False)
+            print owners
+            Conn.close()
+            
+        except Exception,e:
+            print "Exception:", e       
+            
+            
+        final=[]
+        count=0
+        temp=[]
+        for x in owners:
+            temp.append(x)
+            count+=1
+            if count>5:
+                final.append(temp)
+                temp=[]
+                count=0
+        final.append(temp)
+        owners=final            
+        Dict={'teams':team_name,'owners':owners}
+        return render_to_response('Project.html',Dict)
+    except Exception,e:
+        print "Exception:", e
+def Create_New_Project(request):
+    try:
+        if request.is_ajax():
+            if request.method=='GET':
+                message=""
+                user_name=request.GET.get('user_name','')
+                name=request.GET.get('name','')
+                description=request.GET.get('description','')
+                start_date=request.GET.get('start_date','')
+                start_date=start_date.split("-")
+                start_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip()))
+                end_date=request.GET.get('end_date','')
+                end_date=end_date.split("-")
+                end_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip()))
+                team=request.GET.get('team').split("|")
+                owners=request.GET.get('owners').strip()
+                #generate Project id
+                Conn=GetConnection()
+                tmp_id = DB.GetData(Conn, "select nextval('projectid_seq')")
+                Conn.close()
+                print tmp_id
+                project_id=('PROJ-')+str(tmp_id[0])
+                query="select count(*) from projects where project_name='%s' and project_id='%s'"%(name.strip(),project_id.strip())
+                count = []
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                print count
+                now=datetime.datetime.now().date()
+                current_date=now
+                if len(count)==1 and count[0]==0:
+                    #create the new projects
+                    team_array=[]
+                    for each in team:
+                        query="select id from config_values where type='Team' and value='%s'"%(each.strip())
                         Conn=GetConnection()
+                        team_id = []
+                        team_id=DB.GetData(Conn,query)
+                        Conn.close()
+                        print "team ID:"
+                        print team_id
+                        if type(team_id[0])!= int or len(team_id)!=1:
+                            continue
+                        else:
+                            team_id=team_id[0]
+                            team_array.append(team_id)
+                    Dict={
+                        'project_id':project_id.strip(),
+                        'project_name':name.strip(),
+                        'project_description':description.strip(),
+                        'project_startingdate':start_date,
+                        'project_endingdate':end_date,
+                        'project_owners':owners.strip(),
+                        'project_createdby':user_name.strip(),
+                        'project_creationdate':current_date,
+                        'project_modifiedby':user_name.strip(),
+                        'project_modifydate':current_date
+                    }
+                    Conn=GetConnection()
+                    result = False
+                    result=DB.InsertNewRecordInToTable(Conn, "projects",**Dict)
+                    Conn.close()
+                    if result==False:
                         message="Failed"
+                        Conn=GetConnection()
                     else:
                         message="Success"
-        result_dict={
-             'message':message,
-             'project_id':project_id.strip()
-             }                 
-    result=simplejson.dumps(result_dict)
-    return HttpResponse(result,mimetype='application/json')        
+                    for each in team_array:
+                        #form Dict
+                        Dict={}
+                        Dict={
+                              'project_id':project_id.strip(),
+                              'team_id':str(each).strip(),
+                              'status':False
+                        }
+                        result = False
+                        result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
+                        if result==False:
+                            Conn=GetConnection()
+                            message="Failed"
+                        else:
+                            message="Success"
+            result_dict={
+                 'message':message,
+                 'project_id':project_id.strip()
+                 }                 
+        result=simplejson.dumps(result_dict)
+        return HttpResponse(result,mimetype='application/json')   
+    except Exception,e:
+        print "Exception:", e     
 def Project_Detail(request,project_id):
-    query="select * from projects where project_id='%s'"%project_id
-    Conn=GetConnection()
-    project_data=DB.GetData(Conn,query,False)
-    query="select column_name from information_schema.columns where table_name='projects'"
-    project_column=DB.GetData(Conn,query)
-    Dict={}
-    for eachitem in project_data:
-        for each in zip(project_column,eachitem):
-            Dict.update({each[0]:each[1]})
-    temp=Dict['project_owners']
-    first_colon=temp.find(":",0)
-    second_colon=temp.find(":",first_colon+1)
-    first_hiphen=temp.find("-",first_colon+1)
-    testers=temp[first_colon+1:first_hiphen]
-    testers=testers.split(",")
-    managers=temp[second_colon+1:]
-    managers=managers.split(",")
-    del Dict['project_owners']
-    #get top 5 comments
-    query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc limit 5"%(project_id)
-    top_five_comment=DB.GetData(Conn,query,False)
-    final=[]
-    for each in top_five_comment:
-        temp=[]
-        if each[1]==False:
-            query="select comment_text,commented_by,comment_date,rank,c.attachment from comments c where c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)    
-            temp_comment=DB.GetData(Conn,query,False)
-            for each in temp_comment:
-                for eachitem in each:
-                    temp.append(eachitem)
-            temp.append('')
-            temp=tuple(temp)
-        if each[1]==True:
-            query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)
-            temp=DB.GetData(Conn,query,False)
-            temp=temp[0]
-            temp=tuple(temp)
-        final.append(temp)
-    comment=Comment()
-    print comment
-    team_query="select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and ptm.project_id='%s'"%project_id
-    team_number=DB.GetData(Conn,team_query,False)
-    fullTeamDetail=GetProjectTeamInfo(team_number)
-    other_query="(select cast(id as text),value from config_values where type='Team') except (select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and project_id='%s')" %project_id
-    restTeam=DB.GetData(Conn,other_query,False)
-    restTeamDetail=GetProjectTeamInfo(restTeam)
-    Dict.update({'team_detail':fullTeamDetail,'rest_team':restTeamDetail})
-    Dict.update({'comment':comment})
-    Dict.update({'testers':testers,'managers':managers})        
-    Dict.update({'final_comment':final})
-    return render_to_response('Project_Detail.html',Dict,context_instance=RequestContext(request))
-def GetProjectTeamInfo(team_number):
-    fullTeamDetail=[]
-    for each in team_number:
-        team={}
-        query="select name,rank from team_info where team_id='%s'"%int(each[0])
-        team_members=DB.GetData(Conn,query,False)
-        leader=[]
-        tester=[]
-        for eachitem in team_members:
-            if eachitem[1]=='leader':
-                leader.append(eachitem[0])
-            if eachitem[1]=='tester':
-                tester.append(eachitem[0])
-        team.update({'leader':leader,'tester':tester})
-        fullTeamDetail.append((each[0],each[1],each[1].replace(' ','_'),team))
-    return fullTeamDetail
-def Small_Project_Detail(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            name=request.GET.get(u'name','')
-            query="select * from projects where project_name='%s'"%name.strip()
-            project_metadata=DB.GetData(Conn,query,False)
-            project_column_query="select column_name from information_schema.columns where table_name='projects'"
-            project_column=DB.GetData(Conn,project_column_query)
-            Dict={}
-            for each in project_metadata:
-                for eachitem in zip(project_column,each):
-                    Dict.update({eachitem[0]:eachitem[1]})
-            temp=Dict['project_owners']
-            first_colon=temp.find(":",0)
-            second_colon=temp.find(":",first_colon+1)
-            first_hiphen=temp.find("-",first_colon+1)
-            testers=temp[first_colon+1:first_hiphen]
-            testers=testers.split(",")
-            managers=temp[second_colon+1:]
-            managers=managers.split(",")
-            del Dict['project_owners']
-            Dict.update({'testers':testers,'managers':managers})
-            due_in=Dict['project_endingdate']-Dict['project_startingdate']
-            if due_in.days==0:
-                due_message="Today"
-            elif due_in.days<0:
-                if due_in.days<-1:
-                    due_message="Over "+str(str(due_in.days)[1:])+" days"
-                else:
-                    due_message="Over "+str(str(due_in.days)[1:])+" day"
-            else:
-                if due_in.days>1:
-                    due_message="In "+str(due_in.days)+" days"
-                else:
-                    due_message="In "+str(due_in.days)+" days"
-            query="select value from config_values where type='Team' and id in (select cast(team_id as int) from project_team_map where project_id='%s')"%(Dict['project_id'].strip())
-            team_name=DB.GetData(Conn,query)
-            Dict.update({
-                         'project_startingdate':str(Dict['project_startingdate']),
-                         'project_endingdate':str(Dict['project_endingdate']),
-                         'project_creationdate':str(Dict['project_creationdate']),
-                         'project_modifydate':str(Dict['project_modifydate']),
-                         'due_message':due_message,
-                         'team_name':team_name
-                         })     
-    result=simplejson.dumps(Dict)        
-    return HttpResponse(result,mimetype='application/json')        
-def Get_Projects(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            try:
-                name=request.GET.get(u'team_name','')
-                if name=="":
-                    query="select project_name from projects"
-                else:
-                    query="select project_name from projects where project_name Ilike'%%%s%%'"%name.strip()
-                team_name=DB.GetData(Conn,query)
-            except Exception,e:
-                team_name=[]
-                print "Exception:",e
-    result=simplejson.dumps(team_name)
-    return HttpResponse(result,mimetype='application/json')
-def FileUpload(request,project_id):
-    print request
-    print project_id
-    #Get the rank of the person
-    query="select project_owners from projects where project_id='%s'"%(project_id)
-    Conn=GetConnection()
-    project_owners=DB.GetData(Conn, query)
-    temp=project_owners[0]
-    first_colon=temp.find(":",0)
-    second_colon=temp.find(":",first_colon+1)
-    first_hiphen=temp.find("-",first_colon+1)
-    testers=temp[first_colon+1:first_hiphen]
-    testers=testers.split(",")
-    managers=temp[second_colon+1:]
-    managers=managers.split(",")
-    owners=[]
-    for each in testers:
-        if each not in owners:
-            owners.append(each)
-    for each in managers:
-        if each not in owners:
-            owners.append(each)
-    query="select distinct name,rank from team_info where cast(team_id as text) in(select team_id from project_team_map where project_id='%s')"%project_id
-    rest_rank=DB.GetData(Conn,query,False)
-    members=[]
-    for each in rest_rank:
-        if each[0] not in owners:
-            members.append(each[0])
-    user_name=request.POST['commented_by']
-    rank=""
-    if user_name in owners:
-        rank="Owner"
-    if user_name in members:
-        rank="Member"
-    query="select project_createdby from projects where project_id='%s'"%project_id
-    created_by=DB.GetData(Conn,query)
-    if user_name in created_by:
-        rank="Creator"
-    #form file name
-    if rank!="":
-        now=datetime.datetime.now().date()
-        dateFolder=os.path.join(MEDIA_ROOT,str(now.year))
-        dateFolder=os.path.join(dateFolder,str(now.month))
-        dateFolder=os.path.join(dateFolder,str(now.day))
-        #fullfileName=(str(now.year)+'/'+str(now.month)+'/'+str(now.day)+'/'+request.FILES['docfile'])
-        #print fullfileName
-        comment_time=datetime.datetime.now()
-        #Genereate Comment ID
-        tmp_id = DB.GetData(Conn, "select nextval('commentid_seq')")
-        comment_id=('COM-'+str(tmp_id[0]))
-        if len(request.FILES)!=0 and request.POST['comment']!="":
-            file_name=request.FILES['docfile']
-            path=default_storage.save(os.path.join(dateFolder,str(file_name)),ContentFile(file_name.read()))
-            print path
-            #print "Attachment Comment"
-            #new_path=
-            path=path[len(PROJECT_ROOT):]
-            result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
-            if result==False:
-                print "unable to save the attachments"
-                attachment=False
-
-            else:
-                attachment=True
-            #form Dict
-            Dict={
-                  'project_id':project_id.strip(),
-                  'comment_id':comment_id.strip(),
-                  'comment_text':request.POST['comment'].strip(),
-                  'commented_by':user_name.strip(),
-                  'comment_date':comment_time,
-                  'rank':rank.strip(),
-                  'attachment':attachment
-                  }
-            result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
-            if result==True:
-                return HttpResponseRedirect(reverse('comment_view', kwargs={'project_id':project_id}))
-        elif len(request.FILES)==0 and request.POST['comment']!="":
-            #form Dict
-            attachment=False
-            Dict={
-                  'project_id':project_id.strip(),
-                  'comment_id':comment_id.strip(),
-                  'comment_text':request.POST['comment'].strip(),
-                  'commented_by':user_name.strip(),
-                  'comment_date':comment_time,
-                  'rank':rank.strip(),
-                  'attachment':attachment
-                  }
-            result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
-            if result==True:
-                return HttpResponseRedirect(reverse('comment_view', kwargs={'project_id':project_id}))
-        elif len(request.FILES)!=0 and request.POST['comment']=="":
-            file_name=request.FILES['docfile']
-            path=default_storage.save(os.path.join(dateFolder,str(file_name)),ContentFile(file_name.read()))
-            print path
-            #print "Attachment Comment"
-            #new_path=
-            path=path[len(PROJECT_ROOT):]
-            result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
-            if result==False:
-                print "unable to save the attachments"
-                attachment=False
-
-            else:
-                attachment=True
-            #form Dict
-            Dict={
-                  'project_id':project_id.strip(),
-                  'comment_id':comment_id.strip(),
-                  'comment_text':'',
-                  'commented_by':user_name.strip(),
-                  'comment_date':comment_time,
-                  'rank':rank.strip(),
-                  'attachment':attachment
-                  }
-            result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
-            if result==True:
-                return HttpResponseRedirect(reverse('comment_view', kwargs={'project_id':project_id}))
-        else:
-            print "no comment"
-    else:
-        print "not autorized to comment"
-def commentView(request,project_id):
-    query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc"%project_id
-    Conn=GetConnection()
-    all_comments=DB.GetData(Conn,query,False)
-    final=[]
-    for each in all_comments:
-        if each[1]==False:
-            query="select comment_text,commented_by,comment_date,rank,c.attachment from comments c where c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)    
-            temp_comment=DB.GetData(Conn,query,False)
+    try:
+        query="select * from projects where project_id='%s'"%project_id
+        Conn=GetConnection()
+        project_data = []
+        project_data=DB.GetData(Conn,query,False)
+        Conn.close()
+        print project_data
+        time.sleep(0.5)
+        query="select column_name from information_schema.columns where table_name='projects'"
+        Conn=GetConnection()
+        project_column=DB.GetData(Conn,query)
+        print project_column
+        Conn.close()
+        Dict={}
+        for eachitem in project_data:
+            for each in zip(project_column,eachitem):
+                Dict.update({each[0]:each[1]})
+        temp=Dict['project_owners']
+        first_colon=temp.find(":",0)
+        second_colon=temp.find(":",first_colon+1)
+        first_hiphen=temp.find("-",first_colon+1)
+        testers=temp[first_colon+1:first_hiphen]
+        testers=testers.split(",")
+        managers=temp[second_colon+1:]
+        managers=managers.split(",")
+        del Dict['project_owners']
+        #get top 5 comments
+        query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc limit 5"%(project_id)
+        Conn=GetConnection()
+        top_five_comment = False
+        top_five_comment=DB.GetData(Conn,query,False)
+        print top_five_comment
+        Conn.close()
+        final=[]
+        for each in top_five_comment:
             temp=[]
-            for each in temp_comment:
-                for eachitem in each:
-                    temp.append(eachitem)
-            temp.append('')
-            temp=tuple(temp)
-        if each[1]==True:
-            query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)
-            temp=DB.GetData(Conn,query,False)
-            temp=temp[0]
-            temp=tuple(temp)
-        final.append(temp)
-    comment=Comment()
-    query="select project_name from projects where project_id='%s'"%project_id
-    project_name=DB.GetData(Conn,query)
-    project_name=project_name[0]
-    Dict={'all_comments':final,'comment':comment,'project_id':project_id,'project_name':project_name}
-    return render_to_response('Project_Comment.html',Dict,context_instance=RequestContext(request))
-
-def AddTeamtoProject(request):
-    if request.is_ajax():
-        if request.method=='GET':
+            if each[1]==False:
+                query="select comment_text,commented_by,comment_date,rank,c.attachment from comments c where c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)    
+                Conn=GetConnection()
+                temp_comment=DB.GetData(Conn,query,False)
+                Conn.close()
+                time.sleep(0.5)
+                for each in temp_comment:
+                    for eachitem in each:
+                        temp.append(eachitem)
+                temp.append('')
+                temp=tuple(temp)
+            if each[1]==True:
+                query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)
+                Conn=GetConnection()
+                temp=DB.GetData(Conn,query,False)
+                Conn.close()
+                time.sleep(0.5)
+                temp=temp[0]
+                temp=tuple(temp)
+            final.append(temp)
+        comment=Comment()
+        print comment
+        team_query="select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and ptm.project_id='%s'"%project_id
+        Conn=GetConnection()
+        team_number=DB.GetData(Conn,team_query,False)
+        Conn.close()
+        time.sleep(0.5)
+        fullTeamDetail=GetProjectTeamInfo(team_number)
+        other_query="(select cast(id as text),value from config_values where type='Team') except (select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and project_id='%s')" %project_id
+        Conn=GetConnection()
+        restTeam=DB.GetData(Conn,other_query,False)
+        Conn.close()
+        time.sleep(0.5)
+        restTeamDetail=GetProjectTeamInfo(restTeam)
+        Dict.update({'team_detail':fullTeamDetail,'rest_team':restTeamDetail})
+        Dict.update({'comment':comment})
+        Dict.update({'testers':testers,'managers':managers})        
+        Dict.update({'final_comment':final})
+        time.sleep(1)
+        return render_to_response('Project_Detail.html',Dict,context_instance=RequestContext(request))
+    except Exception,e:
+        print "Exception:", e
+def GetProjectTeamInfo(team_number):
+    try:
+        fullTeamDetail=[]
+        for each in team_number:
+            team={}
+            query="select name,rank from team_info where team_id='%s'"%int(each[0])
             Conn=GetConnection()
-            teams=request.GET.get(u'teams').split("|")
-            project_id=request.GET.get(u'project_id').strip()
-            for each in teams:
-                query="select count(*) from project_team_map where project_id='%s' and team_id='%s'"%(project_id,str(each))
-                project_count=DB.GetData(Conn,query)
-                if len(project_count)==1 and project_count[0]==1:
-                    continue
+            team_members=DB.GetData(Conn,query,False)
+            Conn.close()
+            leader=[]
+            tester=[]
+            for eachitem in team_members:
+                if eachitem[1]=='leader':
+                    leader.append(eachitem[0])
+                if eachitem[1]=='tester':
+                    tester.append(eachitem[0])
+            team.update({'leader':leader,'tester':tester})
+            fullTeamDetail.append((each[0],each[1],each[1].replace(' ','_'),team))
+        return fullTeamDetail
+    except Exception,e:
+        print "Exception:", e
+def Small_Project_Detail(request):
+    try:
+        if request.is_ajax():
+            if request.method=='GET':
+                name=request.GET.get(u'name','')
+                query="select * from projects where project_name='%s'"%name.strip()
+                Conn=GetConnection()
+                project_metadata=DB.GetData(Conn,query,False)
+                Conn.close()
+                time.sleep(0.5)
+                project_column_query="select column_name from information_schema.columns where table_name='projects'"
+                Conn=GetConnection()
+                project_column=DB.GetData(Conn,project_column_query)
+                Conn.close()
+                time.sleep(0.5)
+                Dict={}
+                for each in project_metadata:
+                    for eachitem in zip(project_column,each):
+                        Dict.update({eachitem[0]:eachitem[1]})
+                temp=Dict['project_owners']
+                first_colon=temp.find(":",0)
+                second_colon=temp.find(":",first_colon+1)
+                first_hiphen=temp.find("-",first_colon+1)
+                testers=temp[first_colon+1:first_hiphen]
+                testers=testers.split(",")
+                managers=temp[second_colon+1:]
+                managers=managers.split(",")
+                del Dict['project_owners']
+                Dict.update({'testers':testers,'managers':managers})
+                due_in=Dict['project_endingdate']-Dict['project_startingdate']
+                if due_in.days==0:
+                    due_message="Today"
+                elif due_in.days<0:
+                    if due_in.days<-1:
+                        due_message="Over "+str(str(due_in.days)[1:])+" days"
+                    else:
+                        due_message="Over "+str(str(due_in.days)[1:])+" day"
                 else:
-                    #form Dict
-                    Dict={
-                          'project_id':project_id.strip(),
-                          'team_id':str(each).strip(),
-                          'status':False
-                          }
-                    result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
-                    if result==False:
-                        time.sleep(1)
+                    if due_in.days>1:
+                        due_message="In "+str(due_in.days)+" days"
+                    else:
+                        due_message="In "+str(due_in.days)+" days"
+                query="select value from config_values where type='Team' and id in (select cast(team_id as int) from project_team_map where project_id='%s')"%(Dict['project_id'].strip())
+                Conn=GetConnection()
+                team_name=DB.GetData(Conn,query)
+                Conn.close()
+                Dict.update({
+                             'project_startingdate':str(Dict['project_startingdate']),
+                             'project_endingdate':str(Dict['project_endingdate']),
+                             'project_creationdate':str(Dict['project_creationdate']),
+                             'project_modifydate':str(Dict['project_modifydate']),
+                             'due_message':due_message,
+                             'team_name':team_name
+                             })     
+        result=simplejson.dumps(Dict)        
+        return HttpResponse(result,mimetype='application/json')        
+    except Exception,e:
+        print "Exception:", e
+def Get_Projects(request):
+    try:
+        if request.is_ajax():
+            
+            if request.method=='GET':
+                try:
+                    name=request.GET.get(u'team_name','')
+                    if name=="":
+                        query="select project_name from projects"
+                    else:
+                        query="select project_name from projects where project_name Ilike'%%%s%%'"%name.strip()
+                    Conn=GetConnection()
+                    team_name=[]
+                    team_name=DB.GetData(Conn,query)
+                    Conn.close()
+                except Exception,e:
+                    
+                    print "Exception:",e
+        result=simplejson.dumps(team_name)
+        return HttpResponse(result,mimetype='application/json')
+    except Exception,e:
+        print "Exception:", e
+def FileUpload(request,project_id):
+    try:
+        print request
+        print project_id
+        #Get the rank of the person
+        query="select project_owners from projects where project_id='%s'"%(project_id)
+        Conn=GetConnection()
+        project_owners=DB.GetData(Conn, query)
+        Conn.close()
+        temp=project_owners[0]
+        first_colon=temp.find(":",0)
+        second_colon=temp.find(":",first_colon+1)
+        first_hiphen=temp.find("-",first_colon+1)
+        testers=temp[first_colon+1:first_hiphen]
+        testers=testers.split(",")
+        managers=temp[second_colon+1:]
+        managers=managers.split(",")
+        owners=[]
+        for each in testers:
+            if each not in owners:
+                owners.append(each)
+        for each in managers:
+            if each not in owners:
+                owners.append(each)
+        query="select distinct name,rank from team_info where cast(team_id as text) in(select team_id from project_team_map where project_id='%s')"%project_id
+        Conn=GetConnection()
+        rest_rank=DB.GetData(Conn,query,False)
+        Conn.close()
+        members=[]
+        for each in rest_rank:
+            if each[0] not in owners:
+                members.append(each[0])
+        user_name=request.POST['commented_by']
+        rank=""
+        if user_name in owners:
+            rank="Owner"
+        if user_name in members:
+            rank="Member"
+        query="select project_createdby from projects where project_id='%s'"%project_id
+        Conn=GetConnection()
+        created_by=DB.GetData(Conn,query)
+        Conn.close()
+        if user_name in created_by:
+            rank="Creator"
+        #form file name
+        if rank!="":
+            now=datetime.datetime.now().date()
+            dateFolder=os.path.join(MEDIA_ROOT,str(now.year))
+            dateFolder=os.path.join(dateFolder,str(now.month))
+            dateFolder=os.path.join(dateFolder,str(now.day))
+            #fullfileName=(str(now.year)+'/'+str(now.month)+'/'+str(now.day)+'/'+request.FILES['docfile'])
+            #print fullfileName
+            comment_time=datetime.datetime.now()
+            #Genereate Comment ID
+            Conn=GetConnection()
+            tmp_id = DB.GetData(Conn, "select nextval('commentid_seq')")
+            Conn.close()
+            comment_id=('COM-'+str(tmp_id[0]))
+            if len(request.FILES)!=0 and request.POST['comment']!="":
+                file_name=request.FILES['docfile']
+                path=default_storage.save(os.path.join(dateFolder,str(file_name)),ContentFile(file_name.read()))
+                print path
+                #print "Attachment Comment"
+                #new_path=
+                path=path[len(PROJECT_ROOT):]
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
+                Conn.close()
+                if result==False:
+                    print "unable to save the attachments"
+                    attachment=False
+    
+                else:
+                    attachment=True
+                #form Dict
+                Dict={
+                      'project_id':project_id.strip(),
+                      'comment_id':comment_id.strip(),
+                      'comment_text':request.POST['comment'].strip(),
+                      'commented_by':user_name.strip(),
+                      'comment_date':comment_time,
+                      'rank':rank.strip(),
+                      'attachment':attachment
+                      }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
+                Conn.close()
+                if result==True:
+                    return HttpResponseRedirect(reverse('comment_view', kwargs={'project_id':project_id}))
+            elif len(request.FILES)==0 and request.POST['comment']!="":
+                #form Dict
+                attachment=False
+                Dict={
+                      'project_id':project_id.strip(),
+                      'comment_id':comment_id.strip(),
+                      'comment_text':request.POST['comment'].strip(),
+                      'commented_by':user_name.strip(),
+                      'comment_date':comment_time,
+                      'rank':rank.strip(),
+                      'attachment':attachment
+                      }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
+                Conn.close()
+                if result==True:
+                    return HttpResponseRedirect(reverse('comment_view', kwargs={'project_id':project_id}))
+            elif len(request.FILES)!=0 and request.POST['comment']=="":
+                file_name=request.FILES['docfile']
+                path=default_storage.save(os.path.join(dateFolder,str(file_name)),ContentFile(file_name.read()))
+                print path
+                #print "Attachment Comment"
+                #new_path=
+                path=path[len(PROJECT_ROOT):]
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
+                Conn.close()
+                if result==False:
+                    print "unable to save the attachments"
+                    attachment=False
+                else:
+                    attachment=True
+                #form Dict
+                Dict={
+                      'project_id':project_id.strip(),
+                      'comment_id':comment_id.strip(),
+                      'comment_text':'',
+                      'commented_by':user_name.strip(),
+                      'comment_date':comment_time,
+                      'rank':rank.strip(),
+                      'attachment':attachment
+                      }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
+                Conn.close()
+                if result==True:
+                    return HttpResponseRedirect(reverse('comment_view', kwargs={'project_id':project_id}))
+            else:
+                print "no comment"
+        else:
+            print "not autorized to comment"
+    except Exception,e:
+        print "Exception:", e
+def commentView(request,project_id):
+    try:
+        query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc"%project_id
+        Conn=GetConnection()
+        all_comments=DB.GetData(Conn,query,False)
+        Conn.close()
+        final=[]
+        for each in all_comments:
+            if each[1]==False:
+                query="select comment_text,commented_by,comment_date,rank,c.attachment from comments c where c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)    
+                Conn=GetConnection()
+                temp_comment=DB.GetData(Conn,query,False)
+                Conn.close()
+                temp=[]
+                for each in temp_comment:
+                    for eachitem in each:
+                        temp.append(eachitem)
+                temp.append('')
+                temp=tuple(temp)
+            if each[1]==True:
+                query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)
+                Conn=GetConnection()
+                temp=DB.GetData(Conn,query,False)
+                Conn.close()
+                temp=temp[0]
+                temp=tuple(temp)
+            final.append(temp)
+        comment=Comment()
+        query="select project_name from projects where project_id='%s'"%project_id
+        Conn=GetConnection()
+        project_name=DB.GetData(Conn,query)
+        Conn.close()
+        project_name=project_name[0]
+        Dict={'all_comments':final,'comment':comment,'project_id':project_id,'project_name':project_name}
+        return render_to_response('Project_Comment.html',Dict,context_instance=RequestContext(request))
+    except Exception,e:
+        print "Exception:", e
+def AddTeamtoProject(request):
+    try:
+        if request.is_ajax():
+            if request.method=='GET':
+                
+                teams=request.GET.get(u'teams').split("|")
+                project_id=request.GET.get(u'project_id').strip()
+                for each in teams:
+                    query="select count(*) from project_team_map where project_id='%s' and team_id='%s'"%(project_id,str(each))
+                    Conn=GetConnection()
+                    project_count=DB.GetData(Conn,query)
+                    Conn.close()
+                    if len(project_count)==1 and project_count[0]==1:
+                        continue
+                    else:
+                        #form Dict
+                        Dict={
+                              'project_id':project_id.strip(),
+                              'team_id':str(each).strip(),
+                              'status':False
+                              }
+                        result = False
                         Conn=GetConnection()
-    message="Success"
-    result=simplejson.dumps(message)
-    return HttpResponse(result,mimetype='application/json')
-    #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    
+                        result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
+                        Conn.close()
+                        if result==False:
+                            time.sleep(1)
+                            Conn=GetConnection()
+        message="Success"
+        result=simplejson.dumps(message)
+        return HttpResponse(result,mimetype='application/json')
+        #return HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))    
+    except Exception,e:
+        print "Exception:", e
 def DetailRequirementView(request,project_id,req_id):
-    Conn=GetConnection()
+    
     Dict={'project_id':project_id}
     #data retrieval from requirements table
     cols=['requirement_id','requirement_title','requirement_description','start_date','end_date','priority','milestone','creator','creation_date','modifier','last_modified','project_id','status','requirement_path','team','color']
@@ -8392,17 +8519,21 @@ def DetailRequirementView(request,project_id,req_id):
     requirement_query+="from requirements r,requirement_team_map rtm "
     requirement_query+="where r.requirement_id=rtm.requirement_id and r.requirement_id='%s'"%req_id
     try:
+        Conn=GetConnection()
         requirement_data=DB.GetData(Conn,requirement_query,False)
+        print requirement_data
         for each in requirement_data:
             for eachitem in zip(cols,each):
                 Dict.update({eachitem[0]:eachitem[1]})
         requirement_path_id=Dict['requirement_path']
         parent_query="select requirement_path from requirement_sections where requirement_path_id=%d"%int(requirement_path_id)
+        
         parent_path=DB.GetData(Conn,parent_query,False)
         parent_path=parent_path[0][0].split(".")
         if len(parent_path)>=2 and isinstance(parent_path,list):
             parent=str(parent_path[0][0].split(".")[-2]).replace('_','-')
             parent_name_id_query="select requirement_id,requirement_title from requirements where requirement_id='%s'"%parent
+            
             parent_name_id=DB.GetData(Conn,parent_name_id_query,False)
             Dict.update({'parent_id':parent_name_id[0][0],'parent_name':parent_name_id[0][1],'parent':True})
         elif len(parent_path)==1 and isinstance(parent_path, list):
