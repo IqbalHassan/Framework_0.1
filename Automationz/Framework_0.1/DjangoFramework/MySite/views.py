@@ -6535,6 +6535,21 @@ def Milestone_Tasks(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Milestone_Report(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            milestone = request.GET.get(u'term', '')
+            print milestone
+            complete_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='Complete'", False)
+            cancelled_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='Cancelled'", False)
+            submitted_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='Submitted'", False)
+            inprogress_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='In-progress'", False)
+    #Heading = ['Task ID','Task title', 'Status']
+    results = {'Complete':complete_list, 'Cancelled':cancelled_list, 'Submitted':submitted_list, 'In-progress':inprogress_list}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def Milestone_Testings(request):
     if request.is_ajax():
         if request.method == 'GET':

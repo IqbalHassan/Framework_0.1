@@ -6,6 +6,8 @@ $(document).ready(function(){
     ActivateNecessaryButton();
     ButtonSet();
 
+    TestCaseLinking();
+
     $("#submit").click(function(){
 
         var project = $("#project_name").val();
@@ -48,6 +50,58 @@ $(document).ready(function(){
     });
 });
 
+function TestCaseLinking(){
+
+    $("#search_case").autocomplete({
+
+        source:function(request,response){
+            $.ajax({
+                url:"TestCaseSearch",
+                dataType:"json",
+                data:{
+                    term:request.term
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select : function(event, ui) {
+
+            var value = ui.item[1]
+            $("#linking").append('<tr><td><img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td class="Text selected">'
+                + value
+                + "&nbsp"
+                + '</td></tr>');
+
+            //$("#tester th").css('display', 'block');
+
+            $("#search_case").val("");
+            return false;
+
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + " - "+item[1]+"<strong> - " + item[2] + "</strong></a>" )
+            .appendTo( ul );
+    };
+
+    $("#search_case").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteCase").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+}
 
 function ButtonSet(){
 
