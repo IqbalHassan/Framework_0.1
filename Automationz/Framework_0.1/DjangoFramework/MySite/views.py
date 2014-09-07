@@ -7700,6 +7700,113 @@ def LogBug(request):
     result=simplejson.dumps(bug_id)
     return HttpResponse(result,mimetype='application/json')
 
+def BugOperation(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            now=datetime.datetime.now().date()
+            Conn = GetConnection()
+            operation = request.GET.get(u'operation', '')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team','')
+            title=request.GET.get(u'title','')
+            description=request.GET.get(u'bug_desc','')
+            start_date=request.GET.get(u'start_date','')
+            end_date=request.GET.get(u'end_date','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            status=request.GET.get(u'status','')
+            user_name=request.GET.get(u'user_name','')
+            testers=request.GET.get(u'testers','').split("|")
+            created_by=request.GET.get(u'created_by','')
+            confirm_message = ""
+            error_message = ""
+            """if operation == "2":
+                new_name = request.GET.get(u'new_name', '')
+                old_name = request.GET.get(u'old_name', '')
+                old_name = old_name.strip()
+                modified_by = request.GET.get(u'modified_by','')
+                start_date = request.GET.get(u'start_date','').strip()
+                end_date = request.GET.get(u'end_date','').strip()
+                start_date=start_date.split('-')
+                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
+                end_date=end_date.split('-')
+                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
+                query = "select count(*) from config_values where type='milestone' and value='%s'" % old_name
+                available = DB.GetData(Conn, query)
+                if(available[0] > 0):
+                    condition = "where type='milestone' and value='%s'" % old_name
+                    mid = DB.GetData(Conn,"select id from config_values where type='milestone' and value = '"+old_name+"'")
+                    Dict = {'value':new_name.strip()}
+                    print DB.UpdateRecordInTable(Conn, "config_values", condition, **Dict)            
+                    mcondition = "where id='%s' and name='%s'" % (mid[0],old_name)
+                    mDict = {'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date,'status':status,'description':description,'modified_by':modified_by,'modified_date':now}
+                    print DB.UpdateRecordInTable(Conn, "milestone_info", mcondition, **mDict)
+                    result = DB.DeleteRecord(Conn,"milestone_team_map",milestone_id=mid[0])
+                    for each in team_id:
+                        team_Dict={
+                                   'milestone_id':mid[0],
+                                   'team_id':each.strip(),
+                        }
+                        result=DB.InsertNewRecordInToTable(Conn,"milestone_team_map",**team_Dict)
+                    confirm_message = "MileStone is modified"
+                else:
+                    confirm_message = "No milestone is found"    """
+            # start Create Operation
+            if operation == "1":
+                query="select nextval('bugid_seq')"
+                bug_id=DB.GetData(Conn, query)
+                bug_id=('BUG-'+str(bug_id[0]))
+                bug_id=bug_id.strip()
+                query = "select count(*) from bugs where bug_title='%s'" % title
+                available = DB.GetData(Conn, query)
+                if(available[0] == 0):
+                    Dict={
+                          'bug_id':bug_id,
+                          'bug_title':title,
+                          'bug_description':description,
+                          'bug_startingdate':start_date,
+                          'bug_endingdate':end_date,
+                          'bug_priority':priority,
+                          'bug_milestone':milestone,
+                          'bug_createdby':created_by,
+                          'bug_creationdate':now,
+                          'bug_modifiedby':user_name,
+                          'bug_modifydate':now,
+                          'status':status,
+                          'tester':testers,
+                          'team_id':team_id,
+                          'project_id':project_id
+                    }
+                    result=DB.InsertNewRecordInToTable(Conn,"bugs",**Dict)
+                    if(result):
+                        confirm_message = "Bug is logged Successfully"
+                    else:
+                        error_message = "Database Error!"
+                else:
+                    error_message = "Bug name exists. Can't create a new one"
+                # start  Operation
+            """if operation == "3":
+                new_name = request.GET.get(u'new_name', '')
+                new_name = new_name.strip()
+                query = "select count(*) from config_values where type='milestone' and value='%s'" % new_name
+                available = DB.GetData(Conn, query)
+                if(available[0] > 0):
+                    Dict = {'type':'milestone', 'value':new_name.strip()}
+                    print DB.DeleteRecord(Conn, "config_values", **Dict)
+                    mid = DB.GetData(Conn,"select id from config_values where type='milestone' and value = '"+new_name+"'")
+                    mDict = {'id':mid[0], 'name':new_name}
+                    print DB.DeleteRecord(Conn, "milestone_info", **mDict)
+                    confirm_message = "MileStone is deleted Successfully"
+                else:
+                    error_message = "MileStone Not Found"  """
+    results = {'confirm_message':confirm_message,
+             'error_message':error_message,
+             'bug_id':bug_id
+             }
+    result = simplejson.dumps(results)
+    return HttpResponse(result, mimetype='application/json')    
+
+
 def ManageRequirement(request):
     return render_to_response('ManageRequirement.html',{})
 def ManageTeam(request):

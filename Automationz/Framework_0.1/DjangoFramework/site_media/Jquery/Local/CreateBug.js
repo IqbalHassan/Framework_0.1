@@ -1,6 +1,9 @@
 /**
  * Created by J on 9/1/14.
  */
+
+var operation = 1;
+
 $(document).ready(function(){
 
     ActivateNecessaryButton();
@@ -27,19 +30,19 @@ $(document).ready(function(){
 
 
         if(title!=""){
-            $.get("LogNewBug/",{
-                'title':title.trim(),
-                'description':bug_desc.trim(),
-                'status':status.trim(),
-                'start_date':start_date.trim(),
-                'end_date':end_date.trim(),
-                'team':team.trim(),
-                'tester':testers.join("|").trim(),
-                'priority':priority.trim(),
-                'milestone':milestone.trim(),
-                'project_id': project.trim(),
-                'user_name':$('#user_name').text().trim(),
-                'created_by':creator.trim()
+            $.get("LogNewBug",{
+                title:title.trim(),
+                description:bug_desc.trim(),
+                status:status.trim(),
+                start_date:start_date.trim(),
+                end_date:end_date.trim(),
+                team:team.trim(),
+                tester:testers.join("|").trim(),
+                priority:priority.trim(),
+                milestone:milestone.trim(),
+                project_id: project.trim(),
+                user_name:$('#user_name').text().trim(),
+                created_by:creator.trim()
             },function(data){
                 window.location='/Home/CreateBug/';
             });
@@ -47,6 +50,56 @@ $(document).ready(function(){
         else{
             alertify.error("Fields are empty!", 5500);
         }
+
+        /*if(operation=="0"||title==''){
+            var error_message="<b style='color: #ff0000'>Fields are empty</b>";
+            alertify.log("Fields are empty","",0);
+            $('#error_milestone').html(error_message);
+            $('#error_milestone').css({'display':'block'});
+        }
+        else {
+            var title_msg = "Bug Created!";
+
+            $.get('BugOperation',{
+                operation:operation,
+                title:title.trim(),
+                description:bug_desc.trim(),
+                status:status.trim(),
+                start_date:start_date.trim(),
+                end_date:end_date.trim(),
+                team:team.trim(),
+                tester:testers.join("|").trim(),
+                priority:priority.trim(),
+                milestone:milestone.trim(),
+                project_id: project.trim(),
+                user_name:$('#user_name').text().trim(),
+                created_by:creator.trim()
+            },function(data){
+                if(data['confirm_message']==""){
+                    var color='red';
+                }
+                else{
+                    var color='green';
+                }
+                if(data['confirm_message']==""){
+                    alertify.log(""+data['error_message']+"","",0);
+                    milestone_notify(""+data['error_message']+"",""+data['error_message']+"","/site_media/noti2.ico");
+                    $('#error_milestone').html('<b style="color:red;">'+data['error_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                    $('#error_milestone').slideDown('slow');
+                    //setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                    window.location = '/Home/ManageBug/';
+                }
+                else{
+                    alertify.log(""+data['confirm_message']+"","",0);
+                    milestone_notify(title_msg,""+data['confirm_message']+"","/site_media/noti.ico");
+                    $('#error_milestone').html('<b style="color:green;">'+data['confirm_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
+                    $('#error_milestone').slideDown('slow');
+                    //setTimeout(function(){window.location='/Home/RunTest/';},4000);
+                    window.location = '/Home/ManageBug/';
+                }
+
+            })
+        }*/
     });
 });
 
@@ -190,4 +243,53 @@ function ActivateNecessaryButton(){
     $('#end_date').datepicker({ dateFormat: "dd-mm-yy" });
     $('#end_date').datepicker("option", "showAnim", "slide" );
     $(".selectdrop").selectBoxIt();
+}
+
+
+function milestone_notify(title_msg,message,icon){
+    // At first, let's check if we have permission for notification
+    // If not, let's ask for it
+    if (Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    }
+
+    var button = document.getElementById('submit');
+
+    // If the user agreed to get notified
+    if (Notification && Notification.permission === "granted") {
+        var n = new Notification(title_msg,{body:message, icon:icon});
+    }
+
+    // If the user hasn't told if he wants to be notified or not
+    // Note: because of Chrome, we are not sure the permission property
+    // is set, therefore it's unsafe to check for the "default" value.
+    else if (Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+
+            // If the user said okay
+            if (status === "granted") {
+                var n = new Notification(title_msg,{body:message, icon:icon});
+            }
+
+            // Otherwise, we can fallback to a regular modal alert
+            else {
+                alertify.log(message,"",0);
+            }
+        });
+    }
+
+    // If the user refuses to get notified
+    else {
+        // We can fallback to a regular modal alert
+        alertify.log(message,"",0);
+    }
+
+
 }
