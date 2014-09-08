@@ -213,7 +213,12 @@ $(document).ready(function() {
 	}
 	
 	function loadTable(query_string) {
-		$.get("TableDataTestCasesOtherPages", {'Query': query_string, 'test_status_request': true}, function(data) {
+        var other_string=query_string;
+		$.get("TableDataTestCasesOtherPages", {'Query': other_string,
+            'test_status_request': true,
+            "project_id": $.session.get('project_id'),
+            "team_id": $.session.get('default_team_identity')
+        }, function(data) {
 
 	        if (data['TableData'].length == 0)
 	        {

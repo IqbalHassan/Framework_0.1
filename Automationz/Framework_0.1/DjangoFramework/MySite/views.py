@@ -6764,7 +6764,9 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     for eachitem in TestIDList:
                         query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,team_id)
                         tabledata = DB.GetData(Conn,query, False)
-                        TableData.append(tabledata[0])
+                        print tabledata
+                        if tabledata:
+                            TableData.append(tabledata[0])
             
             
                 elif len(QueryText) > 0:
