@@ -7704,6 +7704,7 @@ def LogNewBug(request):
         if request.method=='GET':
             #getting all the info from the messages
             try:
+                Conn=GetConnection()
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team','')
                 title=request.GET.get(u'title','')

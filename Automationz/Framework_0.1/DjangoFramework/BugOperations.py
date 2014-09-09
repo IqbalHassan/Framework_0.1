@@ -3,6 +3,8 @@ import DataBaseUtilities as DB
 import time
 import datetime
 import inspect
+import LogModule
+from LogModule import PassMessasge
 def testConnection(Conn):
     if DB.IsDBConnectionGood(Conn)==False:
         time.sleep(1)
@@ -46,7 +48,7 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
             #add this line in the code from LogModule import PassMessage
             #log message successful here 
             #message format be PassMessage(sModuleInfo, message,1 for pass,2 for warning, 3 for error,debug=True)
-            #PassMessage(sModuleInfo,"Inserted "+bug_id+" successfully", 1)
+            LogModule.PassMessasge(sModuleInfo,"Inserted "+bug_id+" successfully", 1)
             return bug_id
         else:
             return 'meh'
