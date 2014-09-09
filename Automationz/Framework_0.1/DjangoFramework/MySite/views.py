@@ -50,6 +50,7 @@ import RequirementOperations
 import TaskOperations
 from TaskOperations import testConnection
 import BugOperations
+from LogModule import PassMessasge
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -9336,3 +9337,12 @@ def UpdateDefaultProjectForUser(request):
                 message=False
             result=simplejson.dumps(message)
             return HttpResponse(result,mimetype='application/json')
+
+#for the assign test PAGES
+def assign_settings(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    msg="Printing the message"
+    level=1
+    PassMessasge(sModuleInfo, msg, level)
+    return render_to_response('AssignSettings.html',{})
+    
