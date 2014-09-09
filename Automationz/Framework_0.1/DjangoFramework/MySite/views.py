@@ -50,6 +50,7 @@ import RequirementOperations
 import TaskOperations
 from TaskOperations import testConnection
 import BugOperations
+from BugOperations import testConnection
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -707,7 +708,7 @@ def AutoCompleteTesterSearch(request):
     if request.is_ajax():
         if request.method == 'GET':
             value = request.GET.get(u'term', '')
-            results = DB.GetData(Conn, "Select  DISTINCT user_names from permitted_user_list where user_names Ilike '%" + value + "%' and user_level = 'assigned_tester'")
+            results = DB.GetData(Conn, "Select DISTINCT user_names,user_id from permitted_user_list where user_names Ilike '%" + value + "%' and user_level = 'assigned_tester'")
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -7679,28 +7680,39 @@ def CreateBug(request):
     Dict={'project':project,'team':team,'manager':manager}
     return render_to_response('CreateBug.html',Dict)
 
-def LogBug(request):
+def LogNewBug(request):
     if request.is_ajax():
         if request.method=='GET':
             #getting all the info from the messages
-            project_id=request.GET.get(u'project_id','')
-            team_id=request.GET.get(u'team','')
-            title=request.GET.get(u'title','')
-            description=request.GET.get(u'bug_desc','')
-            start_date=request.GET.get(u'start_date','')
-            end_date=request.GET.get(u'end_date','')
-            priority=request.GET.get(u'priority','')
-            milestone=request.GET.get(u'milestone','')
-            status=request.GET.get(u'status','')
-            user_name=request.GET.get(u'user_name','')
-            testers=request.GET.get(u'testers','').split("|")
-            created_by=request.GET.get(u'created_by','')
-            
-            result=BugOperations.CreateNewBug(title,status,description,start_date,end_date,team_id,priority,milestone,project_id,user_name,created_by,testers)
-            if result!=False:
-                bug_id=result
-    result=simplejson.dumps(bug_id)
-    return HttpResponse(result,mimetype='application/json')
+            try:
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team','')
+                title=request.GET.get(u'title','')
+                description=request.GET.get(u'description','')
+                start_date=request.GET.get(u'start_date','')
+                end_date=request.GET.get(u'end_date','')
+                priority=request.GET.get(u'priority','')
+                milestone=request.GET.get(u'milestone','')
+                status=request.GET.get(u'status','')
+                user_name=request.GET.get(u'user_name','')
+                testers=request.GET.get(u'tester','')
+                created_by=request.GET.get(u'created_by','')
+                
+                tester = DB.GetData(Conn, "select user_id from permitted_user_list where user_names = '"+testers+"'")
+                
+                start_date=start_date.split('-')
+                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
+                end_date=end_date.split('-')
+                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
+    
+                
+                result=BugOperations.CreateNewBug(title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,created_by,tester[0])
+                if result!=False:
+                    bug_id=result
+                result=simplejson.dumps(bug_id)
+                return HttpResponse(result,mimetype='application/json')
+            except Exception,e:
+                print "Exception:",e
 
 def BugOperation(request):
     if request.is_ajax():
@@ -7781,11 +7793,11 @@ def BugOperation(request):
                     }
                     result=DB.InsertNewRecordInToTable(Conn,"bugs",**Dict)
                     if(result):
-                        confirm_message = "Bug is logged Successfully"
+                        confirm_message = "Bug is logged Successfully!"
                     else:
                         error_message = "Database Error!"
                 else:
-                    error_message = "Bug name exists. Can't create a new one"
+                    error_message = "Bug name exists. Can't create a new one!"
                 # start  Operation
             """if operation == "3":
                 new_name = request.GET.get(u'new_name', '')
