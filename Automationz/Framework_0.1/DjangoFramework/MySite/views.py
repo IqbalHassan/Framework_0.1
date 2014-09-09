@@ -65,7 +65,7 @@ except ImportError:
 # import DjangoConstants
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
-Conn = GetConnection()
+#Conn = GetConnection()
 # import logging
 
 """ Misc functions """
@@ -101,7 +101,7 @@ def GetProjectNameForTopBar(request):
             query="select project_id from projects"
             Conn=GetConnection()
             project_name_id=DB.GetData(Conn, query,False)
-            Conn.close()
+            #Conn.close()
             #be sure that there will be a project name other wise the page will refresh
             user_id=request.GET.get(u'user_id','')
             Dict={
@@ -109,7 +109,7 @@ def GetProjectNameForTopBar(request):
                   }
             query="select id,value from config_values where type='Team'"
             #testConnection(Conn)
-            Conn=GetConnection()
+            #Conn=GetConnection()
             all_teams=DB.GetData(Conn,query,False)
             Conn.close()
             Dict.update({
@@ -175,41 +175,41 @@ def make_status_array(Conn, refined_list):
             print "skipped_query: %s" %skipped_query
             Conn=GetConnection()
             total = DB.GetData(Conn, total_query)
-            Conn.close()
+            #Conn.close()
             print "total: %s"%total
             for iTem in total:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             passed = DB.GetData(Conn, pass_query)
-            Conn.close()
+            #Conn.close()
             print "passed: %s"%passed
             for iTem in passed:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             failed = DB.GetData(Conn, fail_query)
-            Conn.close()
+            #Conn.close()
             print "failed: %s"%failed
             for iTem in failed:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             blocked = DB.GetData(Conn, blocked_query)
-            Conn.close()
+            #Conn.close()
             print "blocked: %s"%blocked
             for iTem in blocked:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             progress = DB.GetData(Conn, progress_query)
-            Conn.close()
+            #Conn.close()
             print "progress: %s"%progress
             for iTem in total:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             submitted = DB.GetData(Conn, notrun_query)
-            Conn.close()
+            #Conn.close()
             print "submitted: %s"%submitted
             for iTem in progress:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             skipped = DB.GetData(Conn, skipped_query)
             Conn.close()
             print "skipped: %s"%skipped
@@ -239,7 +239,7 @@ def ResultTableFetch(index):
     
     # interval="1"
     try:
-        step = 10
+        step = 20
         limit = "limit " + str(step)
         ########Code for selecting offset#########
         index = int(index)
@@ -258,18 +258,18 @@ def ResultTableFetch(index):
         total_query += (limit + ' ' + offset)
         Conn = GetConnection()
         get_list = DB.GetData(Conn, total_query, False)
-        Conn.close()
+        #Conn.close()
         refine_list = []
         for each in get_list:
             if each not in refine_list:
                 refine_list.append(each)
         total_run = make_array(refine_list)
         print total_run
-        Conn = GetConnection()
+        #Conn = GetConnection()
         all_status = make_status_array(Conn, total_run)
-        Conn.close()
-        time.sleep(0.5)
-        Conn = GetConnection()
+        #Conn.close()
+        #time.sleep(0.5)
+        #Conn = GetConnection()
         dataCount = DB.GetData(Conn, count_query, False)
         Conn.close()
         data = {
@@ -293,7 +293,7 @@ def zipdata(data_array, status_array):
     return data
 
 def GetPageCount(request):
-    step = 10
+    step = 20
     totalPage = 0
     if request.is_ajax():
         if request.method == 'GET':
@@ -619,6 +619,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
                 results = DB.GetData(Conn, tag_query, False)
                 tcidresults = DB.GetData(Conn, id_query, False)
                 tc_status = DB.GetData(Conn, status_query, False)
+                Conn.close()
                 results = list(set(results + tcidresults+tc_status))
                 for eachitem in results:
                     final_results.append(eachitem)
@@ -675,6 +676,7 @@ def AutoCompleteUsersSearch(request):  #==================Returns Abailable User
                     Usable_Machine.append(each)
         
     json = simplejson.dumps(Usable_Machine)
+    Conn.close()
     return HttpResponse(json, mimetype='application/json')
 
 
@@ -688,7 +690,7 @@ def AutoCompleteEmailSearch(request):  #==================Returns Abailable Emai
         # Ignore queries shorter than length 3
         # if len(value) > 1:
         results = DB.GetData(Conn, "Select  DISTINCT user_names from permitted_user_list where user_names Ilike '%" + value + "%' and user_level = 'email'")
-
+    Conn.close()
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -700,14 +702,17 @@ def AutoCompleteTag(request):
             Conn = GetConnection()
             query = "select value,type from config_values where value Ilike '%%%s%%' and type='tag'" % value
             tag_list = DB.GetData(Conn, query, False)
+            Conn.close()
     json = simplejson.dumps(tag_list)
     return HttpResponse(json, mimetype='application/json')
  
 def AutoCompleteTesterSearch(request):
     if request.is_ajax():
         if request.method == 'GET':
+            Conn = GetConnection()
             value = request.GET.get(u'term', '')
             results = DB.GetData(Conn, "Select  DISTINCT user_names from permitted_user_list where user_names Ilike '%" + value + "%' and user_level = 'assigned_tester'")
+    Conn.close()
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -732,9 +737,9 @@ def AutoCompleteTagSearch(request):
 
         query = "select distinct value,type from config_values where type='tag' order by value"
         mastertags = DB.GetData(Conn, query, False)
-
+        
         # results = list(set(results + mastertags))
-
+    Conn.close()
     json = simplejson.dumps(mastertags)
     return HttpResponse(json, mimetype='application/json')
 
@@ -748,6 +753,7 @@ def AutoCompleteTestStepSearch(request):
         results = DB.GetData(Conn, "select stepname,data_required,steptype,description,step_editable,case_desc,expected,verify_point,estd_time from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
 
     json = simplejson.dumps(results)
+    Conn.close()
     return HttpResponse(json, mimetype='application/json')
 
 
@@ -7029,7 +7035,7 @@ def GetFilteredDataResult(request):
     return HttpResponse(result, mimetype='application/json')
 def NewResultFetch(condition, currentPagination,project_id,team_id):
     # pagination Code
-    step = 10
+    step = 20
     limit = ""
     limit += ("limit " + str(step))
     # ##determine offset
@@ -7063,6 +7069,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     count_query = total_query
     total_query += (limit + " " + offset)
     print total_query
+    Conn = GetConnection()
     total_count = DB.GetData(Conn, count_query, False)
     received_data = []
     for each in total_count:
@@ -7079,6 +7086,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     # make Dict
     Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Version", "MileStone"]
     Dict = {'total':total_run, 'status':all_status, 'column':Column, 'totalGet':len(received_data)}
+    Conn.close()
     return Dict
 def RunID_New(request):
     if request.is_ajax():
