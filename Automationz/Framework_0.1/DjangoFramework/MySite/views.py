@@ -7169,6 +7169,7 @@ def GetData(run_id, index, userText=""):
     AllTestCases = AddEstimatedTime(AllTestCases, run_id)
     DataCount = DB.GetData(Conn, count_query, False)
     DataReturn = {'allData':AllTestCases, 'count':len(DataCount)}
+    Conn.close()
     return DataReturn
 
 def manage_test_cases(request):
@@ -7180,6 +7181,7 @@ def manage_test_cases(request):
             query = "select ps.section_id,ps.section_path from product_sections ps ,team_wise_settings tws where tws.parameters=ps.section_id and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d"%(project_id,int(team_id))
             # Convert the data into a list
 #             data = list(DB.GetData(Conn, query, False))
+            Conn = GetConnection()
             cur = Conn.cursor()
             cur.execute(query)
             data = cur.fetchall()
@@ -7291,6 +7293,7 @@ def manage_tc_data(request):
                 SELECT * FROM test_case_tag WHERE property='%s' AND %s
                 ''' % ('section_id', encoded_for_sql)
                 
+                Conn = GetConnection()
                 data = DB.GetData(Conn, query, False, True)
                 
                 first = True
@@ -7303,9 +7306,10 @@ def manage_tc_data(request):
                 
                 result = json.dumps(test_case_ids)
 #                 print result
-                
+                Conn.close()
                 return HttpResponse(result, mimetype='application/json')
             else:
+                Conn.close()
                 return HttpResponse('', mimetype='application/json')
 def FilterDataForRunID(request):
     if request.is_ajax():
@@ -7325,13 +7329,14 @@ def FilterDataForRunID(request):
                 if each not in final:
                     final.append(each)
     result = simplejson.dumps(final)
+    Conn.close()
     return HttpResponse(result, mimetype='application/json')
 
 def create_section(request):
     if request.method == 'GET' and request.is_ajax():
         section_text = request.GET.get('section_text', '')
         empty_section_id = None
-        
+        Conn = GetConnection()
         cur = Conn.cursor()
         query = '''
         SELECT section_id FROM product_sections
@@ -7404,6 +7409,7 @@ def delete_section(request):
         query = '''
         DELETE FROM product_sections WHERE section_id=%d 
         ''' % section_id
+        Conn = GetConnection()
         cur = Conn.cursor()
         cur.execute(query)
         Conn.commit()
@@ -7645,6 +7651,7 @@ def manageMilestone(request):
           'team_info':team_info
           #'requirement_list':requirement_list
     }
+    Conn.close()
     return render_to_response('Milestone.html',Dict)
 def ManageTask(request):
     #get the distinct milestone from the task table
@@ -7659,7 +7666,8 @@ def ManageTask(request):
         final.append((each,task_id))
     Dict={
           'milestone_list':final
-    }    
+    }  
+    Conn.close()  
     return render_to_response('ManageTask.html',Dict)
 def FetchProject(request):
     if request.is_ajax():
@@ -7671,6 +7679,7 @@ def FetchProject(request):
             team=DB.GetData(Conn,query)
             query="select distinct user_names from permitted_user_list where user_level='manager'"
             manager=DB.GetData(Conn,query)
+            Conn.close()
     result={'project':project,'team':team,'manager':manager}
     result=simplejson.dumps(result)
     return HttpResponse(result,mimetype='application/json')
@@ -7685,6 +7694,7 @@ def CreateBug(request):
     query="select distinct user_names from permitted_user_list where user_level='manager'"
     manager=DB.GetData(Conn,query)
     Dict={'project':project,'team':team,'manager':manager}
+    Conn.close()
     return render_to_response('CreateBug.html',Dict)
 
 def LogBug(request):
@@ -7814,6 +7824,7 @@ def BugOperation(request):
              'bug_id':bug_id
              }
     result = simplejson.dumps(results)
+    Conn.close()
     return HttpResponse(result, mimetype='application/json')    
 
 
@@ -7832,6 +7843,7 @@ def GetTesterManager(request):
                 get_list=DB.GetData(Conn, query,False)
                 final.append((each,get_list))
     result=simplejson.dumps(final)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def Create_Team(request):
     message=""
@@ -7867,6 +7879,7 @@ def Create_Team(request):
                 else:
                     message="Failed.Team name insert Failure"    
     result=simplejson.dumps(message)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def GetAllTeam(request):
     if request.is_ajax():
@@ -7879,6 +7892,7 @@ def GetAllTeam(request):
             Conn=GetConnection()
             all_team=DB.GetData(Conn,query)
     result=simplejson.dumps(all_team)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def GetTeamInfo(request):
     if request.is_ajax():
@@ -7912,6 +7926,7 @@ def GetTeamInfo(request):
                  'teamname':team
                  }    
     result=simplejson.dumps(result_data)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def GetTestStepsAndTestCasesOnDriverValue(request):
     if request.is_ajax():
@@ -7935,7 +7950,7 @@ def GetTestStepsAndTestCasesOnDriverValue(request):
                  WHERE
                        config_values.value ='%s' 
                     ''' %ToDelete 
-                    
+                Conn=GetConnection()    
                 tabledata= DB.GetData(Conn, query, False)                              
                 Heading = ['ID', 'Test Case Name', 'Value', 'Step ID', 'Step Name']
             if(data_type=='feature'):
@@ -7961,6 +7976,7 @@ def GetTestStepsAndTestCasesOnDriverValue(request):
             results = {'Heading':Heading, 'TableData':tabledata}
             print results
     json = simplejson.dumps(results)
+    Conn.close()
     return HttpResponse(json, mimetype='application/json')
 def TeamData(request,team_name):
     team_name=team_name.replace('_',' ')
@@ -7997,6 +8013,7 @@ def TeamData(request,team_name):
           'rest_leader':rest_manager,
           'rest_tester':rest_tester
     }
+    Conn.close()
     return render_to_response('Team_Edit.html',Dict)
 def Add_Members(request):
     message=""
@@ -8022,6 +8039,7 @@ def Add_Members(request):
                     else:
                         message="Successfully Updated."
     result=simplejson.dumps(message)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def Delete_Members(request):
     message=""
@@ -8047,6 +8065,7 @@ def Delete_Members(request):
                     else:
                         message="Successfully Updated."
     result=simplejson.dumps(message)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def Delete_Team(request):
     message=""
