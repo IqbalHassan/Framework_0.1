@@ -50,7 +50,8 @@ import RequirementOperations
 import TaskOperations
 from TaskOperations import testConnection
 import BugOperations
-from BugOperations import testConnection
+
+from LogModule import PassMessasge
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -66,7 +67,7 @@ except ImportError:
 # import DjangoConstants
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
-Conn = GetConnection()
+#Conn = GetConnection()
 # import logging
 
 """ Misc functions """
@@ -102,7 +103,7 @@ def GetProjectNameForTopBar(request):
             query="select project_id from projects"
             Conn=GetConnection()
             project_name_id=DB.GetData(Conn, query,False)
-            Conn.close()
+            #Conn.close()
             #be sure that there will be a project name other wise the page will refresh
             user_id=request.GET.get(u'user_id','')
             Dict={
@@ -110,7 +111,7 @@ def GetProjectNameForTopBar(request):
                   }
             query="select id,value from config_values where type='Team'"
             #testConnection(Conn)
-            Conn=GetConnection()
+            #Conn=GetConnection()
             all_teams=DB.GetData(Conn,query,False)
             Conn.close()
             Dict.update({
@@ -176,41 +177,41 @@ def make_status_array(Conn, refined_list):
             print "skipped_query: %s" %skipped_query
             Conn=GetConnection()
             total = DB.GetData(Conn, total_query)
-            Conn.close()
+            #Conn.close()
             print "total: %s"%total
             for iTem in total:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             passed = DB.GetData(Conn, pass_query)
-            Conn.close()
+            #Conn.close()
             print "passed: %s"%passed
             for iTem in passed:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             failed = DB.GetData(Conn, fail_query)
-            Conn.close()
+            #Conn.close()
             print "failed: %s"%failed
             for iTem in failed:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             blocked = DB.GetData(Conn, blocked_query)
-            Conn.close()
+            #Conn.close()
             print "blocked: %s"%blocked
             for iTem in blocked:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             progress = DB.GetData(Conn, progress_query)
-            Conn.close()
+            #Conn.close()
             print "progress: %s"%progress
             for iTem in total:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             submitted = DB.GetData(Conn, notrun_query)
-            Conn.close()
+            #Conn.close()
             print "submitted: %s"%submitted
             for iTem in progress:
                 print iTem
-            Conn=GetConnection()
+            #Conn=GetConnection()
             skipped = DB.GetData(Conn, skipped_query)
             Conn.close()
             print "skipped: %s"%skipped
@@ -240,7 +241,7 @@ def ResultTableFetch(index):
     
     # interval="1"
     try:
-        step = 10
+        step = 20
         limit = "limit " + str(step)
         ########Code for selecting offset#########
         index = int(index)
@@ -259,18 +260,18 @@ def ResultTableFetch(index):
         total_query += (limit + ' ' + offset)
         Conn = GetConnection()
         get_list = DB.GetData(Conn, total_query, False)
-        Conn.close()
+        #Conn.close()
         refine_list = []
         for each in get_list:
             if each not in refine_list:
                 refine_list.append(each)
         total_run = make_array(refine_list)
         print total_run
-        Conn = GetConnection()
+        #Conn = GetConnection()
         all_status = make_status_array(Conn, total_run)
-        Conn.close()
-        time.sleep(0.5)
-        Conn = GetConnection()
+        #Conn.close()
+        #time.sleep(0.5)
+        #Conn = GetConnection()
         dataCount = DB.GetData(Conn, count_query, False)
         Conn.close()
         data = {
@@ -294,7 +295,7 @@ def zipdata(data_array, status_array):
     return data
 
 def GetPageCount(request):
-    step = 10
+    step = 20
     totalPage = 0
     if request.is_ajax():
         if request.method == 'GET':
@@ -620,6 +621,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
                 results = DB.GetData(Conn, tag_query, False)
                 tcidresults = DB.GetData(Conn, id_query, False)
                 tc_status = DB.GetData(Conn, status_query, False)
+                Conn.close()
                 results = list(set(results + tcidresults+tc_status))
                 for eachitem in results:
                     final_results.append(eachitem)
@@ -676,6 +678,7 @@ def AutoCompleteUsersSearch(request):  #==================Returns Abailable User
                     Usable_Machine.append(each)
         
     json = simplejson.dumps(Usable_Machine)
+    Conn.close()
     return HttpResponse(json, mimetype='application/json')
 
 
@@ -689,7 +692,7 @@ def AutoCompleteEmailSearch(request):  #==================Returns Abailable Emai
         # Ignore queries shorter than length 3
         # if len(value) > 1:
         results = DB.GetData(Conn, "Select  DISTINCT user_names from permitted_user_list where user_names Ilike '%" + value + "%' and user_level = 'email'")
-
+    Conn.close()
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -701,14 +704,17 @@ def AutoCompleteTag(request):
             Conn = GetConnection()
             query = "select value,type from config_values where value Ilike '%%%s%%' and type='tag'" % value
             tag_list = DB.GetData(Conn, query, False)
+            Conn.close()
     json = simplejson.dumps(tag_list)
     return HttpResponse(json, mimetype='application/json')
  
 def AutoCompleteTesterSearch(request):
     if request.is_ajax():
         if request.method == 'GET':
+            Conn = GetConnection()
             value = request.GET.get(u'term', '')
             results = DB.GetData(Conn, "Select DISTINCT user_names,user_id from permitted_user_list where user_names Ilike '%" + value + "%' and user_level = 'assigned_tester'")
+    Conn.close()
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -733,9 +739,9 @@ def AutoCompleteTagSearch(request):
 
         query = "select distinct value,type from config_values where type='tag' order by value"
         mastertags = DB.GetData(Conn, query, False)
-
+        
         # results = list(set(results + mastertags))
-
+    Conn.close()
     json = simplejson.dumps(mastertags)
     return HttpResponse(json, mimetype='application/json')
 
@@ -749,6 +755,7 @@ def AutoCompleteTestStepSearch(request):
         results = DB.GetData(Conn, "select stepname,data_required,steptype,description,step_editable,case_desc,expected,verify_point,estd_time from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
 
     json = simplejson.dumps(results)
+    Conn.close()
     return HttpResponse(json, mimetype='application/json')
 
 
@@ -7030,7 +7037,7 @@ def GetFilteredDataResult(request):
     return HttpResponse(result, mimetype='application/json')
 def NewResultFetch(condition, currentPagination,project_id,team_id):
     # pagination Code
-    step = 10
+    step = 20
     limit = ""
     limit += ("limit " + str(step))
     # ##determine offset
@@ -7064,6 +7071,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     count_query = total_query
     total_query += (limit + " " + offset)
     print total_query
+    Conn = GetConnection()
     total_count = DB.GetData(Conn, count_query, False)
     received_data = []
     for each in total_count:
@@ -7080,6 +7088,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     # make Dict
     Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Version", "MileStone"]
     Dict = {'total':total_run, 'status':all_status, 'column':Column, 'totalGet':len(received_data)}
+    Conn.close()
     return Dict
 def RunID_New(request):
     if request.is_ajax():
@@ -7162,6 +7171,7 @@ def GetData(run_id, index, userText=""):
     AllTestCases = AddEstimatedTime(AllTestCases, run_id)
     DataCount = DB.GetData(Conn, count_query, False)
     DataReturn = {'allData':AllTestCases, 'count':len(DataCount)}
+    Conn.close()
     return DataReturn
 
 def manage_test_cases(request):
@@ -7173,6 +7183,7 @@ def manage_test_cases(request):
             query = "select ps.section_id,ps.section_path from product_sections ps ,team_wise_settings tws where tws.parameters=ps.section_id and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d"%(project_id,int(team_id))
             # Convert the data into a list
 #             data = list(DB.GetData(Conn, query, False))
+            Conn = GetConnection()
             cur = Conn.cursor()
             cur.execute(query)
             data = cur.fetchall()
@@ -7284,6 +7295,7 @@ def manage_tc_data(request):
                 SELECT * FROM test_case_tag WHERE property='%s' AND %s
                 ''' % ('section_id', encoded_for_sql)
                 
+                Conn = GetConnection()
                 data = DB.GetData(Conn, query, False, True)
                 
                 first = True
@@ -7296,9 +7308,10 @@ def manage_tc_data(request):
                 
                 result = json.dumps(test_case_ids)
 #                 print result
-                
+                Conn.close()
                 return HttpResponse(result, mimetype='application/json')
             else:
+                Conn.close()
                 return HttpResponse('', mimetype='application/json')
 def FilterDataForRunID(request):
     if request.is_ajax():
@@ -7318,13 +7331,14 @@ def FilterDataForRunID(request):
                 if each not in final:
                     final.append(each)
     result = simplejson.dumps(final)
+    Conn.close()
     return HttpResponse(result, mimetype='application/json')
 
 def create_section(request):
     if request.method == 'GET' and request.is_ajax():
         section_text = request.GET.get('section_text', '')
         empty_section_id = None
-        
+        Conn = GetConnection()
         cur = Conn.cursor()
         query = '''
         SELECT section_id FROM product_sections
@@ -7397,6 +7411,7 @@ def delete_section(request):
         query = '''
         DELETE FROM product_sections WHERE section_id=%d 
         ''' % section_id
+        Conn = GetConnection()
         cur = Conn.cursor()
         cur.execute(query)
         Conn.commit()
@@ -7638,6 +7653,7 @@ def manageMilestone(request):
           'team_info':team_info
           #'requirement_list':requirement_list
     }
+    Conn.close()
     return render_to_response('Milestone.html',Dict)
 def ManageTask(request):
     #get the distinct milestone from the task table
@@ -7652,7 +7668,8 @@ def ManageTask(request):
         final.append((each,task_id))
     Dict={
           'milestone_list':final
-    }    
+    }  
+    Conn.close()  
     return render_to_response('ManageTask.html',Dict)
 def FetchProject(request):
     if request.is_ajax():
@@ -7664,6 +7681,7 @@ def FetchProject(request):
             team=DB.GetData(Conn,query)
             query="select distinct user_names from permitted_user_list where user_level='manager'"
             manager=DB.GetData(Conn,query)
+            Conn.close()
     result={'project':project,'team':team,'manager':manager}
     result=simplejson.dumps(result)
     return HttpResponse(result,mimetype='application/json')
@@ -7678,6 +7696,7 @@ def CreateBug(request):
     query="select distinct user_names from permitted_user_list where user_level='manager'"
     manager=DB.GetData(Conn,query)
     Dict={'project':project,'team':team,'manager':manager}
+    Conn.close()
     return render_to_response('CreateBug.html',Dict)
 
 def LogNewBug(request):
@@ -7818,6 +7837,7 @@ def BugOperation(request):
              'bug_id':bug_id
              }
     result = simplejson.dumps(results)
+    Conn.close()
     return HttpResponse(result, mimetype='application/json')    
 
 
@@ -7836,6 +7856,7 @@ def GetTesterManager(request):
                 get_list=DB.GetData(Conn, query,False)
                 final.append((each,get_list))
     result=simplejson.dumps(final)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def Create_Team(request):
     message=""
@@ -7871,6 +7892,7 @@ def Create_Team(request):
                 else:
                     message="Failed.Team name insert Failure"    
     result=simplejson.dumps(message)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def GetAllTeam(request):
     if request.is_ajax():
@@ -7883,6 +7905,7 @@ def GetAllTeam(request):
             Conn=GetConnection()
             all_team=DB.GetData(Conn,query)
     result=simplejson.dumps(all_team)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def GetTeamInfo(request):
     if request.is_ajax():
@@ -7916,6 +7939,7 @@ def GetTeamInfo(request):
                  'teamname':team
                  }    
     result=simplejson.dumps(result_data)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def GetTestStepsAndTestCasesOnDriverValue(request):
     if request.is_ajax():
@@ -7939,7 +7963,7 @@ def GetTestStepsAndTestCasesOnDriverValue(request):
                  WHERE
                        config_values.value ='%s' 
                     ''' %ToDelete 
-                    
+                Conn=GetConnection()    
                 tabledata= DB.GetData(Conn, query, False)                              
                 Heading = ['ID', 'Test Case Name', 'Value', 'Step ID', 'Step Name']
             if(data_type=='feature'):
@@ -7965,6 +7989,7 @@ def GetTestStepsAndTestCasesOnDriverValue(request):
             results = {'Heading':Heading, 'TableData':tabledata}
             print results
     json = simplejson.dumps(results)
+    Conn.close()
     return HttpResponse(json, mimetype='application/json')
 def TeamData(request,team_name):
     team_name=team_name.replace('_',' ')
@@ -8001,6 +8026,7 @@ def TeamData(request,team_name):
           'rest_leader':rest_manager,
           'rest_tester':rest_tester
     }
+    Conn.close()
     return render_to_response('Team_Edit.html',Dict)
 def Add_Members(request):
     message=""
@@ -8026,6 +8052,7 @@ def Add_Members(request):
                     else:
                         message="Successfully Updated."
     result=simplejson.dumps(message)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def Delete_Members(request):
     message=""
@@ -8051,6 +8078,7 @@ def Delete_Members(request):
                     else:
                         message="Successfully Updated."
     result=simplejson.dumps(message)
+    Conn.close()
     return HttpResponse(result,mimetype='application/json')
 def Delete_Team(request):
     message=""
@@ -9321,3 +9349,40 @@ def UpdateDefaultProjectForUser(request):
                 message=False
             result=simplejson.dumps(message)
             return HttpResponse(result,mimetype='application/json')
+
+#for the assign test PAGES
+def assign_settings(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        query="select value,id from config_values where type='Browser'"
+        Conn=GetConnection()
+        all_browsers=DB.GetData(Conn,query,False)
+        Dict={}
+        if all_browsers:
+            PassMessasge(sModuleInfo, "Successfully taken all the Browser Data", 1)
+            Dict.update({'all_browsers':all_browsers})
+        else:
+            PassMessasge(sModuleInfo, "No data Retrieved", 3)
+        return render_to_response('AssignSettings.html',Dict)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def get_browser_data(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    if request.method=='GET':
+        if request.is_ajax():
+            try:
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                query="select parameters from team_wise_settings where team_id=%d and project_id='%s' and type='Browser'"%(int(team_id), project_id)
+                Conn=GetConnection()
+                browser_list=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(browser_list,list):
+                    PassMessasge(sModuleInfo,"Retrieve data from default_team_settings",1)
+                else:
+                    PassMessasge(sModuleInfo,"Data Retrieval from default_team_settings is failed", 3)
+                result=simplejson.dumps(browser_list)
+                return HttpResponse(result,mimetype='application/json')
+            except Exception,e:
+                PassMessasge(sModuleInfo, e, 3)
+                

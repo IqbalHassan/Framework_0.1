@@ -1,4 +1,4 @@
-var stepCount=10;
+var stepCount=20;
 $(document).ready(function(){
     $('#project_identity').append('<option value="ALL">See All</option>');
     $('#default_team_identity').append('<option value="ALL">See All</option>');

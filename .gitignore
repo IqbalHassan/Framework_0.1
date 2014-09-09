@@ -80,3 +80,8 @@ pip-log.txt
 
 # Remove execlogs
 execlog.log
+
+FrameworkLogger.log
+*.xml
+*.iml
+*.name

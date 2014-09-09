@@ -272,6 +272,11 @@ urlpatterns = patterns('',
     #updating the default project and team 
     url(r'^Home/.*/UpdateDefaultTeamForUser/$',UpdateDefaultTeamForUser),
     url(r'^Home/.*/UpdateDefaultProjectForUser/$',UpdateDefaultProjectForUser),
+    
+    #pages for the assignment of the team settings
+    url(r'^Home/AssignSettings/$', assign_settings),
+    url(r'^Home/.*/get_browser_data/$',get_browser_data),
+    
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )
