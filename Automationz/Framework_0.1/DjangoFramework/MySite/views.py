@@ -9341,8 +9341,36 @@ def UpdateDefaultProjectForUser(request):
 #for the assign test PAGES
 def assign_settings(request):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    msg="Printing the message"
-    level=1
-    PassMessasge(sModuleInfo, msg, level)
-    return render_to_response('AssignSettings.html',{})
-    
+    try:
+        query="select value,id from config_values where type='Browser'"
+        Conn=GetConnection()
+        all_browsers=DB.GetData(Conn,query,False)
+        Dict={}
+        if all_browsers:
+            PassMessasge(sModuleInfo, "Successfully taken all the Browser Data", 1)
+            Dict.update({'all_browsers':all_browsers})
+        else:
+            PassMessasge(sModuleInfo, "No data Retrieved", 3)
+        return render_to_response('AssignSettings.html',Dict)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def get_browser_data(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    if request.method=='GET':
+        if request.is_ajax():
+            try:
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                query="select parameters from team_wise_settings where team_id=%d and project_id='%s' and type='Browser'"%(int(team_id), project_id)
+                Conn=GetConnection()
+                browser_list=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(browser_list,list):
+                    PassMessasge(sModuleInfo,"Retrieve data from default_team_settings",1)
+                else:
+                    PassMessasge(sModuleInfo,"Data Retrieval from default_team_settings is failed", 3)
+                result=simplejson.dumps(browser_list)
+                return HttpResponse(result,mimetype='application/json')
+            except Exception,e:
+                PassMessasge(sModuleInfo, e, 3)
+                
