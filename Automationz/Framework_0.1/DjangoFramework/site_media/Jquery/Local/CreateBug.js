@@ -21,7 +21,7 @@ $(document).ready(function(){
         var priority= 'P' + $('#priority').val();
         var milestone=$('#milestone').text();
         var title=$('#title').val();
-        var creator = $("#created_by").val();
+        //var creator = $("#created_by").val();
         var testers= $("#tester").text();
         /*$('.selected').each(function(){
             testers.push($(this).text().trim());
@@ -29,22 +29,28 @@ $(document).ready(function(){
         var status = $('#status').val();
 
 
-        $.get("LogNewBug/",{
-            title:title.trim(),
-            description:bug_desc.trim(),
-            status:status.trim(),
-            start_date:start_date.trim(),
-            end_date:end_date.trim(),
-            team:team.trim(),
-            tester:testers,
-            priority:priority.trim(),
-            milestone:milestone.trim(),
-            project_id: project.trim(),
-            user_name:$('#user_name').text().trim(),
-            created_by:creator.trim()
-        },function(data){
-            window.location='/Home/ManageBug/';
-        });
+        if(title!=""){
+            $.get("LogNewBug/",{
+                title:title.trim(),
+                description:bug_desc.trim(),
+                status:status.trim(),
+                start_date:start_date.trim(),
+                end_date:end_date.trim(),
+                team:team.trim(),
+                tester:testers,
+                priority:priority.trim(),
+                milestone:milestone.trim(),
+                project_id: project.trim(),
+                user_name:$('#user_name').text().trim()
+                //created_by:creator.trim()
+            },function(data){
+                bug_notify("Bug Created!", "Bug with title '"+title+"' is created!","/site_media/noti.ico");
+                window.location='/Home/ManageBug/';
+            });
+        }
+        else{
+            alertify.log("Title is empty","",0);
+        }
 
         /*if(operation=="0"||title==''){
             var error_message="<b style='color: #ff0000'>Fields are empty</b>";
@@ -248,7 +254,7 @@ function ActivateNecessaryButton(){
 }
 
 
-function milestone_notify(title_msg,message,icon){
+function bug_notify(title_msg,message,icon){
     // At first, let's check if we have permission for notification
     // If not, let's ask for it
     if (Notification && Notification.permission !== "granted") {

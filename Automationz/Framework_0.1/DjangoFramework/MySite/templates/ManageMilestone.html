@@ -3,8 +3,8 @@
 {% block title%}Manage Bug{% endblock %}
 
 {% block content %}
-<script type="text/javascript" src="/site_media/Jquery/Local/ManageBug.js"></script>
-<style>
+<script type="text/javascript" src="/site_media/Jquery/Local/ManageMilestone.js"></script>
+<!--style>
     #searchbox {
         width: 94%;
         padding: 5px;
@@ -18,34 +18,34 @@
     #searchbox:focus {
         box-shadow: 0 6px 6px -6px blue;
     }
-</style>
+</style-->
 <article>
     <div align="left">
-        <h3 style="font-size: 19px;float: left"><a style="font-weight: bold;">Manage Bug</a></h3>
+        <h3 style="font-size: 19px;float: left"><a style="font-weight: bold;">Manage Milestones</a></h3>
     </div>
-    <table align="right" width="100%">
+    <table width="100%">
         <tr>
-            <td width="30%">
+            <td width="80%">
                 <div class="subnav-links left">
-                    <a href="/Home/ManageBug/" class="selected js-selected-navigation-item subnav-item" data-selected-links="repo_issues /AutomationSolutionz/Framework_0.1/issues?q=is%3Aopen+is%3Aissue">Bugs</a>
+                    <a href="/Home/ManageBug/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_issues /AutomationSolutionz/Framework_0.1/issues?q=is%3Aopen+is%3Aissue">Bugs</a>
                     <a href="/Home/ManageTestCases/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_pulls /AutomationSolutionz/Framework_0.1/issues?q=is%3Aopen+is%3Apr">Test Cases</a>
                     <a href="/Home/ManageLabel/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_labels /AutomationSolutionz/Framework_0.1/labels">Labels</a>
-                    <a href="/Home/ManageMilestone/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_milestones /AutomationSolutionz/Framework_0.1/milestones">Milestones</a>
+                    <a href="/Home/ManageMilestone/" class="selected js-selected-navigation-item subnav-item" data-selected-links="repo_milestones /AutomationSolutionz/Framework_0.1/milestones">Milestones</a>
                 </div>
             </td>
-            <td width="55%">
+            <!--td width="55%">
                 <div align="center">
                     <a class="button">Filters</a>
-                    <input class="textbox" style="width: 60%" placeholder="Search Bugs">
+                    <input class="textbox" style="width: 60%" placeholder="Search Milestone">
                 </div>
-            </td>
-            <td width="15%"><a href="/Home/CreateNewBug/" class="createnew" type="button" id="new_task">Log New Bug</a></td>
+            </td-->
+            <td width="20%"><a href="/Home/CreateMilestone/" class="createnew" type="button" style="float: right">New Milestone</a></td>
         </tr>
     </table>
 
     <br><br>
 
-    <table style="width: 100%;">
+    <!--table style="width: 100%;">
         <thead>
         <tr>
             <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Bug</td>
@@ -105,6 +105,6 @@
             </td>
         </tr>
         </tbody>
-    </table>
+    </table-->
 </article>
 {% endblock %}

@@ -10,7 +10,7 @@ def testConnection(Conn):
         time.sleep(1)
         Conn=GetConnection()
 
-def CreateNewBug(title,status,description,start_date,end_date,team,priority,milestone,project_id,user_name,creator,testers):
+def CreateNewBug(title,status,description,start_date,end_date,team,priority,milestone,project_id,user_name,testers):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         Conn=GetConnection()
@@ -32,7 +32,7 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
               'bug_endingdate':end_date,
               'bug_priority':priority,
               'bug_milestone':milestone,
-              'bug_createdby':creator,
+              'bug_createdby':user_name,
               'bug_creationdate':now,
               'bug_modifiedby':user_name,
               'bug_modifydate':now,
