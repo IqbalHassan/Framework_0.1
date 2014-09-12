@@ -50,7 +50,7 @@ import RequirementOperations
 import TaskOperations
 from TaskOperations import testConnection
 import BugOperations
-
+import LogModule
 from LogModule import PassMessasge
 # #
 #=======
@@ -7847,6 +7847,38 @@ def BugOperation(request):
 
 def ManageLabel(request):
     return render_to_response('ManageLabel.html',{})
+
+def CreateLabel(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            label_name = request.GET.get(u'name','').strip()
+            label_color = request.GET.get(u'color','').strip()
+            Conn=GetConnection()
+            query="select nextval('labelid_seq')"
+            label_id=DB.GetData(Conn, query)
+            label_id=('LABEL-'+str(label_id[0]))
+            label_id=label_id.strip()
+            final = []
+            sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+            Dict = {
+                    'label_id':label_id,
+                    'label_name':label_name,
+                    'label_color':label_color
+                    }
+            testConnection(Conn)
+            result = DB.InsertNewRecordInToTable(Conn,"labels",**Dict)
+            #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
+            if result==True:
+                #add this line in the code from LogModule import PassMessage
+                #log message successful here 
+                #message format be PassMessage(sModuleInfo, message,1 for pass,2 for warning, 3 for error,debug=True)
+                LogModule.PassMessasge(sModuleInfo,"Inserted "+label_id+" successfully", 1)
+                final = 'success'
+            else:
+                final =  'meh'
+    result=simplejson.dumps(final)
+    Conn.close()
+    return HttpResponse(result,mimetype='application/json')
 
 def ManageRequirement(request):
     return render_to_response('ManageRequirement.html',{})

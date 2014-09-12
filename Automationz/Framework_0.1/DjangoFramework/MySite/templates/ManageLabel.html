@@ -4,6 +4,8 @@
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageLabel.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/js/spectrum.js"></script>
+<link rel='stylesheet' href='/site_media/spectrum.css' />
 <!--style>
     #searchbox {
         width: 94%;
@@ -46,8 +48,8 @@
     <br><br>
 
     <div id="label_creation" class="tray" align="center" style="border: 2px solid ghostwhite; width: 70%;margin-left: 20%;display: none">
-        <input class="textbox" placeholder="Label Name..." style="float: left;width: 30%">
-        <input class="textbox" style="width: auto;float: left;" id="color_picker">
+        <input class="textbox" placeholder="Label Name..." style="float: left;" id="label_name">
+        <input type="color" class="textbox" style="width: auto;float: left;" id="color_picker">
         &nbsp;&nbsp;&nbsp;
         <input type="button" class="button blue" id="create_label" value="Create Label">
         <input type="button" class="button" id="cancel_label" value="Cancel">
