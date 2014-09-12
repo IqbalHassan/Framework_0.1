@@ -7634,6 +7634,10 @@ def select2(request):
     return render(request, 'select2.html', {})
 """def manageMilestone(request):
     return render_to_response('Milestone.html',{})"""
+    
+def Milestone(request):
+    return render_to_response('ManageMilestone.html',{})
+
 def manageMilestone(request):
     Conn=GetConnection()
     query="select project_id, project_name from projects"
@@ -7716,7 +7720,7 @@ def LogNewBug(request):
                 status=request.GET.get(u'status','')
                 user_name=request.GET.get(u'user_name','')
                 testers=request.GET.get(u'tester','')
-                created_by=request.GET.get(u'created_by','')
+                #created_by=request.GET.get(u'created_by','')
                 
                 tester = DB.GetData(Conn, "select user_id from permitted_user_list where user_names = '"+testers+"'")
                 
@@ -7726,7 +7730,7 @@ def LogNewBug(request):
                 ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
     
                 
-                result=BugOperations.CreateNewBug(title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,created_by,tester[0])
+                result=BugOperations.CreateNewBug(title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,tester[0])
                 if result!=False:
                     bug_id=result
                 result=simplejson.dumps(bug_id)
@@ -7841,6 +7845,8 @@ def BugOperation(request):
     Conn.close()
     return HttpResponse(result, mimetype='application/json')    
 
+def ManageLabel(request):
+    return render_to_response('ManageLabel.html',{})
 
 def ManageRequirement(request):
     return render_to_response('ManageRequirement.html',{})
