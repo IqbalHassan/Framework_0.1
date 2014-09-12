@@ -33,19 +33,26 @@
                         <table width="100%">
                             <tr>
                                 <td width="90%">&nbsp;</td>
-                                <td width="10%" style="padding-left: 50%"><a style="width: 60%; float: right" id="new_browser_button" class="new_tc_form minibutton primary"/>New Browser</a></td>
+                                <td width="10%"><a style="float: right" id="new_browser_button" class="new_tc_form minibutton primary"/>New Browser</a></td>
                             </tr>
-                            <tr>
-                                <td width="10%">&nbsp;</td>
-                                <td width="90%"><input type="text" class="textbox" placeholder="new browser"/></td>
-                            </tr>
-                            <tr>
+                            <tr id="name_row" style="display: none;">
                                 <td width="90%">&nbsp;</td>
                                 <td width="10%">
                                     <table width="100%">
                                         <tr>
-                                            <td width="50%"><input type="button" id="new_browser_submit" class="new_tc_form minibutton danger" value="Cancel"/></td>
-                                            <td width="50%"><input type="button" id="new_browser_cancel" class="new_tc_form minibutton primary" value="Submit"/></td>
+                                            <td width="50%"><input type="text" class="textbox" placeholder="new browser"/> </td>
+                                            <td width="50%"><input type="text" class="textbox" placeholder="browser version"/></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr id="button_row" style="display: none;">
+                                <td width="90%">&nbsp;</td>
+                                <td width="10%">
+                                    <table width="100%">
+                                        <tr>
+                                            <td width="50%"><input type="button" id="new_browser_cancel" class="new_tc_form minibutton danger" value="Cancel"/></td>
+                                            <td width="50%"><input type="button" id="new_browser_submit" class="new_tc_form minibutton primary" value="Submit"/></td>
                                         </tr>
                                     </table>
                                 </td>

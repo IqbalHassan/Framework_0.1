@@ -9387,3 +9387,47 @@ def get_browser_data(request):
             except Exception,e:
                 PassMessasge(sModuleInfo, e, 3)
                 
+def enlist_browser_to_team_settings(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    if request.method=='GET':
+        if request.is_ajax():
+            try:
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                browser_list=request.GET.get(u'browser_list','').split("|")
+                print browser_list
+                for i in browser_list:
+                    query="select count(*) from team_wise_settings where project_id='%s' and team_id=%d and type='Browser' and parameters=%d"%(project_id,int(team_id),int(i))
+                    print query
+                    Conn=GetConnection()
+                    count=DB.GetData(Conn,query)
+                    Conn.close()
+                    if count and count[0]>0:
+                        PassMessasge(sModuleInfo,"Found ('%s',%d,%d,'Browser') in team_wise_settings. Insertion not needed."%(project_id,int(team_id),int(i)),1)
+                        continue
+                    if count and count[0]==0:
+                        PassMessasge(sModuleInfo,"Inserting ('%s',%d,%d,'Browser') in team_wise_settings.."%(project_id,int(team_id),int(i)),1)
+                        Dict={}
+                        Dict.update({
+                            'project_id':project_id,
+                            'team_id':int(team_id),
+                            'parameters':int(i),
+                            'type':'Browser'
+                        })
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"team_wise_settings",**Dict)
+                        if result==True:
+                            PassMessasge(sModuleInfo,"Insertion of %s in team_wise_settings is successful"%str(Dict),1)
+                        else:
+                            PassMessasge(sModuleInfo,"Insertion of %s in team_wise_settings is Failed",str(Dict),3)
+                #deleting up the unnecessary one
+                whereQuery="delete from team_wise_settings where project_id='%s' and team_id=%d and type='Browser' and parameters not in(%s)"%(project_id,int(team_id),(",").join(browser_list))
+                Conn=GetConnection()
+                cur=Conn.cursor()
+                cur.execute(whereQuery)
+                Conn.commit()
+                cur.close()
+                result=simplejson.dumps("message")
+                return HttpResponse(result,mimetype='application/json')
+            except Exception,e:
+                PassMessasge(sModuleInfo, e, 3)
