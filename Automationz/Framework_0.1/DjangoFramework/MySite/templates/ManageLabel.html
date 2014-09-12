@@ -1,6 +1,6 @@
 {% extends "BaseTemplate.html" %}
 
-{% block title%}Manage Bug{% endblock %}
+{% block title%}Manage Labels{% endblock %}
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageLabel.js"></script>
@@ -44,6 +44,15 @@
     </table>
 
     <br><br>
+
+    <div id="label_creation" class="tray" align="center" style="border: 2px solid ghostwhite; width: 70%;margin-left: 20%;display: none">
+        <input class="textbox" placeholder="Label Name..." style="float: left;width: 30%">
+        <input class="textbox" style="width: auto;float: left;" id="color_picker">
+        &nbsp;&nbsp;&nbsp;
+        <input type="button" class="button blue" id="create_label" value="Create Label">
+        <input type="button" class="button" id="cancel_label" value="Cancel">
+    </div>
+
 
     <!--table style="width: 100%;">
         <thead>

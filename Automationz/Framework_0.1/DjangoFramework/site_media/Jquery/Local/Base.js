@@ -6,8 +6,8 @@ $(document).ready(function(){
 	// Remember the path so that after the login, the user is redirected back to the same page he/she was trying to view
 	current_path = window.location.pathname;
 	// Save it to session storage rather than local storage
-	if (current_path === '/Home/Login/') {
-		sessionStorage.setItem("path_to_redirect", '/Home/');
+	if (current_path === '/Home/Login/' || current_path === '/' || current_path === '/Home/') {
+		sessionStorage.setItem("path_to_redirect", '/Home/Dashboard/');
 	} else {
         //sessionStorage.setItem("path_to_redirect", '/Home/User/');
 		sessionStorage.setItem("path_to_redirect", current_path);

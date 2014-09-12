@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     # Home Page
 	url(r'^$', HomePage),
     url(r'^Home/$', HomePage),
+    url(r'^Home/Dashboard/$', HomePage),
     url(r'^Home/User/(?P<user_id>[^/]*)/$',GetProfileInfo),
     url(r'^GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/.*/GetProjectNameForTopBar/$',GetProjectNameForTopBar),
@@ -279,7 +280,7 @@ urlpatterns = patterns('',
     url(r'^Home/AssignSettings/$', assign_settings),
     url(r'^Home/.*/get_browser_data/$',get_browser_data),
     url(r'^Home/.*/enlist_browser_to_team_settings/$',enlist_browser_to_team_settings),
-    url(r'^Home/.*/enlist_new_browsers/$',enlist_new_browsers),
+    #url(r'^Home/.*/enlist_new_browsers/$',enlist_new_browsers),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )
