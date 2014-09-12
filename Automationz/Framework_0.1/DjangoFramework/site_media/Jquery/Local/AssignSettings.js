@@ -6,6 +6,20 @@ $(document).ready(function(){
     set_button_behaviour();
 });
 function set_button_behaviour(){
+    $('#new_browser_submit').on('click',function(){
+        var browser_name=$('#new_browser_name').val().trim();
+        var browser_version=$('#new_browser_version').val().trim();
+        var project_id=$('#project_identity option:selected').val().trim();
+        var team_id=$('#default_team_identity option:selected').val().trim();
+        $.get("enlist_new_browsers/",{
+            'project_id':project_id.trim(),
+            'team_id':team_id.trim(),
+            'browser_name':browser_name.trim(),
+            'browser_version':browser_version.trim()
+        },function(data){
+
+        });
+    });
     $('#default_team_identity').on('change',function(){
         $.session.set('default_team_identity',$(this).val().trim());
         window.location=('/Home/AssignSettings/');

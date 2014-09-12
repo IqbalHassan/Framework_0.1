@@ -9437,3 +9437,36 @@ def enlist_browser_to_team_settings(request):
                 return HttpResponse(result,mimetype='application/json')
             except Exception,e:
                 PassMessasge(sModuleInfo, e, 3)
+
+"""def enlist_new_browsers(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    if request.method=='GET':
+        if request.is_ajax():
+            try:
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                browser_name=request.GET.get(u'browser_name','')
+                browser_version=request.GET.get(u'browser_version','')
+                #check for the message for availablity
+                #get the browser name from the parameters
+                browser_query="select * from config_values where type='Browser' and value='%s'"%(browser_name.strip())
+                version_query="select * from config_values where type='%s Version' and value='%s'"%(browser_name.strip(),browser_version.strip())
+                Conn=GetConnection()
+                browser_count=DB.GetData(Conn,browser_query)
+                Conn.close()
+                Conn=GetConnection()
+                version_count=DB.GetData(Conn,version_query)
+                Conn.close()
+                if (isinstance(browser_count,list) and browser_count[0]>0) and (isinstance(version_count,list) and version_count[0]>0):
+                    PassMessasge(sModuleInfo, "Browser %s with version %s exists already"%(browser_name,browser_version),1)
+                elif (isinstance(browser_count,list) and browser_count[0]>0) and (isinstance(version_count,list) and version_count[0]==0):
+                    PassMessasge(sModuleInfo, "Browser %s exists but version %s not exists in config_values"%(browser_name,browser_version),1)
+                elif(isinstance(browser_count,list) and browser_count[0]>0) and (isinstance(version_count,list) and version_count[0]>0):
+                elif(isinstance(browser_count,list) and browser_count[0]>0) and (isinstance(version_count,list) and version_count[0]>0):
+            except Exception,e:
+                PassMessasge(sModuleInfo, e,3)
+                
+            
+            
+   '''  
+   """       
