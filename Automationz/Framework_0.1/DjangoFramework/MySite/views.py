@@ -9373,7 +9373,7 @@ def assign_settings(request):
         return render_to_response('AssignSettings.html',Dict)
     except Exception,e:
         PassMessasge(sModuleInfo, e, 3)
-def get_browser_data(request):
+"""def get_browser_data(request):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     if request.method=='GET':
         if request.is_ajax():
@@ -9437,8 +9437,7 @@ def enlist_browser_to_team_settings(request):
                 return HttpResponse(result,mimetype='application/json')
             except Exception,e:
                 PassMessasge(sModuleInfo, e, 3)
-
-"""def enlist_new_browsers(request):
+def enlist_new_browsers(request):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     if request.method=='GET':
         if request.is_ajax():
