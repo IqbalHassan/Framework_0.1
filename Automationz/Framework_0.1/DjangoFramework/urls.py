@@ -277,9 +277,8 @@ urlpatterns = patterns('',
     
     #pages for the assignment of the team settings
     url(r'^Home/AssignSettings/$', assign_settings),
-    #url(r'^Home/.*/get_browser_data/$',get_browser_data),
-    #url(r'^Home/.*/enlist_browser_to_team_settings/$',enlist_browser_to_team_settings),
-    #url(r'^Home/.*/enlist_new_browsers/$',enlist_new_browsers),
+    url(r'^Home/.*/enlist_new_dependency/$',enlist_new_dependency),
+    url(r'^Home/.*/get_all_dependency/$',get_all_dependency),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )

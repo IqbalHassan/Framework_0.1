@@ -10,38 +10,21 @@
         <div class="tabs-div">
             <table width="100%">
                 <tr>
-                    <td width="50%">
-                        <table align="center" style="margin-top: 2%;">
-                            <thead>
-                            <th align="center" width="55%"><b class="Text">Client Name</b></th>
-                            <th align="center" width="45%"><b class="Text">Selection</b></th>
-                            </thead>
-                            <tbody>
-                            {% for x in all_browsers %}
-                            <tr>
-                                <td align="left"><b style="font-weight: bold">{{x.0}}</b></td>
-                                <td align="center"><input type="checkbox" name="browser" class="Text"  value="{{x.1}}"/> </td>
-                            </tr>
-                            {% endfor %}
-                            <tr>
-                                <td colspan="2" align="center"><input type="button" id="select_browser" class="new_tc_form button minibutton primary" value="Save" style="width:auto;"></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                    <td width="50%" id="dependency_list">
+
                     </td>
                     <td width="50%"  style="vertical-align: 0%">
                         <table width="100%">
                             <tr>
                                 <td width="90%">&nbsp;</td>
-                                <td width="10%"><a style="float: right" id="new_browser_button" class="new_tc_form minibutton primary"/>New Browser</a></td>
+                                <td width="10%"><a style="float: right" id="new_dependency_button" class="new_tc_form minibutton primary"/>New Dependency</a></td>
                             </tr>
                             <tr id="name_row" style="display: none;">
                                 <td width="90%">&nbsp;</td>
                                 <td width="10%">
                                     <table width="100%">
                                         <tr>
-                                            <td width="50%"><input type="text" id="new_browser_name" style="width: auto" class="textbox" placeholder="new browser"/> </td>
-                                            <td width="50%"><input type="text" id="new_browser_version" class="textbox" style="width: auto" placeholder="browser version"/></td>
+                                            <td width="50%" colspan="2"><input type="text" id="new_dependency_name" style="width: auto" class="textbox" placeholder="new dependency"/> </td>
                                         </tr>
                                     </table>
                                 </td>
@@ -51,14 +34,13 @@
                                 <td width="10%">
                                     <table width="100%">
                                         <tr>
-                                            <td width="50%"><input type="button" id="new_browser_cancel" class="new_tc_form minibutton danger" value="Cancel"/></td>
-                                            <td width="50%"><input type="button" id="new_browser_submit" class="new_tc_form minibutton primary" value="Submit"/></td>
+                                            <td width="50%"><input type="button" id="new_dependency_cancel" class="new_tc_form minibutton danger" value="Cancel"/></td>
+                                            <td width="50%"><input type="button" id="new_dependency_submit" class="new_tc_form minibutton primary" value="Submit"/></td>
                                         </tr>
                                     </table>
                                 </td>
                             </tr>
                         </table>
-
                     </td>
                 </tr>
             </table>
