@@ -7848,7 +7848,7 @@ def BugOperation(request):
 def ManageLabel(request):
     query = "select label_name, label_color, label_id from labels order by label_name"
     Conn=GetConnection()
-    labels=DB.GetData(Conn,query)
+    labels=DB.GetData(Conn,query,False)
     Dict={'labels':labels}
     Conn.close()
     return render_to_response('ManageLabel.html',Dict)

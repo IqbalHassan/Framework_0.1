@@ -17,13 +17,14 @@ function get_all_dependency(){
 }
 function make_table(data){
     var message="";
-    message+='<table>' +
+    message+='<table class="ScheduledLeaveCalendar">' +
             '<thead>' +
-                '<td><b class="Text">Type</b></td>' +
-                '<td><b class="Text">Name</b></td>' +
-                '<td><b class="Text">Bit</b></td>' +
-                '<td><b class="Text">Version</b></td>' +
-                '<td>&nbsp;</td>' +
+                '<th>Type</th>' +
+                '<th>Name</th>' +
+                '<th>Bit</th>' +
+                '<th>Version</th>' +
+                '<th>&nbsp;</th>' +
+                //'<th>Add</th>' +
             '</thead>';
     for(var i=0;i<data.length;i++){
         var sub_array=data[i];
@@ -31,7 +32,7 @@ function make_table(data){
         message+=('<td><b>'+sub_array[0]+'</b></td>');
         var browser_tuple=sub_array[1];
         if (browser_tuple.length<0){
-            message+=('<td colspan="4">&nbsp;</td>');
+            message+=('<td colspan="3">&nbsp;</td>');
         }
         else{
             message+=('<td colspan="3">');

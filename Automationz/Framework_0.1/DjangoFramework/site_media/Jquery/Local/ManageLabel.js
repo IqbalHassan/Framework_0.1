@@ -33,6 +33,7 @@ $(document).ready(function(){
             },function(data){
                 alertify.success("Label Created!");
                 $("#label_creation").slideUp('slow');
+                window.location.reload(true);
             });
         }
         else{
