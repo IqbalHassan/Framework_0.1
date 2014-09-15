@@ -55,6 +55,21 @@
         <input type="button" class="button" id="cancel_label" value="Cancel">
     </div>
 
+    <table class="one-column-emphasis">
+        <thead>
+        <tr>
+            <th>Labels</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% if labels %}
+            {% for x in labels %}
+            <tr><td><span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x}}</span></td></tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
 
     <!--table style="width: 100%;">
         <thead>

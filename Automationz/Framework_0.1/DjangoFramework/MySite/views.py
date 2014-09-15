@@ -7846,7 +7846,12 @@ def BugOperation(request):
     return HttpResponse(result, mimetype='application/json')    
 
 def ManageLabel(request):
-    return render_to_response('ManageLabel.html',{})
+    query = "select label_name, label_color, label_id from labels order by label_name"
+    Conn=GetConnection()
+    labels=DB.GetData(Conn,query)
+    Dict={'labels':labels}
+    Conn.close()
+    return render_to_response('ManageLabel.html',Dict)
 
 def CreateLabel(request):
     if request.is_ajax():
