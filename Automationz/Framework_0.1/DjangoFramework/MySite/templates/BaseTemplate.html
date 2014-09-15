@@ -71,6 +71,15 @@
 			$("#loading").css("display", "none");
 		}, 3000);
 	});
+    
+    $(document).ready(function() {
+        /************************
+         * User identicons
+         ************************/
+        var username = $("#user_name").text().trim();
+        var source_url = "https://sigil.cupcake.io/" + username + ".png?w=24";
+        $("#user_identicon").attr("src", source_url);
+    });
 </script>
 
 <div id="master_wrap">
@@ -147,8 +156,8 @@
 
                     </select>
                 </li>
-                <li style="width:12%">
-                    <a rel="prefetch" href=""><span class="welcome" id="user_name"></span></a>
+                <li style="width:12%; text-align: center;">
+                    <a rel="prefetch" href="" style="display: inline-block; height: 100%; vertical-align: middle;"><img src="" id="user_identicon" style="vertical-align: middle;"><span style="vertical-align: middle;" class="welcome" id="user_name"></span></a>
 
                     <ul>
                         <li><a id="user_id" rel="prefetch" href=""><i class="fa fa-print fa-fw fa-lg"></i>My Account</a></li>
@@ -157,7 +166,6 @@
                         <li><a rel="prefetch" href="/Home/ManageTestCases/DeleteExisting/"><i class="fa fa-trash-o fa-fw fa-lg"></i> Delete Test Cases</a></li>
                         <li><a rel="prefetch" href="/Home/ManageStep/"><i class="fa fa-times-circle fa-fw fa-lg"></i> Delete Test Step</a></li>
                         <li><a id="feadri" rel="prefetch" href="/Home/FeaDri/"><i class="fa fa-cogs fa-fw fa-lg"></i> Feature & Driver</a></li>
-                        <li><a id="devmode" href="#"><i class="fa fa-code fa-lg fa-fw"></i> Dev mode</a></li>
                         <li><a id="project_new" href="/Home/CreateProject/"><i class="fa fa-book fa-lg fa-fw"></i> Manage Project</a></li>
                         <li><a rel="prefetch" href="/Home/ManageMilestone/"><i class="fa fa-archive fa-fw fa-lg"></i> Manage Milestone</a></li>
                         <li><a rel="prefetch" href="/Home/ManageTeam/"><i class="fa fa-hand-o-up fa-fw fa-lg"></i> Manage Team</a></li>

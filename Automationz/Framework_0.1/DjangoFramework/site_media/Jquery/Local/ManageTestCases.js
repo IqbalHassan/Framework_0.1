@@ -256,12 +256,6 @@ $(document).ready(function() {
 	    });
 	}
 	
-	
-	// If dev mode is turned on show the button to create a new section
-	if (sessionStorage.getItem('devmode')) {
-		$("#create_section_btn").css("display", "");
-	}
-	
 	$("#create_section_btn").click(function(e) {
 		e.preventDefault();
 		

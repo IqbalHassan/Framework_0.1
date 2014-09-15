@@ -9398,112 +9398,92 @@ def UpdateDefaultProjectForUser(request):
 def assign_settings(request):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        query="select value,id from config_values where type='Browser'"
-        Conn=GetConnection()
-        all_browsers=DB.GetData(Conn,query,False)
-        Dict={}
-        if all_browsers:
-            PassMessasge(sModuleInfo, "Successfully taken all the Browser Data", 1)
-            Dict.update({'all_browsers':all_browsers})
-        else:
-            PassMessasge(sModuleInfo, "No data Retrieved", 3)
-        return render_to_response('AssignSettings.html',Dict)
+        return render_to_response('AssignSettings.html',{})
     except Exception,e:
         PassMessasge(sModuleInfo, e, 3)
-def get_browser_data(request):
-    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    if request.method=='GET':
+        
+def enlist_new_dependency(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
         if request.is_ajax():
-            try:
+            if request.method=='GET':
+                dependency=request.GET.get(u'dependency','')
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
-                query="select parameters from team_wise_settings where team_id=%d and project_id='%s' and type='Browser'"%(int(team_id), project_id)
+                #check for the existing 
+                query="select count(*) from dependency_management where project_id='%s' and team_id=%d and dependency='%s'"%(project_id,int(team_id),dependency)
                 Conn=GetConnection()
-                browser_list=DB.GetData(Conn,query)
+                count=DB.GetData(Conn,query)
                 Conn.close()
-                if isinstance(browser_list,list):
-                    PassMessasge(sModuleInfo,"Retrieve data from default_team_settings",1)
-                else:
-                    PassMessasge(sModuleInfo,"Data Retrieval from default_team_settings is failed", 3)
-                result=simplejson.dumps(browser_list)
-                return HttpResponse(result,mimetype='application/json')
-            except Exception,e:
-                PassMessasge(sModuleInfo, e, 3)
-                
-def enlist_browser_to_team_settings(request):
-    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    if request.method=='GET':
-        if request.is_ajax():
-            try:
-                project_id=request.GET.get(u'project_id','')
-                team_id=request.GET.get(u'team_id','')
-                browser_list=request.GET.get(u'browser_list','').split("|")
-                print browser_list
-                for i in browser_list:
-                    query="select count(*) from team_wise_settings where project_id='%s' and team_id=%d and type='Browser' and parameters=%d"%(project_id,int(team_id),int(i))
-                    print query
-                    Conn=GetConnection()
-                    count=DB.GetData(Conn,query)
-                    Conn.close()
-                    if count and count[0]>0:
-                        PassMessasge(sModuleInfo,"Found ('%s',%d,%d,'Browser') in team_wise_settings. Insertion not needed."%(project_id,int(team_id),int(i)),1)
-                        continue
-                    if count and count[0]==0:
-                        PassMessasge(sModuleInfo,"Inserting ('%s',%d,%d,'Browser') in team_wise_settings.."%(project_id,int(team_id),int(i)),1)
-                        Dict={}
-                        Dict.update({
-                            'project_id':project_id,
-                            'team_id':int(team_id),
-                            'parameters':int(i),
-                            'type':'Browser'
-                        })
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        #have to insert 
+                        Dict={
+                              'project_id':project_id,
+                              'team_id':int(team_id),
+                              'dependency':dependency
+                        }
                         Conn=GetConnection()
-                        result=DB.InsertNewRecordInToTable(Conn,"team_wise_settings",**Dict)
+                        result=DB.InsertNewRecordInToTable(Conn,"dependency_management",**Dict)
+                        Conn.close()
                         if result==True:
-                            PassMessasge(sModuleInfo,"Insertion of %s in team_wise_settings is successful"%str(Dict),1)
+                            PassMessasge(sModuleInfo, "(%s,%d,%s) tuple is inserted in the database"%(project_id,int(team_id),dependency),1)
+                            message=True
                         else:
-                            PassMessasge(sModuleInfo,"Insertion of %s in team_wise_settings is Failed",str(Dict),3)
-                #deleting up the unnecessary one
-                whereQuery="delete from team_wise_settings where project_id='%s' and team_id=%d and type='Browser' and parameters not in(%s)"%(project_id,int(team_id),(",").join(browser_list))
-                Conn=GetConnection()
-                cur=Conn.cursor()
-                cur.execute(whereQuery)
-                Conn.commit()
-                cur.close()
-                result=simplejson.dumps("message")
-                return HttpResponse(result,mimetype='application/json')
-            except Exception,e:
-                PassMessasge(sModuleInfo, e, 3)
-
-"""def enlist_new_browsers(request):
-    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    if request.method=='GET':
+                            PassMessasge(sModuleInfo, "(%s,%d,%s) tuple is inserted in the database"%(project_id,int(team_id),dependency),3)
+                            message=True
+                        result=simplejson.dumps(message)
+                        return HttpResponse(result,mimetype='application/json')    
+                    else:
+                        if len(count)==1 and count[0]>0:
+                            #no need to insert
+                            PassMessasge(sModuleInfo,"(%s, %d,%s) tuple is already in the dependency_management"%(project_id,int(team_id),dependency))
+                else:
+                    PassMessasge(sModuleInfo,"Query Error in the dependency_management",3) 
+                    
+            result=simplejson.dumps(dependency)
+            return HttpResponse(result,mimetype='application/json')
+    except Exception ,e:
+        PassMessasge(sModuleInfo,e,3)
+def get_all_dependency(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
         if request.is_ajax():
-            try:
+            if request.method=='GET':
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
-                browser_name=request.GET.get(u'browser_name','')
-                browser_version=request.GET.get(u'browser_version','')
-                #check for the message for availablity
-                #get the browser name from the parameters
-                browser_query="select * from config_values where type='Browser' and value='%s'"%(browser_name.strip())
-                version_query="select * from config_values where type='%s Version' and value='%s'"%(browser_name.strip(),browser_version.strip())
+                final_list=[]
+                query="select id,dependency from dependency_management where project_id='%s' and team_id=%d"%(project_id,int(team_id))
                 Conn=GetConnection()
-                browser_count=DB.GetData(Conn,browser_query)
+                dependency_list=DB.GetData(Conn,query,False)
                 Conn.close()
-                Conn=GetConnection()
-                version_count=DB.GetData(Conn,version_query)
-                Conn.close()
-                if (isinstance(browser_count,list) and browser_count[0]>0) and (isinstance(version_count,list) and version_count[0]>0):
-                    PassMessasge(sModuleInfo, "Browser %s with version %s exists already"%(browser_name,browser_version),1)
-                elif (isinstance(browser_count,list) and browser_count[0]>0) and (isinstance(version_count,list) and version_count[0]==0):
-                    PassMessasge(sModuleInfo, "Browser %s exists but version %s not exists in config_values"%(browser_name,browser_version),1)
-                elif(isinstance(browser_count,list) and browser_count[0]>0) and (isinstance(version_count,list) and version_count[0]>0):
-                elif(isinstance(browser_count,list) and browser_count[0]>0) and (isinstance(version_count,list) and version_count[0]>0):
-            except Exception,e:
-                PassMessasge(sModuleInfo, e,3)
-                
-            
-            
-   '''  
-   """       
+                if isinstance(dependency_list,list):
+                    for each in dependency_list:
+                        query="select distinct name from dependency_values where reference_id=%d"%each[0]
+                        Conn=GetConnection()
+                        name_list=DB.GetData(Conn,query)
+                        Conn.close()
+                        if name_list:
+                            dependency_version=[]
+                            for eachitem in name_list:
+                                query="SELECT bit, array_to_string(array_agg(distinct version),',') AS version from dependency_management dm, dependency_values dv where dm.id=dv.reference_id and dv.reference_id=%d and name='%s' GROUP BY dv.reference_id,dv.name,dv.bit"%(each[0],eachitem)
+                                Conn=GetConnection()
+                                version_list=DB.GetData(Conn,query,False)
+                                Conn.close()
+                                if version_list:
+                                    dependency_version.append((eachitem,version_list))
+                                else:
+                                    dependency_version.append((eachitem,[]))
+                            final_list.append((each[1],dependency_version))
+                        else:
+                            final_list.append((each[1],[]))
+                    print final_list
+                    result=simplejson.dumps(final_list)
+                    PassMessasge(sModuleInfo,"All dependency is taken out from dependency_management", 1)
+                else:
+                    result=simplejson.dumps(dependency_list)
+                    PassMessasge(sModuleInfo,"No dependency is taken out successfully", 3)
+                return HttpResponse(result,mimetype='application/json')    
+    except Exception,e:
+        PassMessasge(sModuleInfo, e,3)
+    
