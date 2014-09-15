@@ -17,9 +17,64 @@ function get_all_dependency(){
 }
 function make_table(data){
     var message="";
-    message+='<table>';
+    message+='<table>' +
+            '<thead>' +
+                '<td><b class="Text">Type</b></td>' +
+                '<td><b class="Text">Name</b></td>' +
+                '<td><b class="Text">Bit</b></td>' +
+                '<td><b class="Text">Version</b></td>' +
+                '<td>&nbsp;</td>' +
+            '</thead>';
     for(var i=0;i<data.length;i++){
-        message+=('<tr><td>'+data[i]+'</td></tr>');
+        var sub_array=data[i];
+        message+='<tr>';
+        message+=('<td><b>'+sub_array[0]+'</b></td>');
+        var browser_tuple=sub_array[1];
+        if (browser_tuple.length<0){
+            message+=('<td colspan="4">&nbsp;</td>');
+        }
+        else{
+            message+=('<td colspan="3">');
+            message+=('<table>');
+            for(var j=0;j<browser_tuple.length;j++){
+                message+=('<tr>');
+                message+=('<td>'+browser_tuple[j][0]+'</td>');
+                message+=('<td>');
+                message+=('<table>');
+                if(browser_tuple[j][1].length>0){
+                    for(var k=0;k<browser_tuple[j][1].length;k++){
+                        message+=('<tr>');
+                        message+=('<td>'+browser_tuple[j][1][k][0]+'</td>');
+                        if(browser_tuple[j][1][k][1].length>0){
+                            message+=('<td>');
+                            message+=('<table>');
+                            var version_list=browser_tuple[j][1][k][1].split(",");
+                            for(var l=0;l<version_list.length;l++){
+                                message+=('<tr><td>'+version_list[l]+'</td></tr>');
+                            }
+                            message+=('</table>');
+                            message+=('</td>');
+                        }
+                        else{
+                            message+=('<td>&nbsp;</td>');
+                        }
+                        message+=('</tr>');
+                    }
+                }
+                else{
+                    message+=('<td colspan="2">&nbsp;</td> ');
+                }
+
+                message+=('</table>');
+                message+=('</td>');
+                message+=('<td><input type="button" value="Mark as default"></td>');
+                message+=('</tr>');
+            }
+            message+=('</table>');
+            message+=('</td>');
+        }
+        message+=('<td><input type="button" value="Add New"></td>');
+        message+='</tr>';
     }
     message+='</table>';
     return message;

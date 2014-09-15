@@ -9447,12 +9447,33 @@ def get_all_dependency(request):
             if request.method=='GET':
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
-                query="select dependency from dependency_management where project_id='%s' and team_id=%d"%(project_id,int(team_id))
+                final_list=[]
+                query="select id,dependency from dependency_management where project_id='%s' and team_id=%d"%(project_id,int(team_id))
                 Conn=GetConnection()
-                dependency_list=DB.GetData(Conn,query)
+                dependency_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 if isinstance(dependency_list,list):
-                    result=simplejson.dumps(dependency_list)
+                    for each in dependency_list:
+                        query="select distinct name from dependency_values where reference_id=%d"%each[0]
+                        Conn=GetConnection()
+                        name_list=DB.GetData(Conn,query)
+                        Conn.close()
+                        if name_list:
+                            dependency_version=[]
+                            for eachitem in name_list:
+                                query="SELECT bit, array_to_string(array_agg(distinct version),',') AS version from dependency_management dm, dependency_values dv where dm.id=dv.reference_id and dv.reference_id=%d and name='%s' GROUP BY dv.reference_id,dv.name,dv.bit"%(each[0],eachitem)
+                                Conn=GetConnection()
+                                version_list=DB.GetData(Conn,query,False)
+                                Conn.close()
+                                if version_list:
+                                    dependency_version.append((eachitem,version_list))
+                                else:
+                                    dependency_version.append((eachitem,[]))
+                            final_list.append((each[1],dependency_version))
+                        else:
+                            final_list.append((each[1],[]))
+                    print final_list
+                    result=simplejson.dumps(final_list)
                     PassMessasge(sModuleInfo,"All dependency is taken out from dependency_management", 1)
                 else:
                     result=simplejson.dumps(dependency_list)
