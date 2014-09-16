@@ -24,7 +24,8 @@ function make_table(data){
                 '<th>Bit</th>' +
                 '<th>Version</th>' +
                 '<th>&nbsp;</th>' +
-                //'<th>Add</th>' +
+                '<th>&nbsp;</th>' +
+                '<th>Add</th>' +
             '</thead>';
     for(var i=0;i<data.length;i++){
         var sub_array=data[i];
@@ -32,47 +33,35 @@ function make_table(data){
         message+=('<td><b>'+sub_array[0]+'</b></td>');
         var browser_tuple=sub_array[1];
         if (browser_tuple.length<0){
-            message+=('<td colspan="3">&nbsp;</td>');
+            message+=('<td colspan="5">&nbsp;</td>');
         }
         else{
-            message+=('<td colspan="3">');
-            message+=('<table>');
+            message+=('<td colspan="5"><table width="100%">');
             for(var j=0;j<browser_tuple.length;j++){
                 message+=('<tr>');
-                message+=('<td>'+browser_tuple[j][0]+'</td>');
-                message+=('<td>');
-                message+=('<table>');
+                message+=('<td style="padding-right: 20%;">'+browser_tuple[j][0]+'</td>');
                 if(browser_tuple[j][1].length>0){
+                    message+=('<td colspan="4"><table width="100%">');
                     for(var k=0;k<browser_tuple[j][1].length;k++){
                         message+=('<tr>');
                         message+=('<td>'+browser_tuple[j][1][k][0]+'</td>');
-                        if(browser_tuple[j][1][k][1].length>0){
-                            message+=('<td>');
-                            message+=('<table>');
-                            var version_list=browser_tuple[j][1][k][1].split(",");
-                            for(var l=0;l<version_list.length;l++){
-                                message+=('<tr><td>'+version_list[l]+'</td></tr>');
-                            }
-                            message+=('</table>');
-                            message+=('</td>');
+                        message+=('<td><table width="100%">');
+                        var version_list=browser_tuple[j][1][k][1].split(",");
+                        for(var l=0;l<version_list.length;l++){
+                            message+=('<tr><td>'+version_list[l]+'</td></tr>');
                         }
-                        else{
-                            message+=('<td>&nbsp;</td>');
-                        }
+                        message+=('</table></td>');
                         message+=('</tr>');
                     }
+                    message+=('</table></td>');
                 }
                 else{
-                    message+=('<td colspan="2">&nbsp;</td> ');
+                    message+=('<td colspan="2">&nbsp;</td>')
                 }
-
-                message+=('</table>');
-                message+=('</td>');
-                message+=('<td><input type="button" value="Mark as default"></td>');
+                message+=('<td><table width="100%"><tr><td width="50%"><a class="notification-indicator tooltipped downwards" data-gotokey="n"><span id="type-flag" class="mail-status unfilled"></span></a></td><td width="50%"><input type="button" value="make default"/></td></tr></table></td>')
                 message+=('</tr>');
             }
-            message+=('</table>');
-            message+=('</td>');
+            message+=('</table></td> ');
         }
         message+=('<td><input type="button" value="Add New"></td>');
         message+='</tr>';
