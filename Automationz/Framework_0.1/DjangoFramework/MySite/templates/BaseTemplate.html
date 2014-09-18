@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 
 <html>
-<!-- Above code is for adding HTML5 and XHTML to your html code. Copy paste to your other html files -->
 <head>
 
 	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script> -->
 
     <title>{% block title %} {% endblock %}</title>
     <link rel="icon" type="image/ico" href="/site_media/Logo.ico"></link>
@@ -12,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="/site_media/CSS-Style-Sheet.css" />
     <link rel="stylesheet" href="/site_media/alertify.core.css" />
     <link rel="stylesheet" href="/site_media/alertify.default.css" id="toggleCSS" />
-    <link href="/site_media/font-awesome-4.0.3/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/site_media/font-awesome/css/font-awesome.min.css" rel="stylesheet">
     
     <!-- Tooltip library -->
     <link rel="stylesheet" href="/site_media/hint.min.css">
@@ -84,189 +87,83 @@
 
 <div id="master_wrap">
     <header class="main_header">
-        <!--a id="logo" href="/Home/">
-            <img src="/site_media/Logo.png" style="width:256px;border:0;"/>
-        </a-->
-
-        <nav id="nav" role="navigation">
-            <a href="#nav" title="Show navigation">Show navigation</a>
-            <a href="#" title="Hide navigation">Hide navigation</a>
-            <ul style="width:100%">
-                <li style="width:4%"><a rel="prerender" href="/Home/Dashboard/" class="hint--right hint--bounce hint--rounded" data-hint="Home"><i class="fa fa-home fa-fw fa-lg"></i></a></li>
-                <li style="width:15%">
-                    <a rel="prerender" href="" aria-haspopup="true"><span><i class="fa fa-wrench fa-fw fa-lg"></i> Testing</span></a>
-                    <ul>
-                        <li><a rel="prerender" href = "/Home/RunTest/"><i class="fa fa-rocket fa-fw fa-lg"></i> Test Deployment</a></li>
-                        <li><a rel="prefetch" href = "/Home/Results/"><i class="fa fa-random fa-fw fa-lg"></i> Result & Execution</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTestCases/CreateNewTestCase/"><i class="fa fa-file-text fa-fw fa-lg"></i> Create New Test Case</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTestCases/SearchEdit/"><i class="fa fa-files-o fa-fw fa-lg"></i> Copy/Edit Test Case</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTestCases/"><i class="fa fa-camera-retro fa-fw fa-lg"></i> View & Organize Test Cases</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTestCases/CreateStep/"><i class="fa fa-pencil fa-fw fa-lg"></i> Create/Edit Test Step</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageSetTag/"><i class="fa fa-tags fa-fw fa-lg"></i> Manage Set & Tag</a></li>
-						<li><a rel="prefetch" href="/Home/ManageTestCases/SearchEdit-Dev/"><i class="fa fa-hand-o-up fa-fw fa-lg"></i> SearchEdit (Dev)</a></li>
-                        <!--li><a rel="prefetch" href="/Home/ManageTestCases/TestStep/"><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Manage Test Steps</a></li-->
-
-                        <!--li><a rel="prefetch" href="/Home/ManageTestCases/Create/">Create New Test Case (Old)</a></li-->
-                    </ul>
-                </li>
-                <li style="width:13%">
-                    <a rel="prerender" href = ""><span><i class="fa fa-tasks fa-fw fa-lg"></i>Tasks</span></a>
-                    <ul>
-                        <li><a rel="prefetch" href="/Home/ManageTask/"><i class="fa fa-book fa-fw fa-lg"></i> Manage Task (Development)</a></li>
-                    </ul>
-                    <!--ul>
-                        <li><a rel="prefetch" id="pc_menu" href=""><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/pc1.png" width="16"> PC</a></li>
-                        <li><a rel="prerender" id="mac_menu" href=""><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/mac1.png" width="16"> MAC</a></li>
-                    </ul-->
-                </li>
-
-                <li style="width:11%">
-                    <a rel="prefetch" href = ""><span><i class="fa fa-bug fa-fw fa-lg"></i>Bug</span></a>
-                    <ul>
-                        <li><a rel="prefetch" href="/Home/ManageBug/"><i class="fa fa-asterisk fa-fw fa-lg"></i> Manage Bug (Development)</a></li>
-                    </ul>
-                </li>
-                <li style="width:11.6%">
-                    <a rel="prefetch" href = ""><span><i class="fa fa-gavel fa-fw fa-lg"></i>Requirements</span></a>
-                    <ul>
-                        <li><a rel="prefetch" href="/Home/ManageRequirement/"><i class="fa fa-anchor fa-fw fa-lg"></i> Manage Requirement (Development)</a></li>
-                    </ul>
-                </li>
-                <li style="width:13%">
-                    <a rel="prerender" href="" aria-haspopup="true"><span><i class="fa fa-sort-amount-asc fa-fw fa-lg"></i> Reports</span></a>
-                    <ul>
-                        <li><a rel="prefetch" href="/Home/BundleReport/"><i class="fa fa-archive fa-fw fa-lg"></i> Bundle Report</a></li>
-                        <li><a rel="prerender" href="/Home/MKS-Report/"><i class="fa fa-bookmark fa-fw fa-lg"></i> MKS Report</a></li>
-                        <li><a rel="prefetch" href="/Home/Analysis/"><i class="fa fa-flag fa-fw fa-lg"></i> Test Case History</a></li>
-                        <li><a rel="prerender" href="/Home/DailyBuildResults/"><i class="fa fa-clock-o fa-fw fa-lg"></i> Automated Build History</a></li>
-                        <li><a rel="prefetch" href="/Home/TestTypeStatus/"><i class="fa fa-puzzle-piece fa-fw fa-lg"></i> Test Type Status</a></li>
-                        <li><a rel="prerender" href="/Home/Performance/"><i class="fa fa-tachometer fa-fw fa-lg"></i> Performance</a></li>
-                    </ul>
-                </li>
-
-                <li style="width:10.2%">
-                    <select rel="prefetch" class="project" id="project_identity" style="height: 100%">
-                        <option value="">Select any project</option>
-
-                    </select>
-                </li>
-                <li style="width:10.2%">
-                    <select rel="prefetch" class="project" id="default_team_identity" style="height: 100%">
-                        <option value="">Select any Team</option>
-
-                    </select>
-                </li>
-                <li style="width:12%; text-align: center;">
-                    <a rel="prefetch" href="" style="display: inline-block; height: 100%; vertical-align: middle;"><img src="" id="user_identicon" style="vertical-align: middle;"><span style="vertical-align: middle;" class="welcome" id="user_name"></span></a>
-
-                    <ul>
-                        <li><a id="user_id" rel="prefetch" href=""><i class="fa fa-print fa-fw fa-lg"></i>My Account</a></li>
-                        <li><a rel="prefetch" href="/Home/Admin/"><i class="fa fa-cloud-download fa-fw fa-lg"></i> Git Pull</a></li>
-                        <li><a rel="prefetch" href="/Home/AssignSettings/"><i class="fa fa-cloud-download fa-fw fa-lg"></i>Assign Team Wise Settings</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTestCases/DeleteExisting/"><i class="fa fa-trash-o fa-fw fa-lg"></i> Delete Test Cases</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageStep/"><i class="fa fa-times-circle fa-fw fa-lg"></i> Delete Test Step</a></li>
-                        <li><a id="feadri" rel="prefetch" href="/Home/FeaDri/"><i class="fa fa-cogs fa-fw fa-lg"></i> Feature & Driver</a></li>
-                        <li><a id="project_new" href="/Home/CreateProject/"><i class="fa fa-book fa-lg fa-fw"></i> Manage Project</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageMilestone/"><i class="fa fa-archive fa-fw fa-lg"></i> Manage Milestone</a></li>
-                        <li><a rel="prefetch" href="/Home/ManageTeam/"><i class="fa fa-hand-o-up fa-fw fa-lg"></i> Manage Team</a></li>
-                        <hr>
-                        <li><a rel="prefetch" href="/Home/Login/" class="hint--left hint--bounce hint--rounded" data-hint="Logout"><i class="fa fa-sign-out fa-fw fa-lg"></i> Sign Out</a></li>
-                    </ul>
-                </li>
-
+        
+        <div id='cssmenu'>
+<ul>
+   <li><a href='/Home/'><span><i class="fa fa-home fa-fw fa-lg"></i></span></a></li>
+   <li class='has-sub'><a href='#'><span><i class="fa fa-wrench fa-fw fa-lg"></i> Testing</span></a>
+       <ul>
+         <li class='has-sub'><a href='/Home/RunTest/'><span><i class="fa fa-rocket fa-fw fa-lg"></i> Test Deployment</span></a>
+            <ul>
+               <li><a href='#'><span>Sub Product</span></a></li>
+               <li class='last'><a href='#'><span>Sub Product</span></a></li>
             </ul>
-        </nav>
+         </li>
+		 <li><a href='/Home/Results/'><span><i class="fa fa-random fa-fw fa-lg"></i> Result & Execution</span></a></li>
+		 <li><a href='/Home/ManageTestCases/CreateNewTestCase/'><span><i class="fa fa-file-text fa-fw fa-lg"></i> Create new Test Case(s)</span></a></li>
+		 <li><a href='/Home/ManageTestCases/SearcgEdit/'><span><i class="fa fa-files-o fa-fw fa-lg"></i> Copy/Edit Test Case(s)</span></a></li>
+         <li class='has-sub'><a href='/Home/ManageTestCases/'><span><i class="fa fa-camera-retro fa-fw fa-lg"></i> View & Organize Test Case(s)</span></a>
+            <ul>
+               <li><a href='#'><span>Sub Product</span></a></li>
+               <li class='last'><a href='#'><span>Sub Product</span></a></li>
+            </ul>
+         </li>
+         <li><a href='/Home/ManageTestCases/CreateStep/'><span><i class="fa fa-pencil fa-fw fa-lg"></i> Create/Test Step</span></a></li>
+         <li><a href='/Home/ManageSetTag/'><span><i class="fa fa-tags fa-fw fa-lg"></i> Manage Set & Tag</span></a></li>
+         <li><a href='/Home/ManageTestCases/SearchEdit-Dev/'><span><i class="fa fa-search fa-fw fa-lg"></i> Search/Edit (dev)</span></a></li>
+      </ul>
+   </li>
+   <li class='has-sub'><a href='#'><span><i class="fa fa-tasks fa-fw fa-lg"></i> Tasks</span></a>
+   	  <ul>
+   	     <li><a href='/Home/ManageTask/'><span><i class="fa fa-book fa-fw fa-lg"></i> Manage Task(s)</span></a></li>
+   	  </ul>
+   </li>
+   <li class='has-sub'><a href='#'><span><i class="fa fa-bug fa-fw fa-lg"></i> Bug</span></a>
+   	  <ul>
+   	  	 <li><a href="/Home/ManageBug/"><i class="fa fa-paw fa-fw fa-lg"></i> Manage Bug</a></li>
+   	  </ul>
+   </li>
+   <li class='has-sub'><a href='#'><span><i class="fa fa-calculator fa-fw fa-lg"></i> Requirements</span></a>
+   	  <ul>
+   	  	 <li><a href="/Home/ManageRequirement/"><i class="fa fa-anchor fa-fw fa-lg"></i> Manage Requirements</a></li>
+   	  </ul>
+   </li>
+   <li class='has-sub'><a href='#'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Reports</span></a>
+   	  <ul>
+   	  	 <li><a href="/Home/BundleReport/"><i class="fa fa-pie-chart fa-fw fa-lg"></i> Bundle Report</a></li>
+   	  	 <li><a href="/Home/MKS-Report/"><i class="fa fa-bar-chart fa-fw fa-lg"></i> MKS Report</a></li>
+   	  	 <li><a href="/Home/Analysis/"><i class="fa fa-area-chart fa-fw fa-lg"></i> Test Case History</a></li>
+   	  	 <li><a href="/Home/DailyBuildResults/"><i class="fa fa-history fa-fw fa-lg"></i> Automated Build History</a></li>
+   	  	 <li><a href="/Home/TestTypeStatus/"><i class="fa fa-fire fa-fw fa-lg"></i> Test Type Status</a></li>
+   	  	 <li><a href="/Home/Performance/"><i class="fa fa-tachometer fa-fw fa-lg"></i> Performance</a></li>
+   	  </ul>
+   </li>
+   <li class='has-sub'><a href='#'><span><i class="fa fa-briefcase fa-fw fa-lg"></i> Manage</span></a>
+   	  <ul>
+   	  	 <li><a href="/Home/AssignSettings/"><i class="fa fa-bullseye fa-fw fa-lg"></i> Assign Team Wise Settings</a></li>
+   	  	 <li><a href="/Home/ManageTestCases/DeleteExisting/"><i class="fa fa-trash fa-fw fa-lg"></i> Delete Test Case(s)</a></li>
+   	  	 <li><a href="/Home/ManageStep/"><i class="fa fa-ban fa-fw fa-lg"></i> Delete Test Step(s)</a></li>
+   	  	 <li><a href="/Home/FeaDri/"><i class="fa fa-plug fa-fw fa-lg"></i> Feature(s) & Driver(s)</a></li>
+   	  	 <li><a href="/Home/CreateProject/"><i class="fa fa-binoculars fa-fw fa-lg"></i> Manage Project</a></li>
+   	  	 <li><a href="/Home/ManageMilestone/"><i class="fa fa-calendar fa-fw fa-lg"></i> Manage Milestone</a></li>
+   	  	 <li><a href="/Home/ManageTeam/"><i class="fa fa-users fa-fw fa-lg"></i> Manage Team</a></li>
+   	  </ul>
+   </li>
+   <li style="display: block; margin-top: 8px;"><label><select><option selected>Project</option><option>Z Test</option><option>Automator</option></select></label></li>
+   <li style="display: block; margin-top: 8px; margin-left: 4px;"><label><select><option selected>Team</option><option>Team Z</option><option>Team Automator</option></select></label></li>
+   <li class='has-sub last' style="float: right; display: inline-block; height: 100%; vertical-align: middle;"><a href='#'><span><img src="" id="user_identicon" style="vertical-align: middle;"></i> <span id="user_name" class="welcome">User</span></span></a>
+   	  <ul>
+   	  	 <li><a id="user_id" rel="prefetch" href=""><i class="fa fa-pie-chart fa-fw fa-lg"></i> My Account</a></li>
+   	  	 <li><a href="/Home/Admin/"><i class="fa fa-cloud-download fa-fw fa-lg"></i> Git Pull</a></li>
+   	  	 <li><a href="/Home/Login/"><i class="fa fa-power-off fa-fw fa-lg"></i> Logout</a></li>
+   	  </ul>
+   </li>
+   </ul>
+</div>	
 
     </header>
 
-    <!--div class="ar login_popup">
-        <a class="buttonLog" href="#">Login</a>
-    </div-->
-    <!--div id="toppanel">
-        <div id="panel">
-            <div class="content clearfix">
-                <div class="left">
-                    <h1>Automation Solutionz</h1>
-                    <h2>Log In</h2>
-                    <!--p class="grey">You are free to use this login and registration system in you sites!</p>
-                    <p>You can log in with: <strong>admin/admin</strong></p>
-                    <h2>A Big Thanks</h2>
-                    <p class="grey">This tutorial was built on top of <a href="http://web-kreation.com/index.php/tutorials/nice-clean-sliding-login-panel-built-with-jquery" title="Go to site">Web-Kreation</a>'s amazing sliding panel.</p>
-                </div>
-
-                <div class="left">
-
-                    <form class="clearfix" action="" method="post">
-                        <h1>User Login</h1>
-
-
-                        <label class="grey" for="username">Username:</label>
-                        <input class="field" type="text" name="username" id="username" value="" size="23">
-                        <label class="grey" for="password">Password:</label>
-                        <input class="field" type="password" name="password" id="password" size="23">
-                        <label><input name="rememberMe" id="rememberMe" type="checkbox" checked="checked" value="1"> &nbsp;Remember me</label>
-                        <div class="clear"></div>
-                        <input type="submit" name="submit" value="Login" class="bt_login">
-                        <span class="lost-pwd">Try it with admin/admin</span>
-                    </form>
-                </div>
-                <div class="left right">
-
-                    <form action="" method="post">
-                        <h1>Not a member yet? Sign Up!</h1>
-
-
-                        <label class="grey" for="username">Username:</label>
-                        <input class="field" type="text" name="username" id="username" value="" size="23">
-                        <label class="grey" for="email">Email:</label>
-                        <input class="field" type="text" name="email" id="email" size="23">
-                        <label>A password will be e-mailed to you.</label>
-                        <input type="submit" name="submit" value="Register" class="bt_register">
-                    </form>
-                </div>
-
-            </div>
-        </div>
-
-
-        <div class="tab">
-            <ul class="login">
-                <li class="left">&nbsp;</li>
-                <li class="welcome">Hello undefined!</li>
-                <li class="sep">|</li>
-                <li id="toggle">
-                    <a id="open" class="open" href="#loginmodal">Log In</a>
-                    <a id="close" style="display: none;" class="close" href="#">Close Panel</a>
-                </li>
-                <li class="right">&nbsp;</li>
-            </ul>
-        </div>
-
-    </div-->
-
-
-    <!--div style="padding-top: 8%">
-    <a href="#loginmodal" class="button minibutton blue" id="modaltrigger">Modal Login</a>
-    </div-->
-
-    <!-- modal -->
-    <!--div id="loginmodal" style="display:none;">
-        <h1 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">User Login</h1>
-        <form id="loginform" name="loginform" method="post">
-
-            <input type="text" name="username" id="username" class="textbox username" tabindex="1" placeholder="Username" style="width: 95%">
-
-            <br/><br/>
-
-
-            <input type="password" name="password" id="password" class="textbox password" tabindex="2" placeholder="Password" style="width: 95%">
-
-            <br/><br/>
-            <div class="center"><input type="submit" name="loginbtn" id="loginbtn" class="button minibutton primary" value="Log In" tabindex="3"></div>
-        </form>
-    </div-->
-
-
+    
     <div id="outer_wrap">
 		<div id="contact_link">
 			<a id="contact_url" href="/Home/Contact/URL/">Contact us</a>
