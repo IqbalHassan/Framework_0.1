@@ -140,10 +140,10 @@ $(document).ready(function(){
 	 *   as the user resizes the browser or for example: the user
 	 *   has changed the orientation from 'portrait' to 'landscape'
 	 */
-	$('nav select').css('width', ($(this).width() - 13));
+	$('nav select').css('width', $(this).width());
 	$('.site-title').css('width', $(this).width());
 	$(window).on('resize', function(e) {
-		$('nav select').css('width', ($(this).width() - 13));
+		$('nav select').css('width', $(this).width());
 		$('.site-title').css('width', $(this).width());
 	});
 	
