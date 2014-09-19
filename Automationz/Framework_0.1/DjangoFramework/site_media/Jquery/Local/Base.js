@@ -33,7 +33,9 @@ $(document).ready(function(){
 	   format: "multitoggle"
 	});
 	
-	$("#cssmenu").slicknav();
+	$("#cssmenu").slicknav({
+		label: 'Automation Solutionz'
+	});
 	
 	$("#team_project_menu").sidr({
 		name: 'team_project_panel',
