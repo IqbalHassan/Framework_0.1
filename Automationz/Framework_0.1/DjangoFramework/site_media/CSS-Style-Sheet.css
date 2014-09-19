@@ -176,6 +176,36 @@
   font-size: 12px;
 }
 
+nav select, .site-title {
+	display: none;
+	cursor: pointer;
+}
+
+nav select {
+	border-top-left-radius: 12px;
+	border-bottom-right-radius: 12px;
+	outline: none;
+}
+
+/** For smaller screens **/
+@media (max-width: 1094px) {
+	#cssmenu { display: none; }
+
+	nav select {
+		display: inline-block;
+	}
+	
+	.site-title {
+		font-family: 'Oxygen Mono', Arial, sans-serif;
+		padding: 4px;
+		display: block;
+		text-align: center;
+		font-weight: bold;
+		font-size: 1.4em;
+		color: #666666;
+	}
+}
+
 /********************** Menu bar ************************/
 
 
@@ -2673,11 +2703,12 @@ textarea {
 }
 
 select {
-	background: rgba(250, 250, 250, 0.9);
+	cursor: pointer;
 	line-height: 1;
 	padding: 5px;
-	border-radius: 0;
-	font-weight: bold;
+	border-top-left-radius: 12px;
+	border-bottom-right-radius: 12px;
+	outline: none;
 }
 option {
 }

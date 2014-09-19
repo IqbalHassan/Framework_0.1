@@ -14,49 +14,15 @@
       }, options);
 
       return this.each(function() {
-    	/*
-        cssmenu.prepend('<div id="menu-button">' + settings.title + '</div>');
-        $(this).find("#menu-button").on('click', function(){
-          $(this).toggleClass('menu-opened');
-          var mainmenu = $(this).next('ul');
-          if (mainmenu.hasClass('open')) { 
-            mainmenu.hide().removeClass('open');
-          }
-          else {
-            mainmenu.show().addClass('open');
-            if (settings.format === "dropdown") {
-              mainmenu.find('ul').show();
-            }
-          }
-        });
-        */
-
         cssmenu.find('li ul').parent().addClass('has-sub');
-
-        multiTg = function() {
-          cssmenu.find(".has-sub").prepend('<span class="submenu-button"></span>');
-          cssmenu.find('.submenu-button').on('click', function() {
-            $(this).toggleClass('submenu-opened');
-            if ($(this).siblings('ul').hasClass('open')) {
-              $(this).siblings('ul').removeClass('open').hide();
-            }
-            else {
-              $(this).siblings('ul').addClass('open').show();
-            }
-          });
-        };
-
-        if (settings.format === 'multitoggle') multiTg();
-        else cssmenu.addClass('dropdown');
-
         if (settings.sticky === true) cssmenu.css('position', 'fixed');
 
         resizeFix = function() {
-          if ($( window ).width() > 768) {
+          if ($( window ).width() > 1094) {
             cssmenu.find('ul').show();
           }
 
-          if ($(window).width() <= 768) {
+          if ($(window).width() <= 1094) {
             cssmenu.find('ul').hide().removeClass('open');
           }
         };
@@ -71,6 +37,7 @@
 
 $(document).ready(function(){
 
+	// Initialize the desktop navigation menu
 	$("#cssmenu").menumaker({
 	   title: "Menu",
 	   format: "multitoggle"
@@ -90,7 +57,10 @@ $(document).ready(function(){
     {
         window.location = '/Home/Login/';
     }
+    
+    // Set the '.welcome'-class elements' text to the user's name
     $(".welcome").text($.session.get('fullname'));
+    
     $.get('GetProjectNameForTopBar',{
         'user_id': $.session.get('user_id')
     },function(data){
@@ -109,6 +79,89 @@ $(document).ready(function(){
         $('#default_team_identity').append(message);
         $('#default_team_identity').val($.session.get('default_team_identity'));
     });
+    
+    // -------------- Mobile navigation ------------------ //
+	
+    // Create and attach a 'select' element
+    $('<select />').appendTo('#mobile-menu');
+	
+    // Add the default option in case everything else fails
+	$('<option />', {
+		'selected': 'selected',
+		'value': '#',
+		'text': 'Select a page...'
+	}).appendTo('#mobile-menu select');
+	
+	/*
+	 * Create the required 'option' elements and set their
+	 * 'value' and 'text' attributes accordingly, from the
+	 * desktop navigation menu
+	 */
+	$('#cssmenu ul a').each(function() {
+		var el = $(this);
+		if (el.parents('.has-sub').length && !(el.attr('href') === '#')) {
+			$('<option />', {
+				'value': el.attr('href'),
+				'text': el.text()
+			}).appendTo('nav select');
+		} else if (el.text() === '') {
+			$('<option />', {
+				'value': el.attr('href'),
+				'text': 'Home'
+			}).appendTo('nav select');
+		}
+		/* else if (el.parents('.has-sub').length == 1) {
+			$('<option />', {
+				'value': el.attr('href'),
+				'text': '- ' + el.text()
+			}).appendTo('nav select');
+		} else {
+			if (el.text().length !== 0) {
+				$('<option />', {
+					'value': el.attr('href'),
+					'text': el.text()
+				}).appendTo('nav select');	
+			}
+		}
+		*/
+	});
+	
+	/*
+	 * If any item from the menu is selected, direct the user's
+	 * browser to the requested page
+	 */
+	$('nav select').on('change', function() {
+		window.location = $(this).find('option:selected').val();
+	});
+	
+	/*
+	 * ~ Set the initial width of the header and navigation menu
+	 * ~ Attach an event listener, so that the width also changes
+	 *   as the user resizes the browser or for example: the user
+	 *   has changed the orientation from 'portrait' to 'landscape'
+	 */
+	$('nav select').css('width', ($(this).width() - 13));
+	$('.site-title').css('width', $(this).width());
+	$(window).on('resize', function(e) {
+		$('nav select').css('width', ($(this).width() - 13));
+		$('.site-title').css('width', $(this).width());
+	});
+	
+	/*
+	 * Set the selected menu as the 'selected' item
+	 * in the menu
+	 */
+	var pathname = window.location.pathname;
+	$('nav select option').each(function() {
+		var value = $(this).attr('value');
+		
+		if (value === pathname) {
+			$(this).attr('selected', 'selected');
+		}
+	});
+	
+	// -------------- Mobile navigation ------------------ //
+    
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val());
         if($(this).val()!=""){
