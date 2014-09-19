@@ -185,6 +185,8 @@ nav select {
 	border-top-left-radius: 12px;
 	border-bottom-right-radius: 12px;
 	outline: none;
+	padding: 10px;
+	font-size: 1.2em;
 }
 
 /** For smaller screens **/
