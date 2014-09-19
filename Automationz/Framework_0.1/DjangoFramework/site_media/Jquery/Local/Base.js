@@ -35,6 +35,11 @@ $(document).ready(function(){
 	
 	$("#cssmenu").slicknav();
 	
+	$("#team_project_menu").sidr({
+		name: 'team_project_panel',
+		side: 'right'
+	});
+	
 //	$(window).on('resize', function(e) {
 //		$("#cssmenu").slicknav();
 //	});

@@ -22,6 +22,8 @@
 	rel="stylesheet">
 <link href="/site_media/Jquery/slicknav/slicknav.css"
 	rel="stylesheet">
+<link href="/site_media/Jquery/sidr/jquery.sidr.light.css"
+	rel="stylesheet">
 
 <!-- Tooltip library -->
 <link rel="stylesheet" href="/site_media/hint.min.css">
@@ -60,6 +62,8 @@
 	src="/site_media/Jquery/Local/jquery.session.js"></script>
 <script type="text/javascript"
 	src="/site_media/Jquery/slicknav/jquery.slicknav.min.js"></script>
+<script type="text/javascript"
+	src="/site_media/Jquery/sidr/jquery.sidr.js"></script>
 
 <!--script src="/site_media/Jquery/js/highcharts.js"></script>
     <script src="/site_media/Jquery/js/exporting.js"></script-->
@@ -174,24 +178,6 @@
 							<li><a href="/Home/ManageTeam/"><i class="fa fa-users fa-fw fa-lg"></i> Manage Team</a></li>
 						</ul>
 					</li>
-					<li style="display: block; margin-top: 8px;">
-						<label>
-							<select>
-								<option selected>Project</option>
-								<option>Z Test</option>
-								<option>Automator</option>
-							</select>
-						</label>
-					</li>
-					<li style="display: block; margin-top: 8px; margin-left: 4px;">
-						<label>
-							<select>
-								<option selected>Team</option>
-								<option>Team Z</option>
-								<option>Team Automator</option>
-							</select>
-						</label>
-					</li>
 					<li class='has-sub last'
 						style="float: right; display: inline-block; height: 100%; vertical-align: middle;"><a
 						href='#'><span><img src="" id="user_identicon"
@@ -201,6 +187,7 @@
 						<ul>
 							<li><a id="user_id" rel="prefetch" href=""><i class="fa fa-user fa-fw fa-lg"></i> My Account</a></li>
 							<li><a href="/Home/Admin/"><i class="fa fa-cloud-download fa-fw fa-lg"></i> Git Pull</a></li>
+							<li><a id="team_project_menu" href="#team_project_panel"><i class="fa fa-desktop fa-fw fa-lg"></i> Team & Project</a></li>
 							<li><a id="contact_url" href="/Home/Contact/URL/"><i class="fa fa-envelope fa-fw fa-lg"></i> Contact us</a></il>
 							<li><a>--------------------------------</a></li>
 							<li><a href="/Home/Login/"><i class="fa fa-power-off fa-fw fa-lg"></i> Logout</a></li>
@@ -212,6 +199,33 @@
 			
 
 		</header>
+		
+		<div id="team_project_panel">
+			<h3>Project & Team selection</h3>
+			<div style="text-align: center; margin: 12px;">
+				<button onclick='$.sidr("toggle", "team_project_panel");' style="width: 100%; padding: 4px;">X</button>
+			</div>
+			<ul style="display: block;">
+				<li style="text-align: center;">
+					<label>
+						<select>
+							<option selected>Project</option>
+							<option>Z Test</option>
+							<option>Automator</option>
+						</select>
+					</label>
+				</li>
+				<li style="text-align: center;">
+					<label>
+						<select>
+							<option selected>Team</option>
+							<option>Team Z</option>
+							<option>Team Automator</option>
+						</select>
+					</label>
+				</li>
+			</ul>
+		</div>
 
 
 		<div id="outer_wrap">
