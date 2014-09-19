@@ -264,6 +264,28 @@ p.flip:ACTIVE,p.flip:HOVER {
 }
 
 /* =============== footer ================*/
+#mobile-back-button {
+	cursor: pointer;
+	margin: 4px;
+	padding: 6px;
+	font-weight: bold;
+}
+
+.mobile-footer {
+	display: none;
+}
+
+@media (max-width: 1094px) {
+	.mobile-footer {
+		position: absolute;
+	    left: 0;
+	    bottom: 0;
+	    height: 44px;
+	    width: 100%;
+	    display: block;
+	}
+}
+
 #footer {
     font-family: "Trebuchet MS", sans-serif;
     font-size: 0.75em;

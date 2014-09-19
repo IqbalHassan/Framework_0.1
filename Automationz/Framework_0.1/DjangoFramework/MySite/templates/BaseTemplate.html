@@ -213,9 +213,15 @@
 
 			<section>{% block content %} {% endblock %}</section>
 			<aside>{% block aside %} {% endblock %}</aside>
+			<!-- 
 			<footer>
 				{% block footer %} <a href="#" class="go-top">Go Top</a> {% endblock %}
 			</footer>
+			 -->
+			 <footer class='mobile-footer'>
+			 	<button id="mobile-back-button" onclick="window.history.back();"><i class="fa fa-reply fa-fw"></i></button>
+			 	<button id="mobile-back-button" onclick="window.history.forward();"><i class="fa fa-reply fa-fw fa-flip-horizontal"></i></button>
+			 </footer>
 		</div>
 	</div>
 	<script type="text/javascript">
