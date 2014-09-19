@@ -189,22 +189,24 @@ nav select {
 	font-size: 1.2em;
 }
 
+.slicknav_menu {
+	display: none;
+}
+
 /** For smaller screens **/
 @media (max-width: 1094px) {
 	#cssmenu { display: none; }
-
-	nav select {
-		display: inline-block;
+	
+	.slicknav_menu {
+		display: block;
 	}
 	
-	.site-title {
-		font-family: 'Oxygen Mono', Arial, sans-serif;
-		padding: 4px;
-		display: block;
-		text-align: center;
-		font-weight: bold;
-		font-size: 1.4em;
-		color: #666666;
+	.slicknav_menu select {
+		color: #000000;
+	}
+	
+	.slicknav_menu ul li a {
+		text-decoration: none;
 	}
 }
 
