@@ -3832,7 +3832,7 @@ body.avgrund-active {
 }
 /****************************************************************/
 
-/*** Scroll bar modification, for consistency ***/
+/*** Scroll bar modification, for consistency 
 ::-webkit-scrollbar {
     height: 10px;
     width: 12px;
@@ -3850,6 +3850,7 @@ body.avgrund-active {
 ::-webkit-scrollbar-corner {
     background: #CCC;
 }
+***/
 
 /* ===[ Pill ]=== */
 
