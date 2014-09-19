@@ -194,7 +194,7 @@ nav select {
 }
 
 /** For smaller screens **/
-@media (max-width: 1094px) {
+@media (max-width: 480px) {
 	#cssmenu { display: none; }
 	
 	.slicknav_menu {
