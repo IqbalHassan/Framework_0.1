@@ -7699,7 +7699,9 @@ def CreateBug(request):
     team=DB.GetData(Conn,query)
     query="select distinct user_names from permitted_user_list where user_level='manager'"
     manager=DB.GetData(Conn,query)
-    Dict={'project':project,'team':team,'manager':manager}
+    query="select label_name, label_color, label_id from labels order by label_name"
+    labels=DB.GetData(Conn,query,False)
+    Dict={'project':project,'team':team,'manager':manager,'labels':labels}
     Conn.close()
     return render_to_response('CreateBug.html',Dict)
 

@@ -14,6 +14,7 @@
 
     </div>
 
+    <input class="textbox" placeholder="Title Here" id="title">
 
     <div class="responsive-tabs" style="margin-left: 30px">
 
@@ -42,21 +43,21 @@
                     </td>
                 </tr>
                 -->
-                <tr>
+                <!--tr>
                     <td align="right"><b class="Text">Title:</b></td>
                     <td><input type="text" class="textbox" placeholder="Title Here" id="title"></td>
-                </tr>
+                </tr-->
                 <tr>
                     <td align="right"><b class="Text">Description:</b></td>
-                    <td><textarea  id="bug_desc" rows="5" cols="70" placeholder="Description for the task within 150 words"></textarea></td>
+                    <td><textarea id="bug_desc" rows="4" cols="60" placeholder="Description for the bug within 150 words"></textarea></td>
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Starting Date:</b></td>
-                    <td><input type="text"  class="textbox" id="start_date" placeholder="Starting Date Here"></td>
+                    <td><input class="textbox" id="start_date" placeholder="Starting Date Here"></td>
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">End Date:</b></td>
-                    <td><input type="text"  class="textbox" id="end_date" placeholder="Completion Date Here"></td>
+                    <td><input class="textbox" id="end_date" placeholder="Completion Date Here"></td>
                 </tr>
                 <!--tr>
                     <td align="right"><b class="Text">Created By:</b></td>
@@ -82,7 +83,7 @@
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Milestone:</b></td>
-                    <td><input type="text" id="milestone_list" class="textbox" placeholder="Milestone Here"></td>
+                    <td><input id="milestone_list" class="textbox" placeholder="Milestone Here"></td>
                     <td><table><tr id="milestone"></tr></table></td>
                 </tr>
                 <tr>
@@ -103,24 +104,14 @@
         <h2>Test Case</h2>
         <div class="tabs-div" align="left" style="margin-top: 30px;">
 
-            <div align="center">
-                <input id="search_case" class="textbox" placeholder="Search Test Case"/>
-                <br/><br/>
 
-                <table>
-                    <thead>
-                        <th></th>
-                        <th>Test Case</th>
-                        <th></th>
-                        <th>Task</th>
-                        <th></th>
-                        <th>Requirement</th>
-                    </thead>
-                    <tbody id="linking">
+            <input class="search_case textbox" placeholder="Search Test Case"/>
 
-                    </tbody>
-                </table>
-            </div>
+            <br><br>
+            <table class="linking one-column-emphasis" style="float: left;margin-left: 10%">
+
+            </table>
+
         </div>
 
     </div>

@@ -102,7 +102,7 @@ $(document).ready(function(){
 
 function TestCaseLinking(){
 
-    $("#search_case").autocomplete({
+    $(".search_case").autocomplete({
 
         source:function(request,response){
             $.ajax({
@@ -120,15 +120,23 @@ function TestCaseLinking(){
 
             var value = ui.item[1]
 
-            $("#linking").append('<tr><td><img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
-                + '<td class="Text selected">'
+            $(".linking").append('<tr>' +
+                '<td><img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td>'
                 + value
-                + "&nbsp"
-                + '</td></tr>');
+                + "</td>" +
+                "</tr>");
+
+            //$(".search_case").remove();
+
+            /*$("#test_cases").append('<tr class="linking">' +
+                '<td><input class="search_case textbox" placeholder="Search Test Case" style="width: auto" /></td>' +
+            '</tr>');
+            TestCaseLinking();*/
 
             //$("#tester th").css('display', 'block');
 
-            $("#search_case").val("");
+            $(".search_case").val("");
             return false;
 
         }
@@ -139,7 +147,7 @@ function TestCaseLinking(){
             .appendTo( ul );
     };
 
-    $("#search_case").keypress(function(event) {
+    $(".search_case").keypress(function(event) {
         if (event.which == 13) {
 
             event.preventDefault();
