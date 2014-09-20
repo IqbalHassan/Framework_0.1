@@ -103,4 +103,3 @@ def FormatSeconds(sec):
         minutes, seconds = divmod(remainder, 60)
         duration_formatted = '%d:%02d:%02d' % (hours, minutes, seconds)
         return duration_formatted
-
