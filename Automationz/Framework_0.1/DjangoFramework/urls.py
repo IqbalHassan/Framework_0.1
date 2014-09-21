@@ -21,6 +21,8 @@ urlpatterns = patterns('',
     url(r'^Home/.*/GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/Contact/$', contact_page),
     url(r'^Home/Contact/URL/(?P<url>.+)/$', contact_page_with_url),
+    url(r'^Home/FileUploader/$', FileUploadTest),
+    url(r'^Home/FileUploadSuccess/$', FileUploadTestOnSuccess),
     
     url(r'^Home/select2/$', select2),
         

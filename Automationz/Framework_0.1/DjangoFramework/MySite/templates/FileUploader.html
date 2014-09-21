@@ -1,0 +1,12 @@
+{% extends 'BaseTemplate.html' %}
+{% block title %} Manage Test Cases {% endblock %}
+{% block content %}
+
+<h2>File Upload</h2>
+<form method="POST" enctype="multipart/form-data" action='/Home/FileUploader/'>
+{% csrf_token %}
+	<input type="file" name="uploaded_file">
+	<button name="upload_file_button">Upload</button>
+</form>
+
+{% endblock %}

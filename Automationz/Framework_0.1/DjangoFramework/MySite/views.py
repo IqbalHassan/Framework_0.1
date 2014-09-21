@@ -34,6 +34,7 @@ from django.views.decorators.csrf import csrf_protect
 from psycopg2.extras import DictCursor
 
 from CommonUtil import TimeStamp
+from FileUploader import FileUploader
 import DataBaseUtilities as DB
 from TestCaseCreateEdit import LogMessage
 import TestCaseCreateEdit
@@ -9417,5 +9418,49 @@ def get_all_dependency(request):
                 Conn.close()
                 query="select distinct dependecy from dependency_management"
     except Exception,e:
+<<<<<<< HEAD
         PassMessasge(sModuleInfo,e,3)
         
+=======
+        PassMessasge(sModuleInfo, e,3)
+
+'''
+You must use @csrf_protect before any 'post' handling views
+You must also add {% csrf_token %} just after the <form> tag as in:
+
+    <form method="POST" enctype="multipart/form-data" action='/Home/FileUploader/'>
+    {% csrf_token %}
+        <input type="file" name="uploaded_file">
+        <button name="upload_file_button">Upload</button>
+    </form>
+
+Also, ensure that you have set the attribute: enctype="multipart/form-data" in the form
+'''
+@csrf_protect
+def FileUploadTest(request):
+    if request.method == 'POST':
+        # The path for saving the file
+        path = os.path.join(os.getcwd(), 'site_media', 'file_uploads')
+
+        '''
+        Create the FileUploader object by sending the following parameters:
+        ~ 'request' - The current request object of the view
+        ~ 'name_of_html_file_element' - See the comment before the view if you don't understand what I'm talking about
+        ~ 'path' - The path to save the file to
+        '''
+        file_uploader = FileUploader(request, 'uploaded_file', path)
+        
+        '''
+        The FileUploader.upload_file() returns a boolean indicating wheather it was a success or not
+        '''
+        if file_uploader.upload_file():
+            return HttpResponseRedirect('/Home/FileUploadSuccess/')
+        else:
+            print "Failed to upload file."
+
+    c = RequestContext(request, {})
+    return render_to_response('FileUploader.html', c)
+
+def FileUploadTestOnSuccess(request):
+    return render_to_response('FileUploadSuccess.html', {})
+>>>>>>> 5314ea4b2c11c077c86bd7c02fbad1004187ace8
