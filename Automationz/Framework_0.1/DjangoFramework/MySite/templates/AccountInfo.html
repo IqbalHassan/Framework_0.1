@@ -58,6 +58,26 @@
                 </tr>
             </table>
         </div>
+        <h2>Profile Picture</h2>
+        <div class="tabs-div" align="center">
+        	<div>
+        		<h2 style="font-weight: italic; font-family: 'Oxygen';">Current Profile Picture</h2>
+        		<img id="profile_picture" src="" width="128" height="128" title="Profile Picture">
+        	</div>
+        	<hr>
+        	<div>
+	        	<h2 style="font-weight: italic; font-family: 'Oxygen';">Upload Profile Picture</h2>
+	        	<form method="POST" enctype="multipart/form-data" action='/Home/UserInfo/UploadProfilePicture/' id="uploadForm">
+				{% csrf_token %}
+					<input type='hidden' name='username' value='{{ Username }}'>
+					<input type='hidden' name='user_id' value='{{ UserID }}'>
+					<input type="file" name="uploaded_file" id="file_field">
+					<button id="upload_file_button" class="button primary">Upload</button>
+				</form>
+			</div>
+			<hr>
+			<button id="remove_profile_picture" class="button primary">Remove profile picture</button>
+        </div>
     </div>
 </article>
 <script>
@@ -69,6 +89,40 @@
 <script>
     $(document).ready(function() {
         RESPONSIVEUI.responsiveTabs();
+
+    	var success = "{{ success }}";
+    	if (success === 'successful') {
+    		alertify.success("Profile picture upload successful.<br><span style='font-size: 0.8em;'>Click to dismiss</span>", 0);
+    	} else if (success === 'unsuccessful') {
+    		alertify.error("Profile picture upload unsuccessful.<br><span style='font-size: 0.8em;'>Click to dismiss</span>", 0);
+    	}
+    	
+    	window.is_valid_type = false;
+    	$('#file_field').on('change', function() {
+    		var ext = $(this).val().split('.').pop().toLowerCase();
+            if($.inArray(ext, ['gif','png','jpg','jpeg']) == -1) {
+                alertify.error("Invalid file type!");
+                window.is_valid_type = false;
+            } else {
+            	window.is_valid_type = true;
+            }
+    	});
+    	
+    	$('#upload_file_button').on('click', function(e) {
+    		if (window.is_valid_type === false) {
+    			e.preventDefault();
+    		}
+    	});
+    	
+    	var full_name = $.session.get('fullname') || '';
+        var username = $.session.get('username') || '';
+        $.get('/Home/UserInfo/ServeProfilePictureURL/', {'username': username, 'full_name': full_name}, function(data, status) {
+			if (status === 'success') {
+		        $("#profile_picture").attr("src", data);
+			} else {
+				alertify.error("Could not fetch profile picture.<br><span style='font-size: 0.8em;'>Click to dismiss</span>");
+			}
+		});
     });
 </script>
 {% endblock %}
