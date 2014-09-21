@@ -15,10 +15,14 @@ class FileUploader():
         self.request = request
         self.form_file_target_name = form_file_target_name
         self.path = path
+        self.file = self.request.FILES.get(self.form_file_target_name, '')
     
     def upload_file(self):
-        upload_handled = self.__handle_file_upload(self.request.FILES.get(self.form_file_target_name, ''), self.path)
+        upload_handled = self.__handle_file_upload(self.file, self.path)
         return upload_handled
+    
+    def file_name(self):
+        return self.file.name
     
     def __handle_file_upload(self, f, path_to_save):
         if f == '':
