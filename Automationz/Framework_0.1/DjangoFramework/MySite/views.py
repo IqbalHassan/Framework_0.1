@@ -9435,6 +9435,45 @@ def get_all_dependency(request):
     except Exception,e:
         PassMessasge(sModuleInfo,e,3)
 
+def get_all_names_dependency(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                selected_dependency=request.GET.get(u'selected_dependency','')
+                query="select distinct name,name from dependency_values dv,dependency_management dm where dv.reference_id=dm.id and dm.project_id='%s' and dm.team_id=%d and dm.dependency=%d"%(project_id,int(team_id),int(selected_dependency))
+                print query
+                Conn=GetConnection()
+                name_list=DB.GetData(Conn,query,False)
+                result={'name_list':name_list}
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3)
+        
+def get_all_version_dependency(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                selected_dependency=request.GET.get(u'selected_dependency','')
+                selected_name=request.GET.get(u'selected_name','')
+                query="SELECT bit, array_to_string(array_agg(distinct version),',') AS version from dependency_management dm, dependency_values dv where dm.id=dv.reference_id and dv.reference_id=%d and name='%s' and dm.project_id='%s' and dm.team_id=%d GROUP BY dv.reference_id,dv.name,dv.bit"%(int(selected_dependency),selected_name,project_id,int(team_id))   
+                print query
+                Conn=GetConnection()
+                name_list=DB.GetData(Conn,query,False)
+                result={'version_list':name_list}
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3)
+            
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:

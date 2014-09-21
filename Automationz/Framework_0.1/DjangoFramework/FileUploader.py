@@ -25,7 +25,8 @@ class FileUploader():
         return self.file.name
     
     def __handle_file_upload(self, f, path_to_save):
-        if f == '':
+        # Return False if the file name is too big
+        if len(f.name) < 3 or len(f.name) > 100:
             return False
         
         path_to_file = os.path.join(path_to_save, f.name)
