@@ -114,6 +114,30 @@ function get_all_dependency(project_id,team_id){
         project_id:project_id,
         team_id:team_id
     },function(data){
-
+        var team_name=data['team_name'][0];
+        $('#team_id').html('<b>'+project_id+'<br>'+team_name+'</b>');
+        $('#dependency_tab').html(populate_upper_div(data['dependency_list']));
+        $('#unused_tab').html(populate_lower_div(data['unused_list']));
     });
+}
+function populate_lower_div(array_list){
+    var message="";
+    message+='<table width="100%" class="one-column-emphasis">';
+    for(var i=0;i<array_list.length;i++){
+        message+='<tr>';
+        message+='<td>'+array_list[i][1]+'</td>';
+        message+='<td value="'+array_list[i][0]+'"><a class="button primary">Add</a></td>';
+        message+='</tr>';
+    }
+    message+='</table>';
+    return message;
+}
+function populate_upper_div(array_list){
+    var message="";
+    message+='<table width="100%" class="one-column-emphasis">';
+    for(var i=0;i<array_list.length;i++){
+        message+=('<tr><td class="dependency" value="'+array_list[i][0]+'">'+array_list[i][1]+'</td></tr>');
+    }
+    message+='</table>';
+    return message;
 }

@@ -9412,17 +9412,28 @@ def get_all_dependency(request):
             if request.is_ajax():
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
-                query="select distinct dependency from dependency_management where project_id='%s' and team_id=%d"%(project_id,team_id)
+                query="select distinct d.id,d.dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
                 Conn=GetConnection()
-                dependency_list=DB.GetData(Conn,query)
+                dependency_list=DB.GetData(Conn,query,False)
                 Conn.close()
-                query="select distinct dependecy from dependency_management"
+                query="select distinct d.id,d.dependency_name from dependency d except (select distinct d.id,d.dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d)"%(project_id,int(team_id))
+                Conn=GetConnection()
+                unused_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                team_query="select value from config_values where type='Team' and id=%d"%(int(team_id))
+                Conn=GetConnection()
+                team_name=DB.GetData(Conn,team_query)
+                Conn.close()
+                result={
+                    'dependency_list':dependency_list,
+                    'unused_list':unused_list,
+                    'team_name':team_name
+                }   
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
     except Exception,e:
-<<<<<<< HEAD
         PassMessasge(sModuleInfo,e,3)
-        
-=======
-        PassMessasge(sModuleInfo, e,3)
 
 '''
 You must use @csrf_protect before any 'post' handling views
@@ -9463,4 +9474,3 @@ def FileUploadTest(request):
 
 def FileUploadTestOnSuccess(request):
     return render_to_response('FileUploadSuccess.html', {})
->>>>>>> 5314ea4b2c11c077c86bd7c02fbad1004187ace8
