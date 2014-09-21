@@ -10,7 +10,7 @@ def testConnection(Conn):
         time.sleep(1)
         Conn=GetConnection()
 
-def CreateNewBug(title,status,description,start_date,end_date,team,priority,milestone,project_id,user_name,testers):
+def CreateNewBug(title,status,description,start_date,end_date,team,priority,milestone,project_id,user_name,testers,test_cases):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         Conn=GetConnection()
@@ -43,6 +43,14 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
         }
         testConnection(Conn)
         result = DB.InsertNewRecordInToTable(Conn,"bugs",**Dict)
+        
+        if test_cases[0] != '':
+            for each in test_cases:
+                cases_Dict={
+                           'bug_id':bug_id,
+                           'tc_id':each.strip()
+                }
+                new_result=DB.InsertNewRecordInToTable(Conn,"bug_testcases_map",**cases_Dict)
         #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
         if result==True:
             #add this line in the code from LogModule import PassMessage
