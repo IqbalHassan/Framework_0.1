@@ -121,7 +121,7 @@ function TestCaseLinking(){
             var value = ui.item[1]
 
             $(".linking").append('<tr>' +
-                '<td><img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                //'<td><img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
                 + '<td>'
                 + value
                 + "</td>" +
@@ -154,12 +154,12 @@ function TestCaseLinking(){
 
         }
     });
-    $("#DeleteCase").live('click', function() {
+    /*$("#DeleteCase").live('click', function() {
 
         $(this).parent().next().remove();
         $(this).remove();
 
-    });
+    });*/
 }
 
 function ButtonSet(){
