@@ -1,7 +1,7 @@
 /**
  * Created by Admin on 9/9/14.
  */
-$(document).ready(function(){
+/*$(document).ready(function(){
     get_all_dependency();
     set_button_behaviour();
 });
@@ -101,5 +101,19 @@ function set_button_behaviour(){
         },function(data){
 
         });
+    });
+}*/
+
+$(document).ready(function(){
+    var project_id= $.session.get('project_id').trim();
+    var team_id= $.session.get('default_team_identity').trim();
+    get_all_dependency(project_id,team_id);
+});
+function get_all_dependency(project_id,team_id){
+    $.get('get_all_dependency',{
+        project_id:project_id,
+        team_id:team_id
+    },function(data){
+
     });
 }

@@ -9404,88 +9404,18 @@ def assign_settings(request):
     except Exception,e:
         PassMessasge(sModuleInfo, e, 3)
         
-def enlist_new_dependency(request):
-    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
-    try:
-        if request.is_ajax():
-            if request.method=='GET':
-                dependency=request.GET.get(u'dependency','')
-                project_id=request.GET.get(u'project_id','')
-                team_id=request.GET.get(u'team_id','')
-                #check for the existing 
-                query="select count(*) from dependency_management where project_id='%s' and team_id=%d and dependency='%s'"%(project_id,int(team_id),dependency)
-                Conn=GetConnection()
-                count=DB.GetData(Conn,query)
-                Conn.close()
-                if isinstance(count,list):
-                    if len(count)==1 and count[0]==0:
-                        #have to insert 
-                        Dict={
-                              'project_id':project_id,
-                              'team_id':int(team_id),
-                              'dependency':dependency
-                        }
-                        Conn=GetConnection()
-                        result=DB.InsertNewRecordInToTable(Conn,"dependency_management",**Dict)
-                        Conn.close()
-                        if result==True:
-                            PassMessasge(sModuleInfo, "(%s,%d,%s) tuple is inserted in the database"%(project_id,int(team_id),dependency),1)
-                            message=True
-                        else:
-                            PassMessasge(sModuleInfo, "(%s,%d,%s) tuple is inserted in the database"%(project_id,int(team_id),dependency),3)
-                            message=True
-                        result=simplejson.dumps(message)
-                        return HttpResponse(result,mimetype='application/json')    
-                    else:
-                        if len(count)==1 and count[0]>0:
-                            #no need to insert
-                            PassMessasge(sModuleInfo,"(%s, %d,%s) tuple is already in the dependency_management"%(project_id,int(team_id),dependency))
-                else:
-                    PassMessasge(sModuleInfo,"Query Error in the dependency_management",3) 
-                    
-            result=simplejson.dumps(dependency)
-            return HttpResponse(result,mimetype='application/json')
-    except Exception ,e:
-        PassMessasge(sModuleInfo,e,3)
 def get_all_dependency(request):
     sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
     try:
-        if request.is_ajax():
-            if request.method=='GET':
+        if request.method=='GET':
+            if request.is_ajax():
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
-                final_list=[]
-                query="select id,dependency from dependency_management where project_id='%s' and team_id=%d"%(project_id,int(team_id))
+                query="select distinct dependency from dependency_management where project_id='%s' and team_id=%d"%(project_id,team_id)
                 Conn=GetConnection()
-                dependency_list=DB.GetData(Conn,query,False)
+                dependency_list=DB.GetData(Conn,query)
                 Conn.close()
-                if isinstance(dependency_list,list):
-                    for each in dependency_list:
-                        query="select distinct name from dependency_values where reference_id=%d"%each[0]
-                        Conn=GetConnection()
-                        name_list=DB.GetData(Conn,query)
-                        Conn.close()
-                        if name_list:
-                            dependency_version=[]
-                            for eachitem in name_list:
-                                query="SELECT bit, array_to_string(array_agg(distinct version),',') AS version from dependency_management dm, dependency_values dv where dm.id=dv.reference_id and dv.reference_id=%d and name='%s' GROUP BY dv.reference_id,dv.name,dv.bit"%(each[0],eachitem)
-                                Conn=GetConnection()
-                                version_list=DB.GetData(Conn,query,False)
-                                Conn.close()
-                                if version_list:
-                                    dependency_version.append((eachitem,version_list))
-                                else:
-                                    dependency_version.append((eachitem,[]))
-                            final_list.append((each[1],dependency_version))
-                        else:
-                            final_list.append((each[1],[]))
-                    print final_list
-                    result=simplejson.dumps(final_list)
-                    PassMessasge(sModuleInfo,"All dependency is taken out from dependency_management", 1)
-                else:
-                    result=simplejson.dumps(dependency_list)
-                    PassMessasge(sModuleInfo,"No dependency is taken out successfully", 3)
-                return HttpResponse(result,mimetype='application/json')    
+                query="select distinct dependecy from dependency_management"
     except Exception,e:
-        PassMessasge(sModuleInfo, e,3)
-    
+        PassMessasge(sModuleInfo,e,3)
+        
