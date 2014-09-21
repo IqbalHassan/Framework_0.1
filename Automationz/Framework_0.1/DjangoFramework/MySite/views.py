@@ -9465,6 +9465,12 @@ def FileUploadTest(request):
         The FileUploader.upload_file() returns a boolean indicating wheather it was a success or not
         '''
         if file_uploader.upload_file():
+            '''
+            You can get the file name of the uploaded file once it has been uploaded successfully
+            NOTE: Always call this method once you've confirmed that the file has been uploaded,
+                  otherwise, it may not have any file name and you may get unexpected results
+            '''
+            file_name = file_uploader.file_name()
             return HttpResponseRedirect('/Home/FileUploadSuccess/')
         else:
             print "Failed to upload file."
