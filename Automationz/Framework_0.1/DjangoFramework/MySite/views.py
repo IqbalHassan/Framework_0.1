@@ -65,6 +65,13 @@ except ImportError:
     import json
 
 
+'''
+Global variables
+'''
+path_to_uploaded_files = os.path.join(os.getcwd(), 'site_media', 'file_uploads')
+
+
+
 # import DjangoConstants
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
@@ -9259,7 +9266,7 @@ def SubmitNewTask(request):
     return HttpResponse(results,mimetype='application/json')    
 def ViewTaskPage(request,project_id):
     return HttpResponse(project_id)    
-def GetProfileInfo(request,user_id):
+def GetProfileInfo(request, user_id, success):
     try:
         query="select distinct user_id,full_name,user_level,username from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'"%user_id
         Conn=GetConnection()
@@ -9290,6 +9297,10 @@ def GetProfileInfo(request,user_id):
             testConnection(Conn)
             team_id=DB.GetData(Conn,query,False)
             temp_dict.update({'teams':team_id})
+            
+        temp_dict.update({'success': success})
+        
+        temp_dict = RequestContext(request, temp_dict)
         return render_to_response("AccountInfo.html",temp_dict)
     except Exception,e:
         print "Exception:",e
@@ -9495,10 +9506,11 @@ def FileUploadTest(request):
         '''
         Create the FileUploader object by sending the following parameters:
         ~ 'request' - The current request object of the view
-        ~ 'name_of_html_file_element' - See the comment before the view if you don't understand what I'm talking about
-        ~ 'path' - The path to save the file to
+        ~ name_of_html_file_element: string - See the comment before the view if you don't understand what I'm talking about
+        ~ path: string - The path to save the file to
+        ~ (extensions): tuple - You can also supply extensions if you want (strongly recommended)
         '''
-        file_uploader = FileUploader(request, 'uploaded_file', path)
+        file_uploader = FileUploader(request, 'uploaded_file', path_to_uploaded_files, ('png', 'jpg', 'jpeg', 'gif'))
         
         '''
         The FileUploader.upload_file() returns a boolean indicating wheather it was a success or not
@@ -9510,12 +9522,101 @@ def FileUploadTest(request):
                   otherwise, it may not have any file name and you may get unexpected results
             '''
             file_name = file_uploader.file_name()
-            return HttpResponseRedirect('/Home/FileUploadSuccess/')
+            return HttpResponseRedirect('/Home/FileUploadSuccess/True/')
         else:
-            print "Failed to upload file."
+            return HttpResponseRedirect('/Home/FileUploadSuccess/False/')
 
     c = RequestContext(request, {})
     return render_to_response('FileUploader.html', c)
 
-def FileUploadTestOnSuccess(request):
-    return render_to_response('FileUploadSuccess.html', {})
+def FileUploadTestOnSuccess(request, success):
+    print success
+    if success == 'True':
+        c = {'success': 'Successful'}
+    else:
+        c = {'success': 'Unsuccessful'}
+    return render_to_response('FileUploadSuccess.html', c)
+
+@csrf_protect
+def UploadProfilePicture(request):
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        user_id = request.POST.get('user_id', '')
+        path = os.path.join(path_to_uploaded_files, 'profile_pictures', username)
+    
+        if username == '':
+            return HttpResponseRedirect('/Home/User/%s/unsuccessful/' % user_id)
+        else:
+            if not os.path.isdir(path):
+                try:
+                    os.makedirs(path)
+                except OSError as e:
+                    if e.errno == errno.EEXIST:  # This case should never be approached
+                        print "Directory already exists"
+                    else:
+                        print "Could not make directory: %s" % path
+                    
+                    return HttpResponseRedirect('/Home/User/%s/unsuccessful/' % user_id)
+        
+        file_uploader = FileUploader(request, 'uploaded_file', path)
+        if file_uploader.upload_file():
+            file_name = file_uploader.file_name()
+            query = '''
+            UPDATE user_info SET profile_picture_name='%s' WHERE username='%s'
+            ''' % (file_name, username)
+            
+            Conn = GetConnection()
+            cur = Conn.cursor()
+            
+            try:
+                cur.execute(query)
+                Conn.commit()
+            except Exception as e:
+                print "###########################"
+                print "Transaction unsuccessful:", e
+                print "###########################"
+                return HttpResponseRedirect('/Home/User/%s/unsuccessful/' % user_id)
+            finally:
+                Conn.close()
+            
+        else:
+            print "Could not upload file"        
+            return HttpResponseRedirect('/Home/User/%s/unsuccessful/' % user_id)
+        
+        return HttpResponseRedirect('/Home/User/%s/successful/' % user_id)
+    
+    return HttpResponseRedirect('/Home/User/%s/' % user_id)
+
+def ServeProfilePictureURL(request):
+    if request.method == 'GET' and request.is_ajax():
+        username = request.GET.get('username', '')
+        full_name = request.GET.get('full_name', '')
+        
+        if username == '':
+            return HttpResponse('https://sigil.cupcake.io/%s/.png?w=24' % full_name)
+        
+        query = '''
+        SELECT profile_picture_name FROM user_info WHERE username='%s'
+        ''' % username
+
+        Conn = GetConnection()
+        cur = Conn.cursor()
+        
+        try:
+            cur.execute(query)
+            data = cur.fetchone()
+            file_name = data[0]
+            if file_name == '' or (not file_name):
+                return HttpResponse('https://sigil.cupcake.io/%s/.png?w=24' % full_name)
+            
+            # Path to profile pictures
+            path = '/site_media/file_uploads/profile_pictures/%s/%s' % (username, file_name)
+            
+            return HttpResponse(path)
+        
+        except Exception as e:
+            print e
+        finally:
+            Conn.close()
+    
+    return HttpResponse('')
