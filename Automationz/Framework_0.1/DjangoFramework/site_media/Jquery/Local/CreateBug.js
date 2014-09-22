@@ -28,6 +28,11 @@ $(document).ready(function(){
         });*/
         var status = $('#status').val();
 
+        var test_cases=[];
+        $('input[name="test_cases"]:checked').each(function(){
+            test_cases.push($(this).val());
+        });
+
 
         if(title!=""){
             $.get("LogNewBug/",{
@@ -41,7 +46,8 @@ $(document).ready(function(){
                 priority:priority.trim(),
                 milestone:milestone.trim(),
                 project_id: project.trim(),
-                user_name:$('#user_name').text().trim()
+                user_name:$('#user_name').text().trim(),
+                test_cases:test_cases.join("|")
                 //created_by:creator.trim()
             },function(data){
                 bug_notify("Bug Created!", "Bug with title '"+title+"' is created!","/site_media/noti.ico");
@@ -118,12 +124,16 @@ function TestCaseLinking(){
         },
         select : function(event, ui) {
 
-            var value = ui.item[1]
+            var value = ui.item[0]
+            var name = ui.item[1]
 
             $(".linking").append('<tr>' +
-                //'<td><img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
                 + '<td>'
+                + '<input type="checkbox" checked="true" name="test_cases" value="'
                 + value
+                + '"/>'
+                + name
                 + "</td>" +
                 "</tr>");
 
@@ -154,12 +164,12 @@ function TestCaseLinking(){
 
         }
     });
-    /*$("#DeleteCase").live('click', function() {
+    $("#DeleteCase").live('click', function() {
 
         $(this).parent().next().remove();
         $(this).remove();
 
-    });*/
+    });
 }
 
 function ButtonSet(){

@@ -98,9 +98,15 @@
         /************************
          * User identicons
          ************************/
-        var username = $("#user_name").text().trim();
-        var source_url = "https://sigil.cupcake.io/" + username + ".png?w=24";
-        $("#user_identicon").attr("src", source_url);
+        var full_name = $.session.get('fullname') || '';
+        var username = $.session.get('username') || '';
+        $.get('/Home/UserInfo/ServeProfilePictureURL/', {'username': username, 'full_name': full_name}, function(data, status) {
+			if (status === 'success') {
+		        $("#user_identicon").attr("src", data);
+			} else {
+				alertify.error("Could not fetch profile picture.<br><span style='font-size: 0.8em;'>Click to dismiss</span>");
+			}
+		});
     });
 </script>
 
@@ -121,38 +127,42 @@
 			<div id='cssmenu'>
 				<ul>
 					<li><a href='/Home/Dashboard/'><span><i class="fa fa-home fa-fw fa-lg"></i></span></a></li>
+					
 					<li class='has-sub'><a href='#'><span><i class="fa fa-wrench fa-fw fa-lg"></i> Testing</span></a>
 						<ul>
-							<li class='has-sub'><a href='/Home/RunTest/'><span><i class="fa fa-rocket fa-fw fa-lg"></i> Test Deployment</span></a>
+							<li><a href='/Home/RunTest/'><span><i class="fa fa-rocket fa-fw fa-lg"></i> Deployment</span></a></li>
+							<li><a href='/Home/Results/'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Result & Execution</span></a></li>
+		
+							<li class='has-sub'><a href='#'><span><i class="fa fa-file-text-o fa-fw fa-lg"></i> Test Case</span></a>
 								<ul>
-									<li><a href='#'><span>Sub Product</span></a></li>
-									<li class='last'><a href='#'><span>Sub Product</span></a></li>
+									<li><a href='/Home/ManageTestCases/CreateNewTestCase/'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
+									<li><a href='/Home/ManageTestCases/'><span><i class="fa fa-sitemap fa-fw fa-lg"></i> View & Organize</span></a></li>
+									<li><a href='/Home/ManageTestCases/SearchEdit/'><span><i class="fa fa-search fa-fw fa-lg"></i> Search </span></a></li>
+									<li><a href='/Home/Analysis/'><span><i class="fa fa-history fa-fw fa-lg"></i> Run History</span></a></li>
+									<li><a href='#'><span><i class="fa fa-edit fa-fw fa-lg"></i> Batch Update</span></a></li>
+									<li class='last'><a href="/Home/ManageTestCases/SearchEdit-Dev/"><span> <i class="fa fa-bomb fa-fw fa-lg"></i> Search (dev)</span></a></li>
 								</ul></li>
-							<li><a href='/Home/Results/'><span><i
-										class="fa fa-random fa-fw fa-lg"></i> Result & Execution</span></a></li>
-							<li><a href='/Home/ManageTestCases/CreateNewTestCase/'><span><i
-										class="fa fa-file-text fa-fw fa-lg"></i> Create new Test Case(s)</span></a></li>
-							<li><a href='/Home/ManageTestCases/SearchEdit/'><span><i
-										class="fa fa-files-o fa-fw fa-lg"></i> Copy/Edit Test Case(s)</span></a></li>
-							<li class='has-sub'><a href='/Home/ManageTestCases/'><span><i class="fa fa-camera-retro fa-fw fa-lg"></i> View & Organize Test Case(s)</span></a>
-								<ul>
-									<li><a href='#'><span>Sub Product</span></a></li>
-									<li class='last'><a href='#'><span>Sub Product</span></a></li>
-								</ul></li>
-							<li><a href='/Home/ManageTestCases/CreateStep/'><span><i class="fa fa-pencil fa-fw fa-lg"></i> Create/Test Step</span></a></li>
-							<li><a href='/Home/ManageSetTag/'><span><i class="fa fa-tags fa-fw fa-lg"></i> Manage Set & Tag</span></a></li>
-							<li><a href='/Home/ManageTestCases/SearchEdit-Dev/'><span><i class="fa fa-search fa-fw fa-lg"></i> Search/Edit (dev)</span></a></li>
+							
+							<li><a href='/Home/ManageTestCases/CreateStep/'><span><i class="fa fa-paw fa-fw fa-lg"></i> Create/Update Step</span></a></li>
+							
+							
+							<li><a href='/Home/ManageSetTag/'><span><i class="fa fa-list fa-fw fa-lg"></i> Manage Set</span></a></li>
+							
 						</ul>
 					</li>
-					<li class='has-sub'><a href='#'><span><i class="fa fa-tasks fa-fw fa-lg"></i> Tasks</span></a>
+					<li class='has-sub'><a href='#'><span><i class="fa fa-tasks fa-fw fa-lg"></i> Task</span></a>
 						<ul>
 							<li><a href='/Home/ManageTask/'><span><i class="fa fa-book fa-fw fa-lg"></i> Manage Task(s)</span></a></li>
 						</ul></li>
+					
+					
 					<li class='has-sub'><a href='#'><span><i class="fa fa-bug fa-fw fa-lg"></i> Bug</span></a>
 						<ul>
 							<li><a href="/Home/ManageBug/"><i class="fa fa-paw fa-fw fa-lg"></i> Manage Bug</a></li>
 						</ul></li>
-					<li class='has-sub'><a href='#'><span><i class="fa fa-calculator fa-fw fa-lg"></i> Requirements</span></a>
+					
+					
+					<li class='has-sub'><a href='#'><span><i class="fa fa-calculator fa-fw fa-lg"></i> Requirement</span></a>
 						<ul>
 							<li><a href="/Home/ManageRequirement/"><i class="fa fa-anchor fa-fw fa-lg"></i> Manage Requirements</a></li>
 						</ul>
@@ -169,7 +179,7 @@
 					<li class='has-sub'><a href='#'><span><i class="fa fa-briefcase fa-fw fa-lg"></i> Manage</span></a>
 						<ul>
 							<li><a href="/Home/AssignSettings/"><i
-									class="fa fa-compass fa-fw fa-lg"></i> Assign Team Wise Settings</a></li>
+									class="fa fa-compass fa-fw fa-lg"></i> Environmental Settings</a></li>
 							<li><a href="/Home/ManageTestCases/DeleteExisting/"><i class="fa fa-trash fa-fw fa-lg"></i> Delete Test Case(s)</a></li>
 							<li><a href="/Home/ManageStep/"><i class="fa fa-ban fa-fw fa-lg"></i> Delete Test Step(s)</a></li>
 							<li><a href="/Home/FeaDri/"><i class="fa fa-plug fa-fw fa-lg"></i> Feature(s) & Driver(s)</a></li>
@@ -180,9 +190,8 @@
 					</li>
                     <li class='has-sub last'
 						style="float: right; display: inline-block; height: 100%; vertical-align: middle;"><a
-						href='#'><span><img src="" id="user_identicon"
-								style="vertical-align: middle;"></i>
-								<span id="user_name"
+						href='#'><span><img src="" id="user_identicon" width="24" height="24" style="vertical-align: middle;"></i>
+								<span id="full_name"
 								class="welcome">User</span></span></a>
 						<ul>
 							<li><a id="user_id" rel="prefetch" href=""><i class="fa fa-user fa-fw fa-lg"></i> My Account</a></li>
@@ -230,7 +239,7 @@
 
 			<section>{% block content %} {% endblock %}</section>
 			<aside>{% block aside %} {% endblock %}</aside>
-			<!-- 
+			<!--
 			<footer>
 				{% block footer %} <a href="#" class="go-top">Go Top</a> {% endblock %}
 			</footer>
@@ -244,11 +253,7 @@
 	<script type="text/javascript">
     $('#user_id').attr('href','/Home/User/'+ $.session.get('user_id')+'/');
 </script>
-	<script
-		src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.js"></script>
-	<script
-		src="http://osvaldas.info/examples/drop-down-navigation-touch-friendly-and-responsive/doubletaptogo.min.js"></script>
-	<script>
+<script>
     (function($){$.fn.extend({leanModal:function(options){var defaults={top:100,overlay:0.5,closeButton:null};var overlay=$("<div id='lean_overlay'></div>");$("body").append(overlay);options=$.extend(defaults,options);return this.each(function(){var o=options;$(this).click(function(e){var modal_id=$(this).attr("href");$("#lean_overlay").click(function(){close_modal(modal_id)});$(o.closeButton).click(function(){close_modal(modal_id)});var modal_height=$(modal_id).outerHeight();var modal_width=$(modal_id).outerWidth();
         $("#lean_overlay").css({"display":"block",opacity:0});$("#lean_overlay").fadeTo(200,o.overlay);$(modal_id).css({"display":"block","position":"fixed","opacity":0,"z-index":11000,"left":50+"%","margin-left":-(modal_width/2)+"px","top":o.top+"px"});$(modal_id).fadeTo(200,1);e.preventDefault()})});function close_modal(modal_id){$("#lean_overlay").fadeOut(200);$(modal_id).css({"display":"none"})}}})})(jQuery);
 </script>
