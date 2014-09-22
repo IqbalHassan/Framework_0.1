@@ -158,7 +158,11 @@
 					
 					<li class='has-sub'><a href='#'><span><i class="fa fa-bug fa-fw fa-lg"></i> Bug</span></a>
 						<ul>
-							<li><a href="/Home/ManageBug/"><i class="fa fa-paw fa-fw fa-lg"></i> Manage Bug</a></li>
+							<li class="has-sub"><a href="/Home/ManageBug/"><i class="fa fa-paw fa-fw fa-lg"></i> Manage Bug(s)</a>
+                            <ul>
+                                <li><a href='/Home/CreateNewBug/'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
+                            </ul></li>
+                            <li><a href="/Home/ManageLabel/"><i class="fa fa-tags fa-fw fa-lg"></i> Manage Label(s)</a></li>
 						</ul></li>
 					
 					
@@ -184,7 +188,10 @@
 							<li><a href="/Home/ManageStep/"><i class="fa fa-ban fa-fw fa-lg"></i> Delete Test Step(s)</a></li>
 							<li><a href="/Home/FeaDri/"><i class="fa fa-plug fa-fw fa-lg"></i> Feature(s) & Driver(s)</a></li>
 							<li><a href="/Home/CreateProject/"><i class="fa fa-binoculars fa-fw fa-lg"></i> Manage Project</a></li>
-							<li><a href="/Home/ManageMilestone/"><i class="fa fa-calendar fa-fw fa-lg"></i> Manage Milestone</a></li>
+							<li class="has-sub"><a href="/Home/ManageMilestone/"><i class="fa fa-calendar fa-fw fa-lg"></i> Manage Milestone</a>
+                                <ul>
+                                    <li><a href='/Home/CreateMilestone/'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
+                                </ul></li>
 							<li><a href="/Home/ManageTeam/"><i class="fa fa-users fa-fw fa-lg"></i> Manage Team</a></li>
 						</ul>
 					</li>

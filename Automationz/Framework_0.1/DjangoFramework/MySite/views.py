@@ -6572,6 +6572,19 @@ def Milestone_Tasks(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Milestone_Bugs(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            milestone = request.GET.get(u'term', '')
+            print milestone
+            query = "select b.bug_id,b.bug_title,b.status from bugs b,milestone_info mi where b.bug_milestone::int=mi.id and mi.name like '%"+milestone+"%'"
+            bugs_list = DB.GetData(Conn, query, False)
+    Heading = ['Bug ID','Bug title', 'Status']
+    results = {'Heading':Heading, 'TableData':bugs_list}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def Milestone_Report(request):
     if request.is_ajax():
         if request.method == 'GET':
@@ -7711,7 +7724,9 @@ def CreateBug(request):
     labels=DB.GetData(Conn,query,False)
     query="select distinct tc_id,tc_name from test_cases where tc_id not in (select tc_id from bug_testcases_map) order by tc_id"
     cases=DB.GetData(Conn,query,False)
-    Dict={'project':project,'team':team,'manager':manager,'labels':labels,'cases':cases}
+    query="select id,value from config_values where type='milestone'"
+    milestone_list=DB.GetData(Conn,query,False)
+    Dict={'project':project,'team':team,'manager':manager,'labels':labels,'cases':cases,'milestone_list':milestone_list}
     Conn.close()
     return render_to_response('CreateBug.html',Dict)
 

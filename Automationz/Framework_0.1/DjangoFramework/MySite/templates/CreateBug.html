@@ -83,8 +83,17 @@
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Milestone:</b></td>
-                    <td><input id="milestone_list" class="textbox" placeholder="Milestone Here"></td>
-                    <td><table><tr id="milestone"></tr></table></td>
+                    <!--td><input id="milestone_list" class="textbox" placeholder="Milestone Here"></td>
+                    <td><table><tr id="milestone"></tr></table></td-->
+                    <td>
+                        <select id="milestone" class="selectdrop">
+                            {% if milestone_list %}
+                            {% for x in milestone_list %}
+                            <option value="{{x.0}}"/>{{x.1}}</option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td align="right"><b class="Text">Status:</b></td>

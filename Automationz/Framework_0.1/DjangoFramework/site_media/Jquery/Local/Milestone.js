@@ -64,6 +64,19 @@ function make_task_clickable(){
     });
 }
 
+function make_bug_clickable(){
+    $('#milebugs tr>td:first-child').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor':'pointer'
+        });
+        /*$(this).click(function(){
+         var location='/Home/'+$.session.get('project_id')+'/Tasks/'+$(this).text().trim()+'/';
+         window.location=location;
+         });*/
+    });
+}
+
 function New_UI(){
     status_button_preparation();
 
@@ -125,6 +138,7 @@ function New_UI(){
                     $('a[value="over_due"]').addClass('selected')
                 }
 
+                $("#msinput2").val(ui.item[0]);
                 $("#ms_desc").val(ui.item[2]);
                 $("#starting_date").val(ui.item[3]);
                 $("#ending_date").val(ui.item[4]);
@@ -167,6 +181,12 @@ function New_UI(){
                 {
                     ResultTable(miletasks,data['Heading'],data['TableData'],"Milestone Tasks");
                     make_task_clickable();
+                });
+
+                $.get("MilestoneBugs",{term : value},function(data)
+                {
+                    ResultTable(milebugs,data['Heading'],data['TableData'],"Milestone Bugs");
+                    make_bug_clickable();
                 });
 
                 return false;
