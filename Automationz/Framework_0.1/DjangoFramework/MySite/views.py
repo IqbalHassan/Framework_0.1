@@ -7709,7 +7709,9 @@ def CreateBug(request):
     manager=DB.GetData(Conn,query)
     query="select label_name, label_color, label_id from labels order by label_name"
     labels=DB.GetData(Conn,query,False)
-    Dict={'project':project,'team':team,'manager':manager,'labels':labels}
+    query="select distinct tc_id,tc_name from test_cases where tc_id not in (select tc_id from bug_testcases_map) order by tc_id"
+    cases=DB.GetData(Conn,query,False)
+    Dict={'project':project,'team':team,'manager':manager,'labels':labels,'cases':cases}
     Conn.close()
     return render_to_response('CreateBug.html',Dict)
 

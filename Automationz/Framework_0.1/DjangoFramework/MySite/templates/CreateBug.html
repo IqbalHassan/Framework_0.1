@@ -129,7 +129,13 @@
                     <td style="width: 35%; position: relative;">
                         <div style="position: absolute; min-width: 100%; top: 0;" align="center">
                             <br>
-
+                            <table>
+                                {% if cases %}
+                                    {% for x in cases %}
+                                    <tr><td><input type="checkbox" value="{{x.0}}" name="test_cases">{{x.0}} - {{x.1}}</td></tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </table>
                         </div>
                     </td>
                 </tr>
