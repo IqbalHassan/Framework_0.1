@@ -284,6 +284,8 @@ urlpatterns = patterns('',
     url(r'^Home/.*/get_all_dependency/$',get_all_dependency),
     url(r'^Home/.*/get_all_names_dependency/$',get_all_names_dependency),
     url(r'^Home/.*/get_all_version_dependency/$',get_all_version_dependency),
+    url(r'^Home/.*/register_new_dependency/$',register_new_dependency),
+    url(r'^Home/.*/link_with_project_team/$',link_with_project_team),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )

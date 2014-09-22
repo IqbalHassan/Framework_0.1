@@ -6,22 +6,6 @@
         <div align="left">
             <a href=""><b class="Text">Project</b></a> / <a href=""><b class="Text">Team</b></a> / <b class="Text">Default settings</b>
         </div>
-
-        <div align="right" style="margin-top: -2%;">
-            <table>
-                <tr>
-                    <td>
-                        <a class="createnew" id="createNew" href="">Create</a>
-                    </td>
-                    <td>
-                        <a class="github" id="rename" href="">Rename</a>
-                    </td>
-                    <td>
-                        <a class="dribble" id="delete" href="">Delete</a>
-                    </td>
-                </tr>
-            </table>
-        </div>
     </div>
     <table style="width: 100%;margin-top: 2%;">
         <thead>
@@ -47,11 +31,26 @@
                     </table>
                 </div>
 
-                <div align="center">
+                <div align="center" style="border-bottom: 2px solid #ccc">
                     <table class="one-column-emphasis" id="unused_tab">
                         <tbody>
 
                         </tbody>
+                    </table>
+                </div>
+                <div align="center" style="margin-top: 2%;">
+                    <table width="100%" align="center">
+                        <tr>
+                            <td width="100%">
+                                <input id="createNew" class="new_tc_form add_after_img" type="image" src="/site_media/new.png" name="create" style="background-color: transparent; width:18px; height:18px">
+                            </td>
+                            <!--<td width="33%">
+                                <input class="new_tc_form add_after_img" type="image" src="/site_media/edit.png" name="edit" style="background-color: transparent; width:18px; height:18px">
+                            </td>
+                            <td width="33%">
+                                <input class="new_tc_form add_after_img" type="image" src="/site_media/delete.png" name="delete" style="background-color: transparent; width:18px; height:18px">
+                            </td>-->
+                        </tr>
                     </table>
                 </div>
             </td>
@@ -68,7 +67,11 @@
         </tr>
         </tbody>
     </table>
-
+    <ul class='custom-menu custom-menu-dependency' style="list-style-type: none;padding: 0px;margin: 0px;">
+        <li data-action = "first">Add New Name</li>
+        <li data-action = "second">Rename</li>
+        <li data-action = "third">Delete</li>
+    </ul>
     <script type="text/javascript" src="/site_media/Jquery/Local/AssignSettings.js"></script>
 </article>
 

@@ -9412,18 +9412,30 @@ def get_all_dependency(request):
             if request.is_ajax():
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
-                query="select distinct d.id,d.dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
+                query="select distinct d.id,d.dependency_name as name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d order by name"%(project_id,int(team_id))
                 Conn=GetConnection()
                 dependency_list=DB.GetData(Conn,query,False)
+                if isinstance(dependency_list,list):
+                    PassMessasge(sModuleInfo, "All dependency under (%s,%d) is taken out"%(project_id,int(team_id)),1)
+                else:
+                    PassMessasge(sModuleInfo, "Error Message while taking out dependency for (%s,%d)"%(project_id,int(team_id)),3)
                 Conn.close()
-                query="select distinct d.id,d.dependency_name from dependency d except (select distinct d.id,d.dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d)"%(project_id,int(team_id))
+                query="select distinct d.id,d.dependency_name as name from dependency d except (select distinct d.id,d.dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d order by d.dependency_name) order by name"%(project_id,int(team_id))
                 Conn=GetConnection()
                 unused_list=DB.GetData(Conn,query,False)
                 Conn.close()
+                if isinstance(unused_list,list):
+                    PassMessasge(sModuleInfo, "All unused dependency for (%s,%d) is taken out"%(project_id,int(team_id)),1)
+                else:
+                    PassMessasge(sModuleInfo, "Error Message while taking out unused dependency for (%s,%d)"%(project_id,int(team_id)),3)
                 team_query="select value from config_values where type='Team' and id=%d"%(int(team_id))
                 Conn=GetConnection()
                 team_name=DB.GetData(Conn,team_query)
                 Conn.close()
+                if isinstance(team_name,list):
+                    PassMessasge(sModuleInfo, "Team Name for team id %d is taken out"%(int(team_id)),1)
+                else:
+                    PassMessasge(sModuleInfo, "Error Message while taking out team name for team id %d"%(int(team_id)),3)
                 result={
                     'dependency_list':dependency_list,
                     'unused_list':unused_list,
@@ -9447,6 +9459,11 @@ def get_all_names_dependency(request):
                 print query
                 Conn=GetConnection()
                 name_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                if isinstance(name_list,list):
+                    PassMessasge(sModuleInfo, "All dependency name under (%s,%d,%d) is taken out from dependency_values"%(project_id,int(team_id),int(selected_dependency)),1)
+                else:
+                    PassMessasge(sModuleInfo, "Error Message while taking out dependency for (%s,%d,%d) from dependency_values"%(project_id,int(team_id),int(selected_dependency)),3)
                 result={'name_list':name_list}
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')
@@ -9467,13 +9484,119 @@ def get_all_version_dependency(request):
                 print query
                 Conn=GetConnection()
                 name_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                if isinstance(name_list,list):
+                    PassMessasge(sModuleInfo, "All dependency name under (%s,%d,%d,%s) is taken out from dependency_values"%(project_id,int(team_id),int(selected_dependency),selected_name),1)
+                else:
+                    PassMessasge(sModuleInfo, "Error Message while taking out bit and version dependency for (%s,%d,%d,%s) from dependency_values"%(project_id,int(team_id),int(selected_dependency),selected_name),3)
+                
                 result={'version_list':name_list}
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')
 
     except Exception,e:
         PassMessasge(sModuleInfo,e,3)
-            
+        
+def register_new_dependency(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                name=request.GET.get('name','')
+                #check availability count
+                query="select count(*) from dependency where dependency_name='%s'"%name.strip()
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list) and len(count)==1 and count[0]==0:
+                    #here it will be added
+                    PassMessasge(sModuleInfo, "Dependency with name %s will be added",1)
+                    Dict={
+                          'dependency_name':name.strip()
+                    }
+                    Conn=GetConnection()
+                    result=DB.InsertNewRecordInToTable(Conn,"dependency",**Dict)
+                    if result==True:
+                        message=True
+                        log_message="Dependency with name %s is added successfully"%name
+                    else:
+                        message=False
+                        log_message="Dependency with name %s is not added successfully"%name
+                    
+                elif isinstance(count,list) and len(count)==1 and count[0]>0:
+                    PassMessasge(sModuleInfo, "Dependency with name '%s' exists. exiting with False value"%name, 1)
+                    message=False
+                    log_message="Dependency with name '%s' exists."%name
+                else:
+                    PassMessasge(sModuleInfo,"Error in finding avaiablity count for dependency %s"%name, 3)
+                    message=False
+                    log_message="Database Error. Check Again"
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3)
+        
+def link_with_project_team(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get('project_id','')
+                team_id=request.GET.get('team_id','')
+                dependency=request.GET.get('dependency','')
+                query="select count(*) from dependency_management where dependency=%d"%int(dependency)
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list) and len(count)==1 and count[0]==0:
+                    PassMessasge(sModuleInfo,"No id for the dependency value %d "%int(dependency),1)
+                    #take the reference_id
+                    query="select max(id)+1 from dependency_management"
+                elif isinstance(count,list) and len(count)==1 and count[0]>0:
+                    PassMessasge(sModuleInfo, "Id Found for the dependency value %d"%int(dependency), 1)
+                    #now take the reference id of that dependency values
+                    query="select id from dependency_management where dependency=%d limit 1"%int(dependency)
+                Conn=GetConnection()
+                reference_id=DB.GetData(Conn,query)
+                Conn.close()
+
+                if isinstance(reference_id,list):
+                    reference_id=int(reference_id[0])
+                    #form the Dict
+                    Dict={
+                            'id':reference_id,
+                            'project_id':project_id,
+                            'team_id':int(team_id),
+                            'dependency':int(dependency)
+                        }
+                    Conn=GetConnection()
+                    result=DB.InsertNewRecordInToTable(Conn,"dependency_management",**Dict)
+                    Conn.close()
+                    if result==True:
+                        PassMessasge(sModuleInfo, "Dependency with value %d is linked with (%s,%d)"%(int(dependency),project_id,int(team_id)),1)
+                        message=True
+                        log_message="Dependency is linked Successfully"
+                    else:
+                        PassMessasge(sModuleInfo, "Can't insert the entry %s to the dependency_mangement"%str(Dict), 3)
+                        message=False
+                        log_message="Can't insert the entry %s to the dependency_mangement"%str(Dict)
+                else:
+                    PassMessasge(sModuleInfo,"Error in retrieveing id count for dependency vaulue %d"%int(dependency),3)
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3)
+    
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:

@@ -4412,3 +4412,26 @@ table .ScheduledLeaveCalendar
 {
     width: 18px;
 }
+
+
+/*Adding for the context menu*/
+.custom-menu {
+    display: none;
+    z-index:1000;
+    position: absolute;
+    background-color:#EEE;
+    border: 1px solid #888;
+    overflow: hidden;
+    width: 120px;
+    white-space:nowrap;
+    font-family: sans-serif;
+}
+
+.custom-menu li {
+    padding: 5px;
+}
+
+.custom-menu li:hover {
+    background-color: #DDD;
+    cursor: pointer;
+}
