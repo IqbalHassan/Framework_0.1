@@ -59,6 +59,10 @@ function get_all_dependency(project_id,team_id){
         var team_name=data['team_name'][0];
         $('#dependency_tab').html(populate_upper_div(data['dependency_list'],project_id,team_name));
         $('#unused_tab').html(populate_lower_div(data['unused_list']));
+        $('#name_tab').attr('value','');
+        $('#name_tab').html("");
+        $('#bit_version').attr('value','');
+        $('#bit_version').html('');
         $('.dependency').on('click',function(){
             $('#name_tab').attr('value','');
             $('#bit_version').attr('value','');
@@ -119,7 +123,7 @@ function get_all_dependency(project_id,team_id){
         $(".custom-menu-dependency li").click(function(){
             $(".custom-menu").hide();
             switch($(this).attr("data-action")) {
-                case "first": takeInputForNewName(dep); break;
+                case "first": takeInputForNewName(dep,project_id,team_id); break;
                 case "second": alert("second"); break;
                 case "third": alert("third"); break;
             }
@@ -143,11 +147,40 @@ function get_all_dependency(project_id,team_id){
     });
 }
 
-function takeInputForNewName(dep){
+function takeInputForNewName(dep,project_id,team_id){
     var message="";
+    message+='<table>';
+    message+='<tr>';
+    message+='<td align="right"><b>Dependency Name:</b></td>';
+    message+='<td align="left"><b id="dependency">'+dep+'</b></td>';
+    message+='</tr>';
+    message+='<tr>';
+    message+='<td align="right"><b>Name:</b></td>';
+    message+='<td align="left"><input id="name" type="text" class="textbox" style="width:100%;"/></td>';
+    message+='</tr>';
+    message+='<tr><td align="right"><b>Bit:</b></td><td align="left"><select id="bit"><option value="32">32 Bit</option><option value="64">64 Bit</option></select></td></tr>';
+    message+='<tr><td align="right"><b>Version:</b></td><td align="left"><input id="version" type="text" class="textbox" style="width:100%;"/></td></tr>';
+    message+='</table>';
     alertify.confirm(message,function(e){
        if(e){
-
+           var dependency=$('#dependency').text().trim();
+           var name=$('#name').val().trim();
+           var bit=$('#bit option:selected').val().trim();
+           var version=$('#version').val().trim();
+           $.get('enlist_new_name',{
+               dependency:dependency,
+               name:name,
+               version:version,
+               bit:bit
+           },function(data){
+                if(data['message']==true){
+                    alertify.success(data['log_message'],1500);
+                    get_all_dependency(project_id,team_id);
+                }
+                else{
+                    alertify.error(data['log_message'],1500);
+                }
+           });
        }
        else{
 

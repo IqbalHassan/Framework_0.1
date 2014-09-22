@@ -9612,7 +9612,51 @@ def link_with_project_team(request):
 
     except Exception,e:
         PassMessasge(sModuleInfo,e,3)
-    
+
+def enlist_new_name(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                dependency=request.GET.get(u'dependency','')
+                name=request.GET.get(u'name','')
+                bit=request.GET.get(u'bit','')
+                version=request.GET.get(u'version','')
+                query="select id from dependency_management where dependency=(select id from dependency where dependency_name='%s')"%dependency.strip()
+                Conn=GetConnection()
+                reference_id=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(reference_id,list):
+                    reference_id=reference_id[0]
+                    Dict={
+                        'reference_id':int(reference_id),
+                        'name':name.strip(),
+                        'version': ("v"+version).strip(),
+                        'bit':bit.strip()
+                    }
+                    Conn=GetConnection()
+                    result=DB.InsertNewRecordInToTable(Conn,"dependency_values",**Dict)
+                    Conn.close()
+                    if result==True:
+                        PassMessasge(sModuleInfo, "Tuple %s is inserted in dependency_values successfully"%str(Dict), 1)
+                        message=True
+                        log_message="Name %s with version %s, %s bit is inserted successfully"%(name,version,bit)
+                    else:
+                        message=False
+                        log_message="Name %s with version %s, %s bit is unable to insert"%(name,version,bit)
+                else:
+                    PassMessasge(sModuleInfo, "Error:In retrieveing the reference id for dependency %s"%dependency,3)
+                    message=False
+                    log_message="Error:In retrieveing the reference id for dependency %s"%dependency
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3)    
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
