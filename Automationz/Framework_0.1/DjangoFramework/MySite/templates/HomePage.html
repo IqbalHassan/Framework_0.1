@@ -122,11 +122,23 @@
         <ol class="breadcrumb">
             <li class="active"><i class="fa fa-dashboard"></i> Dashboard</li>
         </ol>
-        <div class="alert alert-success alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <div class="alert alert-success alert-dismissable" id="welcome_msg_div">
+            <button id="close_msg_btn" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             Welcome <a class="logged_user"></a> to Automation Solutionz Framework by <a class="alert-link external roll-link" href="http://www.automationsolutionz.com/" target="_blank"><span data-title="Automation Solutionz">Automation Solutionz</span></a>     </div>
     </div>
 </div><!-- /.row -->
+
+<script>
+$(document).ready(function() {
+	$("#close_msg_btn").on('click', function() {
+		sessionStorage.setItem('closed_welcome_msg', '1');
+	})
+	
+	if (sessionStorage.getItem('closed_welcome_msg') == '1') {
+		$("#welcome_msg_div").css("display", "none");
+	}
+});
+</script>
 
 <div class="row">
     <div class="col-lg-3">
