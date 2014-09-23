@@ -9656,7 +9656,126 @@ def enlist_new_name(request):
                 return HttpResponse(result,mimetype='application/json')
 
     except Exception,e:
+        PassMessasge(sModuleInfo,e,3)
+
+def rename_dependency(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                old_name=request.GET.get(u'old_name','')
+                new_name=request.GET.get(u'new_name','')
+                query="select count(*) from dependency where dependency_name='%s'"%old_name.strip()
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list):
+                    PassMessasge(sModuleInfo,"Dependency %s is found in dependency tables.Renaming.."%old_name.strip(),3)
+                    Dict={
+                          'dependency_name':new_name
+                    }
+                    sWhereQuery="where dependency_name='%s'"%old_name.strip()
+                    Conn=GetConnection()
+                    result=DB.UpdateRecordInTable(Conn,"dependency", sWhereQuery,**Dict)
+                    if result==True:
+                        message=True
+                        log_message="Dependency %s is renamed to %s"%(old_name.strip(),new_name.strip())
+                    else:
+                        message=False
+                        log_message="Dependency %s is not renamed."%old_name.strip()
+                else:
+                    PassMessasge(sModuleInfo,"Dependency %s is not found in dependency tables"%old_name.strip(),3)
+                    message=False
+                    log_message="Dependency %s is not found in dependency tables"%old_name.strip()
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
         PassMessasge(sModuleInfo,e,3)    
+def add_new_version(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                dependency=request.GET.get(u'dependency','')
+                name=request.GET.get(u'name','')
+                bit=request.GET.get(u'bit','')
+                version=request.GET.get(u'version','')
+                #first take out the reference_id
+                query="select distinct id from dependency_management where dependency=%d"%int(dependency)
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list) and len(count)>=1:
+                    reference_id=count[0]
+                    Dict={
+                          'reference_id':int(reference_id),
+                          'name':name.strip(),
+                          'bit':bit.strip(),
+                          'version':("v"+version).strip()
+                    }
+                    Conn=GetConnection()
+                    result=DB.InsertNewRecordInToTable(Conn,"dependency_values",**Dict)
+                    Conn.close()
+                    if result==True:
+                        PassMessasge(sModuleInfo,"Entry %s is added successfully"%str(Dict),1)
+                        message=True
+                        log_message="Version %s,%d bit is added successfully"%(version,int(bit))
+                    else:
+                        PassMessasge(sModuleInfo,result,3)
+                        message=False
+                        log_message="Version %s,%d bit is not added successfully"%(version,int(bit))
+                else:
+                    PassMessasge(sModuleInfo,"No Reference Id is found",3)
+                    message=False
+                    log_message="Error:In fetching reference id for dependency %d"%int(dependency)
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3)    
+
+def rename_name(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                old_name=request.GET.get(u'old_name','')
+                new_name=request.GET.get(u'new_name','')
+                sWhereQuery="where name='%s'"%old_name
+                Dict={
+                      'name':new_name
+                }
+                Conn=GetConnection()
+                result=DB.UpdateRecordInTable(Conn,"dependency_values", sWhereQuery,**Dict)
+                Conn.close()
+                if result==True:
+                    PassMessasge(sModuleInfo, "'%s' is renamed to '%s'"%(old_name,new_name), 1)
+                    message=True
+                    log_message="'%s' is renamed to '%s'"%(old_name,new_name)
+                else:
+                    PassMessasge(sModuleInfo, result, 3)
+                    message=False
+                    log_message="%s is not renamed"%old_name
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3)    
+
+
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:

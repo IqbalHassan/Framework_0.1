@@ -64,6 +64,7 @@ function get_all_dependency(project_id,team_id){
         $('#bit_version').attr('value','');
         $('#bit_version').html('');
         $('.dependency').on('click',function(){
+            dep=$(this).text().trim();
             $('#name_tab').attr('value','');
             $('#bit_version').attr('value','');
             $('.dependency').css({'background':'none'});
@@ -98,12 +99,39 @@ function get_all_dependency(project_id,team_id){
 
                     });
                 });
+                $('.name').bind("contextmenu",function(eventy){
+                    eventy.preventDefault();
+                    $(this).trigger('click');
+                    $(".custom-menu-name").toggle(100).
+                        // In the right position (the mouse)
+                        css({
+                            top: event.pageY + "px",
+                            left: event.pageX + "px"
+                        });
+                    nam=$(this).text().trim();
+                });
+                $(document).bind("mousedown", function (e) {
+                    console.log(!$(e.target).parents(".custom-menu").length > 0);
+                    if (!$(e.target).parents(".custom-menu").length > 0)
+                        $(".custom-menu").hide(100);
+                });
+
+                $(".custom-menu-name li").click(function(){
+                    $(".custom-menu").hide();
+                    switch($(this).attr("data-action")) {
+                        case "version": inputVersion(dep,nam,project_id,team_id); break;
+                        case "rename":inputRenameVersion(nam,project_id,team_id); break;
+                        case "delete": alert("third"); break;
+                    }
+
+                });
             });
         });
         $(".dependency").bind("contextmenu", function (event) {
             // Avoid the real one
             event.preventDefault();
             // Show contextmenu
+            $(this).trigger('click');
             $(".custom-menu-dependency").toggle(100).
                 // In the right position (the mouse)
                 css({
@@ -124,7 +152,7 @@ function get_all_dependency(project_id,team_id){
             $(".custom-menu").hide();
             switch($(this).attr("data-action")) {
                 case "first": takeInputForNewName(dep,project_id,team_id); break;
-                case "second": alert("second"); break;
+                case "second":takeInputForRename(dep,project_id,team_id); break;
                 case "third": alert("third"); break;
             }
 
@@ -146,7 +174,98 @@ function get_all_dependency(project_id,team_id){
         });
     });
 }
+function inputRenameVersion(nam,project_id,team_id){
+    var message="";
+    message+='<table width="100%">';
+    message+='<tr><td align="right"><b>Old Name:</b></td><td><input type="text" class="textbox" id="old_name" value="'+nam+'"style="width:100%" readonly="readonly" /></td></tr>'
+    message+='<tr><td align="right"><b>New Name:</b></td><td><input type="text" class="textbox" id="new_name" style="width:100%"/></td></tr>';
+    message+='</table>'
+    alertify.confirm(message,function(e){
+        if(e){
+            var old_name=$('#old_name').val().trim();
+            var new_name=$('#new_name').val().trim();
+            $.get('rename_name',{
+                'old_name':old_name,
+                'new_name':new_name
+            },function(data){
+                if(data['message']==true){
+                    alertify.success(data['log_message']);
+                    get_all_dependency(project_id,team_id);
+                }
+                else{
+                    alertify.error(data['log_message']);
+                }
+            });
+        }
+        else{
 
+       }
+    });
+}
+function inputVersion(dep,name,project_id,team_id){
+    var message="";
+    message+='<table width="100%" align="center">';
+    message+='<tr><td align="right"><b>Type:</b></td><td align="left"><b>'+dep+'</b></td></tr>';
+    message+='<tr><td align="right"><b>Name:</b></td><td align="left" id="name"><b>'+name+'</b></td></tr>';
+    message+='<tr><td align="right"><b>Bit:</b></td><td align="left"><select id="bit"><option value="32">32 Bit</option><option value="64">64 Bit</option></select></td></tr>';
+    message+='<tr><td align="right"><b>Version:</b></td><td align="left"><input id="version" type="text" class="textbox" style="width:100%;"/></td></tr>';
+    message+='</table>';
+    alertify.confirm(message,function(e){
+        if(e){
+            var dependency=$('#name_tab').attr('value');
+            var name=$('#name').text().trim();
+            var bit=$('#bit option:selected').val().trim();
+            var version=$('#version').val().trim();
+
+            $.get('add_new_version',{
+                dependency:dependency,
+                name:name,
+                bit:bit,
+                version:version
+            },function(data){
+                if(data['message']==true){
+                    alertify.success(data['log_message']);
+                    get_all_dependency(project_id,team_id);
+                }
+                else{
+                    alertify.error(data['log_message']);
+                }
+            });
+        }
+        else{
+
+        }
+    });
+}
+function takeInputForRename(dep,project_id,team_id){
+    var message="";
+    message+='<table width="100%">';
+    message+='<tr><td align="right"><b>Old Name:</b></td><td><input type="text" class="textbox" id="old_name" value="'+dep+'"style="width:100%" readonly="readonly" /></td></tr>'
+    message+='<tr><td align="right"><b>New Name:</b></td><td><input type="text" class="textbox" id="new_name" style="width:100%"/></td></tr>';
+    message+='</table>'
+    alertify.confirm(message,function(e){
+        if(e){
+            var old_name=dep.trim();
+            var new_name=$('#new_name').val().trim();
+            $.get("rename_dependency",{
+                old_name:old_name.trim(),
+                new_name:new_name.trim()
+            },function(data){
+                if(data['message']==true){
+                    alertify.success(data['log_message']);
+                    get_all_dependency(project_id,team_id);
+                }
+                else{
+                    alertify.error(data['log_message']);
+                }
+
+            });
+        }
+        else{
+
+        }
+    });
+}
 function takeInputForNewName(dep,project_id,team_id){
     var message="";
     message+='<table>';
