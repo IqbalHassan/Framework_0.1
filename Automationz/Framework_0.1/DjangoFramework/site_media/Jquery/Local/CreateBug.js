@@ -19,7 +19,7 @@ $(document).ready(function(){
         var end_date=$('#end_date').val();
         var team=$("#default_team_identity").val();
         var priority= 'P' + $('#priority').val();
-        var milestone=$('#milestone').text();
+        var milestone=$("#milestone").val();
         var title=$('#title').val();
         //var creator = $("#created_by").val();
         var testers= $("#tester").text();
@@ -46,7 +46,7 @@ $(document).ready(function(){
                 priority:priority.trim(),
                 milestone:milestone.trim(),
                 project_id: project.trim(),
-                user_name:$('#user_name').text().trim(),
+                user_name:$.session.get('fullname'),
                 test_cases:test_cases.join("|")
                 //created_by:creator.trim()
             },function(data){
@@ -216,7 +216,7 @@ function ButtonSet(){
         $(this).parent().next().remove();
         $(this).remove();
     });
-    $('#milestone_list').autocomplete({
+    /*$('#milestone_list').autocomplete({
         source:function(request,response){
             $.ajax({
                 url:"AutoMileStone",
@@ -261,7 +261,7 @@ function ButtonSet(){
         $(this).parent().next().remove();
         $(this).remove();
 
-    });
+    });*/
 }
 function ActivateNecessaryButton(){
     $('#start_date').datepicker({ dateFormat: "yy-mm-dd" });

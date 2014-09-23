@@ -585,9 +585,10 @@ function RenderPieChart(elementId, dataList, title) {
                     enabled: true,
                     color: '#000000',
                     connectorColor: '#000000',
-                    formatter: function () {
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    /*formatter: function () {
                         return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
-                    }
+                    }*/
                 }
                 /*dataLabels: {
                  enabled: false
