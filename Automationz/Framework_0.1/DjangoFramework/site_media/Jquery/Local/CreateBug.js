@@ -11,6 +11,14 @@ $(document).ready(function(){
 
     TestCaseLinking();
 
+    $('#scrollbox1').enscroll({
+        verticalTrackClass: 'track1',
+        verticalHandleClass: 'handle1',
+        drawScrollButtons: true,
+        scrollUpButtonClass: 'scroll-up1',
+        scrollDownButtonClass: 'scroll-down1'
+    });
+
     $("#submit").live('click',function(){
 
         var project = $("#project_identity").val();
@@ -33,6 +41,11 @@ $(document).ready(function(){
             test_cases.push($(this).val());
         });
 
+        var labels=[];
+        $('input[name="labels"]:checked').each(function(){
+            labels.push($(this).val());
+        });
+
 
         if(title!=""){
             $.get("LogNewBug/",{
@@ -47,7 +60,8 @@ $(document).ready(function(){
                 milestone:milestone.trim(),
                 project_id: project.trim(),
                 user_name:$.session.get('fullname'),
-                test_cases:test_cases.join("|")
+                test_cases:test_cases.join("|"),
+                labels:labels.join("|")
                 //created_by:creator.trim()
             },function(data){
                 bug_notify("Bug Created!", "Bug with title '"+title+"' is created!","/site_media/noti.ico");

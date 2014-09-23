@@ -7748,8 +7748,10 @@ def LogNewBug(request):
                 user_name=request.GET.get(u'user_name','')
                 testers=request.GET.get(u'tester','')
                 test_cases=request.GET.get(u'test_cases','')
+                labels=request.GET.get(u'labels','')
                 
                 test_cases=test_cases.split("|")
+                labels=labels.split("|")
                 #created_by=request.GET.get(u'created_by','')
                 
                 tester = DB.GetData(Conn, "select user_id from permitted_user_list where user_names = '"+testers+"'")
@@ -7760,7 +7762,7 @@ def LogNewBug(request):
                 ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
     
                 
-                result=BugOperations.CreateNewBug(title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,tester[0],test_cases)
+                result=BugOperations.CreateNewBug(title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,tester[0],test_cases,labels)
                 if result!=False:
                     bug_id=result
                 result=simplejson.dumps(bug_id)
