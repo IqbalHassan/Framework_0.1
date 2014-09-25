@@ -3,6 +3,7 @@
  */
 var dep="";
 var nam="";
+var version_name="";
 $(document).ready(function(){
     var project_id= $.session.get('project_id').trim();
     var team_id= $.session.get('default_team_identity').trim();
@@ -95,8 +96,8 @@ function get_all_dependency(project_id,team_id){
         var team_name=data['team_name'][0];
         $('#dependency_tab').html(populate_upper_div(data['dependency_list'],project_id,team_name,"team_id","dependency"));
         $('#version_tab').html(populate_upper_div(data['versions'],project_id,team_name,"version_team_id","version"));
-        $('#unused_tab').html(populate_lower_div(data['unused_list'],"add_dependency"));
-        $('#unused_version_tab').html(populate_lower_div(data['unused_versions'],"add_version"));
+        $('#unused_tab').html(populate_lower_div(data['unused_list'],"add_dependency","dependency"));
+        $('#unused_version_tab').html(populate_lower_div(data['unused_versions'],"add_version","version"));
         $('#name_tab').attr('value','');
         $('#name_tab').html("");
         $('#bit_version').attr('value','');
@@ -212,20 +213,89 @@ function get_all_dependency(project_id,team_id){
                 }
             });
         });
-        version_tab_button_works();
+        version_tab_button_works(project_id,team_id);
     });
 }
-function version_tab_button_works(){
+function version_tab_button_works(project_id,team_id){
+    $(".version").bind("contextmenu", function (event) {
+        // Avoid the real one
+        event.preventDefault();
+        // Show contextmenu
+        //$(this).trigger('click');
+        $(".custom-menu-version").toggle(100).
+            // In the right position (the mouse)
+            css({
+                top: event.pageY + "px",
+                left: event.pageX + "px"
+            });
+        version_name=$(this).text().trim();
+    });
+
+    // If the document is clicked somewhere
+    $(document).bind("mousedown", function (e) {
+        console.log(!$(e.target).parents(".custom-menu").length > 0);
+        if (!$(e.target).parents(".custom-menu").length > 0)
+            $(".custom-menu").hide(100);
+    });
+
+    $(".custom-menu-version li").click(function(){
+        $(".custom-menu").hide();
+        switch($(this).attr("data-action")) {
+            case "rename_version":
+                input_version_name(project_id,team_id,version_name);
+                break;
+            case "usage_version":alert("usage_version"); break;
+            case "unassign_version": alert("unassign version"); break;
+            case "delete_version":alert("delete_version");break;
+        }
+
+    });
     $('.add_version').click(function(){
-        var message=$(this).attr('value');
-        alertify.confirm(message,function(e){
-           if(e){
+        $.get('link_new_version',{
+            version:$(this).attr('value'),
+            project_id:project_id,
+            team_id:team_id
+        },function(data){
+            if(data['message']==true){
+                alertify.success(data['log_message']);
+                get_all_dependency(project_id,team_id);
+            }
+            else{
+                alertify.error(data['log_message']);
+            }
+        });
+    });
+}
+function input_version_name(project_id,team_id,version_name){
+    var message="";
+    message+='<table width="100%">';
+    message+='<tr><td><b>Old Version:</b></td><td><input style="width: 100%;" id="old_version" class="textbox" value="'+version_name+'" readonly="readonly" /></td></tr>';
+    message+='<tr><td><b>New Version:</b></td><td><input style="width: 100%;" id="new_version" class="textbox"/></td></tr>';
+    message+='</table>';
+    alertify.confirm(message,function(e){
+        if(e){
+            var new_name=$('#new_version').val().trim();
+            if(new_name!=""){
+                $.get("rename_version",{
+                    old_version:version_name,
+                    new_version:new_name
+                },function(data){
+                    if(data['message']==true){
+                        alertify.success(data['log_message']);
+                        get_all_dependency(project_id,team_id);
+                    }
+                    else{
+                        alertify.error(data['log_message']);
+                    }
+                });
+            }
+            else{
+                alertify.error("Version is empty",3000);
+            }
+        }
+        else{
 
-           }
-           else{
-
-           }
-       }) ;
+        }
     });
 }
 function getUsage(value,project_id,team_id,dep){
@@ -234,7 +304,48 @@ function getUsage(value,project_id,team_id,dep){
         project_id:project_id,
         team_id:team_id
     },function(data){
+        if(data['message']==true){
+            var temp=data['usage_list'];
+            var message="";
+            message+='<table width="100%" class="one-column-emphasis">';
+            for(var i=0;i<temp.length;i++){
+                message+='<tr>';
+                if(temp[i][1]!=""){
+                    var name_list=temp[i][1].split(",");
+                    message+='<td>'+temp[i][0]+'</td>';
+                    message+='<td><table width="100%">';
+                    for(var j=0;j<name_list.length;j++){
+                        message+='<tr><td>'+name_list[j].trim()+'</td></tr>';
+                    }
+                    message+='</table></td>';
+                }
+                message+='</tr>';
+            }
+            message+='</table>';
+            $('#inner_div').html(message);
+            $("#inner_div").dialog({
+                buttons : {
+                    "OK" : function() {
+                        $(this).dialog("close");
+                    }
+                },
 
+                show : {
+                    effect : 'drop',
+                    direction : "up"
+                },
+
+                modal : true,
+                width : 700,
+                height : 650,
+                align:'center',
+                title:"Usage"
+
+            });
+        }
+        else{
+            alertify.error("Usage data is not fetched properly");
+        }
     });
 }
 function unassignDependency(value,project_id,team_id,dep){
@@ -435,17 +546,25 @@ function populate_name_div(array_list){
         return message;
     }
 }
-function populate_lower_div(array_list,dependency){
-    var message="";
-    message+='<table width="100%" class="one-column-emphasis">';
-    for(var i=0;i<array_list.length;i++){
-        message+='<tr>';
-        message+='<td>'+array_list[i][1]+'</td>';
-        message+='<td><a class="button primary '+dependency+'" value="'+array_list[i][0]+'">Add</a></td>';
-        message+='</tr>';
+function populate_lower_div(array_list,dependency,type){
+    if(array_list.length==0){
+        var message="";
+        message+='<tr><td><b>No '+type+' is Found</b></td></tr>';
+        return message;
     }
-    message+='</table>';
-    return message;
+    else{
+        var message="";
+        message+='<table width="100%" class="one-column-emphasis">';
+        for(var i=0;i<array_list.length;i++){
+            message+='<tr>';
+            message+='<td>'+array_list[i][1]+'</td>';
+            message+='<td><a class="button primary '+dependency+'" value="'+array_list[i][0]+'">Add</a></td>';
+            message+='</tr>';
+        }
+        message+='</table>';
+        return message;
+    }
+
 }
 function populate_upper_div(array_list,project_id,team_name,team_id,dependency){
     if(array_list.length==0){

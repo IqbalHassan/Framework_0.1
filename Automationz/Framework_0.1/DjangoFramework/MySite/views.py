@@ -9812,6 +9812,7 @@ def rename_name(request):
         PassMessasge(sModuleInfo,e,3)    
 
 def enlist_new_version(request):
+    #for the version tab
     sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
     try:
         if request.method=='GET':
@@ -9914,11 +9915,21 @@ def GetUsageDependency(request):
     try:
         if request.method=='GET':
             if request.is_ajax():
-                project_id=request.GET.get(u'project_id','')
-                team_id=request.GET.get(u'team_id','')
                 value=request.GET.get(u'value','')
+                team_id=request.GET.get(u'team_id','')
+                query="select project_id,array_to_string(array_agg(distinct(select distinct value from config_values where id=team_id )),',') as team from dependency_management where dependency=%d group by project_id"%(int(value))
+                Conn=GetConnection()
+                usage_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                if isinstance(usage_list,list):
+                    PassMessasge(sModuleInfo,"Usage Data is taken out for dependency %d"%int(value),1)
+                    message=True
+                else:
+                    PassMessasge(sModuleInfo,"Usage Data is unable to fetch for dependency %d"%int(value) , 3)
+                    message=False
                 result={
-                #   'message':message,
+                    'message':message,
+                    'usage_list':usage_list
                  #  'log_message':log_message
                 }
                 result=simplejson.dumps(result)
@@ -9926,6 +9937,94 @@ def GetUsageDependency(request):
 
     except Exception,e:
         PassMessasge(sModuleInfo,e,3) 
+
+def link_new_version(request):
+    #linking the version in the version tab
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                version=request.GET.get(u'version','')
+                team_id=request.GET.get(u'team_id','')
+                project_id=request.GET.get(u'project_id','')
+                Dict={
+                      'project_id':project_id.strip(),
+                      'team_id':int(team_id),
+                      'version':int(version)
+                }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"version_management",**Dict)
+                Conn.close()
+                if result==True:
+                    PassMessasge(sModuleInfo, "Version with key %d is linked successfully"%int(version),1)
+                    message=True
+                    log_message="Version is linked successfully"
+                else:
+                    PassMessasge(sModuleInfo, result, 3)
+                    message=False
+                    log_message="Version linking failed.."
+                result={
+                    'message':message,
+                    #'usage_list':usage_list
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3)
+
+def rename_version(request):
+    #renaming the version in the version tab
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                old_version=request.GET.get(u'old_version','')
+                new_version=request.GET.get(u'new_version','')
+                #check if the new name is already there
+                query="select count(*) from versions where version_name='%s'"%new_version.strip()
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list):
+                    if(count[0]==0):
+                        sWhereQuery="where version_name='%s'"%old_version.strip()
+                        Dict={
+                              'version_name':new_version.strip()
+                        }
+                        Conn=GetConnection()
+                        result=DB.UpdateRecordInTable(Conn,"versions", sWhereQuery,**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo, "Version '%s' is renamed to '%s'"%(old_version.strip(),new_version.strip()), 1)
+                            message=True
+                            log_message="Version '%s' is renamed to '%s'"%(old_version.strip(),new_version.strip())
+                        else:
+                            PassMessasge(sModuleInfo,result, 3)
+                            message=False
+                            log_message="Version '%s' is not renamed"%old_version.strip()
+                        
+                    else:
+                        PassMessasge(sModuleInfo, "Version '%s' already exists"%(new_version.strip()), 3)
+                        message=False
+                        log_message="Version '%s' already in Database.Choose Another."%(new_version.strip())
+                        
+                else:
+                    PassMessasge(sModuleInfo, count, 3)
+                    message=False
+                    log_message="Database Connection error.Try Again.."
+                result={
+                    'message':message,
+                    #'usage_list':usage_list
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3)
+     
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
