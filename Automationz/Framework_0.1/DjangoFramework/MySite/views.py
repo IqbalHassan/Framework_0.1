@@ -7657,6 +7657,7 @@ def select2(request):
     return render_to_response('Milestone.html',{})"""
     
 def Milestone(request):
+    now=datetime.datetime.now().date()
     Conn=GetConnection()
     query="select * from milestone_info order by name"
     milestones=DB.GetData(Conn,query,False)
@@ -7676,6 +7677,15 @@ def Milestone(request):
         data.append(temp[i])
         data.append(all[i]-complete[i])
         data.append(complete[i])
+        left = (now-each[3]).days
+        if left>0:
+            data.append(left)
+            data.append("Left only ")
+            data.append('green')
+        else:
+            data.append(-left)
+            data.append("Past due by ")
+            data.append('red')
         i = i+1
         milestone_list.append(data)
         
