@@ -7657,7 +7657,14 @@ def select2(request):
     return render_to_response('Milestone.html',{})"""
     
 def Milestone(request):
-    return render_to_response('ManageMilestone.html',{})
+    Conn=GetConnection()
+    query="select * from milestone_info"
+    milestone_list=DB.GetData(Conn,query,False)
+    Dict={
+          'milestone_list':milestone_list
+    }
+    Conn.close()
+    return render_to_response('ManageMilestone.html',Dict)
 
 def manageMilestone(request):
     Conn=GetConnection()

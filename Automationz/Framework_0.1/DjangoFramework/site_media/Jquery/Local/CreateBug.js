@@ -19,6 +19,7 @@ $(document).ready(function(){
         scrollDownButtonClass: 'scroll-down1'
     });
 
+
     $("#submit").live('click',function(){
 
         var project = $("#project_identity").val();
