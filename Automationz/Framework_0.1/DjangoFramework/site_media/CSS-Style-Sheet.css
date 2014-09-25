@@ -4580,3 +4580,21 @@ table .ScheduledLeaveCalendar
         .handle1:hover .bottom {
             background-position: -17px bottom;
         }
+
+
+/***************Milestone**************/
+
+.milestone-title-link {
+margin-top: 0;
+margin-bottom: 5px;
+font-size: 24px;
+font-weight: normal;
+line-height: 1.2;
+}
+.milestone-meta {
+font-size: 14px;
+}
+.milestone-meta-item {
+display: inline-block;
+margin-right: 10px;
+}
