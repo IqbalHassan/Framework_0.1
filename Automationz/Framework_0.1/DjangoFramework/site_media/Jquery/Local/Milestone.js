@@ -289,7 +289,7 @@ function New_UI(){
             $('#error_milestone').css({'display':'block'});
         }
         else {
-            $.get('MileStoneOperation',{status:status,description:description.trim(),old_name:old_name,new_name:new_name,operation:operation,'team':team.join("|").trim(),start_date:start_date.trim(),end_date:end_date.trim(),created_by:created_by,modified_by:modified_by},function(data){
+            $.get('MileStoneOperation/',{status:status,description:description.trim(),old_name:old_name,new_name:new_name,operation:operation,'team':team.join("|").trim(),start_date:start_date.trim(),end_date:end_date.trim(),created_by:created_by,modified_by:modified_by},function(data){
                 if(data['confirm_message']==""){
                     var color='red';
                 }

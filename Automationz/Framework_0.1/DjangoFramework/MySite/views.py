@@ -7657,7 +7657,44 @@ def select2(request):
     return render_to_response('Milestone.html',{})"""
     
 def Milestone(request):
-    return render_to_response('ManageMilestone.html',{})
+    now=datetime.datetime.now().date()
+    Conn=GetConnection()
+    query="select * from milestone_info order by name"
+    milestones=DB.GetData(Conn,query,False)
+    query="(select count(distinct run_id) from test_run_env where status='Complete' group by test_milestone)"
+    complete=DB.GetData(Conn,query)
+    query="select count(distinct run_id) from test_run_env where status not in ('Cancelled') group by test_milestone"
+    all=DB.GetData(Conn,query)
+    temp = []
+    for x in zip(complete,all):
+        temp.append(format((float(x[0])*100)/float(x[1]),'.2f'))
+    milestone_list = []
+    i=0
+    for each in milestones:
+        data = []
+        for x in each:
+            data.append(x)
+        data.append(temp[i])
+        data.append(all[i]-complete[i])
+        data.append(complete[i])
+        left = (now-each[3]).days
+        if left>0:
+            data.append(left)
+            data.append("Left only ")
+            data.append('green')
+        else:
+            data.append(-left)
+            data.append("Past due by ")
+            data.append('red')
+        i = i+1
+        milestone_list.append(data)
+        
+        
+    Dict={
+          'milestone_list':milestone_list
+    }
+    Conn.close()
+    return render_to_response('ManageMilestone.html',Dict)
 
 def manageMilestone(request):
     Conn=GetConnection()
