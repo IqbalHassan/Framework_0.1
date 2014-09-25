@@ -15,7 +15,7 @@
 
       return this.each(function() {
         cssmenu.find('li ul').parent().addClass('has-sub');
-        if (settings.sticky === true) cssmenu.css('position', 'fixed');
+        // if (settings.sticky === true) cssmenu.css('position', 'fixed');
         
         return;
 
