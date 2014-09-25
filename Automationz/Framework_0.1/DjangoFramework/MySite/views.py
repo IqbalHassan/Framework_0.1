@@ -9467,10 +9467,29 @@ def get_all_dependency(request):
                     PassMessasge(sModuleInfo, "Team Name for team id %d is taken out"%(int(team_id)),1)
                 else:
                     PassMessasge(sModuleInfo, "Error Message while taking out team name for team id %d"%(int(team_id)),3)
+                #take out the version_list all 
+                version_query="select distinct v.id,v.version_name as name from versions v, version_management vm where v.id=vm.version and vm.project_id='%s' and vm.team_id=%d order by name"%(project_id,int(team_id))
+                Conn=GetConnection()
+                versions=DB.GetData(Conn,version_query,False)
+                Conn.close()
+                if isinstance(dependency_list,list):
+                    PassMessasge(sModuleInfo, "All Version under (%s,%d) is taken out"%(project_id,int(team_id)),1)
+                else:
+                    PassMessasge(sModuleInfo, "Error Message while taking out versions for (%s,%d)"%(project_id,int(team_id)),3)
+                unused_version_query="select distinct v.id,v.version_name as name from versions v except select distinct v.id,v.version_name as name from versions v, version_management vm where v.id=vm.version and vm.project_id='%s' and vm.team_id=%d order by name"%(project_id,int(team_id))
+                Conn=GetConnection()
+                unused_version=DB.GetData(Conn,unused_version_query,False)
+                Conn.close()
+                if isinstance(unused_version,list):
+                    PassMessasge(sModuleInfo, "All unused versions for (%s,%d) is taken out"%(project_id,int(team_id)),1)
+                else:
+                    PassMessasge(sModuleInfo, "Error Message while taking out unused version for (%s,%d)"%(project_id,int(team_id)),3)
                 result={
                     'dependency_list':dependency_list,
                     'unused_list':unused_list,
-                    'team_name':team_name
+                    'team_name':team_name,
+                    'versions':versions,
+                    'unused_versions':unused_version
                 }   
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')
@@ -9790,7 +9809,121 @@ def rename_name(request):
     except Exception,e:
         PassMessasge(sModuleInfo,e,3)    
 
+def enlist_new_version(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                version=request.GET.get(u'version','')
+                #check for the availablity
+                
+                query="select count(*) from versions where version_name='%s'"%version.strip()
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        #form Dict
+                        Dict={
+                              'version_name':version.strip()
+                        }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"versions",**Dict)
+                        if result==True:
+                            PassMessasge(sModuleInfo,"Version '%s' is added successfully"%version.strip(), 1)
+                            message=True
+                            log_message="Version '%s' is added successfully"%version.strip()
+                        else:
+                            PassMessasge(sModuleInfo,result,3)
+                            message=False
+                            log_message="Version '%s' is not added"%version.strip()
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo,"Version '%s' is already in the Database"%version.strip(), 3)
+                        message=False
+                        log_message="Version %s is already in the Database"%version.strip()
+                         
+                else:
+                    PassMessasge(sModuleInfo, count, 3)
+                    message=False
+                    log_message="Database Connection error.Try Again please.."
+                result={
+                   'message':message,
+                   'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
 
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3) 
+
+def unassign_dependency(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                value=request.GET.get(u'value','')
+                query="select count(*) from dependency_management where project_id='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(value))
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo, "Dependency Found. Will be unassigning", 1)
+                        Dict={
+                            'project_id':project_id,
+                            'team_id':int(team_id),
+                            'dependency':int(value)
+                        }
+                        Conn=GetConnection()
+                        result=DB.DeleteRecord(Conn,"dependency_management",**Dict)
+                        if result==True:
+                            PassMessasge(sModuleInfo,"Dependency %d is unassigning successfully", 1)
+                            message=True
+                            log_message="Dependency unassigned"
+                        else:
+                            PassMessasge(sModuleInfo,result, 3)
+                            message=False
+                            log_message="Dependency is unable to assign"
+                            
+                    if len(count)==1 and count[0]==0:
+                        PassMessasge(sModuleInfo, "Dependency not found", 2)
+                        message=False
+                        log_message="Database Error. Dependency not found"
+                else:
+                    PassMessasge(sModuleInfo,count,3)
+                    message=False
+                    log_message="Database Error. Connection error.."
+                result={
+                   'message':message,
+                   'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3) 
+        
+def GetUsageDependency(request):
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                value=request.GET.get(u'value','')
+                result={
+                #   'message':message,
+                 #  'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+
+    except Exception,e:
+        PassMessasge(sModuleInfo,e,3) 
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:

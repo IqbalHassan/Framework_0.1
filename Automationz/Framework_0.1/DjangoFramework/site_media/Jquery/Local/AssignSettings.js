@@ -13,7 +13,7 @@ $(document).ready(function(){
 function button_work(){
     $('#createNew').click(function(){
         var message=InputDependency();
-        alertify.confirm(message,function(e,str){
+        alertify.confirm(message,function(e){
             if(e){
                 var name=$('#dependency_name').val().trim();
                 var project_id=$('#project_identity').val().trim();
@@ -29,6 +29,42 @@ function button_work(){
                         alertify.error(data['log_message'],3000);
                     }
                 });
+            }
+            else{
+
+            }
+        });
+    });
+    $('#createNewVersion').click(function(){
+        var message="";
+        message+='<table width="100%">';
+        message+='<tr><td><b>Version:</b></td><td><input type="text" class="textbox" placeholder="Version here.. " id="new_version" style="width: 100%"/></td></tr>'
+        message+='</table>';
+        alertify.confirm(message,function(e){
+            if(e){
+                var project_id=$('#project_identity option:selected').val().trim();
+                var team_id=$('#default_team_identity option:selected').val().trim();
+                var version=$('#new_version').val().trim();
+                if(version!=""){
+                    $.get('enlist_new_version',{
+                        'project_id':project_id,
+                        'team_id':team_id,
+                        'version':version
+                    },function(data){
+                        if(data['message']==true){
+                            alertify.success(data['log_message']);
+                            get_all_dependency(project_id,team_id);
+                        }
+                        else{
+                            alertify.error(data['log_message']);
+                        }
+                    });
+                }
+                else{
+                    alertify.error("Version Name is empty",3000);
+                    return false;
+                }
+
             }
             else{
 
@@ -57,8 +93,10 @@ function get_all_dependency(project_id,team_id){
         team_id:team_id
     },function(data){
         var team_name=data['team_name'][0];
-        $('#dependency_tab').html(populate_upper_div(data['dependency_list'],project_id,team_name));
-        $('#unused_tab').html(populate_lower_div(data['unused_list']));
+        $('#dependency_tab').html(populate_upper_div(data['dependency_list'],project_id,team_name,"team_id","dependency"));
+        $('#version_tab').html(populate_upper_div(data['versions'],project_id,team_name,"version_team_id","version"));
+        $('#unused_tab').html(populate_lower_div(data['unused_list'],"add_dependency"));
+        $('#unused_version_tab').html(populate_lower_div(data['unused_versions'],"add_version"));
         $('#name_tab').attr('value','');
         $('#name_tab').html("");
         $('#bit_version').attr('value','');
@@ -154,6 +192,8 @@ function get_all_dependency(project_id,team_id){
                 case "first": takeInputForNewName(dep,project_id,team_id); break;
                 case "second":takeInputForRename(dep,project_id,team_id); break;
                 case "third": alert("third"); break;
+                case "fourth":getUsage($("#name_tab").attr('value'),project_id,team_id,dep);break;
+                case "fifth":unassignDependency($('#name_tab').attr('value'),project_id,team_id,dep);break;
             }
 
         });
@@ -172,6 +212,52 @@ function get_all_dependency(project_id,team_id){
                 }
             });
         });
+        version_tab_button_works();
+    });
+}
+function version_tab_button_works(){
+    $('.add_version').click(function(){
+        var message=$(this).attr('value');
+        alertify.confirm(message,function(e){
+           if(e){
+
+           }
+           else{
+
+           }
+       }) ;
+    });
+}
+function getUsage(value,project_id,team_id,dep){
+    $.get('GetUsageDependency',{
+        value:value,
+        project_id:project_id,
+        team_id:team_id
+    },function(data){
+
+    });
+}
+function unassignDependency(value,project_id,team_id,dep){
+    var message="Are you sure to unassign dependency "+dep+"?";
+    alertify.confirm(message,function(e){
+        if(e){
+            $.get('unassign_dependency',{
+                value:value,
+                project_id:project_id,
+                team_id:team_id
+            },function(data){
+                if(data['message']==true){
+                    alertify.success(data["log_message"]);
+                    get_all_dependency(project_id,team_id);
+                }
+                else{
+                    alertify.error(data["log_message"]);
+                }
+            });
+        }
+        else{
+
+        }
     });
 }
 function inputRenameVersion(nam,project_id,team_id){
@@ -349,31 +435,31 @@ function populate_name_div(array_list){
         return message;
     }
 }
-function populate_lower_div(array_list){
+function populate_lower_div(array_list,dependency){
     var message="";
     message+='<table width="100%" class="one-column-emphasis">';
     for(var i=0;i<array_list.length;i++){
         message+='<tr>';
         message+='<td>'+array_list[i][1]+'</td>';
-        message+='<td><a class="button primary add_dependency" value="'+array_list[i][0]+'">Add</a></td>';
+        message+='<td><a class="button primary '+dependency+'" value="'+array_list[i][0]+'">Add</a></td>';
         message+='</tr>';
     }
     message+='</table>';
     return message;
 }
-function populate_upper_div(array_list,project_id,team_name){
+function populate_upper_div(array_list,project_id,team_name,team_id,dependency){
     if(array_list.length==0){
-        $('#team_id').html('<b>'+project_id+'<br>'+team_name+'</b>');
+        $('#'+team_id).html('<b>'+project_id+'<br>'+team_name+'</b>');
         var message="";
-        message+='<tr><td><b>No Dependency is Found</b></td></tr>'
+        message+='<tr><td><b>No '+dependency+' is Found</b></td></tr>'
         return message;
     }
     else{
-        $('#team_id').html('<b>'+project_id+'<br>'+team_name+'</b>');
+        $('#'+team_id).html('<b>'+project_id+'<br>'+team_name+'</b>');
         var message="";
         message+='<table width="100%" class="one-column-emphasis">';
         for(var i=0;i<array_list.length;i++){
-            message+=('<tr><td  style="cursor:pointer;" class="dependency" value="'+array_list[i][0]+'">'+array_list[i][1]+'</td></tr>');
+            message+=('<tr><td  style="cursor:pointer;" class="'+dependency+'" value="'+array_list[i][0]+'">'+array_list[i][1]+'</td></tr>');
         }
         message+='</table>';
         return message;
