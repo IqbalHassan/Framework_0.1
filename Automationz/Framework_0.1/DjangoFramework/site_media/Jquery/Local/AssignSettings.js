@@ -105,7 +105,7 @@ function get_all_dependency(project_id,team_id){
         $('.dependency').on('click',function(){
             dep=$(this).text().trim();
             $('#name_tab').attr('value','');
-            $('#bit_version').attr('value','');
+            //$('#bit_version').attr('value','');
             $('.dependency').css({'background':'none'});
             $('.dependency').removeClass('selected');
             $(this).css({'background':'#ccc'});
@@ -122,7 +122,7 @@ function get_all_dependency(project_id,team_id){
                 $('#name_tab').html(populate_name_div(name_list));
                 $('.name').click(function(){
                     $('#bit_version').html("");
-                    $('#bit_version').attr('value','');
+                    //$('#bit_version').attr('value','');
                     $('.name').css({'background':'none'});
                     $(this).css({'background':'#ccc'});
                     var value=$(this).attr('value');
@@ -381,18 +381,24 @@ function inputRenameVersion(nam,project_id,team_id){
         if(e){
             var old_name=$('#old_name').val().trim();
             var new_name=$('#new_name').val().trim();
-            $.get('rename_name',{
-                'old_name':old_name,
-                'new_name':new_name
-            },function(data){
-                if(data['message']==true){
-                    alertify.success(data['log_message']);
-                    get_all_dependency(project_id,team_id);
-                }
-                else{
-                    alertify.error(data['log_message']);
-                }
-            });
+            if(new_name!=""){
+                $.get('rename_name',{
+                    'old_name':old_name,
+                    'new_name':new_name
+                },function(data){
+                    if(data['message']==true){
+                        alertify.success(data['log_message']);
+                        get_all_dependency(project_id,team_id);
+                    }
+                    else{
+                        alertify.error(data['log_message']);
+                    }
+                });
+            }
+            else{
+                alertify.error("Name of Dependency is empty");
+            }
+
         }
         else{
 
@@ -444,19 +450,25 @@ function takeInputForRename(dep,project_id,team_id){
         if(e){
             var old_name=dep.trim();
             var new_name=$('#new_name').val().trim();
-            $.get("rename_dependency",{
-                old_name:old_name.trim(),
-                new_name:new_name.trim()
-            },function(data){
-                if(data['message']==true){
-                    alertify.success(data['log_message']);
-                    get_all_dependency(project_id,team_id);
-                }
-                else{
-                    alertify.error(data['log_message']);
-                }
+            if(new_name!=""){
+                $.get("rename_dependency",{
+                    old_name:old_name.trim(),
+                    new_name:new_name.trim(),
+                    tag:$('#name_tab').attr('value')
+                },function(data){
+                    if(data['message']==true){
+                        alertify.success(data['log_message']);
+                        get_all_dependency(project_id,team_id);
+                    }
+                    else{
+                        alertify.error(data['log_message']);
+                    }
 
-            });
+                });
+            }
+            else{
+                alertify.error("Dependency Name is empty");
+            }
         }
         else{
 

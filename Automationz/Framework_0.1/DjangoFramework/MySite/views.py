@@ -9544,7 +9544,7 @@ def get_all_names_dependency(request):
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
                 selected_dependency=request.GET.get(u'selected_dependency','')
-                query="select distinct name,name from dependency_values dv,dependency_management dm where dv.reference_id=dm.id and dm.project_id='%s' and dm.team_id=%d and dm.dependency=%d"%(project_id,int(team_id),int(selected_dependency))
+                query="select distinct name,name from dependency_values dv,dependency_management dm where dv.reference_id=dm.dependency and dm.project_id='%s' and dm.team_id=%d and dm.dependency=%d"%(project_id,int(team_id),int(selected_dependency))
                 print query
                 Conn=GetConnection()
                 name_list=DB.GetData(Conn,query,False)
@@ -9569,7 +9569,7 @@ def get_all_version_dependency(request):
                 team_id=request.GET.get(u'team_id','')
                 selected_dependency=request.GET.get(u'selected_dependency','')
                 selected_name=request.GET.get(u'selected_name','')
-                query="SELECT bit, array_to_string(array_agg(distinct version),',') AS version from dependency_management dm, dependency_values dv where dm.id=dv.reference_id and dv.reference_id=%d and name='%s' and dm.project_id='%s' and dm.team_id=%d GROUP BY dv.reference_id,dv.name,dv.bit"%(int(selected_dependency),selected_name,project_id,int(team_id))   
+                query="SELECT bit, array_to_string(array_agg(distinct version),',') AS version from dependency_management dm, dependency_values dv where dm.dependency=dv.reference_id and dv.reference_id=%d and name='%s' and dm.project_id='%s' and dm.team_id=%d GROUP BY dv.reference_id,dv.name,dv.bit"%(int(selected_dependency),selected_name,project_id,int(team_id))   
                 print query
                 Conn=GetConnection()
                 name_list=DB.GetData(Conn,query,False)
@@ -9638,44 +9638,22 @@ def link_with_project_team(request):
                 project_id=request.GET.get('project_id','')
                 team_id=request.GET.get('team_id','')
                 dependency=request.GET.get('dependency','')
-                query="select count(*) from dependency_management where dependency=%d"%int(dependency)
+                Dict={
+                      'project_id':project_id,
+                      'team_id':int(team_id),
+                      'dependency':int(dependency)
+                }
                 Conn=GetConnection()
-                count=DB.GetData(Conn,query)
+                result=DB.InsertNewRecordInToTable(Conn,"dependency_management",**Dict)
                 Conn.close()
-                if isinstance(count,list) and len(count)==1 and count[0]==0:
-                    PassMessasge(sModuleInfo,"No id for the dependency value %d "%int(dependency),1)
-                    #take the reference_id
-                    query="select max(id)+1 from dependency_management"
-                elif isinstance(count,list) and len(count)==1 and count[0]>0:
-                    PassMessasge(sModuleInfo, "Id Found for the dependency value %d"%int(dependency), 1)
-                    #now take the reference id of that dependency values
-                    query="select id from dependency_management where dependency=%d limit 1"%int(dependency)
-                Conn=GetConnection()
-                reference_id=DB.GetData(Conn,query)
-                Conn.close()
-
-                if isinstance(reference_id,list):
-                    reference_id=int(reference_id[0])
-                    #form the Dict
-                    Dict={
-                            'id':reference_id,
-                            'project_id':project_id,
-                            'team_id':int(team_id),
-                            'dependency':int(dependency)
-                        }
-                    Conn=GetConnection()
-                    result=DB.InsertNewRecordInToTable(Conn,"dependency_management",**Dict)
-                    Conn.close()
-                    if result==True:
-                        PassMessasge(sModuleInfo, "Dependency with value %d is linked with (%s,%d)"%(int(dependency),project_id,int(team_id)),1)
-                        message=True
-                        log_message="Dependency is linked Successfully"
-                    else:
-                        PassMessasge(sModuleInfo, "Can't insert the entry %s to the dependency_mangement"%str(Dict), 3)
-                        message=False
-                        log_message="Can't insert the entry %s to the dependency_mangement"%str(Dict)
+                if result==True:
+                    PassMessasge(sModuleInfo, "Dependency with value %d is linked with (%s,%d)"%(int(dependency),project_id,int(team_id)),1)
+                    message=True
+                    log_message="Dependency is linked Successfully"
                 else:
-                    PassMessasge(sModuleInfo,"Error in retrieveing id count for dependency vaulue %d"%int(dependency),3)
+                    PassMessasge(sModuleInfo, result, 3)
+                    message=False
+                    log_message="Can't insert the entry %s to the dependency_mangement"%str(Dict)
                 result={
                     'message':message,
                     'log_message':log_message
@@ -9695,32 +9673,33 @@ def enlist_new_name(request):
                 name=request.GET.get(u'name','')
                 bit=request.GET.get(u'bit','')
                 version=request.GET.get(u'version','')
-                query="select id from dependency_management where dependency=(select id from dependency where dependency_name='%s')"%dependency.strip()
+                query="select id from dependency where dependency_name='%s'"%dependency.strip()
                 Conn=GetConnection()
-                reference_id=DB.GetData(Conn,query)
+                count=DB.GetData(Conn,query)
                 Conn.close()
-                if isinstance(reference_id,list):
-                    reference_id=reference_id[0]
-                    Dict={
-                        'reference_id':int(reference_id),
-                        'name':name.strip(),
-                        'version': ("v"+version).strip(),
-                        'bit':bit.strip()
-                    }
-                    Conn=GetConnection()
-                    result=DB.InsertNewRecordInToTable(Conn,"dependency_values",**Dict)
-                    Conn.close()
-                    if result==True:
-                        PassMessasge(sModuleInfo, "Tuple %s is inserted in dependency_values successfully"%str(Dict), 1)
-                        message=True
-                        log_message="Name %s with version %s, %s bit is inserted successfully"%(name,version,bit)
-                    else:
-                        message=False
-                        log_message="Name %s with version %s, %s bit is unable to insert"%(name,version,bit)
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]!=0:
+                        Dict={
+                                'reference_id':int(count[0]),
+                                'name':name.strip(),
+                                'version': ("v"+version).strip(),
+                                'bit':bit.strip()
+                            }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"dependency_values",**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo, "Tuple %s is inserted in dependency_values successfully"%str(Dict), 1)
+                            message=True
+                            log_message="Name %s with version %s, %s bit is inserted successfully"%(name,version,bit)
+                        else:
+                            PassMessasge(sModuleInfo, result, 3)
+                            message=False
+                            log_message="Name %s with version %s, %s bit is unable to insert"%(name,version,bit)
                 else:
-                    PassMessasge(sModuleInfo, "Error:In retrieveing the reference id for dependency %s"%dependency,3)
+                    PassMessasge(sModuleInfo, count, 3)
                     message=False
-                    log_message="Error:In retrieveing the reference id for dependency %s"%dependency
+                    log_message="Name %s with version %s, %s bit is unable to insert"%(name,version,bit)
                 result={
                     'message':message,
                     'log_message':log_message
@@ -9738,28 +9717,44 @@ def rename_dependency(request):
             if request.is_ajax():
                 old_name=request.GET.get(u'old_name','')
                 new_name=request.GET.get(u'new_name','')
-                query="select count(*) from dependency where dependency_name='%s'"%old_name.strip()
+                tag=request.GET.get(u'tag','')
+                query="select count(*) from dependency where dependency_name='%s'"%new_name.strip()
                 Conn=GetConnection()
-                count=DB.GetData(Conn,query)
+                new_name_count=DB.GetData(Conn,query)
                 Conn.close()
-                if isinstance(count,list):
-                    PassMessasge(sModuleInfo,"Dependency %s is found in dependency tables.Renaming.."%old_name.strip(),3)
-                    Dict={
-                          'dependency_name':new_name
-                    }
-                    sWhereQuery="where dependency_name='%s'"%old_name.strip()
-                    Conn=GetConnection()
-                    result=DB.UpdateRecordInTable(Conn,"dependency", sWhereQuery,**Dict)
-                    if result==True:
-                        message=True
-                        log_message="Dependency %s is renamed to %s"%(old_name.strip(),new_name.strip())
-                    else:
+                if isinstance(new_name_count,list):
+                    if len(new_name_count)==1 and new_name_count[0]==0:
+                        query="select count(*) from dependency where dependency_name='%s'"%old_name.strip()
+                        Conn=GetConnection()
+                        count=DB.GetData(Conn,query)
+                        Conn.close()
+                        if isinstance(count,list):
+                            PassMessasge(sModuleInfo,"Dependency %s is found in dependency tables.Renaming.."%old_name.strip(),3)
+                            Dict={
+                                  'dependency_name':new_name
+                            }
+                            sWhereQuery="where dependency_name='%s' and id=%d"%(old_name.strip(),int(tag))
+                            Conn=GetConnection()
+                            result=DB.UpdateRecordInTable(Conn,"dependency", sWhereQuery,**Dict)
+                            if result==True:
+                                message=True
+                                log_message="Dependency %s is renamed to %s"%(old_name.strip(),new_name.strip())
+                            else:
+                                message=False
+                                log_message="Dependency %s is not renamed."%old_name.strip()
+                        else:
+                            PassMessasge(sModuleInfo,"Dependency %s is not found in dependency tables"%old_name.strip(),3)
+                            message=False
+                            log_message="Dependency %s is not found in dependency tables"%old_name.strip()
+                    if len(new_name_count)==1 and new_name_count[0]>0:
+                        PassMessasge(sModuleInfo,"Dependency '%s' already exists in dependency tables"%new_name.strip(),3)
                         message=False
-                        log_message="Dependency %s is not renamed."%old_name.strip()
+                        log_message="Dependency '%s' already exists in dependency tables"%new_name.strip()
                 else:
-                    PassMessasge(sModuleInfo,"Dependency %s is not found in dependency tables"%old_name.strip(),3)
+                    PassMessasge(sModuleInfo,new_name_count,3)
                     message=False
-                    log_message="Dependency %s is not found in dependency tables"%old_name.strip()
+                    log_message="Database Connection Error. Try Again.."
+                        
                 result={
                     'message':message,
                     'log_message':log_message
@@ -9778,34 +9773,23 @@ def add_new_version(request):
                 name=request.GET.get(u'name','')
                 bit=request.GET.get(u'bit','')
                 version=request.GET.get(u'version','')
-                #first take out the reference_id
-                query="select distinct id from dependency_management where dependency=%d"%int(dependency)
-                Conn=GetConnection()
-                count=DB.GetData(Conn,query)
-                Conn.close()
-                if isinstance(count,list) and len(count)>=1:
-                    reference_id=count[0]
-                    Dict={
-                          'reference_id':int(reference_id),
+                Dict={
+                          'reference_id':int(dependency),
                           'name':name.strip(),
                           'bit':bit.strip(),
                           'version':("v"+version).strip()
-                    }
-                    Conn=GetConnection()
-                    result=DB.InsertNewRecordInToTable(Conn,"dependency_values",**Dict)
-                    Conn.close()
-                    if result==True:
-                        PassMessasge(sModuleInfo,"Entry %s is added successfully"%str(Dict),1)
-                        message=True
-                        log_message="Version %s,%d bit is added successfully"%(version,int(bit))
-                    else:
-                        PassMessasge(sModuleInfo,result,3)
-                        message=False
-                        log_message="Version %s,%d bit is not added successfully"%(version,int(bit))
+                }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"dependency_values",**Dict)
+                Conn.close()
+                if result==True:
+                    PassMessasge(sModuleInfo,"Entry %s is added successfully"%str(Dict),1)
+                    message=True
+                    log_message="Version %s,%d bit is added successfully"%(version,int(bit))
                 else:
-                    PassMessasge(sModuleInfo,"No Reference Id is found",3)
+                    PassMessasge(sModuleInfo,result,3)
                     message=False
-                    log_message="Error:In fetching reference id for dependency %d"%int(dependency)
+                    log_message="Version %s,%d bit is not added successfully"%(version,int(bit))
                 result={
                     'message':message,
                     'log_message':log_message
@@ -9823,21 +9807,36 @@ def rename_name(request):
             if request.is_ajax():
                 old_name=request.GET.get(u'old_name','')
                 new_name=request.GET.get(u'new_name','')
-                sWhereQuery="where name='%s'"%old_name
-                Dict={
-                      'name':new_name
-                }
+                query="select count(*) from dependency_values where name='%s'"%(new_name.strip())
                 Conn=GetConnection()
-                result=DB.UpdateRecordInTable(Conn,"dependency_values", sWhereQuery,**Dict)
+                count=DB.GetData(Conn,query)
                 Conn.close()
-                if result==True:
-                    PassMessasge(sModuleInfo, "'%s' is renamed to '%s'"%(old_name,new_name), 1)
-                    message=True
-                    log_message="'%s' is renamed to '%s'"%(old_name,new_name)
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        sWhereQuery="where name='%s'"%old_name
+                        Dict={
+                              'name':new_name
+                        }
+                        Conn=GetConnection()
+                        result=DB.UpdateRecordInTable(Conn,"dependency_values", sWhereQuery,**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo, "'%s' is renamed to '%s'"%(old_name,new_name), 1)
+                            message=True
+                            log_message="'%s' is renamed to '%s'"%(old_name,new_name)
+                        else:
+                            PassMessasge(sModuleInfo, result, 3)
+                            message=False
+                            log_message="%s is not renamed"%old_name
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo, "Name '%s' is already exists..."%new_name.strip(),3)
+                        message=False
+                        log_message="Name '%s' is already exists..."%new_name.strip()
                 else:
-                    PassMessasge(sModuleInfo, result, 3)
+                    PassMessasge(sModuleInfo,count,3)
                     message=False
-                    log_message="%s is not renamed"%old_name
+                    log_message="Database Connection Error. Try Again.."
+                        
                 result={
                     'message':message,
                     'log_message':log_message
