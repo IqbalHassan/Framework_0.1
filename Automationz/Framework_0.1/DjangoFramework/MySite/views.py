@@ -7677,15 +7677,19 @@ def Milestone(request):
         data.append(temp[i])
         data.append(all[i]-complete[i])
         data.append(complete[i])
-        left = (now-each[3]).days
-        if left>0:
-            data.append(left)
-            data.append("Left only ")
-            data.append('green')
-        else:
+        left = (each[3]-now).days
+        if left<0 and data[4]!='complete':
             data.append(-left)
             data.append("Past due by ")
             data.append('red')
+        elif left<0 and data[4]=='complete':
+            data.append(-left)
+            data.append("Finished ago by ")
+            data.append('green')
+        else:
+            data.append(left)
+            data.append("Left only ")
+            data.append('green')
         i = i+1
         milestone_list.append(data)
         
