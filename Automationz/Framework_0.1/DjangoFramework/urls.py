@@ -284,22 +284,6 @@ urlpatterns = patterns('',
     
     #pages for the assignment of the team settings
     url(r'^Home/AssignSettings/$', assign_settings),
-    url(r'^Home/.*/get_all_dependency/$',get_all_dependency),
-    url(r'^Home/.*/get_all_names_dependency/$',get_all_names_dependency),
-    url(r'^Home/.*/get_all_version_dependency/$',get_all_version_dependency),
-    url(r'^Home/.*/register_new_dependency/$',register_new_dependency),
-    url(r'^Home/.*/link_with_project_team/$',link_with_project_team),
-    url(r'^Home/.*/enlist_new_name/$',enlist_new_name),
-    url(r'^Home/.*/rename_dependency/$',rename_dependency),
-    url(r'^Home/.*/add_new_version/$',add_new_version),
-    url(r'^Home/.*/rename_name/$',rename_name),
-    url(r'^Home/.*/enlist_new_version/$',enlist_new_version),
-    url(r'^Home/.*/unassign_dependency/$',unassign_dependency),
-    url(r'^Home/.*/GetUsageDependency/$',GetUsageDependency),
-    url(r'^Home/.*/link_new_version/$',link_new_version),
-    url(r'^Home/.*/rename_version/$',rename_version),
-    url(r'^Home/.*/get_version_usage/$',get_version_usage),
-    url(r'^Home/.*/unassign_version/$',unassign_version),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )
