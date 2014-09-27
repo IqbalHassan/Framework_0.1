@@ -10140,6 +10140,7 @@ def unassign_version(request):
                 return HttpResponse(result,mimetype='application/json')
     except Exception,e:
         PassMessasge(sModuleInfo, e, 3)
+#will be changing the new format inhere
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
