@@ -298,6 +298,8 @@ urlpatterns = patterns('',
     url(r'^Home/.*/GetUsageDependency/$',GetUsageDependency),
     url(r'^Home/.*/link_new_version/$',link_new_version),
     url(r'^Home/.*/rename_version/$',rename_version),
+    url(r'^Home/.*/get_version_usage/$',get_version_usage),
+    url(r'^Home/.*/unassign_version/$',unassign_version),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )

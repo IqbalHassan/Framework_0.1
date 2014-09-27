@@ -244,8 +244,8 @@ function version_tab_button_works(project_id,team_id){
             case "rename_version":
                 input_version_name(project_id,team_id,version_name);
                 break;
-            case "usage_version":alert("usage_version"); break;
-            case "unassign_version": alert("unassign version"); break;
+            case "usage_version":get_version_usage(project_id,team_id,version_name); break;
+            case "unassign_version": unassignVersion(project_id,team_id,version_name); break;
             case "delete_version":alert("delete_version");break;
         }
 
@@ -263,6 +263,74 @@ function version_tab_button_works(project_id,team_id){
             else{
                 alertify.error(data['log_message']);
             }
+        });
+    });
+}
+function unassignVersion(project_id,team_id,version_name){
+    var message="";
+    message+='Do you want to unassign version \''+version_name+'\'';
+    alertify.confirm(message,function(e){
+        //e.stopPropagation();
+        if(e){
+            $.get('unassign_version',{
+                version:version_name,
+                project_id:project_id,
+                team_id:team_id
+            },function(data){
+                if(data['message']==true){
+                    alertify.success(data['log_message']);
+                    get_all_dependency(project_id,team_id);
+                }
+                else{
+                    alertify.error(data['log_message']);
+                }
+            });
+        }
+        else{
+
+        }
+    })
+}
+function get_version_usage(project_id,team_id,version_name){
+    $.get('get_version_usage',{
+       version:version_name
+    },function(data){
+        var list=data['results'];
+        var message="";
+        message+='<table width="100%" class="one-column-emphasis">';
+        for(var i=0;i<list.length;i++){
+            if(list[i][1]!=""){
+                message+='<tr><td>'+list[i][0].trim()+'</td>';
+                var temp=list[i][1].split(",");
+                message+='<td><table width="100%">';
+                for(var j=0;j<temp.length;j++){
+                    message+='<tr><td>'+temp[j]+'</td></tr>';
+                }
+                message+='</table></td>';
+                message+='</tr>';
+            }
+
+        }
+        message+='</table>';
+        $('#inner_div').html(message);
+        $("#inner_div").dialog({
+            buttons : {
+                "OK" : function() {
+                    $(this).dialog("close");
+                }
+            },
+
+            show : {
+                effect : 'drop',
+                direction : "up"
+            },
+
+            modal : true,
+            width : 700,
+            height : 650,
+            align:'center',
+            title:"Usage"
+
         });
     });
 }

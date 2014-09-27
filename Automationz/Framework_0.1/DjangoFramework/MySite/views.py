@@ -53,6 +53,7 @@ from TaskOperations import testConnection
 import BugOperations
 import LogModule
 from LogModule import PassMessasge
+from django.contrib.messages.storage.base import Message
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -10064,7 +10065,81 @@ def rename_version(request):
 
     except Exception,e:
         PassMessasge(sModuleInfo,e,3)
-     
+    
+def get_version_usage(request):
+    #getting the version usage
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                version=request.GET.get(u'version','')
+                query="select project_id,array_to_string(array_agg(c.value ),',') as version from versions v,version_management vm,config_values c where c.id =vm.team_id and v.id=vm.version and v.version_name='%s' group by project_id"%(version)
+                Conn=GetConnection()
+                result_list=DB.GetData(Conn,query,False)
+                if isinstance(result_list,list):
+                    PassMessasge(sModuleInfo, "Usage of version '%s' is taken out successfully"%version, 1)
+                    message=True
+                else:
+                    PassMessasge(sModuleInfo,"Usage of version '%s' is not taken out successfully"%version, 3)
+                    message=False
+                result={
+                    'results':result_list,
+                    'message':message
+                }
+                     
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+
+def unassign_version(request):
+    #unassign the version from the team and project
+    sModuleInfo=inspect.stack()[0][3]+" : "+inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                version=request.GET.get(u'version','')
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                #get the version reference numbers
+                query="select id from versions where version_name='%s'"%version
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]!=0:
+                        Dict={
+                            'version':count[0],
+                            'project_id':project_id,
+                            'team_id':team_id
+                        }
+                        Conn=GetConnection()
+                        result=DB.DeleteRecord(Conn,"version_management",**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo,"Version '%s' is unassigned."%version,1)
+                            message=True
+                            log_message="Version '%s' is unassigned."%version
+                        else:
+                            PassMessasge(sModuleInfo, result, 3)
+                            message=False
+                            log_message="Version '%s' is not unassigned successfully.."%version
+                    else:
+                        PassMessasge(sModuleInfo, "Unable to fetch the id of version '%s'"%version,3)
+                        message=False
+                        log_message="Unable to unassign the version '%s'"%version
+                else:
+                    PassMessasge(sModuleInfo, count, 3)
+                    message=False
+                    log_message="Database Connection error.Try Again.."
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
