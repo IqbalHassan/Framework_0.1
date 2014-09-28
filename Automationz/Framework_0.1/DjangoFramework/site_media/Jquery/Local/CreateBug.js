@@ -11,7 +11,7 @@ $(document).ready(function(){
 
     TestCaseLinking();
 
-    $('#scrollbox1').enscroll({
+    $('.scrollbox1').enscroll({
         verticalTrackClass: 'track1',
         verticalHandleClass: 'handle1',
         drawScrollButtons: true,

@@ -4510,7 +4510,7 @@ table .ScheduledLeaveCalendar
 
 /*********scroll***********/
 
-#scrollbox1 {
+.scrollbox1 {
             overflow: auto;
             width: 400px;
             height: 360px;

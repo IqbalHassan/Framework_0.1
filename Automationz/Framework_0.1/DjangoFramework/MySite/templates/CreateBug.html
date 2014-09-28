@@ -140,30 +140,60 @@
         <h2>Test Case</h2>
         <div class="tabs-div" align="left" style="margin-top: 30px;">
 
+            <h2 style="text-align: center">Linked Test Cases</h2>
+            <table class="linking one-column-emphasis">
+                <thead>
+                <tr>
+                    <td></td>
+                    <td>Title</td>
+                    <td>Features</td>
+                    <td>Section</td>
+                    <td>Last Result</td>
+                    <td>Run Date</td>
+                    <td>Version</td>
+                    <td>Milestone</td>
+                </tr>
+                </thead>
+            </table>
+
+            <br>
+            <input class="search_case textbox" placeholder="Search Test Case To Link"/>
+
+            <br><br>
+
+            <!--div class="scrollbox1" style="min-width: 90%; margin-bottom: 2%" align="center">
+
+                <table>
+                    {% if cases %}
+                    {% for x in cases %}
+                    <tr><td><input type="checkbox" value="{{x.0}}" name="test_cases">{{x.0}} - {{x.1}}</td></tr>
+                    {% endfor %}
+                    {% endif %}
+                </table>
+
+            </div-->
 
             <table style="width: 100%;">
                 <thead>
                 <tr>
-                    <td style="text-align: center;"><h2>Link Test Cases</h2></td>
+                    <td style="text-align: center;"></td>
                     <td style="text-align: center;"><h4>Suggested Test Cases</h4></td>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td style="width: 65%;">
-                        <div style="width: 100%;" align="center">
+                        <!--div style="width: 100%;" align="center">
                             <br>
                             <input class="search_case textbox" placeholder="Search Test Case"/>
 
                             <br><br>
-                            <table class="linking" style="float: left;margin-left: 10%">
 
-                            </table>
-                        </div>
+                        </div-->
 
                     </td>
                     <td style="width: 35%; position: relative;">
-                        <div id="scrollbox1" style="position: absolute; min-width: 100%; top: 0;margin-bottom: 3%" align="center">
+                        <div class="scrollbox1" style="position: absolute; min-width: 100%; top: 0;margin-bottom: 3%" align="center">
 
                             <table>
                                 {% if cases %}
