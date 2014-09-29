@@ -9480,7 +9480,177 @@ def assign_settings(request):
     except Exception,e:
         PassMessasge(sModuleInfo, e, 3)
         
+#myConfiguration Shetu don't change#        
+success_tag=1
+warning_tag=2
+error_tag=3
+DBError="Database Connection Error.Try Again.."
+AjaxError="Ajax call is expected here"
+PostError="Can't take any post request"
+def multiple_instance(name,type_tag):
+    return type_tag+":'"+name+"' already exists in the database"
+def entry_success(name,type_tag):
+    return type_tag+":'"+name+"' successfully inserted"
+def entry_fail(name,type_tag):
+    return type_tag+":'"+name+"' is failed  to insert"
+#myConfiguration Shetu don't change#
 
+#get all the data from the assign settings page
+def get_all_data_dependency_page(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                #dependency_tab
+                query="select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
+                Conn=GetConnection()
+                dependency_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                query="select distinct d.id,d.dependency_name as name from dependency d except(select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d) order by name"%(project_id.strip(),int(team_id.strip()))
+                Conn=GetConnection()
+                unused_dependency_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                result={
+                    'dependency_list':dependency_list,
+                    'unused_dependency_list':unused_dependency_list
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+    
+#create new dependency in dependency tab
+def add_new_dependency(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="dependency"
+                dependency=request.GET.get(u'dependency_name','')
+                #check for the occurance
+                query="select count(*) from dependency where dependency_name='%s'"%dependency.strip()
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        #form dict to insert 
+                        Dict={
+                              'dependency_name':dependency.strip()
+                        }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"dependency",**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo,entry_success(dependency,type_tag), success_tag)
+                            message=True
+                            log_message=entry_success(dependency,type_tag)
+                        else:
+                            PassMessasge(sModuleInfo, entry_fail(dependency, type_tag), error_tag)
+                            message=False
+                            log_message=entry_fail(dependency, type_tag)
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo,multiple_instance(dependency, type_tag), error_tag)
+                        message=False
+                        log_message=multiple_instance(dependency, type_tag)
+                else:
+                    PassMessasge(sModuleInfo, DBError, error_tag)
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+            
+def add_new_name_dependency(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="Dependency Name"
+                new_name=request.GET.get(u'new_name','')
+                new_value=request.GET.get(u'new_value','')
+                query="select count(*) from dependency_name where name='%s'"%(new_name.strip())
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        Dict={
+                            'name':new_name.strip(),
+                            'dependency_id':int(new_value.strip())
+                        }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"dependency_name",**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo,entry_success(new_name.strip(), type_tag), success_tag)
+                            message=True
+                            log_message=entry_success(new_name.strip(), type_tag)
+                        else:
+                            PassMessasge(sModuleInfo,entry_fail(new_name.strip(), type_tag),error_tag)
+                            message=False
+                            log_message=entry_fail(new_name.strip(), type_tag)
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo,multiple_instance(new_name, type_tag), error_tag)
+                        message=False
+                        log_message=multiple_instance(new_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo,DBError,error_tag)
+                    message=True
+                    log_message=DBError
+                Conn.close()
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+
+def get_all_name_under_dependency(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                value=request.GET.get(u'value',''),
+                team_id=request.GET.get(u'team_id','')
+                print value[0]
+                print project_id
+                print team_id
+                query="select dn.id,dn.name as name from dependency_name dn,dependency_management dm where dm.dependency=dn.dependency_id and project_id='%s' and team_id=%d and dm.dependency=%d order by name"%(project_id,int(team_id),int(value[0]))
+                Conn=GetConnection()
+                dependency_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                result={
+                    'dependency_list':dependency_list
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+    
 #will be changing the new format inhere
 '''
 You must use @csrf_protect before any 'post' handling views

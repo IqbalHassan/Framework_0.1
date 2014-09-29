@@ -284,6 +284,10 @@ urlpatterns = patterns('',
     
     #pages for the assignment of the team settings
     url(r'^Home/AssignSettings/$', assign_settings),
+    url(r'^Home/.*/get_all_data_dependency_page/$',get_all_data_dependency_page),
+    url(r'^Home/.*/add_new_dependency/$',add_new_dependency),
+    url(r'^Home/.*/add_new_name_dependency/$',add_new_name_dependency),
+    url(r'^Home/.*/get_all_name_under_dependency/$',get_all_name_under_dependency),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )
