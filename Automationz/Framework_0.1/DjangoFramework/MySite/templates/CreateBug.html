@@ -14,7 +14,48 @@
 
     </div>
 
-    <input class="textbox" placeholder="Title Here" id="title">
+
+    <table style="width: 100%">
+        <tr>
+            <td>
+                <input class="textbox" placeholder="Title Here" id="title">
+            </td>
+            <td id="ms_info" style="float: right;display: none">
+                <table>
+                    <tr>
+                        <td class="tc_form_label_col">
+                            <b class="Text">Created By : </b> <b id="created_by"></b>
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="tc_form_label_col">
+                            <b class="Text">Created : </b> <b id="created_date"></b>
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="tc_form_label_col">
+                            <b class="Text">Last Modified By : </b> <b id="modified_by"></b>
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="tc_form_label_col">
+                            <b class="Text">Last Modified : </b> <b id="modified_date"></b>
+                        </td>
+
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+
+
 
     <div class="responsive-tabs" style="margin-left: 30px">
 
@@ -85,7 +126,7 @@
                             </tr>
                             <tr>
                                 <td align="right"><b class="Text">Priority:</b></td>
-                                <td><select id="priority" class="selectdrop"><option selected value="1">P1(Highest)</option>
+                                <td><select id="priority"><option selected value="1">P1(Highest)</option>
                                     <option value="2">P2</option>
                                     <option value="3">P3</option>
                                     <option value="4">P4</option>
@@ -96,7 +137,7 @@
                                 <!--td><input id="milestone_list" class="textbox" placeholder="Milestone Here"></td>
                                 <td><table><tr id="milestone"></tr></table></td-->
                                 <td>
-                                    <select id="milestone" class="selectdrop">
+                                    <select id="milestone">
                                         {% if milestone_list %}
                                         {% for x in milestone_list %}
                                         <option value="{{x.0}}"/>{{x.1}}</option>
@@ -107,7 +148,7 @@
                             </tr>
                             <tr>
                                 <td align="right"><b class="Text">Status:</b></td>
-                                <td><select id="status" class="selectdrop"><option selected value="Unconfirmed">Unconfirmed</option>
+                                <td><select id="status"><option selected value="Unconfirmed">Unconfirmed</option>
                                     <option value="New">New</option>
                                     <option value="Assigned">Assigned</option>
                                     <option value="Reopened">Reopened</option>
@@ -144,6 +185,7 @@
             <table class="linking one-column-emphasis">
                 <thead>
                 <tr>
+                    <td></td>
                     <td></td>
                     <td>Title</td>
                     <td>Features</td>
