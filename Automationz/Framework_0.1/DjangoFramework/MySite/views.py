@@ -54,6 +54,7 @@ import BugOperations
 import LogModule
 from LogModule import PassMessasge
 from django.contrib.messages.storage.base import Message
+from _ast import BitAnd
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -9493,6 +9494,12 @@ def entry_success(name,type_tag):
     return type_tag+":'"+name+"' successfully inserted"
 def entry_fail(name,type_tag):
     return type_tag+":'"+name+"' is failed  to insert"
+def update_success(old_name,new_name,type_tag):
+    return type_tag+":'"+old_name+"' is updated to '"+new_name+"'"
+def update_fail(name,type_tag):
+    return type_tag+":'"+name+"' is failed  to update"
+def unavailable(name,type_tag):
+    return type_tag+":'"+name+"' is not in database"
 #myConfiguration Shetu don't change#
 
 #get all the data from the assign settings page
@@ -9641,6 +9648,291 @@ def get_all_name_under_dependency(request):
                 Conn.close()
                 result={
                     'dependency_list':dependency_list
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def rename_dependency(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="dependency"
+                old_name=request.GET.get(u'old_name','')
+                new_name=request.GET.get(u'new_name','')
+                query="select count(*) from dependency where dependency_name='%s'"%old_name.strip()
+                Conn=GetConnection()
+                old_name_count=DB.GetData(Conn,query)
+                Conn.close()
+                query="select count(*) from dependency where dependency_name='%s'"%new_name.strip()
+                Conn=GetConnection()
+                new_name_count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(old_name_count,list):
+                    if len(old_name_count)==1 and old_name_count[0]>0:
+                        if len(new_name_count)==1 and new_name_count[0]==0:
+                            sWhereQuery="where dependency_name='%s'"%old_name.strip()
+                            Dict={
+                                'dependency_name':new_name.strip()
+                            }
+                            Conn=GetConnection()
+                            result=DB.UpdateRecordInTable(Conn,"dependency", sWhereQuery,**Dict)
+                            Conn.close()
+                            if result==True:
+                                PassMessasge(sModuleInfo,update_success(old_name, new_name, type_tag), success_tag)
+                                message=True
+                                log_message=update_success(old_name, new_name, type_tag)
+                            else:
+                                PassMessasge(sModuleInfo, update_fail(old_name, type_tag), error_tag)
+                                message=False
+                                log_message=update_fail(old_name, type_tag)
+                        if len(new_name_count)==1 and new_name_count[0]>0:
+                            PassMessasge(sModuleInfo,multiple_instance(new_name, type_tag),error_tag)
+                            message=False
+                            log_message=multiple_instance(new_name,type_tag)
+                    if len(old_name_count)==1 and old_name_count[0]==0:
+                        PassMessasge(sModuleInfo, unavailable(old_name,type_tag), error_tag)
+                        message=False
+                        log_message=unavailable(old_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo,DBError, error_tag)
+                    message=False
+                    log_message=DBError
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def add_new_version(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                bit=request.GET.get(u'bit','')
+                version=request.GET.get(u'version','')
+                value=request.GET.get(u'value','')
+                #check for occurances
+                query="select count(*) from dependency_values where bit_name='%s' and version='%s' and id=%d"%(bit,version,int(value))
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        Dict={
+                            'id':int(value),
+                            'version':version,
+                            'bit_name':bit
+                        }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"dependency_values",**Dict)
+                        if result==True:
+                            PassMessasge(sModuleInfo, "Version '%s':%d bit is inserted successfully"%(version,int(bit)),success_tag)
+                            message=True
+                            log_message="Version '%s':%d bit is inserted successfully"%(version,int(bit))
+                        else:
+                            PassMessasge(sModuleInfo, "Version '%s':%d bit is failed to insert"%(version,int(bit)),error_tag)
+                            message=False
+                            log_message="Version '%s':%d bit is failed to insert"%(version,int(bit))
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo, "Version '%s':%d bit is already in the database"%(version,int(bit)),error_tag)
+                        message=False
+                        log_message="Version '%s':%d bit is already in the database"%(version,int(bit))
+                else:
+                    PassMessasge(sModuleInfo,DBError,error_tag)
+                    message=False
+                    log_message=DBError
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def get_all_version_bit(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                value=request.GET.get(u'value','')
+                query="select bit_name|| ' Bit' as bit,array_to_string(array_agg(distinct version),',') from dependency_values dv,dependency_name dn where dv.id=dn.id and dn.id=%d group by bit_name order by bit"%(int(value))
+                Conn=GetConnection()
+                version_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                result={
+                    'version_list':version_list
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+                
+def link_dependency(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                value=request.GET.get(u'value','')
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                Dict={
+                    'project_id':project_id,
+                    'team_id':int(team_id),
+                    'dependency':int(value)
+                }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"dependency_management",**Dict)
+                Conn.close()
+                if result==True:
+                    PassMessasge(sModuleInfo,"Dependency %d is linked successfully"%int(value),error_tag )
+                    message=True
+                    log_message="Dependency is linked successfully"
+                else:
+                    PassMessasge(sModuleInfo,"Dependency %d is not linked successfully"%int(value),error_tag )
+                    message=False
+                    log_message="Dependency is not linked successfully"
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+        
+def unlink_dependency(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                value=request.GET.get(u'value','')
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                Dict={
+                    'project_id':project_id,
+                    'team_id':int(team_id),
+                    'dependency':int(value)
+                }
+                Conn=GetConnection()
+                result=DB.DeleteRecord(Conn,"dependency_management",**Dict)
+                Conn.close()
+                if result==True:
+                    PassMessasge(sModuleInfo,"Dependency %d is unlinked successfully"%int(value),error_tag )
+                    message=True
+                    log_message="Dependency is unlinked successfully"
+                else:
+                    PassMessasge(sModuleInfo,"Dependency %d is not unlinked successfully"%int(value),error_tag )
+                    message=False
+                    log_message="Dependency is not unlinked successfully"
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def rename_name(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="dependency name"
+                old_name=request.GET.get(u'old_name','')
+                new_name=request.GET.get(u'new_name','')
+                query="select count(*) from dependency_name where name='%s'"%old_name.strip()
+                Conn=GetConnection()
+                old_name_count=DB.GetData(Conn,query)
+                Conn.close()
+                query="select count(*) from dependency_name where name='%s'"%new_name.strip()
+                Conn=GetConnection()
+                new_name_count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(old_name_count,list):
+                    if len(old_name_count)==1 and old_name_count[0]>0:
+                        if len(new_name_count)==1 and new_name_count[0]==0:
+                            sWhereQuery="where name='%s'"%old_name.strip()
+                            Dict={
+                                'name':new_name.strip()
+                            }
+                            Conn=GetConnection()
+                            result=DB.UpdateRecordInTable(Conn,"dependency_name", sWhereQuery,**Dict)
+                            Conn.close()
+                            if result==True:
+                                PassMessasge(sModuleInfo,update_success(old_name, new_name, type_tag), success_tag)
+                                message=True
+                                log_message=update_success(old_name, new_name, type_tag)
+                            else:
+                                PassMessasge(sModuleInfo, update_fail(old_name, type_tag), error_tag)
+                                message=False
+                                log_message=update_fail(old_name, type_tag)
+                        if len(new_name_count)==1 and new_name_count[0]>0:
+                            PassMessasge(sModuleInfo,multiple_instance(new_name, type_tag),error_tag)
+                            message=False
+                            log_message=multiple_instance(new_name,type_tag)
+                    if len(old_name_count)==1 and old_name_count[0]==0:
+                        PassMessasge(sModuleInfo, unavailable(old_name,type_tag), error_tag)
+                        message=False
+                        log_message=unavailable(old_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo,DBError, error_tag)
+                    message=False
+                    log_message=DBError
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+
+def make_default_name(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                name=request.GET.get(u'name','')
+                dependency=request.GET.get(u'dependency','')
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                #take out the default choices
+                query="select default_choices from dependency_management where project_id='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(dependency))
+                Conn=GetConnection()
+                result={
+
                 }
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')

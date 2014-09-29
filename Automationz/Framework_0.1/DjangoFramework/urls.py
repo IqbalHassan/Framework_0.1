@@ -288,6 +288,13 @@ urlpatterns = patterns('',
     url(r'^Home/.*/add_new_dependency/$',add_new_dependency),
     url(r'^Home/.*/add_new_name_dependency/$',add_new_name_dependency),
     url(r'^Home/.*/get_all_name_under_dependency/$',get_all_name_under_dependency),
+    url(r'^Home/.*/rename_dependency/$',rename_dependency),
+    url(r'^Home/.*/add_new_version/$',add_new_version),
+    url(r'^Home/.*/get_all_version_bit/$',get_all_version_bit),
+    url(r'^Home/.*/link_dependency/$',link_dependency),
+    url(r'^Home/.*/unlink_dependency/$',unlink_dependency),
+    url(r'^Home/.*/rename_name/$',rename_name),
+    url(r'^Home/.*/make_default_name/$',make_default_name),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )
