@@ -10097,7 +10097,30 @@ def make_default_name(request):
             PassMessasge(sModuleInfo, PostError, error_tag)
     except Exception,e:
         PassMessasge(sModuleInfo, e, 3)
-    
+
+def get_default_settings(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                query="select distinct d.dependency_name,array_to_string(array_agg(distinct dn.name),','),array_to_string(array_agg(distinct default_choices),',') from dependency d ,dependency_management dm, dependency_name dn where d.id=dm.dependency and dm.dependency=dn.dependency_id and dn.dependency_id =d.id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name order by d.dependency_name"%(project_id,int(team_id))
+                Conn=GetConnection()
+                result=DB.GetData(Conn,query,False)
+                Conn.close()
+                result={
+                    'result':result
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)        
 #will be changing the new format inhere
 '''
 You must use @csrf_protect before any 'post' handling views
