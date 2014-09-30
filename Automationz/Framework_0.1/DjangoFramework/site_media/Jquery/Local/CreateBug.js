@@ -205,13 +205,29 @@ function PopulateBugInfo(bug_id){
         $("#modified_by").text(data['Bug_Info'][0][9]);
         $("#modified_date").text(data['Bug_Info'][0][10]);
 
-        data['labels'].each(function(i){
-            $('input[name="labels"]').each(function(){
-                if(data['labels'][i][0]==$(this).val()){
-                    $(this).prop('checked',true);
-                }
-            })
+
+        $('input[name="labels"]').each(function(){
+            $(this).prop('checked',false);
         });
+        $('input[name="labels"]').each(function(){
+           if(data['Bug_Labels'].indexOf($(this).val())>-1){
+               $(this).prop('checked',true);
+           }
+        });
+
+        $(".linking").html("");
+        $(data['Bug_Cases']).each(function(i){
+            $(".linking").append('<tr>' +
+            '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+            + '<td>'
+            + '<input type="checkbox" checked="true" name="test_cases" value="'
+            + data['Bug_Cases'][i][0]
+            + '"/>' +
+            '</td><td>'
+            + data['Bug_Cases'][i][1]
+            + "</td>" +
+            "</tr>");
+        })
     });
 
 }

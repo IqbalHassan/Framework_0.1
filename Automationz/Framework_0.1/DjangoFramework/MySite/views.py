@@ -7819,10 +7819,10 @@ def Selected_BugID_Analaysis(request):
         query = "select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs where bug_id = '%s'" % UserData
         Bug_Info = DB.GetData(Conn, query, False)
         
-        query = "select distinct l.label_id, l.label_name, l.label_color from bug_label_map blm, labels l where blm.bug_id = '%s' and blm.label_id = l.label_id" % UserData
-        Bug_Labels = DB.GetData(Conn, query, False)
+        query = "select distinct l.label_id from bug_label_map blm, labels l where blm.bug_id = '%s' and blm.label_id = l.label_id" % UserData
+        Bug_Labels = DB.GetData(Conn, query)
         
-        query = "select distinct tc.tc_id, tc.run_id, tc.status from bug_testcases_map btm, test_case_results tc where btm.bug_id = '%s' and btm.tc_id=tc.tc_id" % UserData
+        query = "select distinct tc.tc_id, tc.tc_name from bug_testcases_map btm, test_cases tc where btm.bug_id ilike '%s' and btm.tc_id=tc.tc_id" % UserData
         Bug_Cases = DB.GetData(Conn, query, False)
         
         query = "select pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester::int=pul.user_id" % UserData
