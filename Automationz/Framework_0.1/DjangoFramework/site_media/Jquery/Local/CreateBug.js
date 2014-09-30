@@ -3,15 +3,16 @@
  */
 
 var operation = 1;
+var bugid;
 
 $(document).ready(function(){
 
     ActivateNecessaryButton();
     ButtonSet();
-
+    BugSearchAuto();
     TestCaseLinking();
 
-    $('#scrollbox1').enscroll({
+    $('.scrollbox1').enscroll({
         verticalTrackClass: 'track1',
         verticalHandleClass: 'handle1',
         drawScrollButtons: true,
@@ -49,25 +50,49 @@ $(document).ready(function(){
 
 
         if(title!=""){
-            $.get("LogNewBug/",{
-                title:title.trim(),
-                description:bug_desc.trim(),
-                status:status.trim(),
-                start_date:start_date.trim(),
-                end_date:end_date.trim(),
-                team:team.trim(),
-                tester:testers,
-                priority:priority.trim(),
-                milestone:milestone.trim(),
-                project_id: project.trim(),
-                user_name:$.session.get('fullname'),
-                test_cases:test_cases.join("|"),
-                labels:labels.join("|")
-                //created_by:creator.trim()
-            },function(data){
-                bug_notify("Bug Created!", "Bug with title '"+title+"' is created!","/site_media/noti.ico");
-                window.location='/Home/ManageBug/';
-            });
+            if(operation==1){
+                $.get("LogNewBug/",{
+                    title:title.trim(),
+                    description:bug_desc.trim(),
+                    status:status.trim(),
+                    start_date:start_date.trim(),
+                    end_date:end_date.trim(),
+                    team:team.trim(),
+                    tester:testers,
+                    priority:priority.trim(),
+                    milestone:milestone.trim(),
+                    project_id: project.trim(),
+                    user_name:$.session.get('fullname'),
+                    test_cases:test_cases.join("|"),
+                    labels:labels.join("|")
+                    //created_by:creator.trim()
+                },function(data){
+                    bug_notify("Bug Created!", "Bug with title '"+title+"' is created!","/site_media/noti.ico");
+                    window.location='/Home/ManageBug/';
+                });
+            }
+            else if(operation==2){
+                $.get("ModifyBug/",{
+                    bug_id:bugid,
+                    title:title.trim(),
+                    description:bug_desc.trim(),
+                    status:status.trim(),
+                    start_date:start_date.trim(),
+                    end_date:end_date.trim(),
+                    team:team.trim(),
+                    tester:testers,
+                    priority:priority.trim(),
+                    milestone:milestone.trim(),
+                    project_id: project.trim(),
+                    user_name:$.session.get('fullname'),
+                    test_cases:test_cases.join("|"),
+                    labels:labels.join("|")
+                    //created_by:creator.trim()
+                },function(data){
+                    bug_notify("Bug Modified!", "Bug with title '"+title+"' is modified!","/site_media/noti.ico");
+                    window.location='/Home/ManageBug/';
+                });
+            }
         }
         else{
             alertify.log("Title is empty","",0);
@@ -121,13 +146,99 @@ $(document).ready(function(){
     });
 });
 
+function BugSearchAuto(){
+    $('#title').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"BugSearch",
+                dataType:"json",
+                data:{
+                    term:request.term
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(event,ui){
+            var bug_id=ui.item[0].trim();
+            var bug_name=ui.item[1].trim();
+            if(bug_id!=""){
+                $(this).val(bug_name);
+                operation = 2;
+                bugid = bug_id;
+                PopulateBugInfo(bug_id);
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] +"<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+}
+
+function PopulateBugInfo(bug_id){
+    $.get("Selected_BugID_Analaysis",{Selected_Bug_Analysis : bug_id},function(data){
+        $("#bug_desc").val(data['Bug_Info'][0][2]);
+        $("#start_date").val(data['Bug_Info'][0][3]);
+        $("#end_date").val(data['Bug_Info'][0][4]);
+        $("#tester").html('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+        + '<td class="Text selected">'
+        + data['tester']
+            //+ "&nbsp"
+        + '</td>');
+        $('#status').val(data['Bug_Info'][0][11]);
+        if(data['Bug_Info'][0][5]=='P1')
+            $('#priority').val('1');
+        else if(data['Bug_Info'][0][5]=='P2')
+            $('#priority').val('2');
+        else if(data['Bug_Info'][0][5]=='P3')
+            $('#priority').val('3');
+        else if(data['Bug_Info'][0][5]=='P4')
+            $('#priority').val('4');
+        $('#milestone').val(data['Bug_Info'][0][6]);
+        $("#ms_info").show();
+        $("#created_by").text(data['Bug_Info'][0][7]);
+        $("#created_date").text(data['Bug_Info'][0][8]);
+        $("#modified_by").text(data['Bug_Info'][0][9]);
+        $("#modified_date").text(data['Bug_Info'][0][10]);
+
+
+        $('input[name="labels"]').each(function(){
+            $(this).prop('checked',false);
+        });
+        $('input[name="labels"]').each(function(){
+           if(data['Bug_Labels'].indexOf($(this).val())>-1){
+               $(this).prop('checked',true);
+           }
+        });
+
+        $(".linking").html("");
+        $(data['Bug_Cases']).each(function(i){
+            $(".linking").append('<tr>' +
+            '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+            + '<td>'
+            + '<input type="checkbox" checked="true" name="test_cases" value="'
+            + data['Bug_Cases'][i][0]
+            + '"/>' +
+            '</td><td>'
+            + data['Bug_Cases'][i][1]
+            + "</td>" +
+            "</tr>");
+        })
+    });
+
+}
+
 function TestCaseLinking(){
 
     $(".search_case").autocomplete({
 
         source:function(request,response){
             $.ajax({
-                url:"TestCaseSearch",
+                url:"AutoCompleteTestCasesSearchOtherPages",
                 dataType:"json",
                 data:{
                     term:request.term
@@ -139,18 +250,29 @@ function TestCaseLinking(){
         },
         select : function(event, ui) {
 
-            var value = ui.item[0]
-            var name = ui.item[1]
+            //var value = ui.item[0]
+            //var name = ui.item[1]
 
-            $(".linking").append('<tr>' +
+            var tc_id_name = ui.item[0].split(" - ");
+            var value = "";
+            if (tc_id_name != null)
+            {
+                value = tc_id_name[0].trim();
+                name = tc_id_name[1].trim();
+            }
+
+            if(value!=""){
+                $(".linking").append('<tr>' +
                 '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
                 + '<td>'
                 + '<input type="checkbox" checked="true" name="test_cases" value="'
                 + value
-                + '"/>'
+                + '"/>' +
+                '</td><td>'
                 + name
                 + "</td>" +
                 "</tr>");
+            }
 
             //$(".search_case").remove();
 
@@ -168,7 +290,7 @@ function TestCaseLinking(){
     }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
         return $( "<li></li>" )
             .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + " - "+item[1]+"<strong> - " + item[2] + "</strong></a>" )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
             .appendTo( ul );
     };
 
@@ -186,6 +308,56 @@ function TestCaseLinking(){
 
     });
 }
+
+function PerformSearch() {
+    $("#AutoSearchResult #searchedtext").each(function() {
+        var UserText = $(this).find("td").text();
+        UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        $.get("TableDataTestCasesOtherPages",{
+            Query: UserText,
+            project_id:$('#project_identity option:selected').val().trim(),
+            team_id:$('#default_team_identity option:selected').val().trim()
+        },function(data) {
+
+            if (data['TableData'].length == 0)
+            {
+                $('#RunTestResultTable').children().remove();
+                $('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+                $("#DepandencyCheckboxes").children().remove();
+                //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
+            }
+            else
+            {
+                ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
+
+                $("#RunTestResultTable").fadeIn(1000);
+                $("p:contains('Show/Hide Test Cases')").fadeIn(0);
+                implementDropDown("#RunTestResultTable");
+                // add edit btn
+                var indx = 0;
+                $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
+                    var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+                    $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/>');
+                    $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25"/>');
+
+                    indx++;
+                });
+
+                $(".editBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id")+'/';
+                });
+                $(".templateBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id")+'/';
+                });
+                //VerifyQueryProcess();
+                //$(".Buttons[title='Verify Query']").fadeIn(2000);
+                $(".Buttons[title='Select User']").fadeOut();
+            }
+        });
+    });
+}
+
 
 function ButtonSet(){
 
@@ -333,4 +505,53 @@ function bug_notify(title_msg,message,icon){
     }
 
 
+}
+
+function PerformSearch() {
+    $("#AutoSearchResult #searchedtext").each(function() {
+        var UserText = $(this).find("td").text();
+        UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        $.get("TableDataTestCasesOtherPages",{
+            Query: UserText,
+            project_id:$('#project_identity option:selected').val().trim(),
+            team_id:$('#default_team_identity option:selected').val().trim()
+        },function(data) {
+
+            if (data['TableData'].length == 0)
+            {
+                $('#RunTestResultTable').children().remove();
+                $('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+                $("#DepandencyCheckboxes").children().remove();
+                //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
+            }
+            else
+            {
+                ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
+
+                $("#RunTestResultTable").fadeIn(1000);
+                $("p:contains('Show/Hide Test Cases')").fadeIn(0);
+                implementDropDown("#RunTestResultTable");
+                // add edit btn
+                var indx = 0;
+                $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
+                    var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+                    $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/>');
+                    $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25"/>');
+
+                    indx++;
+                });
+
+                $(".editBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id")+'/';
+                });
+                $(".templateBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id")+'/';
+                });
+                //VerifyQueryProcess();
+                //$(".Buttons[title='Verify Query']").fadeIn(2000);
+                $(".Buttons[title='Select User']").fadeOut();
+            }
+        });
+    });
 }

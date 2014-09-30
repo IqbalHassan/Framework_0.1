@@ -7754,7 +7754,29 @@ def FetchProject(request):
     result=simplejson.dumps(result)
     return HttpResponse(result,mimetype='application/json')
 def ManageBug(request):
-    return render_to_response('ManageBug.html',{})
+    now=datetime.datetime.now().date()
+    query="select * from bugs"
+    Conn=GetConnection()
+    bugs=DB.GetData(Conn, query, False)
+    """bugs = []
+    for each in bugs_list:
+        data = []
+        for x in each:
+            data.append(x)
+        milestone=DB.GetData(Conn, "select mi.id, mi.name from bugs b, milestone_info mi where b.bug_milestone::int=mi.id and b.bug_id='"+each[0]+"'",False)
+        data.append(milestone[0][0])
+        data.append(milestone[0][1])
+        #ago = (now-x[8]).days + " days ago by "
+        #data.append(ago)
+        bugs.append(data)"""
+    query="select * from bug_label_map"
+    labels=DB.GetData(Conn, query, False)
+    query="select * from milestone_info"
+    milestones=DB.GetData(Conn, query, False)
+    Dict={'bugs':bugs, 'labels':labels, 'milestones':milestones}
+    Conn.close()
+    return render_to_response('ManageBug.html',Dict)
+
 def CreateBug(request):
     query="select project_id from projects"
     Conn=GetConnection()
@@ -7772,6 +7794,45 @@ def CreateBug(request):
     Dict={'project':project,'team':team,'manager':manager,'labels':labels,'cases':cases,'milestone_list':milestone_list}
     Conn.close()
     return render_to_response('CreateBug.html',Dict)
+
+def BugSearch(request):
+    Conn = GetConnection()
+    results = []
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        # Ignore queries shorter than length 3
+        # if len(value) > 1:
+        # results = DB.GetData(Conn,"Select DISTINCT name from test_case_tag where name != 'Dependency' and name Ilike '%" + value + "%'")
+        # results = DB.GetData(Conn, "Select DISTINCT tc_id from test_cases")
+        results = DB.GetData(Conn, "Select DISTINCT bug_id,bug_title from bugs where bug_id Ilike '%" + value + "%' or bug_title Ilike '%" + value + "%'", False)
+
+    results = list(set(results))
+    json = simplejson.dumps(results)
+    Conn.close()
+    return HttpResponse(json, mimetype='application/json')
+
+def Selected_BugID_Analaysis(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'Selected_Bug_Analysis', '')
+
+        query = "select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs where bug_id = '%s'" % UserData
+        Bug_Info = DB.GetData(Conn, query, False)
+        
+        query = "select distinct l.label_id from bug_label_map blm, labels l where blm.bug_id = '%s' and blm.label_id = l.label_id" % UserData
+        Bug_Labels = DB.GetData(Conn, query)
+        
+        query = "select distinct tc.tc_id, tc.tc_name from bug_testcases_map btm, test_cases tc where btm.bug_id ilike '%s' and btm.tc_id=tc.tc_id" % UserData
+        Bug_Cases = DB.GetData(Conn, query, False)
+        
+        query = "select pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester::int=pul.user_id" % UserData
+        tester = DB.GetData(Conn, query)
+
+    results = {'Bug_Info':Bug_Info, 'Bug_Labels':Bug_Labels, 'Bug_Cases':Bug_Cases, 'tester':tester}
+    json = simplejson.dumps(results)
+    Conn.close()
+    return HttpResponse(json, mimetype='application/json')
 
 def LogNewBug(request):
     if request.is_ajax():
@@ -7793,6 +7854,7 @@ def LogNewBug(request):
                 test_cases=request.GET.get(u'test_cases','')
                 labels=request.GET.get(u'labels','')
                 
+                
                 test_cases=test_cases.split("|")
                 labels=labels.split("|")
                 #created_by=request.GET.get(u'created_by','')
@@ -7812,6 +7874,49 @@ def LogNewBug(request):
                 return HttpResponse(result,mimetype='application/json')
             except Exception,e:
                 print "Exception:",e
+
+def ModifyBug(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            #getting all the info from the messages
+            try:
+                Conn=GetConnection()
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team','')
+                bug_id=request.GET.get(u'bug_id','')
+                title=request.GET.get(u'title','')
+                description=request.GET.get(u'description','')
+                start_date=request.GET.get(u'start_date','')
+                end_date=request.GET.get(u'end_date','')
+                priority=request.GET.get(u'priority','')
+                milestone=request.GET.get(u'milestone','')
+                status=request.GET.get(u'status','')
+                user_name=request.GET.get(u'user_name','')
+                testers=request.GET.get(u'tester','')
+                test_cases=request.GET.get(u'test_cases','')
+                labels=request.GET.get(u'labels','')
+                
+                
+                test_cases=test_cases.split("|")
+                labels=labels.split("|")
+                #created_by=request.GET.get(u'created_by','')
+                
+                tester = DB.GetData(Conn, "select user_id from permitted_user_list where user_names = '"+testers+"'")
+                
+                start_date=start_date.split('-')
+                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
+                end_date=end_date.split('-')
+                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
+    
+                
+                result=BugOperations.EditBug(bug_id,title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,tester[0],test_cases,labels)
+                if result!=False:
+                    bugid=result
+                result=simplejson.dumps(bugid)
+                return HttpResponse(result,mimetype='application/json')
+            except Exception,e:
+                print "Exception:",e
+
 
 def BugOperation(request):
     if request.is_ajax():
