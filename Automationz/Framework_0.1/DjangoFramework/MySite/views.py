@@ -9646,8 +9646,14 @@ def get_all_name_under_dependency(request):
                 Conn=GetConnection()
                 dependency_list=DB.GetData(Conn,query,False)
                 Conn.close()
+                #get the default list
+                query="select default_choices from dependency_management where project_id ='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(value[0]))
+                Conn=GetConnection()
+                default_list=DB.GetData(Conn,query)
+                Conn.close()
                 result={
-                    'dependency_list':dependency_list
+                    'dependency_list':dependency_list,
+                    'default_list':default_list
                 }
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')
@@ -9928,11 +9934,55 @@ def make_default_name(request):
                 dependency=request.GET.get(u'dependency','')
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
+                tag=request.GET.get(u'tag','')
                 #take out the default choices
                 query="select default_choices from dependency_management where project_id='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(dependency))
                 Conn=GetConnection()
+                default_choice=DB.GetData(Conn,query)
+                Conn.close()
+                print default_choice
+                if isinstance(default_choice,list):
+                    if tag=="make_default":
+                        if default_choice[0]==None:
+                            modified_choice=name.strip()
+                        else:
+                            modified_choice=(default_choice[0]+","+name.strip()).strip()
+                        #print modified_choice
+                    if tag=='remove_default':
+                        default_choice=default_choice[0].split(",")
+                        #print default_choice
+                        default_choice.remove(name)
+                        modified_choice=(",").join(default_choice)
+                        print modified_choice
+                        
+                    sWhereQuery="where project_id='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(dependency))
+                    Dict={
+                        'default_choices':modified_choice.strip()
+                    }
+                    Conn=GetConnection()
+                    result=DB.UpdateRecordInTable(Conn,"dependency_management",sWhereQuery,**Dict)
+                    Conn.close()
+                    if result==True:
+                        if tag=="make_default":
+                            PassMessasge(sModuleInfo, "name %d under dependency '%s' is made default"%(int(name),dependency), success_tag)
+                        if tag=='remove_default':
+                            PassMessasge(sModuleInfo, "name %d under dependency '%s' is removed from default"%(int(name),dependency), success_tag)
+                        message=True
+                        log_message="Operation Successful"
+                    else:
+                        if tag=="make_default":
+                            PassMessasge(sModuleInfo, "name %d under dependency '%s' is failed to make default"%(int(name),dependency), error_tag)
+                        if tag=='remove_default':
+                            PassMessasge(sModuleInfo, "name %d under dependency '%s' is failed to remove default"%(int(name),dependency), error_tag)
+                        message=False
+                        log_message="Operation Fail"
+                else:
+                    PassMessasge(sModuleInfo,DBError,error_tag)
+                    message=False
+                    log_message=DBError
                 result={
-
+                    'message':message,
+                    'log_message':log_message
                 }
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')

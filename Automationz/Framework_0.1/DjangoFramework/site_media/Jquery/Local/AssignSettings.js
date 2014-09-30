@@ -63,7 +63,7 @@ function populate_div(div_name,array_list,project_id,team_id,type){
                 project_id:project_id,
                 team_id:team_id
             },function(data){
-                populate_second_div("name_dependency_tab",data['dependency_list'],"dependency_name",project_id,team_id);
+                populate_second_div("name_dependency_tab",data['dependency_list'],data['default_list'],"dependency_name",project_id,team_id);
             });
         });
     }
@@ -98,12 +98,24 @@ function populate_div(div_name,array_list,project_id,team_id,type){
     allow_binding(type,project_id,team_id);
 
 }
-function populate_second_div(div_name,array_list,type,project_id,team_id){
+function populate_second_div(div_name,array_list,default_list,type,project_id,team_id){
+    if(default_list[0]!=null){
+        var default_choices=default_list[0].split(",");
+    }
+    else{
+        var default_choices=[];
+    }
     var message="<table width=\"100%\" class='one-column-emphasis'>";
+
     if(array_list.length>0){
         for(var i=0;i<array_list.length;i++){
             message+='<tr><td align="left" value="'+array_list[i][0]+'" class="'+type+'" style="cursor:pointer" >'+array_list[i][1]+'</td>';
-            message+='<td align="right" class="_status" style="cursor: pointer;"><a class="notification-indicator" data-gotokey="n"><span class="mail-status unfilled"></span></a></td>';
+            if(default_choices.indexOf(array_list[i][0].toString())>-1){
+                message+='<td align="right" class="_status" style="cursor: pointer;"><a class="notification-indicator" data-gotokey="n"><span class="mail-status filled"></span></a></td>';
+            }
+            else{
+                message+='<td align="right" class="_status" style="cursor: pointer;"><a class="notification-indicator" data-gotokey="n"><span class="mail-status unfilled"></span></a></td>';
+            }
             message+='</tr>';
         }
     }
@@ -114,13 +126,16 @@ function populate_second_div(div_name,array_list,type,project_id,team_id){
 
     $('#'+div_name).html(message);
     $('._status').click(function(){
+        var tag="";
         var message="";
         message+='<table width="100%">';
         if($(this).find('span:eq(0)').hasClass('unfilled')){
             message+='<tr><td>Are you sure to make <b>\''+$(this).prev().text().trim()+'\'</b> default?</td></tr>';
+            tag="make_default"
         }
         else{
             message+='<tr><td>Are you sure to remove <b>\''+$(this).prev().text().trim()+'\'</b> from default?</td></tr>';
+            tag="remove_default"
         }
         message+='</table> ';
         var dependency=$(this).prev().attr('value');
@@ -137,9 +152,16 @@ function populate_second_div(div_name,array_list,type,project_id,team_id){
                         name:dependency.trim(),
                         dependency:selected.trim(),
                         project_id:project_id,
-                        team_id:team_id
+                        team_id:team_id,
+                        tag:tag
                     },function(data){
-
+                        if(data['message']==true){
+                            alertify.success(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                        else{
+                            alertify.error(data['log_message'],time_out);
+                        }
                     });
                 }
             }
