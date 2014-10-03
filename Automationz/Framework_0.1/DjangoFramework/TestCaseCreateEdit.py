@@ -842,19 +842,11 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
 
     return Data_List
 
-def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path):
+def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    if Platform == '':
-        err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Platform", 3)
-        return err_msg
-
 
     if TC_Name == '':
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case name", 3)
-        return err_msg
-
-    if TC_Type == '':
-        err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case type", 3)
         return err_msg
 
     if Priority == '':
@@ -866,15 +858,29 @@ def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Depe
         print "Error. Test Section cannot be empty"
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Section", 3)
         return err_msg
+    
     if not isinstance(Tag_List, list):
         print "Error. Test case tag format is incorrect"
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case tag format. It should be a list.", 3)
         return err_msg
 
     if not isinstance(Dependency_List, list):
-        print "Error. Test case dependency format is incorrect"
-        err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case dependency format. It should be a list.", 3)
-        return err_msg 
+        for each in Dependency_List:
+            if not isinstance(each, tuple):
+                print "Error. Test case dependency format is incorrect"
+                err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case dependency format. It should be a list.", 3)
+                return err_msg
+            else:
+                if not isinstance(each[0],basestring) and not isinstance(each[1],list):
+                    print "Error. Test case dependency format is incorrect"
+                    err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case dependency format. It should be a list.", 3)
+                    return err_msg
+                else:
+                    for eachdata in each[1]:
+                        if not isinstance(eachdata,basestring):
+                            print "Error. Test case dependency format is incorrect"
+                            err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case dependency format. It should be a list.", 3)
+                            return err_msg
 
     if not isinstance(Steps_Data_List, list):
         print "Error. Test case steps format is incorrect"
@@ -973,22 +979,29 @@ def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Depe
                         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Expected Normal or Edit Data", 3)
                         return err_msg
     return "Pass"
-def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id):
+def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     Tag_List = []
     # Add test case id tag
     Tag_List.append(('%s' % TC_Id, 'tcid'))
-    ManualTCIDFound = False
+    """ManualTCIDFound = False
     for eachManual_Id in Manual_TC_Id:
         if eachManual_Id.strip() != '':
             Tag_List.append(('%s' % eachManual_Id, 'MKS'))
             ManualTCIDFound = True
     if ManualTCIDFound == False:
-        Tag_List.append(('%s' % TC_Id, 'MKS'))
+        Tag_List.append(('%s' % TC_Id, 'MKS'))"""
     # hard coded tags for now
     Tag_List.append(('Default', 'Data_Type'))
     # Add Section names & initialize variables
-    if Platform.lower() == 'pc':
+    Section_Tag = 'Section'
+    Custom_Tag = 'CustomTag'
+    Section_Path_Tag = 'section_id'
+    Priority_Tag = 'Priority'
+    Tag_List.append(('Status', Status))
+    if Status == "Forced":
+        Tag_List.append(('Status', 'Ready'))    
+    """if Platform.lower() == 'pc':
         Tag_List.append(('PC', 'machine_os'))
         Section_Tag = 'Section'
         Custom_Tag = 'CustomTag'
@@ -1012,10 +1025,10 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Ta
             Tag_List.append(('Status', 'Ready'))
     else:
         err_msg = LogMessage(sModuleInfo, "Unknown platform value for the test case: %s" % (Platform), 3)
-        return err_msg
-    # Add test case type, priority, Data Type
+        return err_msg"""
+    """# Add test case type, priority, Data Type
     for each_TC_Type in TC_Type:
-        Tag_List.append(('%s' % each_TC_Type, TestRunType_Tag))
+        Tag_List.append(('%s' % each_TC_Type, TestRunType_Tag))"""
     Tag_List.append(('%s' % Priority, Priority_Tag))
     #Add project and team id
     Tag_List.append(('%s'%Project_Id,'Project'))
@@ -1037,13 +1050,18 @@ def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Ta
         Tag_List.append(('%s' % eachSection, Section_Tag))
 
     # Add Dependency tags
-    for eachDependency in Dependency_List:
+    """for eachDependency in Dependency_List:
         Tag_List.append(('%s' % Dependency_Tag, eachDependency))
         if eachDependency in ['Outlook', 'MacNative', 'iTunes', 'iPhoto', 'WMP', 'Chrome', 'FireFox', 'IE']:
             Tag_List.append(('%s' % eachDependency, 'client'))
         elif eachDependency in ['BBX', 'SD']:
             Tag_List.append(('%s' % eachDependency, 'device_memory'))
-
+    """
+    for eachDependency in Dependency_List:
+        name=eachDependency[0]
+        tag_listing=list(eachDependency[1])
+        for eachitem in tag_listing:
+            Tag_List.append((name,eachitem))
     # Add Associated Bugs
     for eachBugId in Associated_Bugs_List:
         Tag_List.append(('%s' % eachBugId, 'JiraId'))

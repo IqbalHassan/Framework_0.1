@@ -3059,11 +3059,11 @@ def Create_Submit_New_TestCase(request):
         Conn = GetConnection()
         error = ''
         if request.is_ajax() and request.method == 'GET':
-            Platform = request.GET.get(u'Platform', '')
-            Manual_TC_Id = request.GET.get(u'Manual_TC_Id', '').split(',')
+            #Platform = request.GET.get(u'Platform', '')
+            #Manual_TC_Id = request.GET.get(u'Manual_TC_Id', '').split(',')
             TC_Name = request.GET.get(u'TC_Name', '')
             TC_Creator = request.GET.get(u'TC_Creator', '')
-            TC_Type = request.GET.get(u'TC_Type', '').split('|')
+            #TC_Type = request.GET.get(u'TC_Type', '').split('|')
             Tag_List = request.GET.get(u'Tag_List', '').split('|')
             Dependency_List = request.GET.get(u'Dependency_List', '').split('|')
             Priority = request.GET.get(u'Priority', '')
@@ -3082,11 +3082,17 @@ def Create_Submit_New_TestCase(request):
             Step_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
             Project_id=request.GET.get(u'Project_Id','')
             Team_id=request.GET.get(u'Team_Id','')
+            temp_list=[]
+            for each in Dependency_List:
+                temporary=each.split(":")
+                temp_list.append((temporary[0],temporary[1].split(",")))
+            Dependency_List=temp_list
+            
             Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected_Result, Step_Verification_Point, Step_Time_List)
 
         # 1
         ##########Data Validation: Check if all required input fields have data
-        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
+        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
         if test_case_validation_result != "Pass":
             return returnResult(test_case_validation_result)
 
@@ -3168,7 +3174,7 @@ def Create_Submit_New_TestCase(request):
         ##########Test Case Tags
         # Enter tags for the test case
         # Insert Test Case Tags
-        test_case_tags_result = TestCaseCreateEdit.Insert_TestCase_Tags(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_id,Team_id)
+        test_case_tags_result = TestCaseCreateEdit.Insert_TestCase_Tags(Conn, TC_Id, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_id,Team_id)
 
         if test_case_steps_result == "Pass":
             msg = "==========================================================================================================="
@@ -3196,47 +3202,73 @@ def ViewTestCase(TC_Id):
 
     try:
         TC_Id=TC_Id.GET.get('TC_Id')
-        Conn = GetConnection()
         err_msg = ''
-        
         # Search for TC_ID
+        Conn = GetConnection()
         tmp_id = DB.GetData(Conn, "select tc_id from test_cases where tc_id = '%s'" % TC_Id)
         if len(tmp_id) > 0:
             # TestCaseOperations.LogMessage(sModuleInfo,"TEST CASE id is found:%s"%(TC_Id),4)
 
             # find all the details about test case
+            Conn = GetConnection()
             test_case_details = DB.GetData(Conn, "select tc_name,tc_createdby from test_cases where tc_id = '%s'" % TC_Id, False)
+            Conn.close()
             TC_Name = test_case_details[0][0]
             TC_Creator = test_case_details[0][1]
             
             # Test Case dataset details
+            Conn = GetConnection()
             test_case_dataset_details = DB.GetData(Conn, "select tcdatasetid,data_type from test_case_datasets where tc_id = '%s'" % TC_Id, False)
+            Conn.close()
             if len(test_case_dataset_details) > 0:
                 Test_Case_DataSet_Id = test_case_dataset_details[0][0]
             else:
                 Test_Case_DataSet_Id = ''
 
             # find all the tag details about test case
+            Conn = GetConnection()
             test_case_tag_details = DB.GetData(Conn, "select name,property from test_case_tag where tc_id = '%s'" % TC_Id, False)
-            Manual_TC_Id_List = [x[0] for x in test_case_tag_details if x[1] == 'MKS']
-            Manual_TC_Id = ','.join(Manual_TC_Id_List)
+            Conn.close()
+            #Manual_TC_Id_List = [x[0] for x in test_case_tag_details if x[1] == 'MKS']
+            #Manual_TC_Id = ','.join(Manual_TC_Id_List)
 
-            Platform = [x[0] for x in test_case_tag_details if x[1] == 'machine_os']
+            #Platform = [x[0] for x in test_case_tag_details if x[1] == 'machine_os']
             
             TC_Project=[x[0] for x in test_case_tag_details if x[1] == 'Project']
             TC_Team=[x[0] for x in test_case_tag_details if x[1] == 'Team']
-            TC_Type = [x[0] for x in test_case_tag_details if x[1] == 'test_run_type' or x[1] == 'Mac_test_run_type']
-            Tag_List = [x[0] for x in test_case_tag_details if x[1] == 'CustomTag' or x[1] == 'MacCustomTag']
-            Dependency_List = [x[1] for x in test_case_tag_details if x[0] == 'Dependency' or x[0] == 'MacDependency']
-            Priority_List = [x[0] for x in test_case_tag_details if x[1] == 'Priority' or x[1] == 'MacPriority']
+            #TC_Type = [x[0] for x in test_case_tag_details if x[1] == 'test_run_type' or x[1] == 'Mac_test_run_type']
+            query="select distinct name,array_to_string(array_agg(distinct property),',') from test_case_tag tct,dependency_management dm,dependency d where d.id=dm.dependency and tct.name=d.dependency_name and dm.project_id='%s' and dm.team_id=%d group by tct.name"%(TC_Project[0],int(TC_Team[0]))
+            Conn = GetConnection()
+            Dependency_List = DB.GetData(Conn,query,False)
+            Conn.close()
+            print Dependency_List
+            Conn=GetConnection()
+            query="select name from dependency_name dn,dependency_management dm where dn.dependency_id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(TC_Project[0],int(TC_Team[0]))
+            All_Names=DB.GetData(Conn,query)
+            print All_Names
+            Conn.close()
+            temp_list=[]
+            for each in Dependency_List:
+                temp=[]
+                for eachitem in each[1].split(","):
+                    if eachitem in All_Names:
+                        temp.append(eachitem)
+                temp_list.append((each[0],temp))
+            Dependency_List=temp_list
+            print Dependency_List
+            Tag_List = [x[0] for x in test_case_tag_details if x[1] == 'CustomTag']
+            
+            Priority_List = [x[0] for x in test_case_tag_details if x[1] == 'Priority']
             Priority = ''.join(Priority_List)
             Associated_Bugs_List = [x[0] for x in test_case_tag_details if x[1] == 'JiraId']
             Requirement_ID_List = [x[0] for x in test_case_tag_details if x[1] == 'PRDId']
-            Status_List = [x[1] for x in test_case_tag_details if x[0] == 'Status' or x[0] == 'MacStatus']
+            Status_List = [x[1] for x in test_case_tag_details if x[0] == 'Status']
             Status = ''.join(Status_List)
-            Section_Id = [x[0] for x in test_case_tag_details if x[1] == 'section_id' or x[1] == 'mac_section_id']
+            Section_Id = [x[0] for x in test_case_tag_details if x[1] == 'section_id']
             if len(Section_Id) > 0:
+                Conn=GetConnection()
                 Section_Path = DB.GetData(Conn, "select section_path from product_sections where section_id = '%d'" % int(Section_Id[0]), False)
+                Conn.close()
                 if len(Section_Path) > 0:
                     Section_Path = Section_Path[0][0]
                 else:
@@ -3247,6 +3279,7 @@ def ViewTestCase(TC_Id):
             
             # find all steps and data for the test case
             Steps_Data_List = []
+            Conn=GetConnection()
             test_case_step_details = DB.GetData(Conn, "select ts.step_id,stepname,teststepsequence,data_required,steptype,step_editable from test_steps ts, test_steps_list tsl where ts.step_id = tsl.step_id and tc_id = '%s' order by teststepsequence" % TC_Id, False)
             Step_Iteration = 1
             for each_test_step in test_case_step_details:
@@ -3299,6 +3332,7 @@ def ViewTestCase(TC_Id):
                 if each_test_step[3]:
                     # Is this a verify step
                     container_data_id_query = "select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = '%s' and teststepseq = %s and ctd.curname Ilike '%%_s%s%%'" % (Test_Case_DataSet_Id, Step_Seq, Step_Iteration)
+                    Conn=GetConnection()
                     container_data_id_details = DB.GetData(Conn, container_data_id_query, False)
                     if Step_Edit:
                         for each_data_id in container_data_id_details:
@@ -3315,7 +3349,7 @@ def ViewTestCase(TC_Id):
                 Steps_Data_List.append((Step_Name, Step_Data, Step_Type, step_description, step_expected, step_verified, Step_General_Description[0][0], step_time, Step_Edit, each_test_step[3]))
                 Step_Iteration = Step_Iteration + 1
             # return values
-            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Manual_TC_Id': Manual_TC_Id, 'Platform': Platform, 'TC Type': TC_Type, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team}
+            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team}
 
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -10106,12 +10140,32 @@ def get_default_settings(request):
             if request.is_ajax():
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
-                query="select distinct d.dependency_name,array_to_string(array_agg(distinct dn.name),','),array_to_string(array_agg(distinct default_choices),',') from dependency d ,dependency_management dm, dependency_name dn where d.id=dm.dependency and dm.dependency=dn.dependency_id and dn.dependency_id =d.id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name order by d.dependency_name"%(project_id,int(team_id))
+                query="select distinct d.id,d.dependency_name,array_to_string(array_agg(distinct dn.name),',') from dependency d ,dependency_management dm, dependency_name dn where d.id=dm.dependency and dm.dependency=dn.dependency_id and dn.dependency_id =d.id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,d.id order by d.dependency_name"%(project_id,int(team_id))
                 Conn=GetConnection()
                 result=DB.GetData(Conn,query,False)
                 Conn.close()
+                final_list=[]
+                for each in result:
+                    query="select default_choices from dependency_management where project_id='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(each[0]))
+                    Conn=GetConnection()
+                    default_choices=DB.GetData(Conn,query)
+                    print default_choices
+                    Conn.close()
+                    temp=[]
+                    if isinstance(default_choices,list):
+                        if default_choices[0]!=None:
+                            for eachitem in default_choices[0].split(","):
+                                query="select name from dependency_name where id=%d and dependency_id=%d"%(int(eachitem),int(each[0]))
+                                Conn=GetConnection()
+                                name_list=DB.GetData(Conn,query)
+                                if isinstance(name_list,list):
+                                    temp.append(name_list[0])
+                        else:
+                            temp=[]
+                    final_list.append((each[1],each[2],temp))
+                print final_list
                 result={
-                    'result':result
+                    'result':final_list
                 }
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')

@@ -311,7 +311,7 @@ $(document).ready(function() {
                         /*************** End Properties tab Data*******************************/
                         /****************************Parameters Tab*****************************/
                         //Select Platform
-                        var platform=data['Platform'];
+                        /*var platform=data['Platform'];
                         console.log(platform);
                         for(var i=0;i<platform.length;i++){
                             $('input[name="platform"]').each(function(){
@@ -361,6 +361,28 @@ $(document).ready(function() {
                         else{
                             $("#type-flag").removeClass("filled");
                             $("#type-flag").addClass("unfilled");
+                        }*/
+                        var dependency=data['Dependency List'];
+                        for(var i=0;i<dependency.length;i++){
+
+                            var name=dependency[i][0];
+                            var listings=dependency[i][1];
+                            for(var j=0;j<listings.length;j++){
+                                $('.'+name).each(function(){
+                                    if($(this).val()==listings[j]){
+                                        $(this).attr('checked','true');
+                                    }
+                                });
+                            }
+                            if($('.'+name).is(':checked')==false){
+                                $('#'+name+"-flag").removeClass('filled');
+                                $('#'+name+"-flag").addClass('unfilled');
+                            }
+                            else{
+                                $('#'+name+"-flag").removeClass('unfilled');
+                                $('#'+name+"-flag").addClass('filled');
+                            }
+
                         }
                         /****************************End Parameters Tab*****************************/
                         /****************************RelatedItems Tab*******************************/
@@ -562,7 +584,7 @@ $(document).ready(function() {
                 alertify.error("Section Path is not defined Correctly","",0);
                 return false;
             }
-            if($('#platform-flag').hasClass('unfilled')){
+            /*if($('#platform-flag').hasClass('unfilled')){
                 //alert("Platform is not selected correctly");
                 alertify.error("Platform is not selected correctly","",0);
                 return false;
@@ -576,13 +598,20 @@ $(document).ready(function() {
                 //alert("Test Type is not defined correctly");
                 alertify.error("Test Type is not defined correctly","",0);
                 return false;
-            }
+            }*/
+
             if($('#tag_txtbox').val()!=""){
                 //alert("Tag Field must be empty as you have to select from the suggestion provided");
                 alertify.error("Tag Field must be empty as you have to select from the suggestion provided","",0);
                 return false;
             }
-
+            for(var i=0;i<dependency_classes.length;i++){
+                if($('#'+dependency_classes[i].name+'-flag').hasClass('unfilled')){
+                    //alert("Platform is not selected correctly");
+                    alertify.error(dependency_classes[i].name.trim()+" is not selected correctly","",0);
+                    return false;
+                }
+            }
             if($('#project_identity option:selected').val()==""){
                 alertify.error("Please select a project topbar",1500);
                 return false;
@@ -641,7 +670,7 @@ $(document).ready(function() {
             console.log(tag);
             /*********************************End Properties Tab Data ********************************/
             /*********************************Parameters Tab Data ********************************/
-            var platformList=[];
+            /*var platformList=[];
             $('input[name="platform"]:checked').each(function(){
                 platformList.push($(this).val());
             });
@@ -655,7 +684,17 @@ $(document).ready(function() {
             $('input[name="type"]:checked').each(function(){
                 typeList.push($(this).val());
             });
-            console.log(typeList);
+            console.log(typeList);*/
+            var dependency_list=[];
+            for(var i=0;i<dependency_classes.length;i++){
+                var temp_list=[];
+                $('.'+dependency_classes[i].name+':checked').each(function(){
+                   temp_list.push($(this).val());
+                });
+                var temp=(dependency_classes[i].name+':'+temp_list.join(",")).toString();
+                dependency_list.push(temp);
+            }
+            console.log(dependency_list);
             /*********************************End Parameters Tab Data ********************************/
             /**************************Related Item *************************************************/
             var defectId=$('#defectid_txtbox').val().trim();
@@ -948,15 +987,16 @@ $(document).ready(function() {
                         $("#submit").attr('disabled','disabled');
                         $.get("Submit_New_TestCase/",{
                             Section_Path:newSectionPath,
-                            Platform:platformList.join("|"),
+                            //Platform:platformList.join("|"),
                             Manual_TC_Id:test_case_Id,
                             TC_Name:title,
                             TC_Creator:$('#user_name').text().trim(),
                             Associated_Bugs_List:defectId,
                             Requirement_ID_List:required_Id,
-                            TC_Type:typeList.join("|"),
+                            //TC_Type:typeList.join("|"),
                             Tag_List:tag.join("|"),
-                            Dependency_List:browserList.join("|"),
+                            //Dependency_List:browserList.join("|"),
+                            Dependency_List:dependency_list.join("|"),
                             Priority:priority,
                             Steps_Data_List:stepDataSTR.join("|"),
                             Steps_Name_List:stepNameList.join("|"),
@@ -981,16 +1021,17 @@ $(document).ready(function() {
                         $.get("Edit_TestCase",{
                                 Section_Path:newSectionPath,
                                 TC_Id:_TC_Id,
-                                Platform:platformList.join("|"),
+                                //Platform:platformList.join("|"),
                                 Manual_TC_Id:test_case_Id,
                                 TC_Name:title,
                                 TC_Creator:$('#user_name').text().trim(),
                                 Associated_Bugs_List:defectId,
                                 Requirement_ID_List:required_Id,
                                 Status:status,
-                                TC_Type:typeList.join("|"),
+                                //TC_Type:typeList.join("|"),
                                 Tag_List:tag.join("|"),
-                                Dependency_List:browserList.join("|"),
+                                //Dependency_List:browserList.join("|"),
+                                Dependency_List:dependency_list.join("|"),
                                 Priority:priority,
                                 Steps_Data_List:stepDataSTR.join("|"),
                                 Steps_Name_List:stepNameList.join("|"),
@@ -1032,12 +1073,6 @@ function populate_parameter_div(array_list,div_name){
     for(var i=0;i<array_list.length;i++){
         var dependency=array_list[i][0];
         var name_list=array_list[i][1].split(",");
-        if(array_list[i][2]!=""){
-            var default_choice=array_list[i][2].split(",");
-        }
-        else{
-            var default_choice=[];
-        }
         message+='<form id="tc_'+dependency+'" class="new_tc_form">';
         message+='<table>';
         message+='<tr>';
@@ -1067,6 +1102,23 @@ function populate_parameter_div(array_list,div_name){
         dependency_classes.push(temp);
     }
     $('#'+div_name).html(message);
+    for(var i=0;i<array_list.length;i++){
+        var dependency=array_list[i][0];
+        var name_list=array_list[i][1].split(",");
+        for(var j=0;j<name_list.length;j++){
+            if(array_list[i][2].indexOf(name_list[j])>-1){
+                $('#'+dependency+'_'+name_list[j]).attr('checked','checked');
+            }
+        }
+        if($('.'+dependency).is(':checked')==false){
+            $('#'+dependency+"-flag").removeClass('filled');
+            $('#'+dependency+"-flag").addClass('unfilled');
+        }
+        else{
+            $('#'+dependency+"-flag").removeClass('unfilled');
+            $('#'+dependency+"-flag").addClass('filled');
+        }
+    }
     check_required_data(dependency_classes);
 }
 function GetBrowserSections(){
@@ -1625,42 +1677,14 @@ function check_required_data(array_list)
                        $('#'+array_list[i].name+"-flag").addClass('filled');
                    }
                }
+               if($('.'+array_list[i].name).is(':checked')==false){
+                   $('#'+array_list[i].name+"-flag").removeClass('filled');
+                   $('#'+array_list[i].name+"-flag").addClass('unfilled');
+               }
            }
         });
+
     }
-    /*$("#PC_radio, #MAC_radio").live('click',function(){
-        if(($("#PC_radio").is(':checked') == true) || ($("#MAC_radio").is(':checked') == true)){
-            $("#platform-flag").removeClass("unfilled");
-            $("#platform-flag").addClass("filled");
-        }
-        else {
-            $("#platform-flag").removeClass("filled");
-            $("#platform-flag").addClass("unfilled");
-        }
-    });
-
-    $(".browser").live('click',function(){
-        if(($('#Chrome').is(':checked') == true) || ($('#FireFox').is(':checked') == true) || ($('#IE').is(':checked') == true) || ($('#Safari').is(':checked') == true)){
-            $("#browser-flag").removeClass("unfilled");
-            $("#browser-flag").addClass("filled");
-        }
-        else {
-            $("#browser-flag").removeClass("filled");
-            $("#browser-flag").addClass("unfilled");
-        }
-    });
-
-    $("#smoke_check, #si_check, #svv_check").live('click',function(){
-        if(($('#smoke_check').is(':checked') == true) || ($('#si_check').is(':checked') == true) || ($('#svv_check').is(':checked') == true)){
-            $("#type-flag").removeClass("unfilled");
-            $("#type-flag").addClass("filled");
-        }
-        else {
-            $("#type-flag").removeClass("filled");
-            $("#type-flag").addClass("unfilled");
-        }
-    });*/
-
 }
 function show_radio_button(){
     $("#enable_radio").live('click',function(){
