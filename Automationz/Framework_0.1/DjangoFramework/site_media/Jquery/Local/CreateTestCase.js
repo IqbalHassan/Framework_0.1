@@ -364,8 +364,10 @@ $(document).ready(function() {
                         }*/
                         var dependency=data['Dependency List'];
                         for(var i=0;i<dependency.length;i++){
-
                             var name=dependency[i][0];
+                            //console.log($('.'+name+" :checked").length);
+                            $('.'+name).attr('checked',false);
+                            //console.log($('.'+name+" :checked").length);
                             var listings=dependency[i][1];
                             for(var j=0;j<listings.length;j++){
                                 $('.'+name).each(function(){
@@ -374,6 +376,7 @@ $(document).ready(function() {
                                     }
                                 });
                             }
+                            //console.log($('.'+name+" :checked").length);
                             if($('.'+name).is(':checked')==false){
                                 $('#'+name+"-flag").removeClass('filled');
                                 $('#'+name+"-flag").addClass('unfilled');
@@ -988,7 +991,7 @@ $(document).ready(function() {
                         $.get("Submit_New_TestCase/",{
                             Section_Path:newSectionPath,
                             //Platform:platformList.join("|"),
-                            Manual_TC_Id:test_case_Id,
+                            //Manual_TC_Id:test_case_Id,
                             TC_Name:title,
                             TC_Creator:$('#user_name').text().trim(),
                             Associated_Bugs_List:defectId,
@@ -1022,7 +1025,7 @@ $(document).ready(function() {
                                 Section_Path:newSectionPath,
                                 TC_Id:_TC_Id,
                                 //Platform:platformList.join("|"),
-                                Manual_TC_Id:test_case_Id,
+                                //Manual_TC_Id:test_case_Id,
                                 TC_Name:title,
                                 TC_Creator:$('#user_name').text().trim(),
                                 Associated_Bugs_List:defectId,

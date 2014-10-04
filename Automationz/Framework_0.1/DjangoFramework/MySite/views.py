@@ -3237,7 +3237,7 @@ def ViewTestCase(TC_Id):
             TC_Project=[x[0] for x in test_case_tag_details if x[1] == 'Project']
             TC_Team=[x[0] for x in test_case_tag_details if x[1] == 'Team']
             #TC_Type = [x[0] for x in test_case_tag_details if x[1] == 'test_run_type' or x[1] == 'Mac_test_run_type']
-            query="select distinct name,array_to_string(array_agg(distinct property),',') from test_case_tag tct,dependency_management dm,dependency d where d.id=dm.dependency and tct.name=d.dependency_name and dm.project_id='%s' and dm.team_id=%d group by tct.name"%(TC_Project[0],int(TC_Team[0]))
+            query="select distinct name,array_to_string(array_agg(distinct property),',') from test_case_tag tct,dependency_management dm,dependency d where d.id=dm.dependency and tct.name=d.dependency_name and dm.project_id='%s' and dm.team_id=%d and tct.tc_id='%s'group by tct.name"%(TC_Project[0],int(TC_Team[0]),TC_Id)
             Conn = GetConnection()
             Dependency_List = DB.GetData(Conn,query,False)
             Conn.close()
@@ -3374,11 +3374,11 @@ def EditTestCase(request):
         err_msg = ''
         if request.is_ajax() and request.method == 'GET':
             TC_Id = request.GET.get(u'TC_Id', '')
-            Platform = request.GET.get(u'Platform', '')
-            Manual_TC_Id = request.GET.get(u'Manual_TC_Id', '')
+            #Platform = request.GET.get(u'Platform', '')
+            #Manual_TC_Id = request.GET.get(u'Manual_TC_Id', '')
             TC_Name = request.GET.get(u'TC_Name', '')
             TC_Creator = request.GET.get(u'TC_Creator', '')
-            TC_Type = request.GET.get(u'TC_Type', '')
+            #TC_Type = request.GET.get(u'TC_Type', '')
             Tag_List = request.GET.get(u'Tag_List', '').split('|')
             Dependency_List = request.GET.get(u'Dependency_List', '').split('|')
             Priority = request.GET.get(u'Priority', '')
@@ -3395,13 +3395,18 @@ def EditTestCase(request):
             Steps_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
             Project_Id=request.GET.get(u'Project_Id','')
             Team_Id=request.GET.get(u'Team_Id','')
+            temp_list=[]
+            for each in Dependency_List:
+                temporary=each.split(":")
+                temp_list.append((temporary[0],temporary[1].split(",")))
+            Dependency_List=temp_list
             Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected_Result, Step_Verification_Point, Steps_Time_List)
             Section_Path = request.GET.get(u'Section_Path', '')
         # LogMessage(sModuleInfo,"TEST CASE Edit START:%s"%(TC_Name),4)
 
         # 0
         ##########Data Validation: Check if all required input fields have data
-        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
+        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
         if test_case_validation_result != "Pass":
             return returnResult(test_case_validation_result)
 
@@ -3441,7 +3446,7 @@ def EditTestCase(request):
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
                 return err_msg
-            test_case_tag_result = TestCaseCreateEdit.Update_Test_Case_Tag(Conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id)
+            test_case_tag_result = TestCaseCreateEdit.Update_Test_Case_Tag(Conn, TC_Id, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id)
             if test_case_tag_result != "Pass":
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
