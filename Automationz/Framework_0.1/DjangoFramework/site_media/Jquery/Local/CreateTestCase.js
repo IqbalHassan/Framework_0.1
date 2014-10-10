@@ -310,58 +310,6 @@ $(document).ready(function() {
                         $("#priotiy_select").val(parseInt(priority.substring(1,2)));
                         /*************** End Properties tab Data*******************************/
                         /****************************Parameters Tab*****************************/
-                        //Select Platform
-                        /*var platform=data['Platform'];
-                        console.log(platform);
-                        for(var i=0;i<platform.length;i++){
-                            $('input[name="platform"]').each(function(){
-                                if($(this).val()==platform[i]){
-                                    $(this).attr('checked','true');
-                                }
-                            });
-                        }
-                        if($('input[name="platform"]:checked').length>0){
-                            $("#platform-flag").removeClass("unfilled");
-                            $("#platform-flag").addClass("filled");
-                        }
-                        else{
-                            $("#platform-flag").removeClass("filled");
-                            $("#platform-flag").addClass("unfilled");
-                        }
-                        //Select Browsers/Dependency
-                        var dependency=data['Dependency List'];
-                        for(var i=0;i<dependency.length;i++){
-                            $('input[name="dependancy"]').each(function(){
-                                if($(this).val()==dependency[i]){
-                                    $(this).attr('checked','true');
-                                }
-                            })
-                        };
-                        if($('input[name="dependancy"]:checked').length>0){
-                            $("#browser-flag").removeClass("unfilled");
-                            $("#browser-flag").addClass("filled");
-                        }
-                        else{
-                            $("#browser-flag").removeClass("filled");
-                            $("#browser-flag").addClass("unfilled");
-                        }
-                        //Type Select
-                        var tc_type=data['TC Type'];
-                        for(var i=0;i<tc_type.length;i++){
-                            $('input[name="type"]').each(function(){
-                                if($(this).val()==tc_type[i]){
-                                    $(this).attr('checked','true');
-                                }
-                            })
-                        };
-                        if($('input[name="type"]:checked').length>0){
-                            $("#type-flag").removeClass("unfilled");
-                            $("#type-flag").addClass("filled");
-                        }
-                        else{
-                            $("#type-flag").removeClass("filled");
-                            $("#type-flag").addClass("unfilled");
-                        }*/
                         var dependency=data['Dependency List'];
                         for(var i=0;i<dependency.length;i++){
                             var name=dependency[i][0];
@@ -370,11 +318,7 @@ $(document).ready(function() {
                             //console.log($('.'+name+" :checked").length);
                             var listings=dependency[i][1];
                             for(var j=0;j<listings.length;j++){
-                                $('.'+name).each(function(){
-                                    if($(this).val()==listings[j]){
-                                        $(this).attr('checked','true');
-                                    }
-                                });
+                                $('.'+name+':checkbox[value="'+listings[j]+'"]').attr('checked',true);
                             }
                             //console.log($('.'+name+" :checked").length);
                             if($('.'+name).is(':checked')==false){

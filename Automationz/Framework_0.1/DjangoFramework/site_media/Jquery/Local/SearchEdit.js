@@ -1,64 +1,15 @@
 $(document).ready(function(){
-    AddAutoCompleteSearchBox("#Place_AutoComplete_Here","Search Test Cases Data By Keywords:");
-    RunTestAutocompleteSearch();
-    PerformSearch();
+    RunAutoCompleteTestSearch();
     DeleteSearchQueryText();
 });
-
-function AddAutoCompleteSearchBox(WhereToPlaceId, Label)
-{
-
-    $(WhereToPlaceId).append(
-
-
-        "<form method = 'get' >"
-
-            +"<table id='AutoSearchResult' style='display: block;' >"
-            + "<tbody>"
-
-            + "<tr>"
-            + "<td>"
-            + "<label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'>"
-            //+ Label
-            + " </b></label>"
-            + "<input class = 'ui-corner-all textbox' id='searchbox' style = 'margin:5px' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' placeholder='" +
-            Label +
-            "'/>"
-            + "</td>"
-            + "</tr>"
-
-
-            + "</tbody>"
-            + "</table>"
-
-
-            +"<table id = 'AutoSearchResult' >"
-            + "<tbody>"
-
-            + "<tr id = 'searchedtext'>"
-            +"<p> </p>"
-            + "<th class = 'Text' style= 'text-align: left'> Test Data Set: </th>"
-            + "</tr>"
-
-            + "</tbody>"
-            + "</table>"
-            + "</form>"
-
-
-
-    );
-}
-function RunTestAutocompleteSearch()
-
-{
-
+function RunAutoCompleteTestSearch(){
     $("#searchbox").autocomplete(
         {
             source : function(request, response) {
                 $.ajax({
                     url:"AutoCompleteTestCasesSearchOtherPages",
                     dataType: "json",
-                    data:{ term: request.term},
+                    data:{ term: request.term,project_id:$('#project_identity option:selected').val().trim(),team_id:$('#default_team_identity option:selected').val().trim()},
                     success: function( data ) {
                         response( data );
                     }
@@ -92,16 +43,8 @@ function RunTestAutocompleteSearch()
             .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
             .appendTo( ul );
     };
-
-    $("#searchbox").keypress(function(event) {
-        if (event.which == 13) {
-
-            event.preventDefault();
-
-        }
-    });
-
 }
+
 function PerformSearch() {
     $("#AutoSearchResult #searchedtext").each(function() {
         var UserText = $(this).find("td").text();
@@ -124,11 +67,11 @@ function PerformSearch() {
                 ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
 
                 $("#RunTestResultTable").fadeIn(1000);
-                $("p:contains('Show/Hide Test Cases')").fadeIn(0);
+                //$("p:contains('Show/Hide Test Cases')").fadeIn(0);
                 implementDropDown("#RunTestResultTable");
                 // add edit btn
                 var indx = 0;
-                $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
+                $('#RunTestResultTable tr>td:nth-child(5)').each(function(){
                     var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/>');

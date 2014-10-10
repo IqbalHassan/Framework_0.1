@@ -186,54 +186,17 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     Tag_List = []
     # Add test case id tag
     Tag_List.append(('%s' % TC_Id, 'tcid'))
-    """ManualTCIDFound = False
-    for eachManual_Id in [Manual_TC_Id]:
-        if eachManual_Id.strip() != '':
-            Tag_List.append(('%s' % eachManual_Id, 'MKS'))
-            ManualTCIDFound = True
-    if ManualTCIDFound == False:
-        Tag_List.append(('%s' % TC_Id, 'MKS'))"""
-
     # hard coded tags for now
-    Tag_List.append(('Default', 'Data_Type'))
+    #Tag_List.append(('Default', 'Data_Type'))
 
     # Add Section names & initialize variables
     Section_Tag = 'Section'
     Custom_Tag = 'CustomTag'
     Section_Path_Tag = 'section_id'
     Priority_Tag = 'Priority'
-    Tag_List.append(('Status', Status))
+    Tag_List.append((Status,'Status'))
     if Status == "Forced":
-        Tag_List.append(('Status', 'Ready'))    
-    """if Platform.lower() == 'pc':
-        Tag_List.append(('PC', 'machine_os'))
-        Section_Tag = 'Section'
-        Custom_Tag = 'CustomTag'
-        Section_Path_Tag = 'section_id'
-        TestRunType_Tag = 'test_run_type'
-        Priority_Tag = 'Priority'
-        Dependency_Tag = 'Dependency'
-        Tag_List.append(('Status', Status))
-        if Status == "Forced":
-            Tag_List.append(('Status', 'Ready'))
-    elif Platform.lower() == 'mac':
-        Tag_List.append(('MAC', 'machine_os'))
-        Section_Tag = 'MacSection'
-        Custom_Tag = 'MacCustomTag'
-        Section_Path_Tag = 'mac_section_id'
-        TestRunType_Tag = 'Mac_test_run_type'
-        Priority_Tag = 'MacPriority'
-        Dependency_Tag = 'MacDependency'
-        Tag_List.append(('MacStatus', Status))
-        if Status == "Forced":
-            Tag_List.append(('Status', 'Ready'))
-    else:
-        err_msg = LogMessage(sModuleInfo, "Unknown platform value for the test case: %s" % (Platform), 4)
-        return err_msg
-    """
-    """# Add test case type, priority, Data Type
-    for each_TC_Type in TC_Type.split("|"):
-        Tag_List.append(('%s' % each_TC_Type, TestRunType_Tag))"""
+        Tag_List.append(('Ready','Status'))    
     Tag_List.append(('%s' % Priority, Priority_Tag))
     #Add project and team id
     Tag_List.append(('%s'%Project_Id,'Project'))
@@ -256,18 +219,11 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
         Tag_List.append(('%s' % eachSection, Section_Tag))
 
     # Add Dependency tags
-    """for eachDependency in Dependency_List:
-        Tag_List.append(('%s' % Dependency_Tag, eachDependency))
-        if eachDependency in ['Outlook', 'MacNative', 'iTunes', 'iPhoto', 'WMP', 'Chrome', 'FireFox', 'IE']:
-            Tag_List.append(('%s' % eachDependency, 'client'))
-        elif eachDependency in ['BBX', 'SD']:
-            Tag_List.append(('%s' % eachDependency, 'device_memory'))
-    """
     for eachDependency in Dependency_List:
         name=eachDependency[0]
         tag_listing=list(eachDependency[1])
         for eachitem in tag_listing:
-            Tag_List.append((name,eachitem))
+            Tag_List.append((eachitem,name))
     
     # Add Associated Bugs
     for eachBugId in Associated_Bugs_List:
@@ -997,51 +953,16 @@ def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     Tag_List = []
     # Add test case id tag
     Tag_List.append(('%s' % TC_Id, 'tcid'))
-    """ManualTCIDFound = False
-    for eachManual_Id in Manual_TC_Id:
-        if eachManual_Id.strip() != '':
-            Tag_List.append(('%s' % eachManual_Id, 'MKS'))
-            ManualTCIDFound = True
-    if ManualTCIDFound == False:
-        Tag_List.append(('%s' % TC_Id, 'MKS'))"""
     # hard coded tags for now
-    Tag_List.append(('Default', 'Data_Type'))
+    #Tag_List.append(('Default', 'Data_Type'))
     # Add Section names & initialize variables
     Section_Tag = 'Section'
     Custom_Tag = 'CustomTag'
     Section_Path_Tag = 'section_id'
     Priority_Tag = 'Priority'
-    Tag_List.append(('Status', Status))
+    Tag_List.append((Status,'Status'))
     if Status == "Forced":
-        Tag_List.append(('Status', 'Ready'))    
-    """if Platform.lower() == 'pc':
-        Tag_List.append(('PC', 'machine_os'))
-        Section_Tag = 'Section'
-        Custom_Tag = 'CustomTag'
-        Section_Path_Tag = 'section_id'
-        TestRunType_Tag = 'test_run_type'
-        Priority_Tag = 'Priority'
-        Dependency_Tag = 'Dependency'
-        Tag_List.append(('Status', Status))
-        if Status == "Forced":
-            Tag_List.append(('Status', 'Ready'))
-    elif Platform.lower() == 'mac':
-        Tag_List.append(('MAC', 'machine_os'))
-        Section_Tag = 'MacSection'
-        Custom_Tag = 'MacCustomTag'
-        Section_Path_Tag = 'mac_section_id'
-        TestRunType_Tag = 'Mac_test_run_type'
-        Priority_Tag = 'MacPriority'
-        Dependency_Tag = 'MacDependency'
-        Tag_List.append(('MacStatus', Status))
-        if Status == "Forced":
-            Tag_List.append(('Status', 'Ready'))
-    else:
-        err_msg = LogMessage(sModuleInfo, "Unknown platform value for the test case: %s" % (Platform), 3)
-        return err_msg"""
-    """# Add test case type, priority, Data Type
-    for each_TC_Type in TC_Type:
-        Tag_List.append(('%s' % each_TC_Type, TestRunType_Tag))"""
+        Tag_List.append(('Ready','Status'))    
     Tag_List.append(('%s' % Priority, Priority_Tag))
     #Add project and team id
     Tag_List.append(('%s'%Project_Id,'Project'))
@@ -1063,18 +984,12 @@ def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
         Tag_List.append(('%s' % eachSection, Section_Tag))
 
     # Add Dependency tags
-    """for eachDependency in Dependency_List:
-        Tag_List.append(('%s' % Dependency_Tag, eachDependency))
-        if eachDependency in ['Outlook', 'MacNative', 'iTunes', 'iPhoto', 'WMP', 'Chrome', 'FireFox', 'IE']:
-            Tag_List.append(('%s' % eachDependency, 'client'))
-        elif eachDependency in ['BBX', 'SD']:
-            Tag_List.append(('%s' % eachDependency, 'device_memory'))
-    """
+    
     for eachDependency in Dependency_List:
         name=eachDependency[0]
         tag_listing=list(eachDependency[1])
         for eachitem in tag_listing:
-            Tag_List.append((name,eachitem))
+            Tag_List.append((eachitem,name))
     # Add Associated Bugs
     for eachBugId in Associated_Bugs_List:
         Tag_List.append(('%s' % eachBugId, 'JiraId'))
