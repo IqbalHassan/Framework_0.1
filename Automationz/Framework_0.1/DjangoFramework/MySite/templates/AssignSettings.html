@@ -15,6 +15,19 @@
     #searchbox:focus {
         box-shadow: 0 6px 6px -6px blue;
     }
+    #searchbox_version {
+        width: 94%;
+        padding: 5px;
+        max-width: 95%;
+        outline-color: #000;
+        outline-style: none;
+        box-shadow: 0 6px 6px -6px black;
+        font-size: 1.2em;
+    }
+
+    #searchbox_version:focus {
+        box-shadow: 0 6px 6px -6px blue;
+    }
 </style>
 <article>
     <div>
@@ -84,7 +97,61 @@
         </div>
         <h2>Version</h2>
         <div class="tabs-div">
+            <table style="width: 100%;margin-top: 2%;">
+                <thead>
+                <tr>
+                    <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text" width="33%">Branch</td>
+                    <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text" width="33%">Version</td>
+                    <td width="33%">&nbsp</td>
 
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="width: 22%; border-right: 2px solid #ccc;">
+                        <div style="width: 100%;">
+                            <input type="text" id="searchbox_version" placeholder="Search Branch">
+                        </div>
+                        <div style="width:100%; ">
+                            <table width="100%" style="margin-top: 5%;">
+                                <thead>
+                                <tr>
+                                    <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Linked Branch</b></td>
+                                </tr>
+                                </thead>
+                                <tbody id="branch_body">
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="width:100%;margin-top:2%;" align="center" >
+                            <a href="" id="create_new_branch"><b class="Text">Create New Branch</b></a>
+                        </div>
+                        <div style="width:100%;">
+                            <table width="100%" style="margin-top: 5%;">
+                                <thead>
+                                <tr>
+                                    <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Global Branch</b></td>
+                                </tr>
+                                </thead>
+                                <tbody id="unused_branch">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
+                        <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="version_tab">
+
+                        </div>
+                    </td>
+                    <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
+                        &nbsp;
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
         </div>
         <h2>Features</h2>
         <div class="tabs-div">

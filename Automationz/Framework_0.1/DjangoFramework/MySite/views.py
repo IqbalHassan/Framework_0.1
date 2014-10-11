@@ -9612,9 +9612,19 @@ def get_all_data_dependency_page(request):
                 Conn=GetConnection()
                 unused_dependency_list=DB.GetData(Conn,query,False)
                 Conn.close()
+                query="select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
+                Conn=GetConnection()
+                branch_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                query="select distinct id,branch_name from branch except (select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d)"%(project_id.strip(),int(team_id.strip()))
+                Conn=GetConnection()
+                unused_branch_list=DB.GetData(Conn,query,False)
+                Conn.close()
                 result={
                     'dependency_list':dependency_list,
-                    'unused_dependency_list':unused_dependency_list
+                    'unused_dependency_list':unused_dependency_list,
+                    'branch_list':branch_list,
+                    'unused_branch_list':unused_branch_list
                 }
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')
@@ -10128,7 +10138,55 @@ def get_default_settings(request):
         else:
             PassMessasge(sModuleInfo, PostError, error_tag)
     except Exception,e:
-        PassMessasge(sModuleInfo, e, 3)        
+        PassMessasge(sModuleInfo, e, 3)    
+def add_new_branch(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag='Branch'
+                branch_name=request.GET.get(u'dependency_name','')
+                #check for the occurance
+                query="select count(*) from branch where branch_name='%s'"%branch_name.strip()
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        #form dict to insert 
+                        Dict={
+                              'branch_name':branch_name.strip()
+                        }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"branch",**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo,entry_success(branch_name,type_tag), success_tag)
+                            message=True
+                            log_message=entry_success(branch_name,type_tag)
+                        else:
+                            PassMessasge(sModuleInfo, entry_fail(branch_name, type_tag), error_tag)
+                            message=False
+                            log_message=entry_fail(branch_name, type_tag)
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo,multiple_instance(branch_name, type_tag), error_tag)
+                        message=False
+                        log_message=multiple_instance(branch_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo, DBError, error_tag)
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)    
+        
 #will be changing the new format inhere
 '''
 You must use @csrf_protect before any 'post' handling views

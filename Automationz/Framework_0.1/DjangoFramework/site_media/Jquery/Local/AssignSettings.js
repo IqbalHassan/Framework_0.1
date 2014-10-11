@@ -19,12 +19,13 @@ function get_all_data(project_id,team_id){
     },function(data){
         populate_div("dependency_body",data['dependency_list'],project_id,team_id,"dependency");
         populate_div("unused_dependency",data['unused_dependency_list'],project_id,team_id,"add_dependency");
+        populate_div("branch_body",data['branch_list'],project_id,team_id,'branch');
     });
 }
 function populate_div(div_name,array_list,project_id,team_id,type){
     var message="";
     message+='<tr>';
-    if(type=='dependency'){
+    if(type=='dependency'||type=='branch'){
         message+='<td align="center">'+project_id+'<br>'+team_id+'</td>';
     }
     else{
@@ -44,7 +45,9 @@ function populate_div(div_name,array_list,project_id,team_id,type){
         if(type=="add_dependency"|| type=="dependency"){
             message+='<td style="border-left: 2px solid #CCCCCC" align="center"><b>No Dependency Found</b></td>';
         }
-
+        if(type=='branch'){
+            message+='<td style="border-left: 2px solid #CCCCCC" align="center"><b>No Branch Found</b></td>';
+        }
     }
     $('#'+div_name).html(message);
     if(type=="dependency"){
@@ -463,6 +466,40 @@ function DependencyTabButtons(project_id,team_id){
                 var dependency_name=$('#dependency_name').val().trim();
                 if(dependency_name!=""){
                     $.get('add_new_dependency',{
+                        dependency_name:dependency_name
+                    },function(data){
+                        if(data['message']==true){
+                            alertify.success(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                        else{
+                            alertify.error(data['log_message'],time_out);
+                        }
+                    });
+                }
+                else{
+                    alertify.error(name_field_error,time_out);
+                }
+
+                e.stopPropagation();
+            }
+            else{
+
+            }
+        })
+    });
+    $('#create_new_branch').on('click',function(event){
+        event.preventDefault();
+        var message="";
+        message+='<table width="100%">';
+        message+='<tr><td align="center" colspan="2"><b class="Text">Create New Branch</b></td></tr>';
+        message+='<tr style="margin-top: 2%;"><td align="right"><b class="Text">Branch:</b></td><td><input class="textbox" style="width: 100%" id="branch_name"></td></tr>';
+        message+='</table>';
+        alertify.confirm(message,function(e){
+            if(e){
+                var dependency_name=$('#branch_name').val().trim();
+                if(dependency_name!=""){
+                    $.get('add_new_branch',{
                         dependency_name:dependency_name
                     },function(data){
                         if(data['message']==true){
