@@ -63,6 +63,7 @@ function populate_div(div_name,array_list,project_id,team_id,type){
                 project_id:project_id,
                 team_id:team_id
             },function(data){
+                $('#version_dependency_tab').html("");
                 populate_second_div("name_dependency_tab",data['dependency_list'],data['default_list'],"dependency_name",project_id,team_id);
             });
         });

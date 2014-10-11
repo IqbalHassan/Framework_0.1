@@ -6306,40 +6306,27 @@ def UpdateData(request):
 def GetOS(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
-            name = request.GET.get(u'os', '')
-            refined_list = []
-            ostype = 'OS'
-            if name == '':
-                query = "select distinct value from config_values where type='%s'" % ostype
-                os_list = DB.GetData(Conn, query, False)
-                for each in os_list:
-                    query = "select distinct value from config_values where type='%s Version'" % each[0]
-                    os_verison = DB.GetData(Conn, query)
-                    temp = []
-                    temp.append(each[0])
-                    temp.append(os_verison)
-                    temp = tuple(temp)
-                    refined_list.append(temp)
-                browser_data = []
-                browsertype = 'Browser'
-                query = "select value from config_values where type='%s'" % browsertype
-                browser_list = DB.GetData(Conn, query)
-                for each in browser_list:
-                    temp = []
-                    query = "select value from config_values where type='%s Version'" % each
-                    browser = DB.GetData(Conn, query)
-                    temp.append(each)
-                    temp.append(browser)
-                    temp = tuple(temp)
-                    browser_data.append(temp)
-                # Get the productVersion
-                productVersion = 'Product Version'
-                query = "select value from config_values where type='%s'" % productVersion
-                productVersion = DB.GetData(Conn, query)
-    results = {'os':refined_list, 'browser':browser_data, 'productVersion':productVersion}
-    results = simplejson.dumps(results)
-    return HttpResponse(results, mimetype='application/json')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            final_list=[]
+            query="select distinct dependency_name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(project_id,int(team_id))
+            Conn=GetConnection()
+            dependency=DB.GetData(Conn,query)
+            Conn.close()
+            for each in dependency:
+                query="select distinct name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,project_id,int(team_id))
+                Conn=GetConnection()
+                names=DB.GetData(Conn,query)                
+                temp=[]
+                for eachitem in names:
+                    query="select distinct bit_name,array_agg(distinct version) from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dn.name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,eachitem,project_id,int(team_id))
+                    Conn=GetConnection()
+                    version=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    temp.append((eachitem,version))
+                final_list.append((each,temp))
+            results = simplejson.dumps(final_list)
+            return HttpResponse(results, mimetype='application/json')
 def Auto_MachineName(request):
     if request.is_ajax():
         if request.method == 'GET':
