@@ -227,7 +227,29 @@ function PopulateBugInfo(bug_id){
             + data['Bug_Cases'][i][1]
             + "</td>" +
             "</tr>");
-        })
+        });
+
+        $("#suggestion").show();
+        $("#normal_sugg").hide();
+
+        $(data['Failed_Cases']).each(function(i){
+            $("#nobug_failed").append('<tr>' +
+            '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+            + '<td>'
+            + '<input type="checkbox" name="test_cases" value="'
+            + data['Failed_Cases'][i][0]
+            + '"/>' +
+            '</td><td>'
+            + data['Failed_Cases'][i][1]
+            + "</td>" +
+            '<td></td>' +
+            '<td></td>' +
+            '<td>' +
+            data['Failed_Cases'][i][2] +
+            '</td>' +
+            "</tr>");
+        });
+
     });
 
 }
