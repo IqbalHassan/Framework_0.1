@@ -9,7 +9,7 @@ $(document).ready(function(){
         $('#set_tag').html(formTable(data));
         ClickButton(project_id,team_id);
     });
-    GetTestSet();
+    GetTestSet(project_id,team_id);
 });
 function createDivInit(temp){
     var message="";
@@ -242,11 +242,11 @@ function formTable(data){
     message+='</table>';
     return message;
 }
-function GetTestSet(){
+function GetTestSet(project_id,team_id){
     $('#searchbox').on('input',function(){
         $.get('GetSetTag',{term:$(this).val()},function(data){
             $('#set_tag').html(formTable(data));
-            ClickButton();
+            ClickButton(project_id,team_id);
         });
     });
 };
