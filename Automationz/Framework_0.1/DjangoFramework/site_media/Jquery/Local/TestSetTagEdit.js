@@ -5,11 +5,14 @@ $(document).ready(function(){
     var str="%20";
     var re=new RegExp(str,'g');
     name=name.replace(re,' ');
+    var project_id= $.session.get('project_id');
+    var team_id= $.session.get('default_team_identity');
     LoadGenInfo(type,name);
-    GetExisting();
-    PerformSearch();
-    Suggestion();
-    DeleteFilterData();
+
+    GetExisting(name,project_id,team_id);
+    //PerformSearch();
+    Suggestion(project_id,team_id);
+    DeleteFilterData(project_id,team_id);
     Buttons(type,name);
 });
 function Buttons(type,name){
@@ -58,14 +61,10 @@ function Buttons(type,name){
 
     });
 }
-function GetExisting(){
-    var name=$('#name').text().trim();
-    var str="%20";
-    var re=new RegExp(str,'g');
-    name=name.replace(re,' ');
+function GetExisting(name,project_id,team_id){
     name=name+':';
     name=name.trim();
-    $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:false,total_time:true},function(data){
+    $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:false,project_id:project_id,team_id:team_id,total_time:true},function(data){
         if(data['TableData'].length!=0){
             ResultTable("#existing",data['Heading'],data['TableData'],'Test Cases');
             implementDropDown("#existing");
@@ -84,15 +83,16 @@ function GetExisting(){
         }
     });
 }
-function PerformSearch(){
+
+function PerformSearch(project_id,team_id){
     $("#searchedFilter").each(function() {
         var UserText = $(this).find("td").text();
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
-        $.get('TableDataTestCasesOtherPages',{Query:UserText,test_status_request:false},function(data){
+        $.get('TableDataTestCasesOtherPages',{Query:UserText,test_status_request:false,project_id:project_id,team_id:team_id},function(data){
         if(data['TableData'].length!=0){
             ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
             implementDropDown("#RunTestResultTable");
-            $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
+            $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
                 var id=$(this).closest('tr').find('td:first-child').text().trim();
                 $(this).after('<div><input id="'+id+'" type="checkbox" class="Buttons add"/></div>');
             });
@@ -108,14 +108,14 @@ function PerformSearch(){
     });
     });
 }
-function Suggestion(){
+function Suggestion(project_id,team_id){
     $("#searchbox").autocomplete(
         {
             source : function(request, response) {
                 $.ajax({
                     url:"AutoCompleteTestCasesSearchOtherPages",
                     dataType: "json",
-                    data:{ term: request.term},
+                    data:{ term: request.term,project_id:project_id,team_id:team_id},
                     success: function( data ) {
                         response( data );
                     }
@@ -138,7 +138,7 @@ function Suggestion(){
                         + ":&nbsp"
                         + '</td>'
                     );
-                    PerformSearch();
+                    PerformSearch(project_id,team_id);
                 }
                 $("#searchbox").val("");
                 return false;
@@ -159,11 +159,11 @@ function Suggestion(){
     });
 
 }
-function DeleteFilterData(){
+function DeleteFilterData(project_id,team_id){
     $('#searchedFilter td .delete').live('click',function(){
         $(this).parent().next().remove();
         $(this).remove();
-        PerformSearch();
+        PerformSearch(project_id,team_id);
     });
 }
 function LoadGenInfo(type,name){
