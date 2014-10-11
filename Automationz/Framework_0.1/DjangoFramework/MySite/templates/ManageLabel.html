@@ -65,7 +65,7 @@
 
         {% if labels %}
             {% for x in labels %}
-            <tr><td><span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x.0}}</span></td></tr>
+            <tr><td><!--span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x.0}}</span--><a href="" class="label" style="background-color: {{x.1}};">{{x.0}}</a></td></tr>
             {% endfor %}
         {% endif %}
         </tbody>

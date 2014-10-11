@@ -166,7 +166,7 @@
                             <table>
                                 {% if labels %}
                                 {% for x in labels %}
-                                <tr><td><input type="checkbox" value="{{x.2}}" name="labels"><span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x.0}}</span></td></tr>
+                                <tr><td><input type="checkbox" value="{{x.2}}" name="labels"><a href="" class="label" style="background-color: {{x.1}};">{{x.0}}</a><!--span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x.0}}</span--></td></tr>
                                 {% endfor %}
                                 {% endif %}
                             </table>
@@ -202,7 +202,7 @@
             </table>
 
             <br>
-            <input class="search_case textbox" placeholder="Search Test Case To Link"/>
+            <input class="search_case textbox" placeholder="Search Test Cases To Link"/>
 
             <br><br>
 
@@ -218,7 +218,55 @@
 
             </div-->
 
-            <table style="width: 100%;">
+            <div id="suggestion" style="display: none">
+                <h3 style="text-align: center">Failed Test Cases with no bug linked</h3>
+                <table id="nobug_failed" class="one-column-emphasis">
+                    <thead>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>Title</td>
+                        <td>Features</td>
+                        <td>Section</td>
+                        <td>Last Result</td>
+                        <td>Run Date</td>
+                        <td>Version</td>
+                        <td>Milestone</td>
+                        <!--td>Linked Bug-ID</td-->
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+
+                <br><br>
+
+                <h3 style="text-align: center">Suggested Test Cases</h3>
+                <table id="passed_sugg" class="one-column-emphasis">
+                    <thead>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>Title</td>
+                        <td>Features</td>
+                        <td>Section</td>
+                        <td>Last Result</td>
+                        <td>Run Date</td>
+                        <td>Version</td>
+                        <td>Milestone</td>
+                        <td>Linked Bug-ID</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            <table id="normal_sugg" style="width: 100%;">
                 <thead>
                 <tr>
                     <td style="text-align: center;"></td>

@@ -4609,13 +4609,15 @@ margin-right: 10px;
 
 .label {
 display: inline-block;
-padding: 3px 4px;
-font-size: 11px;
+padding: 8px 11px;
+font-size: 13px;
 font-weight: bold;
 line-height: 1;
 color: #fff;
 border-radius: 2px;
 box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
+min-width: 35px;
+text-align: center;
 }
 .label:hover{
   text-decoration: none;
