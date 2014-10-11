@@ -605,7 +605,6 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
 def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Available Test Case in other page without the platform =========================#
     if request.is_ajax():
         if request.method == 'GET':
-            final_results = []
             value = request.GET.get(u'term', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
@@ -616,6 +615,8 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             Section_Path_Tag = 'section_id'
             Priority_Tag = 'Priority'
             Status='Status'
+            set_type='set'
+            tag_type='tag'
             query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
             Conn=GetConnection()
             dependency=DB.GetData(Conn,query)
@@ -624,7 +625,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             for each in dependency:
                 wherequery+=("'"+each.strip()+"'")
                 wherequery+=','
-            wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"'")
+            wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
             print wherequery
             tag_query="select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)"%(value,wherequery)
             id_query="select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')"%(value,value)
@@ -6797,6 +6798,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
             Custom_Tag = 'CustomTag'
             Section_Path_Tag = 'section_id'
             Priority_Tag = 'Priority'
+            set_type='set'
+            tag_type='tag'
             Status='Status'
             query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
             Conn=GetConnection()
@@ -6806,7 +6809,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
             for each in dependency:
                 wherequery+=("'"+each.strip()+"'")
                 wherequery+=','
-            wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"'")
+            wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
             print wherequery
             TestIDList = []
             for eachitem in QueryText:
@@ -6843,7 +6846,6 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 TableData = DB.GetData(Conn, query, False)        
                 Conn.close()
 
-            TempTableData = []
             RefinedDataTemp = []
             Check_TestCase(TableData, RefinedDataTemp)
             RefinedData=list(RefinedDataTemp)
@@ -6904,7 +6906,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 if test_status_request:
                     try:
                         query = '''
-                        SELECT property FROM test_case_tag WHERE name='%s' AND tc_id='%s'
+                        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
                         ''' % ('Status', i[0])
                         Conn=GetConnection()
                         data = DB.GetData(Conn, query, False, True)
