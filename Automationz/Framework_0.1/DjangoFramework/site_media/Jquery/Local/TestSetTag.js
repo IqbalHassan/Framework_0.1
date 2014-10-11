@@ -2,9 +2,12 @@
  * Created by lent400 on 5/13/14.
  */
 $(document).ready(function(){
+    var project_id= $.session.get('project_id');
+    var team_id= $.session.get('default_team_identity');
+
     $.get('GetSetTag',{term:""},function(data){
         $('#set_tag').html(formTable(data));
-        ClickButton();
+        ClickButton(project_id,team_id);
     });
     GetTestSet();
 });
@@ -121,7 +124,7 @@ function configureLinks(temp,name){
         });
     });
 }
-function ClickButton(){
+function ClickButton(project_id,team_id){
     $('.element').click(function(){
         $('.element').css({'background-color':'#ffffff'});
         $(this).css({'background-color':'#E7F4F9'});
@@ -132,7 +135,7 @@ function ClickButton(){
         $('#name').html('<p style="font-weight: bold; text-align: left;margin-left: -10%" class="Text">'+name+'<span id="time"></span></p>');
         name+=':';
         $('#infoDiv').css({'display':'block'});
-        $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:true,total_time:true},function(data){
+        $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:true,total_time:true,project_id:project_id,team_id:team_id},function(data){
             if(data['TableData'].length!=0){
                 ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
                 $('#time').html('<b> - '+data['time']+'</b>')

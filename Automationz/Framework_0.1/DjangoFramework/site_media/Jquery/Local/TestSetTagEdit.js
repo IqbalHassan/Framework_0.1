@@ -68,7 +68,7 @@ function GetExisting(name,project_id,team_id){
         if(data['TableData'].length!=0){
             ResultTable("#existing",data['Heading'],data['TableData'],'Test Cases');
             implementDropDown("#existing");
-            $('#existing tr>td:nth-child(7)').each(function(){
+            $('#existing tr>td:nth-child(6)').each(function(){
                 var id=$(this).closest('tr').find('td:first-child').text().trim();
                 $(this).after('<div><input id="'+id+'" type="checkbox" class="Buttons remove"/></div>');
             });
