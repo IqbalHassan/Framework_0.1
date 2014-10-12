@@ -6325,7 +6325,15 @@ def GetOS(request):
                     Conn.close()
                     temp.append((eachitem,version))
                 final_list.append((each,temp))
-            results = simplejson.dumps(final_list)
+            query="select distinct branch_name,array_agg(distinct version_name) from branch b,branch_management bm, versions v where b.id=bm.branch and v.id=b.id and bm.project_id='%s' and bm.team_id=%d group by b.branch_name"%(project_id,int(team_id))
+            Conn=GetConnection()
+            version_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            results={
+                'version_list':version_list,
+                'dependency_list':final_list
+                }
+            results = simplejson.dumps(results)
             return HttpResponse(results, mimetype='application/json')
 def Auto_MachineName(request):
     if request.is_ajax():

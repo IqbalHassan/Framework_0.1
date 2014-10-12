@@ -1,4 +1,5 @@
 var dependency_list=[];
+var global_version_list=[];
 $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
@@ -10,12 +11,13 @@ function ManageMilestone(project_id,team_id){
         project_id:project_id,
         team_id:team_id
     },function(data){
-        dependency_list=data;
-        populate_manual_div(dependency_list);
+        dependency_list=data['dependency_list'];
+        global_version_list=data['version_list'];
+        populate_manual_div(dependency_list,global_version_list);
     });
 }
 
-function populate_manual_div(dependency_list){
+function populate_manual_div(dependency_list,global_version_list){
     var message="";
     message+='<tr>';
     message+='<td align="right"><b class="Text">Machine Name:</b></td>';
@@ -39,6 +41,17 @@ function populate_manual_div(dependency_list){
         message+='<td width="10%"><select id="'+dependency_list[i][0]+'_bit" style="display:none;"></select></td><td width="33%"><select id="'+dependency_list[i][0]+'_version" style="display:none;"></select></td></tr></table></td>';
         message+='</tr>';
     }
+    message+='<tr>';
+    message+='<td align="right"><b class="Text">Version:</b></td>';
+    message+='<td align="left"><table width="100%"><tr>';
+    message+='<td width="19%"><select id="branch_name"><option value="">Branch</option>';
+    for(var i=0;i<global_version_list.length;i++){
+        message+='<option value="'+global_version_list[i][0]+'">'+global_version_list[i][0]+'</option> ';
+    }
+    message+='</select></td><td><select id="branch_version" style="display: none;"></select></td>'
+    message+='</tr></table></td>'
+    message+='</tr>';
+    message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="create" class="button primary"/></td></tr>';
     $('#manual_machine_body').html(message);
     for(var i=0;i<dependency_list.length;i++){
         $('#'+dependency_list[i][0]+'_name').on('change',function(){
@@ -52,6 +65,22 @@ function populate_manual_div(dependency_list){
             }
         });
     }
+    $('#branch_name').on('change',function(){
+        if($(this).val()!=""){
+            for(var i=0;i<global_version_list.length;i++){
+                if(global_version_list[i][0]==$(this).val()){
+                    var version=global_version_list[i][1];
+                    var message="";
+                    message+='<option value="">Version</option>';
+                    for(var j=0;j<version.length;j++){
+                        message+='<option value="'+version[j]+'">'+version[j]+'</option>';
+                    }
+                    $('#branch_version').html(message);
+                    $('#branch_version').css({'display':'block'});
+                }
+            }
+        }
+    });
 }
 function generate_name(dependency_list,name,type){
     for (var i=0;i<dependency_list.length;i++){
