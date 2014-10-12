@@ -7775,6 +7775,26 @@ def ManageBug(request):
     Conn.close()
     return render_to_response('ManageBug.html',Dict)
 
+def Bugs_List(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            team = request.GET.get(u'team', '')
+
+        now=datetime.datetime.now().date()
+        query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
+        bugs=DB.GetData(Conn, query, False)
+        
+        query="select * from bug_label_map"
+        labels=DB.GetData(Conn, query, False)
+        #query="select * from milestone_info"
+        #milestones=DB.GetData(Conn, query, False)
+        
+    results = {'bugs':bugs, 'labels':labels}
+    json = simplejson.dumps(results)
+    Conn.close()
+    return HttpResponse(json, mimetype='application/json')
+
 def CreateBug(request):
     query="select project_id from projects"
     Conn=GetConnection()

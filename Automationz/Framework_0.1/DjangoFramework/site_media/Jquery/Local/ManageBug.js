@@ -12,6 +12,47 @@ $(document).ready(function(){
         });
     });*/
 
+    $.get("Bugs_List/",{team:$('#default_team_identity option:selected').val().trim()},function(data) {
+        $(data['bugs']).each(function(i){
+            $("#bugs_list").append('' +
+                '<div style="padding-top: 10px;padding-bottom: 10px;padding: 1px 10px;background: #fff;border: 1px solid #d8d8d8;border-top: 0px;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;color: #666;font-size: 13px;">' +
+
+                '<table style="width: 100%; margin: 0.8%">' +
+                '<tr>'+
+                '<td>'+
+                '<a href="/Home/EditBug/' +
+                data['bugs'][i][0] +
+                '" class="bugs-title">' +
+                data['bugs'][i][1] +
+                '</a>&nbsp;' + // );
+            /*if(data['labels'].indexOf($(this).val())>-1){
+                $("#bugs_list").append('' +
+                    '<a href="" class="label" style="background-color: #fbda04;padding: 3px 4px;font-size: 11px; min-width: 10px">' +
+                    data['labels'][0][1] +
+                    '</a>'
+                );
+            }*/
+            //$("#bugs_list").append('' +
+                '<a href="" class="label" style="background-color: #fbda04;padding: 3px 4px;font-size: 11px; min-width: 10px">' +
+                'minar' +
+                '</a>' +
+                '</td>' +
+                '</tr>'+
+                '<tr>'+
+                '<td style="font-size: 12px">' +
+                data['bugs'][i][0] +
+                ' opened on ' +
+                data['bugs'][i][8] +
+                ' by ' +
+                data['bugs'][i][7] +
+                '</td>' +
+                '</tr>' +
+                '</table>' +
+
+                '</div>'
+            );
+        })
+    });
 
 
 });
