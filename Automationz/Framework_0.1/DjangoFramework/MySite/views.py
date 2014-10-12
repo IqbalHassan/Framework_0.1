@@ -6306,40 +6306,27 @@ def UpdateData(request):
 def GetOS(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
-            name = request.GET.get(u'os', '')
-            refined_list = []
-            ostype = 'OS'
-            if name == '':
-                query = "select distinct value from config_values where type='%s'" % ostype
-                os_list = DB.GetData(Conn, query, False)
-                for each in os_list:
-                    query = "select distinct value from config_values where type='%s Version'" % each[0]
-                    os_verison = DB.GetData(Conn, query)
-                    temp = []
-                    temp.append(each[0])
-                    temp.append(os_verison)
-                    temp = tuple(temp)
-                    refined_list.append(temp)
-                browser_data = []
-                browsertype = 'Browser'
-                query = "select value from config_values where type='%s'" % browsertype
-                browser_list = DB.GetData(Conn, query)
-                for each in browser_list:
-                    temp = []
-                    query = "select value from config_values where type='%s Version'" % each
-                    browser = DB.GetData(Conn, query)
-                    temp.append(each)
-                    temp.append(browser)
-                    temp = tuple(temp)
-                    browser_data.append(temp)
-                # Get the productVersion
-                productVersion = 'Product Version'
-                query = "select value from config_values where type='%s'" % productVersion
-                productVersion = DB.GetData(Conn, query)
-    results = {'os':refined_list, 'browser':browser_data, 'productVersion':productVersion}
-    results = simplejson.dumps(results)
-    return HttpResponse(results, mimetype='application/json')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            final_list=[]
+            query="select distinct dependency_name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(project_id,int(team_id))
+            Conn=GetConnection()
+            dependency=DB.GetData(Conn,query)
+            Conn.close()
+            for each in dependency:
+                query="select distinct name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,project_id,int(team_id))
+                Conn=GetConnection()
+                names=DB.GetData(Conn,query)                
+                temp=[]
+                for eachitem in names:
+                    query="select distinct bit_name,array_agg(distinct version) from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dn.name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,eachitem,project_id,int(team_id))
+                    Conn=GetConnection()
+                    version=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    temp.append((eachitem,version))
+                final_list.append((each,temp))
+            results = simplejson.dumps(final_list)
+            return HttpResponse(results, mimetype='application/json')
 def Auto_MachineName(request):
     if request.is_ajax():
         if request.method == 'GET':
@@ -9645,9 +9632,19 @@ def get_all_data_dependency_page(request):
                 Conn=GetConnection()
                 unused_dependency_list=DB.GetData(Conn,query,False)
                 Conn.close()
+                query="select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
+                Conn=GetConnection()
+                branch_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                query="select distinct id,branch_name from branch except (select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d)"%(project_id.strip(),int(team_id.strip()))
+                Conn=GetConnection()
+                unused_branch_list=DB.GetData(Conn,query,False)
+                Conn.close()
                 result={
                     'dependency_list':dependency_list,
-                    'unused_dependency_list':unused_dependency_list
+                    'unused_dependency_list':unused_dependency_list,
+                    'branch_list':branch_list,
+                    'unused_branch_list':unused_branch_list
                 }
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')
@@ -10161,7 +10158,263 @@ def get_default_settings(request):
         else:
             PassMessasge(sModuleInfo, PostError, error_tag)
     except Exception,e:
-        PassMessasge(sModuleInfo, e, 3)        
+        PassMessasge(sModuleInfo, e, 3)    
+def add_new_branch(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag='Branch'
+                branch_name=request.GET.get(u'dependency_name','')
+                #check for the occurance
+                query="select count(*) from branch where branch_name='%s'"%branch_name.strip()
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        #form dict to insert 
+                        Dict={
+                              'branch_name':branch_name.strip()
+                        }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"branch",**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo,entry_success(branch_name,type_tag), success_tag)
+                            message=True
+                            log_message=entry_success(branch_name,type_tag)
+                        else:
+                            PassMessasge(sModuleInfo, entry_fail(branch_name, type_tag), error_tag)
+                            message=False
+                            log_message=entry_fail(branch_name, type_tag)
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo,multiple_instance(branch_name, type_tag), error_tag)
+                        message=False
+                        log_message=multiple_instance(branch_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo, DBError, error_tag)
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)    
+def get_all_version_under_branch(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                value=request.GET.get(u'value',''),
+                team_id=request.GET.get(u'team_id','')
+                print value[0]
+                print project_id
+                print team_id
+                query="select distinct version_name as name from branch_management bm, versions v where v.id=bm.branch and bm.project_id='%s' and bm.team_id=%d and bm.branch=%d order by name"%(project_id,int(team_id),int(value[0]))
+                Conn=GetConnection()
+                version_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                result={
+                    'version_list':version_list,
+                    'default_list':[]
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def add_new_version_branch(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="Branch Version"
+                new_name=request.GET.get(u'new_name','')
+                new_value=request.GET.get(u'new_value','')
+                query="select count(*) from versions where version_name='%s'"%(new_name.strip())
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        Dict={
+                            'version_name':new_name.strip(),
+                            'id':int(new_value.strip())
+                        }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"versions",**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo,entry_success(new_name.strip(), type_tag), success_tag)
+                            message=True
+                            log_message=entry_success(new_name.strip(), type_tag)
+                        else:
+                            PassMessasge(sModuleInfo,entry_fail(new_name.strip(), type_tag),error_tag)
+                            message=False
+                            log_message=entry_fail(new_name.strip(), type_tag)
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo,multiple_instance(new_name, type_tag), error_tag)
+                        message=False
+                        log_message=multiple_instance(new_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo,DBError,error_tag)
+                    message=True
+                    log_message=DBError
+                Conn.close()
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def rename_branch(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="Branch"
+                old_name=request.GET.get(u'old_name','')
+                new_name=request.GET.get(u'new_name','')
+                query="select count(*) from branch where branch_name='%s'"%old_name.strip()
+                Conn=GetConnection()
+                old_name_count=DB.GetData(Conn,query)
+                Conn.close()
+                query="select count(*) from branch where branch_name='%s'"%new_name.strip()
+                Conn=GetConnection()
+                new_name_count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(old_name_count,list):
+                    if len(old_name_count)==1 and old_name_count[0]>0:
+                        if len(new_name_count)==1 and new_name_count[0]==0:
+                            sWhereQuery="where branch_name='%s'"%old_name.strip()
+                            Dict={
+                                'branch_name':new_name.strip()
+                            }
+                            Conn=GetConnection()
+                            result=DB.UpdateRecordInTable(Conn,"branch", sWhereQuery,**Dict)
+                            Conn.close()
+                            if result==True:
+                                PassMessasge(sModuleInfo,update_success(old_name, new_name, type_tag), success_tag)
+                                message=True
+                                log_message=update_success(old_name, new_name, type_tag)
+                            else:
+                                PassMessasge(sModuleInfo, update_fail(old_name, type_tag), error_tag)
+                                message=False
+                                log_message=update_fail(old_name, type_tag)
+                        if len(new_name_count)==1 and new_name_count[0]>0:
+                            PassMessasge(sModuleInfo,multiple_instance(new_name, type_tag),error_tag)
+                            message=False
+                            log_message=multiple_instance(new_name,type_tag)
+                    if len(old_name_count)==1 and old_name_count[0]==0:
+                        PassMessasge(sModuleInfo, unavailable(old_name,type_tag), error_tag)
+                        message=False
+                        log_message=unavailable(old_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo,DBError, error_tag)
+                    message=False
+                    log_message=DBError
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+        
+def unlink_branch(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                value=request.GET.get(u'value','')
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                Dict={
+                    'project_id':project_id,
+                    'team_id':int(team_id),
+                    'branch':int(value)
+                }
+                Conn=GetConnection()
+                result=DB.DeleteRecord(Conn,"branch_management",**Dict)
+                Conn.close()
+                if result==True:
+                    PassMessasge(sModuleInfo,"Branch %d is unlinked successfully"%int(value),error_tag )
+                    message=True
+                    log_message="Branch is unlinked successfully"
+                else:
+                    PassMessasge(sModuleInfo,"Branch %d is not unlinked successfully"%int(value),error_tag )
+                    message=False
+                    log_message="Branch is not unlinked successfully"
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def link_branch(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                value=request.GET.get(u'value','')
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                Dict={
+                    'project_id':project_id,
+                    'team_id':int(team_id),
+                    'branch':int(value)
+                }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"branch_management",**Dict)
+                Conn.close()
+                if result==True:
+                    PassMessasge(sModuleInfo,"Branch %d is linked successfully"%int(value),error_tag )
+                    message=True
+                    log_message="Branch is linked successfully"
+                else:
+                    PassMessasge(sModuleInfo,"Branch %d is not linked successfully"%int(value),error_tag )
+                    message=False
+                    log_message="Branch is not linked successfully"
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+
 #will be changing the new format inhere
 '''
 You must use @csrf_protect before any 'post' handling views

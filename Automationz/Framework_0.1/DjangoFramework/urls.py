@@ -299,6 +299,12 @@ urlpatterns = patterns('',
     url(r'^Home/.*/unlink_dependency/$',unlink_dependency),
     url(r'^Home/.*/rename_name/$',rename_name),
     url(r'^Home/.*/make_default_name/$',make_default_name),
+    url(r'^Home/.*/add_new_branch/$',add_new_branch),
+    url(r'^Home/.*/get_all_version_under_branch/$',get_all_version_under_branch),
+    url(r'^Home/.*/add_new_version_branch/$',add_new_version_branch),
+    url(r'^Home/.*/rename_branch/$',rename_branch),
+    url(r'^Home/.*/unlink_branch/$',unlink_branch),
+    url(r'^Home/.*/link_branch/$',link_branch),
     
     #pages for the test case new implementation
     url(r'^Home/.*/get_default_settings/$',get_default_settings),
