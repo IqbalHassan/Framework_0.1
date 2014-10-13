@@ -7780,7 +7780,7 @@ def Bugs_List(request):
         query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
         bugs=DB.GetData(Conn, query, False)
         
-        query="select * from bug_label_map"
+        query="select distinct bug_id,labels.label_id,label_name,label_color from labels, bug_label_map blm where labels.label_id=blm.label_id order by bug_id"
         labels=DB.GetData(Conn, query, False)
         #query="select * from milestone_info"
         #milestones=DB.GetData(Conn, query, False)
