@@ -189,6 +189,61 @@ function New_UI(){
                     make_bug_clickable();
                 });
 
+                $.get("MilestoneReport",{term : value},function(data)
+                {
+                    $("#ms_report").html(''
+                        + '<span class="progress-bar" style="width: 35%"><span class="progress" style="width: ' +
+                        data['progress'] + '%' +
+                        '">&nbsp;</span></span>'
+
+                        + '<table class="stats" style="line-height: 220%">'
+                        + '<tr>'
+                        + ' <td class="stat">'
+                        +  '<b><span class="progress-percent">' +
+                        data['progress'] + '%' +
+                        '</span></b>'
+                        + '<span class="stat-label"> complete</span>'
+                        + '</td>'
+                        + '<td class="stat">'
+                        + '&nbsp;&nbsp;&nbsp;&nbsp;'
+                        + '<b id="open">46</b>'
+                        + '<span class="stat-label"> open</span>'
+                        + '</td>'
+                        + '<td class="stat">'
+                        + '&nbsp;&nbsp;&nbsp;&nbsp;'
+                        +  '<b id="closed">130</b>'
+                        + '<span class="stat-label"> closed</span>'
+                        + '</td>'
+                        + '</tr>'
+                        + '</table>'
+                        + '<div class="milestone-actions">'
+                        + '<a href="" class="milestone-action">Edit</a>'
+                        + '&nbsp;&nbsp;&nbsp;&nbsp;'
+                        + '<a href="" class="milestone-action" data-method="put">Mark as closed</a>'
+                        + '&nbsp;&nbsp;&nbsp;&nbsp;'
+                        + '<a href="" rel="facebox" class="milestone-action" style="color: red">Delete</a>'
+
+                        + '</div>'
+
+                        + '<br/><br/>'
+                        + '<table>'
+                        + '<tr width="100%">'
+                        + '<td class="tc_form_label_col" align="right" width="30%">'
+                        +  '<b class="Text">Generate Report:</b>'
+                        + '</td>'
+                        + '<td class="tc_form_input_col" id="status" align="left" width="30%">'
+                        + '<select class="section combo-box" data-level="" id="1">'
+                        +  '<option value="">Select</option>'
+                        + '<option value="All">All</option>'
+                        + '</select>'
+                        + '</td>'
+                        + '</tr>'
+                        + '</table>'
+
+                    );
+
+                });
+
                 return false;
             }
         }
