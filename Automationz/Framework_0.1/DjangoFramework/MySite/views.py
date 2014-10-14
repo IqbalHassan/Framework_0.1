@@ -6387,22 +6387,62 @@ def AddManualTestMachine(request):
                 if count[0] > 0:
                     # update will go here.
                     print "yes"
-                    status = DB.GetData(Conn, "Select status from test_run_env where tester_id = '%s'" % machine_name)
+                    query="Select id,status from test_run_env where tester_id = '%s'" % machine_name
+                    Conn=GetConnection()
+                    status = DB.GetData(Conn,query,False)
+                    Conn.close()
                     for eachitem in status:
-                        if eachitem == "In-Progress":
+                        if eachitem[1] == "In-Progress":
+                            Conn=GetConnection()
                             DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
+                            Conn.close()
+                            Conn=GetConnection()
                             DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
-                        elif eachitem == "Submitted":
+                            Conn.close()
+                        elif eachitem[1] == "Submitted":
+                            Conn=GetConnection()
                             DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % machine_name, status="Cancelled")
-                        elif eachitem == "Unassigned":
-                            DB.Record(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
-                    machine_os = os_name + ' ' + os_version + ' - ' + os_bit
-                    Client = browser + '(' + browser_version + ';' + os_bit + ' Bit)'
+                            Conn.close()
+                        elif eachitem[1] == "Unassigned":
+                            Conn=GetConnection()
+                            DB.DeleteRecord(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
+                            Conn.close()
+                            Conn=GetConnection()
+                            DB.DeleteRecord(Conn,'machine_dependency_settings',machine_serial=eachitem[0])
+                            Conn.close()
                     updated_time = TimeStamp("string")
-                    Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'machine_os':machine_os.strip(), 'client':Client.strip(), 'last_updated_time':updated_time.strip(), 'os_bit':os_bit, 'os_name':os_name, 'os_version':os_version, 'machine_ip':machine_ip, 'product_version':product_version.strip()}
+                    Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':(branch+':'+version).strip()}
+                    Conn=GetConnection()
                     tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
-                    if tes2 == True:
-                        message = "Machine is updated successfully"
+                    Conn.close()
+                    if(tes2 == True):
+                        query="select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1"%(machine_name.strip())
+                        Conn=GetConnection()
+                        temp_id=DB.GetData(Conn,query)
+                        if isinstance(temp_id,list):
+                            machine_id=temp_id[0]
+                            problem=False
+                            for each in new_dependency:
+                                Dict={}
+                                Dict.update({'machine_serial':machine_id,'name':each[1],'bit':each[2],'version':each[3],'type':each[0]})
+                                Conn=GetConnection()
+                                result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
+                                Conn.close()
+                                if result==False:
+                                    problem=True
+                                    break
+                            if problem:
+                                log_message="Machine not registered successfully"
+                                message=False
+                            else:
+                                log_message = "Machine Successfully Registered"
+                                message=True
+                        else:
+                            log_message="Machine not registered successfully"
+                            message=False
+                    else:
+                        log_message="Machine not registered successfully"
+                        message=False
                 else:
                     print "none"
                     # new Entry will be inserted.
