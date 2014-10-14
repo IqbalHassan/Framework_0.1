@@ -6,6 +6,37 @@
 <script type="text/javascript" src="/site_media/Jquery/Local/RunTest_new.js"></script>
 <article>
     <div class="responsive-tabs">
+        <h2>Available Machine</h2>
+        <div class="tabs-div">
+            <table width="100%" class="one-column-emphasis">
+                <thead>
+                <tr>
+                    {% for x in dependency %}
+                        <td>{{x}}</td>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for x in machine_list %}
+                    <tr>
+                        {% for y in x %}
+                            {% if forloop.last %}
+                                <td>
+                                    <table width="100%">
+                                        {% for z in y%}
+                                            <tr><td>{{z}}</td></tr>
+                                        {% endfor %}
+                                    </table>
+                                </td>
+                            {% else %}
+                                <td>{{y}}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <h2>Manage Manual Machine</h2>
         <div class="tabs-div">
             <div align="left">
