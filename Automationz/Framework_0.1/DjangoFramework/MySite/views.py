@@ -643,51 +643,37 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
     return HttpResponse(json, mimetype='application/json')
 
 def AutoCompleteUsersSearch(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
-
+    
     Conn = GetConnection()
-    results = []
-    # if request.is_ajax():
-    if request.method == "GET":
-        value = request.GET.get(u'term', '')
-        # Ignore queries shorter than length 3
-        # if len(value) > 1:
-
-        # Deleting Unassigned Machine which is not updated since 3 mint
-#        AvalMachineID = DB.GetData(Conn,"Select  id from test_run_env where status = 'Unassigned'",False)
-#        for eachMachineID in AvalMachineID:
-#            MachineTime = DB.GetData(Conn,"Select  last_updated_time from test_run_env where status = 'Unassigned' and id = %s" %eachMachineID,False)
-#            MachineTime = str(MachineTime[0][0])
-#            t = TimeDiff(MachineTime)
-#            if t > 3:
-#                DB.DeleteRecord(Conn, "test_run_env", id=str(eachMachineID[0]))
-        # query="Select  DISTINCT tester_id,status from test_run_env where status = 'Unassigned' and tester_id Ilike '%" + value + "%'"
-        """query= "(select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Manual','Automation')) union all (select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tre.status!='In-Progress' and pul.user_level in('Manual'))"
-        results = DB.GetData(Conn, query,False)"""
-        print value
-        Env = request.GET.get(u'Env', '')
-        if Env == u"PC": Environment = "Windows"
-        if Env == u"Mac": Environment = "Darwin"
-        Usable_Machine = []
-        query = "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id Ilike '%" + value + "%' and tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Automation')" 
-        Automation_Machine = DB.GetData(Conn, query, False)
-        for each in Automation_Machine:
-            Usable_Machine.append(each)
-        query = "select distinct user_names,user_level from permitted_user_list where user_level='Manual' and user_names Ilike '%" + value + "%'"
-        print query
-        Manual_Machine = DB.GetData(Conn, query, False)
-        for each in Manual_Machine:
-            query = "select distinct status from test_run_env where tester_id='%s'" % each[0].strip()
-            machine_status = DB.GetData(Conn, query)
-            if len(machine_status) == 0:
-                continue
-            else:
-                if 'In-Progress' in machine_status or 'Submitted' in machine_status:
+    if request.is_ajax():
+        if request.method == "GET":
+            value = request.GET.get(u'term', '')
+            print value
+            Usable_Machine = []
+            query = "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id Ilike '%" + value + "%' and tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Automation')" 
+            Conn=GetConnection()
+            Automation_Machine = DB.GetData(Conn, query, False)
+            Conn.close()
+            for each in Automation_Machine:
+                Usable_Machine.append(each)
+            query = "select distinct user_names,user_level from permitted_user_list where user_level='Manual' and user_names Ilike '%" + value + "%'"
+            Conn=GetConnection()
+            Manual_Machine = DB.GetData(Conn, query, False)
+            Conn.close()
+            for each in Manual_Machine:
+                query = "select distinct status from test_run_env where tester_id='%s'" % each[0].strip()
+                Conn=GetConnection()
+                machine_status = DB.GetData(Conn, query)
+                Conn.close()
+                if len(machine_status) == 0:
                     continue
                 else:
-                    Usable_Machine.append(each)
-        
+                    if 'In-Progress' in machine_status or 'Submitted' in machine_status:
+                        continue
+                    else:
+                        Usable_Machine.append(each)
+            
     json = simplejson.dumps(Usable_Machine)
-    Conn.close()
     return HttpResponse(json, mimetype='application/json')
 
 
@@ -1628,329 +1614,186 @@ def Table_Data_UserList(request):  #==================Returns Available user lis
 
 
 def Run_Test(request):  #==================Returns True/Error Message  When User Click on Run button On Test Run Page==============================
-    Conn = GetConnection()
-    results = {}
-    Eid = []
-    QueryText = []
-    propertyValue = "Ready"
-    if request.is_ajax():
-        if request.method == 'GET':
-            UserData = request.GET.get('RunTestQuery', '')
-            UserData = str(UserData.replace(u'\xa0', u''))
-
-            EmailIds = request.GET.get('EmailIds', '')
-            EmailIds = str(EmailIds.replace(u'\xa0', u''))
-            
-            TesterIds = request.GET.get('TesterIds', '')
-            TesterIds = str(TesterIds.replace(u'\xa0', u''))
-            
-            DependencyText = request.GET.get('DependencyText', '')
-            DependencyText = str(DependencyText.replace(u'\xa0', u''))
-
-            """TestDataType = request.GET.get('TestDataType', '')
-            TestDataType = str(TestDataType.replace(u'\xa0', u''))"""
-
-            TestObjective = request.GET.get('TestObjective', '')
-            TestObjective = str(TestObjective.replace(u'\xa0', u''))
-            TestMileStone = request.GET.get('TestMileStone', '')
-            TestMileStone = str(TestMileStone.replace(u'\xa0', u''))
-            is_rerun = request.GET.get(u'ReRun', '')
-            previous_run = request.GET.get('RunID', '')    
-            Environment = request.GET.get('Env', '')
-            project_id=request.GET.get(u'project_id','')
-            team_id=request.GET.get(u'team_id','')
-            
-            if Environment == "Mac":
-                Section = "MacSection"
-                Test_Run_Type = "Mac_test_run_type"
-                Priority = "MacPriority"
-                TCStatusName = "MacStatus"
-                CustomTag = "MacCustomTag"
-                CustomSet = 'set'
-                Tag = 'tag'
-                Client = 'client'
-            if Environment == "PC":
-                Section = "Section"
-                Test_Run_Type = "test_run_type"
-                Priority = "Priority"
-                TCStatusName = "Status"
-                CustomTag = "CustomTag"
-                CustomSet = 'set'
-                Tag = 'tag'
-                Client = 'client'
-            UserText = UserData.split(":");
-            EmailIds = EmailIds.split(":")
-            DependencyText = DependencyText.split(":")
-            TesterIds = TesterIds.split(":")
-            Emails = []
-            for eachitem in EmailIds :
-                if eachitem != "":
-                    Eid = DB.GetData(Conn, "Select email from permitted_user_list where user_names = '%s'" % str(eachitem))
-                if len(Eid) > 0:
-                    Emails.append(Eid[0])
-
-
-            stEmailIds = ','.join(Emails)
-            Testers = []
-            for each in TesterIds:
-                if each != "" and each != ":":
-                    Testers.append(each)
-            if is_rerun == 'rerun':
-                Testers.remove(" ")
-                if len(Testers) == 1:
-                    Testers = Testers[0]
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.is_ajax():
+            if request.method == 'GET':
+                UserData = request.GET.get('RunTestQuery', '')
+                UserData = str(UserData.replace(u'\xa0', u''))
+    
+                EmailIds = request.GET.get('EmailIds', '')
+                EmailIds = str(EmailIds.replace(u'\xa0', u''))
+                
+                TesterIds = request.GET.get('TesterIds', '')
+                TesterIds = str(TesterIds.replace(u'\xa0', u''))
+                
+                TestObjective = request.GET.get('TestObjective', '')
+                TestObjective = str(TestObjective.replace(u'\xa0', u''))
+                
+                TestMileStone = request.GET.get('TestMileStone', '')
+                TestMileStone = str(TestMileStone.replace(u'\xa0', u''))
+                
+                is_rerun = request.GET.get(u'ReRun', '')
+                previous_run = request.GET.get('RunID', '')    
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                #processing email
+                EmailIds = EmailIds.split(":")
+                Emails = []
+                for eachitem in EmailIds :
+                    if eachitem != "":
+                        Conn=GetConnection()
+                        Eid = DB.GetData(Conn, "Select email from permitted_user_list where user_names = '%s'" % str(eachitem))
+                        Conn.close()
+                    if len(Eid) > 0:
+                        Emails.append(Eid[0])    
+                stEmailIds = ','.join(Emails)
+                
+                #getting testers
+                TesterIds = TesterIds.split(":")
+                Testers = []
+                for each in TesterIds:
+                    if each != "" and each != ":":
+                        Testers.append(each)
+                if is_rerun == 'rerun':
+                    Testers.remove(" ")
+                    if len(Testers) == 1:
+                        Testers = Testers[0]
+                    else:
+                        Testers = ','.join(Testers)
                 else:
                     Testers = ','.join(Testers)
-            else:
-                Testers = ','.join(Testers)
-            for eachitem in UserText:
-                if len(eachitem) != 0 and  eachitem != "":
-                    QueryText.append(str(eachitem.strip()))
-
-    if "Dev" in QueryText:
-        QueryText.remove("Dev")
-        propertyValue = "Dev"
-
-    TesterId = QueryText.pop()  # pop function will remove last item of the list (userid) and will assign to Testerid
-    # Add the manual Test Machine to the test_run_env table
-    if is_rerun == 'rerun':
-        sWhereQuery = {'tester_id':TesterId, 'status':'Unassigned'}
-        print DB.DeleteRecord(Conn, "test_run_env", **sWhereQuery)
-    TesterId = TesterId.strip()
-    runid = TimeStamp("string")
-    # Changing for the ReRun
-    if is_rerun == 'rerun':
-        query = "select * from test_run_env where tester_id='%s' and run_id='%s'" % (TesterId, previous_run)
-        Machine_Detail = DB.GetData(Conn, query, False)
-        print Machine_Detail[0]
-        each = Machine_Detail[0]
-        status = "Unassigned"
-        updateTime = TimeStamp("string")
-        print status
-        print updateTime
-        machine_os = (each[15] + " " + each[14] + " - " + each[16]).strip()
-        print machine_os
-        client = each[7].strip()
-        print client
-        ip = each[11]
-        Dict = {'run_id':runid, 'tester_id':TesterId, 'status':status, 'machine_ip':ip, 'last_updated_time':updateTime, 'machine_os':machine_os, 'client':client, 'os_name':each[15], 'os_version':each[14], 'os_bit':each[16], 'test_objective':TestObjective}
-        # sWhereQuery="where tester_id='%s'" %TesterId
-        print DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
-    query = "select user_level from permitted_user_list where user_names='%s'" % TesterId
-    Machine_Status = DB.GetData(Conn, query, False)
-    if Machine_Status[0][0] == 'Manual' and is_rerun != 'rerun':
-        query = "select * from test_run_env where tester_id='%s'" % TesterId
-        Machine_Detail = DB.GetData(Conn, query, False)
-        print Machine_Detail[0]
-        each = Machine_Detail[0]
-        status = "Unassigned"
-        updateTime = TimeStamp("string")
-        print status
-        print updateTime
-        machine_os = (each[15] + " " + each[14] + " - " + each[16]).strip()
-        print machine_os
-        client = each[7].strip()
-        print client
-        ip = each[11]
-        Dict = {'run_id':runid, 'status':status, 'machine_ip':ip, 'last_updated_time':updateTime, 'machine_os':machine_os, 'client':client, 'os_name':each[15], 'os_version':each[14], 'os_bit':each[16], 'test_objective':TestObjective}
-        sWhereQuery = "where tester_id='%s' and run_id='%s'" % (TesterId, runid)
-        print DB.UpdateRecordInTable(Conn, "test_run_env", sWhereQuery, **Dict)    
-    # Creating Runid and assigning test cases to it in "testrun" table
-    TestIDList = []
-    for eachitem in QueryText:
-        if is_rerun == "rerun":
-            TestID = DB.GetData(Conn, "Select property from result_test_case_tag where name = '%s' and run_id='%s'" % (eachitem, previous_run))
-        else:
-            TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
-        for eachProp in TestID:
-            if eachProp == 'tcid':
-                TestIDList.append(eachitem)
-                break
-
-
-
-    if len(TestIDList) > 0:
-        TestCasesIDs = TestIDList
-
-    elif len(QueryText) > 0:
-        count = 1
-        for eachitem in QueryText:
-            if count == 1:
-                #if eachitem in ('Dev', 'Ready'):
-                #    Query = "HAVING COUNT(CASE WHEN name = '" + TCStatusName + "' and property ='" + eachitem + "' THEN 1 END) > 0 "
-                            
-                # Query = "HAVING COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                #else:
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') THEN 1 END) > 0 "
-                count = count + 1
-            elif count >= 2:
-                """if eachitem in ('Dev', 'Ready'):
-                    Query = Query + "AND COUNT(CASE WHEN name = '" + TCStatusName + "' and property ='" + eachitem + "' THEN 1 END) > 0 "
-                else:  
-                    # Query = Query + "AND COUNT(CASE WHEN name = '%s' THEN 1 END) > 0 " %eachitem
-                    """
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') THEN 1 END) > 0 "
-        Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0" % (TCStatusName, propertyValue)
-        Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
-        if is_rerun == "rerun":
-            final_query = "select distinct tct.tc_id from result_test_case_tag tct, result_test_cases tc where tct.run_id=tc.run_id and tct.tc_id = tc.tc_id and tc.run_id='" + previous_run + "' group by tct.tc_id,tc.tc_name " + Query
-        else:
-            final_query = "select distinct tct.tc_id from test_case_tag tct, test_cases tc where tct.tc_id = tc.tc_id group by tct.tc_id,tc.tc_name " + Query
-        TestCasesIDs = DB.GetData(Conn, final_query)
-    # The Run ID and test case may be given a status of submitted here.    
-    if is_rerun == "rerun":
-        RegisterReRunPermanentInfo(Conn, runid, previous_run, TestCasesIDs)
-        for eachitem in TestCasesIDs:
-            Dict = {'run_id':runid, 'tc_id':str(eachitem)}
-            Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
-            print Result
-        AddReRunInfo(runid, previous_run)
-    else:
-        RegisterPermanentInfo(Conn, runid, TestCasesIDs)
-        for eachitem in TestCasesIDs:
-            Dict = {'run_id':runid, 'tc_id':str(eachitem)}
-            Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
-            print Result
-        AddInfo(runid)
-    
-    # Finding Client info from TestRenEnv for selected machine
-    # if is_rerun=='rerun':
-    #   query="select client from test_run_env where tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
-    # else:
-    query = "Select client from test_run_env Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
-    ClientInfo = DB.GetData(Conn, query)
-    ClientInfo = ClientInfo[0].split(",")
-    # Adding tag values to "testrunevn" table columns
-    if is_rerun == 'rerun':
-        tempdependency = []
-        for each in DependencyText:
-            temp = each.split('(')
-            tempdependency.append(temp[0].strip())
-        DependencyText = tempdependency
-    for each in DependencyText:
-        QueryText.append(each.strip())
-    QueryText.remove("")
-
-    TestSetName = ""
-    for eachitem in QueryText:
-        if eachitem in ('Dev', 'Ready'):
-            TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'" % (TCStatusName, eachitem))
-        else:
-            TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s' and property in ('%s','%s')" % (eachitem, Section, CustomTag))
-        if len(TagName) > 0:
-            TagName = TagName[0]
-        else:
-            if eachitem in ('Dev', 'Ready'):
-                TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'" % (TCStatusName, eachitem))
-            else:
-                TagName = DB.GetData(Conn, "Select DISTINCT property from test_case_tag where name = '%s'" % (eachitem))
-            if len(TagName) > 0:
-                TagName = TagName[0]
-
-        if is_rerun == "rerun":
-            if eachitem in ('Dev', 'Ready'):
-                TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'" % (TCStatusName, eachitem))
-            else:
-                TagName = DB.GetData(Conn, "Select DISTINCT property from result_test_case_tag where name = '%s' and property in ('%s','%s') and run_id='%s'" % (eachitem, Section, CustomTag, previous_run))
-            if len(TagName) > 0:
-                TagName = TagName[0]
-            else:
-                if eachitem in ('Dev', 'Ready'):
-                    TagName = DB.GetData(Conn, "Select DISTINCT name from test_case_tag where name = '%s' and property='%s'" % (TCStatusName, eachitem))
-                else:
-                    TagName = DB.GetData(Conn, "Select DISTINCT property from result_test_case_tag where name = '%s' and run_id='%s'" % (eachitem, previous_run))
-                if len(TagName) > 0 and 'tcid' in TagName:
-                    TagName = 'tcid'
-                else:
-                    TagName = TagName[0]
-        # Checking if QuestyText has Client name. if yes geting client name and version from ClientInfo
-        for iclient in ClientInfo:
-            print "eachitem:" + eachitem
-            print "iclient:" + iclient
-            if eachitem in iclient:
-                eachitem = iclient
-                print "eachitem:" + eachitem
-
-        if TagName == Section or TagName == CustomTag or TagName == Priority or TagName == 'tcid' or TagName == CustomSet or TagName == Tag or TagName == TCStatusName:
-            query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
-            if is_rerun == 'rerun':
-                query = "where tester_id='%s' and run_id='%s' and status='Unassigned'" % (TesterId, runid)
             
-            TestSetName = TestSetName + " " + eachitem
-            TestSetName = TestSetName.strip()
-            Dict = {'run_id':runid, 'rundescription': TestSetName}
-        else:
-            query = "Where  tester_id = '%s' and status = 'Unassigned' " % TesterId
-            if is_rerun == 'rerun':
-                query = "where tester_id='%s' and run_id='%s' and status='Unassigned'" % (TesterId, runid)
-    
-            TestSetName = TestSetName + " " + eachitem
-            TestSetName = TestSetName.strip()
-            Dict = {'run_id':runid, 'rundescription': TestSetName , '%s' % (TagName) : '%s' % (eachitem)}
-        Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , **Dict)
-    if is_rerun == 'rerun':
-        query = "where tester_id='%s' and run_id='%s' and status='Unassigned'" % (TesterId, runid)
-        productversion_query = "select product_version from test_run_env where run_id='%s'" % previous_run
-        product_version = DB.GetData(Conn, productversion_query)
-        Dict = {'product_version':product_version[0].strip()}
-        print DB.UpdateRecordInTable(Conn, "test_run_env", query, **Dict)
-    #####Code for adding MileStone
-    if is_rerun == 'rerun':
-        milestone_query = "select test_milestone from test_run_env where run_id='%s'" % previous_run
-        milestone_list = DB.GetData(Conn, milestone_query)
-        TestMileStone = milestone_list[0]
-    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query,
-                                     email_notification=stEmailIds,
-                                     assigned_tester=Testers,
-                                     test_objective=TestObjective,
-                                     Status='Submitted',
-                                     run_type='Manual',
-                                     test_milestone=TestMileStone,
-                                     project_id=project_id,
-                                     team_id=int(team_id)
-                                     )
-    print DB.UpdateRecordInTable(Conn, "test_run_env", query,
-                                     email_notification=stEmailIds,
-                                     assigned_tester=Testers,
-                                     test_objective=TestObjective,
-                                     Status='Submitted',
-                                     run_type='Manual',
-                                     test_milestone=TestMileStone,
-                                     project_id=project_id,
-                                     team_id=int(team_id)
-                                     )
-    # NJ-Insert into run env results to display submitted runs
-    now = DB.GetData(Conn, "SELECT CURRENT_TIMESTAMP;", False)
-    sTestSetStartTime = str(now[0][0])
-    print sTestSetStartTime
+                
+                UserText = UserData.split(":")
+                QueryText=[]
+                for eachitem in UserText:
+                    if len(eachitem) != 0 and  eachitem != "" and eachitem.strip() not in QueryText:
+                        QueryText.append(str(eachitem.strip()))
+                print QueryText
+                TesterId = QueryText.pop()
+                TesterId = TesterId.strip()
+                runid = TimeStamp("string")
+                query = "select user_level from permitted_user_list where user_names='%s'" % TesterId
+                Conn=GetConnection()
+                Machine_Status = DB.GetData(Conn, query, False)
+                Conn.close()
+                if Machine_Status[0][0] == 'Manual' and is_rerun != 'rerun':
+                    status = "Unassigned"
+                    updateTime = TimeStamp("string")
+                    print status
+                    print updateTime
+                    Dict = {'run_id':runid,'last_updated_time':updateTime, 'test_objective':TestObjective}
+                    sWhereQuery = "where tester_id='%s' and status='%s'" % (TesterId,status)
+                    Conn=GetConnection()
+                    print DB.UpdateRecordInTable(Conn, "test_run_env", sWhereQuery, **Dict)
+                    Conn.close()
+                TestIDList = []
+                for eachitem in QueryText:
+                    if is_rerun == "rerun":
+                        Conn=GetConnection()
+                        TestID = DB.GetData(Conn, "Select property from result_test_case_tag where name = '%s' and run_id='%s'" % (eachitem, previous_run))
+                        Conn.close()
+                    else:
+                        Conn=GetConnection()
+                        TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
+                        Conn.close()
+                    for eachProp in TestID:
+                        if eachProp == 'tcid':
+                            TestIDList.append(eachitem)
+                            break
+                if len(TestIDList) > 0:
+                    TestCasesIDs = TestIDList
+                else:
+                    Section_Tag = 'Section'
+                    Custom_Tag = 'CustomTag'
+                    Section_Path_Tag = 'section_id'
+                    Priority_Tag = 'Priority'
+                    set_type='set'
+                    tag_type='tag'
+                    Status='Status'
+                    query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
+                    Conn=GetConnection()
+                    dependency=DB.GetData(Conn,query)
+                    Conn.close()
+                    wherequery=""
+                    for each in dependency:
+                        wherequery+=("'"+each.strip()+"'")
+                        wherequery+=','
+                    wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+                    print wherequery
+                    
+                    count = 1
+                    for eachitem in QueryText:
+                        if count == 1:
+                            Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
+                            count=count+1
+                        else:
+                            Query+="AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
+                            count=count+1
+                    Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+                    Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+                    query = "select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
+                    Conn=GetConnection()
+                    TestCasesIDs = DB.GetData(Conn, query)        
+                    Conn.close()
+                    print TestCasesIDs
+                if is_rerun == "rerun":
+                    Conn=GetConnection()
+                    RegisterReRunPermanentInfo(Conn, runid, previous_run, TestCasesIDs)
+                    Conn.close()
+                    for eachitem in TestCasesIDs:
+                        Dict = {'run_id':runid, 'tc_id':str(eachitem)}
+                        Conn=GetConnection()
+                        Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
+                        Conn.close()
+                        print Result
+                    AddReRunInfo(runid, previous_run)
+                else:
+                    Conn=GetConnection()
+                    RegisterPermanentInfo(Conn, runid, TestCasesIDs)
+                    Conn.close()
+                    for eachitem in TestCasesIDs:
+                        Dict = {'run_id':runid, 'tc_id':str(eachitem)}
+                        Conn=GetConnection()
+                        Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
+                        Conn.close()
+                        print Result
+                    AddInfo(runid)    
+                run_description=""
+                for each in QueryText:
+                    run_description+=(each+" ")
+                run_description=run_description.strip()
+                Dict={
+                      'rundescription':run_description,
+                      'status':'Submitted',
+                      'email_notification':stEmailIds,
+                      'project_id':project_id,
+                      'team_id':team_id,
+                      'test_milestone':TestMileStone,
+                      'run_type':'Manual',
+                      'assigned_tester':TesterIds
+                }
+                Conn=GetConnection()
+                sWhereQuery="where tester_id='%s' and status='Unassigned'"%(TesterId)
+                result=DB.UpdateRecordInTable(Conn,"test_run_env",sWhereQuery,**Dict)
+                Conn.close()
+                Conn=GetConnection()
+                now = DB.GetData(Conn, "SELECT CURRENT_TIMESTAMP;", False)
+                sTestSetStartTime = str(now[0][0])
+                Conn.close()
+                print sTestSetStartTime
+                Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
+                Conn=GetConnection()
+                EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
+                Conn.close()
+                results = {'Result': result, 'runid':runid}
+            json = simplejson.dumps(results)
+            return HttpResponse(json, mimetype='application/json')
 
-    for i in Testers:
-        tmail = DB.GetData(Conn, "select email from permitted_user_list where user_level like '%assigned%tester%' and user_names='"+i+"'")
-        if len(tmail)>0:
-            Emails.append(tmail[0])
-            
-    allEmailIds = ','.join(Emails)  
-    
-    #EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
-              
-
-    """try:
-        urllib2.urlopen("http://www.google.com").close()
-        #import EmailNotify
-        EmailNotify.Send_Email(allEmailIds,runid,TestObjective,'','')
-        print "connected"
-    except urllib2.URLError:
-        print "disconnected"
-    """
-
-    Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
-    EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
-#    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query, test_objective = TestObjective  )
-#    Result = DB.UpdateRecordInTable(Conn, "test_run_env", query , Status = 'Submitted' ) 
-    results = {'Result': Result, 'runid':runid}
-
-    json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    except Exception,e:
+        PassMessasge(sModuleInfo,e, error_tag)
+        
 def RegisterReRunPermanentInfo(Conn, run_id, previous_run, TestCasesIDs):
     # query="select tc_id from test_run where run_id='%s'"%run_id.strip()
     # est_cases=DB.GetData(Conn, query)
@@ -6866,7 +6709,7 @@ def MileStoneOperation(request):
 
 def TableDataTestCasesOtherPages(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
     Conn = GetConnection()
-    test_status_request = request.GET.get(u'test_status_request', False)
+    test_status_request = request.GET.get(u'test_status_request', '')
     total_time=request.GET.get(u'total_time','')
     if request.is_ajax():
         if request.method == 'GET':

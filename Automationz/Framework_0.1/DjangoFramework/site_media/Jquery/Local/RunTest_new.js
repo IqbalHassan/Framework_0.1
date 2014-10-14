@@ -1,13 +1,281 @@
 var dependency_list=[];
 var global_version_list=[];
 var dependency_classes=[];
+var test_cases="";
 $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
+    AutoSuggestions(project_id,team_id);
     RunAutoCompleteTestSearch(project_id,team_id);
     DeleteSearchQueryText(project_id,team_id);
     ManageMilestone(project_id,team_id);
+    SubmitRun(project_id,team_id);
 });
+function SubmitRun(project_id,team_id){
+    $('#run_test').on('click',function(){
+        var UserText="";
+        if(test_cases){
+            $("#AutoSearchResult #searchedtext").each(function() {
+                UserText = $(this).find("td").text();
+                UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
+            });
+            console.log(UserText);
+        }
+        else{
+            alertify.error('No Test cases selected',1500);
+            return false;
+        }
+        var temp=[]
+        var message="";
+        for(var i=0;i<dependency_classes.length;i++){
+            if($('.'+dependency_classes[i].name+':checked').length>0){
+                if(temp.indexOf($('.'+dependency_classes[i].name+':checked').val().trim())>-1){
+                    continue;
+                }
+                else{
+                    temp.push($('.'+dependency_classes[i].name+':checked').val().trim());
+                }
+            }
+            else{
+                alertify.error('No '+dependency_classes[i].name+' is selected',1500);
+                return false;
+            }
+        }
+        for(var i=0;i<temp.length;i++){
+            message+=(temp[i].trim()+': ');
+        }
+        console.log(message);
+        var TesterQuery="";
+        $("#tester").each( function()
+        {
+            TesterQuery = $(this).find("td").text();
+            TesterQuery = TesterQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        });
+        if(TesterQuery.length==0){
+            alertify.log("Testers is to be selected from suggestion","",0);
+            return false;
+        }
+        var EmailQuery="";
+        $("#email").each( function()
+        {
+            EmailQuery = $(this).find("td").text();
+            EmailQuery = EmailQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        });
+        if(EmailQuery.length==0){
+            alertify.log("Email Receipient is to be selected from suggestion","",0);
+            return false;
+        }
+        var TestObjective=$('#testObjective').val().trim();
+        if(TestObjective==""){
+            alertify.log("Test Objective is empty","",0);
+            return false;
+        }
+        var milestoneQuery="";
+        $("#milestone").each( function()
+        {
+            milestoneQuery = $(this).find("td").text();
+            milestoneQuery = milestoneQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        });
+        if(milestoneQuery.length==0){
+            alertify.log("Milestone is to be selected from suggestion","",0);
+            return false;
+        }
+        var machineQuery="";
+        $("#machine").each( function()
+        {
+            machineQuery = $(this).find("td").text();
+            machineQuery = machineQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        });
+        if(machineQuery.length==0){
+            alertify.log("Machine is to be selected from suggestion","",0);
+            return false;
+        }
+        var RunTestQuery=UserText+message+machineQuery;
+        $.get("Run_Test",
+            {
+                RunTestQuery : RunTestQuery,
+                TesterIds:TesterQuery,
+                EmailIds:EmailQuery,
+                TestObjective:TestObjective,
+                TestMileStone:milestoneQuery,
+                project_id:project_id,
+                team_id:team_id
+            },
+            function(data)
+            {
+                if(data['Result']){
+                    run_notify("RunID-'"+data['runid']+"' got executed!");
+                    var location='/Home/RunID/'+data['runid']+'/';
+                    window.location=location;
+                }
+                else{
+                    MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);
+                }
+
+            });
+    });
+}
+function AutoSuggestions(project_id,team_id){
+    $("#assigned_tester").autocomplete({
+
+        source : 'AutoCompleteTesterSearch',
+        select : function(event, ui) {
+
+            var value = ui.item.value
+            $("#tester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td class="Text">'
+                + value
+                + ":&nbsp"
+                + '</td>');
+
+            //$("#tester th").css('display', 'block');
+
+            $("#assigned_tester").val("");
+            return false;
+
+        }
+    });
+    $("#assigned_tester").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteTester").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+    $("#email_list").autocomplete({
+
+        source : 'AutoCompleteEmailSearch',
+        select : function(event, ui) {
+
+            var value = ui.item.value
+            $("#email").append('<td><img class="delete" id = "DeleteEmail" title = "EmailDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td class="Text">'
+                + value
+                + ":&nbsp"
+                + '</td>');
+
+            //$("#SelectedEmail th").css('display', 'block');
+
+            $("#email_list").val("");
+            return false;
+
+        }
+    });
+
+    $("#email_list").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+
+
+    //Delete Seleted Email Ids
+    $("#DeleteEmail").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+    $('#milestone_list').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"AutoMileStone",
+                dataType:"json",
+                data:{term:request.term},
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(request,ui){
+            var value=ui.item[0].trim();
+            if (value!=""){
+                //$(this).val(value.trim());
+                $("#milestone").html('<td><img class="delete" id = "DeleteMileStone" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                    + '<td class="Text">'
+                    + value
+                    + ":&nbsp"
+                    + '</td>');
+
+                //$("#MileStoneHeader th").css('display', 'block');
+
+                $("#milestone_list").val("");
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
+            .appendTo( ul );
+    };
+    $("#milestone_list").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteMileStone").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+
+    $("#machine_list").autocomplete({
+
+        //source : 'AutoCompleteUsersSearch',
+
+        source : function(request, response) {
+            $.ajax({
+                url:"AutoCompleteUsersSearch",
+                dataType: "json",
+                data:{ term: request.term},
+                success: function( data ) {
+                    response( data );
+                }
+            });
+        },
+        select:function(request,ui){
+            var value=ui.item[0].trim();
+            if (value!=""){
+                //$(this).val(value.trim());
+                $("#machine").html('<td><img class="delete" id = "DeleteMachine" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                    + '<td class="Text">'
+                    + value
+                    + ":&nbsp"
+                    + '</td>');
+
+                //$("#MileStoneHeader th").css('display', 'block');
+
+                $("#milestone_list").val("");
+                $('#run_test').slideDown("slow");
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
+            .appendTo( ul );
+    };
+    $("#DeleteMachine").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+        $('#run_test').slideUp("slow");
+
+    });
+}
 function RunAutoCompleteTestSearch(project_id,team_id){
     $("#searchbox").autocomplete(
         {
@@ -62,6 +330,7 @@ function PerformSearch(project_id,team_id,predicate) {
         }
         $.get("TableDataTestCasesOtherPages",{
             Query: UserText,
+            test_status_request:true,
             project_id:project_id,
             team_id:team_id,
             total_time:'true'
@@ -73,6 +342,7 @@ function PerformSearch(project_id,team_id,predicate) {
                 $("#RunTestResultTable").fadeIn(1000);
                 $('#time_panel').html("");
                 $('#time_panel').css({'display':'none'});
+                test_cases=false;
             }
             else
             {
@@ -80,31 +350,12 @@ function PerformSearch(project_id,team_id,predicate) {
                 $('#time_panel').css({'display':'block'});
                 ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
                 $("#RunTestResultTable").fadeIn(1000);
-                //$("p:contains('Show/Hide Test Cases')").fadeIn(0);
+                test_cases=true;
                 implementDropDown("#RunTestResultTable");
-                // add edit btn
-                /*var indx = 0;
-                $('#RunTestResultTable tr>td:nth-child(5)').each(function(){
-                    var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
-
-                    $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/>');
-                    $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25"/>');
-
-                    indx++;
-                });
-
-                $(".editBtn").click(function (){
-                    window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id")+'/';
-                });
-                $(".templateBtn").click(function (){
-                    window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id")+'/';
-                });
-                //VerifyQueryProcess();
-                //$(".Buttons[title='Verify Query']").fadeIn(2000);
-                */
                 if(predicate==undefined){
                     get_dependency(project_id,team_id);
                 }
+
             }
         });
     });
