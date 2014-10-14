@@ -6,6 +6,45 @@
 <script type="text/javascript" src="/site_media/Jquery/Local/RunTest_new.js"></script>
 <article>
     <div class="responsive-tabs">
+        <h2>Deployment</h2>
+        <div class="tabs-div">
+            <table id='' style='display: block;'>
+                <tbody>
+                <tr>
+                    <td>
+                        <label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'></b></label>
+                        <input class = 'ui-corner-all textbox' id='searchbox' style = 'margin:5px' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' placeholder="Search Test Cases Data By Keywords:"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table id = 'AutoSearchResult'>
+                <tbody>
+                <tr id = 'searchedtext'>
+                    <p></p>
+                    <th class = 'Text' style= 'text-align: left'> Test Data Set: </th>
+                </tr>
+                </tbody>
+            </table>
+            <div id="time_panel" style="margin-top: 2%;display: none;">
+                <b class="Text"></b>
+            </div>
+            <table>
+                <tr>
+                    <td width="50%">
+                        <div id="RunTestResultTable">
+
+                        </div>
+                    </td>
+                    <td width="50%" style="border-left: 2px solid #CCCCCC">
+                        <div id="parameter_div" style="display: block">
+
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
         <h2>Available Machine</h2>
         <div class="tabs-div">
             <table width="100%" class="one-column-emphasis">
