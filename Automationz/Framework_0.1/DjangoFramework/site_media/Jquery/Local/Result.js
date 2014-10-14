@@ -1,34 +1,19 @@
 var stepCount=20;
 $(document).ready(function(){
-    $('#project_identity').append('<option value="ALL">See All</option>');
-    $('#default_team_identity').append('<option value="ALL">See All</option>');
-    AutoComplete();
-    DeleteFilterData();
-    PerformSearch();
-    PaginationButton();
-    $('#project_identity').on('change',function(){
-        $.session.set('project_id',$(this).val());
-        window.location.reload(true);
-    });
-    $('#default_team_identity').on('change',function(){
-        $.session.set('default_team_identity',$(this).val());
-        window.location.reload(true);
-    });
+    var project_id= $.session.get('project_id');
+    var team_id= $.session.get('default_team_identity');
+    PerformSearch(project_id,team_id);
 });
-function PerformSearch(){
+function PerformSearch(project_id,team_id){
     var currentPagination=$('#pagination_no').text().trim();
-    $('#searchedFilter').each(function(){
-        var UserText = $(this).find("td").text();
-        //UserText+='|';
-        UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
-        console.log(UserText);
-        $.get("GetFilteredDataResult",
-            {
-                UserText:UserText,
-                pagination:currentPagination,
-                project_id: $.session.get('project_id'),
-                team_id: $.session.get('default_team_identity')
-            },
+    var UserText="";
+    $.get("GetFilteredDataResult",
+        {
+            UserText:UserText,
+            pagination:currentPagination,
+            project_id: project_id,
+            team_id: team_id
+        },
         function(data){
             if(data['total'].length>0){
                 //make a table column
@@ -67,118 +52,19 @@ function PerformSearch(){
                 $('#pagination_div').css({'display':'block'});
                 $('#UpperDiv').css({'display':'block'});
             }
-            else{
-                $('#allRun').html('<div align="center" style="margin-top: 20%"><b style="font-size: 200%;font-weight: bolder">No Data Available</b></div>');
-                $('#pagination_div').css({'display':'none'});
-                $('#UpperDiv').css({'display':'none'});
-            }
         });
-    });
-}
-function drawStatusTable(status){
-    var message="";
-    message+='<td style="text-align: left;">';
-    message+='<div>';
-    message+='<div class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">';
-    message+='<span class="language-color" style="width:'+status[0]+';';
-    message+='background-color: #65bd10;';
-    message+='background-image: -moz-linear-gradient(#8dcf16, #65bd10);';
-    message+='background-image: -webkit-linear-gradient(#8dcf16, #65bd10);';
-    message+='background-image: linear-gradient(#8dcf16, #65bd10);';
-    message+='float:left" itemprop="keywords">PASS</span>';
-    message+='  <span class="language-color" style="width:'+status[1]+'; background-color:#FD0006;';
-    message+=' background-image: -moz-linear-gradient(#FE4044, #FD0006);';
-    message+='background-image: -webkit-linear-gradient(#FE4044, #FD0006);';
-    message+='background-image: linear-gradient(#FE4044, #FD0006);';
-    message+='float:left" itemprop="keywords">JavaScript</span>';
-    message+='   <span class="language-color" style="width:'+status[2]+'; background-color:#FF9e00;';
-    message+='background-image: -moz-linear-gradient(#ffb640, #FF9e00);';
-    message+='background-image: -webkit-linear-gradient(#ffb640, #FF9e00);';
-    message+='background-image: linear-gradient(#ffb640, #FF9e00);';
-    message+='float:left" itemprop="keywords">CSS</span>';
-    message+='  <span class="language-color" style="width:'+status[3]+'; background-color:blue;';
-    message+='background-image: -moz-linear-gradient(#7373ff, #0000ff);';
-    message+='background-image: -webkit-linear-gradient(#7373ff, #0000ff);';
-    message+='background-image: linear-gradient(#7373ff, #0000ff);';
-    message+='float:left" itemprop="keywords">Other</span>';
-    message+='   <span class="language-color" style="width:'+status[4]+'; background-color:grey;';
-    message+='background-image: -moz-linear-gradient(#B0B0B0, #606060);';
-    message+='background-image: -webkit-linear-gradient(#B0B0B0, #606060);';
-    message+='background-image: linear-gradient(#B0B0B0, #606060);';
-    message+='float:left" itemprop="keywords">defgd</span>';
-    message+='  <span class="language-color" style="width:'+status[5]+'; background-color:#88a388;';
-    message+='background-image: -moz-linear-gradient(#b7d1b7, #88a388);';
-    message+='background-image: -webkit-linear-gradient(#b7d1b7, #88a388);';
-    message+='background-image: linear-gradient(#b7d1b7, #88a388);';
-    message+='float:left" itemprop="keywords">defgd</span>';
-    message+='</div>';
-    message+='</div>';
-    message+='</td>';
-    return message;
-}
-function AutoComplete(){
-    $('#searchinput').autocomplete({
-        source:function(request,response){
-            $.ajax({
-                url:"GetResultAuto",
-                dataType:"json",
-                data:{
-                   term:request.term
-                },
-                success:function(data){
-                    response(data);
-                }
-            });
-        },
-        select:function(request,ui){
-            var value=ui.item[0].trim();
-            if(value!=""){
-                $('#searchedFilter').append('<tr><td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>' +
-                    '<td class="Text"><b>'+value+':<b style="display: none;">'+ui.item[1].trim()+'</b>&nbsp;</b></td></tr>');
-                $('#pagination_no').text(1);
-                PerformSearch();
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
-            .appendTo( ul );
-    };
-}
-function PaginationButton(){
-    $('.previous_page').click(function(){
-        var index=$("#pagination_no").text().trim();
-        index=parseInt(index);
-        if(index>=2){
-            index--;
-        }
-        $('#pagination_no').text(index);
-        PerformSearch();
-    });
-    $('.next_page').click(function(){
-        var index=$('#pagination_no').text().trim();
-        index=parseInt(index);
-        var end=$('#end').text().trim();
-        var total_entry=$('#total').text().trim();
-        if (parseInt(end)<parseInt(total_entry)){
-            index++;
-        }
-        $('#pagination_no').text(index);
-        PerformSearch();
-    });
 }
 function make_clickable(divname){
     $(divname+' tr>td:first-child').each(function(){
-       $(this).css({
-           'color':'blue',
-           'cursor':'pointer',
-           'textAlign':'left'
-       }) ;
-       $(this).click(function(){
-           var location='/Home/RunID/'+$(this).text().trim()+'/';
+        $(this).css({
+            'color':'blue',
+            'cursor':'pointer',
+            'textAlign':'left'
+        }) ;
+        $(this).click(function(){
+            var location='/Home/RunID/'+$(this).text().trim()+'/';
             window.location=location;
-       });
+        });
     });
     $(divname+' tr>td:nth-child(2)').each(function(){
         $(this).css({
@@ -267,10 +153,45 @@ function make_bar_clickable(divname){
 
     });
 }
-function DeleteFilterData(){
-    $('#searchedFilter td .delete').live('click',function(){
-        $(this).parent().next().remove();
-        $(this).remove();
-        PerformSearch();
-    });
+
+function drawStatusTable(status){
+    var message="";
+    message+='<td style="text-align: left;">';
+    message+='<div>';
+    message+='<div class="repository-lang-stats-graph js-toggle-lang-stats" aria-label="Show language statistics" style="background-color:#ccc" original-title="">';
+    message+='<span class="language-color" style="width:'+status[0]+';';
+    message+='background-color: #65bd10;';
+    message+='background-image: -moz-linear-gradient(#8dcf16, #65bd10);';
+    message+='background-image: -webkit-linear-gradient(#8dcf16, #65bd10);';
+    message+='background-image: linear-gradient(#8dcf16, #65bd10);';
+    message+='float:left" itemprop="keywords">PASS</span>';
+    message+='  <span class="language-color" style="width:'+status[1]+'; background-color:#FD0006;';
+    message+=' background-image: -moz-linear-gradient(#FE4044, #FD0006);';
+    message+='background-image: -webkit-linear-gradient(#FE4044, #FD0006);';
+    message+='background-image: linear-gradient(#FE4044, #FD0006);';
+    message+='float:left" itemprop="keywords">JavaScript</span>';
+    message+='   <span class="language-color" style="width:'+status[2]+'; background-color:#FF9e00;';
+    message+='background-image: -moz-linear-gradient(#ffb640, #FF9e00);';
+    message+='background-image: -webkit-linear-gradient(#ffb640, #FF9e00);';
+    message+='background-image: linear-gradient(#ffb640, #FF9e00);';
+    message+='float:left" itemprop="keywords">CSS</span>';
+    message+='  <span class="language-color" style="width:'+status[3]+'; background-color:blue;';
+    message+='background-image: -moz-linear-gradient(#7373ff, #0000ff);';
+    message+='background-image: -webkit-linear-gradient(#7373ff, #0000ff);';
+    message+='background-image: linear-gradient(#7373ff, #0000ff);';
+    message+='float:left" itemprop="keywords">Other</span>';
+    message+='   <span class="language-color" style="width:'+status[4]+'; background-color:grey;';
+    message+='background-image: -moz-linear-gradient(#B0B0B0, #606060);';
+    message+='background-image: -webkit-linear-gradient(#B0B0B0, #606060);';
+    message+='background-image: linear-gradient(#B0B0B0, #606060);';
+    message+='float:left" itemprop="keywords">defgd</span>';
+    message+='  <span class="language-color" style="width:'+status[5]+'; background-color:#88a388;';
+    message+='background-image: -moz-linear-gradient(#b7d1b7, #88a388);';
+    message+='background-image: -webkit-linear-gradient(#b7d1b7, #88a388);';
+    message+='background-image: linear-gradient(#b7d1b7, #88a388);';
+    message+='float:left" itemprop="keywords">defgd</span>';
+    message+='</div>';
+    message+='</div>';
+    message+='</td>';
+    return message;
 }

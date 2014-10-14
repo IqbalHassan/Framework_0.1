@@ -1631,7 +1631,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 TestObjective = str(TestObjective.replace(u'\xa0', u''))
                 
                 TestMileStone = request.GET.get('TestMileStone', '')
-                TestMileStone = str(TestMileStone.replace(u'\xa0', u''))
+                TestMileStone = str(TestMileStone.replace(u'\xa0', u'').split(":")[0])
                 
                 is_rerun = request.GET.get(u'ReRun', '')
                 previous_run = request.GET.get('RunID', '')    
@@ -1772,7 +1772,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                       'team_id':team_id,
                       'test_milestone':TestMileStone,
                       'run_type':'Manual',
-                      'assigned_tester':TesterIds
+                      'assigned_tester':Testers
                 }
                 Conn=GetConnection()
                 sWhereQuery="where tester_id='%s' and status='Unassigned'"%(TesterId)
@@ -6999,7 +6999,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     stepDelete = int(step) * int(int(currentPagination) - 1)
     offset += ("offset " + str(stepDelete))
     print condition
-    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter " 
     total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7011,7 +7011,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
         total_query += condition
     total_query += ") "
     total_query += "union all "
-    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.product_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter " 
     total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7027,17 +7027,21 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     print total_query
     Conn = GetConnection()
     total_count = DB.GetData(Conn, count_query, False)
+    Conn.close()
     received_data = []
     for each in total_count:
         if each not in received_data:
             received_data.append(each)
+    Conn=GetConnection()
     get_list = DB.GetData(Conn, total_query, False)
+    Conn.close()
     refine_list = []
     for each in get_list:
         if each not in refine_list:
             refine_list.append(each)
     total_run = make_array(refine_list)
     print total_run
+    Conn=GetConnection()
     all_status = make_status_array(Conn, total_run)
     # make Dict
     Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Version", "MileStone"]
