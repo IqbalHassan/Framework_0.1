@@ -139,8 +139,14 @@ def HomePage(req):
     return HttpResponse(output)
 
 def RunTest(request):
+    #get the available machine definition
+    query="select distinct tester_id,machine_ip,last_updated_time,status,branch_version,array_agg(distinct type||' : '||name||' - '||bit||' Bit - '||version ) from machine_dependency_settings mds,test_run_env tre  where tre.id=mds.machine_serial and status='Unassigned' group by tester_id,last_updated_time,status,branch_version,machine_ip"
+    Conn=GetConnection()
+    machine_list=DB.GetData(Conn,query,False)
+    Conn.close()        
     templ = get_template('RunTest_new.html')
-    variables = Context({ })
+    column=['Machine Name','Machine IP','Last Updated Time','Status','Version','Dependency']
+    variables = Context({'machine_list':machine_list,'dependency':column})
     output = templ.render(variables)
     return HttpResponse(output)
 
@@ -6350,67 +6356,141 @@ def CheckMachine(request):
             name = request.GET.get(u'name', '')
             print name
             Conn = GetConnection()
-            query = "select os_name,os_version,os_bit,machine_ip,client,product_version from test_run_env,permitted_user_list where user_names=tester_id and user_level='Manual' and tester_id='%s'" % name
+            query = "select distinct machine_ip,branch_version,array_agg(distinct type||'|'||name||'|'||bit||'|'||version ) from test_run_env tre,permitted_user_list pul,machine_dependency_settings mds where pul.user_names=tre.tester_id and mds.machine_serial=tre.id and tester_id='%s' and pul.user_level='Manual' group by branch_version,machine_ip" % name
             machine_info = DB.GetData(Conn, query, False)
+            Conn.close()
             print machine_info
     result = simplejson.dumps(machine_info)
     return HttpResponse(result, mimetype='application/json')
 def AddManualTestMachine(request):
-    if request.is_ajax():
-        if request.method == 'GET':
-            machine_name = request.GET.get(u'machine_name', '').strip()
-            os_name = request.GET.get(u'os_name', '').strip()
-            os_version = request.GET.get(u'os_version', '').strip()
-            os_bit = request.GET.get(u'os_bit', '').strip()
-            browser = request.GET.get(u'browser', '').strip()
-            browser_version = request.GET.get(u'browser_version', '').strip()
-            machine_ip = request.GET.get(u'machine_ip', '').strip()
-            product_version = request.GET.get(u'product_version', '').strip()
-            print machine_name
-            print os_name
-            print os_version
-            print os_bit
-            print browser
-            print browser_version
-            print machine_ip
-            Conn = GetConnection()
-            query = "select count(*) from permitted_user_list where user_names='%s' and user_level='Manual'" % machine_name
-            count = DB.GetData(Conn, query)
-            if count[0] > 0:
-                # update will go here.
-                print "yes"
-                status = DB.GetData(Conn, "Select status from test_run_env where tester_id = '%s'" % machine_name)
-                for eachitem in status:
-                    if eachitem == "In-Progress":
-                        DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
-                        DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
-                    elif eachitem == "Submitted":
-                        DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % machine_name, status="Cancelled")
-                    elif eachitem == "Unassigned":
-                        DB.Record(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
-                machine_os = os_name + ' ' + os_version + ' - ' + os_bit
-                Client = browser + '(' + browser_version + ';' + os_bit + ' Bit)'
-                updated_time = TimeStamp("string")
-                Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'machine_os':machine_os.strip(), 'client':Client.strip(), 'last_updated_time':updated_time.strip(), 'os_bit':os_bit, 'os_name':os_name, 'os_version':os_version, 'machine_ip':machine_ip, 'product_version':product_version.strip()}
-                tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
-                if tes2 == True:
-                    message = "Machine is updated successfully"
-            else:
-                print "none"
-                # new Entry will be inserted.
-                machine_os = os_name + ' ' + os_version + ' - ' + os_bit
-                Client = browser + '(' + browser_version + ';' + os_bit + ' Bit)'
-                updated_time = TimeStamp("string")
-                Dict = {'user_names':machine_name.strip(), 'user_level':'Manual', 'email':machine_name + '@machine.com'}
-                tes1 = DB.InsertNewRecordInToTable(Conn, "permitted_user_list", **Dict)
-                Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'machine_os':machine_os.strip(), 'client':Client.strip(), 'last_updated_time':updated_time.strip(), 'os_bit':os_bit, 'os_name':os_name, 'os_version':os_version, 'machine_ip':machine_ip, 'product_version':product_version.strip()}
-                tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
-                if(tes1 == True and tes2 == True):
-                    message = "Machine Successfully Registered"
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.is_ajax():
+            if request.method == 'GET':
+                machine_name = request.GET.get(u'machine_name', '').strip()
+                machine_ip = request.GET.get(u'machine_ip', '').strip()
+                branch=request.GET.get(u'branch_name','').strip()
+                version=request.GET.get(u'branch_version','').strip()
+                dependency=request.GET.get(u'dependency','').split('#')
+                new_dependency=[]
+                for each in dependency:
+                    new_dependency.append(each.split('|'))
+                print machine_name
+                print machine_ip
+                print branch+":"+version
+                print new_dependency
+                user_level_tag='Manual'
+                query = "select count(*) from permitted_user_list where user_names='%s' and user_level='%s'" % (machine_name,user_level_tag)
+                Conn = GetConnection()
+                count = DB.GetData(Conn, query)
+                Conn.close()
+                if count[0] > 0:
+                    # update will go here.
+                    print "yes"
+                    query="Select id,status from test_run_env where tester_id = '%s'" % machine_name
+                    Conn=GetConnection()
+                    status = DB.GetData(Conn,query,False)
+                    Conn.close()
+                    for eachitem in status:
+                        if eachitem[1] == "In-Progress":
+                            Conn=GetConnection()
+                            DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
+                            Conn.close()
+                            Conn=GetConnection()
+                            DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
+                            Conn.close()
+                        elif eachitem[1] == "Submitted":
+                            Conn=GetConnection()
+                            DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % machine_name, status="Cancelled")
+                            Conn.close()
+                        elif eachitem[1] == "Unassigned":
+                            Conn=GetConnection()
+                            DB.DeleteRecord(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
+                            Conn.close()
+                            Conn=GetConnection()
+                            DB.DeleteRecord(Conn,'machine_dependency_settings',machine_serial=eachitem[0])
+                            Conn.close()
+                    updated_time = TimeStamp("string")
+                    Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':(branch+':'+version).strip()}
+                    Conn=GetConnection()
+                    tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
+                    Conn.close()
+                    if(tes2 == True):
+                        query="select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1"%(machine_name.strip())
+                        Conn=GetConnection()
+                        temp_id=DB.GetData(Conn,query)
+                        if isinstance(temp_id,list):
+                            machine_id=temp_id[0]
+                            problem=False
+                            for each in new_dependency:
+                                Dict={}
+                                Dict.update({'machine_serial':machine_id,'name':each[1],'bit':each[2],'version':each[3],'type':each[0]})
+                                Conn=GetConnection()
+                                result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
+                                Conn.close()
+                                if result==False:
+                                    problem=True
+                                    break
+                            if problem:
+                                log_message="Machine not registered successfully"
+                                message=False
+                            else:
+                                log_message = "Machine Successfully Registered"
+                                message=True
+                        else:
+                            log_message="Machine not registered successfully"
+                            message=False
+                    else:
+                        log_message="Machine not registered successfully"
+                        message=False
                 else:
-                    message = "Machine is not registered successfully"
-    result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')    
+                    print "none"
+                    # new Entry will be inserted.
+                    Dict = {'user_names':machine_name.strip(), 'user_level':user_level_tag, 'email':machine_name + '@machine.com'}
+                    Conn=GetConnection()
+                    tes1 = DB.InsertNewRecordInToTable(Conn, "permitted_user_list", **Dict)
+                    Conn.close()
+                    updated_time = TimeStamp("string")
+                    Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':(branch+':'+version).strip()}
+                    Conn=GetConnection()
+                    tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
+                    Conn.close()
+                    if(tes1 == True and tes2 == True):
+                        query="select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1"%(machine_name.strip())
+                        Conn=GetConnection()
+                        temp_id=DB.GetData(Conn,query)
+                        if isinstance(temp_id,list):
+                            machine_id=temp_id[0]
+                            problem=False
+                            for each in new_dependency:
+                                Dict={}
+                                Dict.update({'machine_serial':machine_id,'name':each[1],'bit':each[2],'version':each[3],'type':each[0]})
+                                Conn=GetConnection()
+                                result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
+                                Conn.close()
+                                if result==False:
+                                    problem=True
+                                    break
+                            if problem:
+                                log_message="Machine not registered successfully"
+                                message=False
+                            else:
+                                log_message = "Machine Successfully Registered"
+                                message=True
+                        else:
+                            log_message="Machine not registered successfully"
+                            message=False
+                    else:
+                        log_message="Machine not registered successfully"
+                        message=False
+        result={
+                'message':message,
+                'log_message':log_message
+                }
+        result = simplejson.dumps(result)
+        return HttpResponse(result, mimetype='application/json')
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, error_tag)    
 def chartDraw(request):
     if request.is_ajax():
         if request.method == 'GET':
@@ -7791,7 +7871,7 @@ def Bugs_List(request):
         query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
         bugs=DB.GetData(Conn, query, False)
         
-        query="select distinct bug_id,labels.label_id,label_name,label_color from labels, bug_label_map blm where labels.label_id=blm.label_id order by bug_id"
+        query="select * from bug_label_map"
         labels=DB.GetData(Conn, query, False)
         #query="select * from milestone_info"
         #milestones=DB.GetData(Conn, query, False)

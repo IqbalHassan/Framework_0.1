@@ -2,7 +2,7 @@ import logging
 import os
 import wmi
 
-
+import datetime
 
 logger = logging.getLogger(__name__)
 hdlr = logging.FileHandler('execlog.log')
