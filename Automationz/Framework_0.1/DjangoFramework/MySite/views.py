@@ -6614,12 +6614,23 @@ def Milestone_Report(request):
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            complete_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='Complete'", False)
-            cancelled_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='Cancelled'", False)
-            submitted_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='Submitted'", False)
-            inprogress_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='In-progress'", False)
+            complete_list = DB.GetData(Conn, "select cast(count(distinct run_id) as text) from test_run_env where test_milestone like '%"+milestone+"%' and status='Complete'")
+            cancelled_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='Cancelled'")
+            submitted_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='Submitted'")
+            inprogress_list = DB.GetData(Conn, "select count(status) from test_run_env where test_milestone like '%"+milestone+"%' and status='In-progress'")
+            #query="(select count(distinct run_id) from test_run_env where status='Complete' group by test_milestone)"
+            #complete=DB.GetData(Conn,query)
+            #query="select count(distinct run_id) from test_run_env where status not in ('Cancelled') group by test_milestone"
+            all=DB.GetData(Conn,"select cast(count(distinct run_id) as text) from test_run_env where status not in ('Cancelled') and test_milestone like '%"+milestone+"%'")
+    temp = []
+    #temp.append(format((float(complete_list)*100)/float(all),'.2f'))
+    for x in zip(complete_list,all):
+        if x[1]=='0':
+            temp.append(0)
+        else:
+            temp.append(format((float(x[0])*100)/float(x[1]),'.2f'))
     #Heading = ['Task ID','Task title', 'Status']
-    results = {'Complete':complete_list, 'Cancelled':cancelled_list, 'Submitted':submitted_list, 'In-progress':inprogress_list}
+    results = {'Complete':complete_list, 'Cancelled':cancelled_list, 'Submitted':submitted_list, 'In-progress':inprogress_list, 'progress':temp}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
