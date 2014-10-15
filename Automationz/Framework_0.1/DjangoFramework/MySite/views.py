@@ -6874,139 +6874,143 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
-            UserText = UserData.split(":");
-            # Environment = request.GET.get(u'Env', '')
-            # propertyValue="Ready"
-            project_id=request.GET.get(u'project_id','')
-            team_id=request.GET.get(u'team_id','')
-            QueryText = []
-            for eachitem in UserText:
-                if len(eachitem) != 0 and  len(eachitem) != 1:
-                    QueryText.append(eachitem.strip())
-            Section_Tag = 'Section'
-            Custom_Tag = 'CustomTag'
-            Section_Path_Tag = 'section_id'
-            Priority_Tag = 'Priority'
-            set_type='set'
-            tag_type='tag'
-            Status='Status'
-            query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
-            Conn=GetConnection()
-            dependency=DB.GetData(Conn,query)
-            Conn.close()
-            wherequery=""
-            for each in dependency:
-                wherequery+=("'"+each.strip()+"'")
-                wherequery+=','
-            wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
-            print wherequery
-            TestIDList = []
-            for eachitem in QueryText:
+            if UserData!='':
+                UserText = UserData.split(":");
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                QueryText = []
+                for eachitem in UserText:
+                    if len(eachitem) != 0 and  len(eachitem) != 1 and eachitem.strip() not in QueryText:
+                        QueryText.append(eachitem.strip())
+                print QueryText
+                Section_Tag = 'Section'
+                Custom_Tag = 'CustomTag'
+                Section_Path_Tag = 'section_id'
+                Priority_Tag = 'Priority'
+                set_type='set'
+                tag_type='tag'
+                Status='Status'
+                query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
                 Conn=GetConnection()
-                TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
+                dependency=DB.GetData(Conn,query)
                 Conn.close()
-                for eachProp in TestID:
-                    if eachProp == 'tcid':
-                        TestIDList.append(eachitem)
-                        break
-            TableData = []
-            if len(TestIDList) > 0:
-                for eachitem in TestIDList:
-                    query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,team_id)
-                    Conn=GetConnection()
-                    tabledata = DB.GetData(Conn,query, False)
-                    Conn.close()
-                    print tabledata
-                    if tabledata:
-                        TableData.append(tabledata[0])
-            else:
-                count = 1
+                wherequery=""
+                for each in dependency:
+                    wherequery+=("'"+each.strip()+"'")
+                    wherequery+=','
+                wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+                print wherequery
+                TestIDList = []
                 for eachitem in QueryText:
-                    if count == 1:
-                        Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
-                        count=count+1
-                    else:
-                        Query+="AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
-                        count=count+1
-                Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
-                Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
-                query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
-                Conn=GetConnection()
-                TableData = DB.GetData(Conn, query, False)        
-                Conn.close()
-
-            RefinedDataTemp = []
-            Check_TestCase(TableData, RefinedDataTemp)
-            RefinedData=list(RefinedDataTemp)
-            dataWithTime = []
-            if total_time=="true":
-                time_collected=0
-            for each in RefinedData:
-                query = "select count(*) from test_steps where tc_id='%s'" % each[0].strip()
-                Conn=GetConnection()
-                stepNumber = DB.GetData(Conn, query)
-                Conn.close()
-                test_case_time = 0
-                for count in range(0, int(stepNumber[0])):
-                    temp_id = each[0] + '_s' + str(count + 1)
-                    step_time_query = "select description from master_data where id='%s' and field='estimated' and value='time'" % temp_id.strip()
                     Conn=GetConnection()
-                    step_time = DB.GetData(Conn, step_time_query)
+                    TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
                     Conn.close()
-                    if len(step_time) == 0:
-                        stepTime = 0
-                    else:
-                        stepTime = step_time[0]
-                    test_case_time += int(stepTime)
-                    if total_time=="true":
-                        time_collected+=int(stepTime)
-                temp = []
-                for eachitem in each:
-                    temp.append(eachitem)
-                temp.append(ConvertTime(test_case_time))
-        #         temp=tuple(temp)
-                dataWithTime.append(temp)    
-            RefinedData=dataWithTime
-            for each in RefinedData:
-                print each
-            Heading = ['ID', 'Title', 'Section', 'Type','Time']
-            for i in dataWithTime:
-                x = i[1]
-                print x
-                try:
-                    query = '''
-                    SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
-                    ''' % ('section_id', i[0])
+                    for eachProp in TestID:
+                        if eachProp == 'tcid':
+                            TestIDList.append(eachitem)
+                            break
+                TableData = []
+                if len(TestIDList) > 0:
+                    for eachitem in TestIDList:
+                        query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,team_id)
+                        Conn=GetConnection()
+                        tabledata = DB.GetData(Conn,query, False)
+                        Conn.close()
+                        print tabledata
+                        if tabledata:
+                            TableData.append(tabledata[0])
+                else:
+                    count = 1
+                    for eachitem in QueryText:
+                        if count == 1:
+                            Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
+                            count=count+1
+                        else:
+                            Query+="AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
+                            count=count+1
+                    Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+                    Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+                    query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
                     Conn=GetConnection()
-                    data = DB.GetData(Conn, query, False, False)
+                    TableData = DB.GetData(Conn, query, False)        
                     Conn.close()
-                    section_id = int(data[0][0])
-                    
-                    query = '''
-                    SELECT section_path FROM product_sections WHERE section_id=%d
-                    ''' % section_id
+    
+                RefinedDataTemp = []
+                Check_TestCase(TableData, RefinedDataTemp)
+                RefinedData=list(RefinedDataTemp)
+                dataWithTime = []
+                if total_time=="true":
+                    time_collected=0
+                for each in RefinedData:
+                    query = "select count(*) from test_steps where tc_id='%s'" % each[0].strip()
                     Conn=GetConnection()
-                    data = DB.GetData(Conn, query, False, False)
+                    stepNumber = DB.GetData(Conn, query)
                     Conn.close()
-                    section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
-                    i.insert(2, section_path)
-                except:
-                    print '-'
-                if test_status_request:
+                    test_case_time = 0
+                    for count in range(0, int(stepNumber[0])):
+                        temp_id = each[0] + '_s' + str(count + 1)
+                        step_time_query = "select description from master_data where id='%s' and field='estimated' and value='time'" % temp_id.strip()
+                        Conn=GetConnection()
+                        step_time = DB.GetData(Conn, step_time_query)
+                        Conn.close()
+                        if len(step_time) == 0:
+                            stepTime = 0
+                        else:
+                            stepTime = step_time[0]
+                        test_case_time += int(stepTime)
+                        if total_time=="true":
+                            time_collected+=int(stepTime)
+                    temp = []
+                    for eachitem in each:
+                        temp.append(eachitem)
+                    temp.append(ConvertTime(test_case_time))
+            #         temp=tuple(temp)
+                    dataWithTime.append(temp)    
+                RefinedData=dataWithTime
+                for each in RefinedData:
+                    print each
+                Heading = ['ID', 'Title', 'Section', 'Type','Time']
+                for i in dataWithTime:
+                    x = i[1]
+                    print x
                     try:
                         query = '''
-                        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
-                        ''' % ('Status', i[0])
+                        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
+                        ''' % ('section_id', i[0])
                         Conn=GetConnection()
-                        data = DB.GetData(Conn, query, False, True)
+                        data = DB.GetData(Conn, query, False, False)
                         Conn.close()
-                        i.insert(4, data[0][0])           
-                        Heading = ['ID', 'Title', 'Section', 'Type', 'Status', 'Time']
+                        section_id = int(data[0][0])
+                        
+                        query = '''
+                        SELECT section_path FROM product_sections WHERE section_id=%d
+                        ''' % section_id
+                        Conn=GetConnection()
+                        data = DB.GetData(Conn, query, False, False)
+                        Conn.close()
+                        section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
+                        i.insert(2, section_path)
                     except:
-                        i[4] = ' - '
-            results = {'Heading':Heading, 'TableData':RefinedData}
-            if total_time=="true":
-                results.update({'time':ConvertTime(time_collected)})
+                        print '-'
+                    if test_status_request:
+                        try:
+                            query = '''
+                            SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
+                            ''' % ('Status', i[0])
+                            Conn=GetConnection()
+                            data = DB.GetData(Conn, query, False, True)
+                            Conn.close()
+                            i.insert(4, data[0][0])           
+                            Heading = ['ID', 'Title', 'Section', 'Type', 'Status', 'Time']
+                        except:
+                            i[4] = ' - '
+                results = {'Heading':Heading, 'TableData':RefinedData}
+                if total_time=="true":
+                    results.update({'time':ConvertTime(time_collected)})
+            else:
+                results = {'Heading':[], 'TableData':[]}
+                if total_time=="true":
+                    results.update({'time':""})
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
 

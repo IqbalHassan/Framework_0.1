@@ -1,10 +1,227 @@
 var dependency_list=[];
 var global_version_list=[];
+var dependency_classes=[];
 $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
+    RunAutoCompleteTestSearch(project_id,team_id);
+    DeleteSearchQueryText(project_id,team_id);
     ManageMilestone(project_id,team_id);
 });
+function RunAutoCompleteTestSearch(project_id,team_id){
+    $("#searchbox").autocomplete(
+        {
+            source : function(request, response) {
+                $.ajax({
+                    url:"AutoCompleteTestCasesSearchOtherPages",
+                    dataType: "json",
+                    data:{ term: request.term,project_id:project_id,team_id:team_id},
+                    success: function( data ) {
+                        response( data );
+                    }
+                });
+            },
+
+            //source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
+            select : function(event, ui) {
+
+                var tc_id_name = ui.item[0].split(" - ");
+                var value = "";
+                if (tc_id_name != null)
+                    value = tc_id_name[0].trim();
+
+                if(value != "")
+                {
+                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+                        + '<td name = "submitquery" class = "Text" style = "size:10">'
+                        + value
+                        + ":&nbsp"
+                        + '</td>'
+                    );
+                    PerformSearch(project_id,team_id);
+                }
+                $("#searchbox").val("");
+                return false;
+            }
+        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+}
+
+function PerformSearch(project_id,team_id,predicate) {
+
+    $("#AutoSearchResult #searchedtext").each(function() {
+        var UserText = $(this).find("td").text();
+        UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        console.log(UserText);
+        if(predicate!=undefined){
+            UserText=UserText+predicate;
+        }
+        $.get("TableDataTestCasesOtherPages",{
+            Query: UserText,
+            project_id:project_id,
+            team_id:team_id,
+            total_time:'true'
+        },function(data) {
+            if (data['TableData'].length == 0)
+            {
+                $('#RunTestResultTable').html("");
+                $('#RunTestResultTable').html("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+                $("#RunTestResultTable").fadeIn(1000);
+                $('#time_panel').html("");
+                $('#time_panel').css({'display':'none'});
+            }
+            else
+            {
+                $('#time_panel').html('<b class="Text">Time Needed: '+data['time']+'</b> ');
+                $('#time_panel').css({'display':'block'});
+                ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
+                $("#RunTestResultTable").fadeIn(1000);
+                //$("p:contains('Show/Hide Test Cases')").fadeIn(0);
+                implementDropDown("#RunTestResultTable");
+                // add edit btn
+                /*var indx = 0;
+                $('#RunTestResultTable tr>td:nth-child(5)').each(function(){
+                    var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+                    $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/>');
+                    $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25"/>');
+
+                    indx++;
+                });
+
+                $(".editBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id")+'/';
+                });
+                $(".templateBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id")+'/';
+                });
+                //VerifyQueryProcess();
+                //$(".Buttons[title='Verify Query']").fadeIn(2000);
+                */
+                if(predicate==undefined){
+                    get_dependency(project_id,team_id);
+                }
+            }
+        });
+    });
+}
+function populate_parameter_div(array_list,div_name,project_id,team_id){
+    var message="";
+    for(var i=0;i<array_list.length;i++){
+        var dependency=array_list[i][0];
+        var name_list=array_list[i][1].split(",");
+        message+='<form id="tc_'+dependency+'" class="new_tc_form">';
+        message+='<table>';
+        message+='<tr>';
+        message+='<td class="tc_form_label_col">'
+        message+='<b class="Text">'+dependency+':</b>';
+        message+='</td>';
+        message+='<td class="tc_form_input_col">';
+        message+='<table width="100%">';
+        var equal_size=(100/name_list.length);
+        var dep_name=[];
+        message+='<tr>';
+        for(var j=0;j<name_list.length;j++){
+            message+='<td width="'+equal_size+'%">';
+            message+='<input class="'+dependency+'" id="'+dependency+'_'+name_list[j]+'" type="radio" name="type" value="'+name_list[j]+'" style="width:auto" />';
+            message+='<label for="'+dependency+'_'+name_list[j]+'">'+name_list[j]+'</label>';
+            message+='</td>';
+            dep_name.push(dependency+'_'+name_list[j]);
+        }
+        message+='</tr>';
+        message+='</table>';
+        message+='</td>';
+        message+='<tr>';
+        message+='</table>';
+        message+='</form>';
+        var temp={'name':dependency,'list':dep_name};
+        dependency_classes.push(temp);
+    }
+    $('#'+div_name).html(message);
+    for(var i=0;i<dependency_classes.length;i++){
+        for(var j=0;j<dependency_classes[i].list.length;j++){
+            $('#'+dependency_classes[i].list[j]).on('click',function(){
+               PerformSearch(project_id,team_id,parseValue(dependency_classes));
+            });
+        }
+    }
+}
+function parseValue(dependency_classes){
+    var message="";
+    for(var i=0;i<dependency_classes.length;i++){
+        $('.'+dependency_classes[i].name+':checked').each(function(){
+           message+=($(this).val().trim()+': ');
+        });
+    }
+    return message;
+}
+function get_dependency(project_id,team_id){
+    $.get('get_default_settings',{
+        project_id:project_id,
+        team_id:team_id
+    },function(data){
+        populate_parameter_div(data['result'],"parameter_div",project_id,team_id);
+    });
+}
+
+function implementDropDown(wheretoplace){
+    $(wheretoplace+" tr td:nth-child(2)").css({'color' : 'blue','cursor' : 'pointer'});
+    $(wheretoplace+" tr td:nth-child(2)").each(function() {
+        var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+        var name=$(this).text().trim();
+        $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+        $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+            var data_list=data['Result'];
+            var column=data['column'];
+            ResultTable('#'+ID+'detail',column,data_list,"");
+            $('#'+ID+'detail tr').each(function(){
+                $(this).css({'textAlign':'left'});
+            });
+        });
+        $(this).live('click',function(){
+            $('#'+ID+'detail').slideToggle("slow");
+        });
+    });
+}
+function DeleteSearchQueryText(project_id,team_id){
+    $("#AutoSearchResult td .delete").live('click', function() {
+
+        if ($("#AutoSearchTextBoxLabel").text().trim() != "*Select Test Machine:") //If user is on select user page, do not allow him to delete the Test Data Set
+        {
+            console.log("clicked");
+            console.log($(this).text());
+            $(this).parent().next().remove();
+            $(this).remove();
+            if($('#AutoSearchResult #searchedtext td').text()==""){
+                $('#DepandencyCheckboxes').css('display','none');
+                $('.flip[title="DepandencyCheckBox"]').css('display','none');
+                $('#RunTestResultTable').css('display','none');
+            }
+            $("#AutoSearchResult #searchedtext").each(function() {
+                var UserText = $(this).find("td").text();
+                if (UserText.length == 0)
+                {
+                    //$(".Buttons[title='Search Test Cases']").fadeOut(2000);
+                    //$(".Buttons[title='Verify Query']").fadeOut(2000);
+                    $(".Buttons[title='Select User']").fadeOut(2000);
+                }
+            });
+
+        }
+
+        else
+        {
+
+            $(".delete").css('cursor','default');
+        }
+        PerformSearch(project_id,team_id);
+
+    });
+}
 
 function ManageMilestone(project_id,team_id){
     $.get('GetOS',{

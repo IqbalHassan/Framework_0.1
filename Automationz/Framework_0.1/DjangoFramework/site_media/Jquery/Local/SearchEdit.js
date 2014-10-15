@@ -112,10 +112,7 @@ function implementDropDown(wheretoplace){
         });
     });
 }
-function DeleteSearchQueryText()
-
-{
-
+function DeleteSearchQueryText(){
     $("#AutoSearchResult td .delete").live('click', function() {
 
         if ($("#AutoSearchTextBoxLabel").text().trim() != "*Select Test Machine:") //If user is on select user page, do not allow him to delete the Test Data Set
