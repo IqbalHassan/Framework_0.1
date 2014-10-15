@@ -6702,13 +6702,16 @@ def Milestone_Report(request):
             #complete=DB.GetData(Conn,query)
             #query="select count(distinct run_id) from test_run_env where status not in ('Cancelled') group by test_milestone"
             all=DB.GetData(Conn,"select cast(count(distinct run_id) as text) from test_run_env where status not in ('Cancelled') and test_milestone like '%"+milestone+"%'")
-    temp = []
-    #temp.append(format((float(complete_list)*100)/float(all),'.2f'))
-    for x in zip(complete_list,all):
-        if x[1]=='0':
-            temp.append(0)
-        else:
-            temp.append(format((float(x[0])*100)/float(x[1]),'.2f'))
+        temp = []
+        #temp.append(format((float(complete_list)*100)/float(all),'.2f'))
+        for x in zip(complete_list,all):
+            if x[1]=='0':
+                temp.append(0)
+            else:
+                temp.append(format((float(x[0])*100)/float(x[1]),'.2f'))
+        
+        temp.append(int(all[0])-int(complete_list[0]))
+        temp.append(int(all[0]))
     #Heading = ['Task ID','Task title', 'Status']
     results = {'Complete':complete_list, 'Cancelled':cancelled_list, 'Submitted':submitted_list, 'In-progress':inprogress_list, 'progress':temp}
     json = simplejson.dumps(results)
