@@ -7754,22 +7754,32 @@ def Milestone(request):
     Conn=GetConnection()
     query="select * from milestone_info order by name"
     milestones=DB.GetData(Conn,query,False)
-    query="(select count(distinct run_id) from test_run_env where status='Complete' group by test_milestone)"
+    """query="(select count(distinct run_id) from test_run_env where status='Complete' group by test_milestone)"
     complete=DB.GetData(Conn,query)
     query="select count(distinct run_id) from test_run_env where status not in ('Cancelled') group by test_milestone"
     all=DB.GetData(Conn,query)
     temp = []
     for x in zip(complete,all):
-        temp.append(format((float(x[0])*100)/float(x[1]),'.2f'))
+        temp.append(format((float(x[0])*100)/float(x[1]),'.2f'))"""
     milestone_list = []
-    i=0
+    #i=0
     for each in milestones:
         data = []
         for x in each:
             data.append(x)
-        data.append(temp[i])
-        data.append(all[i]-complete[i])
-        data.append(complete[i])
+        #data.append(temp[i])
+        complete = DB.GetData(Conn, "select cast(count(distinct run_id) as text) from test_run_env where test_milestone like '%"+each[1]+"%' and status='Complete'")
+        all=DB.GetData(Conn,"select cast(count(distinct run_id) as text) from test_run_env where status not in ('Cancelled') and test_milestone like '%"+each[1]+"%'")
+        for x in zip(complete,all):
+            if x[1]=='0':
+                data.append(0)
+            else:
+                data.append(format((float(x[0])*100)/float(x[1]),'.2f'))
+        
+        data.append(int(all[0])-int(complete[0]))
+        data.append(int(complete[0]))
+        """data.append(all[i]-complete[i])
+        data.append(complete[i])"""
         left = (each[3]-now).days
         if left<0 and data[4]!='complete':
             data.append(-left)
@@ -7783,7 +7793,7 @@ def Milestone(request):
             data.append(left)
             data.append("Left only ")
             data.append('green')
-        i = i+1
+        #i = i+1
         milestone_list.append(data)
         
         
@@ -7878,7 +7888,7 @@ def Bugs_List(request):
         query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
         bugs=DB.GetData(Conn, query, False)
         
-        query="select * from bug_label_map"
+        query="select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, bug_label_map blm where l.label_id=blm.label_id"
         labels=DB.GetData(Conn, query, False)
         #query="select * from milestone_info"
         #milestones=DB.GetData(Conn, query, False)
