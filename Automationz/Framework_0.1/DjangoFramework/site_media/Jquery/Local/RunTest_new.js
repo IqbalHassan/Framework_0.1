@@ -112,7 +112,7 @@ function SubmitRun(project_id,team_id){
             function(data)
             {
                 if(data['Result']){
-                    run_notify("RunID-'"+data['runid']+"' got executed!");
+                    //run_notify("RunID-'"+data['runid']+"' got executed!");
                     var location='/Home/RunID/'+data['runid']+'/';
                     window.location=location;
                 }
