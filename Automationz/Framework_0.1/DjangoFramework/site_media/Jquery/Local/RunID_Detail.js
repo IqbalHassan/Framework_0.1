@@ -396,14 +396,14 @@ function LoadAllTestCases(divname){
             'textAlign':'left'
         });
         var name=$(this).text().trim();
-        var TestCaseName=$(this).closest("tr").find("td:nth-child(9)").text().trim();
+        var TestCaseName=$($(this).closest("tr").find("td:first-child")[0]).text().trim();
         var RunID=$('#fetch_run_id').text().trim();
         $(this).html('<div id="'+TestCaseName+'name">'+name+'</div><div id="'+TestCaseName+'detail" style="display:none"></div>')
         $.get("TestCase_Detail_Table",{'RunID':RunID,'TestCaseName':TestCaseName},function(data){
             ResultTable('#'+divname+' #'+TestCaseName+'detail',data['TestCase_Detail_Col'],data['TestCase_Detail_Data'],"");
         })
         $('#'+divname+' #'+TestCaseName+'name').live('click',function(){
-            var TestCaseName=$(this).closest("tr").find("td:nth-child(9)").text().trim();
+            var TestCaseName=$($(this).closest('tr').find('td:first-child')[0]).text().trim();
             $('#'+divname+' #'+TestCaseName+'detail tr td:first-child').each(function(){
                 $(this).css({
                     'color':'blue',
