@@ -10,6 +10,14 @@ $(document).ready(function(){
     DeleteSearchQueryText(project_id,team_id);
     ManageMilestone(project_id,team_id);
     SubmitRun(project_id,team_id);
+    $('#project_identity').on('change',function(){
+        $.session.set('project_id',$(this).val().trim());
+        window.location.reload(true);
+    });
+    $('#default_team_identity').on('change',function(){
+        $.session.set('default_team_identity',$(this).val().trim());
+        window.location.reload(true);
+    });
 });
 function SubmitRun(project_id,team_id){
     $('#run_test').on('click',function(){
@@ -239,7 +247,7 @@ function AutoSuggestions(project_id,team_id){
             $.ajax({
                 url:"AutoCompleteUsersSearch",
                 dataType: "json",
-                data:{ term: request.term},
+                data:{ term: request.term,project_id:project_id,team_id:team_id},
                 success: function( data ) {
                     response( data );
                 }
@@ -481,11 +489,11 @@ function ManageMilestone(project_id,team_id){
     },function(data){
         dependency_list=data['dependency_list'];
         global_version_list=data['version_list'];
-        populate_manual_div(dependency_list,global_version_list);
+        populate_manual_div(dependency_list,global_version_list,project_id,team_id);
     });
 }
 
-function populate_manual_div(dependency_list,global_version_list){
+function populate_manual_div(dependency_list,global_version_list,project_id,team_id){
     var message="";
     message+='<tr>';
     message+='<td align="right"><b class="Text">Machine Name:</b></td>';
@@ -564,14 +572,20 @@ function populate_manual_div(dependency_list,global_version_list){
             else{
                 temp.push($('#'+name+'_name option:selected').val().trim());
             }
-            if($('#'+name+'_bit option:selected').val().trim()==""){
+            if($('#'+name+'_bit option:selected').val()==null){
+                temp.push('Nil');
+            }
+            else if($('#'+name+'_bit option:selected').val().trim()==""){
                 alertify.error(name+' bit is empty',1500);
                 return false;
             }
             else{
                 temp.push($('#'+name+'_bit option:selected').val().trim());
             }
-            if($('#'+name+'_version option:selected').val().trim()==""){
+            if($('#'+name+'_bit option:selected').val()==null){
+                temp.push('Nil');
+            }
+            else if($('#'+name+'_version option:selected').val().trim()==""){
                 alertify.error(name+' version is empty',1500);
                 return false;
             }
@@ -594,7 +608,9 @@ function populate_manual_div(dependency_list,global_version_list){
             'machine_ip':machine_ip,
             'dependency':dependency.join('#'),
             'branch_name':branch_name,
-            'branch_version':branch_version
+            'branch_version':branch_version,
+            'project_id':project_id,
+            'team_id':team_id
         },function(data){
             if(data['message']){
                 alertify.success(data['log_message'],1500)
@@ -611,7 +627,7 @@ function populate_manual_div(dependency_list,global_version_list){
             $.ajax({
                 url:"Auto_MachineName",
                 dataType:"json",
-                data:{term:request.term},
+                data:{term:request.term,'project_id':project_id,'team_id':team_id},
                 success:function(data){
                     response(data);
                 }
@@ -658,15 +674,16 @@ function generate_name(dependency_list,name,type){
             for(var j=0;j<dependency_list[i][1].length;j++){
                 if(dependency_list[i][1][j][0]==name){
                     var version_list=dependency_list[i][1][j][1];
-                    var message="";
-                    message+='<option value="">Bit</option>';
-                    for(var k=0;k<version_list.length;k++){
-                        message+='<option value="'+version_list[k][0]+'">'+version_list[k][0]+' Bit</option>';
+                    if (version_list.length>0){
+                        var message="";
+                        message+='<option value="">Bit</option>';
+                        for(var k=0;k<version_list.length;k++){
+                            message+='<option value="'+version_list[k][0]+'">'+version_list[k][0]+' Bit</option>';
+                        }
+                        $('#'+type+'_bit').html(message);
+                        $('#'+type+'_bit').css({'display':'block'});
+                        break;
                     }
-                    $('#'+type+'_bit').html(message);
-                    $('#'+type+'_bit').css({'display':'block'});
-                    break;
-
                 }
             }
         }

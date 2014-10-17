@@ -140,12 +140,12 @@ def HomePage(req):
 
 def RunTest(request):
     #get the available machine definition
-    query="select distinct tester_id,machine_ip,last_updated_time,status,branch_version,array_agg(distinct type||' : '||name||' - '||bit||' Bit - '||version ) from machine_dependency_settings mds,test_run_env tre  where tre.id=mds.machine_serial and status='Unassigned' group by tester_id,last_updated_time,status,branch_version,machine_ip"
+    query="select distinct tester_id,machine_ip,last_updated_time,status,branch_version,project_id,(select value from config_values where type='Team' and id=team_id),array_agg( distinct case when bit=0 then  type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' Bit - '||version end ) from machine_dependency_settings mds,test_run_env tre,machine_project_map mpm where tre.id=mds.machine_serial and mpm.machine_serial=tre.id and status='Unassigned' group by tester_id,last_updated_time,status,branch_version,machine_ip,mpm.project_id,mpm.team_id"
     Conn=GetConnection()
     machine_list=DB.GetData(Conn,query,False)
     Conn.close()        
     templ = get_template('RunTest_new.html')
-    column=['Machine Name','Machine IP','Last Updated Time','Status','Version','Dependency']
+    column=['Machine Name','Machine IP','Last Updated Time','Status','Version','Project ID','Team Name' ,'Dependency']
     variables = Context({'machine_list':machine_list,'dependency':column})
     output = templ.render(variables)
     return HttpResponse(output)
@@ -648,20 +648,22 @@ def AutoCompleteUsersSearch(request):  #==================Returns Abailable User
     if request.is_ajax():
         if request.method == "GET":
             value = request.GET.get(u'term', '')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
             print value
             Usable_Machine = []
-            query = "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul where tre.tester_id Ilike '%" + value + "%' and tre.tester_id=pul.user_names and tre.status='Unassigned' and pul.user_level in('Automation')" 
+            query = "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul,machine_project_map mpm where tre.tester_id Ilike '%%%s%%' and tre.tester_id=pul.user_names and mpm.machine_serial=tre.id and tre.status='Unassigned' and pul.user_level in('Automation') and mpm.project_id='%s' and mpm.team_id=%d"%(value,project_id,int(team_id)) 
             Conn=GetConnection()
             Automation_Machine = DB.GetData(Conn, query, False)
             Conn.close()
             for each in Automation_Machine:
                 Usable_Machine.append(each)
-            query = "select distinct user_names,user_level from permitted_user_list where user_level='Manual' and user_names Ilike '%" + value + "%'"
+            query = "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul,machine_project_map mpm where tre.tester_id Ilike '%%%s%%' and tre.tester_id=pul.user_names and mpm.machine_serial=tre.id and tre.status='Unassigned' and pul.user_level in('Manual') and mpm.project_id='%s' and mpm.team_id=%d"%(value,project_id,int(team_id))
             Conn=GetConnection()
             Manual_Machine = DB.GetData(Conn, query, False)
             Conn.close()
             for each in Manual_Machine:
-                query = "select distinct status from test_run_env where tester_id='%s'" % each[0].strip()
+                query = "select distinct status from test_run_env tre,machine_project_map mpm where tester_id='%s' and tre.id=mpm.machine_serial"% (each[0].strip())
                 Conn=GetConnection()
                 machine_status = DB.GetData(Conn, query)
                 Conn.close()
@@ -1163,33 +1165,42 @@ def AddEstimatedTime(TestCaseList, run_id):
         ModifiedTestCaseList.append(temp)
     return ModifiedTestCaseList
 def RunId_TestCases(request, RunId):  #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
-    Conn = GetConnection()
     RunId = RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID", "Mahchine", "Tester", "Estd. Time", "Status", "Product", "Machine OS", "Client", "Machine IP", "Objective", "MileStone", "Email","Project","Team"]
+    Env_Details_Col = ["Run ID", "Mahchine", "Tester", "Estd. Time", "Status", "Version","Dependency", "Machine IP", "Objective", "MileStone" ,"Email","Project","Team"]
     run_id_status = GetRunIDStatus(RunId)
-    query = "Select DISTINCT run_id,tester_id,assigned_tester,'" + run_id_status + "',product_version,os_name||' '||os_version||' - '||os_bit as machine_os,client,machine_ip,test_objective,test_milestone from test_run_env Where run_id = '%s'" % RunId
+    query = "Select DISTINCT run_id,tester_id,assigned_tester,'%s',branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),machine_ip,test_objective,test_milestone from test_run_env tre,machine_dependency_settings mds Where tre.id=mds.machine_serial and run_id = '%s' group by run_id,tester_id,assigned_tester,branch_version,machine_ip,test_objective,test_milestone" % (run_id_status,RunId)
+    Conn=GetConnection()
     Env_Details_Data = DB.GetData(Conn, query, False)
+    Conn.close()
     # Code for the total estimated time for the RUNID
     totalRunIDTime = 0
     query = "select tc_id from test_run where run_id='%s'" % RunId
+    Conn=GetConnection()
     test_case_list = DB.GetData(Conn, query)
+    Conn.close()
     for each in test_case_list:
         # Get the step_count
         query = "select count(*) from result_test_steps where tc_id='%s' and run_id='%s'" % (each, RunId)
+        Conn=GetConnection()
         step_count = DB.GetData(Conn, query)
+        Conn.close()
         count = step_count[0]
         count = int(count)
         for eachstep in range(1, count + 1):
             temp_id = each + '_s' + str(eachstep)
             query = "select description from result_master_data where field='estimated' and value='time' and id='%s' and run_id='%s'" % (temp_id, RunId)
+            Conn=GetConnection()
             step_time = DB.GetData(Conn, query)
+            Conn.close()
             totalRunIDTime += int(step_time[0])
     formatTime = ConvertTime(totalRunIDTime) 
     ################################################
     # code for fetching email notification
     email_query = "select email_notification from test_run_env where run_id='%s'" % RunId
+    Conn=GetConnection()
     email_list = DB.GetData(Conn, email_query, False)
+    Conn.close()
     print email_list
     emails = email_list[0][0]
     email_list = emails.split(",")
@@ -1199,14 +1210,20 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
     for each in email_list:
         if each != "":
             query = "select user_names from permitted_user_list where user_level='email' and email='%s'" % each
+            Conn=GetConnection()
             name = DB.GetData(Conn, query)
+            Conn.close()
             email_receiver.append(name[0])
     print email_receiver
     email_name = ",".join(email_receiver)
-    query="select p.project_id||' - '||p.project_name from projects p, test_run_env tre where p.project_id=tre.project_id and tre.run_id='%s'"%RunId
+    query="select p.project_id||' - '||p.project_name from projects p, test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and p.project_id=mpm.project_id and tre.run_id='%s'"%RunId
+    Conn=GetConnection()
     project_name=DB.GetData(Conn,query,False)
-    query="select c.id|| ' - ' ||value from config_values c,test_run_env tre where c.id=tre.team_id and c.type='Team' and tre.run_id='%s'"%RunId
+    Conn.close()
+    query="select c.id|| ' - ' ||value from config_values c,test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and  c.id=mpm.team_id and c.type='Team' and tre.run_id='%s'"%RunId
+    Conn=GetConnection()
     team_name=DB.GetData(Conn,query,False)
+    Conn.close()
     temp = []
     for each in Env_Details_Data[0]:
         temp.append(each)
@@ -1221,24 +1238,14 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
     #####################################
     ReRunColumn = ['Test Case ID', 'Test Case Name', 'Type', 'Status']
     query = "select tc.tc_id,tc.tc_name,tcr.status from result_test_cases tc,test_case_results tcr where tc.run_id=tcr.run_id and tc.tc_id=tcr.tc_id and tcr.run_id='%s'" % RunId
+    Conn=GetConnection()
     ReRunList = DB.GetData(Conn, query, False)
+    Conn.close()
     ReRun = Modify(ReRunList)
     results = {
              'Env_Details_Col':Env_Details_Col,
              'Env_Details_Data':Env_Details_Data,
              'Env_length':len(Env_Details_Data),
-             """'Column':Col,
-             'AllTestCases':AllTestCases,
-             'All_length':len(AllTestCases),
-             'Pass_length':len(Pass_TestCases),
-             'Pass':Pass_TestCases,
-             'Fail_length':len(Fail_TestCases),
-             'Fail':Fail_TestCases,
-             'Submitted':Submitted_TestCases,
-             'submitted_length':len(Submitted_TestCases),
-             'failsteps':FailsStepsWithCount,
-             'failsteps_col':failsteps_Col,
-             'fail_length':len(FailsStepsWithCount),"""
              'rerun_col':ReRunColumn,
              'rerun_list':ReRun
              }
@@ -1768,8 +1775,8 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                       'rundescription':run_description,
                       'status':'Submitted',
                       'email_notification':stEmailIds,
-                      'project_id':project_id,
-                      'team_id':team_id,
+                      #'project_id':project_id,
+                      #'team_id':team_id,
                       'test_milestone':TestMileStone,
                       'run_type':'Manual',
                       'assigned_tester':Testers
@@ -6158,22 +6165,22 @@ def GetOS(request):
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
             final_list=[]
-            query="select distinct dependency_name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(project_id,int(team_id))
+            query="select distinct dependency_name,array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by dependency_name"%(project_id,int(team_id))
             Conn=GetConnection()
-            dependency=DB.GetData(Conn,query)
+            dependency=DB.GetData(Conn,query,False)
             Conn.close()
             for each in dependency:
-                query="select distinct name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,project_id,int(team_id))
-                Conn=GetConnection()
-                names=DB.GetData(Conn,query)                
+                name=each[0]
+                listing=each[1]
                 temp=[]
-                for eachitem in names:
-                    query="select distinct bit_name,array_agg(distinct version) from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dn.name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,eachitem,project_id,int(team_id))
+                for eachitem in listing:
+                    query="select bit_name,array_agg(distinct version) from dependency_name dn,dependency_values dv where dn.id=dv.id and dn.name='%s' group by bit_name"%(eachitem)
+                #   query="select distinct name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,project_id,int(team_id))
                     Conn=GetConnection()
-                    version=DB.GetData(Conn,query,False)
+                    names=DB.GetData(Conn,query,False)                
                     Conn.close()
-                    temp.append((eachitem,version))
-                final_list.append((each,temp))
+                    temp.append((eachitem,names))
+                final_list.append((name,temp))
             query="select distinct branch_name,array_agg(distinct version_name) from branch b,branch_management bm, versions v where b.id=bm.branch and v.id=b.id and bm.project_id='%s' and bm.team_id=%d group by b.branch_name"%(project_id,int(team_id))
             Conn=GetConnection()
             version_list=DB.GetData(Conn,query,False)
@@ -6188,9 +6195,12 @@ def Auto_MachineName(request):
     if request.is_ajax():
         if request.method == 'GET':
             machine_name = request.GET.get(u'term', '')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
             Conn = GetConnection()
-            query = "select user_names,user_level from permitted_user_list where user_names Ilike '%%%s%%' and user_level='Manual'" % machine_name
+            query = "select distinct user_names,user_level from permitted_user_list pul,test_run_env tre,machine_project_map mpm where pul.user_names=tre.tester_id and mpm.machine_serial=tre.id and user_level='Manual' and project_id='%s' and team_id=%d and user_names Ilike '%%%s%%' " % (project_id,int(team_id),machine_name)
             machine_list = DB.GetData(Conn, query, False)
+            Conn.close()
     result = simplejson.dumps(machine_list)
     return HttpResponse(result, mimetype='application/json')
 def CheckMachine(request):
@@ -6215,6 +6225,8 @@ def AddManualTestMachine(request):
                 branch=request.GET.get(u'branch_name','').strip()
                 version=request.GET.get(u'branch_version','').strip()
                 dependency=request.GET.get(u'dependency','').split('#')
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
                 new_dependency=[]
                 for each in dependency:
                     new_dependency.append(each.split('|'))
@@ -6267,7 +6279,11 @@ def AddManualTestMachine(request):
                             problem=False
                             for each in new_dependency:
                                 Dict={}
-                                Dict.update({'machine_serial':machine_id,'name':each[1],'bit':each[2],'version':each[3],'type':each[0]})
+                                Dict.update({'machine_serial':machine_id,'name':each[1],'type':each[0]})
+                                if(each[2]!='Nil'):
+                                    Dict.update({'bit':each[2],'version':each[3]})
+                                else:
+                                    Dict.update({'bit':0,'version':''})
                                 Conn=GetConnection()
                                 result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
                                 Conn.close()
@@ -6278,8 +6294,16 @@ def AddManualTestMachine(request):
                                 log_message="Machine not registered successfully"
                                 message=False
                             else:
-                                log_message = "Machine Successfully Registered"
-                                message=True
+                                Dict={'machine_serial':machine_id,'project_id':project_id,'team_id':team_id}
+                                Conn=GetConnection()
+                                result=DB.InsertNewRecordInToTable(Conn,'machine_project_map',**Dict)
+                                Conn.close()
+                                if result==True:
+                                    log_message = "Machine Successfully Registered"
+                                    message=True
+                                else:
+                                    log_message="Machine not registered successfully"
+                                    message=False
                         else:
                             log_message="Machine not registered successfully"
                             message=False
@@ -6294,7 +6318,7 @@ def AddManualTestMachine(request):
                     tes1 = DB.InsertNewRecordInToTable(Conn, "permitted_user_list", **Dict)
                     Conn.close()
                     updated_time = TimeStamp("string")
-                    Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':(branch+':'+version).strip()}
+                    Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':(branch+':'+version).strip(),'project_id':project_id,'team_id':team_id}
                     Conn=GetConnection()
                     tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
                     Conn.close()
@@ -6315,8 +6339,16 @@ def AddManualTestMachine(request):
                                     problem=True
                                     break
                             if problem:
-                                log_message="Machine not registered successfully"
-                                message=False
+                                Dict={'machine_serial':machine_id,'project_id':project_id,'team_id':team_id}
+                                Conn=GetConnection()
+                                result=DB.InsertNewRecordInToTable(Conn,'machine_project_map',**Dict)
+                                Conn.close()
+                                if result==True:
+                                    log_message = "Machine Successfully Registered"
+                                    message=True
+                                else:
+                                    log_message="Machine not registered successfully"
+                                    message=False
                             else:
                                 log_message = "Machine Successfully Registered"
                                 message=True
@@ -7000,24 +7032,24 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     offset += ("offset " + str(stepDelete))
     print condition
     total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
-    total_query += "from test_run_env tre, test_env_results ter " 
-    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
+    total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
+    total_query += "where tre.run_id=ter.run_id and mpm.machine_serial=tre.id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
     if project_id!="ALL":
-        total_query+=" and tre.project_id='%s'"%project_id
+        total_query+=" and mpm.project_id='%s'"%project_id
     if team_id!="ALL":
-        total_query+=" and tre.team_id=%d"%int(team_id)
+        total_query+=" and mpm.team_id=%d"%int(team_id)
     if condition != "":
         total_query += " and "
         total_query += condition
     total_query += ") "
     total_query += "union all "
     total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
-    total_query += "from test_run_env tre, test_env_results ter " 
-    total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
+    total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
+    total_query += "where tre.run_id=ter.run_id and tre.id=mpm.machine_serial and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
     if project_id!="ALL":
-        total_query+=" and tre.project_id='%s'"%project_id
+        total_query+=" and mpm.project_id='%s'"%project_id
     if team_id!="ALL":
-        total_query+=" and tre.team_id=%d"%int(team_id)
+        total_query+=" and mpm.team_id=%d"%int(team_id)
     if condition != "":
         total_query += " and "
         total_query += condition
@@ -7065,7 +7097,7 @@ def RunID_New(request):
             print index
             print runData['allData'][0][3]
             print '--------------------------- INSIDE -------------------------------------'
-            Col = ['ID', 'Title', 'Type', 'Status', 'Duration', 'Estd. Time', 'Comment', 'Log', 'Automation ID']
+            Col = ['ID', 'Title', 'Type', 'Status', 'Duration', 'Estd. Time', 'Comment', 'Log']
             runDetail = {'runData':runData['allData'], 'runCol':Col, 'total':runData['count']}
     result = simplejson.dumps(runDetail)
     return HttpResponse(result, mimetype='application/json')
@@ -7095,7 +7127,9 @@ def GetData(run_id, index, userText=""):
     print condition
     # form the query
     query = ""
-    query += "select * from ("
+    query+="select * from ("
+    query+="(select rtc.tc_id,tc_name,tcr.status,to_char(tcr.duration,'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id "%run_id
+    """query += "select * from ("
     query += "(select "
     query += "tc.tc_id as MKSId, "
     query += "tc.tc_name, "
@@ -7107,18 +7141,21 @@ def GetData(run_id, index, userText=""):
     query += "from test_case_results tr, result_test_cases tc, result_test_case_tag tct "
     query += "where tr.run_id = '%s' and " % run_id
     query += "tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' "
+    """
     if userText != "":
         query += "and "
         query += userText
-    query += " ORDER BY tr.id) "
+    query += " ORDER BY tcr.id) "
     query += "union all "
-    query += "(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
+    """query += "(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
     query += "from test_run tr,result_test_cases tc, result_test_case_tag tct "
     query += "where tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s'" % run_id
+    """
+    query+="(select rtc.tc_id,tc_name,'Pending','','','' from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id"%run_id
     if userText != "":
         query += " and "
         query += userText
-    query += " and tr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )) AS A" % run_id
+    query += " and tcr.tc_id not in (select tc_id from test_case_results where run_id = '%s') )) AS A" % run_id
     count_query = query
     query += " %s" % condition
     print query

@@ -1,3 +1,4 @@
+
 var stepCount=5;
 $(document).ready(function(){
     RESPONSIVEUI.responsiveTabs();
@@ -15,7 +16,7 @@ $(document).ready(function(){
     connectLogFile("SubmittedTestCasesTable");
     //buttonPreparation();
     When_Clicking_On_CommonFailedTestStep()*/
-    var RunID=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+    var RunID=$("#fetch_run_id").text().trim();
     $('#run_id').text(RunID.trim());
     //drawChart(RunID);
     $('#run_id').live('click',function(){
@@ -396,7 +397,7 @@ function LoadAllTestCases(divname){
         });
         var name=$(this).text().trim();
         var TestCaseName=$(this).closest("tr").find("td:nth-child(9)").text().trim();
-        var RunID=$('#EnvironmentDetailsTable tr td:first-child').text().trim();
+        var RunID=$('#fetch_run_id').text().trim();
         $(this).html('<div id="'+TestCaseName+'name">'+name+'</div><div id="'+TestCaseName+'detail" style="display:none"></div>')
         $.get("TestCase_Detail_Table",{'RunID':RunID,'TestCaseName':TestCaseName},function(data){
             ResultTable('#'+divname+' #'+TestCaseName+'detail',data['TestCase_Detail_Col'],data['TestCase_Detail_Data'],"");
@@ -451,8 +452,8 @@ function LoadAllTestCases(divname){
             'cursor' : 'pointer'
         });
         $(this).live('click',function(){
-            var TestCaseName=$(this).closest("tr").find("td:nth-child(9)").text().trim();
-            var location=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+            var TestCaseName=$(this).closest("tr").find("td:first-child").text().trim();
+            var location=$("#fetch_run_id").text().trim();
             console.log(location);
             window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
         });
@@ -487,7 +488,7 @@ function When_Clicking_On_CommonFailedTestStep(){
         'cursor':'pointer'
     });
     $('#FailedStepsTable tr td:nth-child(1)').each(function(){
-        var RunID=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+        var RunID=$("#fetch_run_id").text().trim();
         var name=$(this).text().trim();
         var stepName=name.split('(')[0].trim();
         var div_name=name.split('(')[0].trim().split(' ').join('_');
@@ -643,7 +644,7 @@ function Report(){
     });
 
     $("#send_report").click(function(){
-        var RunID=$("#EnvironmentDetailsTable tr td:first-child").text().trim();
+        var RunID=$("#fetch_run_id").text().trim();
 
         var EmailQuery="";
         $("#email").each( function()

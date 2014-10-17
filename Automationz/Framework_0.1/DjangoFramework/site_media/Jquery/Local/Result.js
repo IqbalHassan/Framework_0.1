@@ -3,7 +3,38 @@ $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
     PerformSearch(project_id,team_id);
+    PaginationButton(project_id,team_id);
+    $('#project_identity').on('change',function(){
+        $.session.set('project_id',$(this).val());
+        window.location.reload(true);
+    });
+    $('#default_team_identity').on('change',function(){
+        $.session.set('default_team_identity',$(this).val());
+        window.location.reload(true);
+    });
 });
+function PaginationButton(project_id,team_id){
+    $('.previous_page').click(function(){
+        var index=$("#pagination_no").text().trim();
+        index=parseInt(index);
+        if(index>=2){
+            index--;
+        }
+        $('#pagination_no').text(index);
+        PerformSearch(project_id,team_id);
+    });
+    $('.next_page').click(function(){
+        var index=$('#pagination_no').text().trim();
+        index=parseInt(index);
+        var end=$('#end').text().trim();
+        var total_entry=$('#total').text().trim();
+        if (parseInt(end)<parseInt(total_entry)){
+            index++;
+        }
+        $('#pagination_no').text(index);
+        PerformSearch(project_id,team_id);
+    });
+}
 function PerformSearch(project_id,team_id){
     var currentPagination=$('#pagination_no').text().trim();
     var UserText="";
