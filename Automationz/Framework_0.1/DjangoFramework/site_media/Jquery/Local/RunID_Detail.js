@@ -452,7 +452,7 @@ function LoadAllTestCases(divname){
             'cursor' : 'pointer'
         });
         $(this).live('click',function(){
-            var TestCaseName=$(this).closest("tr").find("td:first-child").text().trim();
+            var TestCaseName=$($(this).closest("tr").find("td:first-child")[0]).text().trim();
             var location=$("#fetch_run_id").text().trim();
             console.log(location);
             window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
