@@ -193,25 +193,29 @@ function New_UI(){
                 {
                     $("#ms_report").html(''
                         + '<span class="progress-bar" style="width: 35%"><span class="progress" style="width: ' +
-                        data['progress'] + '%' +
+                        data['progress'][0] + '%' +
                         '">&nbsp;</span></span>'
 
                         + '<table class="stats" style="line-height: 220%">'
                         + '<tr>'
                         + ' <td class="stat">'
                         +  '<b><span class="progress-percent">' +
-                        data['progress'] + '%' +
+                        data['progress'][0] + '%' +
                         '</span></b>'
                         + '<span class="stat-label"> complete</span>'
                         + '</td>'
                         + '<td class="stat">'
                         + '&nbsp;&nbsp;&nbsp;&nbsp;'
-                        + '<b id="open">46</b>'
+                        + '<b id="open">' +
+                        data['progress'][1] +
+                        '</b>'
                         + '<span class="stat-label"> open</span>'
                         + '</td>'
                         + '<td class="stat">'
                         + '&nbsp;&nbsp;&nbsp;&nbsp;'
-                        +  '<b id="closed">130</b>'
+                        +  '<b id="closed">' +
+                        data['progress'][2] +
+                        '</b>'
                         + '<span class="stat-label"> closed</span>'
                         + '</td>'
                         + '</tr>'
