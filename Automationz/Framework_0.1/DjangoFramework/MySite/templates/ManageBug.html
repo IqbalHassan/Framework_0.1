@@ -4,6 +4,7 @@
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageBug.js"></script>
+
 <!--style>
     #searchbox {
         width: 94%;
@@ -20,6 +21,28 @@
     }
 </style-->
 <article>
+
+    <a id="simple-menu" href="#sidr" class="button hint--right hint--bounce hint--rounded" data-hint="Apply Filter" style="text-decoration: none;"><img class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
+    <div id="sidr" class="sidr">
+        <h3>Select Filters to apply</h3>
+        <div style="text-align: center; margin: 12px;">
+            <button onclick='$.sidr("toggle", "sidr");' style="width: 100%; padding: 4px;">X</button>
+        </div>
+        <ul>
+            <li>
+                <input class="textbox" placeholder="Search & Select Filter Here" id="searchinput" style="padding-left: 10px; width: 95%; margin-top: 40%;z-index: 999999"/>
+            </li>
+            <li>
+                <table style="margin-top: 5%;margin-bottom: 1%; width: 100%">
+                    <tr id="searchedFilter">
+                        <th><p>Filtered By:</p></th>
+                    </tr>
+                    <tr><td style="display: none;" id="pagination_no">1</td></tr>
+                </table>
+        </ul>
+    </div>
+
+
     <div align="left">
         <h3 style="font-size: 19px;float: left"><a style="font-weight: bold;">Manage Bug</a></h3>
     </div>

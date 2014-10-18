@@ -230,7 +230,7 @@ function PopulateBugInfo(bug_id){
         });
 
         $("#suggestion").show();
-        $("#normal_sugg").hide();
+        //$("#normal_sugg").hide();
 
         $(data['Failed_Cases']).each(function(i){
             $("#nobug_failed").append('<tr>' +
@@ -260,7 +260,7 @@ function TestCaseLinking(){
 
         source:function(request,response){
             $.ajax({
-                url:"AutoCompleteTestCasesSearchOtherPages",
+                url:"TestCaseSearch/",
                 dataType:"json",
                 data:{
                     term:request.term
@@ -275,13 +275,16 @@ function TestCaseLinking(){
             //var value = ui.item[0]
             //var name = ui.item[1]
 
-            var tc_id_name = ui.item[0].split(" - ");
+            /*var tc_id_name = ui.item[0].split(" - ");
             var value = "";
             if (tc_id_name != null)
             {
                 value = tc_id_name[0].trim();
                 name = tc_id_name[1].trim();
-            }
+            }*/
+
+            var value=ui.item[0].trim();
+            var name=ui.item[1].trim();
 
             if(value!=""){
                 $(".linking").append('<tr>' +

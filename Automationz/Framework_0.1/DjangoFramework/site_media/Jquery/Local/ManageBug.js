@@ -12,6 +12,11 @@ $(document).ready(function(){
         });
     });*/
 
+    $("#simple-menu").sidr({
+        name: 'sidr',
+        side: 'left'
+    });
+
     $.get("Bugs_List/",{team:$('#default_team_identity option:selected').val().trim()},function(data) {
         $(data['bugs']).each(function(i){
 
