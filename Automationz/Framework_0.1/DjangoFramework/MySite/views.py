@@ -7769,7 +7769,8 @@ def Bugs_List(request):
             team = request.GET.get(u'team', '')
 
         now=datetime.datetime.now().date()
-        query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
+        #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
+        query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id"
         bugs=DB.GetData(Conn, query, False)
         
         query="select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, bug_label_map blm where l.label_id=blm.label_id"
@@ -7777,7 +7778,8 @@ def Bugs_List(request):
         #query="select * from milestone_info"
         #milestones=DB.GetData(Conn, query, False)
         
-    results = {'bugs':bugs, 'labels':labels}
+    Heading = ['Bug-ID','Title','Description','Starting Date','Due Date','Milestone', 'Status']    
+    results = {'Heading':Heading,'bugs':bugs, 'labels':labels}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')

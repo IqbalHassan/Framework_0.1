@@ -12,13 +12,16 @@ $(document).ready(function(){
         });
     });*/
 
+    var project_id= $.session.get('project_id');
+    var team_id= $.session.get('default_team_identity');
+
     $("#simple-menu").sidr({
         name: 'sidr',
         side: 'left'
     });
 
     $.get("Bugs_List/",{team:$('#default_team_identity option:selected').val().trim()},function(data) {
-        $(data['bugs']).each(function(i){
+        /*$(data['bugs']).each(function(i){
 
             per_bug = '<div style="padding-top: 10px;padding-bottom: 10px;padding: 1px 10px;background: #fff;border: 1px solid #d8d8d8;border-top: 0px;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;color: #666;font-size: 13px;">' +
 
@@ -57,11 +60,46 @@ $(document).ready(function(){
 
             '</div>';
             $("#bugs_list").append(per_bug);
-        })
+        })*/
+
+        if(data['bugs'].length>0) {
+            //make a table column
+            var message = "";
+            message += '<table class="one-column-emphasis">';
+            message += '<tr>';
+            for (var i = 0; i < data['Heading'].length; i++) {
+                message += '<th align="left">' + data['Heading'][i] + '</th>';
+            }
+            message += '</tr>'
+            for (var i = 0; i < data['bugs'].length; i++) {
+                message += '<tr>';
+                for (var j = 0; j < data['bugs'][i].length; j++) {
+                    message += '<td align="left">' + data['bugs'][i][j] + '</td>';
+
+
+                }
+                message += '</tr>';
+            }
+            message += '</table>';
+            $('#allBugs').html(message);
+            make_clickable('#allBugs');
+
+        }
     });
 
 
 });
+
+
+function make_clickable(divname) {
+    $(divname + ' tr>td:first-child').each(function () {
+        $(this).css({
+            'color': 'blue',
+            'cursor': 'pointer',
+            'textAlign': 'left'
+        });
+    });
+}
 
 
 
