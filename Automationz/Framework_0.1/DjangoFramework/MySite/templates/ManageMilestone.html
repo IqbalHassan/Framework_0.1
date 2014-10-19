@@ -20,26 +20,103 @@
     }
 </style-->
 <article>
-    <div align="left">
-        <h3 style="font-size: 19px;float: left"><a style="font-weight: bold;">Manage Milestones</a></h3>
+
+    <a id="simple-menu" href="#sidr" class="button hint--right hint--bounce hint--rounded" data-hint="Apply Filter" style="text-decoration: none;"><img class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
+    <div id="sidr" class="sidr">
+        <h3>Select Filters to apply</h3>
+        <div style="text-align: center; margin: 12px;">
+            <button onclick='$.sidr("toggle", "sidr");' style="width: 100%; padding: 4px;">X</button>
+        </div>
+        <ul>
+            <li>
+                <input class="textbox" placeholder="Search & Select Filter Here" id="searchinput" style="padding-left: 10px; width: 95%; margin-top: 40%;z-index: 999999"/>
+            </li>
+            <li>
+                <table style="margin-top: 5%;margin-bottom: 1%; width: 100%">
+                    <tr id="searchedFilter">
+                        <th><p>Filtered By:</p></th>
+                    </tr>
+                    <!--tr><td style="display: none;" id="pagination_no">1</td></tr-->
+                </table>
+        </ul>
     </div>
+
+
     <table width="100%">
         <tr>
-            <td width="80%">
-                <div class="subnav-links left">
-                    <a href="/Home/ManageBug/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_issues /AutomationSolutionz/Framework_0.1/issues?q=is%3Aopen+is%3Aissue">Bugs</a>
-                    <a href="/Home/ManageTestCases/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_pulls /AutomationSolutionz/Framework_0.1/issues?q=is%3Aopen+is%3Apr">Test Cases</a>
-                    <a href="/Home/ManageLabel/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_labels /AutomationSolutionz/Framework_0.1/labels">Labels</a>
-                    <a href="/Home/ManageMilestone/" class="selected js-selected-navigation-item subnav-item" data-selected-links="repo_milestones /AutomationSolutionz/Framework_0.1/milestones">Milestones</a>
+            <td>
+                <div style="float: left">
+                    <h3 style="font-size: 19px;"><a style="font-weight: bold">Manage Milestones</a></h3>
+                    <b style="display: none;" id="pagination_no">1</b>
                 </div>
             </td>
-            <!--td width="55%">
-                <div align="center">
-                    <a class="button">Filters</a>
-                    <input class="textbox" style="width: 60%" placeholder="Search Milestone">
+            <td style="float: right">
+                <div id="UpperDiv">
+                    <div>
+                        <div>
+                            <b style="font-size: 120%;">showing <b id="start"></b> - <b id="end"></b> of <b id="total"></b> entries</b>
+                        </div>
+                        <div style="display: inline-block; float: right">
+                            <input  type="button" class="minibutton previous_page" value="<"/>
+                            <input  type="button" class="minibutton next_page" value=">"/>
+                        </div>
+                    </div>
                 </div>
-            </td-->
-            <td width="20%"><a href="/Home/CreateMilestone/" class="createnew" type="button" style="float: right">New Milestone</a></td>
+            </td>
+        </tr>
+    </table>
+    <div align="center">
+        <div id="allMilestones">
+        </div>
+        <div id="allPage" align="center" style="display: none;">
+            <br>
+            <br>
+            <b style="font-size: 150%;font-weight: bolder;">---------------------------------------------------------------------------------------</b>
+        </div>
+    </div>
+    <div id="result_table">
+
+    </div>
+    <div id="pagination_div" align="right">
+        <div style="display: inline-block">
+            <input  type="button" class="minibutton previous_page" value="<"/>
+            <input  type="button" class="minibutton next_page" value=">"/>
+        </div>
+    </div>
+
+    <div id="floatouter" width="100%" align="center">
+        <div id="inner">
+            <div id="chart">
+
+            </div>
+            <br/><br/>
+            <div id="show_button">
+
+            </div>
+        </div>
+    </div>
+
+
+<!--div align="left">
+    <h3 style="font-size: 19px;float: left"><a style="font-weight: bold;">Manage Milestones</a></h3>
+</div>
+<table width="100%">
+    <tr>
+        <td width="80%">
+            <div class="subnav-links left">
+                <a href="/Home/ManageBug/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_issues /AutomationSolutionz/Framework_0.1/issues?q=is%3Aopen+is%3Aissue">Bugs</a>
+                <a href="/Home/ManageTestCases/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_pulls /AutomationSolutionz/Framework_0.1/issues?q=is%3Aopen+is%3Apr">Test Cases</a>
+                <a href="/Home/ManageLabel/" class="js-selected-navigation-item subnav-item" data-selected-links="repo_labels /AutomationSolutionz/Framework_0.1/labels">Labels</a>
+                <a href="/Home/ManageMilestone/" class="selected js-selected-navigation-item subnav-item" data-selected-links="repo_milestones /AutomationSolutionz/Framework_0.1/milestones">Milestones</a>
+            </div>
+        </td>
+        <!--td width="55%">
+            <div align="center">
+                <a class="button">Filters</a>
+                <input class="textbox" style="width: 60%" placeholder="Search Milestone">
+            </div>
+        </td-->
+            <!--td width="20%"><a href="/Home/CreateMilestone/" class="createnew" type="button" style="float: right">New Milestone</a></td>
         </tr>
     </table>
 
@@ -121,7 +198,7 @@
                                     </tr>
                                 </table>
                             </tr-->
-                        </table>
+                        <!--/table>
 
                     </td>
                 </tr>
