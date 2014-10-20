@@ -9667,11 +9667,21 @@ def get_all_data_dependency_page(request):
                 Conn=GetConnection()
                 unused_branch_list=DB.GetData(Conn,query,False)
                 Conn.close()
+                query="select distinct f.id,f.feature_name from feature f,feature_management fm where f.id=fm.feature and fm.project_id='%s' and fm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
+                Conn=GetConnection()
+                feature_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                query="select distinct id,feature_name from feature except (select distinct f.id,f.feature_name from feature f,feature_management fm where f.id=fm.feature and fm.project_id='%s' and fm.team_id=%d)"%(project_id.strip(),int(team_id.strip()))
+                Conn=GetConnection()
+                unused_feature_list=DB.GetData(Conn,query,False)
+                Conn.close()
                 result={
                     'dependency_list':dependency_list,
                     'unused_dependency_list':unused_dependency_list,
                     'branch_list':branch_list,
-                    'unused_branch_list':unused_branch_list
+                    'unused_branch_list':unused_branch_list,
+                    'feature_list':feature_list,
+                    'unused_feature_list':unused_feature_list
                 }
                 result=simplejson.dumps(result)
                 return HttpResponse(result,mimetype='application/json')
@@ -10429,6 +10439,186 @@ def link_branch(request):
                     PassMessasge(sModuleInfo,"Branch %d is not linked successfully"%int(value),error_tag )
                     message=False
                     log_message="Branch is not linked successfully"
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+#feature tab code
+def add_new_feature(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="feature"
+                dependency=request.GET.get(u'feature_name','')
+                #check for the occurance
+                query="select count(*) from feature where feature_name='%s'"%dependency.strip()
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        #form dict to insert 
+                        Dict={
+                              'feature_name':dependency.strip()
+                        }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"feature",**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo,entry_success(dependency,type_tag), success_tag)
+                            message=True
+                            log_message=entry_success(dependency,type_tag)
+                        else:
+                            PassMessasge(sModuleInfo, entry_fail(dependency, type_tag), error_tag)
+                            message=False
+                            log_message=entry_fail(dependency, type_tag)
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo,multiple_instance(dependency, type_tag), error_tag)
+                        message=False
+                        log_message=multiple_instance(dependency, type_tag)
+                else:
+                    PassMessasge(sModuleInfo, DBError, error_tag)
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+
+def link_feature(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="Feature"
+                value=request.GET.get(u'value','')
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                Dict={
+                    'project_id':project_id,
+                    'team_id':int(team_id),
+                    'feature':int(value)
+                }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"feature_management",**Dict)
+                Conn.close()
+                if result==True:
+                    PassMessasge(sModuleInfo,"%s %d is linked successfully"%(type_tag,int(value)),error_tag )
+                    message=True
+                    log_message="%s is linked successfully"%type_tag
+                else:
+                    PassMessasge(sModuleInfo,"%s %d is not linked successfully"%(type_tag,int(value)),error_tag )
+                    message=False
+                    log_message="%s is not linked successfully"%type_tag
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def unlink_feature(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag='Feature'
+                value=request.GET.get(u'value','')
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                Dict={
+                    'project_id':project_id,
+                    'team_id':int(team_id),
+                    'feature':int(value)
+                }
+                Conn=GetConnection()
+                result=DB.DeleteRecord(Conn,"feature_management",**Dict)
+                Conn.close()
+                if result==True:
+                    PassMessasge(sModuleInfo,"%s %d is unlinked successfully"%(type_tag,int(value)),error_tag )
+                    message=True
+                    log_message="%s is unlinked successfully"%type_tag
+                else:
+                    PassMessasge(sModuleInfo,"%s %d is not unlinked successfully"%(type_tag,int(value)),error_tag )
+                    message=False
+                    log_message="%s is not unlinked successfully"%type_tag
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def rename_feature(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="Feature"
+                old_name=request.GET.get(u'old_name','')
+                new_name=request.GET.get(u'new_name','')
+                query="select count(*) from feature where feature_name='%s'"%old_name.strip()
+                Conn=GetConnection()
+                old_name_count=DB.GetData(Conn,query)
+                Conn.close()
+                query="select count(*) from feature where feature_name='%s'"%new_name.strip()
+                Conn=GetConnection()
+                new_name_count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(old_name_count,list):
+                    if len(old_name_count)==1 and old_name_count[0]>0:
+                        if len(new_name_count)==1 and new_name_count[0]==0:
+                            sWhereQuery="where feature_name='%s'"%old_name.strip()
+                            Dict={
+                                'feature_name':new_name.strip()
+                            }
+                            Conn=GetConnection()
+                            result=DB.UpdateRecordInTable(Conn,"feature", sWhereQuery,**Dict)
+                            Conn.close()
+                            if result==True:
+                                PassMessasge(sModuleInfo,update_success(old_name, new_name, type_tag), success_tag)
+                                message=True
+                                log_message=update_success(old_name, new_name, type_tag)
+                            else:
+                                PassMessasge(sModuleInfo, update_fail(old_name, type_tag), error_tag)
+                                message=False
+                                log_message=update_fail(old_name, type_tag)
+                        if len(new_name_count)==1 and new_name_count[0]>0:
+                            PassMessasge(sModuleInfo,multiple_instance(new_name, type_tag),error_tag)
+                            message=False
+                            log_message=multiple_instance(new_name,type_tag)
+                    if len(old_name_count)==1 and old_name_count[0]==0:
+                        PassMessasge(sModuleInfo, unavailable(old_name,type_tag), error_tag)
+                        message=False
+                        log_message=unavailable(old_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo,DBError, error_tag)
+                    message=False
+                    log_message=DBError
                 result={
                     'message':message,
                     'log_message':log_message
