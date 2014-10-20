@@ -6519,7 +6519,7 @@ def Get_MileStones(request):
             print milestone
             query = "select name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by name"
             milestone_list = DB.GetData(Conn, query, False)
-    Heading = ['Milestone Name','Description', 'Starting Date', 'Finishing Date', 'Status']
+    Heading = ['Milestone Name','Description', 'Starting Date', 'Due Date', 'Status']
     results = {'Heading':Heading, 'TableData':milestone_list}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
