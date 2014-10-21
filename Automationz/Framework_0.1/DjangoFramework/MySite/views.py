@@ -10632,6 +10632,57 @@ def rename_feature(request):
     except Exception,e:
         PassMessasge(sModuleInfo, e, 3)
 
+def first_level_sub_feature(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                type_tag="Feature Name"
+                new_name=request.GET.get(u'feature_name','')
+                new_value=request.GET.get(u'reference_value','')
+                query="select count(*) from first_level_sub_feature where name='%s'"%(new_name.strip())
+                Conn=GetConnection()
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(count,list):
+                    if len(count)==1 and count[0]==0:
+                        Dict={
+                            'name':new_name.strip(),
+                            'feature_id':int(new_value.strip())
+                        }
+                        Conn=GetConnection()
+                        result=DB.InsertNewRecordInToTable(Conn,"first_level_sub_feature",**Dict)
+                        Conn.close()
+                        if result==True:
+                            PassMessasge(sModuleInfo,entry_success(new_name.strip(), type_tag), success_tag)
+                            message=True
+                            log_message=entry_success(new_name.strip(), type_tag)
+                        else:
+                            PassMessasge(sModuleInfo,entry_fail(new_name.strip(), type_tag),error_tag)
+                            message=False
+                            log_message=entry_fail(new_name.strip(), type_tag)
+                    if len(count)==1 and count[0]>0:
+                        PassMessasge(sModuleInfo,multiple_instance(new_name, type_tag), error_tag)
+                        message=False
+                        log_message=multiple_instance(new_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo,DBError,error_tag)
+                    message=True
+                    log_message=DBError
+                Conn.close()
+                result={
+                    'message':message,
+                    'log_message':log_message
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+
 #will be changing the new format inhere
 '''
 You must use @csrf_protect before any 'post' handling views

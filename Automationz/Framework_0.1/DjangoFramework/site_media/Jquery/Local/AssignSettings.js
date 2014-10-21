@@ -451,13 +451,40 @@ function allow_binding(type,project_id,team_id){
         $(".custom-menu-feature li").click(function(){
             $(".custom-menu").hide();
             switch($(this).attr("data-action")) {
-                case "create":alert('create_sub_feature');break;
+                case "create":create_sub_feature(dep_name,project_id,team_id,dep_value);break;
                 case "rename":rename_feature(dep_name,project_id,team_id,dep_value); break;
                 case "usage":alert('usage'); break;
                 case "unlink":unlink_feature(dep_name,project_id,team_id,dep_value); break;
             }
         });
     }
+}
+function create_sub_feature(dep_name,project_id,team_id,dep_value){
+    var message="";
+    message+='<table width="100%">';
+    message+='<tr><td colspan="2"><b class="Text">Create Sub Feature For \''+dep_name+'\'</b></td></tr>';
+    message+='<tr><td align="right"><b class="Text">Feature Name:</b></td><td align="left"><input class="textbox" placeholder="Enter the feature name" id="feature_name" style="width:100%"/></td></tr>'
+    message+='</table>'
+    alertify.confirm(message,function(e){
+        if(e){
+            var feature_name=$('#feature_name').val().trim();
+            $.get('first_level_sub_feature',{
+               'feature_name':feature_name.trim(),
+                'reference_value':dep_value
+            },function(data){
+                if(data['message']==true){
+                    alertify.success(data['log_message'],time_out);
+                    get_all_data(project_id,team_id);
+                }
+                else{
+                    alertify.error(data['log_message'],time_out);
+                }
+            });
+        }
+        else{
+
+        }
+    })
 }
 function rename_feature(dep_name,project_id,team_id,dep_value){
     var message="";
