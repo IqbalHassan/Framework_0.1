@@ -2,7 +2,7 @@
 {% block title%}Team Wise Settings{% endblock %}
 {% block content%}
 <style>
-    #searchbox {
+    .searchbox {
         width: 94%;
         padding: 5px;
         max-width: 95%;
@@ -12,20 +12,7 @@
         font-size: 1.2em;
     }
 
-    #searchbox:focus {
-        box-shadow: 0 6px 6px -6px blue;
-    }
-    #searchbox_version {
-        width: 94%;
-        padding: 5px;
-        max-width: 95%;
-        outline-color: #000;
-        outline-style: none;
-        box-shadow: 0 6px 6px -6px black;
-        font-size: 1.2em;
-    }
-
-    #searchbox_version:focus {
+    .searchbox:focus {
         box-shadow: 0 6px 6px -6px blue;
     }
 </style>
@@ -50,7 +37,7 @@
                     <tr>
                         <td style="width: 22%; border-right: 2px solid #ccc;">
                             <div style="width: 100%;">
-                                <input type="text" id="searchbox" placeholder="Search Dependency">
+                                <input type="text" id="searchbox" placeholder="Search Dependency" class="searchbox">
                             </div>
                             <div style="width:100%; ">
                                 <table width="100%" style="margin-top: 5%;">
@@ -110,7 +97,7 @@
                 <tr>
                     <td style="width: 22%; border-right: 2px solid #ccc;">
                         <div style="width: 100%;">
-                            <input type="text" id="searchbox_version" placeholder="Search Branch">
+                            <input type="text" id="searchbox_version" class="searchbox" placeholder="Search Branch">
                         </div>
                         <div style="width:100%; ">
                             <table width="100%" style="margin-top: 5%;">
@@ -155,7 +142,62 @@
         </div>
         <h2>Features</h2>
         <div class="tabs-div">
+            <table style="width: 100%;margin-top: 2%;">
+                <thead>
+                <tr>
+                    <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text" width="33%">Features</td>
+                    <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text" width="33%">Sub Features</td>
+                    <td width="33%">&nbsp</td>
 
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="width: 22%; border-right: 2px solid #ccc;">
+                        <div style="width: 100%;">
+                            <input type="text" id="searchbox_feature" class="searchbox" placeholder="Search Features">
+                        </div>
+                        <div style="width:100%; ">
+                            <table width="100%" style="margin-top: 5%;">
+                                <thead>
+                                <tr>
+                                    <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Linked Features</b></td>
+                                </tr>
+                                </thead>
+                                <tbody id="feature_body">
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="width:100%;margin-top:2%;" align="center" >
+                            <a href="" id="create_new_feature"><b class="Text">Create New Feature</b></a>
+                        </div>
+                        <div style="width:100%;">
+                            <table width="100%" style="margin-top: 5%;">
+                                <thead>
+                                <tr>
+                                    <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Global Dependency</b></td>
+                                </tr>
+                                </thead>
+                                <tbody id="unused_feature">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
+                        <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="name_feature_tab">
+
+                        </div>
+                    </td>
+                    <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
+                        <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="version_feature_tab">
+
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
         <h2>Drivers</h2>
         <div class="tabs-div">
@@ -194,6 +236,18 @@
         <li data-action = "create_name">New</li>
         <li data-action = "rename_name">Rename</li>
         <li data-action = "usage_name">Usage</li>
+    </ul>
+    <ul class='custom-menu custom-menu-add_feature' style="list-style-type: none;padding: 0px;margin: 0px;">
+        <li data-action = "link">Link</li>
+        <li data-action = "rename">Rename</li>
+        <li data-action = "usage">Usage</li>
+        <li data-action = "delete">Delete</li>
+    </ul>
+    <ul class='custom-menu custom-menu-feature' style="list-style-type: none;padding: 0px;margin: 0px;">
+        <li data-action = "create">New</li>
+        <li data-action = "rename">Rename</li>
+        <li data-action = "usage">Usage</li>
+        <li data-action = "unlink">Unlink</li>
     </ul>
     <script type="text/javascript" src="/site_media/Jquery/Local/AssignSettings.js"></script>
 </article>

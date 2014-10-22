@@ -307,7 +307,11 @@ urlpatterns = patterns('',
     url(r'^Home/.*/rename_branch/$',rename_branch),
     url(r'^Home/.*/unlink_branch/$',unlink_branch),
     url(r'^Home/.*/link_branch/$',link_branch),
-    
+    url(r'^Home/.*/add_new_feature/$',add_new_feature),
+    url(r'^Home/.*/link_feature/$',link_feature),
+    url(r'^Home/.*/unlink_feature/$',unlink_feature),
+    url(r'^Home/.*/rename_feature/$',rename_feature),
+    url(r'^Home/.*/first_level_sub_feature/$',first_level_sub_feature),
     #pages for the test case new implementation
     url(r'^Home/.*/get_default_settings/$',get_default_settings),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
