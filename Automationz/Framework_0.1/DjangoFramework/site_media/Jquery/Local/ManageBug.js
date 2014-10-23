@@ -98,6 +98,10 @@ function make_clickable(divname) {
             'cursor': 'pointer',
             'textAlign': 'left'
         });
+        $(this).click(function(){
+            var location='/Home/EditBug/'+$(this).text().trim()+'/';
+            window.location=location;
+        });
     });
 }
 

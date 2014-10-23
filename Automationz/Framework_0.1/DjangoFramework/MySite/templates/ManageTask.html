@@ -4,7 +4,7 @@
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageTask.js"></script>
-<style>
+<!--style>
     #searchbox {
         width: 94%;
         padding: 5px;
@@ -18,9 +18,86 @@
     #searchbox:focus {
         box-shadow: 0 6px 6px -6px blue;
     }
-</style>
+</style-->
 <article>
-    <table style="width: 100%">
+
+    <a id="simple-menu" href="#sidr" class="button hint--right hint--bounce hint--rounded" data-hint="Apply Filter" style="text-decoration: none;"><img class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
+    <a style="float: right" href="" id="create_new_task" class="createnew" type="button">New Task</a>
+    <div id="sidr" class="sidr">
+        <h3>Select Filters to apply</h3>
+        <div style="text-align: center; margin: 12px;">
+            <button onclick='$.sidr("toggle", "sidr");' style="width: 100%; padding: 4px;">X</button>
+        </div>
+        <ul>
+            <li>
+                <input class="textbox" placeholder="Search & Select Filter Here" id="searchinput" style="padding-left: 10px; width: 95%; margin-top: 40%;z-index: 999999"/>
+            </li>
+            <li>
+                <table style="margin-top: 5%;margin-bottom: 1%; width: 100%">
+                    <tr id="searchedFilter">
+                        <th><p>Filtered By:</p></th>
+                    </tr>
+                    <!--tr><td style="display: none;" id="pagination_no">1</td></tr-->
+                </table>
+        </ul>
+    </div>
+
+
+    <table width="100%">
+        <tr>
+            <td>
+                <div style="float: left">
+                    <h3 style="font-size: 19px;"><a style="font-weight: bold"><span id="project_code" style="cursor: pointer;"></span> / Manage Task</a></h3>
+                    <b style="display: none;" id="pagination_no">1</b>
+                </div>
+            </td>
+            <td style="float: right">
+                <div id="UpperDiv">
+                    <div>
+                        <div>
+                            <b style="font-size: 120%;">showing <b id="start"></b> - <b id="end"></b> of <b id="total"></b> entries</b>
+                        </div>
+                        <div style="display: inline-block; float: right">
+                            <input  type="button" class="minibutton previous_page" value="<"/>
+                            <input  type="button" class="minibutton next_page" value=">"/>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div align="center">
+        <div id="allTasks">
+        </div>
+        <div id="allPage" align="center" style="display: none;">
+            <br>
+            <br>
+            <b style="font-size: 150%;font-weight: bolder;">---------------------------------------------------------------------------------------</b>
+        </div>
+    </div>
+    <div id="result_table">
+
+    </div>
+    <div id="pagination_div" align="right">
+        <div style="display: inline-block">
+            <input  type="button" class="minibutton previous_page" value="<"/>
+            <input  type="button" class="minibutton next_page" value=">"/>
+        </div>
+    </div>
+
+    <div id="floatouter" width="100%" align="center">
+        <div id="inner">
+            <div id="chart">
+
+            </div>
+            <br/><br/>
+            <div id="show_button">
+
+            </div>
+        </div>
+    </div>
+
+    <!--table style="width: 100%">
         <tr>
             <td width="50%" align="left"><b class="Text" style="color:#4183c4"><span id="project_code" style="cursor: pointer;"></span> / Manage Task</b></td>
             <td width="50%" align="right"><a style="margin-left: 80%;" href="" id="create_new_task" class="createnew" type="button">New Task</a></td>
@@ -54,7 +131,8 @@
                 {% endif %}
             </table>
         </div>
-    </div>
+    </div-->
+
 </article>
 <script>
     var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);

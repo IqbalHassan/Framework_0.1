@@ -487,10 +487,26 @@ def EditBug(request,bug_id):
     if bug_id != "":
         return render_to_response('ManageBug.html')
     else:
-        templ = get_template('CreateBug.html')
+        query="select project_id from projects"
+        Conn=GetConnection()
+        project=DB.GetData(Conn,query)
+        query="select distinct value from config_values where type='Team'"
+        team=DB.GetData(Conn,query)
+        query="select distinct user_names from permitted_user_list where user_level='manager'"
+        manager=DB.GetData(Conn,query)
+        query="select label_name, label_color, label_id from labels order by label_name"
+        labels=DB.GetData(Conn,query,False)
+        query="select distinct tc_id,tc_name from test_cases where tc_id not in (select tc_id from bug_testcases_map) order by tc_id"
+        cases=DB.GetData(Conn,query,False)
+        query="select id,value from config_values where type='milestone'"
+        milestone_list=DB.GetData(Conn,query,False)
+        Dict={'project':project,'team':team,'manager':manager,'labels':labels,'cases':cases,'milestone_list':milestone_list}
+        Conn.close()
+        return render_to_response('CreateBug.html',Dict)
+        """templ = get_template('CreateBug.html')
         variables = Context({ })
         output = templ.render(variables)
-        return HttpResponse(output)    
+        return HttpResponse(output)  """  
 
 def Performance(request):
     templ = get_template('Performance.html')
@@ -7805,6 +7821,23 @@ def Bugs_List(request):
         
     Heading = ['Bug-ID','Title','Description','Starting Date','Due Date','Milestone', 'Status']    
     results = {'Heading':Heading,'bugs':bugs, 'labels':labels}
+    json = simplejson.dumps(results)
+    Conn.close()
+    return HttpResponse(json, mimetype='application/json')
+
+def Tasks_List(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            team = request.GET.get(u'team', '')
+
+        now=datetime.datetime.now().date()
+        #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
+        query="select tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status,pul.user_names from tasks t, milestone_info mi, permitted_user_list pul where mi.id::text=t.tasks_milestone and pul.user_id::text=t.tester"
+        tasks=DB.GetData(Conn, query, False)
+        
+    Heading = ['Task-ID','Title','Description','Starting Date','Due Date','Milestone', 'Status','Tester']    
+    results = {'Heading':Heading,'tasks':tasks}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
