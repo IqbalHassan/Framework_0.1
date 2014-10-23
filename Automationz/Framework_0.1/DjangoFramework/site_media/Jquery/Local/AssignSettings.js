@@ -131,14 +131,14 @@ function populate_div(div_name,array_list,project_id,team_id,type){
             $(this).addClass('selected');
             dep_value=$(this).attr('value');
             dep_name=$(this).text().trim();
-            /*$.get('get_all_version_under_branch',{
+            $.get('get_all_first_level_sub_feature',{
                 value:dep_value,
                 project_id:project_id,
                 team_id:team_id
             },function(data){
-                $('#version_dependency_tab').html("");
-                populate_second_div("version_tab",data['version_list'],data['default_list'],"version_name",project_id,team_id);
-            });*/
+                $('#version_feature_tab').html("");
+                populate_second_div("name_feature_tab",data['version_list'],data['default_list'],"first_level_feature",project_id,team_id);
+            });
         });
     }
     $('.'+type).bind("contextmenu",function(eventy){
@@ -289,6 +289,29 @@ function populate_second_div(div_name,array_list,default_list,type,project_id,te
         message+="</table>";
 
         $('#'+div_name).html(message);
+    }
+    if(type=='first_level_feature'){
+        var message="<table width=\"100%\" class='one-column-emphasis'>";
+
+        if(array_list.length>0){
+            for(var i=0;i<array_list.length;i++){
+                message+='<tr><td align="left" value="'+array_list[i][0]+'" class="'+type+'" style="cursor:pointer" >'+array_list[i][1]+'</td>';
+                message+='</tr>';
+            }
+        }
+        else{
+            message+='<td><b>No Version Found</b></td>'
+        }
+        message+="</table>";
+
+        $('#'+div_name).html(message);
+
+        $('.'+type).on('click',function(){
+            $('.'+type).css({'background':'none'});
+            $(this).css({'background':'#CCCCCC'});
+            dep_name=$(this).text().trim();
+            dep_value=$(this).attr('value');
+        });
     }
 }
 function input_rename_name(dep_name,project_id,team_id,dep_value){

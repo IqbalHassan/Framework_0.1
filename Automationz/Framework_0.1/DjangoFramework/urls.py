@@ -311,6 +311,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/unlink_feature/$',unlink_feature),
     url(r'^Home/.*/rename_feature/$',rename_feature),
     url(r'^Home/.*/first_level_sub_feature/$',first_level_sub_feature),
+    url(r'^Home/.*/get_all_first_level_sub_feature/$',get_all_first_level_sub_feature),
     #pages for the test case new implementation
     url(r'^Home/.*/get_default_settings/$',get_default_settings),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),

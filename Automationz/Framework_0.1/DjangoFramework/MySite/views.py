@@ -10682,6 +10682,33 @@ def first_level_sub_feature(request):
             PassMessasge(sModuleInfo, PostError, error_tag)
     except Exception,e:
         PassMessasge(sModuleInfo, e, 3)
+def get_all_first_level_sub_feature(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                value=request.GET.get(u'value',''),
+                team_id=request.GET.get(u'team_id','')
+                print value[0]
+                print project_id
+                print team_id
+                query="select id,name from first_level_sub_feature flsb,feature_management fm where fm.feature=flsb.feature_id and project_id='%s' and team_id=%d and fm.feature=%d order by name"%(project_id,int(team_id),int(value[0]))
+                Conn=GetConnection()
+                version_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                result={
+                    'version_list':version_list,
+                    'default_list':[]
+                }
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo,AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
 
 #will be changing the new format inhere
 '''
