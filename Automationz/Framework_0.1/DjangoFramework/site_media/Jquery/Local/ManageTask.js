@@ -191,7 +191,7 @@ $(document).ready(function(){
         $.session.set('project_id',$(this).val());
         window.location.reload(true);
     });
-    
+
     $.get("Tasks_List",{project_id : project_id},function(data)
     {
         if(data['tasks'].length>0) {

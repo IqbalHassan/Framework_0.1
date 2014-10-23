@@ -14,6 +14,11 @@ $(document).ready(function(){
         $.session.set('default_team_identity',$(this).val());
         window.location.reload(true);
     });
+    $("#simple-menu").sidr({
+        name: 'sidr',
+        side: 'left'
+    });
+
 });
 function DeleteFilterData(project_id,team_id){
     $('#searchedFilter td .delete').live('click',function(){
@@ -41,7 +46,7 @@ function AutoComplete(project_id,team_id){
         select:function(request,ui){
             var value=ui.item[0].trim();
             if(value!=""){
-                $('#searchedFilter').append('<td align="left"><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /><b>'+value+':<span style="display: none;">'+ui.item[1].trim()+'</span>&nbsp;</b></td>');
+                $('#searchedFilter').append('<tr><td>&nbsp;&nbsp;</td><td align="left"><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /><b>'+value+':<span style="display: none;">'+ui.item[1].trim()+'</span>&nbsp;</b></td></tr>');
                 //    '<td class="Text"></td>');
                 $('#pagination_no').text(1);
                 PerformSearch(project_id,team_id);

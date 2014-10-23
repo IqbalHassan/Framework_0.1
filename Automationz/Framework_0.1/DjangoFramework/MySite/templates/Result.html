@@ -7,7 +7,38 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="/site_media/Jquery/Local/Result.js"></script>
 <article>
-    <table width="100%">
+
+    <a id="simple-menu" href="#sidr" class="button hint--right hint--bounce hint--rounded" data-hint="Apply Filter" style="text-decoration: none;"><img class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
+    <div id="sidr" class="sidr">
+        <h3>Select Filters to apply</h3>
+        <div style="text-align: center; margin: 12px;">
+            <button onclick='$.sidr("toggle", "sidr");' style="width: 100%; padding: 4px;">X</button>
+        </div>
+        <ul>
+            <li>
+                <input class="textbox" placeholder="Search & Select Filter Here" id="inputText" style="padding-left: 10px; width: 95%; margin-top: 40%;z-index: 999999"/>
+
+                <style type="text/css">
+                    .ui-widget-content {position: fixed}
+                </style>
+            </li>
+            <li>
+                <table style="margin-top: 5%; width: 100%">
+                    <tr>
+                        <th><p>Filtered By:</p></th>
+                    </tr>
+                    <tr>
+                        <table id="searchedFilter">
+
+                        </table>
+                    </tr>
+                    <!--tr><td style="display: none;" id="pagination_no">1</td></tr-->
+                </table>
+        </ul>
+    </div>
+
+
+    <!--table width="100%">
         <tr>
             <td>
                 <div style="float: left">
@@ -41,6 +72,29 @@
             </td>
             <td id="searchedFilter" align="left">
 
+            </td>
+        </tr>
+    </table-->
+    <table width="100%">
+        <tr>
+            <td>
+                <div style="float: left">
+                    <h3 style="font-size: 19px;"><a style="font-weight: bold">Results</a></h3>
+                    <b style="display: none;" id="pagination_no">1</b>
+                </div>
+            </td>
+            <td style="float: right">
+                <div id="UpperDiv">
+                    <div>
+                        <div>
+                            <b style="font-size: 120%;">showing <b id="start"></b> - <b id="end"></b> of <b id="total"></b> entries</b>
+                        </div>
+                        <div style="display: inline-block; float: right">
+                            <input  type="button" class="minibutton previous_page" value="<"/>
+                            <input  type="button" class="minibutton next_page" value=">"/>
+                        </div>
+                    </div>
+                </div>
             </td>
         </tr>
     </table>
