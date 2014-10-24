@@ -30,11 +30,20 @@
         <ul>
             <li>
                 <input class="textbox" placeholder="Search & Select Filter Here" id="searchinput" style="padding-left: 10px; width: 95%; margin-top: 40%;z-index: 999999"/>
+
+                <style type="text/css">
+                    .ui-widget-content {position: fixed}
+                </style>
             </li>
             <li>
-                <table style="margin-top: 5%;margin-bottom: 1%; width: 100%">
-                    <tr id="searchedFilter">
+                <table style="margin-top: 5%; width: 100%">
+                    <tr>
                         <th><p>Filtered By:</p></th>
+                    </tr>
+                    <tr>
+                        <table id="searchedFilter">
+
+                        </table>
                     </tr>
                     <!--tr><td style="display: none;" id="pagination_no">1</td></tr-->
                 </table>

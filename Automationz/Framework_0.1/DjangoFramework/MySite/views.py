@@ -7829,14 +7829,14 @@ def Tasks_List(request):
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
-            team = request.GET.get(u'team', '')
+            project_id = request.GET.get(u'project_id', '')
 
         now=datetime.datetime.now().date()
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query="select tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status,pul.user_names from tasks t, milestone_info mi, permitted_user_list pul where mi.id::text=t.tasks_milestone and pul.user_id::text=t.tester"
+        query="select tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' order by tasks_id desc"
         tasks=DB.GetData(Conn, query, False)
         
-    Heading = ['Task-ID','Title','Description','Starting Date','Due Date','Milestone', 'Status','Tester']    
+    Heading = ['Task-ID','Title','Description','Starting Date','Due Date','Milestone', 'Status']    
     results = {'Heading':Heading,'tasks':tasks}
     json = simplejson.dumps(results)
     Conn.close()

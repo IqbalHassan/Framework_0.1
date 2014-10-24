@@ -187,7 +187,12 @@ $(document).ready(function(){
         side: 'left'
     });
 
-    $.get("Tasks_List",{term : ''},function(data)
+    $('#project_identity').on('change',function(){
+        $.session.set('project_id',$(this).val());
+        window.location.reload(true);
+    });
+
+    $.get("Tasks_List",{project_id : project_id},function(data)
     {
         if(data['tasks'].length>0) {
             //make a table column
@@ -211,6 +216,9 @@ $(document).ready(function(){
             $('#allTasks').html(message);
             make_clickable('#allTasks');
 
+        }
+        else{
+            $("#allTasks").html('<h2>No Data Available</h2>')
         }
     });
 

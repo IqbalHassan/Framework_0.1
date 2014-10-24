@@ -60,7 +60,8 @@ def CreateNewTask(title,status,description,start_date,end_date,teams,tester,prio
               'tasks_priority':priority,
               'status':status,
               'parent_id':path_id,
-              'tester':tester
+              'tester':tester,
+              'project_id':project_id
         }
         testConnection(Conn)
         result=DB.InsertNewRecordInToTable(Conn,"tasks",**Dict)

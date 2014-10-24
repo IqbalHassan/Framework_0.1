@@ -55,7 +55,8 @@ function Submit_button_preparation(){
             'user_name':$('#user_name').text().trim()
 
         },function(data){
-            window.location=('/Home/'+ $.session.get('project_id')+'/Task/'+data);
+            //window.location=('/Home/'+ $.session.get('project_id')+'/Task/'+data);
+            window.location= ('/Home/ManageTask/');
         });
     });
 }
