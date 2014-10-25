@@ -144,6 +144,19 @@ $(document).ready(function(){
             })
         }*/
     });
+
+    URL = window.location.pathname;
+    console.log("url:"+URL);
+    indx = URL.indexOf("EditBug");
+    console.log("Edit Index:"+indx);
+    if(indx!=-1){
+        referred_bug=URL.substring((URL.lastIndexOf("EditBug/")+("EditBug/").length),(URL.length-1));
+        PopulateBugInfo(referred_bug);
+        operation=2;
+        bugid=referred_bug;
+    }
+    console.log("Url Length:"+URL.length);
+
 });
 
 function BugSearchAuto(){
@@ -181,6 +194,7 @@ function BugSearchAuto(){
 
 function PopulateBugInfo(bug_id){
     $.get("Selected_BugID_Analaysis",{Selected_Bug_Analysis : bug_id},function(data){
+        $("#title").val(data['Bug_Info'][0][1]);
         $("#bug_desc").val(data['Bug_Info'][0][2]);
         $("#start_date").val(data['Bug_Info'][0][3]);
         $("#end_date").val(data['Bug_Info'][0][4]);

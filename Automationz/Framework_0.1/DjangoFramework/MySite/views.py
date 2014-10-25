@@ -485,7 +485,7 @@ def Edit(request,tc_id):
 def EditBug(request,bug_id):
     bug_id = request.GET.get('bug_id', '')
     if bug_id != "":
-        return render_to_response('ManageBug.html')
+        return render_to_response('CreateBug.html')
     else:
         query="select project_id from projects"
         Conn=GetConnection()
@@ -507,6 +507,41 @@ def EditBug(request,bug_id):
         variables = Context({ })
         output = templ.render(variables)
         return HttpResponse(output)  """  
+
+"""def ViewBug(bug_id):
+    def returnResult(string):
+        json = simplejson.dumps(string)
+        return HttpResponse(json, mimetype='application/json')
+
+    try:
+        bug_id=bug_id.GET.get('bug_id')
+        err_msg = ''
+        # Search for TC_ID
+        Conn = GetConnection()
+        tmp_id = DB.GetData(Conn, "select bug_Id from bugs where bug_Id = '%s'" % bug_id)
+        if len(tmp_id) > 0:
+            # TestCaseOperations.LogMessage(sModuleInfo,"TEST CASE id is found:%s"%(TC_Id),4)
+
+            # find all the details about test case
+            Conn = GetConnection()
+            query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id where bug_id='"+bug_id+"'"
+            bug_details=DB.GetData(Conn, query, False)
+            Conn.close()
+            
+                        # return values
+            results = {'bug_details':bug_details}
+
+            json = simplejson.dumps(results)
+            return HttpResponse(json, mimetype='application/json')
+
+        else:
+            err_msg = "Bug is not found:%s" % (bug_id)
+            return returnResult(err_msg)
+
+    except Exception, e:
+        err_msg = "Bug search failed due to exception: %s" % (bug_id)
+        return returnResult(err_msg)"""
+
 
 def Performance(request):
     templ = get_template('Performance.html')
@@ -7811,7 +7846,7 @@ def Bugs_List(request):
 
         now=datetime.datetime.now().date()
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id"
+        query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id order by b.bug_id desc"
         bugs=DB.GetData(Conn, query, False)
         
         query="select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, bug_label_map blm where l.label_id=blm.label_id"
