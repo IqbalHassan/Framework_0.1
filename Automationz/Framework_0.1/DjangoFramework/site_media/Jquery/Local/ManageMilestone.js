@@ -18,13 +18,12 @@ $(document).ready(function(){
             for (var i = 0; i < data['Heading'].length; i++) {
                 message += '<th align="left">' + data['Heading'][i] + '</th>';
             }
-            message += '</tr>'
+            message += '</tr>';
             for (var i = 0; i < data['TableData'].length; i++) {
+                //msid.push(data['TableData'][i][0]);
                 message += '<tr>';
                 for (var j = 0; j < data['TableData'][i].length; j++) {
                     message += '<td align="left">' + data['TableData'][i][j] + '</td>';
-
-
                 }
                 message += '</tr>';
             }
@@ -45,6 +44,13 @@ function make_clickable(divname) {
             'color': 'blue',
             'cursor': 'pointer',
             'textAlign': 'left'
+        });
+        $(this).click(function(){
+            $.get("GetMileStoneID",{term : $(this).text().trim()},function(data)
+            {
+                var location='/Home/EditMilestone/'+data+'/';
+                window.location=location;
+            });
         });
     });
 }

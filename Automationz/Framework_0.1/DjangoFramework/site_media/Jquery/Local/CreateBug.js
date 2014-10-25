@@ -213,7 +213,7 @@ function PopulateBugInfo(bug_id){
         else if(data['Bug_Info'][0][5]=='P4')
             $('#priority').val('4');
         $('#milestone').val(data['Bug_Info'][0][6]);
-        $("#ms_info").show();
+        $("#bug_info").show();
         $("#created_by").text(data['Bug_Info'][0][7]);
         $("#created_date").text(data['Bug_Info'][0][8]);
         $("#modified_by").text(data['Bug_Info'][0][9]);

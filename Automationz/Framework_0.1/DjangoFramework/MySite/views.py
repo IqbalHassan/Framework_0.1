@@ -482,6 +482,17 @@ def Edit(request,tc_id):
         output = templ.render(variables)
         return HttpResponse(output)
     
+def EditMilestone(request,ms_id):
+    ms_id = request.GET.get('ms_id', '')
+    if ms_id != "":
+        return render_to_response('Milestone.html')
+    else:
+        return render_to_response('Milestone.html')
+        """templ = get_template('Milestone.html')
+        variables = Context({ })
+        output = templ.render(variables)
+        return HttpResponse(output)"""
+    
 def EditBug(request,bug_id):
     bug_id = request.GET.get('bug_id', '')
     if bug_id != "":
@@ -6568,11 +6579,31 @@ def Get_MileStones(request):
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by name"
+            query = "select name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by id desc"
             milestone_list = DB.GetData(Conn, query, False)
     Heading = ['Milestone Name','Description', 'Starting Date', 'Due Date', 'Status']
     results = {'Heading':Heading, 'TableData':milestone_list}
     json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Get_MileStone_ID(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            milestone = request.GET.get(u'term', '')
+            query = "select id from milestone_info where name = '"+milestone+"'"
+            milestone_info = DB.GetData(Conn, query)
+    json = simplejson.dumps(milestone_info)
+    return HttpResponse(json, mimetype='application/json')
+
+def Get_MileStone_By_ID(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            id = request.GET.get(u'term', '')
+            query = "select id,name,cast(starting_date as text),cast(finishing_date as text),status,description,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from milestone_info where id = '"+id+"'"
+            milestone_info = DB.GetData(Conn, query, False)
+    json = simplejson.dumps(milestone_info)
     return HttpResponse(json, mimetype='application/json')
 
 def Milestone_Requirements(request):
