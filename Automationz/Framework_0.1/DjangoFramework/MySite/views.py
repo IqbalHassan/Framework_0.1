@@ -7900,7 +7900,7 @@ def Tasks_List(request):
         now=datetime.datetime.now().date()
         tasks_list = []
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query="select tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status, requirement_path from tasks t, milestone_info mi,requirement_sections rs where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text order by tasks_id desc"
+        query="select tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi,requirement_sections rs where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text order by tasks_id desc"
         tasks=DB.GetData(Conn, query, False)
         
         query="select requirement_path from tasks t, milestone_info mi,requirement_sections rs where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text order by tasks_id desc"
@@ -7912,10 +7912,10 @@ def Tasks_List(request):
             for y in x[0]:
                 data.append(y)
             temp=x[1][0].replace('_','-')
+            temp=temp.replace('.','/')
             if data[0]==temp:
                 data.append('None')
             else:
-                temp=temp.replace('.','/')
                 data.append(temp)
             #data.append(x[1])
             tasks_list.append(data)
