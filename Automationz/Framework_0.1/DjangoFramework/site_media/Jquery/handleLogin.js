@@ -31,11 +31,15 @@ $(document).ready(function() {
 					} else {
 						alertify.success("Welcome, " + data['message']);
 						var path_to_redirect = sessionStorage.getItem("path_to_redirect");
-						
-						setTimeout(function() {
-							alertify.success("Redirecting you to the previous page.");
+						if (path_to_redirect == null){
+							var path_to_redirect = "/Home/Dashboard/" 
+						}
+						/*
+						setTimeout(function() 
+						{
+                           alertify.success("Redirecting you to the previous page.");
 						}, 1000);
-						
+						*/
 						
 						$.session.set('username', username);
 	                    $.session.set('fullname', data['message'][1]);
