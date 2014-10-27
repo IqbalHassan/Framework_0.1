@@ -3518,26 +3518,28 @@ def Get_Users(request):
         # if username=='':
         query="select user_id,full_name from user_info usr,permitted_user_list pul where pul.user_names = usr.full_name and pul.user_level in('manager','assigned_tester') and usr.username='%s' and usr.password='%s'"%(username,password)
         results = DB.GetData(Conn,query,False)
-
     if len(results) > 0:
-        message = results[0]
+        message = results[0][1]
+        Dict={'message':message}
+        query="select default_project,default_team from default_choice where user_id='%s'"%results[0][0]
+        testConnection(Conn)
+        default_choice=DB.GetData(Conn,query,False)
+        if isinstance(default_choice,list) and len(default_choice)==1:
+            Dict.update({
+                'project_id':default_choice[0][0],
+                'team_id':default_choice[0][1]
+            })
+        else:
+            Dict.update({
+                'project_id':"",
+                'team_id':""
+            })
     else:
         message = "User Not Found!"
-    Dict={'message':message}
+        Dict={'message':message}
+    
     #get the default_team and project id
-    query="select default_project,default_team from default_choice where user_id='%s'"%results[0][0]
-    testConnection(Conn)
-    default_choice=DB.GetData(Conn,query,False)
-    if isinstance(default_choice,list) and len(default_choice)==1:
-        Dict.update({
-            'project_id':default_choice[0][0],
-            'team_id':default_choice[0][1]
-        })
-    else:
-        Dict.update({
-            'project_id':"",
-            'team_id':""
-        })
+
     json = simplejson.dumps(Dict)
     return HttpResponse(json, mimetype='application/json')
 

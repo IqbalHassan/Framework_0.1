@@ -1813,13 +1813,13 @@ article header{
 .responsive-tabs__list__item { display: inline; cursor:pointer;}
 
 
-@media (max-width: 800px) {
+@media (max-width: 400px) {
     .responsive-tabs__list { display: none;}
     .responsive-tabs__heading { display: block; cursor: pointer; }
     .responsive-tabs__panel--closed-accordion-only { display: none;}
 }
 
-@media (min-width: 800px) {
+@media (min-width: 400px) {
     .responsive-tabs__panel--closed-accordion-only { display: block !important;}
 }
 
