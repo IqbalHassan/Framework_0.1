@@ -29,7 +29,7 @@ $(document).ready(function() {
 						alertify.error("No user found with the provided details.");
 						$("#password").val("");
 					} else {
-						alertify.success("Welcome, " + data['message']);
+						alertify.success("Welcome, " + data['message'][1]);
 						var path_to_redirect = sessionStorage.getItem("path_to_redirect");
 						if (path_to_redirect == null){
 							var path_to_redirect = "/Home/Dashboard/" 
