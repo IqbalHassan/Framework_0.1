@@ -3511,11 +3511,13 @@ def Auto_Step_Create(request):
 def Get_Users(request):
     Conn = GetConnection()
     results = []
+    userExists = False
     # if request.is_ajax():
     if request.method == "GET":
         username = request.GET.get(u'user', '').strip()
         password = request.GET.get(u'pwd', '').strip()
         # if username=='':
+        
         query="select user_id,full_name from user_info usr,permitted_user_list pul where pul.user_names = usr.full_name and pul.user_level in('manager','assigned_tester') and usr.username='%s' and usr.password='%s'"%(username,password)
         results = DB.GetData(Conn,query,False)
     if len(results) > 0:
@@ -3535,8 +3537,16 @@ def Get_Users(request):
                 'team_id':""
             })
     else:
-        message = "User Not Found!"
+
+        does_user_exists = []
+        query="select user_id,full_name from user_info usr,permitted_user_list pul where pul.user_names = usr.full_name and pul.user_level in('manager','assigned_tester') and usr.username='%s'"%(username)
+        does_user_exists = DB.GetData(Conn,query,False)
+        if len  (does_user_exists) > 0:
+            message = "Incorrect Password"
+        else:
+            message = "User Not Found!"
         Dict={'message':message}
+
     
     #get the default_team and project id
 
