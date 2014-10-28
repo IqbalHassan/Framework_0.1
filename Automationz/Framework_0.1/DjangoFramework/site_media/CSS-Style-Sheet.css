@@ -30,7 +30,7 @@
 }
 #cssmenu ul {
   position: relative;
-  z-index: 597;
+  z-index: 9999999;
 }
 #cssmenu ul li {
   float: left;
@@ -40,7 +40,7 @@
 #cssmenu ul li.hover,
 #cssmenu ul li:hover {
   position: relative;
-  z-index: 599;
+  z-index: 9999999;
   cursor: default;
 }
 #cssmenu ul ul {
@@ -48,7 +48,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 598;
+  z-index: 9999999;
   width: 100%;
 }
 #cssmenu ul ul li {
