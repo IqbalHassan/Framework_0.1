@@ -181,7 +181,7 @@ def Delete_Test_Case(Conn, tc_list):
         deleted_test_case.append(test_case)
         LogMessage(sModuleInfo, "==============================================================================================", 1)
     return deleted_test_case
-def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id):
+def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Feature_Path, Requirement_ID_List,Project_Id,Team_Id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     Tag_List = []
     # Add test case id tag
@@ -191,8 +191,10 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
 
     # Add Section names & initialize variables
     Section_Tag = 'Section'
+    Feature_Tag = 'Feature'
     Custom_Tag = 'CustomTag'
     Section_Path_Tag = 'section_id'
+    Feature_Path_Tag = 'feature_id'
     Priority_Tag = 'Priority'
     Tag_List.append((Status,'Status'))
     if Status == "Forced":
@@ -217,6 +219,18 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     # Work around to display section names in run page
     for eachSection in Section_Path.split('.'):
         Tag_List.append(('%s' % eachSection, Section_Tag))
+    
+    # Add Feature id based on hierarchy
+    if DBUtil.IsDBConnectionGood(conn) == False:
+        time.sleep(1)
+        conn = GetConnection()
+    Feature_Id = DBUtil.GetData(conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
+    if len(Feature_Id) > 0:
+        Tag_List.append(('%d' % Feature_Id[0], Feature_Path_Tag))
+
+    # Work around to display feature names in run page
+    for eachFeature in Feature_Path.split('.'):
+        Tag_List.append(('%s' % eachFeature, Feature_Tag))
 
     # Add Dependency tags
     for eachDependency in Dependency_List:
@@ -811,7 +825,7 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
 
     return Data_List
 
-def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path):
+def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path, Feature_Path):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
 
     if TC_Name == '':
@@ -827,7 +841,10 @@ def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_
         print "Error. Test Section cannot be empty"
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Section", 3)
         return err_msg
-    
+    if Feature_Path == '':
+        print "Error. Test Feature cannot be empty"
+        err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Feature", 3)
+        return err_msg    
     if not isinstance(Tag_List, list):
         print "Error. Test case tag format is incorrect"
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case tag format. It should be a list.", 3)
@@ -948,7 +965,7 @@ def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_
                         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Expected Normal or Edit Data", 3)
                         return err_msg
     return "Pass"
-def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id):
+def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Feature_Path, Requirement_ID_List,Project_Id,Team_Id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     Tag_List = []
     # Add test case id tag
@@ -957,8 +974,10 @@ def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     #Tag_List.append(('Default', 'Data_Type'))
     # Add Section names & initialize variables
     Section_Tag = 'Section'
+    Feature_Tag = 'Feature'
     Custom_Tag = 'CustomTag'
     Section_Path_Tag = 'section_id'
+    Feature_Path_Tag = 'feature_id'
     Priority_Tag = 'Priority'
     Tag_List.append((Status,'Status'))
     if Status == "Forced":
@@ -982,6 +1001,18 @@ def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     # Work around to display section names in run page
     for eachSection in Section_Path.split('.'):
         Tag_List.append(('%s' % eachSection, Section_Tag))
+    
+    # Add Feature id based on hierarchy
+    if DBUtil.IsDBConnectionGood(conn) == False:
+        time.sleep(1)
+        conn = GetConnection()
+    Feature_Id = DBUtil.GetData(conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
+    if len(Feature_Id) > 0:
+        Tag_List.append(('%d' % Feature_Id[0], Feature_Path_Tag))
+
+    # Work around to display feature names in run page
+    for eachFeature in Feature_Path.split('.'):
+        Tag_List.append(('%s' % eachFeature, Feature_Tag))
 
     # Add Dependency tags
     

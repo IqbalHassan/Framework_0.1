@@ -216,6 +216,7 @@ $(document).ready(function(){
             $('#allTasks').html(message);
             make_clickable('#allTasks');
 
+
         }
         else{
             $("#allTasks").html('<h2>No Data Available</h2>')
@@ -239,5 +240,18 @@ function make_clickable(divname) {
             'cursor': 'pointer',
             'textAlign': 'left'
         });
+    });
+
+    $(divname + ' tr>td:last-child').each(function () {
+        if($(this).text()!=("None")){
+            $(this).css({
+                'color': 'blue',
+                'cursor': 'pointer',
+                'textAlign': 'left'
+            });
+        }
+        var divider = $(this).lastIndexOf("/");
+        console.log(divider);
+
     });
 }

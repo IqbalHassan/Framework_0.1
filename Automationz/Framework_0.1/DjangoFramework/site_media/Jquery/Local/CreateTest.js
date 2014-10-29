@@ -184,7 +184,78 @@ $(document).ready(function() {
 
 					dataId += sectionArray[index] + '.'
 				}
+
 				
+				
+				
+				//Feature path
+				var featureArray = features.split('.');
+				var dataId ="";
+				var handlerString = ""
+				for(var index in featureArray){
+					if(featureArray[index] == "")
+						continue;
+					$.ajax({
+					    url:'GetFeatures/',
+						dataType : "json",
+						data : {
+							feature : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_')
+						},
+					    success: function( json ) {
+				        	if(json.length != 1){
+				        		var realItemIndex = parseInt(json[0][0])
+				        		var handlerString = ""
+				        		for(var i = 0; i < realItemIndex; i++)
+				        			handlerString+=featureArray[i]+'.'
+				        			
+				        		if(realItemIndex == 0){
+				        			$(".feature[data-level='']").find('option').each(function(){$(this).remove();});
+				        			$(".feature[data-level='']").append("<option>Choose...</option>");
+						        	
+						        	for(var i = 0; i < json.length; i++)
+				    		        	json[i] = json[i][0].replace(/_/g,' ')
+				    		        $.each(json, function(i, value) {
+				    		        	if(i == 0)return;
+				    		            $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+				    		        });
+				        			$(".feature[data-level='']").val(featureArray[realItemIndex].replace(/_/g,' '))
+				        		}else{
+				        			var tag = jQuery('<select/>',{
+							    		'class':'feature',
+							    		'data-level':handlerString,
+							    		'id':realItemIndex+1,
+							    		change: function(){
+							    			isAtLowestFeature = false;
+							    			recursivelyAddFeature(this);
+							    		}
+							    	})
+							    	if($('#featuregroup select[id='+realItemIndex+']').length != 0)
+							    		$('#featuregroup select[id='+realItemIndex+']').after(tag)
+							    	else
+							    		$('#featuregroup select[id=1]').after(tag)
+							    		
+							    	$(".feature[data-level='"+handlerString+"']").append("<option>Choose...</option>");
+						        	
+						        	var once = true;
+						        	for(var i = 0; i < json.length; i++)
+							        	json[i] = json[i][0].replace(/_/g,' ')
+							        $.each(json, function(i, value) {
+				    		        	if(i == 0)return;
+							        	if(once){
+							        		lowest_feature+=1
+							        		once = false
+							        	}
+							        	$(".feature[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
+							        });	
+						        	$(".feature[data-level='"+handlerString+"']").val(featureArray[realItemIndex].replace(/_/g,' '))
+								}
+				        		isAtLowestFeature = true;
+				        	}
+					    }
+					});
+
+					dataId += featureArray[index] + '.'
+				}
 				//auto id
 				if(!template){
 					$('#TC_Id').html("<b>Automation ID: "+auto_id +"</b>")

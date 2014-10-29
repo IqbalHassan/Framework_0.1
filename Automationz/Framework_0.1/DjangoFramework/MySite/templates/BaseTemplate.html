@@ -128,73 +128,101 @@
 				<ul>
 					<li><a href='/Home/Dashboard/'><span><i class="fa fa-home fa-fw fa-lg"></i></span></a></li>
 					
+					
+					<li class='has-sub'><a href='#'><span><i class="fa fa-calculator fa-fw fa-lg"></i> Requirement</span></a>
+						<ul>
+							<li><a href="/Home/ManageRequirement/"><i class="fa fa-search fa-fw fa-lg"></i> Search</a></li>
+							 <li><a href='#'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
+							 <li><a href='#'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Reports </span></a></li>
+							 <li><a href='#'><span><i class="fa fa-file-o fa-child fa-lg"></i> Assigned To Me </span></a></li>
+							 
+						</ul>
+					</li>
+					
+					
+					<li class='has-sub'><a href='#'><span><i class="fa fa-tasks fa-fw fa-lg"></i> Task</span></a>
+						<ul>
+							<li><a href='/Home/ManageTask/'><span><i class="fa fa-search fa-fw fa-lg"></i> Search </span></a></li>
+                            <li><a href='#'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
+                            <li><a href='#'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Reports </span></a></li>
+                            <li><a href='#'><span><i class="fa fa-file-o fa-child fa-lg"></i> Assigned To Me </span></a></li>
+                            <li><a href='#'><span><i class="fa fa-magic fa-spin"></i> Suggested </span></a></li>
+
+                        </ul>
+                     </li>
+					
+					
 					<li class='has-sub'><a href='#'><span><i class="fa fa-wrench fa-fw fa-lg"></i> Testing</span></a>
 						<ul>
 							<li><a href='/Home/RunTest/'><span><i class="fa fa-rocket fa-fw fa-lg"></i> Deployment</span></a></li>
 							<li><a href='/Home/Results/'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Result & Execution</span></a></li>
-		
 							<li class='has-sub'><a href='#'><span><i class="fa fa-file-text-o fa-fw fa-lg"></i> Test Case</span></a>
 								<ul>
 									<li><a href='/Home/ManageTestCases/CreateNewTestCase/'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
 									<li><a href='/Home/ManageTestCases/'><span><i class="fa fa-sitemap fa-fw fa-lg"></i> View & Organize</span></a></li>
+									<li><a href='/Home/ManageSetTag/'><span><i class="fa fa-list fa-fw fa-lg"></i> Set</span></a></li>
+									<li class='has-sub'><a href='#'><span><i class="fa fa-paw fa-fw fa-lg"></i> Steps </span></a>
+									<ul>
+										<li><a href='/Home/ManageTestCases/CreateStep/'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Update </span></a></li>
+										<li><a href="/Home/ManageStep/"><span><i class="fa fa-ban fa-fw fa-lg"></i> Delete <span></a></li>
+									</ul>
+									</li>
+								
+								
+								
+								
+								
+								
 									<li><a href='/Home/ManageTestCases/SearchEdit/'><span><i class="fa fa-search fa-fw fa-lg"></i> Search </span></a></li>
 									<li><a href='/Home/Analysis/'><span><i class="fa fa-history fa-fw fa-lg"></i> Run History</span></a></li>
+									<li><a href="/Home/ManageTestCases/DeleteExisting/"> <span><i class="fa fa-trash fa-fw fa-lg"></i> Delete </span></a></li>
 									<li><a href='#'><span><i class="fa fa-edit fa-fw fa-lg"></i> Batch Update</span></a></li>
 									<li class='last'><a href="/Home/ManageTestCases/SearchEdit-Dev/"><span> <i class="fa fa-bomb fa-fw fa-lg"></i> Search (dev)</span></a></li>
-								</ul></li>
+								
+								
+								
+								</ul>
+							</li>						
 							
-							<li><a href='/Home/ManageTestCases/CreateStep/'><span><i class="fa fa-paw fa-fw fa-lg"></i> Create/Update Step</span></a></li>
-							
-							
-							<li><a href='/Home/ManageSetTag/'><span><i class="fa fa-list fa-fw fa-lg"></i> Manage Set</span></a></li>
-							
+
+							<li class='has-sub'><a href='#'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Reports </span></a>
+								<ul>
+									<li><a href="/Home/BundleReport/"><i class="fa fa-pie-chart fa-fw fa-lg"></i> Bundle Report</a></li>
+									<li><a href="/Home/MKS-Report/"><i class="fa fa-bar-chart fa-fw fa-lg"></i> MKS Report</a></li>
+									<li><a href="/Home/Analysis/"><i class="fa fa-area-chart fa-fw fa-lg"></i> Test Case History</a></li>
+									<li><a href="/Home/DailyBuildResults/"><i class="fa fa-history fa-fw fa-lg"></i> Automated Build History</a></li>
+									<li><a href="/Home/TestTypeStatus/"><i class="fa fa-fire fa-fw fa-lg"></i> Test Type Status</a></li>
+									<li><a href="/Home/Performance/"><i class="fa fa-tachometer fa-fw fa-lg"></i> Performance</a></li>
+								</ul>	
+							<li><a href='#'><span><i class="fa fa-file-o fa-child fa-lg"></i> Assigned To Me </span></a></li>	
+							<li><a href='#'><span><i class="fa fa-magic fa-spin"></i> Suggested </span></a></li>					
 						</ul>
-					</li>
-					<li class='has-sub'><a href='#'><span><i class="fa fa-tasks fa-fw fa-lg"></i> Task</span></a>
-						<ul>
-							<li><a href='/Home/ManageTask/'><span><i class="fa fa-book fa-fw fa-lg"></i> Manage Task(s)</span></a></li>
-                                <!--ul-->
-                            <!--li><a href='/Home/CreateNewTask/'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li-->
-                        </ul></li>
-					
-					
 					<li class='has-sub'><a href='#'><span><i class="fa fa-bug fa-fw fa-lg"></i> Bug</span></a>
 						<ul>
-							<li><a href="/Home/ManageBug/"><i class="fa fa-paw fa-fw fa-lg"></i> Search</a>
-                            <!--ul-->
+							<li><a href="/Home/ManageBug/"><i class="fa fa-search fa-fw fa-lg"></i> Search</a>
                             <li><a href='/Home/CreateNewBug/'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
-                            <!--/ul></li-->
-                            <li><a href="/Home/ManageLabel/"><i class="fa fa-tags fa-fw fa-lg"></i> Manage Label(s)</a></li>
-						</ul></li>
-					
-					
-					<li class='has-sub'><a href='#'><span><i class="fa fa-calculator fa-fw fa-lg"></i> Requirement</span></a>
-						<ul>
-							<li><a href="/Home/ManageRequirement/"><i class="fa fa-anchor fa-fw fa-lg"></i> Manage Requirements</a></li>
+ 							<li><a href='#'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Reports </span></a></li>
+ 							<li><a href='#'><span><i class="fa fa-file-o fa-child fa-lg"></i> Assigned To Me </span></a></li>
+ 							<li><a href='#'><span><i class="fa fa-magic fa-spin"></i> Suggested </span></a></li>
 						</ul>
 					</li>
-					<li class='has-sub'><a href='#'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Reports</span></a>
-						<ul>
-							<li><a href="/Home/BundleReport/"><i class="fa fa-pie-chart fa-fw fa-lg"></i> Bundle Report</a></li>
-							<li><a href="/Home/MKS-Report/"><i class="fa fa-bar-chart fa-fw fa-lg"></i> MKS Report</a></li>
-							<li><a href="/Home/Analysis/"><i class="fa fa-area-chart fa-fw fa-lg"></i> Test Case History</a></li>
-							<li><a href="/Home/DailyBuildResults/"><i class="fa fa-history fa-fw fa-lg"></i> Automated Build History</a></li>
-							<li><a href="/Home/TestTypeStatus/"><i class="fa fa-fire fa-fw fa-lg"></i> Test Type Status</a></li>
-							<li><a href="/Home/Performance/"><i class="fa fa-tachometer fa-fw fa-lg"></i> Performance</a></li>
-						</ul></li>
+					<li class="has-sub"><a href='#'><span><i class="fa fa-calendar fa-fw fa-lg"></i> Milestone </span></a>
+                                <ul>
+                                    <li><a href="/Home/ManageMilestone/"><span><i class="fa fa-search fa-fw fa-lg"></i> Search</a>
+                                    <li><a href='/Home/CreateMilestone/'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
+                               		<li><a href='#'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Reports </span></a></li>
+                               		<li><a href='#'><span><i class="fa fa-magic fa-spin"></i> Suggested </span></a></li>
+                                </ul>
+                     </li>		
+					
+					
 					<li class='has-sub'><a href='#'><span><i class="fa fa-briefcase fa-fw fa-lg"></i> Manage</span></a>
 						<ul>
-							<li><a href="/Home/AssignSettings/"><i
-									class="fa fa-compass fa-fw fa-lg"></i> Environmental Settings</a></li>
-							<li><a href="/Home/ManageTestCases/DeleteExisting/"><i class="fa fa-trash fa-fw fa-lg"></i> Delete Test Case(s)</a></li>
-							<li><a href="/Home/ManageStep/"><i class="fa fa-ban fa-fw fa-lg"></i> Delete Test Step(s)</a></li>
+							<li><a href="/Home/AssignSettings/"><i class="fa fa-compass fa-fw fa-lg"></i> Project Settings</a></li>
+							<li><a href="/Home/CreateProject/"><i class="fa fa-binoculars fa-fw fa-lg"></i> Project</a></li>
+							<li><a href="/Home/ManageTeam/"><i class="fa fa-users fa-fw fa-lg"></i> Team</a></li>
+							<li><a href="/Home/ManageLabel/"><i class="fa fa-tags fa-fw fa-lg"></i> Label</a></li>
 							<li><a href="/Home/FeaDri/"><i class="fa fa-plug fa-fw fa-lg"></i> Feature(s) & Driver(s)</a></li>
-							<li><a href="/Home/CreateProject/"><i class="fa fa-binoculars fa-fw fa-lg"></i> Manage Project</a></li>
-							<li class="has-sub"><a href="/Home/ManageMilestone/"><i class="fa fa-calendar fa-fw fa-lg"></i> Manage Milestone</a>
-                                <ul>
-                                    <li><a href='/Home/CreateMilestone/'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
-                                </ul></li>
-							<li><a href="/Home/ManageTeam/"><i class="fa fa-users fa-fw fa-lg"></i> Manage Team</a></li>
 						</ul>
 					</li>
                     <li class='has-sub last'

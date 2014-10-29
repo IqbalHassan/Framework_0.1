@@ -10,7 +10,25 @@ $(document).ready(function(){
     DeleteSearchQueryText(project_id,team_id);
     ManageMilestone(project_id,team_id);
     SubmitRun(project_id,team_id);
+<<<<<<< HEAD
 
+=======
+    /*$('.edit_machine').on('click',function(){
+        $('.tabs-div').removeClass('responsive-tabs__panel--active');
+
+        $('.tabs-div').removeClass('responsive-tabs__list__item--active');
+        $('.tabs-div').attr('aria-hidden','true');
+        //$('.tabs-div').hide();
+
+        $('.tabs-dive').prev().addClass('responsive-tabs__heading--active');
+        $('.tabs-div:last').addClass('responsive-tabs__panel--active');
+        $('.tabs-div:last').attr('aria-hidden','false');
+
+        $('.tabs-div:last').addClass('responsive-tabs__list__item--active');
+        //$('.tabs-div:last').show();
+        $('.tabs-dive:last').prev().addClass('responsive-tabs__heading--active');
+    });*/
+>>>>>>> remotes/origin/master
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val().trim());
         window.location.reload(true);

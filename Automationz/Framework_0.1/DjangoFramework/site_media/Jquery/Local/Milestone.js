@@ -7,6 +7,17 @@ $(document).ready(function(){
     New_UI();
 
     $('.combo-box').combobox();
+
+    URL = window.location.pathname;
+    console.log("url:"+URL);
+    indx = URL.indexOf("EditMilestone");
+    console.log("Edit Index:"+indx);
+    if(indx!=-1){
+        var referred_ms=URL.substring((URL.lastIndexOf("EditMilestone/")+("EditMilestone/").length),(URL.length-1));
+        PopulateMSInfo(referred_ms);
+        operation=2;
+    }
+    console.log("Url Length:"+URL.length);
 });
 
 function make_ms_clickable(){
@@ -15,10 +26,13 @@ function make_ms_clickable(){
             'color':'blue',
             'cursor':'pointer'
         });
-        /*$(this).click(function(){
-            var location='/Home/ManageMilestone/'+$(this).text().trim()+'/';
-            window.location=location;
-        });*/
+        $(this).click(function(){
+            $.get("GetMileStoneID",{term : $(this).text().trim()},function(data)
+            {
+                var location='/Home/EditMilestone/'+data+'/';
+                window.location=location;
+            });
+        });
     });
 }
 function make_req_clickable(){
@@ -70,12 +84,166 @@ function make_bug_clickable(){
             'color':'blue',
             'cursor':'pointer'
         });
-        /*$(this).click(function(){
-         var location='/Home/'+$.session.get('project_id')+'/Tasks/'+$(this).text().trim()+'/';
+        $(this).click(function(){
+         var location='/Home/EditBug/'+$(this).text().trim()+'/';
          window.location=location;
-         });*/
+         });
     });
 }
+function PopulateMSInfo(value){
+
+    $("#renamebox").show();
+    $.get("GetMileStoneByID",{term : value.trim()},function(data)
+    {
+        $("#msinput").val(data[0][1]);
+        if(data[0][4]=="not_started")
+        {
+            $('a[value="not_started"]').addClass('selected')
+            $('a[value="started"]').removeClass('selected')
+            $('a[value="complete"]').removeClass('selected')
+            $('a[value="over_due"]').removeClass('selected')
+        }
+        else if(data[0][4]=="started")
+        {
+            $('a[value="not_started"]').removeClass('selected')
+            $('a[value="started"]').addClass('selected')
+            $('a[value="complete"]').removeClass('selected')
+            $('a[value="over_due"]').removeClass('selected')
+        }
+        else if(data[0][4]=="complete")
+        {
+            $('a[value="not_started"]').removeClass('selected')
+            $('a[value="started"]').removeClass('selected')
+            $('a[value="complete"]').addClass('selected')
+            $('a[value="over_due"]').removeClass('selected')
+        }
+        else if(data[0][4]=="over_due")
+        {
+            $('a[value="not_started"]').removeClass('selected')
+            $('a[value="started"]').removeClass('selected')
+            $('a[value="complete"]').removeClass('selected')
+            $('a[value="over_due"]').addClass('selected')
+        }
+
+        $("#msinput2").val(data[0][1]);
+        $("#ms_desc").val(data[0][5]);
+        $("#starting_date").val(data[0][2]);
+        $("#ending_date").val(data[0][3]);
+
+        $("#ms_info").show();
+        $("#created_by").text(data[0][6]);
+        $("#created_date").text(data[0][8]);
+        $("#modified_by").text(data[0][7]);
+        $("#modified_date").text(data[0][9]);
+
+
+        $('input[name="team"]:checked').removeAttr('checked')
+        $.get("MilestoneTeams",{term : value},function(result)
+        {
+            $('input[name="team"]').each(function(){
+                for(var i=0;i<result.length;i++)
+                {
+                    if($(this).val()==result[i])
+                    {
+                        $(this).attr('checked', true)
+                    }
+                }
+            });
+        });
+
+        Other_Info(data[0][1]);
+
+    });
+}
+
+
+function Other_Info(value){
+
+    $.get("MilestoneRequirements",{term : value},function(data)
+    {
+        ResultTable(milereqs,data['Heading'],data['TableData'],"Milestone Requirements");
+        make_req_clickable();
+    });
+
+    $.get("MilestoneTestings",{term : value},function(data)
+    {
+        ResultTable(miletests,data['Heading'],data['TableData'],"Milestone Testings");
+        make_test_clickable();
+    });
+
+    $.get("MilestoneTasks",{term : value},function(data)
+    {
+        ResultTable(miletasks,data['Heading'],data['TableData'],"Milestone Tasks");
+        make_task_clickable();
+    });
+
+    $.get("MilestoneBugs",{term : value},function(data)
+    {
+        ResultTable(milebugs,data['Heading'],data['TableData'],"Milestone Bugs");
+        make_bug_clickable();
+    });
+
+    $.get("MilestoneReport",{term : value},function(data)
+    {
+        $("#ms_report").html(''
+            + '<span class="progress-bar" style="width: 35%"><span class="progress" style="width: ' +
+            data['progress'][0] + '%' +
+            '">&nbsp;</span></span>'
+
+            + '<table class="stats" style="line-height: 220%">'
+            + '<tr>'
+            + ' <td class="stat">'
+            +  '<b><span class="progress-percent">' +
+            data['progress'][0] + '%' +
+            '</span></b>'
+            + '<span class="stat-label"> complete</span>'
+            + '</td>'
+            + '<td class="stat">'
+            + '&nbsp;&nbsp;&nbsp;&nbsp;'
+            + '<b id="open">' +
+            data['progress'][1] +
+            '</b>'
+            + '<span class="stat-label"> open</span>'
+            + '</td>'
+            + '<td class="stat">'
+            + '&nbsp;&nbsp;&nbsp;&nbsp;'
+            +  '<b id="closed">' +
+            data['progress'][2] +
+            '</b>'
+            + '<span class="stat-label"> closed</span>'
+            + '</td>'
+            + '</tr>'
+            + '</table>'
+            + '<div class="milestone-actions">'
+            + '<a href="" class="milestone-action">Edit</a>'
+            + '&nbsp;&nbsp;&nbsp;&nbsp;'
+            + '<a href="" class="milestone-action" data-method="put">Mark as closed</a>'
+            + '&nbsp;&nbsp;&nbsp;&nbsp;'
+            + '<a href="" rel="facebox" class="milestone-action" style="color: red">Delete</a>'
+
+            + '</div>'
+
+            + '<br/><br/>'
+            + '<table>'
+            + '<tr width="100%">'
+            + '<td class="tc_form_label_col" align="right" width="30%">'
+            +  '<b class="Text">Generate Report:</b>'
+            + '</td>'
+            + '<td class="tc_form_input_col" id="status" align="left" width="30%">'
+            + '<select class="section combo-box" data-level="" id="1">'
+            +  '<option value="">Select</option>'
+            + '<option value="All">All</option>'
+            + '</select>'
+            + '</td>'
+            + '</tr>'
+            + '</table>'
+
+        );
+
+    });
+
+}
+
 
 function New_UI(){
     status_button_preparation();
@@ -165,88 +333,7 @@ function New_UI(){
                 });
 
 
-                $.get("MilestoneRequirements",{term : value},function(data)
-                {
-                    ResultTable(milereqs,data['Heading'],data['TableData'],"Milestone Requirements");
-                    make_req_clickable();
-                });
-
-                $.get("MilestoneTestings",{term : value},function(data)
-                {
-                    ResultTable(miletests,data['Heading'],data['TableData'],"Milestone Testings");
-                    make_test_clickable();
-                });
-
-                $.get("MilestoneTasks",{term : value},function(data)
-                {
-                    ResultTable(miletasks,data['Heading'],data['TableData'],"Milestone Tasks");
-                    make_task_clickable();
-                });
-
-                $.get("MilestoneBugs",{term : value},function(data)
-                {
-                    ResultTable(milebugs,data['Heading'],data['TableData'],"Milestone Bugs");
-                    make_bug_clickable();
-                });
-
-                $.get("MilestoneReport",{term : value},function(data)
-                {
-                    $("#ms_report").html(''
-                        + '<span class="progress-bar" style="width: 35%"><span class="progress" style="width: ' +
-                        data['progress'][0] + '%' +
-                        '">&nbsp;</span></span>'
-
-                        + '<table class="stats" style="line-height: 220%">'
-                        + '<tr>'
-                        + ' <td class="stat">'
-                        +  '<b><span class="progress-percent">' +
-                        data['progress'][0] + '%' +
-                        '</span></b>'
-                        + '<span class="stat-label"> complete</span>'
-                        + '</td>'
-                        + '<td class="stat">'
-                        + '&nbsp;&nbsp;&nbsp;&nbsp;'
-                        + '<b id="open">' +
-                        data['progress'][1] +
-                        '</b>'
-                        + '<span class="stat-label"> open</span>'
-                        + '</td>'
-                        + '<td class="stat">'
-                        + '&nbsp;&nbsp;&nbsp;&nbsp;'
-                        +  '<b id="closed">' +
-                        data['progress'][2] +
-                        '</b>'
-                        + '<span class="stat-label"> closed</span>'
-                        + '</td>'
-                        + '</tr>'
-                        + '</table>'
-                        + '<div class="milestone-actions">'
-                        + '<a href="" class="milestone-action">Edit</a>'
-                        + '&nbsp;&nbsp;&nbsp;&nbsp;'
-                        + '<a href="" class="milestone-action" data-method="put">Mark as closed</a>'
-                        + '&nbsp;&nbsp;&nbsp;&nbsp;'
-                        + '<a href="" rel="facebox" class="milestone-action" style="color: red">Delete</a>'
-
-                        + '</div>'
-
-                        + '<br/><br/>'
-                        + '<table>'
-                        + '<tr width="100%">'
-                        + '<td class="tc_form_label_col" align="right" width="30%">'
-                        +  '<b class="Text">Generate Report:</b>'
-                        + '</td>'
-                        + '<td class="tc_form_input_col" id="status" align="left" width="30%">'
-                        + '<select class="section combo-box" data-level="" id="1">'
-                        +  '<option value="">Select</option>'
-                        + '<option value="All">All</option>'
-                        + '</select>'
-                        + '</td>'
-                        + '</tr>'
-                        + '</table>'
-
-                    );
-
-                });
+                Other_Info(value);
 
                 return false;
             }

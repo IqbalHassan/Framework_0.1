@@ -26,16 +26,27 @@ $(document).ready(function() {
 				dataType: "json",
 				success: function(data) {
 					if (data['message'] === 'User Not Found!') {
-						alertify.error("No user found with the provided details.");
+						alertify.error("Incorrect User Name");
 						$("#password").val("");
-					} else {
-						alertify.success("Welcome, " + data['message']);
+					} 
+					else if (data['message'] === 'Incorrect Password') {
+						alertify.error("Incorrect Password");
+						$("#password").val("");
+					} 
+					
+					
+					else {
+						alertify.success("Welcome, " + data['message'][1]);
 						var path_to_redirect = sessionStorage.getItem("path_to_redirect");
-						
-						setTimeout(function() {
-							alertify.success("Redirecting you to the previous page.");
+						if (path_to_redirect == null){
+							var path_to_redirect = "/Home/Dashboard/" 
+						}
+						/*
+						setTimeout(function() 
+						{
+                           alertify.success("Redirecting you to the previous page.");
 						}, 1000);
-						
+						*/
 						
 						$.session.set('username', username);
 	                    $.session.set('fullname', data['message'][1]);
