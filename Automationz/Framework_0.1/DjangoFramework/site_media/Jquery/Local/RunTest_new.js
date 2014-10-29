@@ -10,6 +10,7 @@ $(document).ready(function(){
     DeleteSearchQueryText(project_id,team_id);
     ManageMilestone(project_id,team_id);
     SubmitRun(project_id,team_id);
+
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val().trim());
         window.location.reload(true);
