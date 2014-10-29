@@ -634,6 +634,7 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             CustomSet = "set"
             Tag = 'tag'
             Client = 'client'
+            Feature = 'feature'
         if Environment == "PC":
             Section = "Section"
             Test_Run_Type = "test_run_type"
@@ -643,11 +644,12 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             CustomSet = "set"
             Tag = 'tag'
             Client = 'client'
+            Feature = 'feature'
         
         Conn = GetConnection()
         results = DB.GetData(Conn, "select distinct name,property from test_case_tag "
                                    "where name Ilike '%" + value + "%' "
-                                     "and property in('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') "
+                                     "and property in('" + Section + "','" + Feature + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') "
                                      "and tc_id in (select tc_id from test_case_tag where name = '" + Environment + "' and property = 'machine_os' ) ", False
                                      )
 
@@ -681,6 +683,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             Section_Tag = 'Section'
             Custom_Tag = 'CustomTag'
             Section_Path_Tag = 'section_id'
+            Feature_Path_Tag = 'feature_id'
             Priority_Tag = 'Priority'
             Status='Status'
             set_type='set'
@@ -693,7 +696,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             for each in dependency:
                 wherequery+=("'"+each.strip()+"'")
                 wherequery+=','
-            wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+            wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
             print wherequery
             tag_query="select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)"%(value,wherequery)
             id_query="select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')"%(value,value)
@@ -836,6 +839,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 CustomSet = "set"
                 Tag = 'tag'
                 Client = 'client'
+                Feature = 'feature'
             if Environment == "PC":
                 Section = "Section"
                 Test_Run_Type = "test_run_type"
@@ -845,6 +849,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 CustomSet = "set"
                 Tag = 'tag'
                 Client = 'client'
+                Feature = 'feature'
             QueryText = []
             for eachitem in UserText:
                 if len(eachitem) != 0 and  len(eachitem) != 1:
@@ -881,13 +886,13 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
                 #if eachitem in ('Dev', 'Ready','Forced'):
                 #   Query = "HAVING COUNT(CASE WHEN property = '" + eachitem + "' and name='" + TCStatusName + "'  THEN 1 END) > 0 "
                 #else:
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Feature + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
                 #if eachitem in ('Dev', 'Ready','Forced'):
                 #   Query = Query + "AND COUNT(CASE WHEN property = '" + eachitem + "' and name='" + TCStatusName + "'  THEN 1 END) > 0 "
                 #else:
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Feature + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') THEN 1 END) > 0 "
         Query = Query + " AND COUNT(CASE WHEN name = '%s' and property = '%s' THEN 1 END) > 0 " % (TCStatusName, propertyValue)
         Query = Query + " AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0"
         query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name " + Query
@@ -1546,6 +1551,8 @@ def Verify_Query(request):  #==================Returns Message if Depandency is 
                 Env_Dependency = "MacDependency"
                 TCStatusName = "MacStatus"
                 CustomTag = "MacCustomTag"
+                Feature = 'feature'
+                
 
             if Environment == "PC":
                 Section = "Section"
@@ -1556,6 +1563,7 @@ def Verify_Query(request):  #==================Returns Message if Depandency is 
                 CustomTag = "CustomTag"
                 CustomSet = 'set'
                 Tag = 'tag'
+                Feature = 'feature'
             Client='client'
             QueryText = []
             for eachitem in UserText:
@@ -1601,10 +1609,10 @@ def Verify_Query(request):  #==================Returns Message if Depandency is 
         count = 1
         for eachitem in QueryText:
             if count == 1:
-                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag +"','" + Client + "') THEN 1 END) > 0 "
+                Query = "HAVING COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Feature + "','"+ CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag +"','" + Client + "') THEN 1 END) > 0 "
                 count = count + 1
             elif count >= 2:
-                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client +"') THEN 1 END) > 0 "
+                Query = Query + "AND COUNT(CASE WHEN name = '" + eachitem + "' and property in ('" + Section + "','" + Feature + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client +"') THEN 1 END) > 0 "
         Query = Query + "AND COUNT(CASE WHEN name = '" + TCStatusName + "' and property = '" + propertyValue + "' THEN 1 END) > 0 "
         Query = Query + "AND COUNT(CASE WHEN property = 'machine_os' and name = '" + Environment + "' THEN 1 END) > 0 "
         query="Select distinct t1. property,t2. property from test_case_tag t1, test_case_tag t2 "
@@ -1777,6 +1785,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     Section_Tag = 'Section'
                     Custom_Tag = 'CustomTag'
                     Section_Path_Tag = 'section_id'
+                    Feature_Path_Tag = 'feature_id'
                     Priority_Tag = 'Priority'
                     set_type='set'
                     tag_type='tag'
@@ -1789,7 +1798,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     for each in dependency:
                         wherequery+=("'"+each.strip()+"'")
                         wherequery+=','
-                    wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+                    wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
                     print wherequery
                     
                     count = 1
@@ -2956,6 +2965,7 @@ def Create_Submit_New_TestCase(request):
     @param TC_Name: Title of the test case
     @param TC_Type: Default / Performance / Localization
     @param Tag_List: List of Section names tag
+    @param Tag_List: List of Feature names tag
     @param Dependency_List: List of dependent clients
     @param Priority_List: P1, P2, P3
     @param Steps_Data_List: [(Step1,Data1),(Step2,Data2),(Step3,Data3)]. Step1 = stepname, Data1 = [(Field,value)] format depends on the step
@@ -2985,6 +2995,7 @@ def Create_Submit_New_TestCase(request):
             Status = request.GET.get(u'Status', '')
             Is_Edit = request.GET.get(u'Is_Edit', 'create')
             Section_Path = request.GET.get(u'Section_Path', '')
+            Fection_Path = request.GET.get(u'Section_Path', '')
             Step_Description_List = request.GET.get(u'Steps_Description_List', '')
             print Step_Description_List
             Step_Description_List = Step_Description_List.split('|')
@@ -3169,6 +3180,7 @@ def ViewTestCase(TC_Id):
             Status_List = [x[0] for x in test_case_tag_details if x[1] == 'Status']
             Status = ''.join(Status_List)
             print Status
+            
             Section_Id = [x[0] for x in test_case_tag_details if x[1] == 'section_id']
             if len(Section_Id) > 0:
                 Conn=GetConnection()
@@ -3180,6 +3192,18 @@ def ViewTestCase(TC_Id):
                     Section_Path = ''
             else:
                 Section_Path = ''
+            
+            Feature_Id = [x[0] for x in test_case_tag_details if x[1] == 'feature_id']
+            if len(Feature_Id) > 0:
+                Conn=GetConnection()
+                Feature_Path = DB.GetData(Conn, "select feature_path from product_features where feature_id = '%d'" % int(Feature_Id[0]), False)
+                Conn.close()
+                if len(Feature_Path) > 0:
+                    Feature_Path = Feature_Path[0][0]
+                else:
+                    Feature_Path = ''
+            else:
+                Feature_Path = ''
 
             
             # find all steps and data for the test case
@@ -3435,6 +3459,53 @@ def Get_SubSections(request):  #==================Returns Abailable User Name in
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+
+def Get_Features(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
+
+    Conn = GetConnection()
+    results = []
+    # if request.is_ajax():
+    if request.method == "GET":
+        feature = request.GET.get(u'feature', '')
+        project_id=request.GET.get(u'project_id','')
+        team_id=request.GET.get(u'team_id','')
+        if feature == '':
+            query="select distinct subltree(feature_path,0,1) from team_wise_settings tws,product_features ps where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d"%(project_id,int(team_id))
+            #query = "select distinct subltree(feature_path,0,1) from product_features"
+            results = DB.GetData(Conn, query, False)
+            levelnumber = 0
+        else:
+            levelnumber = feature.count('.') + 1
+            
+            query="select distinct subltree(feature_path,%d,%d) from team_wise_settings tws,product_features ps where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d and feature_path~'*.%s.*' and nlevel(feature_path)>%d"%(int(levelnumber),int(levelnumber+1),project_id,int(team_id),feature,int(levelnumber))
+            #query = "select distinct subltree(feature_path,0,1) from product_features"
+            results = DB.GetData(Conn, query, False)
+
+    results.insert(0, (str(levelnumber),))
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Get_SubFeatures(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
+
+    Conn = GetConnection()
+    results = []
+    # if request.is_ajax():
+    if request.method == "GET":
+        feature = request.GET.get(u'feature', '')
+        if feature == '':
+            results = DB.GetData(Conn, "select distinct subpath(feature_path,0,2) from product_features", False)
+            levelnumber = 0
+        else:
+            levelnumber = feature.count('.') + 1
+            results = DB.GetData(Conn, "select distinct subltree(feature_path,0,2) FROM product_features WHERE feature_path ~ '*.%s.*' and nlevel(feature_path) > 1" % (feature), False)
+
+    results.insert(0, (str(levelnumber),))
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+
+
+
 def Get_Browsers(request):
     Conn = GetConnection()
     results = []
@@ -3652,11 +3723,17 @@ def BundleReport_Table(request):
             browser_query = "select distinct client from test_run_env where machine_os ~ '" + OSName + ".*' and product_version = '" + version + "' order by client"
             section_query = "select distinct subpath(section_path,0,1) from product_sections"
             sect_sub_q = "select ps.section_path from product_sections ps, result_test_case_tag rtct where ps.section_id::text = rtct.name and rtct.property='section_id' group by ps.section_path order by ps.section_path"
+            
+            feature_query = "select distinct subpath(feature_path,0,1) from product_features"
+            feat_sub_q = "select ps.feature_path from product_features ps, result_test_case_tag rtct where ps.feature_id::text = rtct.name and rtct.property='feature_id' group by ps.feature_path order by ps.feature_path"
+
+            
             OS_client_query = "select distinct machine_os,client from test_run_env where machine_os ~ '" + OSName + ".*' and product_version = '" + version + "' order by machine_os"
             OS = DB.GetData(Conn, os_query, False)
             browsers = DB.GetData(Conn, browser_query, False)
             env_details = DB.GetData(Conn, OS_client_query, False)
             sections = DB.GetData(Conn, sect_sub_q, False)
+            features = DB.GetData(Conn, feat_sub_q, False)
             # env_details.append("Total")
             # Total = ["Total"]
             # sections.append(Total)
@@ -6573,6 +6650,51 @@ def getProductSection(request):
                 section_path = DB.GetData(Conn, query)
     result = simplejson.dumps(section_path)
     return HttpResponse(result, mimetype='application/json')
+
+def getProductFeature(request):
+    """Conn=GetConnection()
+    if request.is_ajax():
+        if request.method=='GET':
+            feature=request.GET.get(u'feature','')
+            if feature=="":
+                main_result=[]
+                query="select distinct feature_path from product_features"
+                feature_path=DB.GetData(Conn,query)
+                for each in feature_path:
+                    main_result.append((feature_path.split('.')[0],[]))
+                    
+                print feature_path"""
+    """Conn = GetConnection()
+    results = []
+    #if request.is_ajax():
+    if request.method == "GET":
+        feature = request.GET.get(u'feature', '')
+        if feature == '':
+            final_result=[]
+            results = DB.GetData(Conn, "select distinct subpath(feature_path,0,1) from product_features", False)
+            levelnumber = 0
+            for each in results:
+                top_level_query="select nlevel(feature_path) from product_features where feature_path ~ '*.%s.*' order by nlevel(feature_path) desc"%each[0]    
+                top_level=DB.GetData(Conn,top_level_query)
+                print top_level
+                levelnumber = feature.count('.') + 1
+                results_sub = DB.GetData(Conn, "select distinct subltree(feature_path,%d,%d) FROM product_features WHERE feature_path ~ '*.%s.*' and nlevel(feature_path) > %d" % (levelnumber, levelnumber + 1, each[0], levelnumber), False)
+                temp=[]
+                for eachitem in results_sub:
+                    temp.append(eachitem[0])
+                final_result.append((each[0],temp))
+            print final_result"""
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            feature = request.GET.get(u'feature', '')
+            if feature == "":
+                query = "select distinct subpath(feature_path,0,1) from product_features"
+                feature_path = DB.GetData(Conn, query)
+    result = simplejson.dumps(feature_path)
+    return HttpResponse(result, mimetype='application/json')
+
+
 ##########MileStone Code####################
 def AutoMileStone(request):
     if request.is_ajax():
@@ -6853,8 +6975,10 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         QueryText.append(eachitem.strip())
                 print QueryText
                 Section_Tag = 'Section'
+                Feature_Tag = 'Feature'
                 Custom_Tag = 'CustomTag'
                 Section_Path_Tag = 'section_id'
+                Feature_Path_Tag = 'feature_id'
                 Priority_Tag = 'Priority'
                 set_type='set'
                 tag_type='tag'
@@ -6867,7 +6991,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 for each in dependency:
                     wherequery+=("'"+each.strip()+"'")
                     wherequery+=','
-                wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+                wherequery+=("'"+Section_Tag+"','"+Feature_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
                 print wherequery
                 TestIDList = []
                 for eachitem in QueryText:
@@ -6938,7 +7062,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 RefinedData=dataWithTime
                 for each in RefinedData:
                     print each
-                Heading = ['ID', 'Title', 'Section', 'Type','Time']
+                Heading = ['ID', 'Title', 'Section', 'Feature' ,'Type','Time']
                 for i in dataWithTime:
                     x = i[1]
                     print x
@@ -6952,6 +7076,14 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         section_id = int(data[0][0])
                         
                         query = '''
+                        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
+                        ''' % ('feature_id', i[0])
+                        Conn=GetConnection()
+                        data = DB.GetData(Conn, query, False, False)
+                        Conn.close()
+                        feature_id = int(data[0][0])                        
+                        
+                        query = '''
                         SELECT section_path FROM product_sections WHERE section_id=%d
                         ''' % section_id
                         Conn=GetConnection()
@@ -6959,6 +7091,16 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         Conn.close()
                         section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
                         i.insert(2, section_path)
+                        
+                                                
+                        query = '''
+                        SELECT feature_path FROM product_features WHERE feature_id=%d
+                        ''' % feature_id
+                        Conn=GetConnection()
+                        data = DB.GetData(Conn, query, False, False)
+                        Conn.close()
+                        feature_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
+                        i.insert(2, feature_path)
                     except:
                         print '-'
                     if test_status_request:
@@ -6970,7 +7112,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                             data = DB.GetData(Conn, query, False, True)
                             Conn.close()
                             i.insert(4, data[0][0])           
-                            Heading = ['ID', 'Title', 'Section', 'Type', 'Status', 'Time']
+                            Heading = ['ID', 'Title', 'Section','Feature' ,'Type', 'Status', 'Time']
                         except:
                             i[4] = ' - '
                 results = {'Heading':Heading, 'TableData':RefinedData}
@@ -9797,11 +9939,11 @@ def get_all_data_dependency_page(request):
                 Conn=GetConnection()
                 unused_branch_list=DB.GetData(Conn,query,False)
                 Conn.close()
-                query="select distinct f.id,f.feature_name from feature f,feature_management fm where f.id=fm.feature and fm.project_id='%s' and fm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
+                query="select distinct f.feature_id,f.feature_path from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
                 Conn=GetConnection()
                 feature_list=DB.GetData(Conn,query,False)
                 Conn.close()
-                query="select distinct id,feature_name from feature except (select distinct f.id,f.feature_name from feature f,feature_management fm where f.id=fm.feature and fm.project_id='%s' and fm.team_id=%d)"%(project_id.strip(),int(team_id.strip()))
+                query="select distinct feature_id,feature_path from product_features except (select distinct f.feature_id,f.feature_path from product_features f,feature_management fm where f.feature_id=fm.product_features and fm.project_id='%s' and fm.team_id=%d)"%(project_id.strip(),int(team_id.strip()))
                 Conn=GetConnection()
                 unused_feature_list=DB.GetData(Conn,query,False)
                 Conn.close()
@@ -10588,16 +10730,16 @@ def add_new_feature(request):
         if request.method=='GET':
             if request.is_ajax():
                 type_tag="feature"
-                dependency=request.GET.get(u'feature_name','')
+                dependency=request.GET.get(u'feature_path','')
                 #check for the occurance
-                query="select count(*) from feature where feature_name='%s'"%dependency.strip()
+                query="select count(*) from feature where feature_path='%s'"%dependency.strip()
                 Conn=GetConnection()
                 count=DB.GetData(Conn,query)
                 if isinstance(count,list):
                     if len(count)==1 and count[0]==0:
                         #form dict to insert 
                         Dict={
-                              'feature_name':dependency.strip()
+                              'feature_path':dependency.strip()
                         }
                         Conn=GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"feature",**Dict)
@@ -10711,23 +10853,23 @@ def rename_feature(request):
                 type_tag="Feature"
                 old_name=request.GET.get(u'old_name','')
                 new_name=request.GET.get(u'new_name','')
-                query="select count(*) from feature where feature_name='%s'"%old_name.strip()
+                query="select count(*) from product_features where feature_path='%s'"%old_name.strip()
                 Conn=GetConnection()
                 old_name_count=DB.GetData(Conn,query)
                 Conn.close()
-                query="select count(*) from feature where feature_name='%s'"%new_name.strip()
+                query="select count(*) from product_features where feature_path='%s'"%new_name.strip()
                 Conn=GetConnection()
                 new_name_count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(old_name_count,list):
                     if len(old_name_count)==1 and old_name_count[0]>0:
                         if len(new_name_count)==1 and new_name_count[0]==0:
-                            sWhereQuery="where feature_name='%s'"%old_name.strip()
+                            sWhereQuery="where feature_path='%s'"%old_name.strip()
                             Dict={
-                                'feature_name':new_name.strip()
+                                'feature_path':new_name.strip()
                             }
                             Conn=GetConnection()
-                            result=DB.UpdateRecordInTable(Conn,"feature", sWhereQuery,**Dict)
+                            result=DB.UpdateRecordInTable(Conn,"product_features", sWhereQuery,**Dict)
                             Conn.close()
                             if result==True:
                                 PassMessasge(sModuleInfo,update_success(old_name, new_name, type_tag), success_tag)
@@ -10767,8 +10909,8 @@ def first_level_sub_feature(request):
     try:
         if request.method=='GET':
             if request.is_ajax():
-                type_tag="Feature Name"
-                new_name=request.GET.get(u'feature_name','')
+                type_tag="Feature Path"
+                new_name=request.GET.get(u'feature_path','')
                 new_value=request.GET.get(u'reference_value','')
                 query="select count(*) from first_level_sub_feature where name='%s'"%(new_name.strip())
                 Conn=GetConnection()

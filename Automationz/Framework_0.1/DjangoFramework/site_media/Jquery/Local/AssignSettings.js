@@ -463,13 +463,13 @@ function create_sub_feature(dep_name,project_id,team_id,dep_value){
     var message="";
     message+='<table width="100%">';
     message+='<tr><td colspan="2"><b class="Text">Create Sub Feature For \''+dep_name+'\'</b></td></tr>';
-    message+='<tr><td align="right"><b class="Text">Feature Name:</b></td><td align="left"><input class="textbox" placeholder="Enter the feature name" id="feature_name" style="width:100%"/></td></tr>'
+    message+='<tr><td align="right"><b class="Text">Feature Name:</b></td><td align="left"><input class="textbox" placeholder="Enter the feature name" id="feature_path" style="width:100%"/></td></tr>'
     message+='</table>'
     alertify.confirm(message,function(e){
         if(e){
-            var feature_name=$('#feature_name').val().trim();
+            var feature_path=$('#feature_path').val().trim();
             $.get('first_level_sub_feature',{
-               'feature_name':feature_name.trim(),
+               'feature_path':feature_path.trim(),
                 'reference_value':dep_value
             },function(data){
                 if(data['message']==true){
@@ -894,14 +894,14 @@ function DependencyTabButtons(project_id,team_id){
         var message="";
         message+='<table width="100%">';
         message+='<tr><td align="center" colspan="2"><b class="Text">Create New Feature</b></td></tr>';
-        message+='<tr style="margin-top: 2%;"><td align="right"><b class="Text">Feature:</b></td><td><input class="textbox" style="width: 100%" id="feature_name"></td></tr>';
+        message+='<tr style="margin-top: 2%;"><td align="right"><b class="Text">Feature:</b></td><td><input class="textbox" style="width: 100%" id="feature_path"></td></tr>';
         message+='</table>';
         alertify.confirm(message,function(e){
             if(e){
-                var feature_name=$('#feature_name').val().trim();
-                if(feature_name!=""){
+                var feature_path=$('#feature_path').val().trim();
+                if(feature_path!=""){
                     $.get('add_new_feature',{
-                        feature_name:feature_name
+                        feature_path:feature_path
                     },function(data){
                         if(data['message']==true){
                             alertify.success(data['log_message'],time_out);
