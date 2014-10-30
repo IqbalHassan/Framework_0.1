@@ -124,6 +124,7 @@ function populate_div(div_name,array_list,project_id,team_id,type){
     if(type=='feature'){
         $('#name_feature_tab').html("");
         $('#version_feature_tab').html("");
+        $('#last_feature_tab').html("");
         $('.'+type).on('click',function(){
             $('.'+type).removeClass('selected');
             $('.add_feature').css({'background':'none'});
@@ -138,6 +139,7 @@ function populate_div(div_name,array_list,project_id,team_id,type){
                 team_id:team_id
             },function(data){
                 $('#version_feature_tab').html("");
+                $('#last_feature_tab').html("");
                 populate_second_div("name_feature_tab",data['version_list'],data['default_list'],"first_level_feature",project_id,team_id);
             });
         });
@@ -369,7 +371,7 @@ function create_level_wise_feature(dep_name,project_id,team_id,dep_value,type){
                 }
             });
             var value_to_pass=(base_feature+'.'+dep_name+'.'+new_feature).trim();
-            if(type='second_level_feature'){
+            if(type=='second_level_feature'){
                 var first_level_feature=''
                 $('.first_level_feature').each(function(){
                   if($(this).hasClass('selected')){
@@ -658,15 +660,9 @@ function create_sub_feature(dep_name,project_id,team_id,dep_value){
     message+='</table>'
     alertify.confirm(message,function(e){
         if(e){
-<<<<<<< HEAD
-            var feature_name=$('#feature_name').val().trim();
-
-=======
             var feature_path=$('#feature_path').val().trim();
->>>>>>> remotes/origin/master
-            $.get('first_level_sub_feature',{
-               'feature_path':feature_path.trim(),
-                'reference_value':dep_value
+            $.get('CreateLevelWiseFeature',{
+               'name':(dep_name+'.'+feature_path).trim()
             },function(data){
                 if(data['message']==true){
                     alertify.success(data['log_message'],time_out);

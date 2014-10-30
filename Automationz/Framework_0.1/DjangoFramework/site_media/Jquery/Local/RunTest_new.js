@@ -10,13 +10,6 @@ $(document).ready(function(){
     DeleteSearchQueryText(project_id,team_id);
     ManageMilestone(project_id,team_id);
     SubmitRun(project_id,team_id);
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-=======
-
->>>>>>> master
     /*$('.edit_machine').on('click',function(){
         $('.tabs-div').removeClass('responsive-tabs__panel--active');
 
@@ -32,7 +25,6 @@ $(document).ready(function(){
         //$('.tabs-div:last').show();
         $('.tabs-dive:last').prev().addClass('responsive-tabs__heading--active');
     });*/
->>>>>>> remotes/origin/master
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val().trim());
         window.location.reload(true);
