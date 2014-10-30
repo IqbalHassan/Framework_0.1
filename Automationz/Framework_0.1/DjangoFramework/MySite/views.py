@@ -8067,7 +8067,9 @@ def Tasks_List(request):
                 data.append(y)
             temp=x[1][0].replace('_','-')
             temp=temp.replace('.','/')
-            if data[0]==temp:
+            if temp==data[0]:
+                data.append('None')
+            elif 'REQ' in temp:
                 data.append('None')
             else:
                 data.append(temp)

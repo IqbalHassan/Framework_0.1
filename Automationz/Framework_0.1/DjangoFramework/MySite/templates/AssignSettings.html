@@ -146,9 +146,7 @@
                 <thead>
                 <tr>
                     <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text" width="33%">Features</td>
-                    <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text" width="33%">Sub Features</td>
-                    <td width="33%">&nbsp</td>
-
+                    <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text" width="33%" colspan="3">Sub Features</td>
                 </tr>
                 </thead>
                 <tbody>
@@ -185,13 +183,18 @@
                             </table>
                         </div>
                     </td>
-                    <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
+                    <td style="width: 25%; border-left: 2px solid #ccc; position: relative;">
                         <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="name_feature_tab">
 
                         </div>
                     </td>
-                    <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
+                    <td style="width: 25%; border-left: 2px solid #ccc; position: relative;">
                         <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="version_feature_tab">
+
+                        </div>
+                    </td>
+                    <td style="width: 25%; border-left: 2px solid #ccc; position: relative;">
+                        <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="last_feature_tab">
 
                         </div>
                     </td>
@@ -248,6 +251,18 @@
         <li data-action = "rename">Rename</li>
         <li data-action = "usage">Usage</li>
         <li data-action = "unlink">Unlink</li>
+    </ul>
+    <ul class='custom-menu custom-menu-first_level_feature' style="list-style-type: none;padding: 0px;margin: 0px;">
+        <li data-action = "create">New</li>
+        <li data-action = "rename">Rename</li>
+        <li data-action = "usage">Usage</li>
+        <li data-action = "delete">Delete</li>
+    </ul>
+    <ul class='custom-menu custom-menu-second_level_feature' style="list-style-type: none;padding: 0px;margin: 0px;">
+        <li data-action = "create">New</li>
+        <li data-action = "rename">Rename</li>
+        <li data-action = "usage">Usage</li>
+        <li data-action = "delete">Delete</li>
     </ul>
     <script type="text/javascript" src="/site_media/Jquery/Local/AssignSettings.js"></script>
 </article>
