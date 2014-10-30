@@ -9981,11 +9981,11 @@ def get_all_data_dependency_page(request):
                 Conn=GetConnection()
                 unused_branch_list=DB.GetData(Conn,query,False)
                 Conn.close()
-                query="select distinct f.feature_id,f.feature_path from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
+                query="select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
                 Conn=GetConnection()
                 feature_list=DB.GetData(Conn,query,False)
                 Conn.close()
-                query="select distinct feature_id,feature_path from product_features except (select distinct f.feature_id,f.feature_path from product_features f,feature_management fm where f.feature_id=fm.product_features and fm.project_id='%s' and fm.team_id=%d)"%(project_id.strip(),int(team_id.strip()))
+                query="select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features except (select distinct subltree(f.feature_path,0,1),subltree(f.feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d)"%(project_id.strip(),int(team_id.strip()))
                 Conn=GetConnection()
                 unused_feature_list=DB.GetData(Conn,query,False)
                 Conn.close()
@@ -10774,7 +10774,7 @@ def add_new_feature(request):
                 type_tag="feature"
                 dependency=request.GET.get(u'feature_path','')
                 #check for the occurance
-                query="select count(*) from feature where feature_path='%s'"%dependency.strip()
+                query="select count(*) from product_features where feature_path='%s'"%dependency.strip()
                 Conn=GetConnection()
                 count=DB.GetData(Conn,query)
                 if isinstance(count,list):
@@ -10784,7 +10784,7 @@ def add_new_feature(request):
                               'feature_path':dependency.strip()
                         }
                         Conn=GetConnection()
-                        result=DB.InsertNewRecordInToTable(Conn,"feature",**Dict)
+                        result=DB.InsertNewRecordInToTable(Conn,"product_features",**Dict)
                         Conn.close()
                         if result==True:
                             PassMessasge(sModuleInfo,entry_success(dependency,type_tag), success_tag)
@@ -10822,11 +10822,16 @@ def link_feature(request):
                 value=request.GET.get(u'value','')
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
+                query="select feature_id from product_features where feature_path ~ '%s'"%value
+                Conn=GetConnection()
+                feature_id=DB.GetData(Conn,query)
+                Conn.close()
                 Dict={
                     'project_id':project_id,
                     'team_id':int(team_id),
-                    'feature':int(value)
+                    'feature':int(feature_id[0])
                 }
+                value=feature_id[0]
                 Conn=GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"feature_management",**Dict)
                 Conn.close()
@@ -10859,11 +10864,16 @@ def unlink_feature(request):
                 value=request.GET.get(u'value','')
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
+                query="select feature_id from product_features where feature_path ~ '%s'"%value
+                Conn=GetConnection()
+                feature_id=DB.GetData(Conn,query)
+                Conn.close()
                 Dict={
                     'project_id':project_id,
                     'team_id':int(team_id),
-                    'feature':int(value)
+                    'feature':int(feature_id[0])
                 }
+                value=feature_id[0]
                 Conn=GetConnection()
                 result=DB.DeleteRecord(Conn,"feature_management",**Dict)
                 Conn.close()
@@ -10946,58 +10956,71 @@ def rename_feature(request):
     except Exception,e:
         PassMessasge(sModuleInfo, e, 3)
 
-def first_level_sub_feature(request):
+def get_all_first_level_sub_feature(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name 
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                project_id=request.GET.get(u'project_id','')
+                name=request.GET.get(u'name',''),
+                team_id=request.GET.get(u'team_id','')
+                print name
+                print project_id
+                print team_id
+                level_count=name[0].count('.')+1
+                query="select distinct subltree(feature_path,%d,%d) from product_features where nlevel(feature_path)>%d and feature_path ~'*.%s.*'"%(int(level_count),int(level_count)+1,int(level_count),name[0].strip())
+                Conn=GetConnection()
+                version_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                result={
+                        'version_list':version_list,
+                        'default_list':[]
+                        }
+                 
+                result=simplejson.dumps(result)
+                return HttpResponse(result,mimetype='application/json')
+    except Exception,e:
+        PassMessasge(sModuleInfo, e, 3)
+def CreateLevelWiseFeature(request):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         if request.method=='GET':
             if request.is_ajax():
-                type_tag="Feature Path"
-                new_name=request.GET.get(u'feature_path','')
-                new_value=request.GET.get(u'reference_value','')
-                query="select count(*) from first_level_sub_feature where name='%s'"%(new_name.strip())
+                type_tag='Sub Feature'
+                new_name=request.GET.get(u'name','')
+                query="select count(*) from product_features where feature_path='%s'"%new_name.strip()
                 Conn=GetConnection()
                 count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(count,list):
                     if len(count)==1 and count[0]==0:
-                        Dict={
-                            'name':new_name.strip(),
-                            'feature_id':int(new_value.strip())
-                        }
+                        query="insert into product_features(feature_path) values('%s')"%new_name.strip()
                         Conn=GetConnection()
-                        result=DB.InsertNewRecordInToTable(Conn,"first_level_sub_feature",**Dict)
+                        cur=Conn.cursor()
+                        cur.execute(query)
+                        Conn.commit()
+                        cur.close()
                         Conn.close()
-                        if result==True:
-                            PassMessasge(sModuleInfo,entry_success(new_name.strip(), type_tag), success_tag)
-                            message=True
-                            log_message=entry_success(new_name.strip(), type_tag)
-                        else:
-                            PassMessasge(sModuleInfo,entry_fail(new_name.strip(), type_tag),error_tag)
-                            message=False
-                            log_message=entry_fail(new_name.strip(), type_tag)
+                        PassMessasge(sModuleInfo, entry_success(new_name, type_tag), success_tag)
+                        result={'log_message':entry_success(new_name, type_tag),'message':True}
+                        result=simplejson.dumps(result)
+                        return HttpResponse(result,mimetype='application/json')    
                     if len(count)==1 and count[0]>0:
                         PassMessasge(sModuleInfo,multiple_instance(new_name, type_tag), error_tag)
                         message=False
                         log_message=multiple_instance(new_name, type_tag)
+                        result={'message':message,'log_message':log_message}
+                        result=simplejson.dumps(result)
+                        return HttpResponse(result,mimetype='application/json')
                 else:
-                    PassMessasge(sModuleInfo,DBError,error_tag)
-                    message=True
-                    log_message=DBError
-                Conn.close()
-                result={
-                    'message':message,
-                    'log_message':log_message
-                }
-                result=simplejson.dumps(result)
-                return HttpResponse(result,mimetype='application/json')
+                    PassMessasge(sModuleInfo, DBError, error_tag)
+                    
             else:
                 PassMessasge(sModuleInfo,AjaxError, error_tag)
         else:
             PassMessasge(sModuleInfo, PostError, error_tag)
     except Exception,e:
-        PassMessasge(sModuleInfo, e, 3)
-
-#will be changing the new format inhere
+            PassMessasge(sModuleInfo, e, 3)
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
