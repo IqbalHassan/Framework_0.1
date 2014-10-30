@@ -1,4 +1,88 @@
 $(document).ready(function(){
+    primarySettings();
+    var project_id= $.session.get('project_id');
+    var team_id= $.session.get('default_team_identity');
+
+    $("#simple-menu").sidr({
+        name: 'sidr',
+        side: 'left'
+    });
+
+    $('#project_identity').on('change',function(){
+        $.session.set('project_id',$(this).val());
+        window.location.reload(true);
+    });
+
+    $.get("Reqs_List",{project_id : project_id},function(data)
+    {
+        if(data['reqs'].length>0) {
+            //make a table column
+            var message = "";
+            message += '<table class="one-column-emphasis">';
+            message += '<tr>';
+            for (var i = 0; i < data['Heading'].length; i++) {
+                message += '<th align="left">' + data['Heading'][i] + '</th>';
+            }
+            message += '</tr>'
+            for (var i = 0; i < data['reqs'].length; i++) {
+                message += '<tr>';
+                for (var j = 0; j < data['reqs'][i].length; j++) {
+                    message += '<td align="left">' + data['reqs'][i][j] + '</td>';
+
+
+                }
+                message += '</tr>';
+            }
+            message += '</table>';
+            $('#allReqs').html(message);
+            make_clickable('#allReqs');
+
+
+        }
+        else{
+            $("#allReqs").html('<h2>No Data Available</h2>')
+        }
+    });
+
+});
+
+function primarySettings(){
+    $('#project_code').text($.session.get('project_id'));
+    $('#create_new_requirement').click(function(event){
+        event.preventDefault();
+        window.location=('/Home/'+ $.session.get('project_id')+'/CreateRequirement/');
+    });
+}
+
+function make_clickable(divname) {
+    $(divname + ' tr>td:first-child').each(function () {
+        $(this).css({
+            'color': 'blue',
+            'cursor': 'pointer',
+            'textAlign': 'left'
+        });
+        $(this).click(function(){
+            window.location = '/Home/'+ $.session.get('project_id')+'/Requirements/'+$(this).text().trim()+'/';
+        })
+    });
+
+    $(divname + ' tr>td:last-child').each(function () {
+        /*if($(this).text()!=("None")){
+         $(this).css({
+         'color': 'blue',
+         'cursor': 'pointer',
+         'textAlign': 'left'
+         });
+         }*/
+        var divider = $(this).lastIndexOf("/");
+        console.log(divider);
+
+    });
+}
+
+
+
+/*$(document).ready(function(){
    PopulateGeneralInfo();
     var config_object = {
         "core": {
@@ -51,7 +135,7 @@ $(document).ready(function(){
                                 createNode(node.text + ".");
                             }*/
                             //create a child requirement under this requirement
-                            window.location=('/Home/'+ $.session.get('project_id')+'/CreateRequirement/'+ node.text);
+                           /* window.location=('/Home/'+ $.session.get('project_id')+'/CreateRequirement/'+ node.text);
                         }
                     },
                     "Edit" : {
@@ -80,7 +164,7 @@ $(document).ready(function(){
             "keep_selected_style": false
         },*/
 
-        "plugins" : [ "search", "types", "wholerow", "contextmenu", "sort" ]
+       /* "plugins" : [ "search", "types", "wholerow", "contextmenu", "sort" ]
     };
     //$('#tree').jstree(config_object);
     $("#tree").jstree(config_object)
@@ -152,4 +236,4 @@ function PopulateGeneralInfo(){
         event.preventDefault();
         window.location=("/Home/"+ $.session.get('project_id')+"/CreateRequirement/");
     });
-}
+}*/

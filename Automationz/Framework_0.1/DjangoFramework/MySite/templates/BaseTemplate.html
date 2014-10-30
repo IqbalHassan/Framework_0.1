@@ -132,7 +132,7 @@
 					<li class='has-sub'><a href='#'><span><i class="fa fa-calculator fa-fw fa-lg"></i> Requirement</span></a>
 						<ul>
 							<li><a href="/Home/ManageRequirement/"><i class="fa fa-search fa-fw fa-lg"></i> Search</a></li>
-							 <li><a href='#'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
+							 <li><a href='#' onclick="location.href='/Home/'+ $.session.get('project_id')+'/CreateRequirement/'"><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
 							 <li><a href='#'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Reports </span></a></li>
 							 <li><a href='#'><span><i class="fa fa-file-o fa-child fa-lg"></i> Assigned To Me </span></a></li>
 							 
@@ -143,7 +143,7 @@
 					<li class='has-sub'><a href='#'><span><i class="fa fa-tasks fa-fw fa-lg"></i> Task</span></a>
 						<ul>
 							<li><a href='/Home/ManageTask/'><span><i class="fa fa-search fa-fw fa-lg"></i> Search </span></a></li>
-                            <li><a href='#'><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
+                            <li><a href='#' onclick="location.href='/Home/'+ $.session.get('project_id')+'/CreateTask/'"><span><i class="fa fa-file-o fa-fw fa-lg"></i> Create/Edit </span></a></li>
                             <li><a href='#'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Reports </span></a></li>
                             <li><a href='#'><span><i class="fa fa-file-o fa-child fa-lg"></i> Assigned To Me </span></a></li>
                             <li><a href='#'><span><i class="fa fa-magic fa-spin"></i> Suggested </span></a></li>
