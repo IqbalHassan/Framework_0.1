@@ -16,6 +16,13 @@ function Submit_button_preparation(){
     $('#submit').click(function(){
         var title=$('#title').val().trim();
 
+        if(title==""){
+            alertify.error("Title is empty!");
+        }
+        if($("#section-flag").hasClass("unfilled")){
+            alertify.error("You need to choose a section!");
+        }
+
         if($('a[value="not_started"]').hasClass('selected'))
             var status = "not_started";
         if($('a[value="started"]').hasClass('selected'))

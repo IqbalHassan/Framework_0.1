@@ -243,13 +243,13 @@ function make_clickable(divname) {
     });
 
     $(divname + ' tr>td:last-child').each(function () {
-        if($(this).text()!=("None")){
+        /*if($(this).text()!=("None")){
             $(this).css({
                 'color': 'blue',
                 'cursor': 'pointer',
                 'textAlign': 'left'
             });
-        }
+        }*/
         var divider = $(this).lastIndexOf("/");
         console.log(divider);
 

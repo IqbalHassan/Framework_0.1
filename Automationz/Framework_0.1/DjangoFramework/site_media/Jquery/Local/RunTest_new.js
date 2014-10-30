@@ -11,8 +11,12 @@ $(document).ready(function(){
     ManageMilestone(project_id,team_id);
     SubmitRun(project_id,team_id);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
+=======
+
+>>>>>>> master
     /*$('.edit_machine').on('click',function(){
         $('.tabs-div').removeClass('responsive-tabs__panel--active');
 
