@@ -8083,6 +8083,46 @@ def Tasks_List(request):
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
 
+
+def Reqs_List(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            project_id = request.GET.get(u'project_id', '')
+
+        now=datetime.datetime.now().date()
+        reqs_list = []
+        #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
+        query="select requirement_id,requirement_title,requirement_description,cast(requirement_startingdate as text),cast(requirement_endingdate as text),mi.name,r.status from requirements r,milestone_info mi where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone order by requirement_id desc"
+        reqs=DB.GetData(Conn, query, False)
+        
+        query="select requirement_path from requirements r,milestone_info mi,requirement_sections rs where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone and r.parent_requirement_id=rs.requirement_path_id::text order by requirement_id desc"
+        parents=DB.GetData(Conn, query, False)
+        
+            
+        for x in zip(reqs,parents):
+            data = []
+            for y in x[0]:
+                data.append(y)
+            temp=x[1][0].replace('_','-')
+            temp=temp.replace('.','/')
+            if temp==data[0]:
+                data.append('None')
+            #elif 'REQ' in temp:
+                #data.append('None')
+            else:
+                data.append(temp)
+            #data.append(x[1])
+            reqs_list.append(data)
+    
+        
+    Heading = ['REQ-ID','Title','Description','Starting Date','Due Date','Milestone', 'Status', 'Parent']    
+    results = {'Heading':Heading,'reqs':reqs_list}
+    json = simplejson.dumps(results)
+    Conn.close()
+    return HttpResponse(json, mimetype='application/json')
+
+
 def CreateBug(request):
     query="select project_id from projects"
     Conn=GetConnection()
