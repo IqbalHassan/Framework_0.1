@@ -318,7 +318,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/link_feature/$',link_feature),
     url(r'^Home/.*/unlink_feature/$',unlink_feature),
     #url(r'^Home/.*/rename_feature/$',rename_feature),
-    url(r'^Home/.*/first_level_sub_feature/$',first_level_sub_feature),
+    #url(r'^Home/.*/first_level_sub_feature/$',first_level_sub_feature),
     url(r'^Home/.*/get_all_first_level_sub_feature/$',get_all_first_level_sub_feature),
     url(r'^Home/.*/CreateLevelWiseFeature/$',CreateLevelWiseFeature),
     #pages for the test case new implementation
