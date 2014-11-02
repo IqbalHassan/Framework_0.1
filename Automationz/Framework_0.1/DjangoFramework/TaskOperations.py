@@ -22,7 +22,7 @@ def insert_new_section(Conn,new_requirement_path):
     Conn.commit()
     return sequence
         
-def CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,user_name):
+def CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name):
     try:
         Conn=GetConnection()
         query="select nextval('taskid_seq')"

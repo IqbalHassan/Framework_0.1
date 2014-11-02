@@ -2995,7 +2995,7 @@ def Create_Submit_New_TestCase(request):
             Status = request.GET.get(u'Status', '')
             Is_Edit = request.GET.get(u'Is_Edit', 'create')
             Section_Path = request.GET.get(u'Section_Path', '')
-            Fection_Path = request.GET.get(u'Section_Path', '')
+            Feature_Path = request.GET.get(u'Feature_Path', '')
             Step_Description_List = request.GET.get(u'Steps_Description_List', '')
             print Step_Description_List
             Step_Description_List = Step_Description_List.split('|')
@@ -3014,7 +3014,7 @@ def Create_Submit_New_TestCase(request):
 
         # 1
         ##########Data Validation: Check if all required input fields have data
-        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
+        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path, Feature_Path)
         if test_case_validation_result != "Pass":
             return returnResult(test_case_validation_result)
 
@@ -3335,7 +3335,7 @@ def EditTestCase(request):
 
         # 0
         ##########Data Validation: Check if all required input fields have data
-        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path)
+        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path, Feature_Path)
         if test_case_validation_result != "Pass":
             return returnResult(test_case_validation_result)
 
@@ -9779,8 +9779,9 @@ def SubmitNewTask(request):
             milestone=request.GET.get(u'milestone','')
             project_id=request.GET.get(u'project_id','')
             section_path=request.GET.get(u'section_path','')
+            feature_path=request.GET.get(u'feature_path','')
             user_name=request.GET.get(u'user_name','')
-            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,user_name)
+            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 def ViewTaskPage(request,project_id):

@@ -403,7 +403,7 @@ def Insert_ExpectedDataSet(conn, TC_Id, Step_Index, Step_Seq, Test_Case_DataSet_
 
     return Expected_Data_Set_Id
 
-def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List):
+def Insert_TestCase_Tags(conn, TC_Id, Platform, Manual_TC_Id, TC_Type, Custom_Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Feature_Path, Requirement_ID_List):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
 
     Tag_List = []
@@ -759,7 +759,7 @@ def Generate_TCId(Section_Path, tmp_TC_Id):
         print "Exception:", e
         return tmp_TC_Id
 
-def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path):
+def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path, Feature_Path):
      ##########Data Validation: Check if all required input fields have data
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     if Platform == '':
@@ -783,6 +783,11 @@ def TestCase_DataValidation(Platform, TC_Name, TC_Type, Priority, Tag_List, Depe
     if Section_Path == '':
         print "Error. Test Section cannot be empty"
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Section", 4)
+        return err_msg
+    
+    if Feature_Path == '':
+        print "Error. Test Feature cannot be empty"
+        err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Feature", 4)
         return err_msg
 
     if not isinstance(Tag_List, list):

@@ -308,8 +308,8 @@ $(document).ready(function() {
                             dataId += sectionArray[index] + '.'
                         }
                         
-                        //Features
-                        var features=data['Features_Path'];
+                        //FeaturePath
+                        var features=data['Feature_Path'];
                         var featureArray = features.split('.');
                         var dataId ="";
                         var handlerString = "";
@@ -610,9 +610,11 @@ $(document).ready(function() {
                 return false;
             }
             if($('#feature-flag').hasClass('unfilled')){
+                //alert("Feature Path is not defined Correctly");
                 alertify.error("Feature Path is not defined Correctly","",0);
                 return false;
             }
+                        
             /*if($('#platform-flag').hasClass('unfilled')){
                 //alert("Platform is not selected correctly");
                 alertify.error("Platform is not selected correctly","",0);
@@ -686,6 +688,10 @@ $(document).ready(function() {
             //Select Section Name
             var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
             console.log(newSectionPath);
+            //Select Feature Name
+            var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+            console.log(newFeaturePath);    
+            
             //Get TC_ID for the test case
             var _TC_Id = $('#TC_Id').html().substring($('#TC_Id').html().indexOf(": ")+2,$('#TC_Id').html().indexOf("</b>"))
             //Select Priority
@@ -1016,6 +1022,7 @@ $(document).ready(function() {
                         $("#submit").attr('disabled','disabled');
                         $.get("Submit_New_TestCase/",{
                             Section_Path:newSectionPath,
+                            Feature_Path:newFeaturePath,
                             //Platform:platformList.join("|"),
                             //Manual_TC_Id:test_case_Id,
                             TC_Name:title,
@@ -1049,6 +1056,7 @@ $(document).ready(function() {
                         $("#submit").attr('disabled','disabled');
                         $.get("Edit_TestCase",{
                                 Section_Path:newSectionPath,
+                                Feature_Path:newFeaturePath,
                                 TC_Id:_TC_Id,
                                 //Platform:platformList.join("|"),
                                 //Manual_TC_Id:test_case_Id,
