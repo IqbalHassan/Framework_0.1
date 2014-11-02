@@ -8,10 +8,12 @@ $(document).ready(function(){
         url:'GetSections/',
         dataType : "json",
         data : {
-            section : ''
+            section : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
         },
         success: function( json ) {
-            if(json.length > 1)
+            if(json.length > 0)
                 for(var i = 1; i < json.length; i++)
                     json[i] = json[i][0].replace(/_/g,' ')
             $.each(json, function(i, value) {

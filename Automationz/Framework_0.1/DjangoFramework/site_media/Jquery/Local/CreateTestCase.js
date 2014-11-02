@@ -11,7 +11,9 @@ var step_num_data_num = new Array();
 var tag_list = new Array();
 var Env = "PC";
 var lowest_section = 0;
+var lowest_feature = 0;
 var isAtLowestSection = false;
+var isAtLowestFeature = false;
 var popupdivrowcount=[];
 var referred_test_case="";
 var dependency_classes=[];
@@ -607,6 +609,10 @@ $(document).ready(function() {
                 alertify.error("Section Path is not defined Correctly","",0);
                 return false;
             }
+            if($('#feature-flag').hasClass('unfilled')){
+                alertify.error("Feature Path is not defined Correctly","",0);
+                return false;
+            }
             /*if($('#platform-flag').hasClass('unfilled')){
                 //alert("Platform is not selected correctly");
                 alertify.error("Platform is not selected correctly","",0);
@@ -1169,6 +1175,33 @@ function GetBrowserSections(){
         $("#section-flag").removeClass("filled");
         $("#section-flag").addClass("unfilled");
     });
+
+
+    $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+        },
+        success: function( json ) {
+            if(json.length > 0)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+    $(".feature[data-level='']").change(function(){
+        isAtLowestSection = false;
+        recursivelyAddFeature(this);
+        $("#feature-flag").removeClass("filled");
+        $("#feature-flag").addClass("unfilled");
+    });
+
 
     //Browsers
     $.ajax({
