@@ -7082,7 +7082,8 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         Conn=GetConnection()
                         data = DB.GetData(Conn, query, False, False)
                         Conn.close()
-                        feature_id = int(data[0][0])                        
+                        feature_id = int(data[0][0])        
+                        print "Feature id is: %s" %feature_id                
                     except:
                         print "unable to get feature id"   
                     try:
@@ -7094,6 +7095,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         Conn.close()
                         section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
                         i.insert(2, section_path)
+                        print "full path of section is: %s" %section_path
                     except:
                         print "unable to get full path of section"   
                     try:                            
@@ -7105,6 +7107,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         Conn.close()
                         feature_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
                         i.insert(2, feature_path)
+                        print "full path of feature is: %s"%feature_path
                     except:
                         print "unable to get full path of feature"
                     if test_status_request:
@@ -7116,7 +7119,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                             data = DB.GetData(Conn, query, False, True)
                             Conn.close()
                             i.insert(4, data[0][0])           
-                            Heading = ['ID', 'Title', 'Section','Feature' ,'Type', 'Status', 'Time']
+                            Heading = ['ID', 'Title', 'Feature','Section' ,'Type', 'Status', 'Time']
                         except:
                             i[4] = ' - '
                 results = {'Heading':Heading, 'TableData':RefinedData}
