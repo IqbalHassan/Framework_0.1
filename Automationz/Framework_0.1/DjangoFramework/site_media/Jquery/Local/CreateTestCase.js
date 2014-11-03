@@ -687,11 +687,10 @@ $(document).ready(function() {
             console.log(status);
             //Select Section Name
             var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
-            console.log(newSectionPath);
-            //Select Feature Name
             var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
-            console.log(newFeaturePath);    
-            
+
+            console.log(newSectionPath);
+            console.log(newFeaturePath);
             //Get TC_ID for the test case
             var _TC_Id = $('#TC_Id').html().substring($('#TC_Id').html().indexOf(": ")+2,$('#TC_Id').html().indexOf("</b>"))
             //Select Priority

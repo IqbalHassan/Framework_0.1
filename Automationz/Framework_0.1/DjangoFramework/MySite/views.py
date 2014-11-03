@@ -3096,7 +3096,7 @@ def Create_Submit_New_TestCase(request):
         ##########Test Case Tags
         # Enter tags for the test case
         # Insert Test Case Tags
-        test_case_tags_result = TestCaseCreateEdit.Insert_TestCase_Tags(Conn, TC_Id, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_id,Team_id)
+        test_case_tags_result = TestCaseCreateEdit.Insert_TestCase_Tags(Conn, TC_Id, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Feature_Path, Requirement_ID_List,Project_id,Team_id)
 
         if test_case_steps_result == "Pass":
             msg = "==========================================================================================================="
@@ -3331,6 +3331,8 @@ def EditTestCase(request):
             Dependency_List=temp_list
             Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected_Result, Step_Verification_Point, Steps_Time_List)
             Section_Path = request.GET.get(u'Section_Path', '')
+            Feature_Path = request.GET.get(u'Feature_Path', '')
+
         # LogMessage(sModuleInfo,"TEST CASE Edit START:%s"%(TC_Name),4)
 
         # 0

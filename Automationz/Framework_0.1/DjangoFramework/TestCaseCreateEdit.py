@@ -221,7 +221,7 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
         Tag_List.append(('%s' % eachSection, Section_Tag))
     
     # Add Feature id based on hierarchy
-    if DBUtil.IsDBConnectionGood(conn) == False:
+    if DBUtil.IsDBConnectionGood(Conn) == False:
         time.sleep(1)
         conn = GetConnection()
     Feature_Id = DBUtil.GetData(conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
@@ -841,10 +841,12 @@ def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_
         print "Error. Test Section cannot be empty"
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Section", 3)
         return err_msg
+    
     if Feature_Path == '':
         print "Error. Test Feature cannot be empty"
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Feature", 3)
         return err_msg    
+    
     if not isinstance(Tag_List, list):
         print "Error. Test case tag format is incorrect"
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case tag format. It should be a list.", 3)
