@@ -7067,14 +7067,15 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     x = i[1]
                     print x
                     try:
-                        query = '''
-                        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
-                        ''' % ('section_id', i[0])
+                        query = "SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'" % ('section_id', i[0])
                         Conn=GetConnection()
                         data = DB.GetData(Conn, query, False, False)
                         Conn.close()
                         section_id = int(data[0][0])
-                        
+                        print "Section id is: %s" %section_id
+                    except:
+                        print "unable to get section id"
+                    try:   
                         query = '''
                         SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
                         ''' % ('feature_id', i[0])
@@ -7082,7 +7083,9 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         data = DB.GetData(Conn, query, False, False)
                         Conn.close()
                         feature_id = int(data[0][0])                        
-                        
+                    except:
+                        print "unable to get feature id"   
+                    try:
                         query = '''
                         SELECT section_path FROM product_sections WHERE section_id=%d
                         ''' % section_id
@@ -7091,8 +7094,9 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         Conn.close()
                         section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
                         i.insert(2, section_path)
-                        
-                                                
+                    except:
+                        print "unable to get full path of section"   
+                    try:                            
                         query = '''
                         SELECT feature_path FROM product_features WHERE feature_id=%d
                         ''' % feature_id
@@ -7102,7 +7106,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         feature_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
                         i.insert(2, feature_path)
                     except:
-                        print '-'
+                        print "unable to get full path of feature"
                     if test_status_request:
                         try:
                             query = '''
