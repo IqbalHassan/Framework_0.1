@@ -2717,7 +2717,7 @@ def Performance_ClickedBundle_Details(request, type):
         variable = "pr.cpu_peak,  to_char(pr.cpu_peaktime,'HH24:MI:SS')"
         # floor(extract('epoch' from pr.cpu_peaktime))::integer"
 
-
+    Conn = GetConnection()
 
     Performance_TestCase_Duration_Table = DB.GetData(Conn, "Select pr.run_id,ter.status as test_run_status ," + variable + ",tcr.logid "
                       "from performance_results pr, test_case_results tcr, test_env_results ter "
@@ -3278,7 +3278,7 @@ def ViewTestCase(TC_Id):
                 Steps_Data_List.append((Step_Name, Step_Data, Step_Type, step_description, step_expected, step_verified, Step_General_Description[0][0], step_time, Step_Edit, each_test_step[3]))
                 Step_Iteration = Step_Iteration + 1
             # return values
-            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team}
+            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team}
 
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -3377,7 +3377,7 @@ def EditTestCase(request):
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
                 return err_msg
-            test_case_tag_result = TestCaseCreateEdit.Update_Test_Case_Tag(Conn, TC_Id, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path, Requirement_ID_List,Project_Id,Team_Id)
+            test_case_tag_result = TestCaseCreateEdit.Update_Test_Case_Tag(Conn, TC_Id, Tag_List, Dependency_List, Priority, Associated_Bugs_List, Status, Section_Path,Feature_Path, Requirement_ID_List,Project_Id,Team_Id)
             if test_case_tag_result != "Pass":
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
@@ -4235,7 +4235,7 @@ def Process_Git(request):
     return HttpResponse(json, mimetype='application/json')
 
 def DeleteExistingTestCase(TC_Ids):
-    conn = Conn
+    conn = GetConnection()
     is_string = False
     
     if type(TC_Ids) == type(u''):
@@ -5009,7 +5009,7 @@ def Process_FeatureDriver(request):  # minar09
                             return render_to_response('TestStep.html', {'error_message':message}, context_instance=RequestContext(request))                            
                         else:
                             srquery = "SELECT count(*) FROM test_steps_list where driver='" + input1 + "' or stepfeature='" + input1 + "'"
-                            searchCount = DB.GetData(Conn, srquery)
+                            searchCount = DB.GetData(conn, srquery)
                             if (searchCount[0] < 1):
                                 whereQuery = "where type='" + data_type + "' and value = '" + input1 + "' "
                                 testrunenv = DB.UpdateRecordInTable(conn, "config_values", whereQuery, value=input2, type=data_type) 
@@ -5098,7 +5098,7 @@ def FeatureDriverOperation(request):  # minar09
                             # return render_to_response('Feature_Driver.html',{'error_message':message},context_instance=RequestContext(request))                            
                         else:
                             srquery = "SELECT count(*) FROM test_steps_list where driver='" + input1 + "' or stepfeature='" + input1 + "'"
-                            searchCount = DB.GetData(Conn, srquery)
+                            searchCount = DB.GetData(conn, srquery)
                             if (searchCount[0] < 1):
                                 whereQuery = "where type='" + data_type + "' and value = '" + input1 + "' "
                                 testrunenv = DB.UpdateRecordInTable(conn, "config_values", whereQuery, value=input2, type=data_type) 
@@ -6075,7 +6075,7 @@ def update_runid(run_id, test_case_id):
         updated_time = str(currenttime[0][0])
         print DB.DeleteRecord(oConn, "test_run_env", tester_id=machine_info[0][3].strip(), status='Unassigned')
         Dict = {'tester_id':machine_info[0][3].strip(), 'status':'Unassigned', 'machine_os':machine_info[0][6].strip(), 'client':machine_info[0][7].strip(), 'last_updated_time':updated_time.strip(), 'os_bit':machine_info[0][16].strip(), 'os_name':machine_info[0][15].strip(), 'os_version':machine_info[0][14].strip(), 'machine_ip':machine_info[0][11].strip(), 'product_version':machine_info[0][10].strip()}
-        print DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
+        print DB.InsertNewRecordInToTable(oConn, "test_run_env", **Dict)
     if status == 'Complete':
         run_id = str(run_id)
         allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'", False)
@@ -6084,27 +6084,27 @@ def update_runid(run_id, test_case_id):
         list = []
         
         pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
-        passed = DB.GetData(Conn, pass_query)
+        passed = DB.GetData(oConn, pass_query)
         list.append(passed[0])
         fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % run_id
-        fail = DB.GetData(Conn, fail_query)
+        fail = DB.GetData(oConn, fail_query)
         list.append(fail[0])
         blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
-        blocked = DB.GetData(Conn, blocked_query)
+        blocked = DB.GetData(oConn, blocked_query)
         list.append(blocked[0])
         progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
-        progress = DB.GetData(Conn, progress_query)
+        progress = DB.GetData(oConn, progress_query)
         list.append(progress[0])
         submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
-        submitted = DB.GetData(Conn, submitted_query)
+        submitted = DB.GetData(oConn, submitted_query)
         list.append(submitted[0])
         skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
-        skipped = DB.GetData(Conn, skipped_query)
+        skipped = DB.GetData(oConn, skipped_query)
         list.append(skipped[0])
         total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
-        total = DB.GetData(Conn, total_query)
+        total = DB.GetData(oConn, total_query)
         list.append(total[0])
-        duration = DB.GetData(Conn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
+        duration = DB.GetData(oConn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
         
         EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
             
@@ -7641,7 +7641,7 @@ def rename_section(request):
         new_text = request.GET.get('new_text', '')
         
         old_section_text = ''
-        
+        Conn=GetConnection()
         cur = Conn.cursor()
         
         temp = section_path.split('.')
@@ -7687,6 +7687,7 @@ def delete_section(request):
         cur.close()
         return HttpResponse(section_id)
 def DeleteTestCase(request):
+    Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             test_case_list = request.GET.get(u'Query', '')
