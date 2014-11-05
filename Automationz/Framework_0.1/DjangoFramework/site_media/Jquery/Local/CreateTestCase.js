@@ -609,7 +609,7 @@ $(document).ready(function() {
                 alertify.error("Section Path is not defined Correctly","",0);
                 return false;
             }
-if($('#feature-flag').hasClass('unfilled')){
+            if($('#feature-flag').hasClass('unfilled')){
                 //alert("Feature Path is not defined Correctly");
                 alertify.error("Feature Path is not defined Correctly","",0);
                 return false;
