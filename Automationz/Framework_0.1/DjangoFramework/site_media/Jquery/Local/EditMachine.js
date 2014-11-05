@@ -5,26 +5,10 @@ var test_cases="";
 $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
-    AutoSuggestions(project_id,team_id);
-    RunAutoCompleteTestSearch(project_id,team_id);
-    DeleteSearchQueryText(project_id,team_id);
-    ManageMilestone(project_id,team_id);
-    SubmitRun(project_id,team_id);
-    /*$('.edit_machine').on('click',function(){
-        $('.tabs-div').removeClass('responsive-tabs__panel--active');
-
-        $('.tabs-div').removeClass('responsive-tabs__list__item--active');
-        $('.tabs-div').attr('aria-hidden','true');
-        //$('.tabs-div').hide();
-
-        $('.tabs-dive').prev().addClass('responsive-tabs__heading--active');
-        $('.tabs-div:last').addClass('responsive-tabs__panel--active');
-        $('.tabs-div:last').attr('aria-hidden','false');
-
-        $('.tabs-div:last').addClass('responsive-tabs__list__item--active');
-        //$('.tabs-div:last').show();
-        $('.tabs-dive:last').prev().addClass('responsive-tabs__heading--active');
-    });*/
+    var location_name=window.location.pathname;
+    location_name=location_name.split("/")[3].replace(/_/,' ');
+    //alert(location_name);
+    ManageMilestone(project_id,team_id,location_name);
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val().trim());
         window.location.reload(true);
@@ -34,314 +18,6 @@ $(document).ready(function(){
         window.location.reload(true);
     });
 });
-function SubmitRun(project_id,team_id){
-    $('#run_test').on('click',function(){
-        var UserText="";
-        if(test_cases){
-            $("#AutoSearchResult #searchedtext").each(function() {
-                UserText = $(this).find("td").text();
-                UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
-            });
-            console.log(UserText);
-        }
-        else{
-            alertify.error('No Test cases selected',1500);
-            return false;
-        }
-        var temp=[]
-        var message="";
-        for(var i=0;i<dependency_classes.length;i++){
-            if($('.'+dependency_classes[i].name+':checked').length>0){
-                if(temp.indexOf($('.'+dependency_classes[i].name+':checked').val().trim())>-1){
-                    continue;
-                }
-                else{
-                    temp.push($('.'+dependency_classes[i].name+':checked').val().trim());
-                }
-            }
-            else{
-                alertify.error('No '+dependency_classes[i].name+' is selected',1500);
-                return false;
-            }
-        }
-        for(var i=0;i<temp.length;i++){
-            message+=(temp[i].trim()+': ');
-        }
-        console.log(message);
-        var TesterQuery="";
-        $("#tester").each( function()
-        {
-            TesterQuery = $(this).find("td").text();
-            TesterQuery = TesterQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
-        });
-        if(TesterQuery.length==0){
-            alertify.log("Testers is to be selected from suggestion","",0);
-            return false;
-        }
-        var EmailQuery="";
-        $("#email").each( function()
-        {
-            EmailQuery = $(this).find("td").text();
-            EmailQuery = EmailQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
-        });
-        if(EmailQuery.length==0){
-            alertify.log("Email Receipient is to be selected from suggestion","",0);
-            return false;
-        }
-        var TestObjective=$('#testObjective').val().trim();
-        if(TestObjective==""){
-            alertify.log("Test Objective is empty","",0);
-            return false;
-        }
-        var milestoneQuery="";
-        $("#milestone").each( function()
-        {
-            milestoneQuery = $(this).find("td").text();
-            milestoneQuery = milestoneQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
-        });
-        if(milestoneQuery.length==0){
-            alertify.log("Milestone is to be selected from suggestion","",0);
-            return false;
-        }
-        var machineQuery="";
-        $("#machine").each( function()
-        {
-            machineQuery = $(this).find("td").text();
-            machineQuery = machineQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
-        });
-        if(machineQuery.length==0){
-            alertify.log("Machine is to be selected from suggestion","",0);
-            return false;
-        }
-        var RunTestQuery=UserText+message+machineQuery;
-        $.get("Run_Test",
-            {
-                RunTestQuery : RunTestQuery,
-                TesterIds:TesterQuery,
-                EmailIds:EmailQuery,
-                TestObjective:TestObjective,
-                TestMileStone:milestoneQuery,
-                project_id:project_id,
-                team_id:team_id
-            },
-            function(data)
-            {
-                if(data['Result']){
-                    //run_notify("RunID-'"+data['runid']+"' got executed!");
-                    var location='/Home/RunID/'+data['runid']+'/';
-                    window.location=location;
-                }
-                else{
-                    MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);
-                }
-
-            });
-    });
-}
-function AutoSuggestions(project_id,team_id){
-    $("#assigned_tester").autocomplete({
-
-        source : 'AutoCompleteTesterSearch',
-        select : function(event, ui) {
-
-            var value = ui.item.value
-            $("#tester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
-                + '<td class="Text">'
-                + value
-                + ":&nbsp"
-                + '</td>');
-
-            //$("#tester th").css('display', 'block');
-
-            $("#assigned_tester").val("");
-            return false;
-
-        }
-    });
-    $("#assigned_tester").keypress(function(event) {
-        if (event.which == 13) {
-
-            event.preventDefault();
-
-        }
-    });
-    $("#DeleteTester").live('click', function() {
-
-        $(this).parent().next().remove();
-        $(this).remove();
-
-    });
-    $("#email_list").autocomplete({
-
-        source : 'AutoCompleteEmailSearch',
-        select : function(event, ui) {
-
-            var value = ui.item.value
-            $("#email").append('<td><img class="delete" id = "DeleteEmail" title = "EmailDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
-                + '<td class="Text">'
-                + value
-                + ":&nbsp"
-                + '</td>');
-
-            //$("#SelectedEmail th").css('display', 'block');
-
-            $("#email_list").val("");
-            return false;
-
-        }
-    });
-
-    $("#email_list").keypress(function(event) {
-        if (event.which == 13) {
-
-            event.preventDefault();
-
-        }
-    });
-
-
-    //Delete Seleted Email Ids
-    $("#DeleteEmail").live('click', function() {
-
-        $(this).parent().next().remove();
-        $(this).remove();
-
-    });
-    $('#milestone_list').autocomplete({
-        source:function(request,response){
-            $.ajax({
-                url:"AutoMileStone",
-                dataType:"json",
-                data:{term:request.term},
-                success:function(data){
-                    response(data);
-                }
-            });
-        },
-        select:function(request,ui){
-            var value=ui.item[0].trim();
-            if (value!=""){
-                //$(this).val(value.trim());
-                $("#milestone").html('<td><img class="delete" id = "DeleteMileStone" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
-                    + '<td class="Text">'
-                    + value
-                    + ":&nbsp"
-                    + '</td>');
-
-                //$("#MileStoneHeader th").css('display', 'block');
-
-                $("#milestone_list").val("");
-                return false;
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
-            .appendTo( ul );
-    };
-    $("#milestone_list").keypress(function(event) {
-        if (event.which == 13) {
-
-            event.preventDefault();
-
-        }
-    });
-    $("#DeleteMileStone").live('click', function() {
-
-        $(this).parent().next().remove();
-        $(this).remove();
-
-    });
-
-    $("#machine_list").autocomplete({
-
-        //source : 'AutoCompleteUsersSearch',
-
-        source : function(request, response) {
-            $.ajax({
-                url:"AutoCompleteUsersSearch",
-                dataType: "json",
-                data:{ term: request.term,project_id:project_id,team_id:team_id},
-                success: function( data ) {
-                    response( data );
-                }
-            });
-        },
-        select:function(request,ui){
-            var value=ui.item[0].trim();
-            if (value!=""){
-                //$(this).val(value.trim());
-                $("#machine").html('<td><img class="delete" id = "DeleteMachine" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
-                    + '<td class="Text">'
-                    + value
-                    + ":&nbsp"
-                    + '</td>');
-
-                //$("#MileStoneHeader th").css('display', 'block');
-
-                $("#milestone_list").val("");
-                $('#run_test').slideDown("slow");
-                return false;
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
-            .appendTo( ul );
-    };
-    $("#DeleteMachine").live('click', function() {
-
-        $(this).parent().next().remove();
-        $(this).remove();
-        $('#run_test').slideUp("slow");
-
-    });
-}
-function RunAutoCompleteTestSearch(project_id,team_id){
-    $("#searchbox").autocomplete(
-        {
-            source : function(request, response) {
-                $.ajax({
-                    url:"AutoCompleteTestCasesSearchOtherPages",
-                    dataType: "json",
-                    data:{ term: request.term,project_id:project_id,team_id:team_id},
-                    success: function( data ) {
-                        response( data );
-                    }
-                });
-            },
-
-            //source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
-            select : function(event, ui) {
-
-                var tc_id_name = ui.item[0].split(" - ");
-                var value = "";
-                if (tc_id_name != null)
-                    value = tc_id_name[0].trim();
-
-                if(value != "")
-                {
-                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
-                        + '<td name = "submitquery" class = "Text" style = "size:10">'
-                        + value
-                        + ":&nbsp"
-                        + '</td>'
-                    );
-                    PerformSearch(project_id,team_id);
-                }
-                $("#searchbox").val("");
-                return false;
-            }
-        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
-            .appendTo( ul );
-    };
-}
-
 function PerformSearch(project_id,team_id,predicate) {
 
     $("#AutoSearchResult #searchedtext").each(function() {
@@ -461,43 +137,7 @@ function implementDropDown(wheretoplace){
         });
     });
 }
-function DeleteSearchQueryText(project_id,team_id){
-    $("#AutoSearchResult td .delete").live('click', function() {
-
-        if ($("#AutoSearchTextBoxLabel").text().trim() != "*Select Test Machine:") //If user is on select user page, do not allow him to delete the Test Data Set
-        {
-            console.log("clicked");
-            console.log($(this).text());
-            $(this).parent().next().remove();
-            $(this).remove();
-            if($('#AutoSearchResult #searchedtext td').text()==""){
-                $('#DepandencyCheckboxes').css('display','none');
-                $('.flip[title="DepandencyCheckBox"]').css('display','none');
-                $('#RunTestResultTable').css('display','none');
-            }
-            $("#AutoSearchResult #searchedtext").each(function() {
-                var UserText = $(this).find("td").text();
-                if (UserText.length == 0)
-                {
-                    //$(".Buttons[title='Search Test Cases']").fadeOut(2000);
-                    //$(".Buttons[title='Verify Query']").fadeOut(2000);
-                    $(".Buttons[title='Select User']").fadeOut(2000);
-                }
-            });
-
-        }
-
-        else
-        {
-
-            $(".delete").css('cursor','default');
-        }
-        PerformSearch(project_id,team_id);
-
-    });
-}
-
-function ManageMilestone(project_id,team_id){
+function ManageMilestone(project_id,team_id,location_name){
     $.get('GetOS',{
         project_id:project_id,
         team_id:team_id
@@ -505,6 +145,27 @@ function ManageMilestone(project_id,team_id){
         dependency_list=data['dependency_list'];
         global_version_list=data['version_list'];
         populate_manual_div(dependency_list,global_version_list,project_id,team_id);
+        $.get("CheckMachine",{name:location_name},function(data){
+            var machine_ip=data[0][0];
+            var branch_version=data[0][1];
+            var dependency=data[0][2];
+            $('#machine_ip').val(machine_ip);
+            $('#machine_name').val(location_name);
+            branch_version=branch_version.split(':');
+            var branch=branch_version[0].trim();
+            var version=branch_version[1].trim();
+            $('#branch_name').val(branch);
+            $('#branch_name').trigger('change');
+            $('#branch_version').val(version);
+            for(var i=0;i<dependency.length;i++){
+                var list=dependency[i].split('|');
+                $('#'+list[0]+'_name').val(list[1]);
+                $('#'+list[0]+'_name').trigger('change');
+                $('#'+list[0]+'_bit').val(list[2]);
+                $('#'+list[0]+'_bit').trigger('change');
+                $('#'+list[0]+'_version').val(list[3]);
+            }
+        });
     });
 }
 
@@ -542,7 +203,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     message+='</select></td><td><select id="branch_version" style="display: none;"></select></td>'
     message+='</tr></table></td>'
     message+='</tr>';
-    message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="create" type="button" class="button primary" id="create_manual_machine"/></td></tr>';
+    message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="Edit" type="button" class="button primary" id="create_manual_machine"/></td></tr>';
     $('#manual_machine_body').html(message);
     for(var i=0;i<dependency_list.length;i++){
         $('#'+dependency_list[i][0]+'_name').on('change',function(){

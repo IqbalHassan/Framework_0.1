@@ -95,11 +95,13 @@
                                         {% endfor %}
                                     </table>
                                 </td>
+                            {% elif forloop.count == 0 %}
+
                             {% else %}
                                 <td>{{y}}</td>
                             {% endif %}
                         {% endfor %}
-                        <!--td><input type="button" class="edit_machine" value="edit"/></td-->
+                        <td><a href="/Home/Machine/{{x.0.split|join:'_'}}/">Edit</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

@@ -149,7 +149,8 @@ def RunTest(request):
     variables = Context({'machine_list':machine_list,'dependency':column})
     output = templ.render(variables)
     return HttpResponse(output)
-
+def edit_machine(request,machine_id):
+    return render_to_response('EditMachine.html',{})
 """def Search(request):
     templ = get_template('SearchResults.html')
     variables = Context({ })

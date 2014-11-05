@@ -323,6 +323,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/CreateLevelWiseFeature/$',CreateLevelWiseFeature),
     #pages for the test case new implementation
     url(r'^Home/.*/get_default_settings/$',get_default_settings),
+    url(r'^Home/Machine/(?P<machine_id>[^/]*)/$',edit_machine),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )
