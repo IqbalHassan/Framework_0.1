@@ -1203,7 +1203,7 @@ function GetBrowserSections(){
         }
     });
     $(".feature[data-level='']").change(function(){
-        isAtLowestSection = false;
+        isAtLowestFeature = false;
         recursivelyAddFeature(this);
         $("#feature-flag").removeClass("filled");
         $("#feature-flag").addClass("unfilled");

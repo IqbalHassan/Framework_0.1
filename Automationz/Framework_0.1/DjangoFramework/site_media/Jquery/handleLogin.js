@@ -54,6 +54,8 @@ $(document).ready(function() {
 	                    $.session.set('project_id', data['project_id']);
                         $.session.set('default_team_identity',data['team_id']);
                         $.session.set('user_id',data['message'][0]);
+                        $('#project_identity').val(data['project_id']);
+                        $('#default_team_identity').val(data['team_id']);
 						setTimeout(function() {
 							window.location.href = path_to_redirect;
 						}, 1500);

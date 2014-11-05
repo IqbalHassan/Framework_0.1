@@ -10845,6 +10845,13 @@ def link_feature(request):
                 value=feature_id[0]
                 Conn=GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"feature_management",**Dict)
+                nDict={
+                    'project_id':project_id,
+                    'team_id':int(team_id),
+                    'parameters':int(feature_id[0]),
+                    'type':"Feature"
+                }
+                result=DB.InsertNewRecordInToTable(Conn,"team_wise_settings",**nDict)
                 Conn.close()
                 if result==True:
                     PassMessasge(sModuleInfo,"%s %d is linked successfully"%(type_tag,int(value)),error_tag )
@@ -10887,6 +10894,13 @@ def unlink_feature(request):
                 value=feature_id[0]
                 Conn=GetConnection()
                 result=DB.DeleteRecord(Conn,"feature_management",**Dict)
+                nDict={
+                    'project_id':project_id,
+                    'team_id':int(team_id),
+                    'parameters':int(feature_id[0]),
+                    'type':"Feature"
+                }
+                result=DB.DeleteRecord(Conn,"team_wise_settings",**nDict)
                 Conn.close()
                 if result==True:
                     PassMessasge(sModuleInfo,"%s %d is unlinked successfully"%(type_tag,int(value)),error_tag )
