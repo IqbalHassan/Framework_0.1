@@ -5,7 +5,10 @@ var test_cases="";
 $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
-    ManageMilestone(project_id,team_id);
+    var location_name=window.location.pathname;
+    location_name=location_name.split("/")[3].replace(/_/,' ');
+    //alert(location_name);
+    ManageMilestone(project_id,team_id,location_name);
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val().trim());
         window.location.reload(true);
@@ -134,7 +137,7 @@ function implementDropDown(wheretoplace){
         });
     });
 }
-function ManageMilestone(project_id,team_id){
+function ManageMilestone(project_id,team_id,location_name){
     $.get('GetOS',{
         project_id:project_id,
         team_id:team_id
@@ -142,6 +145,27 @@ function ManageMilestone(project_id,team_id){
         dependency_list=data['dependency_list'];
         global_version_list=data['version_list'];
         populate_manual_div(dependency_list,global_version_list,project_id,team_id);
+        $.get("CheckMachine",{name:location_name},function(data){
+            var machine_ip=data[0][0];
+            var branch_version=data[0][1];
+            var dependency=data[0][2];
+            $('#machine_ip').val(machine_ip);
+            $('#machine_name').val(location_name);
+            branch_version=branch_version.split(':');
+            var branch=branch_version[0].trim();
+            var version=branch_version[1].trim();
+            $('#branch_name').val(branch);
+            $('#branch_name').trigger('change');
+            $('#branch_version').val(version);
+            for(var i=0;i<dependency.length;i++){
+                var list=dependency[i].split('|');
+                $('#'+list[0]+'_name').val(list[1]);
+                $('#'+list[0]+'_name').trigger('change');
+                $('#'+list[0]+'_bit').val(list[2]);
+                $('#'+list[0]+'_bit').trigger('change');
+                $('#'+list[0]+'_version').val(list[3]);
+            }
+        });
     });
 }
 
@@ -179,7 +203,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     message+='</select></td><td><select id="branch_version" style="display: none;"></select></td>'
     message+='</tr></table></td>'
     message+='</tr>';
-    message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="create" type="button" class="button primary" id="create_manual_machine"/></td></tr>';
+    message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="Edit" type="button" class="button primary" id="create_manual_machine"/></td></tr>';
     $('#manual_machine_body').html(message);
     for(var i=0;i<dependency_list.length;i++){
         $('#'+dependency_list[i][0]+'_name').on('change',function(){

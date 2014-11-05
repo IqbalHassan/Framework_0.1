@@ -101,7 +101,7 @@
                                 <td>{{y}}</td>
                             {% endif %}
                         {% endfor %}
-                        <td><a href="/Home/Machine/{{x.0}}/">Edit</a></td>
+                        <td><a href="/Home/Machine/{{x.0.split|join:'_'}}/">Edit</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
