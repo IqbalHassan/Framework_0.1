@@ -609,13 +609,12 @@ $(document).ready(function() {
                 alertify.error("Section Path is not defined Correctly","",0);
                 return false;
             }
-            if($('#feature-flag').hasClass('unfilled')){
+if($('#feature-flag').hasClass('unfilled')){
                 //alert("Feature Path is not defined Correctly");
                 alertify.error("Feature Path is not defined Correctly","",0);
                 return false;
             }
-                        
-            /*if($('#platform-flag').hasClass('unfilled')){
+                                    /*if($('#platform-flag').hasClass('unfilled')){
                 //alert("Platform is not selected correctly");
                 alertify.error("Platform is not selected correctly","",0);
                 return false;
