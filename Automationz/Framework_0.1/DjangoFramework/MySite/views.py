@@ -8188,8 +8188,11 @@ def Selected_BugID_Analaysis(request):
         
         query = "select distinct tc.tc_id, tc.tc_name, tcr.status from test_case_results tcr, test_cases tc where tc.tc_id=tcr.tc_id and tcr.status='Failed' and tc.tc_id not in (select tc_id from bug_testcases_map) order by tc.tc_id"
         failed_cases = DB.GetData(Conn, query, False)
+        
+        query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='BUG' and fm.feature_id=pf.feature_id::text" % UserData
+        feature = DB.GetData(Conn, query)
 
-    results = {'Bug_Info':Bug_Info, 'Bug_Labels':Bug_Labels, 'Bug_Cases':Bug_Cases, 'tester':tester, 'Failed_Cases':failed_cases}
+    results = {'Bug_Info':Bug_Info, 'Bug_Labels':Bug_Labels, 'Bug_Cases':Bug_Cases, 'tester':tester, 'Failed_Cases':failed_cases, 'Feature':feature}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
@@ -8213,6 +8216,7 @@ def LogNewBug(request):
                 testers=request.GET.get(u'tester','')
                 test_cases=request.GET.get(u'test_cases','')
                 labels=request.GET.get(u'labels','')
+                Feature_Path = request.GET.get(u'Feature_Path', '')
                 
                 
                 test_cases=test_cases.split("|")
@@ -8227,7 +8231,7 @@ def LogNewBug(request):
                 ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
     
                 
-                result=BugOperations.CreateNewBug(title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,tester[0],test_cases,labels)
+                result=BugOperations.CreateNewBug(title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,tester[0],test_cases,labels,Feature_Path)
                 if result!=False:
                     bug_id=result
                 result=simplejson.dumps(bug_id)
@@ -8255,6 +8259,7 @@ def ModifyBug(request):
                 testers=request.GET.get(u'tester','')
                 test_cases=request.GET.get(u'test_cases','')
                 labels=request.GET.get(u'labels','')
+                Feature_Path = request.GET.get(u'Feature_Path', '')
                 
                 
                 test_cases=test_cases.split("|")
@@ -8269,7 +8274,7 @@ def ModifyBug(request):
                 ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
     
                 
-                result=BugOperations.EditBug(bug_id,title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,tester[0],test_cases,labels)
+                result=BugOperations.EditBug(bug_id,title,status,description,starting_date,ending_date,team_id,priority,milestone,project_id,user_name,tester[0],test_cases,labels,Feature_Path)
                 if result!=False:
                     bugid=result
                 result=simplejson.dumps(bugid)

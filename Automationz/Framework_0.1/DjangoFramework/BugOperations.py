@@ -10,7 +10,7 @@ def testConnection(Conn):
         time.sleep(1)
         Conn=GetConnection()
 
-def CreateNewBug(title,status,description,start_date,end_date,team,priority,milestone,project_id,user_name,testers,test_cases,labels):
+def CreateNewBug(title,status,description,start_date,end_date,team,priority,milestone,project_id,user_name,testers,test_cases,labels,Feature_Path):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         Conn=GetConnection()
@@ -60,6 +60,17 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
                 }
                 hehe_result=DB.InsertNewRecordInToTable(Conn,"bug_label_map",**label_Dict)
         #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
+        
+        Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
+        if len(Feature_Id) > 0:
+            feat_Dict={
+                           'id':bug_id,
+                           'type':'BUG',
+                           'feature_id':Feature_Id[0]
+                }
+            fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
+        
+        
         if result==True:
             #add this line in the code from LogModule import PassMessage
             #log message successful here 
@@ -86,7 +97,7 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
         print "Exception:", e
         
         
-def EditBug(bug_id,title,status,description,start_date,end_date,team,priority,milestone,project_id,user_name,testers,test_cases,labels):
+def EditBug(bug_id,title,status,description,start_date,end_date,team,priority,milestone,project_id,user_name,testers,test_cases,labels,Feature_Path):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         Conn=GetConnection()
@@ -138,7 +149,21 @@ def EditBug(bug_id,title,status,description,start_date,end_date,team,priority,mi
                            'label_id':each.strip()
                 }
                 hehe_result=DB.InsertNewRecordInToTable(Conn,"bug_label_map",**label_Dict)
+        
+        
         #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
+        
+        Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
+        if len(Feature_Id) > 0:
+            lsres=DB.DeleteRecord(Conn,"feature_map", id=bug_id)
+            feat_Dict={
+                           'id':bug_id,
+                           'type':'BUG',
+                           'feature_id':Feature_Id[0]
+                }
+            fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
+
+        
         if result==True:
             #add this line in the code from LogModule import PassMessage
             #log message successful here 

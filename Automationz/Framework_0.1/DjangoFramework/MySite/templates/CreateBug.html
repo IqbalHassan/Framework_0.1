@@ -20,37 +20,7 @@
             <td>
                 <input class="textbox" placeholder="Title Here" id="title">
             </td>
-            <td id="bug_info" style="float: right;display: none">
-                <table>
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Created By : </b> <b id="created_by"></b>
-                        </td>
 
-                    </tr>
-
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Created : </b> <b id="created_date"></b>
-                        </td>
-
-                    </tr>
-
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Last Modified By : </b> <b id="modified_by"></b>
-                        </td>
-
-                    </tr>
-
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Last Modified : </b> <b id="modified_date"></b>
-                        </td>
-
-                    </tr>
-                </table>
-            </td>
         </tr>
     </table>
 
@@ -63,14 +33,14 @@
         <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
             <table width="100%">
                 <thead>
-                <tr>
+                <!--tr>
                     <td style="text-align: center;"></td>
                     <td style="text-align: center;"><h4>Labels</h4></td>
-                </tr>
+                </tr-->
                 </thead>
                 <tbody>
                 <tr>
-                    <td style="width: 65%">
+                    <td style="width: 55%">
                         <table width="100%" style="padding-bottom: 1%;">
                             <tr>
                                 <!--
@@ -170,22 +140,61 @@
 
                         </table>
                     </td>
-                    <td style="width: 35%; position: relative;">
-                        <div style="position: absolute; min-width: 100%; top: 0;" align="center">
+                    <td style="width: 45%; position: relative;">
 
-                            <table>
-                                {% if labels %}
-                                {% for x in labels %}
-                                <tr><td><input type="checkbox" value="{{x.2}}" name="labels"><a href="" class="label" style="background-color: {{x.1}};">{{x.0}}</a><!--span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x.0}}</span--></td></tr>
-                                {% endfor %}
-                                {% endif %}
-                            </table>
+                        <div id="bug_info" style="display: none; position: absolute; min-width: 100%; top: 0;" align="center">
+                            <!--td  style="float: right;"-->
+                                <table>
+                                    <tr>
+                                        <td class="tc_form_label_col">
+                                            <b class="Text">Created By : </b> <b id="created_by"></b>
+                                        </td>
 
+                                    </tr>
+
+                                    <tr>
+                                        <td class="tc_form_label_col">
+                                            <b class="Text">Created : </b> <b id="created_date"></b>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="tc_form_label_col">
+                                            <b class="Text">Last Modified By : </b> <b id="modified_by"></b>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="tc_form_label_col">
+                                            <b class="Text">Last Modified : </b> <b id="modified_date"></b>
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            <!--/td-->
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
+        </div>
+
+        <h2>Label</h2>
+        <div class="tabs-div" align="left" style="margin-top: 30px;">
+
+            <div align="center">
+
+                <table>
+                    {% if labels %}
+                    {% for x in labels %}
+                    <tr><td><input type="checkbox" value="{{x.2}}" name="labels"><a href="" class="label" style="background-color: {{x.1}};">{{x.0}}</a><!--span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x.0}}</span--></td></tr>
+                    {% endfor %}
+                    {% endif %}
+                </table>
+
+            </div>
         </div>
 
         <h2>Test Case</h2>
@@ -314,6 +323,18 @@
             </table>
 
         </div>
+
+
+        <h2>Task</h2>
+        <div class="tabs-div" align="left" style="margin-top: 30px;">
+
+        </div>
+
+        <h2>Requirement</h2>
+        <div class="tabs-div" align="left" style="margin-top: 30px;">
+
+        </div>
+
 
     </div>
 
