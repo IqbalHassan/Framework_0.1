@@ -1,5 +1,15 @@
+
+
 var createpath="CreateRequirement";
 var editpath="EditRequirement";
+
+
+var lowest_section = 0;
+var isAtLowestSection = false;
+var lowest_feature = 0;
+var isAtLowestFeature = false;
+
+
 $(document).ready(function(){
     var URL=window.location.pathname;
     var create_index=URL.indexOf(createpath);
@@ -7,6 +17,7 @@ $(document).ready(function(){
     var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf(createpath) != -1;
     if(create_index != -1 || edit_index != -1){
         //Button Preparation
+        addingSections();
         status_button_preparation();
         $('#project_id').text($.session.get('project_id'));
         $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
@@ -22,6 +33,13 @@ $(document).ready(function(){
             $('#form_parent_selection').css({'display':'block'});
         }
         $('#submit').click(function(){
+
+            if($('#feature-flag').hasClass('unfilled')){
+                //alert("Feature Path is not defined Correctly");
+                alertify.error("Feature Path is not defined Correctly","",0);
+                return false;
+            }
+
             //get the statuses
             var status="";
             if($('a[value="not_started"]').hasClass('selected'))
@@ -46,6 +64,8 @@ $(document).ready(function(){
             priority=$('input[name="priority"]:checked').val();
             var milestone=$('#milestone option:selected').val();
             var title=$('#title').val();
+            var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+
             $.get("SubmitCreateRequirement/",{
                 'title':title.trim(),
                 'description':requirement_description.trim(),
@@ -56,7 +76,8 @@ $(document).ready(function(){
                 'priority':priority.trim(),
                 'milestone':milestone.trim(),
                 'project_id': $.session.get('project_id'),
-                'user_name':$('#user_name').text().trim()
+                'user_name':$.session.get('fullname'),
+                'feature_path':newFeaturePath
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/Requirements/'+data);
             });
@@ -89,3 +110,123 @@ function status_button_preparation(){
         $('#not_started').removeClass("selected");
     });
 }
+
+
+function addingSections(){
+    //Sections
+    $.ajax({
+        url:'Get_RequirementSections/',
+        dataType : "json",
+        data : {
+            section : ''
+        },
+        success: function( json ) {
+            if(json.length > 1)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".section[data-level='']").append($('<option>').text(value.replace(/_/g,'-')).attr('value', value.replace(/_/g,'-')));
+            });
+        }
+    });
+    $(".section[data-level='']").append($('<option>').text('No Parent'));
+    $(".section[data-level='']").change(function(){
+        isAtLowestSection = false;
+        recursivelyAddSection(this);
+        $("#section-flag").removeClass("filled");
+        $("#section-flag").addClass("unfilled");
+    });
+
+    //Features
+    $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+        },
+        success: function( json ) {
+            if(json.length > 0)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+    $(".feature[data-level='']").change(function(){
+        isAtLowestFeature = false;
+        recursivelyAddFeature(this);
+        $("#feature-flag").removeClass("filled");
+        $("#feature-flag").addClass("unfilled");
+    });
+
+}
+
+function recursivelyAddFeature(_this){
+    var fatherHeirarchy = $(_this).attr("data-level");
+    var father = $(_this).children("option:selected").text();
+    if(father == "")
+        return;
+    if(father == "Choose..."){
+        for(var i = 0; i < lowest_feature; i++){
+            $("#featuregroup select.feature:last-child").remove();
+        }
+        lowest_feature = 0
+        return;
+    }
+    var current_feature = (fatherHeirarchy.split(".").length - 1)
+    if(current_feature < lowest_feature){
+        for(var i = current_feature + 1; i <= lowest_feature; i++){
+            $("#featuregroup select.feature:last-child").remove();
+        }
+        lowest_feature = current_feature
+    }
+
+    $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : (fatherHeirarchy+father).replace(/ /g,'_'),
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+
+        },
+        success: function( json ) {
+            if(json.length != 1){
+                jQuery('<select/>',{
+                    'class':'feature',
+                    'data-level':fatherHeirarchy+father+'.',
+                    change: function(){
+                        isAtLowestFeature = false;
+                        recursivelyAddFeature(this);
+                        $("#feature-flag").removeClass("filled");
+                        $("#feature-flag").addClass("unfilled");
+                    }
+                }).appendTo('#featuregroup');
+
+                $(".feature[data-level='"+fatherHeirarchy+father+".']").append("<option>Choose...</option>");
+
+                var once = true;
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+                $.each(json, function(i, value) {
+                    if(i == 0)return;
+                    if(once){
+                        lowest_feature+=1
+                        once = false
+                    }
+                    $(".feature[data-level='"+fatherHeirarchy+father+".']").append($('<option>').text(value).attr('value', value));
+                });
+            }else{
+                isAtLowestFeature = true;
+                $("#feature-flag").removeClass("unfilled");
+                $("#feature-flag").addClass("filled");
+            }
+        }
+    });
+}
+

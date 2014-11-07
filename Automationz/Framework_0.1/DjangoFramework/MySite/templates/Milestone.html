@@ -20,37 +20,7 @@
             <td>
                 <input placeholder="Milestone Name" id="msinput" class="textbox" name="ms_name" style="margin-left: 30px;margin-bottom: 20px"/>
             </td>
-            <td id="ms_info" style="float: right;display: none">
-                <table>
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Created By : </b> <b id="created_by"></b>
-                        </td>
 
-                    </tr>
-
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Created : </b> <b id="created_date"></b>
-                        </td>
-
-                    </tr>
-
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Last Modified By : </b> <b id="modified_by"></b>
-                        </td>
-
-                    </tr>
-
-                    <tr>
-                        <td class="tc_form_label_col">
-                            <b class="Text">Last Modified : </b> <b id="modified_date"></b>
-                        </td>
-
-                    </tr>
-                </table>
-            </td>
         </tr>
     </table>
 
@@ -61,109 +31,158 @@
         <div class="tabs-div" align="left" style="margin-top: 30px;margin-left: 20%">
 
 
-            <table id="renamebox" style="display: none">
+            <table width="100%">
+                <thead>
+                <!--tr>
+                    <td style="text-align: center;"></td>
+                    <td style="text-align: center;"></td>
+                </tr-->
+                </thead>
+                <tbody>
                 <tr>
-                    <td class="tc_form_label_col">
-                        <b class="Text">New Name:</b>
-                    </td>
-                    <td class="tc_form_input_col">
-                        <input id="msinput2" class="textbox"  placeholder="Rename Milestone">
-                    </td>
-                </tr>
-            </table>
-
-            &nbsp;&nbsp;&nbsp;
-            <table>
-                <tr>
-                    <td class="tc_form_label_col" align="right">
-                        <b class="Text">Status:</b>
-                    </td>
-                    <td class="tc_form_input_col">
-                        <table class="status_radio" width="100%">
+                    <td style="width: 55%">
+                        <table id="renamebox" style="display: none">
                             <tr>
-                                <td>
-                                    <a id="not_started" type="radio" value="not_started" class="button">Not Started</a>
+                                <td class="tc_form_label_col">
+                                    <b class="Text">New Name:</b>
                                 </td>
-                                <td >
-                                    <a id="started" type="radio" value="started" class="button" style="width:auto">Started</a>
-                                </td>
-                                <td>
-                                    <a id="complete" type="radio" value="complete" class="button" style="width:auto">Complete</a>
-                                </td>
-                                <td >
-                                    <a id="over_due" type="radio" value="over_due" class="button" style="width:auto">Over Due</a>
+                                <td class="tc_form_input_col">
+                                    <input id="msinput2" class="textbox"  placeholder="Rename Milestone">
                                 </td>
                             </tr>
                         </table>
-                    </td>
-                </tr>
-            </table>
 
-            &nbsp;&nbsp;&nbsp;
-            <table>
-                <tr>
-                    <td class="tc_form_label_col">
-                        <b class="Text">Description:</b>
-                    </td>
-                    <td class="tc_form_input_col">
-                        <textarea rows="4" cols="60" id="ms_desc" name="ms_desc" placeholder="Describe the milestone (within 180 letters)"></textarea>
-                    </td>
-                </tr>
-            </table>
-
-            &nbsp;&nbsp;&nbsp;
-            <table>
-                <tr>
-                    <td class="tc_form_label_col">
-                        <b class="Text">Team:</b>
-                    </td>
-                    <td>
+                        &nbsp;&nbsp;&nbsp;
                         <table>
-                                {% if team_info %}
                             <tr>
-                                {% for x in team_info %}
-                                <td><input type="checkbox" name="team" value="{{x.0}}"/>{{x.1}}</td>
-                                {% endfor %}
+                                <td class="tc_form_label_col" align="right">
+                                    <b class="Text">Status:</b>
+                                </td>
+                                <td class="tc_form_input_col">
+                                    <table class="status_radio" width="100%">
+                                        <tr>
+                                            <td>
+                                                <a id="not_started" type="radio" value="not_started" class="button">Not Started</a>
+                                            </td>
+                                            <td >
+                                                <a id="started" type="radio" value="started" class="button" style="width:auto">Started</a>
+                                            </td>
+                                            <td>
+                                                <a id="complete" type="radio" value="complete" class="button" style="width:auto">Complete</a>
+                                            </td>
+                                            <td >
+                                                <a id="over_due" type="radio" value="over_due" class="button" style="width:auto">Over Due</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
                             </tr>
-                            {% endif %}
+                        </table>
+
+                        &nbsp;&nbsp;&nbsp;
+                        <table>
+                            <tr>
+                                <td class="tc_form_label_col">
+                                    <b class="Text">Description:</b>
+                                </td>
+                                <td class="tc_form_input_col">
+                                    <textarea rows="4" cols="60" id="ms_desc" name="ms_desc" placeholder="Describe the milestone (within 180 letters)"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+
+                        &nbsp;&nbsp;&nbsp;
+                        <table>
+                            <tr>
+                                <td class="tc_form_label_col">
+                                    <b class="Text">Team:</b>
+                                </td>
+                                <td>
+                                    <table>
+                                        {% if team_info %}
+                                        <tr>
+                                            {% for x in team_info %}
+                                            <td><input type="checkbox" name="team" value="{{x.0}}"/>{{x.1}}</td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endif %}
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        &nbsp;&nbsp;&nbsp;
+                        <table>
+                            <tr>
+                                <td class="tc_form_label_col">
+                                    <b class="Text">Starting Date:</b>
+                                </td>
+                                <td class="tc_form_input_col">
+                                    <input class="textbox" style="width: auto" placeholder="Starting Date" id="starting_date"/>
+                                </td>
+
+                            </tr>
+                        </table>
+                        &nbsp;&nbsp;&nbsp;
+                        <table>
+                            <tr>
+                                <td class="tc_form_label_col">
+                                    <b class="Text">Ending Date:</b>
+                                </td>
+                                <td class="tc_form_input_col">
+                                    <input class="textbox" style="width: auto" placeholder="Ending Date" id="ending_date"/>
+                                </td>
+                            </tr>
+                        </table>
+
+
+                        &nbsp;&nbsp;&nbsp;
+                        <table>
+                            <tr>
+                                <div id="button_id" align="left" style="padding-left: 30%;padding-top: 3%">
+                                    <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
+                                    <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
+                                </div>
+                            </tr>
+                        </table>
+
+                    </td>
+
+                    <td id="ms_info" style="float: right;display: none;width: 45%; position: relative;">
+                        <table>
+                            <tr>
+                                <td class="tc_form_label_col">
+                                    <b class="Text">Created By : </b> <b id="created_by"></b>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td class="tc_form_label_col">
+                                    <b class="Text">Created : </b> <b id="created_date"></b>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td class="tc_form_label_col">
+                                    <b class="Text">Last Modified By : </b> <b id="modified_by"></b>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td class="tc_form_label_col">
+                                    <b class="Text">Last Modified : </b> <b id="modified_date"></b>
+                                </td>
+
+                            </tr>
                         </table>
                     </td>
-                </tr>
-            </table>
-            &nbsp;&nbsp;&nbsp;
-            <table>
-                <tr>
-                    <td class="tc_form_label_col">
-                        <b class="Text">Starting Date:</b>
-                    </td>
-                    <td class="tc_form_input_col">
-                        <input class="textbox" style="width: auto" placeholder="Starting Date" id="starting_date"/>
-                    </td>
 
-                </tr>
-            </table>
-            &nbsp;&nbsp;&nbsp;
-            <table>
-                <tr>
-                    <td class="tc_form_label_col">
-                        <b class="Text">Ending Date:</b>
-                    </td>
-                    <td class="tc_form_input_col">
-                        <input class="textbox" style="width: auto" placeholder="Ending Date" id="ending_date"/>
-                    </td>
                 </tr>
             </table>
 
 
-            &nbsp;&nbsp;&nbsp;
-            <table>
-                <tr>
-                    <div id="button_id" align="left" style="padding-left: 30%;padding-top: 3%">
-                        <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
-                        <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
-                    </div>
-                </tr>
-            </table>
             <!--
             &nbsp;&nbsp;&nbsp;
             <table>

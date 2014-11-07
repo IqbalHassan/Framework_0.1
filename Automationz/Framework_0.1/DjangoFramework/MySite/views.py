@@ -9516,9 +9516,10 @@ def CreateRequirement(request):
             milestone=request.GET.get(u'milestone','')
             status=request.GET.get(u'status','')
             user_name=request.GET.get(u'user_name','')
+            feature_path=request.GET.get(u'feature_path','')
             parent_requirement_id=request.GET.get(u'requirement_id','')
             if parent_requirement_id=="":
-                result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name)
+                result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path)
                 if result!=False:
                     requirement_id=result
     result=simplejson.dumps(requirement_id)
