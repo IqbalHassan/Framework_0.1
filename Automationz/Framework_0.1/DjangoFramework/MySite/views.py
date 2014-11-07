@@ -8190,9 +8190,9 @@ def Selected_BugID_Analaysis(request):
         failed_cases = DB.GetData(Conn, query, False)
         
         query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='BUG' and fm.feature_id=pf.feature_id::text" % UserData
-        feature = DB.GetData(Conn, query)
+        feature = DB.GetData(Conn, query, False)
 
-    results = {'Bug_Info':Bug_Info, 'Bug_Labels':Bug_Labels, 'Bug_Cases':Bug_Cases, 'tester':tester, 'Failed_Cases':failed_cases, 'Feature':feature}
+    results = {'Bug_Info':Bug_Info, 'Bug_Labels':Bug_Labels, 'Bug_Cases':Bug_Cases, 'tester':tester, 'Failed_Cases':failed_cases, 'Feature':feature[0][0] }
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')

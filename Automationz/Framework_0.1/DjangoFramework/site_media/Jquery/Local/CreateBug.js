@@ -96,7 +96,6 @@ $(document).ready(function(){
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
 
-
         if(title!=""){
             if(operation==1){
                 $.get("LogNewBug/",{
@@ -383,6 +382,7 @@ function PopulateBugInfo(bug_id){
 
         //FeaturePath
         var features=data['Feature'];
+        console.log(features);
         var featureArray = features.split('.');
         var dataId ="";
         var handlerString = "";
