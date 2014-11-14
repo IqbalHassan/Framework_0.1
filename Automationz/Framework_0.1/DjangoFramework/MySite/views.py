@@ -1715,6 +1715,19 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 previous_run = request.GET.get('RunID', '')    
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
+                feature_path=request.GET.get(u'feature_path','')
+                start_date=request.GET.get(u'start_date','')
+                end_date=request.GET.get(u'end_date','')
+                query="select feature_id from product_features where feature_path ~ '%s'"%feature_path
+                Conn=GetConnection()
+                feature_id=DB.GetData(Conn,query)
+                Conn.close()
+                feature_id=int(feature_id[0])
+                start_date=start_date.split('-')
+                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
+                end_date=end_date.split('-')
+                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
+                    
                 #processing email
                 EmailIds = EmailIds.split(":")
                 Emails = []
@@ -1851,7 +1864,10 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                       #'team_id':team_id,
                       'test_milestone':TestMileStone,
                       'run_type':'Manual',
-                      'assigned_tester':Testers
+                      'assigned_tester':Testers,
+                      'feature_id':feature_id,
+                      'start_date':starting_date,
+                      'end_date':ending_date
                 }
                 Conn=GetConnection()
                 sWhereQuery="where tester_id='%s' and status='Unassigned'"%(TesterId)
@@ -6472,7 +6488,7 @@ def AddManualTestMachine(request):
                     tes1 = DB.InsertNewRecordInToTable(Conn, "permitted_user_list", **Dict)
                     Conn.close()
                     updated_time = TimeStamp("string")
-                    Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':(branch+':'+version).strip(),'project_id':project_id,'team_id':team_id}
+                    Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':(branch+':'+version).strip()}
                     Conn=GetConnection()
                     tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
                     Conn.close()
