@@ -69,7 +69,19 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
                            'feature_id':Feature_Id[0]
                 }
             fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
-        
+        """level = 1
+        eachFeature = DB.GetData(Conn,"select subpath(feature_path,0,"+level+") from product_features where feature_path = '"+Feature_Path+"'")
+        while eachFeature != Feature_Path:
+            Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % eachFeature[0])
+            feat_Dict={
+                       'id':bug_id,
+                       'type':'BUG',
+                       'feature_id':Feature_Id[0]
+            }
+            fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
+            level = level + 1
+            eachFeature = DB.GetData(Conn,"select subpath(feature_path,0,"+level+") from product_features where feature_path = '"+Feature_Path+"'")
+        """
         
         if result==True:
             #add this line in the code from LogModule import PassMessage

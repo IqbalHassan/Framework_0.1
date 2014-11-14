@@ -16,7 +16,18 @@
                 <div class="responsive-tabs">
                     <h2>Fields</h2>
                     <div class="tabs-div" align="center">
-                        <form id="tc_enable" class="new_tc_form">
+                    <table width="100%">
+                    <thead>
+                    <!--tr>
+                        <td style="text-align: center;"></td>
+                        <td style="text-align: center;"><h4>Labels</h4></td>
+                    </tr-->
+                    </thead>
+                    <tbody>
+                    <tr>
+                    <td style="width: 55%">
+
+                    <form id="tc_enable" class="new_tc_form">
                             <table>
                                 <tr>
                                     <td class="tc_form_label_col" align="right">
@@ -207,6 +218,46 @@
                         <div align="center">
                             <input type='button' id='submit' class="new_tc_form button minibutton primary" value="Save" style="width:auto;"/>
                         </div>
+            </td>
+                        <td style="width: 45%; position: relative;">
+
+                            <div id="task_info" style="display: none; position: absolute; min-width: 100%; top: 0;" align="center">
+                                <!--td  style="float: right;"-->
+                                <table>
+                                    <tr>
+                                        <td class="tc_form_label_col">
+                                            <b class="Text">Created By : </b> <b id="created_by"></b>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="tc_form_label_col">
+                                            <b class="Text">Created : </b> <b id="created_date"></b>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="tc_form_label_col">
+                                            <b class="Text">Last Modified By : </b> <b id="modified_by"></b>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="tc_form_label_col">
+                                            <b class="Text">Last Modified : </b> <b id="modified_date"></b>
+                                        </td>
+
+                                    </tr>
+                                </table>
+                                <!--/td-->
+                            </div>
+                        </td>
+        </tr>
+        </tbody>
+    </table>
 
                     </div>
                     <h2>Tasks</h2>
