@@ -4,6 +4,9 @@
 
 var lowest_section = 0;
 var isAtLowestSection = false;
+var lowest_feature = 0;
+var isAtLowestFeature = false;
+
 $(document).ready(function(){
     $('#project_id').text($.session.get('project_id'));
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
@@ -14,6 +17,22 @@ $(document).ready(function(){
 });
 function Submit_button_preparation(){
     $('#submit').click(function(){
+
+        if($('#project_identity option:selected').val()==""){
+            alertify.error("Please select a project topbar",1500);
+            return false;
+        }
+        if($('#default_team_identity option:selected').val()==""){
+            alertify.error("Please select a team from topbar",1500);
+            return false;
+        }
+
+        if($('#feature-flag').hasClass('unfilled')){
+            //alert("Feature Path is not defined Correctly");
+            alertify.error("Feature Path is not defined Correctly","",0);
+            return false;
+        }
+
         var title=$('#title').val().trim();
 
         if(title==""){
@@ -47,6 +66,8 @@ function Submit_button_preparation(){
         var milestone=$('#milestone option:selected').val();
         var project_id= $.session.get('project_id');
         var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
+        var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+
         $.get('SubmitNewTask/',{
             'title':title,
             'status':status,
@@ -59,7 +80,8 @@ function Submit_button_preparation(){
             'milestone':milestone,
             'project_id':project_id,
             'section_path':newSectionPath,
-            'user_name':$('#user_name').text().trim()
+            'feature_path':newFeaturePath,
+            'user_name':$.session.get('fullname')
 
         },function(data){
             //window.location=('/Home/'+ $.session.get('project_id')+'/Task/'+data);
@@ -196,4 +218,96 @@ function addingSections(){
         $("#section-flag").removeClass("filled");
         $("#section-flag").addClass("unfilled");
     });
+
+    //Features
+    $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+        },
+        success: function( json ) {
+            if(json.length > 0)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+    $(".feature[data-level='']").change(function(){
+        isAtLowestFeature = false;
+        recursivelyAddFeature(this);
+        $("#feature-flag").removeClass("filled");
+        $("#feature-flag").addClass("unfilled");
+    });
+
 }
+
+function recursivelyAddFeature(_this){
+    var fatherHeirarchy = $(_this).attr("data-level");
+    var father = $(_this).children("option:selected").text();
+    if(father == "")
+        return;
+    if(father == "Choose..."){
+        for(var i = 0; i < lowest_feature; i++){
+            $("#featuregroup select.feature:last-child").remove();
+        }
+        lowest_feature = 0
+        return;
+    }
+    var current_feature = (fatherHeirarchy.split(".").length - 1)
+    if(current_feature < lowest_feature){
+        for(var i = current_feature + 1; i <= lowest_feature; i++){
+            $("#featuregroup select.feature:last-child").remove();
+        }
+        lowest_feature = current_feature
+    }
+
+    $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : (fatherHeirarchy+father).replace(/ /g,'_'),
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+
+        },
+        success: function( json ) {
+            if(json.length != 1){
+                jQuery('<select/>',{
+                    'class':'feature',
+                    'data-level':fatherHeirarchy+father+'.',
+                    change: function(){
+                        isAtLowestFeature = false;
+                        recursivelyAddFeature(this);
+                        $("#feature-flag").removeClass("filled");
+                        $("#feature-flag").addClass("unfilled");
+                    }
+                }).appendTo('#featuregroup');
+
+                $(".feature[data-level='"+fatherHeirarchy+father+".']").append("<option>Choose...</option>");
+
+                var once = true;
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+                $.each(json, function(i, value) {
+                    if(i == 0)return;
+                    if(once){
+                        lowest_feature+=1
+                        once = false
+                    }
+                    $(".feature[data-level='"+fatherHeirarchy+father+".']").append($('<option>').text(value).attr('value', value));
+                });
+            }else{
+                isAtLowestFeature = true;
+                $("#feature-flag").removeClass("unfilled");
+                $("#feature-flag").addClass("filled");
+            }
+        }
+    });
+}
+

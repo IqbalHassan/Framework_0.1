@@ -74,9 +74,22 @@ def CreateNewTask(title,status,description,start_date,end_date,teams,tester,prio
                 }
                 testConnection(Conn)
                 result=DB.InsertNewRecordInToTable(Conn,"task_team_map",**team_dict)
+                
                 if result==False:
                     return False
+                
+            Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
+            if len(Feature_Id) > 0:
+                feat_Dict={
+                               'id':task_id,
+                               'type':'TASK',
+                               'feature_id':Feature_Id[0]
+                    }
+                fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
+            
             return task_id
+        
+        
         #register another path for the task to be grabbed by the requirement
         #register this task in the task_section so that we can get the path faster
     except Exception,e:

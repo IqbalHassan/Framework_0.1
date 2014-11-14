@@ -1,7 +1,7 @@
 import DataBaseUtilities as DB
 from MySite.models import GetConnection
 import datetime                    
-def CreateParentRequirement(title,description,project_id,team_list,start_date,end_date,priority,status,milestone,username):
+def CreateParentRequirement(title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path):
     Conn=GetConnection()
     try:
         req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
@@ -63,6 +63,16 @@ def CreateParentRequirement(title,description,project_id,team_list,start_date,en
                             result=DB.InsertNewRecordInToTable(Conn,"requirement_team_map",**team_Dict)
                             if result==False:
                                 return False
+                            
+                        Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
+                        if len(Feature_Id) > 0:
+                            feat_Dict={
+                                           'id':req_id,
+                                           'type':'REQ',
+                                           'feature_id':Feature_Id[0]
+                                }
+                            fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
+                        
                         return req_id
                     else:
                         return False

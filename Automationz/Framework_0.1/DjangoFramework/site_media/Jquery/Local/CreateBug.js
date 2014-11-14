@@ -4,13 +4,10 @@
 
 var operation = 1;
 var bugid;
+var lowest_feature = 0;
+var isAtLowestFeature = false;
 
 $(document).ready(function(){
-
-    ActivateNecessaryButton();
-    ButtonSet();
-    BugSearchAuto();
-    TestCaseLinking();
 
     $('.scrollbox1').enscroll({
         verticalTrackClass: 'track1',
@@ -21,7 +18,55 @@ $(document).ready(function(){
     });
 
 
+    $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+        },
+        success: function( json ) {
+            if(json.length > 0)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+    $(".feature[data-level='']").change(function(){
+        isAtLowestFeature = false;
+        recursivelyAddFeature(this);
+        $("#feature-flag").removeClass("filled");
+        $("#feature-flag").addClass("unfilled");
+    });
+
+
+    ActivateNecessaryButton();
+    ButtonSet();
+    BugSearchAuto();
+    TestCaseLinking();
+
+
+
     $("#submit").live('click',function(){
+
+        if($('#project_identity option:selected').val()==""){
+            alertify.error("Please select a project topbar",1500);
+            return false;
+        }
+        if($('#default_team_identity option:selected').val()==""){
+            alertify.error("Please select a team from topbar",1500);
+            return false;
+        }
+
+        if($('#feature-flag').hasClass('unfilled')){
+            //alert("Feature Path is not defined Correctly");
+            alertify.error("Feature Path is not defined Correctly","",0);
+            return false;
+        }
 
         var project = $("#project_identity").val();
         var bug_desc=$("#bug_desc").val();
@@ -48,6 +93,8 @@ $(document).ready(function(){
             labels.push($(this).val());
         });
 
+        var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+
 
         if(title!=""){
             if(operation==1){
@@ -64,11 +111,12 @@ $(document).ready(function(){
                     project_id: project.trim(),
                     user_name:$.session.get('fullname'),
                     test_cases:test_cases.join("|"),
-                    labels:labels.join("|")
+                    labels:labels.join("|"),
+                    Feature_Path:newFeaturePath
                     //created_by:creator.trim()
                 },function(data){
                     bug_notify("Bug Created!", "Bug with title '"+title+"' is created!","/site_media/noti.ico");
-                    window.location='/Home/ManageBug/';
+                    window.location='/Home/EditBug/'+data;
                 });
             }
             else if(operation==2){
@@ -86,11 +134,12 @@ $(document).ready(function(){
                     project_id: project.trim(),
                     user_name:$.session.get('fullname'),
                     test_cases:test_cases.join("|"),
-                    labels:labels.join("|")
+                    labels:labels.join("|"),
+                    Feature_Path:newFeaturePath
                     //created_by:creator.trim()
                 },function(data){
                     bug_notify("Bug Modified!", "Bug with title '"+title+"' is modified!","/site_media/noti.ico");
-                    window.location='/Home/ManageBug/';
+                    window.location='/Home/EditBug/'+data;
                 });
             }
         }
@@ -158,6 +207,71 @@ $(document).ready(function(){
     console.log("Url Length:"+URL.length);
 
 });
+
+function recursivelyAddFeature(_this){
+    var fatherHeirarchy = $(_this).attr("data-level");
+    var father = $(_this).children("option:selected").text();
+    if(father == "")
+        return;
+    if(father == "Choose..."){
+        for(var i = 0; i < lowest_feature; i++){
+            $("#featuregroup select.feature:last-child").remove();
+        }
+        lowest_feature = 0
+        return;
+    }
+    var current_feature = (fatherHeirarchy.split(".").length - 1)
+    if(current_feature < lowest_feature){
+        for(var i = current_feature + 1; i <= lowest_feature; i++){
+            $("#featuregroup select.feature:last-child").remove();
+        }
+        lowest_feature = current_feature
+    }
+
+    $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : (fatherHeirarchy+father).replace(/ /g,'_'),
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+
+        },
+        success: function( json ) {
+            if(json.length != 1){
+                jQuery('<select/>',{
+                    'class':'feature',
+                    'data-level':fatherHeirarchy+father+'.',
+                    change: function(){
+                        isAtLowestFeature = false;
+                        recursivelyAddFeature(this);
+                        $("#feature-flag").removeClass("filled");
+                        $("#feature-flag").addClass("unfilled");
+                    }
+                }).appendTo('#featuregroup');
+
+                $(".feature[data-level='"+fatherHeirarchy+father+".']").append("<option>Choose...</option>");
+
+                var once = true;
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+                $.each(json, function(i, value) {
+                    if(i == 0)return;
+                    if(once){
+                        lowest_feature+=1
+                        once = false
+                    }
+                    $(".feature[data-level='"+fatherHeirarchy+father+".']").append($('<option>').text(value).attr('value', value));
+                });
+            }else{
+                isAtLowestFeature = true;
+                $("#feature-flag").removeClass("unfilled");
+                $("#feature-flag").addClass("filled");
+            }
+        }
+    });
+}
+
 
 function BugSearchAuto(){
     $('#title').autocomplete({
@@ -263,6 +377,86 @@ function PopulateBugInfo(bug_id){
             '</td>' +
             "</tr>");
         });
+
+
+
+        //FeaturePath
+        var features=data['Feature'];
+        console.log(features);
+        var featureArray = features.split('.');
+        var dataId ="";
+        var handlerString = "";
+        for(var index in featureArray){
+            if(featureArray[index] == "")
+                continue;
+            $.ajax({
+                url:'GetFeatures/',
+                dataType : "json",
+                data : {
+                    feature : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_'),
+                    project_id: $.session.get('project_id'),
+                    team_id: $.session.get('default_team_identity')
+                },
+                success: function( json ) {
+                    if(json.length != 1){
+                        var realItemIndex = parseInt(json[0][0])
+                        var handlerString = ""
+                        for(var i = 0; i < realItemIndex; i++)
+                            handlerString+=featureArray[i]+'.'
+
+                        if(realItemIndex == 0){
+                            $(".feature[data-level='']").find('option').each(function(){$(this).remove();});
+                            $(".feature[data-level='']").append("<option>Choose...</option>");
+
+                            for(var i = 0; i < json.length; i++)
+                                json[i] = json[i][0].replace(/_/g,' ')
+                            $.each(json, function(i, value) {
+                                if(i == 0)return;
+                                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+                            });
+                            $(".feature[data-level='']").val(featureArray[realItemIndex].replace(/_/g,' '))
+                        }else{
+                            var tag = jQuery('<select/>',{
+                                'class':'feature',
+                                'data-level':handlerString,
+                                'id':realItemIndex+1,
+                                change: function(){
+                                    isAtLowestFeature = false;
+                                    recursivelyAddFeature(this);
+                                    $("#feature-flag").removeClass("filled");
+                                    $("#feature-flag").addClass("unfilled");
+                                }
+                            })
+                            if($('#featuregroup select[id='+realItemIndex+']').length != 0)
+                                $('#featuregroup select[id='+realItemIndex+']').after(tag)
+                            else
+                                $('#featuregroup select[id=1]').after(tag)
+
+                            $(".feature[data-level='"+handlerString+"']").append("<option>Choose...</option>");
+
+                            var once = true;
+                            for(var i = 0; i < json.length; i++)
+                                json[i] = json[i][0].replace(/_/g,' ')
+                            $.each(json, function(i, value) {
+                                if(i == 0)return;
+                                if(once){
+                                    lowest_feature+=1
+                                    once = false
+                                }
+                                $(".feature[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
+                            });
+                            $(".feature[data-level='"+handlerString+"']").val(featureArray[realItemIndex].replace(/_/g,' '))
+                        }
+                        isAtLowestFeature = true;
+                        $("#feature-flag").removeClass("unfilled");
+                        $("#feature-flag").addClass("filled");
+                    }
+                }
+            });
+
+            dataId += featureArray[index] + '.'
+        }
+
 
     });
 

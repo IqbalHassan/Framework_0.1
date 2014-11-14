@@ -614,7 +614,7 @@ $(document).ready(function() {
                 alertify.error("Feature Path is not defined Correctly","",0);
                 return false;
             }
-                                    /*if($('#platform-flag').hasClass('unfilled')){
+            /*if($('#platform-flag').hasClass('unfilled')){
                 //alert("Platform is not selected correctly");
                 alertify.error("Platform is not selected correctly","",0);
                 return false;
@@ -1202,7 +1202,7 @@ function GetBrowserSections(){
         }
     });
     $(".feature[data-level='']").change(function(){
-        isAtLowestSection = false;
+        isAtLowestFeature = false;
         recursivelyAddFeature(this);
         $("#feature-flag").removeClass("filled");
         $("#feature-flag").addClass("unfilled");
