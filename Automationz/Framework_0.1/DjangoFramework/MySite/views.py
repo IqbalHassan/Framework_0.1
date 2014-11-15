@@ -8016,6 +8016,7 @@ def ManageTask(request):
 def EditTask(request,task_id,project_id):
     task_id = request.GET.get('task_id', '')
     project_id = request.GET.get('project_id', '')
+    
     if task_id != "":
         return render_to_response('CreateNewTask.html')
     else:
@@ -8051,8 +8052,15 @@ def Selected_TaskID_Analaysis(request):
         
         query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='TASK' and fm.feature_id=pf.feature_id::text" % UserData
         feature = DB.GetData(Conn, query, False)
+        
+        #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
+        #milestone = DB.GetData(Conn,query)
+        
+        UserData = UserData.replace('-','_')
+        query = "select * from requirement_sections where requirement_path = '%s'" %UserData
+        section = DB.GetData(Conn,query)
 
-    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0] }
+    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0]}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')

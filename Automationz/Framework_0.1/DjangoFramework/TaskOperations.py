@@ -102,7 +102,7 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester
     try:
         Conn=GetConnection()
         
-        if section_path=="No_Parent":
+        """if section_path=="No_Parent":
             new_requirement_path=task_id.replace('-', '_')
             path_id=insert_new_section(Conn, new_requirement_path)
         else:
@@ -112,18 +112,19 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester
                 path_id=requirement_path[0][0]
                 path=requirement_path[0][1]
                 new_requirement_path=path+"."+(task_id).replace('-','_')
-                sequence=insert_new_section(Conn,new_requirement_path.strip())
+                sequence=insert_new_section(Conn,new_requirement_path.strip())"""
         #get the current time and date
         now=datetime.datetime.now().date()
         #now form a directory to send the other information
+        condition = "where tasks_id='%s'" % task_id
         Dict={
               'tasks_id':task_id,
               'tasks_title':title,
               'tasks_description':description,
               'tasks_startingdate':start_date,
               'tasks_endingdate':end_date,
-              'tasks_createdby':user_name,
-              'tasks_creationdate':now,
+              #'tasks_createdby':user_name,
+              #'tasks_creationdate':now,
               'tasks_modifiedby':user_name,
               'tasks_modifydate':now,
               'tasks_milestone':milestone,
@@ -134,7 +135,7 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester
               'project_id':project_id
         }
         testConnection(Conn)
-        result=DB.UpdateRecordInTable(Conn,"tasks",**Dict)
+        result=DB.UpdateRecordInTable(Conn,"tasks",condition,**Dict)
         if result==True:
             lsres=DB.DeleteRecord(Conn,"task_team_map", task_id=task_id)
             for each in teams:
@@ -151,12 +152,13 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester
                 
             Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
             if len(Feature_Id) > 0:
+                lsres=DB.DeleteRecord(Conn,"feature_map", id=task_id)
                 feat_Dict={
                                'id':task_id,
                                'type':'TASK',
                                'feature_id':Feature_Id[0]
                     }
-                fresult = DB.UpdateRecordInTable(Conn,"feature_map",**feat_Dict)
+                fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
             
             return task_id
         

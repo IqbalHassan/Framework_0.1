@@ -35,28 +35,28 @@ function PopulateTaskInfo(task_id){
 
         $("#title").val(data['Task_Info'][0][0]);
 
-        if(data['Task_Info'][0][8]=="not_started")
+        if(data['Task_Info'][0][11]=="not_started")
         {
             $('a[value="not_started"]').addClass('selected')
             $('a[value="started"]').removeClass('selected')
             $('a[value="complete"]').removeClass('selected')
             $('a[value="over_due"]').removeClass('selected')
         }
-        else if(data['Task_Info'][0][8]=="started")
+        else if(data['Task_Info'][0][11]=="started")
         {
             $('a[value="not_started"]').removeClass('selected')
             $('a[value="started"]').addClass('selected')
             $('a[value="complete"]').removeClass('selected')
             $('a[value="over_due"]').removeClass('selected')
         }
-        else if(data['Task_Info'][0][8]=="complete")
+        else if(data['Task_Info'][0][11]=="complete")
         {
             $('a[value="not_started"]').removeClass('selected')
             $('a[value="started"]').removeClass('selected')
             $('a[value="complete"]').addClass('selected')
             $('a[value="over_due"]').removeClass('selected')
         }
-        else if(data['Task_Info'][0][8]=="over_due")
+        else if(data['Task_Info'][0][11]=="over_due")
         {
             $('a[value="not_started"]').removeClass('selected')
             $('a[value="started"]').removeClass('selected')
@@ -66,18 +66,29 @@ function PopulateTaskInfo(task_id){
 
         $("#description").val(data['Task_Info'][0][1]);
         $("#starting_date").val(data['Task_Info'][0][2]);
-        $("#ending_date").val(data['Task_Info'][0][4]);
+        $("#ending_date").val(data['Task_Info'][0][3]);
         $("#tester").html('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
         + '<td class="Text selected">'
         + data['tester']
             //+ "&nbsp"
         + '</td>');
         $("#task_info").show();
-        $("#created_by").text(data['Task_Info'][0][7]);
-        $("#created_date").text(data['Task_Info'][0][8]);
-        $("#modified_by").text(data['Task_Info'][0][9]);
-        $("#modified_date").text(data['Task_Info'][0][10]);
+        $("#created_by").text(data['Task_Info'][0][6]);
+        $("#created_date").text(data['Task_Info'][0][7]);
+        $("#modified_by").text(data['Task_Info'][0][8]);
+        $("#modified_date").text(data['Task_Info'][0][9]);
 
+        $("#milestone").val(data['Task_Info'][0][5]);
+
+
+        $('input[name="priority"]').each(function(){
+            $(this).prop('checked',false);
+        });
+        $('input[name="priority"]').each(function(){
+            if(data['Task_Info'][0][4]==$(this).val()){
+                $(this).prop('checked',true);
+            }
+        });
 
         //FeaturePath
         var features=data['Feature'];
