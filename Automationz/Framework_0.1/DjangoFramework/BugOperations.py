@@ -69,6 +69,7 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
                            'feature_id':Feature_Id[0]
                 }
             fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
+            feat = Feature_Path.split('.')
         """level = 1
         eachFeature = DB.GetData(Conn,"select subpath(feature_path,0,"+level+") from product_features where feature_path = '"+Feature_Path+"'")
         while eachFeature != Feature_Path:

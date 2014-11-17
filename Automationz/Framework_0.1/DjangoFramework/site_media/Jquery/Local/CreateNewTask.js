@@ -21,9 +21,13 @@ $(document).ready(function(){
     console.log("Edit Index:"+indx);
     if(indx!=-1){
         var referred_task=URL.substring((URL.lastIndexOf("EditTask/")+("EditTask/").length),(URL.length-1));
+        $("#header").html($.session.get('project_id')+' / '+$('#default_team_identity :selected').text()+' / Edit Task / '+referred_task);
         PopulateTaskInfo(referred_task);
         operation=2;
         //bugid=referred_task;
+    }
+    else{
+        $("#header").html($.session.get('project_id')+' / '+$('#default_team_identity :selected').text()+' / Create Task');
     }
     console.log("Url Length:"+URL.length);
 

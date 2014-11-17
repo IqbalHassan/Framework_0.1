@@ -14,6 +14,7 @@ $(document).ready(function(){
     var URL=window.location.pathname;
     var create_index=URL.indexOf(createpath);
     var edit_index=URL.indexOf(editpath);
+    $("#header").html($.session.get('project_id')+' / '+$('#default_team_identity :selected').text()+' / Create Requirement');
     var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf(createpath) != -1;
     if(create_index != -1 || edit_index != -1){
         //Button Preparation

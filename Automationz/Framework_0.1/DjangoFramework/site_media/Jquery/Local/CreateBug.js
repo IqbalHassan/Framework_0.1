@@ -199,10 +199,14 @@ $(document).ready(function(){
     indx = URL.indexOf("EditBug");
     console.log("Edit Index:"+indx);
     if(indx!=-1){
-        referred_bug=URL.substring((URL.lastIndexOf("EditBug/")+("EditBug/").length),(URL.length-1));
+        var referred_bug=URL.substring((URL.lastIndexOf("EditBug/")+("EditBug/").length),(URL.length-1));
+        $("#header").html($.session.get('project_id')+' / '+$('#default_team_identity :selected').text()+' / Modify Bug / '+referred_bug);
         PopulateBugInfo(referred_bug);
         operation=2;
         bugid=referred_bug;
+    }
+    else{
+        $("#header").html($.session.get('project_id')+' / '+$('#default_team_identity :selected').text()+' / Log New Bug');
     }
     console.log("Url Length:"+URL.length);
 
