@@ -1288,7 +1288,7 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
     Conn=GetConnection()
     project_name=DB.GetData(Conn,query,False)
     Conn.close()
-    query="select c.id|| ' - ' ||value from config_values c,test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and  c.id=mpm.team_id and c.type='Team' and tre.run_id='%s'"%RunId
+    query="select value from config_values c,test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and  c.id=mpm.team_id and c.type='Team' and tre.run_id='%s'"%RunId
     Conn=GetConnection()
     team_name=DB.GetData(Conn,query,False)
     Conn.close()
@@ -1696,65 +1696,88 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
     try:
         if request.is_ajax():
             if request.method == 'GET':
-                UserData = request.GET.get('RunTestQuery', '')
-                UserData = str(UserData.replace(u'\xa0', u''))
-    
-                EmailIds = request.GET.get('EmailIds', '')
-                EmailIds = str(EmailIds.replace(u'\xa0', u''))
-                
-                TesterIds = request.GET.get('TesterIds', '')
-                TesterIds = str(TesterIds.replace(u'\xa0', u''))
-                
-                TestObjective = request.GET.get('TestObjective', '')
-                TestObjective = str(TestObjective.replace(u'\xa0', u''))
-                
-                TestMileStone = request.GET.get('TestMileStone', '')
-                TestMileStone = str(TestMileStone.replace(u'\xa0', u'').split(":")[0])
-                
                 is_rerun = request.GET.get(u'ReRun', '')
                 previous_run = request.GET.get('RunID', '')    
-                project_id=request.GET.get(u'project_id','')
-                team_id=request.GET.get(u'team_id','')
-                feature_path=request.GET.get(u'feature_path','')
-                start_date=request.GET.get(u'start_date','')
-                end_date=request.GET.get(u'end_date','')
-                query="select feature_id from product_features where feature_path ~ '%s'"%feature_path
-                Conn=GetConnection()
-                feature_id=DB.GetData(Conn,query)
-                Conn.close()
-                feature_id=int(feature_id[0])
-                start_date=start_date.split('-')
-                starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
-                end_date=end_date.split('-')
-                ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
-                    
-                #processing email
-                EmailIds = EmailIds.split(":")
-                Emails = []
-                for eachitem in EmailIds :
-                    if eachitem != "":
-                        Conn=GetConnection()
-                        Eid = DB.GetData(Conn, "Select email from permitted_user_list where user_names = '%s'" % str(eachitem))
-                        Conn.close()
-                    if len(Eid) > 0:
-                        Emails.append(Eid[0])    
-                stEmailIds = ','.join(Emails)
+                UserData = request.GET.get('RunTestQuery', '')
+                UserData = str(UserData.replace(u'\xa0', u''))
                 
-                #getting testers
-                TesterIds = TesterIds.split(":")
-                Testers = []
-                for each in TesterIds:
-                    if each != "" and each != ":":
-                        Testers.append(each)
-                if is_rerun == 'rerun':
-                    Testers.remove(" ")
-                    if len(Testers) == 1:
-                        Testers = Testers[0]
+                if is_rerun=="rerun":
+                    query="select email_notification, assigned_tester, test_objective,test_milestone, branch_version, project_id,team_id, feature_id, start_date,end_date,tester_id,machine_ip from test_run_env tre, machine_project_map mpm where mpm.machine_serial=tre.id and run_id='%s'"%previous_run
+                    Conn=GetConnection()
+                    Meta_info=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    stEmailIds=Meta_info[0][0]
+                    Testers=Meta_info[0][1]
+                    TestObjective=(Meta_info[0][2]+' -ReRun')
+                    TestMileStone=Meta_info[0][3]
+                    Branch_Version=Meta_info[0][4]
+                    project_id=Meta_info[0][5]
+                    team_id=Meta_info[0][6]
+                    feature_id=Meta_info[0][7]
+                    starting_date=Meta_info[0][8]
+                    ending_date=Meta_info[0][9]
+                    TesterId=Meta_info[0][10]
+                    machine_ip=Meta_info[0][11]
+                    query="select type,name,bit,version from machine_dependency_settings mds, test_run_env tre where mds.machine_serial=tre.id and tre.tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
+                    Conn=GetConnection()
+                    machine_data=DB.GetData(Conn,query,False)
+                    Conn.close()
+                else:
+                    EmailIds = request.GET.get('EmailIds', '')
+                    EmailIds = str(EmailIds.replace(u'\xa0', u''))
+                    
+                    TesterIds = request.GET.get('TesterIds', '')
+                    TesterIds = str(TesterIds.replace(u'\xa0', u''))
+                    
+                    TestObjective = request.GET.get('TestObjective', '')
+                    TestObjective = str(TestObjective.replace(u'\xa0', u''))
+                    
+                    TestMileStone = request.GET.get('TestMileStone', '')
+                    TestMileStone = str(TestMileStone.replace(u'\xa0', u'').split(":")[0])
+                    
+                    project_id=request.GET.get(u'project_id','')
+                    team_id=request.GET.get(u'team_id','')
+                    feature_path=request.GET.get(u'feature_path','')
+                    start_date=request.GET.get(u'start_date','')
+                    end_date=request.GET.get(u'end_date','')
+                    
+                    query="select feature_id from product_features where feature_path ~ '%s'"%feature_path
+                    Conn=GetConnection()
+                    feature_id=DB.GetData(Conn,query)
+                    Conn.close()
+                    feature_id=int(feature_id[0])
+                    start_date=start_date.split('-')
+                    starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
+                    end_date=end_date.split('-')
+                    ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
+                        
+                    #processing email
+                    EmailIds = EmailIds.split(":")
+                    Emails = []
+                    for eachitem in EmailIds :
+                        if eachitem != "":
+                            Conn=GetConnection()
+                            Eid = DB.GetData(Conn, "Select email from permitted_user_list where user_names = '%s'" % str(eachitem))
+                            Conn.close()
+                        if len(Eid) > 0:
+                            Emails.append(Eid[0])    
+                    stEmailIds = ','.join(Emails)
+                    
+                    #getting testers
+                    TesterIds = TesterIds.split(":")
+                    Testers = []
+                    for each in TesterIds:
+                        if each != "" and each != ":":
+                            Testers.append(each)
+                    if is_rerun == 'rerun':
+                        Testers.remove(" ")
+                        if len(Testers) == 1:
+                            Testers = Testers[0]
+                        else:
+                            Testers = ','.join(Testers)
                     else:
                         Testers = ','.join(Testers)
-                else:
-                    Testers = ','.join(Testers)
-            
+                
                 
                 UserText = UserData.split(":")
                 QueryText=[]
@@ -1762,23 +1785,54 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     if len(eachitem) != 0 and  eachitem != "" and eachitem.strip() not in QueryText:
                         QueryText.append(str(eachitem.strip()))
                 print QueryText
-                TesterId = QueryText.pop()
-                TesterId = TesterId.strip()
+                if is_rerun!="rerun":
+                    TesterId = QueryText.pop()
+                    TesterId = TesterId.strip()
                 runid = TimeStamp("string")
                 query = "select user_level from permitted_user_list where user_names='%s'" % TesterId
                 Conn=GetConnection()
                 Machine_Status = DB.GetData(Conn, query, False)
                 Conn.close()
-                if Machine_Status[0][0] == 'Manual' and is_rerun != 'rerun':
-                    status = "Unassigned"
-                    updateTime = TimeStamp("string")
-                    print status
-                    print updateTime
-                    Dict = {'run_id':runid,'last_updated_time':updateTime, 'test_objective':TestObjective}
-                    sWhereQuery = "where tester_id='%s' and status='%s'" % (TesterId,status)
-                    Conn=GetConnection()
-                    print DB.UpdateRecordInTable(Conn, "test_run_env", sWhereQuery, **Dict)
-                    Conn.close()
+                if Machine_Status[0][0] == 'Manual':
+                    if is_rerun != 'rerun':
+                        status = "Unassigned"
+                        updateTime = TimeStamp("string")
+                        print status
+                        print updateTime
+                        Dict = {'run_id':runid,'last_updated_time':updateTime, 'test_objective':TestObjective}
+                        sWhereQuery = "where tester_id='%s' and status='%s'" % (TesterId,status)
+                        Conn=GetConnection()
+                        print DB.UpdateRecordInTable(Conn, "test_run_env", sWhereQuery, **Dict)
+                        Conn.close()
+                    else:
+                        status='Unassigned'
+                        Conn=GetConnection()
+                        result=DB.DeleteRecord(Conn, "test_run_env",tester_id=TesterId, status=status)
+                        updated_time = TimeStamp("string")
+                        Dict = {'tester_id':TesterId.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':Branch_Version.strip()}
+                        Conn=GetConnection()
+                        tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
+                        Conn.close()
+                        if(tes2 == True):
+                            query="select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1"%(TesterId.strip())
+                            Conn=GetConnection()
+                            temp_id=DB.GetData(Conn,query)
+                            if isinstance(temp_id,list):
+                                machine_id=temp_id[0]
+                                problem=False
+                                for each in machine_data:
+                                    Dict={}
+                                    Dict.update({'machine_serial':machine_id,'name':each[1],'type':each[0],'bit':each[2],'version':each[3]})                                   
+                                    Conn=GetConnection()
+                                    result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
+                                    Conn.close()
+                            Conn=GetConnection()
+                            Dict={
+                                  'machine_serial':machine_id,
+                                  'project_id':project_id,
+                                  'team_id':team_id
+                            }
+                            print DB.InsertNewRecordInToTable(Conn,"machine_project_map", **Dict)
                 TestIDList = []
                 for eachitem in QueryText:
                     if is_rerun == "rerun":
@@ -1860,6 +1914,8 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                       'rundescription':run_description,
                       'status':'Submitted',
                       'email_notification':stEmailIds,
+                      'run_id':runid,
+                      'test_objective':TestObjective,
                       #'project_id':project_id,
                       #'team_id':team_id,
                       'test_milestone':TestMileStone,
@@ -6501,14 +6557,17 @@ def AddManualTestMachine(request):
                             problem=False
                             for each in new_dependency:
                                 Dict={}
-                                Dict.update({'machine_serial':machine_id,'name':each[1],'bit':each[2],'version':each[3],'type':each[0]})
+                                if each[2]=='Nil':
+                                    Dict.update({'machine_serial':machine_id,'name':each[1],'bit':each[2],'version':each[3],'type':each[0]})
+                                else:
+                                    Dict.update({'machine_serial':machine_id,'name':each[1],'bit':0,'version':each[3],'type':each[0]})
                                 Conn=GetConnection()
                                 result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
                                 Conn.close()
                                 if result==False:
                                     problem=True
                                     break
-                            if problem:
+                            if  not problem:
                                 Dict={'machine_serial':machine_id,'project_id':project_id,'team_id':team_id}
                                 Conn=GetConnection()
                                 result=DB.InsertNewRecordInToTable(Conn,'machine_project_map',**Dict)
@@ -7321,7 +7380,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     stepDelete = int(step) * int(int(currentPagination) - 1)
     offset += ("offset " + str(stepDelete))
     print condition
-    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and mpm.machine_serial=tre.id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7333,7 +7392,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
         total_query += condition
     total_query += ") "
     total_query += "union all "
-    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and tre.id=mpm.machine_serial and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7366,7 +7425,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     Conn=GetConnection()
     all_status = make_status_array(Conn, total_run)
     # make Dict
-    Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Version", "MileStone"]
+    Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Feature", "Version", "MileStone"]
     Dict = {'total':total_run, 'status':all_status, 'column':Column, 'totalGet':len(received_data)}
     Conn.close()
     return Dict
@@ -7402,9 +7461,9 @@ def FormCondition(userText):
     for each in UserText:
         eachitem = each.split(":")
         if eachitem[1].strip() == 'Status':
-            condition += ("tr.status='%s' and " % eachitem[0])
+            condition += ("tcr.status='%s' and " % eachitem[0])
         if len(eachitem[0].strip()) == 8:
-            condition += ("tr.tc_id='%s' and " % eachitem[0])
+            condition += ("rtc.tc_id='%s' and " % eachitem[0])
     condition = condition[:-5].strip()
     return condition
 def GetData(run_id, index, userText=""):

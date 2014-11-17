@@ -122,6 +122,16 @@ function PerformSearch(project_id,team_id){
                 $('#allRun').html(message);
                 make_clickable('#allRun');
                 make_bar_clickable('#allRun');
+                $("#allRun").find('table:eq(0) tr td:nth-child(8)').each(function(){
+                    var message=$(this).text().trim();
+                    if(message=="null"){
+                        $(this).text('N/A');
+                    }
+                    else{
+                        $(this).text(message.split(".").join('/'));
+                    }
+
+                });
                 $('#total').html(data['totalGet']);
                 $('#start').html((currentPagination-1)*stepCount+1);
                 if(parseInt((currentPagination)*stepCount)>parseInt(data['totalGet'])){
