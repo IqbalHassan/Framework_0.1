@@ -14,9 +14,13 @@ $(document).ready(function(){
     console.log("Edit Index:"+indx);
     if(indx!=-1){
         var referred_ms=URL.substring((URL.lastIndexOf("EditMilestone/")+("EditMilestone/").length),(URL.length-1));
+        $("#header").html($.session.get('project_id')+' / Edit Milestone / '+referred_ms);
         PopulateMSInfo(referred_ms);
         operation=2;
     }
+    /*else{
+        $("#header").html($.session.get('project_id')+' / Create Milestone');
+    }*/
     console.log("Url Length:"+URL.length);
 });
 
@@ -96,7 +100,8 @@ function PopulateMSInfo(value){
     $.get("GetMileStoneByID",{term : value.trim()},function(data)
     {
         $("#msinput").val(data[0][1]);
-        if(data[0][4]=="not_started")
+        $("#status").val(data[0][4]);
+        /*if(data[0][4]=="not_started")
         {
             $('a[value="not_started"]').addClass('selected')
             $('a[value="started"]').removeClass('selected')
@@ -123,7 +128,7 @@ function PopulateMSInfo(value){
             $('a[value="started"]').removeClass('selected')
             $('a[value="complete"]').removeClass('selected')
             $('a[value="over_due"]').addClass('selected')
-        }
+        }*/
 
         $("#msinput2").val(data[0][1]);
         $("#ms_desc").val(data[0][5]);
@@ -246,7 +251,7 @@ function Other_Info(value){
 
 
 function New_UI(){
-    status_button_preparation();
+    //status_button_preparation();
 
     $.get("GetMileStones",{term : ''},function(data)
     {
@@ -277,7 +282,8 @@ function New_UI(){
                 $(this).val(value.trim());
                 operation = 2;
                 $("#renamebox").show();
-                if(ui.item[1]=="not_started")
+                $("#status").val(ui.item[1]);
+                /*if(ui.item[1]=="not_started")
                 {
                     $('a[value="not_started"]').addClass('selected')
                     $('a[value="started"]').removeClass('selected')
@@ -304,7 +310,7 @@ function New_UI(){
                     $('a[value="started"]').removeClass('selected')
                     $('a[value="complete"]').removeClass('selected')
                     $('a[value="over_due"]').addClass('selected')
-                }
+                }*/
 
                 $("#msinput2").val(ui.item[0]);
                 $("#ms_desc").val(ui.item[2]);
@@ -377,14 +383,15 @@ function New_UI(){
 
         //get the statuses
         var status="";
-        if($('a[value="not_started"]').hasClass('selected'))
+        status = $("#status").val();
+        /*if($('a[value="not_started"]').hasClass('selected'))
             status = "not_started";
         if($('a[value="started"]').hasClass('selected'))
             status = "started";
         if($('a[value="complete"]').hasClass('selected'))
             status = "complete";
         if($('a[value="over_due"]').hasClass('selected'))
-            status = "over_due";
+            status = "over_due";*/
 
         var description = $("#ms_desc").val();
         var created_by = "";
@@ -465,7 +472,7 @@ function New_UI(){
 
 }
 
-function status_button_preparation(){
+/*function status_button_preparation(){
     $("#not_started").click(function(){
         $(this).addClass("selected");
         $('#started').removeClass("selected");
@@ -490,7 +497,7 @@ function status_button_preparation(){
         $('#over_due').removeClass("selected");
         $('#not_started').removeClass("selected");
     });
-}
+}*/
 
 /*function MileStoneTab(){
     $('#msinput').autocomplete({

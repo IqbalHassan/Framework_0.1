@@ -20,7 +20,7 @@ var dependency_classes=[];
 $(document).ready(function() {
     addMainTableRow('#steps_table');
     //check_required_data();
-    show_radio_button();
+    //show_radio_button();
     vertical_sidebar();
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
@@ -213,8 +213,8 @@ $(document).ready(function() {
                     /******************Properties tab Data*******************************/
                     //Status
                     if (typeof(data)!='string'){
-                        var status=data['Status'];
-                        console.log(status);
+                        $("#status").val(data['Status']);
+                        /*console.log(status);
                         if(status=="Ready"){
                             $('a[value="Production"]').addClass('selected');
                         }
@@ -223,7 +223,7 @@ $(document).ready(function() {
                         }
                         if(status=="Forced"){
                             $('a[value="Forced-Manual"]').addClass('selected');
-                        }
+                        }*/
                         //TagList
                         var tag_list=data['Tags List'];
                         if(tag_list.length!=0){
@@ -678,14 +678,14 @@ $(document).ready(function() {
             /******************************END Validation Check here*******************************/
             /*********************************Properties Tab Data ********************************/
             //Select Status
-            var status;
-            if($('a[value="Production"]').hasClass('selected'))
+            var status = $("#status").val();
+            /*if($('a[value="Production"]').hasClass('selected'))
                 status = "Ready";
             if($('a[value="Development"]').hasClass('selected'))
                 status = "Dev";
             if($('a[value="Forced-Manual"]').hasClass('selected'))
                 status = "Forced";
-            console.log(status);
+            console.log(status);*/
             //Select Section Name
             var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
             var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
@@ -1816,7 +1816,7 @@ function check_required_data(array_list)
 
     }
 }
-function show_radio_button(){
+/*function show_radio_button(){
     $("#enable_radio").live('click',function(){
         $(this).addClass("selected");
         $("#Disable_radio").removeClass("selected");
@@ -1832,7 +1832,7 @@ function show_radio_button(){
         $("#Disable_radio").removeClass("selected");
         $("#enable_radio").removeClass("selected");
     });
-}
+}*/
 function vertical_sidebar(){
     /*$("#add_step_tip").click(function(){
      if(confirm("Are you sure about leaving before saving?")){

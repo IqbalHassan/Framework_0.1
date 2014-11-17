@@ -12,7 +12,7 @@ $(document).ready(function(){
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
     $('#ending_date').datepicker({ dateFormat: "yy-mm-dd" });
     addingSections();
-    status_button_preparation();
+    //status_button_preparation();
     Submit_button_preparation();
 
     URL = window.location.pathname;
@@ -39,7 +39,8 @@ function PopulateTaskInfo(task_id){
 
         $("#title").val(data['Task_Info'][0][0]);
 
-        if(data['Task_Info'][0][11]=="not_started")
+        $("#status").val(data['Task_Info'][0][11]);
+        /*if(data['Task_Info'][0][11]=="not_started")
         {
             $('a[value="not_started"]').addClass('selected')
             $('a[value="started"]').removeClass('selected')
@@ -66,7 +67,7 @@ function PopulateTaskInfo(task_id){
             $('a[value="started"]').removeClass('selected')
             $('a[value="complete"]').removeClass('selected')
             $('a[value="over_due"]').addClass('selected')
-        }
+        }*/
 
         $("#description").val(data['Task_Info'][0][1]);
         $("#starting_date").val(data['Task_Info'][0][2]);
@@ -204,14 +205,15 @@ function Submit_button_preparation(){
             alertify.error("You need to choose a section!");
         }
 
-        if($('a[value="not_started"]').hasClass('selected'))
+        /*if($('a[value="not_started"]').hasClass('selected'))
             var status = "not_started";
         if($('a[value="started"]').hasClass('selected'))
             var status = "started";
         if($('a[value="complete"]').hasClass('selected'))
             var status = "complete";
         if($('a[value="over_due"]').hasClass('selected'))
-            var status = "over_due";
+            var status = "over_due";*/
+        var status = $("#status").val();
 
         var description=$('#description').val().trim();
         var team=[];
@@ -253,7 +255,7 @@ function Submit_button_preparation(){
         }
     });
 }
-function status_button_preparation(){
+/*function status_button_preparation(){
     $("#not_started").click(function(){
         $(this).addClass("selected");
         $('#started').removeClass("selected");
@@ -278,7 +280,8 @@ function status_button_preparation(){
         $('#over_due').removeClass("selected");
         $('#not_started').removeClass("selected");
     });
-}
+}*/
+
 function recursivelyAddSection(_this){
     var fatherHeirarchy = $(_this).attr("data-level");
     var father = $(_this).children("option:selected").text();

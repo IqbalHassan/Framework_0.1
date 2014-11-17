@@ -19,7 +19,7 @@ $(document).ready(function(){
     if(create_index != -1 || edit_index != -1){
         //Button Preparation
         addingSections();
-        status_button_preparation();
+        //status_button_preparation();
         $('#project_id').text($.session.get('project_id'));
         $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
         $('#ending_date').datepicker({ dateFormat: "yy-mm-dd" });
@@ -43,14 +43,15 @@ $(document).ready(function(){
 
             //get the statuses
             var status="";
-            if($('a[value="not_started"]').hasClass('selected'))
+            /*if($('a[value="not_started"]').hasClass('selected'))
                 status = "not_started";
             if($('a[value="started"]').hasClass('selected'))
                 status = "started";
             if($('a[value="complete"]').hasClass('selected'))
                 status = "complete";
             if($('a[value="over_due"]').hasClass('selected'))
-                status = "over_due";
+                status = "over_due";*/
+            status = $("#status").val();
             var requirement_description="";
             requirement_description=$('#description').val();
             var start_date="";
@@ -85,7 +86,8 @@ $(document).ready(function(){
         });
     }
 });
-function status_button_preparation(){
+
+/*function status_button_preparation(){
     $("#not_started").click(function(){
         $(this).addClass("selected");
         $('#started').removeClass("selected");
@@ -110,7 +112,7 @@ function status_button_preparation(){
         $('#over_due').removeClass("selected");
         $('#not_started').removeClass("selected");
     });
-}
+}*/
 
 
 function addingSections(){

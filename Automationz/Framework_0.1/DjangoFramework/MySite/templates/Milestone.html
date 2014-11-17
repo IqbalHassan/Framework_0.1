@@ -6,7 +6,7 @@
 <script type="text/javascript" src="/site_media/Jquery/Local/Milestone.js"></script>
 <article>
     <div align="left">
-        <h3 style="font-size: 19px;"><a style="font-weight: bold">Create/Edit Milestone</a></h3>
+        <h3 style="font-size: 19px;"><a style="font-weight: bold" id="header">Create/Edit Milestone</a></h3>
     </div>
 
 
@@ -41,8 +41,8 @@
                 <tbody>
                 <tr>
                     <td style="width: 55%">
-                        <table id="renamebox" style="display: none">
-                            <tr>
+                        <table>
+                            <tr id="renamebox" style="display: none">
                                 <td class="tc_form_label_col">
                                     <b class="Text">New Name:</b>
                                 </td>
@@ -50,16 +50,19 @@
                                     <input id="msinput2" class="textbox"  placeholder="Rename Milestone">
                                 </td>
                             </tr>
-                        </table>
 
-                        &nbsp;&nbsp;&nbsp;
-                        <table>
                             <tr>
                                 <td class="tc_form_label_col" align="right">
                                     <b class="Text">Status:</b>
                                 </td>
                                 <td class="tc_form_input_col">
-                                    <table class="status_radio" width="100%">
+                                    <select id="status">
+                                        <option value="not_started">Not Started</option>
+                                        <option value="started">Started</option>
+                                        <option value="complete">Complete</option>
+                                        <option value="over_due">Over Due</option>
+                                    </select>
+                                    <!--table class="status_radio" width="100%">
                                         <tr>
                                             <td>
                                                 <a id="not_started" type="radio" value="not_started" class="button">Not Started</a>
@@ -74,13 +77,10 @@
                                                 <a id="over_due" type="radio" value="over_due" class="button" style="width:auto">Over Due</a>
                                             </td>
                                         </tr>
-                                    </table>
+                                    </table-->
                                 </td>
                             </tr>
-                        </table>
 
-                        &nbsp;&nbsp;&nbsp;
-                        <table>
                             <tr>
                                 <td class="tc_form_label_col">
                                     <b class="Text">Description:</b>
@@ -89,10 +89,7 @@
                                     <textarea rows="4" cols="60" id="ms_desc" name="ms_desc" placeholder="Describe the milestone (within 180 letters)"></textarea>
                                 </td>
                             </tr>
-                        </table>
 
-                        &nbsp;&nbsp;&nbsp;
-                        <table>
                             <tr>
                                 <td class="tc_form_label_col">
                                     <b class="Text">Team:</b>
@@ -109,9 +106,7 @@
                                     </table>
                                 </td>
                             </tr>
-                        </table>
-                        &nbsp;&nbsp;&nbsp;
-                        <table>
+
                             <tr>
                                 <td class="tc_form_label_col">
                                     <b class="Text">Starting Date:</b>
@@ -121,9 +116,7 @@
                                 </td>
 
                             </tr>
-                        </table>
-                        &nbsp;&nbsp;&nbsp;
-                        <table>
+
                             <tr>
                                 <td class="tc_form_label_col">
                                     <b class="Text">Ending Date:</b>
@@ -132,51 +125,49 @@
                                     <input class="textbox" style="width: auto" placeholder="Ending Date" id="ending_date"/>
                                 </td>
                             </tr>
+
                         </table>
 
-
-                        &nbsp;&nbsp;&nbsp;
-                        <table>
-                            <tr>
-                                <div id="button_id" align="left" style="padding-left: 30%;padding-top: 3%">
-                                    <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
-                                    <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
-                                </div>
-                            </tr>
-                        </table>
+                        <div id="button_id" style="padding-left: 30%;padding-top: 3%">
+                            <input type="button" value="Submit" id="ms_button" class="button minibutton primary"/>
+                            <!--a type='submit' id="ms_button" class="button minibutton primary" name='submit_button'>Submit</a-->
+                        </div>
 
                     </td>
 
-                    <td id="ms_info" style="float: right;display: none;width: 45%; position: relative;">
-                        <table>
-                            <tr>
-                                <td class="tc_form_label_col">
-                                    <b class="Text">Created By : </b> <b id="created_by"></b>
-                                </td>
+                    <td style="float: right;width: 45%; position: relative;">
+                        <div id="ms_info" style="display: none; position: absolute; min-width: 100%; top: 0;" align="center">
+                            <table>
+                                <tr>
+                                    <td class="tc_form_label_col">
+                                        <b class="Text">Created By : </b> <b id="created_by"></b>
+                                    </td>
 
-                            </tr>
+                                </tr>
 
-                            <tr>
-                                <td class="tc_form_label_col">
-                                    <b class="Text">Created : </b> <b id="created_date"></b>
-                                </td>
+                                <tr>
+                                    <td class="tc_form_label_col">
+                                        <b class="Text">Created : </b> <b id="created_date"></b>
+                                    </td>
 
-                            </tr>
+                                </tr>
 
-                            <tr>
-                                <td class="tc_form_label_col">
-                                    <b class="Text">Last Modified By : </b> <b id="modified_by"></b>
-                                </td>
+                                <tr>
+                                    <td class="tc_form_label_col">
+                                        <b class="Text">Last Modified By : </b> <b id="modified_by"></b>
+                                    </td>
 
-                            </tr>
+                                </tr>
 
-                            <tr>
-                                <td class="tc_form_label_col">
-                                    <b class="Text">Last Modified : </b> <b id="modified_date"></b>
-                                </td>
+                                <tr>
+                                    <td class="tc_form_label_col">
+                                        <b class="Text">Last Modified : </b> <b id="modified_date"></b>
+                                    </td>
 
-                            </tr>
-                        </table>
+                                </tr>
+                            </table>
+                        </div>
+
                     </td>
 
                 </tr>
