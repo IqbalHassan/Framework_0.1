@@ -240,7 +240,12 @@ function make_clickable(divname) {
             'cursor': 'pointer',
             'textAlign': 'left'
         });
+        $(this).click(function(){
+            var location='/Home/'+$.session.get('project_id')+'/EditTask/'+$(this).text().trim()+'/';
+            window.location=location;
+        });
     });
+
 
     $(divname + ' tr>td:last-child').each(function () {
         /*if($(this).text()!=("None")){

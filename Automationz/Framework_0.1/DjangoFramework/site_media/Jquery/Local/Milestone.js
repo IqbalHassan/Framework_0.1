@@ -71,10 +71,10 @@ function make_task_clickable(){
             'color':'blue',
             'cursor':'pointer'
         });
-        /*$(this).click(function(){
-            var location='/Home/'+$.session.get('project_id')+'/Tasks/'+$(this).text().trim()+'/';
+        $(this).click(function(){
+            var location='/Home/'+$.session.get('project_id')+'/EditTask/'+$(this).text().trim()+'/';
             window.location=location;
-        });*/
+        });
     });
 }
 

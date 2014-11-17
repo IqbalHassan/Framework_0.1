@@ -95,3 +95,76 @@ def CreateNewTask(title,status,description,start_date,end_date,teams,tester,prio
     except Exception,e:
         print "Exception:", e
         
+        
+        
+        
+def ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name):
+    try:
+        Conn=GetConnection()
+        
+        """if section_path=="No_Parent":
+            new_requirement_path=task_id.replace('-', '_')
+            path_id=insert_new_section(Conn, new_requirement_path)
+        else:
+            query="select requirement_path_id,requirement_path from requirement_sections where requirement_path ~'%s'"%(section_path.replace('-', '_'))
+            requirement_path=DB.GetData(Conn,query,False)
+            if isinstance(requirement_path,list) and len(requirement_path)==1:
+                path_id=requirement_path[0][0]
+                path=requirement_path[0][1]
+                new_requirement_path=path+"."+(task_id).replace('-','_')
+                sequence=insert_new_section(Conn,new_requirement_path.strip())"""
+        #get the current time and date
+        now=datetime.datetime.now().date()
+        #now form a directory to send the other information
+        condition = "where tasks_id='%s'" % task_id
+        Dict={
+              'tasks_id':task_id,
+              'tasks_title':title,
+              'tasks_description':description,
+              'tasks_startingdate':start_date,
+              'tasks_endingdate':end_date,
+              #'tasks_createdby':user_name,
+              #'tasks_creationdate':now,
+              'tasks_modifiedby':user_name,
+              'tasks_modifydate':now,
+              'tasks_milestone':milestone,
+              'tasks_priority':priority,
+              'status':status,
+              'parent_id':path_id,
+              'tester':tester,
+              'project_id':project_id
+        }
+        testConnection(Conn)
+        result=DB.UpdateRecordInTable(Conn,"tasks",condition,**Dict)
+        if result==True:
+            lsres=DB.DeleteRecord(Conn,"task_team_map", task_id=task_id)
+            for each in teams:
+                #form new Dict
+                team_dict={
+                    'task_id':task_id,
+                    'team_id':each
+                }
+                testConnection(Conn)
+                result=DB.InsertNewRecordInToTable(Conn,"task_team_map",**team_dict)
+                
+                if result==False:
+                    return False
+                
+            Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
+            if len(Feature_Id) > 0:
+                lsres=DB.DeleteRecord(Conn,"feature_map", id=task_id)
+                feat_Dict={
+                               'id':task_id,
+                               'type':'TASK',
+                               'feature_id':Feature_Id[0]
+                    }
+                fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
+            
+            return task_id
+        
+        
+        #register another path for the task to be grabbed by the requirement
+        #register this task in the task_section so that we can get the path faster
+    except Exception,e:
+        print "Exception:", e
+        

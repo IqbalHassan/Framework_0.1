@@ -8071,6 +8071,61 @@ def ManageTask(request):
     }  
     Conn.close()  
     return render_to_response('ManageTask.html',Dict)
+
+def EditTask(request,task_id,project_id):
+    task_id = request.GET.get('task_id', '')
+    project_id = request.GET.get('project_id', '')
+    
+    if task_id != "":
+        return render_to_response('CreateNewTask.html')
+    else:
+        Conn=GetConnection()
+        query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
+        team_info=DB.GetData(Conn,query,False)
+        query="select value from config_values where type='Priority'"
+        priority=DB.GetData(Conn,query,False)
+        query="select id,value from config_values where type='milestone'"
+        milestone_list=DB.GetData(Conn,query,False)
+        #get the names from permitted_user_list
+        query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
+        user_list=DB.GetData(Conn,query,False)
+        Dict={
+              'team_info':team_info,
+              'priority_list':priority,
+              'milestone_list':milestone_list,
+              'user_list':user_list
+        }
+    return render_to_response("CreateNewTask.html",Dict)
+
+def Selected_TaskID_Analaysis(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'Selected_Task_Analysis', '')
+
+        query = "select tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),tasks_priority,tasks_milestone,tasks_createdby,cast(tasks_creationdate as text),tasks_modifiedby,cast(tasks_modifydate as text),parent_id,status,tester,project_id from tasks where tasks_id = '%s'" % UserData
+        Task_Info = DB.GetData(Conn, query, False)
+        
+        query = "select pul.user_names from tasks t,permitted_user_list pul where tasks_id = '%s' and t.tester::int=pul.user_id" % UserData
+        tester = DB.GetData(Conn, query)
+        
+        query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='TASK' and fm.feature_id=pf.feature_id::text" % UserData
+        feature = DB.GetData(Conn, query, False)
+        
+        #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
+        #milestone = DB.GetData(Conn,query)
+        
+        UserData = UserData.replace('-','_')
+        query = "select * from requirement_sections where requirement_path = '%s'" %UserData
+        section = DB.GetData(Conn,query)
+
+    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0]}
+    json = simplejson.dumps(results)
+    Conn.close()
+    return HttpResponse(json, mimetype='application/json')
+
+
+
 def FetchProject(request):
     if request.is_ajax():
         if request.method=='GET':
@@ -9876,6 +9931,31 @@ def SubmitNewTask(request):
             result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
+
+def SubmitEditedTask(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            task_id=request.GET.get(u'task_id','')
+            title=request.GET.get(u'title','')
+            status=request.GET.get(u'status','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'starting_date','')
+            end_date=request.GET.get(u'ending_date','')
+            start_date=convert_date_from_string(start_date)
+            end_date=convert_date_from_string(end_date)
+            teams=request.GET.get(u'team','').split("|")
+            tester=request.GET.get(u'tester','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            project_id=request.GET.get(u'project_id','')
+            section_path=request.GET.get(u'section_path','')
+            feature_path=request.GET.get(u'feature_path','')
+            user_name=request.GET.get(u'user_name','')
+            result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name)
+    results=simplejson.dumps(result)
+    return HttpResponse(results,mimetype='application/json')    
+
+
 def ViewTaskPage(request,project_id):
     return HttpResponse(project_id)    
 def GetProfileInfo(request, user_id, success):

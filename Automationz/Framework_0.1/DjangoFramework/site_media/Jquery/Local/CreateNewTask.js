@@ -1,7 +1,7 @@
 /**
  * Created by lent400 on 8/14/14.
  */
-
+var operation = 1;
 var lowest_section = 0;
 var isAtLowestSection = false;
 var lowest_feature = 0;
@@ -14,7 +14,165 @@ $(document).ready(function(){
     addingSections();
     status_button_preparation();
     Submit_button_preparation();
+
+    URL = window.location.pathname;
+    console.log("url:"+URL);
+    indx = URL.indexOf("EditTask");
+    console.log("Edit Index:"+indx);
+    if(indx!=-1){
+        var referred_task=URL.substring((URL.lastIndexOf("EditTask/")+("EditTask/").length),(URL.length-1));
+        PopulateTaskInfo(referred_task);
+        operation=2;
+        //bugid=referred_task;
+    }
+    console.log("Url Length:"+URL.length);
+
 });
+
+function PopulateTaskInfo(task_id){
+
+    $.get("Selected_TaskID_Analaysis",{Selected_Task_Analysis : task_id},function(data){
+
+        $("#title").val(data['Task_Info'][0][0]);
+
+        if(data['Task_Info'][0][11]=="not_started")
+        {
+            $('a[value="not_started"]').addClass('selected')
+            $('a[value="started"]').removeClass('selected')
+            $('a[value="complete"]').removeClass('selected')
+            $('a[value="over_due"]').removeClass('selected')
+        }
+        else if(data['Task_Info'][0][11]=="started")
+        {
+            $('a[value="not_started"]').removeClass('selected')
+            $('a[value="started"]').addClass('selected')
+            $('a[value="complete"]').removeClass('selected')
+            $('a[value="over_due"]').removeClass('selected')
+        }
+        else if(data['Task_Info'][0][11]=="complete")
+        {
+            $('a[value="not_started"]').removeClass('selected')
+            $('a[value="started"]').removeClass('selected')
+            $('a[value="complete"]').addClass('selected')
+            $('a[value="over_due"]').removeClass('selected')
+        }
+        else if(data['Task_Info'][0][11]=="over_due")
+        {
+            $('a[value="not_started"]').removeClass('selected')
+            $('a[value="started"]').removeClass('selected')
+            $('a[value="complete"]').removeClass('selected')
+            $('a[value="over_due"]').addClass('selected')
+        }
+
+        $("#description").val(data['Task_Info'][0][1]);
+        $("#starting_date").val(data['Task_Info'][0][2]);
+        $("#ending_date").val(data['Task_Info'][0][3]);
+        $("#tester").html('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+        + '<td class="Text selected">'
+        + data['tester']
+            //+ "&nbsp"
+        + '</td>');
+        $("#task_info").show();
+        $("#created_by").text(data['Task_Info'][0][6]);
+        $("#created_date").text(data['Task_Info'][0][7]);
+        $("#modified_by").text(data['Task_Info'][0][8]);
+        $("#modified_date").text(data['Task_Info'][0][9]);
+
+        $("#milestone").val(data['Task_Info'][0][5]);
+
+
+        $('input[name="priority"]').each(function(){
+            $(this).prop('checked',false);
+        });
+        $('input[name="priority"]').each(function(){
+            if(data['Task_Info'][0][4]==$(this).val()){
+                $(this).prop('checked',true);
+            }
+        });
+
+        //FeaturePath
+        var features=data['Feature'];
+        console.log(features);
+        var featureArray = features.split('.');
+        var dataId ="";
+        var handlerString = "";
+        for(var index in featureArray){
+            if(featureArray[index] == "")
+                continue;
+            $.ajax({
+                url:'GetFeatures/',
+                dataType : "json",
+                data : {
+                    feature : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_'),
+                    project_id: $.session.get('project_id'),
+                    team_id: $.session.get('default_team_identity')
+                },
+                success: function( json ) {
+                    if(json.length != 1){
+                        var realItemIndex = parseInt(json[0][0])
+                        var handlerString = ""
+                        for(var i = 0; i < realItemIndex; i++)
+                            handlerString+=featureArray[i]+'.'
+
+                        if(realItemIndex == 0){
+                            $(".feature[data-level='']").find('option').each(function(){$(this).remove();});
+                            $(".feature[data-level='']").append("<option>Choose...</option>");
+
+                            for(var i = 0; i < json.length; i++)
+                                json[i] = json[i][0].replace(/_/g,' ')
+                            $.each(json, function(i, value) {
+                                if(i == 0)return;
+                                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+                            });
+                            $(".feature[data-level='']").val(featureArray[realItemIndex].replace(/_/g,' '))
+                        }else{
+                            var tag = jQuery('<select/>',{
+                                'class':'feature',
+                                'data-level':handlerString,
+                                'id':realItemIndex+1,
+                                change: function(){
+                                    isAtLowestFeature = false;
+                                    recursivelyAddFeature(this);
+                                    $("#feature-flag").removeClass("filled");
+                                    $("#feature-flag").addClass("unfilled");
+                                }
+                            })
+                            if($('#featuregroup select[id='+realItemIndex+']').length != 0)
+                                $('#featuregroup select[id='+realItemIndex+']').after(tag)
+                            else
+                                $('#featuregroup select[id=1]').after(tag)
+
+                            $(".feature[data-level='"+handlerString+"']").append("<option>Choose...</option>");
+
+                            var once = true;
+                            for(var i = 0; i < json.length; i++)
+                                json[i] = json[i][0].replace(/_/g,' ')
+                            $.each(json, function(i, value) {
+                                if(i == 0)return;
+                                if(once){
+                                    lowest_feature+=1
+                                    once = false
+                                }
+                                $(".feature[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
+                            });
+                            $(".feature[data-level='"+handlerString+"']").val(featureArray[realItemIndex].replace(/_/g,' '))
+                        }
+                        isAtLowestFeature = true;
+                        $("#feature-flag").removeClass("unfilled");
+                        $("#feature-flag").addClass("filled");
+                    }
+                }
+            });
+
+            dataId += featureArray[index] + '.'
+        }
+
+
+    });
+
+
+}
+
 function Submit_button_preparation(){
     $('#submit').click(function(){
 
@@ -68,25 +226,27 @@ function Submit_button_preparation(){
         var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
-        $.get('SubmitNewTask/',{
-            'title':title,
-            'status':status,
-            'description':description,
-            'team':team.join("|"),
-            'tester':tester.join("|"),
-            'starting_date':starting_date,
-            'ending_date':ending_date,
-            'priority':priority,
-            'milestone':milestone,
-            'project_id':project_id,
-            'section_path':newSectionPath,
-            'feature_path':newFeaturePath,
-            'user_name':$.session.get('fullname')
+        if(operation==1){
+            $.get('SubmitNewTask/',{
+                'title':title,
+                'status':status,
+                'description':description,
+                'team':team.join("|"),
+                'tester':tester.join("|"),
+                'starting_date':starting_date,
+                'ending_date':ending_date,
+                'priority':priority,
+                'milestone':milestone,
+                'project_id':project_id,
+                'section_path':newSectionPath,
+                'feature_path':newFeaturePath,
+                'user_name':$.session.get('fullname')
 
-        },function(data){
-            //window.location=('/Home/'+ $.session.get('project_id')+'/Task/'+data);
-            window.location= ('/Home/ManageTask/');
-        });
+            },function(data){
+                window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
+                //window.location= ('/Home/ManageTask/');
+            });
+        }
     });
 }
 function status_button_preparation(){
