@@ -216,13 +216,14 @@ function ReRunTab(){
         var statusList=[]
         $('.rerunTab').each(function(){
             if($(this).hasClass('down')){
-                temp=$(this).text().trim();
+                var temp=$(this).text().trim();
                 statusList.push(temp);
             }
+        });
             //console.log(temp);
             $.get('ReRun',{
                 status:statusList.join(','),
-                RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim()
+                RunID:$('#fetch_run_id').text().trim()
             },function(data){
                 var column=data['col'];
                 var data_list=data['list'];
@@ -253,7 +254,7 @@ function ReRunTab(){
                     $('#additional_data').fadeIn(500);
                 }
             });
-        });
+
         console.log(statusList);
     });
     MakingReRunClickable();
@@ -271,7 +272,7 @@ function ReRunTab(){
             return false;
         }
         //console.log(tc_list);
-        var machine=$('input[name="machine"]').val();
+        /*var machine=$('input[name="machine"]').val();
         var tester=$('input[name="tester"]').val();
         var client=$('input[name="client"]').val();
         var email=$('input[name="email"]').val();
@@ -296,15 +297,15 @@ function ReRunTab(){
             //alert("TestObjective is empty");
             alertify.log("TestObjective is empty","",0);
             return false;
-        }
+        }*/
         var queryText="";
         for(var i=0;i<tc_list.length;i++){
             queryText+=tc_list[i].trim();
             queryText+=": ";
         }
-        queryText+=((machine.trim())+':');
+        //queryText+=((machine.trim())+':');
         //console.log(queryText);
-        var testerText="";
+        /*var testerText="";
         tester=tester.split(",");
         for(var i=0;i<tester.length;i++){
             testerText+=tester[i];
@@ -320,18 +321,18 @@ function ReRunTab(){
         //console.log(emailText);
         var dependencyText="";
         dependencyText+=(client+": ");
-        //console.log(dependencyText);
+        //console.log(dependencyText);*/
         $.get("Run_Test",{
             RunTestQuery:queryText,
-            EmailIds:emailText,
-            TesterIds:testerText,
-            DependencyText:dependencyText,
-            TestObjective:objective,
-            Env:environment,
+            //EmailIds:emailText,
+            //TesterIds:testerText,
+            //DependencyText:dependencyText,
+            //TestObjective:objective,
+            //Env:environment,
             ReRun:"rerun",
-            RunID:$('#EnvironmentDetailsTable tr>td:first-child').text().trim(),
-            project_id:project_id.trim(),
-            team_id:team_id
+            RunID:$('#fetch_run_id').text().trim()
+            //project_id:project_id.trim(),
+            //team_id:team_id
         },function(data){
             if(data['Result']){
                 var oldid = $("#run_id").text().trim();

@@ -6,7 +6,7 @@ $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
     var location_name=window.location.pathname;
-    location_name=location_name.split("/")[3].replace(/_/,' ');
+    location_name=location_name.split("/")[3].replace(/_/g,' ');
     //alert(location_name);
     ManageMilestone(project_id,team_id,location_name);
     $('#project_identity').on('change',function(){
