@@ -181,6 +181,7 @@ $(document).ready(function(){
     });
     $('#default_team_identity').on('change',function(){
         $.session.set('default_team_identity',$(this).val());
+        //$.session.set('default_team_name',$('#default_team_identity option:selected').text().trim());
         if($(this).val()!=""){
             $.get('UpdateDefaultTeamForUser',{
                 'user_id': $.session.get('user_id'),

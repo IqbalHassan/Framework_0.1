@@ -508,7 +508,7 @@ def EditBug(request,bug_id):
         manager=DB.GetData(Conn,query)
         query="select label_name, label_color, label_id from labels order by label_name"
         labels=DB.GetData(Conn,query,False)
-        query="select distinct tc_id,tc_name from test_cases where tc_id not in (select tc_id from bug_testcases_map) order by tc_id"
+        query="select distinct tc_id,tc_name from test_cases where tc_id not in (select id2 from components_map) order by tc_id"
         cases=DB.GetData(Conn,query,False)
         query="select id,value from config_values where type='milestone'"
         milestone_list=DB.GetData(Conn,query,False)
@@ -3669,18 +3669,20 @@ def Get_Users(request):
     if len(results) > 0:
         message = results[0]
         Dict={'message':message}
-        query="select default_project,default_team from default_choice where user_id='%s'"%results[0][0]
+        query="select default_project,default_team, cv.value from default_choice dc,config_values cv where dc.user_id='%s' and dc.default_team=cv.id"%results[0][0]
         testConnection(Conn)
         default_choice=DB.GetData(Conn,query,False)
         if isinstance(default_choice,list) and len(default_choice)==1:
             Dict.update({
                 'project_id':default_choice[0][0],
-                'team_id':default_choice[0][1]
+                'team_id':default_choice[0][1],
+                'team_name':default_choice[0][2]
             })
         else:
             Dict.update({
                 'project_id':"",
-                'team_id':""
+                'team_id':"",
+                'team_name':""
             })
     else:
 
@@ -8156,7 +8158,7 @@ def ManageBug(request):
         #ago = (now-x[8]).days + " days ago by "
         #data.append(ago)
         bugs.append(data)"""
-    query="select * from bug_label_map"
+    query="select * from label_map"
     labels=DB.GetData(Conn, query, False)
     query="select * from milestone_info"
     milestones=DB.GetData(Conn, query, False)
@@ -8175,7 +8177,7 @@ def Bugs_List(request):
         query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id order by b.bug_id desc"
         bugs=DB.GetData(Conn, query, False)
         
-        query="select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, bug_label_map blm where l.label_id=blm.label_id"
+        query="select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, label_map blm where l.label_id=blm.label_id"
         labels=DB.GetData(Conn, query, False)
         #query="select * from milestone_info"
         #milestones=DB.GetData(Conn, query, False)
@@ -8274,7 +8276,7 @@ def CreateBug(request):
     manager=DB.GetData(Conn,query)
     query="select label_name, label_color, label_id from labels order by label_name"
     labels=DB.GetData(Conn,query,False)
-    query="select distinct tc_id,tc_name from test_cases where tc_id not in (select tc_id from bug_testcases_map) order by tc_id"
+    query="select distinct tc_id,tc_name from test_cases where tc_id not in (select id2 from components_map) order by tc_id"
     cases=DB.GetData(Conn,query,False)
     query="select id,value from config_values where type='milestone'"
     milestone_list=DB.GetData(Conn,query,False)
@@ -8307,16 +8309,16 @@ def Selected_BugID_Analaysis(request):
         query = "select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs where bug_id = '%s'" % UserData
         Bug_Info = DB.GetData(Conn, query, False)
         
-        query = "select distinct l.label_id from bug_label_map blm, labels l where blm.bug_id = '%s' and blm.label_id = l.label_id" % UserData
+        query = "select distinct l.label_id from label_map blm, labels l where blm.id = '%s' and blm.label_id = l.label_id" % UserData
         Bug_Labels = DB.GetData(Conn, query)
         
-        query = "select distinct tc.tc_id, tc.tc_name from bug_testcases_map btm, test_cases tc where btm.bug_id ilike '%s' and btm.tc_id=tc.tc_id" % UserData
+        query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 ilike '%s' and btm.id2=tc.tc_id" % UserData
         Bug_Cases = DB.GetData(Conn, query, False)
         
         query = "select pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester::int=pul.user_id" % UserData
         tester = DB.GetData(Conn, query)
         
-        query = "select distinct tc.tc_id, tc.tc_name, tcr.status from test_case_results tcr, test_cases tc where tc.tc_id=tcr.tc_id and tcr.status='Failed' and tc.tc_id not in (select tc_id from bug_testcases_map) order by tc.tc_id"
+        query = "select distinct tc.tc_id, tc.tc_name, tcr.status from test_case_results tcr, test_cases tc where tc.tc_id=tcr.tc_id and tcr.status='Failed' and tc.tc_id not in (select id2 from components_map) order by tc.tc_id"
         failed_cases = DB.GetData(Conn, query, False)
         
         query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='BUG' and fm.feature_id=pf.feature_id::text" % UserData

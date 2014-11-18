@@ -39,11 +39,11 @@ $(document).ready(function() {
     var template = URL.length > (URL.lastIndexOf("CreateNew/")+("CreateNew/").length) && URL.indexOf("CreateNew") != -1;
     if(indx!=-1 && template){
         referred_test_case=URL.substring((URL.lastIndexOf("CreateNew/")+("CreateNew/").length),(URL.length-1));
-        $("#header").html($.session.get('project_id')+' / '+$('#default_team_identity :selected').text()+' / Create Test Case');
+        $("#header").html($.session.get('project_id')+' / Create Test Case');
     }
     if(indx2!=-1){
         referred_test_case=URL.substring((URL.lastIndexOf("Edit/")+("Edit/").length),(URL.length-1));
-        $("#header").html($.session.get('project_id')+' / '+$('#default_team_identity :selected').text()+' / Edit Test Case / '+referred_test_case);
+        $("#header").html($.session.get('project_id')+' / Edit Test Case / '+referred_test_case);
     }
     console.log("Url Length:"+URL.length);
     console.log("Template:"+template);

@@ -47,18 +47,21 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
         if test_cases[0] != '':
             for each in test_cases:
                 cases_Dict={
-                           'bug_id':bug_id,
-                           'tc_id':each.strip()
+                           'id1':bug_id,
+                           'id2':each.strip(),
+                           'type1':'BUG',
+                           'type2':'TC'
                 }
-                new_result=DB.InsertNewRecordInToTable(Conn,"bug_testcases_map",**cases_Dict)
+                new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                 
         if labels[0] != '':
             for each in labels:
                 label_Dict={
-                           'bug_id':bug_id,
-                           'label_id':each.strip()
+                           'id':bug_id,
+                           'label_id':each.strip(),
+                           'type':'BUG'
                 }
-                hehe_result=DB.InsertNewRecordInToTable(Conn,"bug_label_map",**label_Dict)
+                hehe_result=DB.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
         #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
         
         Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
@@ -146,22 +149,25 @@ def EditBug(bug_id,title,status,description,start_date,end_date,team,priority,mi
         result = DB.UpdateRecordInTable(Conn,"bugs", condition, **Dict)
         
         if test_cases[0] != '':
-            tcres=DB.DeleteRecord(Conn, "bug_testcases_map", bug_id=bug_id)
+            tcres=DB.DeleteRecord(Conn, "components_map", id1=bug_id)
             for each in test_cases:
                 cases_Dict={
-                           'bug_id':bug_id,
-                           'tc_id':each.strip()
+                           'id1':bug_id,
+                           'id2':each.strip(),
+                           'type1':'BUG',
+                           'type2':'TC'
                 }
-                new_result=DB.InsertNewRecordInToTable(Conn,"bug_testcases_map",**cases_Dict)
+                new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                 
         if labels[0] != '':
-            lsres=DB.DeleteRecord(Conn,"bug_label_map", bug_id=bug_id)
+            lsres=DB.DeleteRecord(Conn,"label_map", id=bug_id)
             for each in labels:
                 label_Dict={
-                           'bug_id':bug_id,
-                           'label_id':each.strip()
+                           'id':bug_id,
+                           'label_id':each.strip(),
+                           'type':'BUG'
                 }
-                hehe_result=DB.InsertNewRecordInToTable(Conn,"bug_label_map",**label_Dict)
+                hehe_result=DB.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
         
         
         #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)

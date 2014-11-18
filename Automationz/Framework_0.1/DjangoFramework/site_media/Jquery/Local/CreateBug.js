@@ -200,13 +200,13 @@ $(document).ready(function(){
     console.log("Edit Index:"+indx);
     if(indx!=-1){
         var referred_bug=URL.substring((URL.lastIndexOf("EditBug/")+("EditBug/").length),(URL.length-1));
-        $("#header").html($.session.get('project_id')+' / '+$('#default_team_identity :selected').text()+' / Modify Bug / '+referred_bug);
+        $("#header").html($.session.get('project_id')+' / Modify Bug / '+referred_bug);
         PopulateBugInfo(referred_bug);
         operation=2;
         bugid=referred_bug;
     }
     else{
-        $("#header").html($.session.get('project_id')+' / '+$('#default_team_identity :selected').text()+' / Log New Bug');
+        $("#header").html($.session.get('project_id')+' / Log New Bug');
     }
     console.log("Url Length:"+URL.length);
 

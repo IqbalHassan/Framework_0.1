@@ -14,6 +14,7 @@ $(document).ready(function(){
 
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
+    $("#header").html($.session.get('project_id')+' / Manage Bugs');
 
     $("#simple-menu").sidr({
         name: 'sidr',
