@@ -1355,3 +1355,22 @@ def LogMessage(sModuleInfo, msg, level, debug=True):
         print msg
         CommonUtil.ExecLog(sModuleInfo, msg, level)
     return msg 
+
+def Insert_Linkings(Conn, TC_Id, TC_Name, labels):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    # Form the Dictionary to add test case information
+    if labels[0] != '':
+        lsres=DBUtil.DeleteRecord(Conn,"label_map", id=TC_Id)
+        for each in labels:
+            label_Dict={
+                       'id':TC_Id,
+                       'label_id':each.strip(),
+                       'type':'TC'
+            }
+            result=DBUtil.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
+    if result == True:
+        LogMessage(sModuleInfo, "Entered labels for TC %s: %s" % (TC_Id, TC_Name), 1)
+        return "Pass"
+    else:
+        err_msg = LogMessage(sModuleInfo, "Failed to Enter labels for TC %s: %s" % (TC_Id, TC_Name), 3)
+        return err_msg

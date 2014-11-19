@@ -184,9 +184,15 @@
                     <h2>Label</h2>
                     <div class="tabs-div" align="center">
                         <div align="center">
-                            <table id="labels">
-
+                            <br>
+                            <table>
+                                {% if labels %}
+                                {% for x in labels %}
+                                <tr><td><input type="checkbox" value="{{x.0}}" name="labels"><a class="label" style="background-color: {{x.2}};">{{x.1}}</a></td></tr>
+                                {% endfor %}
+                                {% endif %}
                             </table>
+
                         </div>
                     </div>
 

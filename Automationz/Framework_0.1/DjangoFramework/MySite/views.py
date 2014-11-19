@@ -384,16 +384,32 @@ def Create(request):
         return HttpResponse(output)
     
 def CreateNew(request):
+    query="select label_id,label_name,Label_color from labels order by label_name"
+    Conn=GetConnection()
+    labels=DB.GetData(Conn,query,False)
+    Conn.close()        
     templ = get_template('CreateTestCase.html')
-    variables = Context({ })
+    variables = Context({'labels':labels})
     output = templ.render(variables)
     return HttpResponse(output)
+    """templ = get_template('CreateTestCase.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)"""
 
 def CopyTestCase(request,tc_id):
+    query="select label_id,label_name,Label_color from labels order by label_name"
+    Conn=GetConnection()
+    labels=DB.GetData(Conn,query,False)
+    Conn.close()        
     templ = get_template('CreateTestCase.html')
-    variables = Context({ })
+    variables = Context({'labels':labels})
     output = templ.render(variables)
     return HttpResponse(output)
+    """templ = get_template('CreateTestCase.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)"""
     
 def ManageTestCases(request):
     templ = get_template('ManageTestCases.html')
@@ -478,10 +494,18 @@ def Edit(request,tc_id):
     if TC_Id != "":
         return ViewTestCase(TC_Id)
     else:
+        query="select label_id,label_name,Label_color from labels order by label_name"
+        Conn=GetConnection()
+        labels=DB.GetData(Conn,query,False)
+        Conn.close()        
         templ = get_template('CreateTestCase.html')
-        variables = Context({ })
+        variables = Context({'labels':labels})
         output = templ.render(variables)
         return HttpResponse(output)
+        """templ = get_template('CreateTestCase.html')
+        variables = Context({ })
+        output = templ.render(variables)
+        return HttpResponse(output)"""
     
 def EditMilestone(request,ms_id):
     ms_id = request.GET.get('ms_id', '')
@@ -3118,6 +3142,9 @@ def Create_Submit_New_TestCase(request):
             Step_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
             Project_id=request.GET.get(u'Project_Id','')
             Team_id=request.GET.get(u'Team_Id','')
+            labels=request.GET.get(u'labels','')
+                
+            labels=labels.split("|")
             temp_list=[]
             for each in Dependency_List:
                 temporary=each.split(":")
@@ -3153,6 +3180,14 @@ def Create_Submit_New_TestCase(request):
                 print error
                 TestCaseCreateEdit.LogMessage(sModuleInfo, test_cases_result, 3)
                 return returnResult(test_cases_result)
+            
+            labels_result = TestCaseCreateEdit.Insert_Linkings(Conn, TC_Id, TC_Name, labels)
+            if labels_result != 'Pass':
+                # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+                error = "Returns from TestCaseCreateEdit Module by Failing to enter labels for test case id %s" % TC_Id
+                print error
+                TestCaseCreateEdit.LogMessage(sModuleInfo, labels_result, 3)
+                return returnResult(labels_result)
         else:
             TC_Id = Is_Edit
         # 3
@@ -3320,6 +3355,11 @@ def ViewTestCase(TC_Id):
                 Feature_Path = ''
 
             
+            query = "select distinct l.label_id from label_map blm, labels l where blm.id = '%s' and blm.type='TC' and blm.label_id = l.label_id" % TC_Id
+            Conn = GetConnection()
+            Labels = DB.GetData(Conn, query)
+            Conn.close()
+            
             # find all steps and data for the test case
             Steps_Data_List = []
             Conn=GetConnection()
@@ -3392,7 +3432,7 @@ def ViewTestCase(TC_Id):
                 Steps_Data_List.append((Step_Name, Step_Data, Step_Type, step_description, step_expected, step_verified, Step_General_Description[0][0], step_time, Step_Edit, each_test_step[3]))
                 Step_Iteration = Step_Iteration + 1
             # return values
-            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team}
+            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team, 'Labels':Labels}
 
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -3438,6 +3478,9 @@ def EditTestCase(request):
             Steps_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
             Project_Id=request.GET.get(u'Project_Id','')
             Team_Id=request.GET.get(u'Team_Id','')
+            labels=request.GET.get(u'labels','')
+                
+            labels=labels.split("|")
             temp_list=[]
             for each in Dependency_List:
                 temporary=each.split(":")
@@ -3476,6 +3519,13 @@ def EditTestCase(request):
                 err_msg = "Test Case Detail is not updated successfully for test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
                 return err_msg
+            labels_result = TestCaseCreateEdit.Insert_Linkings(Conn, TC_Id, TC_Name, labels)
+            if labels_result != 'Pass':
+                # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+                error = "Returns from TestCaseCreateEdit Module by Failing to enter labels for test case id %s" % TC_Id
+                print error
+                TestCaseCreateEdit.LogMessage(sModuleInfo, labels_result, 3)
+                return returnResult(labels_result)
             # form the test case datasets
             test_case_datasets = '%sds' % New_TC_Id
             if DB.IsDBConnectionGood(Conn) == False:

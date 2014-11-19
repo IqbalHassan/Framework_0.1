@@ -18,7 +18,7 @@ var popupdivrowcount=[];
 var referred_test_case="";
 var dependency_classes=[];
 $(document).ready(function() {
-    show_labels();
+    //show_labels();
     addMainTableRow('#steps_table');
     //check_required_data();
     //show_radio_button();
@@ -435,6 +435,15 @@ $(document).ready(function() {
                             $('#titlebox').val(title);
                         }
                         /************************End RelatedItems Tab*******************************/
+                        $('input[name="labels"]').each(function(){
+                            $(this).prop('checked',false);
+                        });
+                        $('input[name="labels"]').each(function(){
+                            if(data['Labels'].indexOf($(this).val())>-1){
+                                $(this).prop('checked',true);
+                            }
+                        });
+
                         /***************************Steps Tab***************************************/
                         var steps_and_data = data['Steps and Data'];
                         //$('#steps_table').html("");
@@ -958,6 +967,11 @@ $(document).ready(function() {
             }
             /*************************End Filtering***********************************************/
             /************************End DataFetching From the POP Up*********************************************/
+            var labels=[];
+            $('input[name="labels"]:checked').each(function(){
+                labels.push($(this).val());
+            });
+            /***********************Other Linking***************************************/
             var query = indx != -1?"c":(indx2 != -1?"e":"o");
             console.log(query);
             $.get("GetStepNameType/",
@@ -1043,7 +1057,8 @@ $(document).ready(function() {
                             Steps_Time_List:stepTimeList.join("|"),
                             Status:"Dev",
                             Project_Id:project_id,
-                            Team_Id: team_id
+                            Team_Id: team_id,
+                            labels:labels.join("|")
                         },function(data) {
                             //alert(data);
                             alertify.success("Test Case '"+data+"' successfully created!","",0);
@@ -1078,7 +1093,8 @@ $(document).ready(function() {
                                 Steps_Verify_List:stepVerificationList.join("|"),
                                 Steps_Time_List:stepTimeList.join("|"),
                                 Project_Id:project_id,
-                                Team_Id: team_id
+                                Team_Id: team_id,
+                                labels:labels.join("|")
                             },
                             function(data) {
                                 //alert(data+" edited successfully");
@@ -2230,7 +2246,7 @@ function auto_step_create(step){
     });
 }
 
-function show_labels(){
+/*function show_labels(){
     $.ajax({
         url:'GetLabels',
         dataType : "json",
@@ -2249,7 +2265,7 @@ function show_labels(){
             });
         }
     });
-}
+}*/
 /****************************End Minar's Thing****************************************************/
 function DeleteSearchQueryText() {
     $(".delete").live("click", function() {
