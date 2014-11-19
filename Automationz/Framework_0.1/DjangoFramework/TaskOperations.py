@@ -130,7 +130,7 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester
               'tasks_milestone':milestone,
               'tasks_priority':priority,
               'status':status,
-              'parent_id':path_id,
+              #'parent_id':path_id,
               'tester':tester,
               'project_id':project_id
         }

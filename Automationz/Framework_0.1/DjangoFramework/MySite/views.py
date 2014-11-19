@@ -488,7 +488,26 @@ def EditMilestone(request,ms_id):
     if ms_id != "":
         return render_to_response('Milestone.html')
     else:
-        return render_to_response('Milestone.html')
+        Conn=GetConnection()
+        query="select project_id, project_name from projects"
+        project_info=DB.GetData(Conn,query,False)
+        query="select id,value from config_values where type='milestone'"
+        milestone_info=DB.GetData(Conn,query,False)
+        #get the current projects team info
+        query="select distinct id,value from config_values where type='Team'"
+        team_info=DB.GetData(Conn,query,False)
+        #get the existing requirement id for parenting
+        #query="select distinct requirement_id,requirement_title from requirements where project_id='%s' order by requirement_id"%project_id
+        #requirement_list=DB.GetData(Conn,query,False)
+        Dict={
+              #'project_id':project_id,
+              #'project_list':project_info,
+              #'milestone_list':milestone_info,
+              'team_info':team_info
+              #'requirement_list':requirement_list
+        }
+        Conn.close()
+        return render_to_response('Milestone.html',Dict)
         """templ = get_template('Milestone.html')
         variables = Context({ })
         output = templ.render(variables)
@@ -8561,6 +8580,18 @@ def CreateLabel(request):
     result=simplejson.dumps(final)
     Conn.close()
     return HttpResponse(result,mimetype='application/json')
+
+def Get_Labels(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            value=request.GET.get(u'term','')
+            query="select * from labels"
+            Conn=GetConnection()
+            labels=DB.GetData(Conn,query,False)
+    result=simplejson.dumps(labels)
+    Conn.close()
+    return HttpResponse(result,mimetype='application/json')
+
 
 def ManageRequirement(request):
     return render_to_response('ManageRequirement.html',{})

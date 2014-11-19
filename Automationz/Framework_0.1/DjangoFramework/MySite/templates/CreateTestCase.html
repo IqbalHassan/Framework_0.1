@@ -146,6 +146,50 @@
                         </div>
 
                     </div>
+
+
+                    <h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Steps</h2>
+                    <div class="tabs-div" align="center">
+
+                        <br/>
+                        <table class="one-column-emphasis" summary="Add test steps">
+                            <colgroup><col>
+                            </colgroup><thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">#</th>
+                            <th scope="col">Step</th>
+                            <th scope="col">Data</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Expected</th>
+                            <th scope="col">Verification Point</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Estd. Time</th>
+                            <th scope="col">Step Info</th>
+                        </tr>
+                        </thead>
+                            <tbody id="steps_table">
+                            </tbody>
+                        </table>
+
+                        <div class="new_tc_form" style="text-align: center">
+                            <input id="add_test_step" class="buttonCustom new_tc_form" type='image'
+                                   src='/site_media/plus1.png' name='Add Step' style="background-color: transparent; width:22px; height:22px">
+                            <input id="remove_test_step" class="buttonCustom new_tc_form" type='image'
+                                   src='/site_media/minus1.png' name='Remove Step' style="background-color: transparent; width:22px; height:22px">
+                        </div>
+
+                    </div>
+
+                    <h2>Label</h2>
+                    <div class="tabs-div" align="center">
+                        <div align="center">
+                            <table id="labels">
+
+                            </table>
+                        </div>
+                    </div>
+
                     <h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/other.png" width="16"> 3rd Party Integration</h2>
                     <div class="tabs-div" style="margin: 30px" align="center">
                         <form id="tc_assoc" class="new_tc_form">
@@ -188,40 +232,6 @@
                             </table>
                         </form>
 
-
-                    </div>
-
-                    <h2><img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/step.png" width="16"> Steps</h2>
-                    <div class="tabs-div" align="center">
-
-                        <br/>
-                        <table class="one-column-emphasis" summary="Add test steps">
-                            <colgroup><col>
-                            </colgroup><thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col">#</th>
-                            <th scope="col">Step</th>
-                            <th scope="col">Data</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Expected</th>
-                            <th scope="col">Verification Point</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Estd. Time</th>
-                            <th scope="col">Step Info</th>
-                        </tr>
-                        </thead>
-                            <tbody id="steps_table">
-                            </tbody>
-                        </table>
-
-                        <div class="new_tc_form" style="text-align: center">
-                            <input id="add_test_step" class="buttonCustom new_tc_form" type='image'
-                                   src='/site_media/plus1.png' name='Add Step' style="background-color: transparent; width:22px; height:22px">
-                            <input id="remove_test_step" class="buttonCustom new_tc_form" type='image'
-                                   src='/site_media/minus1.png' name='Remove Step' style="background-color: transparent; width:22px; height:22px">
-                        </div>
-
                     </div>
 
                     <h2>Requirement</h2>
@@ -253,7 +263,7 @@
                                 </li>
 
                                 <li id="edit_step_tip" style="cursor: pointer" original-title="Edit Step">
-                                    <a aria-label="Edit Test Step" data-hint="Edit Step" class="hint--left hint--bounce hint--rounded js-selected-navigation-item sunken-menu-item js-disable-pjax">
+                                    <a href="/Home/CreateNewBug/" target="_blank" aria-label="Edit Test Step" data-hint="Edit Step" class="hint--left hint--bounce hint--rounded js-selected-navigation-item sunken-menu-item js-disable-pjax">
                                         <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="/site_media/edit1.png" width="16">
                                     </a>        </li>
 

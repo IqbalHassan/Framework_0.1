@@ -6,6 +6,7 @@ var lowest_section = 0;
 var isAtLowestSection = false;
 var lowest_feature = 0;
 var isAtLowestFeature = false;
+var task_id = "";
 
 $(document).ready(function(){
     $('#project_id').text($.session.get('project_id'));
@@ -24,7 +25,7 @@ $(document).ready(function(){
         $("#header").html($.session.get('project_id')+' / Edit Task / '+referred_task);
         PopulateTaskInfo(referred_task);
         operation=2;
-        //bugid=referred_task;
+        task_id = referred_task;
     }
     else{
         $("#header").html($.session.get('project_id')+' / Create Task');
@@ -234,6 +235,28 @@ function Submit_button_preparation(){
 
         if(operation==1){
             $.get('SubmitNewTask/',{
+                'title':title,
+                'status':status,
+                'description':description,
+                'team':team.join("|"),
+                'tester':tester.join("|"),
+                'starting_date':starting_date,
+                'ending_date':ending_date,
+                'priority':priority,
+                'milestone':milestone,
+                'project_id':project_id,
+                'section_path':newSectionPath,
+                'feature_path':newFeaturePath,
+                'user_name':$.session.get('fullname')
+
+            },function(data){
+                window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
+                //window.location= ('/Home/ManageTask/');
+            });
+        }
+        else if(operation==2){
+            $.get('SubmitEditedTask/',{
+                'task_id':task_id,
                 'title':title,
                 'status':status,
                 'description':description,

@@ -18,6 +18,7 @@ var popupdivrowcount=[];
 var referred_test_case="";
 var dependency_classes=[];
 $(document).ready(function() {
+    show_labels();
     addMainTableRow('#steps_table');
     //check_required_data();
     //show_radio_button();
@@ -1026,7 +1027,7 @@ $(document).ready(function() {
                             //Platform:platformList.join("|"),
                             //Manual_TC_Id:test_case_Id,
                             TC_Name:title,
-                            TC_Creator:$('#user_name').text().trim(),
+                            TC_Creator:$.session.get('fullname').trim(),
                             Associated_Bugs_List:defectId,
                             Requirement_ID_List:required_Id,
                             //TC_Type:typeList.join("|"),
@@ -1061,7 +1062,7 @@ $(document).ready(function() {
                                 //Platform:platformList.join("|"),
                                 //Manual_TC_Id:test_case_Id,
                                 TC_Name:title,
-                                TC_Creator:$('#user_name').text().trim(),
+                                TC_Creator:$.session.get('fullname').trim(),
                                 Associated_Bugs_List:defectId,
                                 Requirement_ID_List:required_Id,
                                 Status:status,
@@ -1851,11 +1852,25 @@ function vertical_sidebar(){
      '</div>'
      });*/
     $("#add_step_tip").click(function(){
-        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+        /*alertify.confirm("Are you sure about leaving before saving?", function(e) {
             if (e) {
                 window.location = '/Home/ManageTestCases/CreateStep/'
             }
-        });
+        });*/
+        $("#title_prompt").html(
+            //'<p style="text-align: center">You have selected ' +
+            //tc_id +'-'+ tc_name + '.' +
+            '<br/><p style="text-align: center; font-size: large; font: Helvetica, arial, freesans, clean, sans-serif;">Are you sure about leaving before saving?</p>' +
+            '</p>' +
+            '<div align="center" style="margin-left: 5%">' +
+            '<a class="github" href="/Home/ManageTestCases/CreateStep/">Yes</a>' +
+            '<a class="twitter" href="/Home/ManageTestCases/CreateStep/" target="_blank">Open in new tab</a>' +
+            '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+            '</div>'
+
+        );
+        $("#title_prompt").modal();
+        return false;
     });
 
     /*$("#edit_step_tip").click(function(){
@@ -1875,11 +1890,26 @@ function vertical_sidebar(){
      '</div>'
      });*/
     $("#edit_step_tip").click(function(){
-        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+        /*alertify.confirm("Are you sure about leaving before saving?", function(e) {
             if (e) {
-                window.location = '/Home/ManageTestCases/CreateStep/'
+                //window.location = '/Home/ManageTestCases/CreateStep/'
+                window.open('/Home/ManageTestCases/CreateStep/','_blank');
             }
-        });
+        });*/
+        $("#title_prompt").html(
+            //'<p style="text-align: center">You have selected ' +
+            //tc_id +'-'+ tc_name + '.' +
+            '<br/><p style="text-align: center; font-size: large; font: Helvetica, arial, freesans, clean, sans-serif;">Are you sure about leaving before saving?</p>' +
+            '</p>' +
+            '<div align="center" style="margin-left: 5%">' +
+            '<a class="github" href="/Home/ManageTestCases/CreateStep/">Yes</a>' +
+            '<a class="twitter" href="/Home/ManageTestCases/CreateStep/" target="_blank">Open in new tab</a>' +
+            '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+            '</div>'
+
+        );
+        $("#title_prompt").modal();
+        return false;
     });
 
     /*$("#set_tag_tip").click(function(){
@@ -1899,11 +1929,25 @@ function vertical_sidebar(){
      '</div>'
      });*/
     $("#set_tag_tip").click(function(){
-        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+        /*alertify.confirm("Are you sure about leaving before saving?", function(e) {
             if (e) {
                 window.location = '/Home/ManageTestCases/TestSet/'
             }
-        });
+        });*/
+        $("#title_prompt").html(
+            //'<p style="text-align: center">You have selected ' +
+            //tc_id +'-'+ tc_name + '.' +
+            '<br/><p style="text-align: center; font-size: large; font: Helvetica, arial, freesans, clean, sans-serif;">Are you sure about leaving before saving?</p>' +
+            '</p>' +
+            '<div align="center" style="margin-left: 5%">' +
+            '<a class="github" href="/Home/ManageSetTag/">Yes</a>' +
+            '<a class="twitter" href="/Home/ManageSetTag/" target="_blank">Open in new tab</a>' +
+            '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+            '</div>'
+
+        );
+        $("#title_prompt").modal();
+        return false;
     });
     /*$("#copy_edit_tip").click(function(){
      if(confirm("Are you sure about leaving before saving?")){
@@ -1922,11 +1966,25 @@ function vertical_sidebar(){
      '</div>'
      });*/
     $("#copy_edit_tip").click(function(){
-        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+        /*alertify.confirm("Are you sure about leaving before saving?", function(e) {
             if (e) {
                 window.location = '/Home/ManageTestCases/SearchEdit/'
             }
-        });
+        });*/
+        $("#title_prompt").html(
+            //'<p style="text-align: center">You have selected ' +
+            //tc_id +'-'+ tc_name + '.' +
+            '<br/><p style="text-align: center; font-size: large; font: Helvetica, arial, freesans, clean, sans-serif;">Are you sure about leaving before saving?</p>' +
+            '</p>' +
+            '<div align="center" style="margin-left: 5%">' +
+            '<a class="github" href="/Home/ManageTestCases/SearchEdit/">Yes</a>' +
+            '<a class="twitter" href="/Home/ManageTestCases/SearchEdit/" target="_blank">Open in new tab</a>' +
+            '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+            '</div>'
+
+        );
+        $("#title_prompt").modal();
+        return false;
     });
     /*$("#history_tip").click(function(){
      if(confirm("Are you sure about leaving before saving?")){
@@ -1945,11 +2003,25 @@ function vertical_sidebar(){
      '</div>'
      });*/
     $("#history_tip").click(function(){
-        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+        /*alertify.confirm("Are you sure about leaving before saving?", function(e) {
             if (e) {
                 window.location = '/Home/Analysis/'
             }
-        });
+        });*/
+        $("#title_prompt").html(
+            //'<p style="text-align: center">You have selected ' +
+            //tc_id +'-'+ tc_name + '.' +
+            '<br/><p style="text-align: center; font-size: large; font: Helvetica, arial, freesans, clean, sans-serif;">Are you sure about leaving before saving?</p>' +
+            '</p>' +
+            '<div align="center" style="margin-left: 5%">' +
+            '<a class="github" href="/Home/Analysis/">Yes</a>' +
+            '<a class="twitter" href="/Home/Analysis/" target="_blank">Open in new tab</a>' +
+            '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+            '</div>'
+
+        );
+        $("#title_prompt").modal();
+        return false;
     });
     /*$("#organize_tip").click(function(){
      if(confirm("Are you sure about leaving before saving?")){
@@ -1968,11 +2040,25 @@ function vertical_sidebar(){
      '</div>'
      });*/
     $("#organize_tip").click(function(){
-        alertify.confirm("Are you sure about leaving before saving?", function(e) {
+        /*alertify.confirm("Are you sure about leaving before saving?", function(e) {
             if (e) {
                 window.location = '/Home/ManageTestCases/'
             }
-        });
+        });*/
+        $("#title_prompt").html(
+            //'<p style="text-align: center">You have selected ' +
+            //tc_id +'-'+ tc_name + '.' +
+            '<br/><p style="text-align: center; font-size: large; font: Helvetica, arial, freesans, clean, sans-serif;">Are you sure about leaving before saving?</p>' +
+            '</p>' +
+            '<div align="center" style="margin-left: 5%">' +
+            '<a class="github" href="/Home/ManageTestCases/">Yes</a>' +
+            '<a class="twitter" href="/Home/ManageTestCases/" target="_blank">Open in new tab</a>' +
+            '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+            '</div>'
+
+        );
+        $("#title_prompt").modal();
+        return false;
     });
 }
 function reset () {
@@ -2140,6 +2226,27 @@ function auto_step_create(step){
             if(json[0]==0){
                 alertify.success("New step created with title '"+step+"'","",0)
             }
+        }
+    });
+}
+
+function show_labels(){
+    $.ajax({
+        url:'GetLabels',
+        dataType : "json",
+        data : {
+            term : ''
+        },
+        success: function( json ) {
+            $.each(json, function(index, value){
+                $("#labels").append('<tr><td><input type="checkbox" value="' +
+                value[0] +
+                '" name="labels"><a class="label" style="background-color: ' +
+                value[2] +
+                ';">' +
+                value[1] +
+                '</a></td></tr>')
+            });
         }
     });
 }
