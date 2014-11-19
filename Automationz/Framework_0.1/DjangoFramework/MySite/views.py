@@ -2217,26 +2217,48 @@ def AddReRunInfo(run_id, previous_run):
     conn = GetConnection()
     query = "select tc_id from test_run where run_id='" + run_id + "'"
     TestCaseList = DB.GetData(conn, query)
+    conn.close()
     for eachcase in TestCaseList:
         print eachcase
+        conn=GetConnection()
         print DB.InsertNewRecordInToTable(conn, "test_case_results", run_id=run_id, tc_id=eachcase, status="Submitted")
+        conn.close()
+        query="select id from test_case_results where run_id='%s' and tc_id='%s' and status='Submitted'"%(run_id, eachcase)
+        Conn=GetConnection()
+        result_index=DB.GetData(Conn,query)
+        Conn.close()        
+        conn=GetConnection()
         TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From result_Test_Steps ts,result_test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id and ts.run_id=tsl.run_id and ts.run_id='%s' Order By teststepsequence" % (eachcase, previous_run), False)
+        conn.close()
         for eachstep in TestStepsList:
             # print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
-            Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2]}
+            Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2],'testcaseresulttindex':result_index[0]}
+            conn=GetConnection()
             print DB.InsertNewRecordInToTable(conn, "test_step_results", **Dict)
+            conn.close()
 def AddInfo(run_id):
     conn = GetConnection()
     query = "select tc_id from test_run where run_id='" + run_id + "'"
     TestCaseList = DB.GetData(conn, query)
+    conn.close()
     for eachcase in TestCaseList:
         print eachcase
+        conn=GetConnection()
         print DB.InsertNewRecordInToTable(conn, "test_case_results", run_id=run_id, tc_id=eachcase, status="Submitted")
+        conn.close()
+        query="select id from test_case_results where run_id='%s' and tc_id='%s' and status='Submitted'"%(run_id, eachcase)
+        Conn=GetConnection()
+        result_index=DB.GetData(Conn,query)
+        Conn.close()
+        conn=GetConnection()
         TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % eachcase, False)
+        conn.close()
         for eachstep in TestStepsList:
             # print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
-            Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2]}
+            Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2],'testcaseresulttindex':result_index[0]}
+            conn=GetConnection()
             print DB.InsertNewRecordInToTable(conn, "test_step_results", **Dict)
+            conn.close()
 def ReRun_Fail_TestCases(request):
     Conn = GetConnection()
     results = {}
@@ -6165,18 +6187,44 @@ def update_runid(run_id, test_case_id):
             command = "can't create"
             print DB.DeleteRecord(oConn, "test_run_env", tester_id=machine_info[0][3].strip(), status='Unassigned')
     if command == "create":
-        currenttime = DB.GetData(oConn, "select current_timestamp", False)
-        updated_time = str(currenttime[0][0])
+        #currenttime = DB.GetData(oConn, "select current_timestamp", False)
+        #updated_time = str(currenttime[0][0])
+        updated_time=TimeStamp("string")
         print DB.DeleteRecord(oConn, "test_run_env", tester_id=machine_info[0][3].strip(), status='Unassigned')
-        Dict = {'tester_id':machine_info[0][3].strip(), 'status':'Unassigned', 'machine_os':machine_info[0][6].strip(), 'client':machine_info[0][7].strip(), 'last_updated_time':updated_time.strip(), 'os_bit':machine_info[0][16].strip(), 'os_name':machine_info[0][15].strip(), 'os_version':machine_info[0][14].strip(), 'machine_ip':machine_info[0][11].strip(), 'product_version':machine_info[0][10].strip()}
-        print DB.InsertNewRecordInToTable(oConn, "test_run_env", **Dict)
-    if status == 'Complete':
+        Dict = {'tester_id':machine_info[0][3].strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_info[0][6].strip(), 'branch_version':machine_info[0][12].strip()}
+        Conn=GetConnection()
+        print DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
+        Conn.close()
+        query="select id from test_run_env where tester_id='%s' and status='Unassigned'"%(machine_info[0][3].strip())
+        Conn=GetConnection()
+        new_index=DB.GetData(Conn,query)
+        Conn.close()
+        query="select name,bit,version,type from machine_dependency_settings where machine_serial=%d"%int(machine_info[0][0])
+        Conn=GetConnection()
+        dependency_list=DB.GetData(Conn,query,False)
+        Conn.close()
+        for each in dependency_list:
+            Dict={}
+            Dict.update({'name':each[0], 'bit':each[1],'version':each[2],'type':each[3], 'machine_serial':new_index[0]})
+            Conn=GetConnection()
+            print DB.InsertNewRecordInToTable(Conn,'machine_dependency_settings', **Dict)
+            Conn.close()
+        query="select project_id,team_id from machine_project_map where machine_serial=%d"%int(machine_info[0][0])
+        Conn=GetConnection()
+        project_map=DB.GetData(Conn,query,False)
+        Conn.close()
+        for each in project_map:
+            Dict={}
+            Dict.update({'machine_serial':new_index[0], 'project_id':each[0],'team_id':each[1]})
+            Conn=GetConnection()
+            print DB.InsertNewRecordInToTable(Conn,'machine_project_map',**Dict)
+            Conn.close()
+    """if status == 'Complete':
         run_id = str(run_id)
         allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'", False)
         TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
         Tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+run_id+"'")
-        list = []
-        
+        list = []     
         pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
         passed = DB.GetData(oConn, pass_query)
         list.append(passed[0])
@@ -6201,8 +6249,8 @@ def update_runid(run_id, test_case_id):
         duration = DB.GetData(oConn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
         
         EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
-            
-        """try:
+        """    
+    """try:
             urllib2.urlopen("http://www.google.com").close()
             #import EmailNotify
             EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
@@ -6297,21 +6345,28 @@ def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReaso
     query = "select step_id,teststepsequence from result_test_steps where tc_id='%s' and run_id='%s' order by teststepsequence" % (test_case_id, run_id)
     Conn = GetConnection()
     test_steps_list = DB.GetData(Conn, query, False)
+    Conn.close()
     print test_steps_list
     count = 0
     for each in test_steps_list:
         name_query = "select stepname from result_test_steps_list where step_id='%s' and run_id='%s'" % (each[0], run_id)
+        Conn=GetConnection()
         stepName = DB.GetData(Conn, name_query)
+        Conn.close()
         if stepName[0] == List[count][0]:
             query = "where run_id='%s' and tc_id='%s' and teststep_id='%d' and teststepsequence='%d'" % (run_id, test_case_id, each[0], each[1])
             Dict = {}
             Dict.update({'status':List[count][2], 'failreason':List[count][1]})
+            Conn=GetConnection()
             print DB.UpdateRecordInTable(Conn, "test_step_results", query, **Dict)
+            Conn.close()
             count += 1
     query = "where run_id='%s' and tc_id='%s'" % (run_id, test_case_id)
     Dict = {}
     Dict.update({'status':test_case_status, 'failreason':failReason})
+    Conn=GetConnection()
     print DB.UpdateRecordInTable(Conn, "test_case_results", query, **Dict)
+    Conn.close()
     update_runid(run_id, test_case_id)
     return "true"
 def UpdateData(request):
@@ -6435,7 +6490,7 @@ def GetOS(request):
             results={
                 'version_list':version_list,
                 'dependency_list':final_list
-                }
+                } 
             results = simplejson.dumps(results)
             return HttpResponse(results, mimetype='application/json')
 def Auto_MachineName(request):
