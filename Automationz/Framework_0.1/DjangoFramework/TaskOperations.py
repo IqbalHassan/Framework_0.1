@@ -22,7 +22,7 @@ def insert_new_section(Conn,new_requirement_path):
     Conn.commit()
     return sequence
         
-def CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name):
+def CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels):
     try:
         Conn=GetConnection()
         query="select nextval('taskid_seq')"
@@ -86,6 +86,15 @@ def CreateNewTask(title,status,description,start_date,end_date,teams,tester,prio
                                'feature_id':Feature_Id[0]
                     }
                 fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
+                
+            if labels[0] != '':
+                for each in labels:
+                    label_Dict={
+                               'id':task_id,
+                               'label_id':each.strip(),
+                               'type':'TASK'
+                    }
+                    hehe_result=DB.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
             
             return task_id
         
@@ -98,7 +107,7 @@ def CreateNewTask(title,status,description,start_date,end_date,teams,tester,prio
         
         
         
-def ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name):
+def ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels):
     try:
         Conn=GetConnection()
         
@@ -159,7 +168,16 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester
                                'feature_id':Feature_Id[0]
                     }
                 fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
-            
+                
+            if labels[0] != '':
+                lsres=DB.DeleteRecord(Conn,"label_map", id=task_id)
+                for each in labels:
+                    label_Dict={
+                               'id':task_id,
+                               'label_id':each.strip(),
+                               'type':'TASK'
+                    }
+                    hehe_result=DB.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
             return task_id
         
         

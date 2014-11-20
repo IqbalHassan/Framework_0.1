@@ -104,7 +104,7 @@
                                         <b class="Text">Description:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <textarea rows="5" cols="65" id="description"></textarea>
+                                        <textarea rows="4" cols="65" id="description"></textarea>
                                     </td>
                                 </tr>
                             </table>
@@ -223,9 +223,7 @@
                             </table>
                         </form>
                         <HR class="tc_form_divider"/>
-                        <div align="center">
-                            <input type='button' id='submit' class="new_tc_form button minibutton primary" value="Save" style="width:auto;"/>
-                        </div>
+
             </td>
                         <td style="width: 35%; position: relative;">
 
@@ -280,11 +278,32 @@
                     <div class="tabs-div">
 
                     </div>
+
+                    <h2>Labels</h2>
+                    <div class="tabs-div">
+                        <div align="center">
+                            <br>
+                            <table>
+                                {% if labels %}
+                                {% for x in labels %}
+                                <tr><td><input type="checkbox" value="{{x.0}}" name="labels"><a class="label" style="background-color: {{x.2}};">{{x.1}}</a></td></tr>
+                                {% endfor %}
+                                {% endif %}
+                            </table>
+
+                        </div>
+                    </div>
+
                     <h2>Discussion</h2>
                     <div class="tabs-div">
 
                     </div>
+
                 </div>
+
+    <div align="center">
+        <input type='button' id='submit' class="new_tc_form button minibutton primary" value="Save" style="width:auto;"/>
+    </div>
             <!--/td>
             <td width="4%">
                 <div class="repository-sidebar">

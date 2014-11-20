@@ -8215,11 +8215,14 @@ def EditTask(request,task_id,project_id):
         #get the names from permitted_user_list
         query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
         user_list=DB.GetData(Conn,query,False)
+        query = "select label_id,label_name,Label_color from labels order by label_name"
+        labels = DB.GetData(Conn,query,False)
         Dict={
               'team_info':team_info,
               'priority_list':priority,
               'milestone_list':milestone_list,
-              'user_list':user_list
+              'user_list':user_list,
+              'labels':labels
         }
     return render_to_response("CreateNewTask.html",Dict)
 
@@ -8241,11 +8244,15 @@ def Selected_TaskID_Analaysis(request):
         #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
         #milestone = DB.GetData(Conn,query)
         
+        
+        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='TASK' order by label_name" % UserData
+        labels = DB.GetData(Conn,query)
+        
         UserData = UserData.replace('-','_')
         query = "select * from requirement_sections where requirement_path = '%s'" %UserData
         section = DB.GetData(Conn,query)
 
-    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0]}
+    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
@@ -10034,11 +10041,14 @@ def TaskPage(request,project_id):
     #get the names from permitted_user_list
     query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
     user_list=DB.GetData(Conn,query,False)
+    query = "select label_id,label_name,Label_color from labels order by label_name"
+    labels = DB.GetData(Conn,query,False)
     Dict={
           'team_info':team_info,
           'priority_list':priority,
           'milestone_list':milestone_list,
-          'user_list':user_list
+          'user_list':user_list,
+          'labels':labels
     }
     return render_to_response("CreateNewTask.html",Dict)
 
@@ -10082,7 +10092,9 @@ def SubmitNewTask(request):
             section_path=request.GET.get(u'section_path','')
             feature_path=request.GET.get(u'feature_path','')
             user_name=request.GET.get(u'user_name','')
-            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name)
+            labels = request.GET.get(u'labels','')
+            labels=labels.split("|")
+            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 
@@ -10105,7 +10117,9 @@ def SubmitEditedTask(request):
             section_path=request.GET.get(u'section_path','')
             feature_path=request.GET.get(u'feature_path','')
             user_name=request.GET.get(u'user_name','')
-            result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name)
+            labels = request.GET.get(u'labels','')
+            labels=labels.split("|")
+            result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 

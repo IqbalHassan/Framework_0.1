@@ -96,6 +96,15 @@ function PopulateTaskInfo(task_id){
             }
         });
 
+        $('input[name="labels"]').each(function(){
+            $(this).prop('checked',false);
+        });
+        $('input[name="labels"]').each(function(){
+            if(data['labels'].indexOf($(this).val())>-1){
+                $(this).prop('checked',true);
+            }
+        });
+
         //FeaturePath
         var features=data['Feature'];
         console.log(features);
@@ -233,6 +242,11 @@ function Submit_button_preparation(){
         var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
+        var labels=[];
+        $('input[name="labels"]:checked').each(function(){
+            labels.push($(this).val());
+        });
+
         if(operation==1){
             $.get('SubmitNewTask/',{
                 'title':title,
@@ -247,7 +261,8 @@ function Submit_button_preparation(){
                 'project_id':project_id,
                 'section_path':newSectionPath,
                 'feature_path':newFeaturePath,
-                'user_name':$.session.get('fullname')
+                'user_name':$.session.get('fullname'),
+                'labels':labels.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
@@ -269,7 +284,8 @@ function Submit_button_preparation(){
                 'project_id':project_id,
                 'section_path':newSectionPath,
                 'feature_path':newFeaturePath,
-                'user_name':$.session.get('fullname')
+                'user_name':$.session.get('fullname'),
+                'labels':labels.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
