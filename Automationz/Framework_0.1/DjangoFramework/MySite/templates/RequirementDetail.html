@@ -102,6 +102,18 @@
                 </table>
             </td>
             <td>&nbsp;</td>
+            <td>
+                <div>
+                    <table>
+                        {% if labels %}
+                        {% for x in labels %}
+                        <tr><td><a class="label" style="background-color: {{x.2}};">{{x.1}}</a></td></tr>
+                        {% endfor %}
+                        {% endif %}
+                    </table>
+
+                </div>
+            </td>
         </tr>
         <tr>
             <td align="25%">&nbsp;</td>
@@ -121,4 +133,5 @@
         </tr>
     </table>
 </div>
+
 {% endblock %}

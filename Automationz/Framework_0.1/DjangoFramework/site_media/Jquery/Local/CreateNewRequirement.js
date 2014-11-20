@@ -68,6 +68,11 @@ $(document).ready(function(){
             var title=$('#title').val();
             var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
+            var labels=[];
+            $('input[name="labels"]:checked').each(function(){
+                labels.push($(this).val());
+            });
+
             $.get("SubmitCreateRequirement/",{
                 'title':title.trim(),
                 'description':requirement_description.trim(),
@@ -79,7 +84,8 @@ $(document).ready(function(){
                 'milestone':milestone.trim(),
                 'project_id': $.session.get('project_id'),
                 'user_name':$.session.get('fullname'),
-                'feature_path':newFeaturePath
+                'feature_path':newFeaturePath,
+                'labels':labels.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/Requirements/'+data);
             });

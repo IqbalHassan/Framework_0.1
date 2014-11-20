@@ -9612,6 +9612,13 @@ def DetailRequirementView(request,project_id,req_id):
         print "Exception:",e
     comment=Comment()
     Dict.update({'comment':comment})
+    try:
+        Conn = GetConnection()
+        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='"+req_id+"' and lm.type='REQ' order by label_name"
+        labels = DB.GetData(Conn,query,False)
+        Dict.update({'labels':labels})
+    except Exception,e:
+        print "Exception:",e
     #get all the comments of this requirement_id
     return render(request,'RequirementDetail.html',Dict)
 
@@ -9672,14 +9679,18 @@ def ToNewRequirementPage(request,project_id):
     #get the existing requirement id for parenting
     query="select distinct requirement_id,requirement_title from requirements where project_id='%s' order by requirement_id"%project_id
     requirement_list=DB.GetData(Conn,query,False)
+    
+    query = "select label_id,label_name,Label_color from labels order by label_name"
+    labels = DB.GetData(Conn,query)
     Dict={
           'project_id':project_id,
           'project_list':project_info,
           'milestone_list':milestone_info,
           'team_list':team_info,
-          'requirement_list':requirement_list
+          'requirement_list':requirement_list,
+          'labels':labels
     }
-    return render(request,'CreateNewRequirement.html',Dict)
+    return render_to_response('CreateNewRequirement.html',Dict)
 
 #getting the tree information for the requirements
 
@@ -9786,8 +9797,10 @@ def CreateRequirement(request):
             user_name=request.GET.get(u'user_name','')
             feature_path=request.GET.get(u'feature_path','')
             parent_requirement_id=request.GET.get(u'requirement_id','')
+            labels=request.GET.get(u'labels','')
+            labels=labels.split("|")
             if parent_requirement_id=="":
-                result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path)
+                result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path,labels)
                 if result!=False:
                     requirement_id=result
     result=simplejson.dumps(requirement_id)
@@ -9999,10 +10012,13 @@ def RequirementPage(request,project_id):
     priority=DB.GetData(Conn,query,False)
     query="select value from config_values where type='milestone'"
     milestone_list=DB.GetData(Conn,query,False)
+    query = "select label_id,label_name,Label_color from labels order by label_name"
+    labels = DB.GetData(Conn,query,False)
     Dict={
           'team_info':team_info,
           'priority_list':priority,
-          'milestone_list':milestone_list
+          'milestone_list':milestone_list,
+          'labels':labels
     }
     return render_to_response("CreateNewRequirement.html",Dict)
 
