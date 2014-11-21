@@ -8206,14 +8206,14 @@ def EditTask(request,task_id,project_id):
         return render_to_response('CreateNewTask.html')
     else:
         Conn=GetConnection()
-        query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
+        query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
         team_info=DB.GetData(Conn,query,False)
         query="select value from config_values where type='Priority'"
         priority=DB.GetData(Conn,query,False)
         query="select id,value from config_values where type='milestone'"
         milestone_list=DB.GetData(Conn,query,False)
         #get the names from permitted_user_list
-        query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
+        query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)" 
         user_list=DB.GetData(Conn,query,False)
         query = "select label_id,label_name,Label_color from labels order by label_name"
         labels = DB.GetData(Conn,query,False)
@@ -8248,11 +8248,14 @@ def Selected_TaskID_Analaysis(request):
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='TASK' order by label_name" % UserData
         labels = DB.GetData(Conn,query)
         
+        query = "select team_id from task_team_map where task_id='%s'" %UserData
+        team = DB.GetData(Conn,query)
+        
         UserData = UserData.replace('-','_')
         query = "select * from requirement_sections where requirement_path = '%s'" %UserData
         section = DB.GetData(Conn,query)
 
-    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels}
+    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels, 'team':team}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
@@ -8763,11 +8766,11 @@ def GetAllTeam(request):
         if request.method=='GET':
             value=request.GET.get(u'term','')
             if value=='':
-                query="select value from config_values where type='Team'"
+                query="select id,value from config_values where type='Team'"
             else:
-                query="select value from config_values where type='Team' and value Ilike '%%%s%%'"%value
+                query="select id,value from config_values where type='Team' and value Ilike '%%%s%%'"%value
             Conn=GetConnection()
-            all_team=DB.GetData(Conn,query)
+            all_team=DB.GetData(Conn,query,False)
     result=simplejson.dumps(all_team)
     Conn.close()
     return HttpResponse(result,mimetype='application/json')

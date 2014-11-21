@@ -116,7 +116,7 @@
                                         <b class="Text">Teams:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <table>
+                                        <!--table>
                                             {% if team_info %}
                                             <tr>
                                                 {% for x in team_info %}
@@ -124,7 +124,15 @@
                                                 {% endfor %}
                                             </tr>
                                             {% endif %}
-                                        </table>
+                                        </table-->
+                                        <select class="teams combo-box">
+                                            <option value=""></option>>
+                                            {% if team_info %}
+                                            {% for x in team_info %}
+                                            <option value="{{x.0}}"/>{{x.1}}</option>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </select>
                                     </td>
                                 </tr>
                             </table>
@@ -136,7 +144,7 @@
                                         <b class="Text">Assigned User:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <table>
+                                        <!--table>
                                             {% if user_list %}
                                                 {% for x in user_list %}
                                                     <td><input type="checkbox" name="tester" value="{{x.0}}"/>{{x.1}}</td>
@@ -149,7 +157,15 @@
                                                     {% endif %}
                                                 {% endfor %}
                                             {% endif %}
-                                        </table>
+                                        </table-->
+                                        <select class="users combo-box">
+                                            <option value=""></option>>
+                                            {% if user_list %}
+                                            {% for x in user_list %}
+                                            <option value="{{x.0}}"/>{{x.1}}</option>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </select>
                                     </td>
                                 </tr>
                             </table>
@@ -276,6 +292,28 @@
                     </div>
                     <h2>Test Cases</h2>
                     <div class="tabs-div">
+
+                        <table class="one-column-emphasis">
+                            <thead>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td>Title</td>
+                                <td>Features</td>
+                                <td>Section</td>
+                                <td>Last Result</td>
+                                <td>Run Date</td>
+                                <td>Version</td>
+                                <td>Milestone</td>
+                            </tr>
+                            </thead>
+                            <tbody class="linking">
+
+                            </tbody>
+                        </table>
+
+                        <br>
+                        <input class="search_case textbox" placeholder="Search Test Cases To Link"/>
 
                     </div>
 

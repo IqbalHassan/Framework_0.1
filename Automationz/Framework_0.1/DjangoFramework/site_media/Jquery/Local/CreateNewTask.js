@@ -12,7 +12,11 @@ $(document).ready(function(){
     $('#project_id').text($.session.get('project_id'));
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
     $('#ending_date').datepicker({ dateFormat: "yy-mm-dd" });
+
+    $('.combo-box').combobox();
+
     addingSections();
+    TestCaseLinking();
     //status_button_preparation();
     Submit_button_preparation();
 
@@ -33,6 +37,87 @@ $(document).ready(function(){
     console.log("Url Length:"+URL.length);
 
 });
+
+function TestCaseLinking(){
+
+    $(".search_case").autocomplete({
+
+        source:function(request,response){
+            $.ajax({
+                url:"TestCaseSearch/",
+                dataType:"json",
+                data:{
+                    term:request.term
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select : function(event, ui) {
+
+            //var value = ui.item[0]
+            //var name = ui.item[1]
+
+            /*var tc_id_name = ui.item[0].split(" - ");
+             var value = "";
+             if (tc_id_name != null)
+             {
+             value = tc_id_name[0].trim();
+             name = tc_id_name[1].trim();
+             }*/
+
+            var value=ui.item[0].trim();
+            var name=ui.item[1].trim();
+
+            if(value!=""){
+                $(".linking").append('<tr>' +
+                '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+                + '<td>'
+                + '<input type="checkbox" checked="true" name="test_cases" value="'
+                + value
+                + '"/>' +
+                '</td><td>'
+                + name
+                + "</td>" +
+                "</tr>");
+            }
+
+            //$(".search_case").remove();
+
+            /*$("#test_cases").append('<tr class="linking">' +
+             '<td><input class="search_case textbox" placeholder="Search Test Case" style="width: auto" /></td>' +
+             '</tr>');
+             TestCaseLinking();*/
+
+            //$("#tester th").css('display', 'block');
+
+            $(".search_case").val("");
+            return false;
+
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+
+    $(".search_case").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteCase").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+}
+
 
 function PopulateTaskInfo(task_id){
 
@@ -73,11 +158,13 @@ function PopulateTaskInfo(task_id){
         $("#description").val(data['Task_Info'][0][1]);
         $("#starting_date").val(data['Task_Info'][0][2]);
         $("#ending_date").val(data['Task_Info'][0][3]);
-        $("#tester").html('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+        /*$("#tester").html('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
         + '<td class="Text selected">'
         + data['tester']
             //+ "&nbsp"
-        + '</td>');
+        + '</td>');*/
+        $(".users").val(data['Task_Info'][0][12]);
+        $(".teams").val(data['team']);
         $("#task_info").show();
         $("#created_by").text(data['Task_Info'][0][6]);
         $("#created_date").text(data['Task_Info'][0][7]);
@@ -226,14 +313,17 @@ function Submit_button_preparation(){
         var status = $("#status").val();
 
         var description=$('#description').val().trim();
-        var team=[];
+        var team = $(".teams").val();
+        /*var team=[];
         $('input[name="team"]:checked').each(function(){
             team.push($(this).val());
-        });
-        var tester=[];
+        });*/
+
+        var tester = $(".users").val();
+        /*var tester=[];
         $('input[name="tester"]:checked').each(function(){
             tester.push($(this).val());
-        });
+        });*/
         var starting_date=$('#starting_date').val().trim();
         var ending_date=$('#ending_date').val().trim();
         var priority=$('input[name="priority"]:checked').val();
@@ -252,8 +342,8 @@ function Submit_button_preparation(){
                 'title':title,
                 'status':status,
                 'description':description,
-                'team':team.join("|"),
-                'tester':tester.join("|"),
+                'team':team,
+                'tester':tester,
                 'starting_date':starting_date,
                 'ending_date':ending_date,
                 'priority':priority,
@@ -275,8 +365,8 @@ function Submit_button_preparation(){
                 'title':title,
                 'status':status,
                 'description':description,
-                'team':team.join("|"),
-                'tester':tester.join("|"),
+                'team':team,
+                'tester':tester,
                 'starting_date':starting_date,
                 'ending_date':ending_date,
                 'priority':priority,
