@@ -2,8 +2,8 @@
  * Created by lent400 on 8/14/14.
  */
 var operation = 1;
-var lowest_section = 0;
-var isAtLowestSection = false;
+//var lowest_section = 0;
+//var isAtLowestSection = false;
 var lowest_feature = 0;
 var isAtLowestFeature = false;
 var task_id = "";
@@ -121,6 +121,8 @@ function TestCaseLinking(){
 
 function PopulateTaskInfo(task_id){
 
+    $("#relation").show();
+
     $.get("Selected_TaskID_Analaysis",{Selected_Task_Analysis : task_id},function(data){
 
         $("#title").val(data['Task_Info'][0][0]);
@@ -235,8 +237,8 @@ function PopulateTaskInfo(task_id){
                                 change: function(){
                                     isAtLowestFeature = false;
                                     recursivelyAddFeature(this);
-                                    $("#feature-flag").removeClass("filled");
-                                    $("#feature-flag").addClass("unfilled");
+                                    //$("#feature-flag").removeClass("filled");
+                                    //$("#feature-flag").addClass("unfilled");
                                 }
                             })
                             if($('#featuregroup select[id='+realItemIndex+']').length != 0)
@@ -260,8 +262,8 @@ function PopulateTaskInfo(task_id){
                             $(".feature[data-level='"+handlerString+"']").val(featureArray[realItemIndex].replace(/_/g,' '))
                         }
                         isAtLowestFeature = true;
-                        $("#feature-flag").removeClass("unfilled");
-                        $("#feature-flag").addClass("filled");
+                        //$("#feature-flag").removeClass("unfilled");
+                        //$("#feature-flag").addClass("filled");
                     }
                 }
             });
@@ -287,7 +289,7 @@ function Submit_button_preparation(){
             return false;
         }
 
-        if($('#feature-flag').hasClass('unfilled')){
+        /*if($('#feature-flag').hasClass('unfilled')){
             //alert("Feature Path is not defined Correctly");
             alertify.error("Feature Path is not defined Correctly","",0);
             return false;
@@ -300,7 +302,7 @@ function Submit_button_preparation(){
         }
         if($("#section-flag").hasClass("unfilled")){
             alertify.error("You need to choose a section!");
-        }
+        }*/
 
         /*if($('a[value="not_started"]').hasClass('selected'))
             var status = "not_started";
@@ -313,7 +315,9 @@ function Submit_button_preparation(){
         var status = $("#status").val();
 
         var description=$('#description').val().trim();
-        var team = $(".teams").val();
+        //var team = $(".teams").val();
+
+        var team= $("#default_team_identity").val();
         /*var team=[];
         $('input[name="team"]:checked').each(function(){
             team.push($(this).val());
@@ -328,8 +332,8 @@ function Submit_button_preparation(){
         var ending_date=$('#ending_date').val().trim();
         var priority=$('input[name="priority"]:checked').val();
         var milestone=$('#milestone option:selected').val();
-        var project_id= $.session.get('project_id');
-        var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
+        var project_id= $("#project_identity").val();
+        //var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
         var labels=[];
@@ -349,7 +353,7 @@ function Submit_button_preparation(){
                 'priority':priority,
                 'milestone':milestone,
                 'project_id':project_id,
-                'section_path':newSectionPath,
+                //'section_path':newSectionPath,
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
                 'labels':labels.join("|")
@@ -372,7 +376,7 @@ function Submit_button_preparation(){
                 'priority':priority,
                 'milestone':milestone,
                 'project_id':project_id,
-                'section_path':newSectionPath,
+                //'section_path':newSectionPath,
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
                 'labels':labels.join("|")
@@ -411,7 +415,7 @@ function Submit_button_preparation(){
     });
 }*/
 
-function recursivelyAddSection(_this){
+/*function recursivelyAddSection(_this){
     var fatherHeirarchy = $(_this).attr("data-level");
     var father = $(_this).children("option:selected").text();
     if(father == "")
@@ -428,16 +432,16 @@ function recursivelyAddSection(_this){
             $("#sectiongroup select.section:last-child").remove();
         }
         isAtLowestSection = true;
-        $("#section-flag").removeClass("unfilled");
-        $("#section-flag").addClass("filled");
+        //$("#section-flag").removeClass("unfilled");
+        //$("#section-flag").addClass("filled");
     }
     if(father == "No More"){
         for(var i = 0; i < lowest_section; i++){
             $("#sectiongroup select.section:last-child").remove();
         }
         isAtLowestSection = true;
-        $("#section-flag").removeClass("unfilled");
-        $("#section-flag").addClass("filled");
+        //$("#section-flag").removeClass("unfilled");
+        //$("#section-flag").addClass("filled");
     }
     var current_section = (fatherHeirarchy.split(".").length - 1)
     if(current_section < lowest_section){
@@ -487,11 +491,11 @@ function recursivelyAddSection(_this){
             }
         }
     });
-}
+}*/
 
 function addingSections(){
     //Sections
-    $.ajax({
+    /*$.ajax({
         url:'Get_RequirementSections/',
         dataType : "json",
         data : {
@@ -513,7 +517,7 @@ function addingSections(){
         recursivelyAddSection(this);
         $("#section-flag").removeClass("filled");
         $("#section-flag").addClass("unfilled");
-    });
+    });*/
 
     //Features
     $.ajax({
@@ -537,8 +541,8 @@ function addingSections(){
     $(".feature[data-level='']").change(function(){
         isAtLowestFeature = false;
         recursivelyAddFeature(this);
-        $("#feature-flag").removeClass("filled");
-        $("#feature-flag").addClass("unfilled");
+        //$("#feature-flag").removeClass("filled");
+        //$("#feature-flag").addClass("unfilled");
     });
 
 }
@@ -580,8 +584,8 @@ function recursivelyAddFeature(_this){
                     change: function(){
                         isAtLowestFeature = false;
                         recursivelyAddFeature(this);
-                        $("#feature-flag").removeClass("filled");
-                        $("#feature-flag").addClass("unfilled");
+                        //$("#feature-flag").removeClass("filled");
+                        //$("#feature-flag").addClass("unfilled");
                     }
                 }).appendTo('#featuregroup');
 
@@ -600,8 +604,8 @@ function recursivelyAddFeature(_this){
                 });
             }else{
                 isAtLowestFeature = true;
-                $("#feature-flag").removeClass("unfilled");
-                $("#feature-flag").addClass("filled");
+                //$("#feature-flag").removeClass("unfilled");
+                //$("#feature-flag").addClass("filled");
             }
         }
     });

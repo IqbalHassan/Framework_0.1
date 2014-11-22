@@ -29,6 +29,7 @@ $(document).ready(function() {
     AutoCompleteSearchForPrompt();
     /*****************Shetu's Function************************/
     AutoCompleteTag();
+    //$(".combo-box").combobox();
     /*****************End Shetu************************/
 
     URL = window.location.pathname
@@ -1368,7 +1369,7 @@ function AutoCompleteTestStep(){
     }
 }
 function AutoCompleteTag(){
-    $('#tag_txtbox').autocomplete({
+    $('#label_txtbox').autocomplete({
         source:function(request,response){
             $.ajax({
                 url:"AutoCompleteTag/",

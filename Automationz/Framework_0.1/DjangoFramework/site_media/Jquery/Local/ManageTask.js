@@ -192,7 +192,12 @@ $(document).ready(function(){
         window.location.reload(true);
     });
 
-    $.get("Tasks_List",{project_id : project_id},function(data)
+    $('#default_team_identity').on('change',function(){
+        $.session.set('default_team_identity',$(this).val());
+        window.location.reload(true);
+    });
+
+    $.get("Tasks_List",{project_id : project_id, team_id:team_id},function(data)
     {
         if(data['tasks'].length>0) {
             //make a table column
@@ -202,7 +207,7 @@ $(document).ready(function(){
             for (var i = 0; i < data['Heading'].length; i++) {
                 message += '<th align="left">' + data['Heading'][i] + '</th>';
             }
-            message += '</tr>'
+            message += '</tr>';
             for (var i = 0; i < data['tasks'].length; i++) {
                 message += '<tr>';
                 for (var j = 0; j < data['tasks'][i].length; j++) {

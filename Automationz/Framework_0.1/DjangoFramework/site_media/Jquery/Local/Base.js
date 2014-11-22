@@ -64,7 +64,7 @@ $(document).ready(function(){
     // Set the '.welcome'-class elements' text to the user's name
     $(".welcome").text($.session.get('fullname'));
     
-    $.get('GetProjectNameForTopBar',{
+    $.get('GetProjectNameForTopBar/',{
         'user_id': $.session.get('user_id')
     },function(data){
         var message="";
