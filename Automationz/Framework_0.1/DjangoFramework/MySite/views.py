@@ -8248,14 +8248,14 @@ def Selected_TaskID_Analaysis(request):
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='TASK' order by label_name" % UserData
         labels = DB.GetData(Conn,query)
         
-        query = "select team_id from task_team_map where task_id='%s'" %UserData
-        team = DB.GetData(Conn,query)
+        #query = "select team_id from task_team_map where task_id='%s'" %UserData
+        #team = DB.GetData(Conn,query)
         
         UserData = UserData.replace('-','_')
         query = "select * from requirement_sections where requirement_path = '%s'" %UserData
         section = DB.GetData(Conn,query)
 
-    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels, 'team':team}
+    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
@@ -8333,6 +8333,7 @@ def Tasks_List(request):
         tasks_list = []
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
         query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi,requirement_sections rs,task_team_map ttm where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text and ttm.task_id=t.tasks_id and ttm.team_id='"+team_id+"' order by tasks_id desc"
+        query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi, task_team_map ttm where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and ttm.task_id=t.tasks_id and ttm.team_id='"+team_id+"' order by tasks_id desc"
         tasks=DB.GetData(Conn, query, False)
         
         query="select requirement_path from tasks t, milestone_info mi,requirement_sections rs where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text order by tasks_id desc"

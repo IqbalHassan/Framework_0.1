@@ -32,7 +32,7 @@ def CreateNewTask(title,status,description,start_date,end_date,teams,tester,prio
             task_id=int(task_id[0])+1
             task_id=str('TASK-'+str(task_id))
         
-        if section_path=="No_Parent":
+        """if section_path=="No_Parent":
             new_requirement_path=task_id.replace('-', '_')
             path_id=insert_new_section(Conn, new_requirement_path)
         else:
@@ -42,7 +42,7 @@ def CreateNewTask(title,status,description,start_date,end_date,teams,tester,prio
                 path_id=requirement_path[0][0]
                 path=requirement_path[0][1]
                 new_requirement_path=path+"."+(task_id).replace('-','_')
-                sequence=insert_new_section(Conn,new_requirement_path.strip())
+                sequence=insert_new_section(Conn,new_requirement_path.strip())"""
         #get the current time and date
         now=datetime.datetime.now().date()
         #now form a directory to send the other information
@@ -59,7 +59,7 @@ def CreateNewTask(title,status,description,start_date,end_date,teams,tester,prio
               'tasks_milestone':milestone,
               'tasks_priority':priority,
               'status':status,
-              'parent_id':path_id,
+              #'parent_id':path_id,
               'tester':tester,
               'project_id':project_id
         }

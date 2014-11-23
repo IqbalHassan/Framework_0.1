@@ -293,14 +293,14 @@ function Submit_button_preparation(){
             //alert("Feature Path is not defined Correctly");
             alertify.error("Feature Path is not defined Correctly","",0);
             return false;
-        }
+        }*/
 
         var title=$('#title').val().trim();
 
         if(title==""){
             alertify.error("Title is empty!");
         }
-        if($("#section-flag").hasClass("unfilled")){
+        /*if($("#section-flag").hasClass("unfilled")){
             alertify.error("You need to choose a section!");
         }*/
 
