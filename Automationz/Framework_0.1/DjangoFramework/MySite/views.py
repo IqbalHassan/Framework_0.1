@@ -7506,6 +7506,7 @@ def GetFilteredDataResult(request):
             currentPagination = request.GET.get(u'pagination', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
+            capacity=request.GET.get(u'capacity','')
             print currentPagination
             # UserText=str(UserText)
             UserText = UserText.replace(u'\xa0', u'|')
@@ -7541,12 +7542,12 @@ def GetFilteredDataResult(request):
                 condition += " and "
             condition = condition[:-5].strip()
             print condition
-            final = NewResultFetch(condition, currentPagination,project_id,team_id)
+            final = NewResultFetch(condition, currentPagination,project_id,team_id,capacity)
     result = simplejson.dumps(final)
     return HttpResponse(result, mimetype='application/json')
-def NewResultFetch(condition, currentPagination,project_id,team_id):
+def NewResultFetch(condition, currentPagination,project_id,team_id,capacity):
     # pagination Code
-    step = 20
+    step = int(capacity)
     limit = ""
     limit += ("limit " + str(step))
     # ##determine offset
