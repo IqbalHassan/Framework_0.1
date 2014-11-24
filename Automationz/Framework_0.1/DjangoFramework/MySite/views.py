@@ -1745,7 +1745,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 UserData = str(UserData.replace(u'\xa0', u''))
                 
                 if is_rerun=="rerun":
-                    query="select email_notification, assigned_tester, test_objective,test_milestone, branch_version, project_id,team_id, feature_id, start_date,end_date,tester_id,machine_ip from test_run_env tre, machine_project_map mpm where mpm.machine_serial=tre.id and run_id='%s'"%previous_run
+                    query="select email_notification, assigned_tester, test_objective,test_milestone, branch_version, project_id,team_id, start_date,end_date,tester_id,machine_ip from test_run_env tre, machine_project_map mpm where mpm.machine_serial=tre.id and run_id='%s'"%previous_run
                     Conn=GetConnection()
                     Meta_info=DB.GetData(Conn,query,False)
                     Conn.close()
@@ -1756,11 +1756,10 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     Branch_Version=Meta_info[0][4]
                     project_id=Meta_info[0][5]
                     team_id=Meta_info[0][6]
-                    feature_id=Meta_info[0][7]
-                    starting_date=Meta_info[0][8]
-                    ending_date=Meta_info[0][9]
-                    TesterId=Meta_info[0][10]
-                    machine_ip=Meta_info[0][11]
+                    starting_date=Meta_info[0][7]
+                    ending_date=Meta_info[0][8]
+                    TesterId=Meta_info[0][9]
+                    machine_ip=Meta_info[0][10]
                     query="select type,name,bit,version from machine_dependency_settings mds, test_run_env tre where mds.machine_serial=tre.id and tre.tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
                     Conn=GetConnection()
                     machine_data=DB.GetData(Conn,query,False)
@@ -1780,15 +1779,9 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     
                     project_id=request.GET.get(u'project_id','')
                     team_id=request.GET.get(u'team_id','')
-                    feature_path=request.GET.get(u'feature_path','')
                     start_date=request.GET.get(u'start_date','')
                     end_date=request.GET.get(u'end_date','')
                     
-                    query="select feature_id from product_features where feature_path ~ '%s'"%feature_path
-                    Conn=GetConnection()
-                    feature_id=DB.GetData(Conn,query)
-                    Conn.close()
-                    feature_id=int(feature_id[0])
                     start_date=start_date.split('-')
                     starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
                     end_date=end_date.split('-')
@@ -1964,7 +1957,6 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                       'test_milestone':TestMileStone,
                       'run_type':'Manual',
                       'assigned_tester':Testers,
-                      'feature_id':feature_id,
                       'start_date':starting_date,
                       'end_date':ending_date
                 }
@@ -7506,7 +7498,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     stepDelete = int(step) * int(int(currentPagination) - 1)
     offset += ("offset " + str(stepDelete))
     print condition
-    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration, tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and mpm.machine_serial=tre.id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7518,7 +7510,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
         total_query += condition
     total_query += ") "
     total_query += "union all "
-    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration, tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and tre.id=mpm.machine_serial and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7551,7 +7543,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     Conn=GetConnection()
     all_status = make_status_array(Conn, total_run)
     # make Dict
-    Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Feature", "Version", "MileStone"]
+    Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Version", "MileStone"]
     Dict = {'total':total_run, 'status':all_status, 'column':Column, 'totalGet':len(received_data)}
     Conn.close()
     return Dict
