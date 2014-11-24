@@ -7611,11 +7611,12 @@ def RunID_New(request):
             run_id = run_id.replace("%3A", ":")
             index = request.GET.get(u'pagination', '')
             userText = request.GET.get(u'UserText', '')
+            capacity=request.GET.get(u'capacity','')
             if(userText == ""):
-                runData = GetData(run_id, index)
+                runData = GetData(run_id, index,capacity)
             else:
                 userText = FormCondition(userText)
-                runData = GetData(run_id, index, userText)
+                runData = GetData(run_id, index, capacity,userText)
             print '--------------------------- INSIDE -------------------------------------'
             print run_id
             print index
@@ -7641,8 +7642,8 @@ def FormCondition(userText):
             condition += ("rtc.tc_id='%s' and " % eachitem[0])
     condition = condition[:-5].strip()
     return condition
-def GetData(run_id, index, userText=""):
-    step = 5
+def GetData(run_id, index, capacity,userText=""):
+    step = int(capacity)
     limit = ("limit " + str(step))
     # offset
     offset = ""

@@ -1,5 +1,5 @@
 
-var stepCount=5;
+//var stepCount=5;
 $(document).ready(function(){
     RESPONSIVEUI.responsiveTabs();
     GetAllData();
@@ -88,6 +88,10 @@ function PaginationButton(){
         $('#pagination_no').text(index);
         GetAllData();
     });
+    $('#filterCount').on('change',function(){
+        $('#pagination_no').html('1');
+        GetAllData();
+    });
 }
 function GetAllData(){
     var currentPagination=$('#pagination_no').text().trim();
@@ -98,7 +102,8 @@ function GetAllData(){
         console.log(UserText);
         var pathname=window.location.pathname;
         pathname=pathname.split("/")[3];
-        $.get("RunID_New",{run_id:pathname.trim(),pagination:currentPagination,UserText:UserText},function(data){
+        var stepCount=$('#filterCount option:selected').val().trim();
+        $.get("RunID_New",{run_id:pathname.trim(),pagination:currentPagination,UserText:UserText, capacity:stepCount},function(data){
             //alert(data);
             if(data['runData'].length>0){
                 var message=makeTable(data['runData'],data['runCol']);
