@@ -271,57 +271,11 @@ function ReRunTab(){
             alertify.log('Test Cases are not selected',"",0);
             return false;
         }
-        //console.log(tc_list);
-        /*var machine=$('input[name="machine"]').val();
-        var tester=$('input[name="tester"]').val();
-        var client=$('input[name="client"]').val();
-        var email=$('input[name="email"]').val();
-        var os=$('input[name="os"]').val();
-        var objective=$('input[name="test_objective"]').val();
-        var project_id=$('input[name="project_id"]').val().split(" - ")[0].trim();
-        var team_id=$('input[name="team_id"]').val().split(" - ")[0].trim();
-        os=os.split("-")[0].trim();
-        os=os.split(" ")[0].trim();
-        var environment="";
-        if(os=='Windows'){
-            environment="PC";
-        }
-        else{
-            environment="Mac";
-        }
-        //console.log(os);
-        objective=objective.trim();
-        objective+=(' -ReRun');
-        objective=objective.trim();
-        if(objective==""){
-            //alert("TestObjective is empty");
-            alertify.log("TestObjective is empty","",0);
-            return false;
-        }*/
         var queryText="";
         for(var i=0;i<tc_list.length;i++){
             queryText+=tc_list[i].trim();
             queryText+=": ";
         }
-        //queryText+=((machine.trim())+':');
-        //console.log(queryText);
-        /*var testerText="";
-        tester=tester.split(",");
-        for(var i=0;i<tester.length;i++){
-            testerText+=tester[i];
-            testerText+=": ";
-        }
-        //console.log(testerText);
-        var emailText="";
-        email=email.split(",");
-        for(var i=0;i<email.length;i++){
-            emailText+=email[i];
-            emailText+=": ";
-        }
-        //console.log(emailText);
-        var dependencyText="";
-        dependencyText+=(client+": ");
-        //console.log(dependencyText);*/
         $.get("Run_Test",{
             RunTestQuery:queryText,
             //EmailIds:emailText,
@@ -447,7 +401,7 @@ function LoadAllTestCases(divname){
         });
     });
     /////// To change status on clicking the status
-    $('#'+divname+' tr td:nth-child(4)').each(function(){
+    $('#'+divname+' tr td:nth-child(10)').each(function(){
         $(this).css({
             'color':'blue',
             'cursor' : 'pointer'
@@ -456,7 +410,24 @@ function LoadAllTestCases(divname){
             var TestCaseName=$($(this).closest("tr").find("td:first-child")[0]).text().trim();
             var location=$("#fetch_run_id").text().trim();
             console.log(location);
-            window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/';
+            window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/Execute/';
+        });
+    });
+    $('#'+divname+' tr td:nth-child(9)').each(function(){
+        $(this).css({
+            'color':'blue',
+            'cursor' : 'pointer'
+        });
+        $(this).live('click',function(){
+            var TestCaseName=$($(this).closest("tr").find("td:first-child")[0]).text().trim();
+            var location=$("#fetch_run_id").text().trim();
+            console.log(location);
+            window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/View/';
+        });
+    });
+    $('#'+divname+' tr td:nth-child(4)').each(function(){
+        $(this).css({
+            'color':'blue'
         });
     });
     $('#'+divname+' tr td:nth-child(3)').each(function(){

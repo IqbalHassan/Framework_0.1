@@ -1,7 +1,7 @@
 import os
 
 from django.conf.urls import *  # @UnusedWildImport 
-
+import urls_direct
 from MySite.views import *  # @UnusedWildImport
 from MySite.views import select2
 
@@ -38,7 +38,7 @@ urlpatterns = patterns('',
     url(r'^Home/.*/GetFilteredDataResult/$', GetFilteredDataResult),
     url(r'^Home/RunID/(?P<Run_Id>[^/]*)/$', Search2),
     url(r'^Home/.*/RunID_New/$', RunID_New),
-    url(r'^Home/RunID/(?P<Run_Id>[^/]*)/TC/(?P<TC_Id>[^/]*)/$', RunIDTestCases),
+    url(r'^Home/RunID/', include('urls_direct')),
     url(r'^Home/.*/DataFetchForTestCases/$', DataFetchForTestCases),
     url(r'^Home/.*/TestDataFetch/$', TestDataFetch),
     url(r'^Home/.*/UpdateData/$', UpdateData),

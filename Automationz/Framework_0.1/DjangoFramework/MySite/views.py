@@ -5844,6 +5844,54 @@ def TestStepWithTypeInTable(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def ViewRunIDTestCases(request, Run_Id, TC_Id):
+    print Run_Id
+    print TC_Id
+    Conn = GetConnection()
+    query = "select tc_name from result_test_cases where tc_id='%s' and run_id='%s'" % (TC_Id, Run_Id)
+    testcasename = DB.GetData(Conn, query, False)
+    dquery = "select name from result_test_case_tag where tc_id='%s' and property='JiraId' and run_id='%s'" % (TC_Id, Run_Id)
+    defectid = DB.GetData(Conn, dquery, False)
+    defectid = [x[0] for x in defectid]
+    id1 = ', '.join(defectid)
+    tquery = "select name from result_test_case_tag where tc_id='%s' and property='MKS' and run_id='%s'" % (TC_Id, Run_Id)
+    mksid = DB.GetData(Conn, tquery, False)
+    mksid = [x[0] for x in mksid]
+    id2 = ', '.join(mksid)
+    rquery = "select name from result_test_case_tag where tc_id='%s' and property='PRDId' and run_id='%s'" % (TC_Id, Run_Id)
+    requirementid = DB.GetData(Conn, rquery, False)
+    requirementid = [x[0] for x in requirementid]
+    id3 = ', '.join(requirementid)
+    
+    section_path = ''
+    
+    try:
+        query = '''
+        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
+        ''' % ('section_id', TC_Id)
+        data = DB.GetData(Conn, query, False, False)
+        section_id = int(data[0][0])
+        
+        query = '''
+        SELECT section_path FROM product_sections WHERE section_id=%d
+        ''' % section_id
+        data = DB.GetData(Conn, query, False, False)
+        section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
+        
+    except:
+        print '-'
+    
+    return render_to_response('ViewRunIDEditTestCases.html',
+                              {
+                              'runid':Run_Id,
+                              'testcaseid':TC_Id,
+                              'testcasename':testcasename[0][0],
+                              'defectid':id1,
+                              'mksid':id2,
+                              'requirementid':id3,
+                              'section_path': section_path
+                              })
+
 def RunIDTestCases(request, Run_Id, TC_Id):
     print Run_Id
     print TC_Id
@@ -6362,7 +6410,7 @@ def Send_Report(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
     #########################################################################################
-def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReason):
+def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReason,start_time,end_time):
     """test_step_id_list=[]
     for each in List:
         print each
@@ -6404,8 +6452,14 @@ def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReaso
             Conn.close()
             count += 1
     query = "where run_id='%s' and tc_id='%s'" % (run_id, test_case_id)
+    test_case_select_query="select teststarttime from test_case_results "+query
+    Conn=GetConnection()
+    case_start_time=DB.GetData(Conn,test_case_select_query,False)
+    Conn.close()
     Dict = {}
-    Dict.update({'status':test_case_status, 'failreason':failReason})
+    if case_start_time[0][0]==None:
+        Dict.update({'teststarttime':start_time})
+    Dict.update({'status':test_case_status, 'failreason':failReason, 'testendtime':end_time})
     Conn=GetConnection()
     print DB.UpdateRecordInTable(Conn, "test_case_results", query, **Dict)
     Conn.close()
@@ -6419,6 +6473,8 @@ def UpdateData(request):
             step_reason = request.GET.get(u'step_reason', '').split("|")
             run_id = request.GET.get(u'run_id', '')
             test_case_id = request.GET.get(u'test_case_id', '')
+            start_time=request.GET.get(u'start_time','')
+            end_time=request.GET.get(u'end_time','')
             Conn = GetConnection()
             query = "select teststepsequence from result_test_steps where tc_id='%s' and run_id='%s'" % (test_case_id, run_id)
             test_step_sequence_list = DB.GetData(Conn, query)
@@ -6500,7 +6556,7 @@ def UpdateData(request):
                 Final_List.append(temp)
                 index += 1
             print Final_List
-            message = UpdateTestStepStatus(Final_List, run_id, test_case_id, test_case_status, failReason)
+            message = UpdateTestStepStatus(Final_List, run_id, test_case_id, test_case_status, failReason, start_time,end_time)
     result = simplejson.dumps(message)
     return HttpResponse(result, mimetype='application/json')
 def GetOS(request):
@@ -7595,29 +7651,12 @@ def GetData(run_id, index, userText=""):
     # form the query
     query = ""
     query+="select * from ("
-    query+="(select rtc.tc_id,tc_name,tcr.status,to_char(tcr.duration,'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id "%run_id
-    """query += "select * from ("
-    query += "(select "
-    query += "tc.tc_id as MKSId, "
-    query += "tc.tc_name, "
-    query += "tr.status, "
-    query += "to_char(tr.duration,'HH24:MI:SS'), "
-    query += "tr.failreason, "
-    query += "tr.logid, "
-    query += "tc.tc_id "
-    query += "from test_case_results tr, result_test_cases tc, result_test_case_tag tct "
-    query += "where tr.run_id = '%s' and " % run_id
-    query += "tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' "
-    """
+    query+="(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id "%run_id
     if userText != "":
         query += "and "
         query += userText
     query += " ORDER BY tcr.id) "
     query += "union all "
-    """query += "(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
-    query += "from test_run tr,result_test_cases tc, result_test_case_tag tct "
-    query += "where tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s'" % run_id
-    """
     query+="(select rtc.tc_id,tc_name,'Pending','','','' from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id"%run_id
     if userText != "":
         query += " and "
@@ -7631,8 +7670,14 @@ def GetData(run_id, index, userText=""):
     print runData
     AllTestCases = Modify(runData)
     AllTestCases = AddEstimatedTime(AllTestCases, run_id)
+    final=[]
+    for each in AllTestCases:
+        temp=list(each)
+        temp.append('View')
+        temp.append('Execute')
+        final.append(tuple(temp))
     DataCount = DB.GetData(Conn, count_query, False)
-    DataReturn = {'allData':AllTestCases, 'count':len(DataCount)}
+    DataReturn = {'allData':final, 'count':len(DataCount)}
     Conn.close()
     return DataReturn
 
