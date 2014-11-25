@@ -118,7 +118,24 @@ function GetAllData(){
                 }
                 $('#UpperDiv').css({'display':'block'});
                 LoadAllTestCases("allData");
-                connectLogFile("allData");}
+                connectLogFile("allData");
+                $('#pass_selected').on('click',function(){
+                    var list=[];
+                    $('.auto_pass:checked').each(function(){
+                        if($(this).parent().prev().prev().prev().prev().prev().prev().prev().text().trim()!='Passed'){
+                            list.push($(this).val());
+                        }
+                    });
+                    $.get('AutoTestCasePass',{
+                        run_id:$('#fetch_run_id').text().trim(),
+                        test_cases:list.join("|")
+                    },function(data){
+                        if(data==true){
+                            window.location=('/Home/RunID/'+pathname+'/');
+                        }
+                    });
+                });
+            }
             else{
                 $('#allData').html('<div align="center" style="margin-top: 20%"><b style="font-size: 200%;font-weight: bolder">No Data Available</b></div>');
             }
@@ -171,9 +188,9 @@ function makeTable(data,col){
         		once = false;
         		continue;
         	}
-        	
     		message+='<td>'+data[i][j]+'</td>';
         }
+        message+='<td><input type="checkbox" class="auto_pass" value="'+data[i][0]+'"></td>';
         message+='</tr>';
     }
     message+='</table>';

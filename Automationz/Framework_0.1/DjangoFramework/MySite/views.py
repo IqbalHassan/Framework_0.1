@@ -11472,6 +11472,34 @@ def CreateLevelWiseFeature(request):
             PassMessasge(sModuleInfo, PostError, error_tag)
     except Exception,e:
             PassMessasge(sModuleInfo, e, 3)
+def AutoTestCasePass(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                run_id=request.GET.get(u'run_id','')
+                test_cases=request.GET.get(u'test_cases','').split('|')
+                for each in test_cases:
+                    query="select tsr.id, teststep_id from test_case_results tcr, test_step_results tsr where tcr.run_id=tsr.run_id and tsr.testcaseresulttindex=tcr.id and tcr.run_id='%s' and tcr.tc_id='%s'"%(run_id.strip(),each.strip())
+                    Conn=GetConnection()
+                    test_step_list=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    Dict={'status':'Passed'}
+                    for eachitem in test_step_list:
+                        sWhereQuery="where id=%d and teststep_id=%d and run_id='%s' and tc_id='%s'"%(eachitem[0],eachitem[1],run_id.strip(),each.strip())
+                        Conn=GetConnection()
+                        print DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
+                        Conn.close()
+                    sWhereQuery="where run_id='%s' and tc_id='%s'"%(run_id.strip(),each.strip())
+                    Conn=GetConnection()
+                    Dict.update({'failreason':''})
+                    print DB.UpdateRecordInTable(Conn,"test_case_results",sWhereQuery,**Dict)
+                    Conn.close()
+                message=True
+                result=simplejson.dumps(message)
+                return HttpResponse(result,mimetype='application/json')                        
+    except Exception,e:
+            PassMessasge(sModuleInfo, e, 3)
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
