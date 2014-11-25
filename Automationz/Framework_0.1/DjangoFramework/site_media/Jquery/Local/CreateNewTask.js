@@ -7,6 +7,7 @@ var operation = 1;
 var lowest_feature = 0;
 var isAtLowestFeature = false;
 var task_id = "";
+var newsectionpath = "";
 
 $(document).ready(function(){
     $('#project_id').text($.session.get('project_id'));
@@ -22,14 +23,23 @@ $(document).ready(function(){
 
     URL = window.location.pathname;
     console.log("url:"+URL);
-    indx = URL.indexOf("EditTask");
+    var indx = URL.indexOf("EditTask");
     console.log("Edit Index:"+indx);
+    var indx2 = URL.indexOf("ChildTask");
+    console.log("Child Index:"+indx);
     if(indx!=-1){
         var referred_task=URL.substring((URL.lastIndexOf("EditTask/")+("EditTask/").length),(URL.length-1));
         $("#header").html($.session.get('project_id')+' / Edit Task / '+referred_task);
         PopulateTaskInfo(referred_task);
         operation=2;
         task_id = referred_task;
+    }
+    else if(indx2!=-1){
+        var referred_task=URL.substring((URL.lastIndexOf("ChildTask/")+("ChildTask/").length),(URL.length-1));
+        $("#header").html($.session.get('project_id')+' / '+referred_task+' / Create Child Task');
+        //PopulateTaskInfo(referred_task);
+        operation=3;
+        newsectionpath = referred_task;
     }
     else{
         $("#header").html($.session.get('project_id')+' / Create Task');
@@ -122,6 +132,9 @@ function TestCaseLinking(){
 function PopulateTaskInfo(task_id){
 
     $("#relation").show();
+    $("#create_child").click(function(){
+        window.location = '/Home/'+$.session.get('project_id')+'/ChildTask/'+task_id
+    });
 
     $.get("Selected_TaskID_Analaysis",{Selected_Task_Analysis : task_id},function(data){
 
@@ -377,6 +390,28 @@ function Submit_button_preparation(){
                 'milestone':milestone,
                 'project_id':project_id,
                 //'section_path':newSectionPath,
+                'feature_path':newFeaturePath,
+                'user_name':$.session.get('fullname'),
+                'labels':labels.join("|")
+
+            },function(data){
+                window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
+                //window.location= ('/Home/ManageTask/');
+            });
+        }
+        else if(operation==3){
+            $.get('SubmitChildTask/',{
+                'title':title,
+                'status':status,
+                'description':description,
+                'team':team,
+                'tester':tester,
+                'starting_date':starting_date,
+                'ending_date':ending_date,
+                'priority':priority,
+                'milestone':milestone,
+                'project_id':project_id,
+                'section_path':newsectionpath,
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
                 'labels':labels.join("|")

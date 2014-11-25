@@ -8218,6 +8218,35 @@ def EditTask(request,task_id,project_id):
         }
     return render_to_response("CreateNewTask.html",Dict)
 
+def ChildTask(request,task_id,project_id):
+    task_id = request.GET.get('task_id', '')
+    project_id = request.GET.get('project_id', '')
+    
+    if task_id != "":
+        return render_to_response('CreateNewTask.html')
+    else:
+        Conn=GetConnection()
+        query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
+        team_info=DB.GetData(Conn,query,False)
+        query="select value from config_values where type='Priority'"
+        priority=DB.GetData(Conn,query,False)
+        query="select id,value from config_values where type='milestone'"
+        milestone_list=DB.GetData(Conn,query,False)
+        #get the names from permitted_user_list
+        query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)" 
+        user_list=DB.GetData(Conn,query,False)
+        query = "select label_id,label_name,Label_color from labels order by label_name"
+        labels = DB.GetData(Conn,query,False)
+        Dict={
+              'team_info':team_info,
+              'priority_list':priority,
+              'milestone_list':milestone_list,
+              'user_list':user_list,
+              'labels':labels
+        }
+    return render_to_response("CreateNewTask.html",Dict)
+
+
 def Selected_TaskID_Analaysis(request):
     Conn = GetConnection()
     if request.is_ajax():
@@ -8328,7 +8357,7 @@ def Tasks_List(request):
         query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.team_id='"+team_id+"' order by tasks_id desc"
         tasks=DB.GetData(Conn, query, False)
         
-        query="select task_path from tasks t, milestone_info mi,task_sections rs where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text and t.team_id='"+team_id+"' order by tasks_id desc"
+        query="select task_path from tasks t,task_sections rs where t.project_id='"+project_id+"' and t.parent_id=rs.task_path_id::text and t.team_id='"+team_id+"' order by tasks_id desc"
         parents=DB.GetData(Conn, query, False)
         
             
@@ -8339,8 +8368,6 @@ def Tasks_List(request):
             temp=x[1][0].replace('_','-')
             temp=temp.replace('.','/')
             if temp==data[0]:
-                data.append('None')
-            elif 'REQ' in temp:
                 data.append('None')
             else:
                 data.append(temp)
@@ -10081,7 +10108,7 @@ def SubmitNewTask(request):
             end_date=request.GET.get(u'ending_date','')
             start_date=convert_date_from_string(start_date)
             end_date=convert_date_from_string(end_date)
-            teams=request.GET.get(u'team','').split("|")
+            teams=request.GET.get(u'team','')
             tester=request.GET.get(u'tester','')
             priority=request.GET.get(u'priority','')
             milestone=request.GET.get(u'milestone','')
@@ -10106,7 +10133,7 @@ def SubmitEditedTask(request):
             end_date=request.GET.get(u'ending_date','')
             start_date=convert_date_from_string(start_date)
             end_date=convert_date_from_string(end_date)
-            teams=request.GET.get(u'team','').split("|")
+            teams=request.GET.get(u'team','')
             tester=request.GET.get(u'tester','')
             priority=request.GET.get(u'priority','')
             milestone=request.GET.get(u'milestone','')
@@ -10117,6 +10144,31 @@ def SubmitEditedTask(request):
             labels = request.GET.get(u'labels','')
             labels=labels.split("|")
             result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
+    results=simplejson.dumps(result)
+    return HttpResponse(results,mimetype='application/json')    
+
+
+def SubmitChildTask(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            title=request.GET.get(u'title','')
+            status=request.GET.get(u'status','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'starting_date','')
+            end_date=request.GET.get(u'ending_date','')
+            start_date=convert_date_from_string(start_date)
+            end_date=convert_date_from_string(end_date)
+            teams=request.GET.get(u'team','')
+            tester=request.GET.get(u'tester','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            project_id=request.GET.get(u'project_id','')
+            section_path=request.GET.get(u'section_path','')
+            feature_path=request.GET.get(u'feature_path','')
+            user_name=request.GET.get(u'user_name','')
+            labels = request.GET.get(u'labels','')
+            labels=labels.split("|")
+            result=TaskOperations.CreateChildTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 

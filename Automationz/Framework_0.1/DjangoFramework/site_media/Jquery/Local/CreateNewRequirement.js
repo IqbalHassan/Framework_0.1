@@ -35,14 +35,13 @@ $(document).ready(function(){
         }
         $('#submit').click(function(){
 
-            if($('#feature-flag').hasClass('unfilled')){
-                //alert("Feature Path is not defined Correctly");
+            /*if($('#feature-flag').hasClass('unfilled')){
                 alertify.error("Feature Path is not defined Correctly","",0);
                 return false;
-            }
+            }*/
 
             //get the statuses
-            var status="";
+            //var status="";
             /*if($('a[value="not_started"]').hasClass('selected'))
                 status = "not_started";
             if($('a[value="started"]').hasClass('selected'))
@@ -51,19 +50,19 @@ $(document).ready(function(){
                 status = "complete";
             if($('a[value="over_due"]').hasClass('selected'))
                 status = "over_due";*/
-            status = $("#status").val();
-            var requirement_description="";
-            requirement_description=$('#description').val();
-            var start_date="";
-            start_date=$('#starting_date').val();
-            var end_date="";
-            end_date=$('#ending_date').val();
+            var status = $("#status").val();
+            //var requirement_description="";
+            var requirement_description=$('#description').val();
+            //var start_date="";
+            var start_date=$('#starting_date').val();
+            //var end_date="";
+            var end_date=$('#ending_date').val();
             var team=[];
             $('input[name="team"]:checked').each(function(){
                team.push($(this).val());
             });
-            var priority="";
-            priority=$('input[name="priority"]:checked').val();
+            //var priority="";
+            var priority=$('input[name="priority"]:checked').val();
             var milestone=$('#milestone option:selected').val();
             var title=$('#title').val();
             var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');

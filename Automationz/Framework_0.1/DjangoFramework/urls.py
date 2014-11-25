@@ -95,9 +95,7 @@ urlpatterns = patterns('',
     url(r'^Home/ManageTestCases/Create/Submit_New_TestCase/$', Create_Submit_New_TestCase),
     url(r'^Home/.*/Submit_New_TestCase/$', Create_Submit_New_TestCase),
     url(r'^Home/.*/GetSections/$', Get_Sections),
-    url(r'^Home/.*/GetSubSections/$', Get_SubSections),
     url(r'^Home/.*/GetFeatures/$', Get_Features),
-    url(r'^Home/.*/GetSubFeatures/$', Get_SubFeatures),
     url(r'^Home/.*/GetBrowsers/$', Get_Browsers),
     url(r'^Home/.*/GetVersions/$', Get_Versions),
     url(r'^Home/.*/GetTesters/$', Get_Testers),
@@ -290,7 +288,9 @@ urlpatterns = patterns('',
     url(r'^Home/.*/Get_RequirementSections/$',Get_RequirementSections),
     url(r'^Home/.*/SubmitNewTask/$',SubmitNewTask),
     url(r'^Home/.*/SubmitEditedTask/$',SubmitEditedTask),
+    url(r'^Home/.*/SubmitChildTask/$',SubmitChildTask),
     url(r'^Home/(?P<project_id>[^/]*)/EditTask/(?P<task_id>[^/]*)/$', EditTask),
+    url(r'^Home/(?P<project_id>[^/]*)/ChildTask/(?P<task_id>[^/]*)/$', ChildTask),
     url(r'^Home/.*/Tasks_List/$',Tasks_List),
     url(r'^Home/.*/GetTeamInfoPerProject/$',GetTeamInfoPerProject),
     url(r'^Home/.*/UpdateAccountInfo/$',updateAccountInfo),
@@ -331,5 +331,10 @@ urlpatterns = patterns('',
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
     
 )
+
+urlpatterns += patterns('',
+    url(r'^Home/.*/GetSubSections/$', Get_SubSections),
+    url(r'^Home/.*/GetSubFeatures/$', Get_SubFeatures),    
+    )
 
 
