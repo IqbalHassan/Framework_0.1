@@ -1,4 +1,4 @@
-var stepCount=20;
+//var stepCount=20;
 $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
@@ -80,6 +80,10 @@ function PaginationButton(project_id,team_id){
         $('#pagination_no').text(index);
         PerformSearch(project_id,team_id);
     });
+    $('#filterCount').on('change',function(){
+        $('#pagination_no').html('1');
+        PerformSearch(project_id,team_id);
+    });
 }
 function PerformSearch(project_id,team_id){
     var message=[];
@@ -88,12 +92,14 @@ function PerformSearch(project_id,team_id){
     });
     var currentPagination=$('#pagination_no').text().trim();
     var UserText=message.join("|");
+    var stepCount=$('#filterCount option:selected').val().trim();
     $.get("GetFilteredDataResult",
         {
             UserText:UserText,
             pagination:currentPagination,
             project_id: project_id,
-            team_id: team_id
+            team_id: team_id,
+            capacity:stepCount
         },
         function(data){
             if(data['total'].length>0){

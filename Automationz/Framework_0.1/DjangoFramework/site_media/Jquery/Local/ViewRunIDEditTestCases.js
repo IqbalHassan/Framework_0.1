@@ -1,116 +1,10 @@
 /**
  * Created by lent400 on 1/15/14.
  */
-function ConvertTime(date){
-    var Year=date.getFullYear();
-    var Month=date.getMonth()+1;
-    var day=date.getDate();
-    var minuate=date.getMinutes();
-    var seconds=date.getSeconds();
-    var hour=date.getHours();
-    var miliseconds=date.getMilliseconds();
-    var time=(Year+"-"+Month+'-'+day+' '+hour+":"+minuate+":"+seconds+'.'+miliseconds).trim();
-    return time;
-}
-var time_start=ConvertTime(new Date());
+
 var test_case_name=$('#testcasename').text().trim();
 $(document).ready(function(){
     DataFetch();
-    $('#changeStatus').live('click',function(event){
-        var time_ended=ConvertTime(new Date());
-        var run_id=$('#runid').text().trim();
-        var test_case_id=$('#testcaseid').text().trim();
-        var step_name=[];
-        $('#data_table tr td:nth-child(2)').each(function(){
-            var step=$(this).text().trim();
-            console.log(step);
-            step_name.push(step);
-        });
-        //step_name.shift();
-        var step_status=[];
-        $('#data_table tr td:nth-child(6)').each(function(){
-            var step_no=$(this).closest("tr").find("td:first-child").text().trim();
-            var tc_id=$('#testcaseid').text().trim();
-            var step_id=tc_id+"_s"+step_no+"_status";
-            step_id=step_id.trim();
-            var status=$('#'+step_id+' option:selected').text().trim();
-            step_status.push(status);
-        });
-        //step_status.shift();
-        var step_reason=[];
-        $('#data_table tr td:nth-child(5)').each(function(){
-            var step_no=$(this).closest("tr").find("td:first-child").text().trim();
-            var tc_id=$('#testcaseid').text().trim();
-            var step_id=tc_id+"_s"+step_no+"_reason";
-            var reason=$('#'+step_id).val();
-            step_reason.push(reason);
-        });
-        //step_reason.shift();
-        console.log(step_name);
-        console.log(step_status);
-        console.log(step_reason);
-        console.log(run_id);
-        console.log(test_case_id);
-        $.get("UpdateData",{
-            step_name:step_name.join('|'),
-            step_status:step_status.join('|'),
-            step_reason:step_reason.join('|'),
-            run_id:run_id,
-            test_case_id:test_case_id,
-            start_time:time_start,
-            end_time:time_ended
-        },function(data){
-            if(data=="true"){
-                //var message = "All Step status changed as submitted";
-                //change_notify(message);
-                //var message = "All Step status changed as submitted";
-                //change_notify(message);
-                window.location="/Home/RunID/"+run_id+"/TC/"+test_case_id+"/Execute/";
-            }
-        });
-        event.stopPropagation();
-    });
-    $('#passAll').live('click',function(event){
-        var time_ended=ConvertTime(new Date());
-        var run_id=$('#runid').text().trim();
-        var test_case_id=$('#testcaseid').text().trim();
-        var step_name=[];
-        $('#data_table tr td:nth-child(2)').each(function(){
-            var step=$(this).text().trim();
-            console.log(step);
-            step_name.push(step);
-        });
-        //step_name.shift();
-        var step_reason=[];
-        $('#data_table tr td:nth-child(5)').each(function(){
-            var step_no=$(this).closest("tr").find("td:first-child").text().trim();
-            var tc_id=$('#testcaseid').text().trim();
-            var step_id=tc_id+"_s"+step_no+"_reason";
-            var reason=$('#'+step_id).val();
-            step_reason.push(reason);
-        });
-        //step_reason.shift();
-        $.get("UpdateData",{
-            step_name:step_name.join('|'),
-            step_status:"Passed",
-            step_reason:step_reason.join('|'),
-            run_id:run_id,
-            test_case_id:test_case_id,
-            start_time:time_start,
-            end_time:time_ended
-        },function(data){
-            //console.log(data);
-            if(data=="true"){
-                //var message = "All Test Steps Status are changed to 'Passed'";
-                //pass_notify(message);
-                //var message = "All Test Steps Status are changed to 'Passed'";
-                //pass_notify(message);
-                window.location="/Home/RunID/"+run_id+"/TC/"+test_case_id+"/Execute/";
-            }
-        });
-        event.stopPropagation();
-    });
-
     related_items();
     history();
     go_change();
@@ -782,8 +676,7 @@ function go_change(){
             success: function( json ) {
 
                 if(json[0] != undefined){
-                    var location='/Home/RunID/'+run_id+'/TC/'+json[0]+'/Execute/';
-                    window.location = location;
+                    window.location = '/Home/RunID/'+run_id+'/TC/'+json[0]+'/View/';
                 }
             }
         });
@@ -802,8 +695,7 @@ function go_change(){
             success: function( json ) {
 
                 if(json[0] != undefined){
-                    var location='/Home/RunID/'+run_id+'/TC/'+json[0]+'/Execute/';
-                    window.location = location;
+                    window.location = '/Home/RunID/'+run_id+'/TC/'+json[0]+'/View/';
                 }
             }
         });
