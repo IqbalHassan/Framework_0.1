@@ -153,7 +153,7 @@ function initTeamName(team){
     message+='<tr style="margin-right: 2%;"><td align="center" style="width: 22%; border-right: 2px solid #ccc;"><b class="Text">Teams</b></td>';
     message+='<td><table>'
     for(var i=0;i<team.length;i++){
-        message+='<tr><td>&nbsp;</td><td class="team" style="cursor: pointer;" id="'+team[i].replace(/ /g,'_').trim()+'">'+team[i].trim()+'</td></tr>'
+        message+='<tr><td>&nbsp;</td><td class="team" style="cursor: pointer;" id="'+team[i][1].replace(/ /g,'_').trim()+'">'+team[i][1].trim()+'</td></tr>'
     }
     message+='</table></td></tr>';
     message+='</table>';
