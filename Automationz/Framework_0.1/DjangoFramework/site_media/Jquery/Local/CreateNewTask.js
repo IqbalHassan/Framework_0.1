@@ -207,6 +207,8 @@ function PopulateTaskInfo(task_id){
             }
         });
 
+        //ResultTable(parents_table,data['Heading'],data['parents'],"Parent Tasks");
+
         //FeaturePath
         var features=data['Feature'];
         console.log(features);

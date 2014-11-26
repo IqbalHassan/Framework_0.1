@@ -203,7 +203,7 @@ def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,
             task_id=int(task_id[0])+1
             task_id=str('TASK-'+str(task_id))
         
-        query="select task_path_id,task_path from task_sections where task_path ~'%s'"%(section_path.replace('-', '_'))
+        query="select task_path_id,task_path from task_sections where task_path ~'*.%s'"%(section_path.replace('-', '_'))
         task_path=DB.GetData(Conn,query,False)
         if isinstance(task_path,list) and len(task_path)==1:
             path_id=task_path[0][0]

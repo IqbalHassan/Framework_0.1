@@ -8321,10 +8321,17 @@ def Selected_TaskID_Analaysis(request):
         #query = "select team_id from task_team_map where task_id='%s'" %UserData
         #team = DB.GetData(Conn,query)
         
-        UserData = UserData.replace('-','_')
-        query = "select * from task_sections where task_path = '%s'" %UserData
+        """query = "select task_path from task_sections where task_path ~ '*.%s'" %UserData.replace('-','_')
         section = DB.GetData(Conn,query)
+        section = section.replace('_', '-')
+        section = section.split('.')
+        parents = []
+        for each in section:
+            query = "select ts.task_path, t.tasks_id, t.status, mi.name from tasks t, milestone_info mi, task_sections ts where t.tasks_id = '%s' and t.tasks_milestone=mi.id::text and ts.task_path ~ '*.%s'" %(each,each.replace('-','_'))
+            temp = DB.GetData(Conn,query,False)
+            parents.append(temp)"""
 
+    Heading = ['Path','Task-ID','Status','Milestone']
     results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels}
     json = simplejson.dumps(results)
     Conn.close()
