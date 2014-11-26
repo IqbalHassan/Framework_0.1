@@ -725,6 +725,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             print project_id
             print team_id
             Section_Tag = 'Section'
+            Feature_Tag='Feature'
             Custom_Tag = 'CustomTag'
             Section_Path_Tag = 'section_id'
             Feature_Path_Tag = 'feature_id'
@@ -740,7 +741,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             for each in dependency:
                 wherequery+=("'"+each.strip()+"'")
                 wherequery+=','
-            wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+            wherequery+=("'"+Feature_Tag+"','"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
             print wherequery
             tag_query="select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)"%(value,wherequery)
             id_query="select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')"%(value,value)
@@ -1886,6 +1887,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 if len(TestIDList) > 0:
                     TestCasesIDs = TestIDList
                 else:
+                    Feature_tag='Feature'
                     Section_Tag = 'Section'
                     Custom_Tag = 'CustomTag'
                     Section_Path_Tag = 'section_id'
@@ -1902,7 +1904,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     for each in dependency:
                         wherequery+=("'"+each.strip()+"'")
                         wherequery+=','
-                    wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+                    wherequery+=("'"+Feature_tag+"','"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
                     print wherequery
                     
                     count = 1
@@ -11498,6 +11500,86 @@ def AutoTestCasePass(request):
                 message=True
                 result=simplejson.dumps(message)
                 return HttpResponse(result,mimetype='application/json')                        
+    except Exception,e:
+            PassMessasge(sModuleInfo, e, 3)
+def specific_dependency_settings(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.is_ajax():
+            if request.method == 'GET':
+                UserData = request.GET.get(u'Query', '')
+                if UserData!='':
+                    UserText = UserData.split(":");
+                    project_id=request.GET.get(u'project_id','')
+                    team_id=request.GET.get(u'team_id','')
+                    QueryText = []
+                    for eachitem in UserText:
+                        if len(eachitem) != 0 and  len(eachitem) != 1 and eachitem.strip() not in QueryText:
+                            QueryText.append(eachitem.strip())
+                    print QueryText
+                    Section_Tag = 'Section'
+                    Feature_Tag = 'Feature'
+                    Custom_Tag = 'CustomTag'
+                    Section_Path_Tag = 'section_id'
+                    Feature_Path_Tag = 'feature_id'
+                    Priority_Tag = 'Priority'
+                    set_type='set'
+                    tag_type='tag'
+                    Status='Status'
+                    query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
+                    Conn=GetConnection()
+                    dependency=DB.GetData(Conn,query)
+                    Conn.close()
+                    wherequery=""
+                    for each in dependency:
+                        wherequery+=("'"+each.strip()+"'")
+                        wherequery+=','
+                    wherequery+=("'"+Section_Tag+"','"+Feature_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+                    print wherequery
+                    TestIDList = []
+                    for eachitem in QueryText:
+                        Conn=GetConnection()
+                        TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
+                        Conn.close()
+                        for eachProp in TestID:
+                            if eachProp == 'tcid':
+                                TestIDList.append(eachitem)
+                                break
+                    TableData = []
+                    if len(TestIDList) > 0:
+                        for eachitem in TestIDList:
+                            query="select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,team_id)
+                            Conn=GetConnection()
+                            tabledata = DB.GetData(Conn,query)
+                            Conn.close()
+                            print tabledata
+                            if tabledata:
+                                TableData.append(tabledata[0])
+                    else:
+                        count = 1
+                        for eachitem in QueryText:
+                            if count == 1:
+                                Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
+                                count=count+1
+                            else:
+                                Query+="AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
+                                count=count+1
+                        Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+                        Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+                        query = "select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
+                        Conn=GetConnection()
+                        TableData = DB.GetData(Conn, query)        
+                        Conn.close()
+                    final_data=[]    
+                    for each in TableData:
+                        final_data.append("'"+each+"'")
+                    test_case_ids="("+",".join(final_data)+")"
+                    test_case_query="select property,array_agg(distinct name) from test_case_tag tct, dependency d where d.dependency_name=tct.property and tc_id in "+test_case_ids+" group by property" 
+                    Conn=GetConnection()
+                    final_list=DB.GetData(Conn,test_case_query,False)
+                    Conn.close()
+                    result=simplejson.dumps(final_list)
+                    return HttpResponse(result,mimetype='application/json')        
     except Exception,e:
             PassMessasge(sModuleInfo, e, 3)
 '''

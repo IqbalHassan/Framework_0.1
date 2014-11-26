@@ -397,8 +397,9 @@ function PerformSearch(project_id,team_id,predicate) {
                 test_cases=true;
                 implementDropDown("#RunTestResultTable");
                 if(predicate==undefined){
-                    get_dependency(project_id,team_id);
+                    get_dependency(project_id,team_id,UserText);    
                 }
+
 
             }
         });
@@ -408,7 +409,6 @@ function populate_parameter_div(array_list,div_name,project_id,team_id){
     var message="";
     for(var i=0;i<array_list.length;i++){
         var dependency=array_list[i][0];
-        var name_list=array_list[i][1].split(",");
         message+='<form id="tc_'+dependency+'" class="new_tc_form">';
         message+='<table>';
         message+='<tr>';
@@ -417,15 +417,15 @@ function populate_parameter_div(array_list,div_name,project_id,team_id){
         message+='</td>';
         message+='<td class="tc_form_input_col">';
         message+='<table width="100%">';
-        var equal_size=(100/name_list.length);
+        var equal_size=(100/array_list[i][1].length);
         var dep_name=[];
         message+='<tr>';
-        for(var j=0;j<name_list.length;j++){
+        for(var j=0;j<array_list[i][1].length;j++){
             message+='<td width="'+equal_size+'%">';
-            message+='<input class="'+dependency+'" id="'+dependency+'_'+name_list[j]+'" type="radio" name="type" value="'+name_list[j]+'" style="width:auto" />';
-            message+='<label for="'+dependency+'_'+name_list[j]+'">'+name_list[j]+'</label>';
+            message+='<input class="'+dependency+'" id="'+dependency+'_'+array_list[i][1][j]+'" type="radio" name="type" value="'+array_list[i][1][j]+'" style="width:auto" />';
+            message+='<label for="'+dependency+'_'+array_list[i][1][j]+'">'+array_list[i][1][j]+'</label>';
             message+='</td>';
-            dep_name.push(dependency+'_'+name_list[j]);
+            dep_name.push(dependency+'_'+array_list[i][1][j]);
         }
         message+='</tr>';
         message+='</table>';
@@ -454,12 +454,13 @@ function parseValue(dependency_classes){
     }
     return message;
 }
-function get_dependency(project_id,team_id){
-    $.get('get_default_settings',{
+function get_dependency(project_id,team_id,UserText){
+    $.get('specific_dependency_settings',{
+        Query: UserText,
         project_id:project_id,
         team_id:team_id
     },function(data){
-        populate_parameter_div(data['result'],"parameter_div",project_id,team_id);
+        populate_parameter_div(data,"parameter_div",project_id,team_id);
     });
 }
 
