@@ -397,7 +397,7 @@ function PerformSearch(project_id,team_id,predicate) {
                 test_cases=true;
                 implementDropDown("#RunTestResultTable");
                 if(predicate==undefined){
-                    get_dependency(project_id,team_id,UserText);    
+                    get_dependency(project_id,team_id,UserText);
                 }
 
 
