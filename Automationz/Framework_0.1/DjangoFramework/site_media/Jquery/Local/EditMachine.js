@@ -146,25 +146,28 @@ function ManageMilestone(project_id,team_id,location_name){
         global_version_list=data['version_list'];
         populate_manual_div(dependency_list,global_version_list,project_id,team_id);
         $.get("CheckMachine",{name:location_name},function(data){
-            var machine_ip=data[0][0];
-            var branch_version=data[0][1];
-            var dependency=data[0][2];
-            $('#machine_ip').val(machine_ip);
             $('#machine_name').val(location_name);
-            branch_version=branch_version.split(':');
-            var branch=branch_version[0].trim();
-            var version=branch_version[1].trim();
-            $('#branch_name').val(branch);
-            $('#branch_name').trigger('change');
-            $('#branch_version').val(version);
-            for(var i=0;i<dependency.length;i++){
-                var list=dependency[i].split('|');
-                $('#'+list[0]+'_name').val(list[1]);
-                $('#'+list[0]+'_name').trigger('change');
-                $('#'+list[0]+'_bit').val(list[2]);
-                $('#'+list[0]+'_bit').trigger('change');
-                $('#'+list[0]+'_version').val(list[3]);
+            if(data.length>0){
+                var machine_ip=data[0][0];
+                var branch_version=data[0][1];
+                var dependency=data[0][2];
+                $('#machine_ip').val(machine_ip);
+                branch_version=branch_version.split(':');
+                var branch=branch_version[0].trim();
+                var version=branch_version[1].trim();
+                $('#branch_name').val(branch);
+                $('#branch_name').trigger('change');
+                $('#branch_version').val(version);
+                for(var i=0;i<dependency.length;i++){
+                    var list=dependency[i].split('|');
+                    $('#'+list[0]+'_name').val(list[1]);
+                    $('#'+list[0]+'_name').trigger('change');
+                    $('#'+list[0]+'_bit').val(list[2]);
+                    $('#'+list[0]+'_bit').trigger('change');
+                    $('#'+list[0]+'_version').val(list[3]);
+                }
             }
+
         });
     });
 }

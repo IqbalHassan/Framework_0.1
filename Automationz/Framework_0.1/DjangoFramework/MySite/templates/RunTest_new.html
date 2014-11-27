@@ -95,22 +95,8 @@
                 <tbody>
                 {% for x in machine_list %}
                     <tr>
-                        {% for y in x %}
-                            {% if forloop.last %}
-                                <td>
-                                    <table width="100%">
-                                        {% for z in y%}
-                                            <tr><td>{{z}}</td></tr>
-                                        {% endfor %}
-                                    </table>
-                                </td>
-                            {% elif forloop.counter == 0 %}
-
-                            {% else %}
-                                <td>{{y}}</td>
-                            {% endif %}
-                        {% endfor %}
-                        <td><a href="/Home/Machine/{{x.0.split|join:'_'}}/">Edit</a></td>
+                        <td>{{x}}</td>
+                        <td><a href="/Home/Machine/{{x.split|join:'_'}}/">Edit</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
