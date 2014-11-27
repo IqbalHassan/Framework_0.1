@@ -8338,6 +8338,48 @@ def Selected_TaskID_Analaysis(request):
     return HttpResponse(json, mimetype='application/json')
 
 
+def Selected_Requirement_Analaysis(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'req_id', '')
+
+        query = "select requirement_title,status,requirement_description,cast(requirement_startingdate as text), cast(requirement_endingdate as text),requirement_priority,requirement_milestone from requirements where requirement_id = '%s'" % UserData
+        Req_Info = DB.GetData(Conn, query, False)
+        
+        
+        query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='REQ' and fm.feature_id=pf.feature_id::text" % UserData
+        feature = DB.GetData(Conn, query, False)
+        
+        #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
+        #milestone = DB.GetData(Conn,query)
+        query = "select team_id from requirement_team_map where requirement_id='%s'" %UserData
+        teams = DB.GetData(Conn,query,False)
+        
+        
+        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='REQ' order by label_name" % UserData
+        labels = DB.GetData(Conn,query)
+        
+        #query = "select team_id from task_team_map where task_id='%s'" %UserData
+        #team = DB.GetData(Conn,query)
+        
+        """query = "select task_path from task_sections where task_path ~ '*.%s'" %UserData.replace('-','_')
+        section = DB.GetData(Conn,query)
+        section = section.replace('_', '-')
+        section = section.split('.')
+        parents = []
+        for each in section:
+            query = "select ts.task_path, t.tasks_id, t.status, mi.name from tasks t, milestone_info mi, task_sections ts where t.tasks_id = '%s' and t.tasks_milestone=mi.id::text and ts.task_path ~ '*.%s'" %(each,each.replace('-','_'))
+            temp = DB.GetData(Conn,query,False)
+            parents.append(temp)"""
+
+    #Heading = ['Path','Task-ID','Status','Milestone']
+    results = {'Req_Info':Req_Info, 'Feature':feature[0][0], 'labels':labels, 'teams':teams}
+    json = simplejson.dumps(results)
+    Conn.close()
+    return HttpResponse(json, mimetype='application/json')
+
+
 
 def FetchProject(request):
     if request.is_ajax():
@@ -9894,6 +9936,33 @@ def CreateRequirement(request):
     return HttpResponse(result,mimetype='application/json')
 ##getting required requirement and team info on the project_id change
 
+def SubmitEditRequirement(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            #getting all the info from the messages
+            req_id = request.GET.get(u'req_id','')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team','').split("|")
+            title=request.GET.get(u'title','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'start_date','')
+            end_date=request.GET.get(u'end_date','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            status=request.GET.get(u'status','')
+            user_name=request.GET.get(u'user_name','')
+            feature_path=request.GET.get(u'feature_path','')
+            parent_requirement_id=request.GET.get(u'requirement_id','')
+            labels=request.GET.get(u'labels','')
+            labels=labels.split("|")
+            result=RequirementOperations.EditRequirement(req_id, title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path,labels)
+            if result!=False:
+                requirement_id=result
+    result=simplejson.dumps(requirement_id)
+    return HttpResponse(result,mimetype='application/json')
+
+
+
 def GetTeamInfoToCreateRequirement(request):
     if request.is_ajax():
         if request.method=='GET':
@@ -10097,7 +10166,36 @@ def RequirementPage(request,project_id):
     team_info=DB.GetData(Conn,query,False)
     query="select value from config_values where type='Priority'"
     priority=DB.GetData(Conn,query,False)
-    query="select value from config_values where type='milestone'"
+    query="select id,value from config_values where type='milestone'"
+    milestone_list=DB.GetData(Conn,query,False)
+    query = "select label_id,label_name,Label_color from labels order by label_name"
+    labels = DB.GetData(Conn,query,False)
+    Dict={
+          'team_info':team_info,
+          'priority_list':priority,
+          'milestone_list':milestone_list,
+          'labels':labels
+    }
+    return render_to_response("CreateNewRequirement.html",Dict)
+
+
+def Edit_Requirement(request,project_id,req_id):
+    """
+    TC_Id = request.GET.get('TC_Id', '')
+    if TC_Id != "":
+        return ViewTestCase(TC_Id)
+    else:
+        templ = get_template('CreateNewRequirement.html')
+        variables = Context({ })
+        output = templ.render(variables)
+        return HttpResponse(output)"""
+    #Get the teams for this projects
+    Conn=GetConnection()
+    query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
+    team_info=DB.GetData(Conn,query,False)
+    query="select value from config_values where type='Priority'"
+    priority=DB.GetData(Conn,query,False)
+    query="select id,value from config_values where type='milestone'"
     milestone_list=DB.GetData(Conn,query,False)
     query = "select label_id,label_name,Label_color from labels order by label_name"
     labels = DB.GetData(Conn,query,False)

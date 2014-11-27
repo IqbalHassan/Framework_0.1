@@ -17,6 +17,7 @@
     });
 </script>
 <div align="center" style="margin: auto;">
+    <a class="createnew" onclick="location.href='/Home/'+ $.session.get('project_id')+'/EditRequirement/'+ $('#req_id').text().trim()" style="float: right;cursor: pointer">Edit Requirement</a>
     <table align="center" width="100%">
         <tr>
             <td align="25%">
@@ -34,7 +35,7 @@
             <td width="50%">
                 <table align="center">
                     <tr>
-                        <td style="vertical-align: 0%;"><a href="#"><h2>{{requirement_id}}</h2></a></td>
+                        <td style="vertical-align: 0%;"><a href="#" id="req_id"><h2>{{requirement_id}}</h2></a></td>
                         <td style="vertical-align: 0%;"><h2> - {{requirement_title}}</h2></td>
                     </tr>
                     <tr>

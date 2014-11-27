@@ -11,7 +11,7 @@
         <tr>
             <td colspan="2"><input class="textbox" placeholder="Title of the Requirement" id="title" /></td>
             <td id="relation" style="display: none">
-                <a class="createnew" style="float: right">Create Child</a>
+                <a class="createnew" style="float: right;cursor: pointer">Create Child</a>
                 <!--a class="createnew" style="float: right">Create Parent</a-->
             </td>
         </tr>
@@ -179,7 +179,7 @@
                                         <select id="milestone">
                                             {% if milestone_list %}
                                                 {% for x in milestone_list %}
-                                                    <option value="{{x.0}}"/>{{x.0}}</option>
+                                                    <option value="{{x.0}}"/>{{x.1}}</option>
                                                 {% endfor %}
                                             {% endif %}
                                         </select>
@@ -229,7 +229,7 @@
                     <input type='button' id='submit' class="new_tc_form button minibutton primary" value="Save" style="width:auto;"/>
                 </div>
             </td>
-            <td width="4%">
+            <!--td width="4%">
                 <div class="repository-sidebar">
                     <div class="sunken-menu vertical-right repo-nav js-repo-nav js-repository-container-pjax js-octicon-loaders">
                         <div class="sunken-menu-contents">
@@ -239,7 +239,7 @@
                         </div>
                     </div>
                 </div>
-            </td>
+            </td-->
         </tr>
     </table>
 </article>
