@@ -8356,7 +8356,7 @@ def Selected_Requirement_Analaysis(request):
         #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
         #milestone = DB.GetData(Conn,query)
         query = "select team_id from requirement_team_map where requirement_id='%s'" %UserData
-        teams = DB.GetData(Conn,query,False)
+        teams = DB.GetData(Conn,query)
         
         
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='REQ' order by label_name" % UserData
@@ -8494,7 +8494,7 @@ def Reqs_List(request):
         query="select requirement_id,requirement_title,requirement_description,cast(requirement_startingdate as text),cast(requirement_endingdate as text),mi.name,r.status from requirements r,milestone_info mi where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone order by requirement_id desc"
         reqs=DB.GetData(Conn, query, False)
         
-        query="select requirement_path from requirements r,milestone_info mi,requirement_sections rs where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone and r.parent_requirement_id=rs.requirement_path_id::text order by requirement_id desc"
+        query="select requirement_path from requirements r,requirement_sections rs where project_id='"+project_id+"' and r.parent_requirement_id=rs.requirement_path_id::text order by requirement_id desc"
         parents=DB.GetData(Conn, query, False)
         
             
@@ -8506,8 +8506,6 @@ def Reqs_List(request):
             temp=temp.replace('.','/')
             if temp==data[0]:
                 data.append('None')
-            #elif 'REQ' in temp:
-                #data.append('None')
             else:
                 data.append(temp)
             #data.append(x[1])
@@ -9964,6 +9962,31 @@ def SubmitEditRequirement(request):
     return HttpResponse(result,mimetype='application/json')
 
 
+def SubmitChildRequirement(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            #getting all the info from the messages
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team','').split("|")
+            title=request.GET.get(u'title','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'start_date','')
+            end_date=request.GET.get(u'end_date','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            status=request.GET.get(u'status','')
+            user_name=request.GET.get(u'user_name','')
+            feature_path=request.GET.get(u'feature_path','')
+            parent_requirement_id=request.GET.get(u'requirement_id','')
+            labels=request.GET.get(u'labels','')
+            labels=labels.split("|")
+            result=RequirementOperations.CreateChildRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path, parent_requirement_id, labels)
+            if result!=False:
+                requirement_id=result
+    result=simplejson.dumps(requirement_id)
+    return HttpResponse(result,mimetype='application/json')
+
+
 
 def GetTeamInfoToCreateRequirement(request):
     if request.is_ajax():
@@ -10182,6 +10205,35 @@ def RequirementPage(request,project_id):
 
 
 def Edit_Requirement(request,project_id,req_id):
+    """
+    TC_Id = request.GET.get('TC_Id', '')
+    if TC_Id != "":
+        return ViewTestCase(TC_Id)
+    else:
+        templ = get_template('CreateNewRequirement.html')
+        variables = Context({ })
+        output = templ.render(variables)
+        return HttpResponse(output)"""
+    #Get the teams for this projects
+    Conn=GetConnection()
+    query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
+    team_info=DB.GetData(Conn,query,False)
+    query="select value from config_values where type='Priority'"
+    priority=DB.GetData(Conn,query,False)
+    query="select id,value from config_values where type='milestone'"
+    milestone_list=DB.GetData(Conn,query,False)
+    query = "select label_id,label_name,Label_color from labels order by label_name"
+    labels = DB.GetData(Conn,query,False)
+    Dict={
+          'team_info':team_info,
+          'priority_list':priority,
+          'milestone_list':milestone_list,
+          'labels':labels
+    }
+    return render_to_response("CreateNewRequirement.html",Dict)
+
+
+def Child_Requirement(request,project_id,req_id):
     """
     TC_Id = request.GET.get('TC_Id', '')
     if TC_Id != "":

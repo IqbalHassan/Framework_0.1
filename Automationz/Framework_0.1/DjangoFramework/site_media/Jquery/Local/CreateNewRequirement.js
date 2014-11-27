@@ -2,8 +2,10 @@
 
 var createpath="CreateRequirement/";
 var editpath="EditRequirement/";
+var childpath="ChildRequirement/";
 var operation = 1;
 var req_id = "";
+var sectionpath = "";
 
 
 
@@ -17,6 +19,7 @@ $(document).ready(function(){
     var URL=window.location.pathname;
     var create_index=URL.indexOf(createpath);
     var edit_index=URL.indexOf(editpath);
+    var child_index=URL.indexOf(childpath);
     var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf(createpath) != -1;
     if(create_index != -1){
 
@@ -30,8 +33,13 @@ $(document).ready(function(){
         operation=2;
         req_id = referred_req;
     }
-
-
+    if(child_index!=-1){
+        var referred_req=URL.substring((URL.lastIndexOf(childpath)+(childpath).length),(URL.length-1));
+        $("#header").html($.session.get('project_id')+' / Create Child Requirement');
+        //PopulateReqInfo(referred_req);
+        operation=3;
+        sectionpath = referred_req;
+    }
 
     //Button Preparation
     addingSections();
@@ -125,6 +133,25 @@ $(document).ready(function(){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
         }
+        else if(operation==3){
+            $.get("SubmitChildRequirement/",{
+                'title':title.trim(),
+                'description':requirement_description.trim(),
+                'status':status.trim(),
+                'start_date':start_date.trim(),
+                'end_date':end_date.trim(),
+                'team':team.join("|").trim(),
+                'priority':priority.trim(),
+                'milestone':milestone.trim(),
+                'project_id': $.session.get('project_id'),
+                'user_name':$.session.get('fullname'),
+                'feature_path':newFeaturePath,
+                'requirement_id':sectionpath,
+                'labels':labels.join("|")
+            },function(data){
+                window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
+            });
+        }
     });
 });
 
@@ -132,7 +159,7 @@ function PopulateReqInfo(req_id){
 
     $("#relation").show();
     $("#create_child").click(function(){
-        window.location = '/Home/'+$.session.get('project_id')+'/ChildTask/'+task_id
+        window.location = '/Home/'+$.session.get('project_id')+'/ChildRequirement/'+req_id
     });
 
     $.get("Selected_Requirement_Analaysis",{req_id : req_id},function(data) {
@@ -144,7 +171,7 @@ function PopulateReqInfo(req_id){
             $(this).prop('checked',false);
         });
         $('input[name="team"]').each(function(){
-            if(data['teams']==$(this).val()){
+            if(data['teams'].indexOf($(this).val())>-1){
                 $(this).prop('checked',true);
             }
         });

@@ -336,8 +336,10 @@ urlpatterns += patterns('',
     url(r'^Home/.*/GetSubSections/$', Get_SubSections),
     url(r'^Home/.*/GetSubFeatures/$', Get_SubFeatures),  
     url(r'^Home/(?P<project_id>[^/]*)/EditRequirement/(?P<req_id>[^/]*)/$',Edit_Requirement),
+    url(r'^Home/(?P<project_id>[^/]*)/ChildRequirement/(?P<req_id>[^/]*)/$',Child_Requirement),
     url(r'^Home/.*/Selected_Requirement_Analaysis/$',Selected_Requirement_Analaysis), 
     url(r'^Home/.*/SubmitEditRequirement/$',SubmitEditRequirement), 
+    url(r'^Home/.*/SubmitChildRequirement/$',SubmitChildRequirement), 
     )
 
 
