@@ -339,7 +339,8 @@ urlpatterns += patterns('',
     url(r'^Home/(?P<project_id>[^/]*)/ChildRequirement/(?P<req_id>[^/]*)/$',Child_Requirement),
     url(r'^Home/.*/Selected_Requirement_Analaysis/$',Selected_Requirement_Analaysis), 
     url(r'^Home/.*/SubmitEditRequirement/$',SubmitEditRequirement), 
-    url(r'^Home/.*/SubmitChildRequirement/$',SubmitChildRequirement), 
+    url(r'^Home/.*/SubmitChildRequirement/$',SubmitChildRequirement),
+    url(r'^Home/.*/AutoCompleteLabel/$',AutoCompleteLabel), 
     )
 
 

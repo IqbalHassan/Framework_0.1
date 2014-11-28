@@ -816,6 +816,18 @@ def AutoCompleteTag(request):
             Conn.close()
     json = simplejson.dumps(tag_list)
     return HttpResponse(json, mimetype='application/json')
+
+def AutoCompleteLabel(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            value = request.GET.get(u'term', '')
+            print value
+            Conn = GetConnection()
+            query = "select * from labels where label_name Ilike '%%%s%%' or label_id Ilike '%%%s%%'" % (value, value)
+            label_list = DB.GetData(Conn, query, False)
+            Conn.close()
+    json = simplejson.dumps(label_list)
+    return HttpResponse(json, mimetype='application/json')
  
 def AutoCompleteTesterSearch(request):
     if request.is_ajax():
@@ -3351,9 +3363,9 @@ def ViewTestCase(TC_Id):
                 Feature_Path = ''
 
             
-            query = "select distinct l.label_id from label_map blm, labels l where blm.id = '%s' and blm.type='TC' and blm.label_id = l.label_id" % TC_Id
+            query = "select distinct l.label_id,l.label_name,l.label_color from label_map blm, labels l where blm.id = '%s' and blm.type='TC' and blm.label_id = l.label_id" % TC_Id
             Conn = GetConnection()
-            Labels = DB.GetData(Conn, query)
+            Labels = DB.GetData(Conn, query, False)
             Conn.close()
             
             # find all steps and data for the test case

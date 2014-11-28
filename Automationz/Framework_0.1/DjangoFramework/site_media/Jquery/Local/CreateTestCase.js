@@ -28,7 +28,7 @@ $(document).ready(function() {
     get_default_settings(project_id,team_id);
     AutoCompleteSearchForPrompt();
     /*****************Shetu's Function************************/
-    AutoCompleteTag();
+    AutoCompleteLabel();
     //$(".combo-box").combobox();
     /*****************End Shetu************************/
 
@@ -226,13 +226,12 @@ $(document).ready(function() {
                         if(status=="Forced"){
                             $('a[value="Forced-Manual"]').addClass('selected');
                         }*/
-                        //TagList
-                        var tag_list=data['Tags List'];
-                        if(tag_list.length!=0){
-                            for(var i=0;i<tag_list.length;i++){
-                                console.log(tag_list);
-                                if(tag_list[i]!=""){
-                                    AddToListTag(tag_list[i]);
+                        //LabelsList
+                        var label_list=data['Labels'];
+                        if(label_list.length!=0){
+                            for(var i=0;i<label_list.length;i++){
+                                if(label_list[i]!=""){
+                                    AddToListLabel(label_list[i][0],label_list[i][1],label_list[i][2]);
                                 }
                             }
                         }
@@ -435,7 +434,7 @@ $(document).ready(function() {
                             $('#TC_Id').css('display','block');
                             $('#titlebox').val(title);
                         }
-                        /************************End RelatedItems Tab*******************************/
+                        /************************End RelatedItems Tab*******************************
                         $('input[name="labels"]').each(function(){
                             $(this).prop('checked',false);
                         });
@@ -643,11 +642,11 @@ $(document).ready(function() {
                 return false;
             }*/
 
-            if($('#tag_txtbox').val()!=""){
+            /*if($('#tag_txtbox').val()!=""){
                 //alert("Tag Field must be empty as you have to select from the suggestion provided");
                 alertify.error("Tag Field must be empty as you have to select from the suggestion provided","",0);
                 return false;
-            }
+            }*/
             for(var i=0;i<dependency_classes.length;i++){
                 if($('#'+dependency_classes[i].name+'-flag').hasClass('unfilled')){
                     //alert("Platform is not selected correctly");
@@ -1368,11 +1367,11 @@ function AutoCompleteTestStep(){
         };
     }
 }
-function AutoCompleteTag(){
+function AutoCompleteLabel(){
     $('#label_txtbox').autocomplete({
         source:function(request,response){
             $.ajax({
-                url:"AutoCompleteTag/",
+                url:"AutoCompleteLabel/",
                 dataType:"json",
                 data:{
                     term:request.term
@@ -1384,9 +1383,11 @@ function AutoCompleteTag(){
         },
         select:function(request,ui){
             console.log(ui);
-            var value=ui.item[0].trim();
-            if(value!=""){
-                AddToListTag(value);
+            var id=ui.item[0].trim();
+            var name=ui.item[1].trim();
+            var color=ui.item[2].trim();
+            if(id!=""){
+                AddToListLabel(id,name,color);
             }
             return false;
         }
@@ -1396,7 +1397,7 @@ function AutoCompleteTag(){
             .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
             .appendTo( ul );
     };
-    $("#tag_txtbox").keypress(function(event) {
+    $("#label_txtbox").keypress(function(event) {
         if (event.which == 13) {
             event.preventDefault();
 
@@ -1957,8 +1958,8 @@ function vertical_sidebar(){
             '<br/><p style="text-align: center; font-size: large; font: Helvetica, arial, freesans, clean, sans-serif;">Are you sure about leaving before saving?</p>' +
             '</p>' +
             '<div align="center" style="margin-left: 5%">' +
-            '<a class="github" href="/Home/ManageSetTag/">Yes</a>' +
-            '<a class="twitter" href="/Home/ManageSetTag/" target="_blank">Open in new tab</a>' +
+            '<a class="github" href="/Home/ManageLabel/">Yes</a>' +
+            '<a class="twitter" href="/Home/ManageLabel/" target="_blank">Open in new tab</a>' +
             '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
             '</div>'
 
@@ -2275,9 +2276,15 @@ function DeleteSearchQueryText() {
 }
 
 // Add an item to an html list
-function AddToListTag(text) {
-    $("#searchedtag").append(
-        '<tr><td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
-            + '<td class="submitquery" class = "Text" style = "size:10;display: inline-block;">' + text + "&nbsp;&nbsp;&nbsp;"
-            + '</td></tr>');
+function AddToListLabel(id,name,color) {
+    $("#searchedlabel").append(
+        '<td><input type="checkbox" checked="true" value="' +
+        id +
+        '" name="labels">' +
+        '<a class="label" style="background-color: ' +
+        color +
+        ';">' +
+        name +
+        '</a></td>'
+            + '</td>&nbsp;&nbsp;&nbsp;');
 }
