@@ -16,6 +16,9 @@ var isAtLowestFeature = false;
 
 
 $(document).ready(function(){
+
+    AutoCompleteTask();
+
     var URL=window.location.pathname;
     var create_index=URL.indexOf(createpath);
     var edit_index=URL.indexOf(editpath);
@@ -96,6 +99,12 @@ $(document).ready(function(){
             labels.push($(this).val());
         });
 
+        var tasks=[];
+        $('input[name="tasks"]:checked').each(function(){
+            tasks.push($(this).val());
+        });
+
+
         if(operation==1){
             $.get("SubmitCreateRequirement/",{
                 'title':title.trim(),
@@ -109,7 +118,8 @@ $(document).ready(function(){
                 'project_id': $.session.get('project_id'),
                 'user_name':$.session.get('fullname'),
                 'feature_path':newFeaturePath,
-                'labels':labels.join("|")
+                'labels':labels.join("|"),
+                'tasks':tasks.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
@@ -128,7 +138,8 @@ $(document).ready(function(){
                 'project_id': $.session.get('project_id'),
                 'user_name':$.session.get('fullname'),
                 'feature_path':newFeaturePath,
-                'labels':labels.join("|")
+                'labels':labels.join("|"),
+                'tasks':tasks.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
@@ -147,7 +158,8 @@ $(document).ready(function(){
                 'user_name':$.session.get('fullname'),
                 'feature_path':newFeaturePath,
                 'requirement_id':sectionpath,
-                'labels':labels.join("|")
+                'labels':labels.join("|"),
+                'tasks':tasks.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
@@ -197,6 +209,21 @@ function PopulateReqInfo(req_id){
             if(data['labels'].indexOf($(this).val())>-1){
                 $(this).prop('checked',true);
             }
+        });
+
+
+
+        $(data['tasks']).each(function(i){
+            $(".task_linking").append('<tr>' +
+            '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+            + '<td>'
+            + '<input type="checkbox" checked="true" name="tasks" value="'
+            + data['tasks'][i][0]
+            + '"/>' +
+            '</td><td>'
+            + data['tasks'][i][1]
+            + "</td>" +
+            "</tr>");
         });
 
         //FeaturePath
@@ -426,3 +453,49 @@ function recursivelyAddFeature(_this){
     });
 }
 
+function AutoCompleteTask(){
+    $('.search_task').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"AutoCompleteTask/",
+                dataType:"json",
+                data:{
+                    term:request.term,
+                    project_id:$.session.get('project_id')
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(request,ui){
+            console.log(ui);
+            var id=ui.item[0].trim();
+            var name=ui.item[1].trim();
+            if(id!=""){
+                $(".task_linking").append('<tr>' +
+                '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+                + '<td>'
+                + '<input type="checkbox" checked="true" name="tasks" value="'
+                + id
+                + '"/>' +
+                '</td><td>'
+                + name
+                + "</td>" +
+                "</tr>");
+            }
+            return false;
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+    $(".search_task").keypress(function(event) {
+        if (event.which == 13) {
+            event.preventDefault();
+
+        }
+    });
+}

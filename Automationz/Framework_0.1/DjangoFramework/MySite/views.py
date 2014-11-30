@@ -828,6 +828,19 @@ def AutoCompleteLabel(request):
             Conn.close()
     json = simplejson.dumps(label_list)
     return HttpResponse(json, mimetype='application/json')
+
+def AutoCompleteTask(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            value = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'term','')
+            print value
+            Conn = GetConnection()
+            query = "select tasks_id,tasks_title from tasks where tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%'" % (value, value)
+            task_list = DB.GetData(Conn, query, False)
+            Conn.close()
+    json = simplejson.dumps(task_list)
+    return HttpResponse(json, mimetype='application/json')
  
 def AutoCompleteTesterSearch(request):
     if request.is_ajax():
@@ -8374,6 +8387,9 @@ def Selected_Requirement_Analaysis(request):
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='REQ' order by label_name" % UserData
         labels = DB.GetData(Conn,query)
         
+        query = "select t.tasks_id, tasks_title from components_map cm, tasks t where id1='%s' and type1='REQ' and type2='TASK' and t.tasks_id=cm.id2" % UserData
+        tasks = DB.GetData(Conn,query,False)
+        
         #query = "select team_id from task_team_map where task_id='%s'" %UserData
         #team = DB.GetData(Conn,query)
         
@@ -8388,7 +8404,7 @@ def Selected_Requirement_Analaysis(request):
             parents.append(temp)"""
 
     #Heading = ['Path','Task-ID','Status','Milestone']
-    results = {'Req_Info':Req_Info, 'Feature':feature[0][0], 'labels':labels, 'teams':teams}
+    results = {'Req_Info':Req_Info, 'Feature':feature[0][0], 'labels':labels, 'teams':teams, 'tasks':tasks}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
@@ -9940,8 +9956,10 @@ def CreateRequirement(request):
             parent_requirement_id=request.GET.get(u'requirement_id','')
             labels=request.GET.get(u'labels','')
             labels=labels.split("|")
+            tasks=request.GET.get(u'tasks','')
+            tasks=tasks.split("|")
             if parent_requirement_id=="":
-                result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path,labels)
+                result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path,labels,tasks)
                 if result!=False:
                     requirement_id=result
     result=simplejson.dumps(requirement_id)
@@ -9967,7 +9985,9 @@ def SubmitEditRequirement(request):
             parent_requirement_id=request.GET.get(u'requirement_id','')
             labels=request.GET.get(u'labels','')
             labels=labels.split("|")
-            result=RequirementOperations.EditRequirement(req_id, title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path,labels)
+            tasks=request.GET.get(u'tasks','')
+            tasks=tasks.split("|")
+            result=RequirementOperations.EditRequirement(req_id, title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path,labels,tasks)
             if result!=False:
                 requirement_id=result
     result=simplejson.dumps(requirement_id)
@@ -9992,7 +10012,9 @@ def SubmitChildRequirement(request):
             parent_requirement_id=request.GET.get(u'requirement_id','')
             labels=request.GET.get(u'labels','')
             labels=labels.split("|")
-            result=RequirementOperations.CreateChildRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path, parent_requirement_id, labels)
+            tasks=request.GET.get(u'tasks','')
+            tasks=tasks.split("|")
+            result=RequirementOperations.CreateChildRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path, parent_requirement_id, labels,tasks)
             if result!=False:
                 requirement_id=result
     result=simplejson.dumps(requirement_id)
