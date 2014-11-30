@@ -3761,9 +3761,8 @@ def Get_Users(request):
     if request.method == "GET":
         username = request.GET.get(u'user', '').strip()
         password = request.GET.get(u'pwd', '').strip()
-        # if username=='':
-        
-        query="select user_id,full_name from user_info usr,permitted_user_list pul where pul.user_names = usr.full_name and pul.user_level in('manager','assigned_tester') and usr.username='%s' and usr.password='%s'"%(username,password)
+        # if username=='':        
+        query="select user_id,full_name,user_level from user_info usr,permitted_user_list pul where pul.user_names = usr.full_name and pul.user_level in('manager','assigned_tester','admin') and usr.username='%s' and usr.password='%s'"%(username,password)
         results = DB.GetData(Conn,query,False)
     if len(results) > 0:
         message = results[0]
@@ -11753,6 +11752,8 @@ def specific_dependency_settings(request):
                     return HttpResponse(result,mimetype='application/json')        
     except Exception,e:
             PassMessasge(sModuleInfo, e, 3)
+def admin_page(request):
+    return render_to_response('superAdmin.html',{},context_instance=RequestContext(request))
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:

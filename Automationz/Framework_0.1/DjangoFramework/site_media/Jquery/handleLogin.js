@@ -38,10 +38,15 @@ $(document).ready(function() {
 					else {
 						alertify.success("Welcome, " + data['message'][1]);
 						var path_to_redirect = sessionStorage.getItem("path_to_redirect");
-						if (path_to_redirect == null){
-							var path_to_redirect = "/Home/Dashboard/" 
-						}
-						/*
+						if(data['message'][2]=='admin'){
+                            var path_to_redirect="/Home/Admin/";
+                        }
+                        else{
+                            if (path_to_redirect == null){
+                                var path_to_redirect = "/Home/Dashboard/"
+                            }
+                        }
+                        /*
 						setTimeout(function() 
 						{
                            alertify.success("Redirecting you to the previous page.");
@@ -50,6 +55,7 @@ $(document).ready(function() {
 						
 						$.session.set('username', username);
 	                    $.session.set('fullname', data['message'][1]);
+                        $.session.set('user_type',data['message'][2]);
 	                    $.session.set('log', 'logged');
 	                    $.session.set('project_id', data['project_id']);
                         $.session.set('default_team_identity',data['team_id']);
