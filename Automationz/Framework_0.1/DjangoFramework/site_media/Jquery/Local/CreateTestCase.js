@@ -703,7 +703,7 @@ $(document).ready(function() {
             console.log(newSectionPath);
             console.log(newFeaturePath);
             //Get TC_ID for the test case
-            var _TC_Id = $('#TC_Id').html().substring($('#TC_Id').html().indexOf(": ")+2,$('#TC_Id').html().indexOf("</b>"))
+            var _TC_Id = $('#header').text().split('/')[2].trim();
             //Select Priority
             var priority='P'+$('#priotiy_select option:selected').val();
             console.log(priority);

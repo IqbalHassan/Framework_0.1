@@ -223,8 +223,8 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     # Add Feature id based on hierarchy
     if DBUtil.IsDBConnectionGood(Conn) == False:
         time.sleep(1)
-        conn = GetConnection()
-    Feature_Id = DBUtil.GetData(conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
+        Conn = GetConnection()
+    Feature_Id = DBUtil.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
     if len(Feature_Id) > 0:
         Tag_List.append(('%d' % Feature_Id[0], Feature_Path_Tag))
 

@@ -3527,13 +3527,14 @@ def EditTestCase(request):
                 err_msg = "Test Case Detail is not updated successfully for test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
                 return err_msg
-            labels_result = TestCaseCreateEdit.Insert_Linkings(Conn, TC_Id, TC_Name, labels)
+            """labels_result = TestCaseCreateEdit.Insert_Linkings(Conn, TC_Id, TC_Name, labels)
             if labels_result != 'Pass':
                 # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
                 error = "Returns from TestCaseCreateEdit Module by Failing to enter labels for test case id %s" % TC_Id
                 print error
                 TestCaseCreateEdit.LogMessage(sModuleInfo, labels_result, 3)
                 return returnResult(labels_result)
+            """
             # form the test case datasets
             test_case_datasets = '%sds' % New_TC_Id
             if DB.IsDBConnectionGood(Conn) == False:
