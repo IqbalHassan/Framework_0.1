@@ -11751,6 +11751,43 @@ def GetProjectOwner(request):
             Conn.close()
             result=simplejson.dumps(owner_list)
             return HttpResponse(result,mimetype='application/json')
+def Create_New_User(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            full_name=request.GET.get(u'full_name','').strip()
+            user_name=request.GET.get(u'user_name','').strip()
+            email=request.GET.get(u'email','').strip()
+            password=request.GET.get(u'password','').strip()
+            user_level=request.GET.get(u'user_level','').strip()
+            query="select count(*) from user_info where full_name='%s'"%(full_name.strip())
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            Conn.close()
+            if len(count)==1 and count[0]==0:
+                #insert the new user
+                Dict={
+                    'username':user_name,
+                    'password':password,
+                    'full_name':full_name
+                }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"user_info",**Dict)
+                Conn.close()
+                if result:
+                    Dict={
+                        'user_names':full_name,
+                        'user_level':user_level,
+                        'email':email
+                    }
+                    Conn=GetConnection()
+                    result=DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
+                    Conn=GetConnection()
+                    if result:
+                        message=True
+                else:
+                    message=False
+            result=simplejson.dumps(message)
+            return HttpResponse(result,mimetype='application/json')    
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:

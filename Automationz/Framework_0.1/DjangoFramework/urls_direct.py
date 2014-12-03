@@ -10,4 +10,6 @@ urlpatterns = patterns('',
     url(r'^superAdmin/',admin_page),
     url(r'^superAdminFunction/Project/$',superAdminFunction),
     url(r'^.*/GetProjectOwner/$',GetProjectOwner),
+    url(r'^superAdminFunction/AddUser/$',superAdminFunction),
+    url(r'^.*/Create_New_User/$',Create_New_User),
 )

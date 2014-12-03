@@ -71,6 +71,47 @@ function populate_mainBody_div(type_tag){
             })
         });
     }
+    if(type_tag=='AddUser'){
+        message+='<div align="center" style="font-size: 150%;font-weight: bolder">New User Registration</div>';
+        message+='<table style="margin-top: 2%;"><tr><td align="right"><b>Full Name:</b></td><td><input class="textbox" id="full_name" placeholder="Full Name"/></td></tr><tr><td align="right"><b>User Name:</b></td><td><input class="textbox" id="user_name" placeholder="User Name"/></td></tr>';
+        message+='<tr><td align="right"><b>Email:</b></td><td><input class="textbox" id="email" placeholder="Email Here"/></td></tr>';
+        message+='<tr><td align="right"><b>Designation:</b></td><td><select id="user_level">' +
+            '<option value="" selected>Select User Level</option>' +
+            '<option value="assigned_tester">Tester</option>' +
+            '<option value="manager">Manager</option>' +
+            '<option value="admin">Admin</option>' +
+            '</select></td></tr>';
+        message+='<tr><td align="right"><b>Password:</b></td><td><input class="textbox" id="password" placeholder="Password Here"/></td></tr>';
+        message+='<tr><td align="right"><b>Confirm Password:</b></td><td><input class="textbox" id="confirm_password" placeholder="Confirm Password"/></td></tr>';
+        message+='</table>';
+        message+='<div align="center"><input class="primary button" type="button" id="create_user" value="Register User"/> </div>';
+        $('#mainBody').html(message);
+        $('#create_user').on('click',function(){
+            var user_name=$('#user_name').val().trim();
+            var full_name=$('#full_name').val().trim();
+            var email=$('#email').val().trim();
+            var password=$('#password').val().trim();
+            var confirm_password=$('#confirm_password').val().trim();
+            var user_level=$('#user_level option:selected').val().trim();
+            if(user_name=='' || full_name==''||email==''||user_level==''){
+                alertify.error('Check Input Fields',1500)
+            }
+            if(password!=confirm_password){
+                alertify.error('Password don\'t match',1500);
+            }
+            $.get('Create_New_User',{
+                user_name:user_name.trim(),
+                email:email.trim(),
+                password:password.trim(),
+                full_name:full_name.trim(),
+                user_level:user_level
+            },function(data){
+                if(data==true){
+                    window.location='/Home/superAdmin/';
+                }
+            });
+        });
+    }
 }
 function DeleteSearchQueryText(){
     $('#owner_list td .delete').live('click',function(){
