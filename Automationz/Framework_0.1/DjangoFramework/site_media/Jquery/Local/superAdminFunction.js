@@ -112,6 +112,29 @@ function populate_mainBody_div(type_tag){
             });
         });
     }
+    if(type_tag=='ListUser'){
+        $.get('ListAllUsers',{},function(data){
+            var column=data['column'];
+            var user_list=data['user_list'];
+            var message="";
+            message+='<div align="center" style="font-size: 150%;font-weight: bolder">Current Users</div>';
+            message+='<table style="margin-top: 3%;" width="100%;" align="center">';
+            message+='<tr>';
+            for(var i=0;i<column.length;i++){
+                message+=('<th>'+column[i]+'</th>');
+            }
+            message+='</tr>';
+            for(var i=0;i<user_list.length;i++){
+                message+='<tr>';
+                for(var j=0;j<user_list[i].length;j++){
+                    message+=('<td align="center">'+user_list[i][j]+'</td>');
+                }
+                message+='</tr>';
+            }
+            message+='</table>';
+            $('#mainBody').html(message);
+        });
+    }
 }
 function DeleteSearchQueryText(){
     $('#owner_list td .delete').live('click',function(){

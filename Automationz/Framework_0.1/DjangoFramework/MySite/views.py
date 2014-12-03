@@ -11788,6 +11788,20 @@ def Create_New_User(request):
                     message=False
             result=simplejson.dumps(message)
             return HttpResponse(result,mimetype='application/json')    
+def ListAllUser(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            query="select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
+            Conn=GetConnection()
+            user_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            Column=['User Name','Full Name','Password','Designation','Email']
+            result={
+                'user_list':user_list,
+                'column':Column
+            }
+            result=simplejson.dumps(result)
+            return HttpResponse(result,mimetype='application/json')
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
