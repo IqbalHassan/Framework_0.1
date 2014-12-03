@@ -9207,16 +9207,8 @@ def Create_New_Project(request):
             if request.method=='GET':
                 message=""
                 user_name=request.GET.get('user_name','')
-                name=request.GET.get('name','')
-                description=request.GET.get('description','')
-                start_date=request.GET.get('start_date','')
-                start_date=start_date.split("-")
-                start_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip()))
-                end_date=request.GET.get('end_date','')
-                end_date=end_date.split("-")
-                end_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip()))
-                team=request.GET.get('team').split("|")
-                owners=request.GET.get('owners').strip()
+                name=request.GET.get('project_name','')
+                owners=request.GET.get('project_owner').strip()
                 #generate Project id
                 Conn=GetConnection()
                 tmp_id = DB.GetData(Conn, "select nextval('projectid_seq')")
@@ -9233,31 +9225,15 @@ def Create_New_Project(request):
                 current_date=now
                 if len(count)==1 and count[0]==0:
                     #create the new projects
-                    team_array=[]
-                    for each in team:
-                        query="select id from config_values where type='Team' and value='%s'"%(each.strip())
-                        Conn=GetConnection()
-                        team_id = []
-                        team_id=DB.GetData(Conn,query)
-                        Conn.close()
-                        print "team ID:"
-                        print team_id
-                        if type(team_id[0])!= int or len(team_id)!=1:
-                            continue
-                        else:
-                            team_id=team_id[0]
-                            team_array.append(team_id)
                     Dict={
                         'project_id':project_id.strip(),
                         'project_name':name.strip(),
-                        'project_description':description.strip(),
-                        'project_startingdate':start_date,
-                        'project_endingdate':end_date,
                         'project_owners':owners.strip(),
                         'project_createdby':user_name.strip(),
                         'project_creationdate':current_date,
                         'project_modifiedby':user_name.strip(),
-                        'project_modifydate':current_date
+                        'project_modifydate':current_date,
+                        'project_description':'',
                     }
                     Conn=GetConnection()
                     result = False
@@ -9268,21 +9244,6 @@ def Create_New_Project(request):
                         Conn=GetConnection()
                     else:
                         message="Success"
-                    for each in team_array:
-                        #form Dict
-                        Dict={}
-                        Dict={
-                              'project_id':project_id.strip(),
-                              'team_id':str(each).strip(),
-                              'status':False
-                        }
-                        result = False
-                        result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
-                        if result==False:
-                            Conn=GetConnection()
-                            message="Failed"
-                        else:
-                            message="Success"
             result_dict={
                  'message':message,
                  'project_id':project_id.strip()
@@ -11777,6 +11738,19 @@ def specific_dependency_settings(request):
             PassMessasge(sModuleInfo, e, 3)
 def admin_page(request):
     return render_to_response('superAdmin.html',{},context_instance=RequestContext(request))
+def superAdminFunction(request):
+    return render_to_response('superAdminFunction.html',{},context_instance=RequestContext(request))
+def GetProjectOwner(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            value=request.GET.get(u'term','')
+            print value
+            query="select distinct user_id,user_names,case when user_level='assigned_tester' then 'Tester' when user_level='manager' then 'Manager' end  from permitted_user_list pul, user_info ui where pul.user_names=ui.full_name and user_level not in('email','admin') and user_names iLike '%%%s%%'"%(value.strip())
+            Conn=GetConnection()
+            owner_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            result=simplejson.dumps(owner_list)
+            return HttpResponse(result,mimetype='application/json')
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:

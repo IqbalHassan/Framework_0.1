@@ -8,4 +8,6 @@ urlpatterns = patterns('',
     url(r'^.*/AutoTestCasePass/$',AutoTestCasePass),
     url(r'^.*/specific_dependency_settings/$',specific_dependency_settings),
     url(r'^superAdmin/',admin_page),
+    url(r'^superAdminFunction/Project/$',superAdminFunction),
+    url(r'^.*/GetProjectOwner/$',GetProjectOwner),
 )

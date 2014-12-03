@@ -39,7 +39,7 @@ $(document).ready(function() {
 						alertify.success("Welcome, " + data['message'][1]);
 						var path_to_redirect = sessionStorage.getItem("path_to_redirect");
 						if(data['message'][2]=='admin'){
-                            var path_to_redirect="/Home/Admin/";
+                            var path_to_redirect="/Home/superAdmin/";
                         }
                         else{
                             if (path_to_redirect == null){
