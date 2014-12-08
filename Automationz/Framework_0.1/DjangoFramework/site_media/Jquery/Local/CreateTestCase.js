@@ -703,7 +703,6 @@ $(document).ready(function() {
             console.log(newSectionPath);
             console.log(newFeaturePath);
             //Get TC_ID for the test case
-            var _TC_Id = $('#header').text().split('/')[2].trim();
             //Select Priority
             var priority='P'+$('#priotiy_select option:selected').val();
             console.log(priority);
@@ -1069,6 +1068,8 @@ $(document).ready(function() {
                         });
                     }
                     else if(query == "e" && dataValidationCheck){
+                        var _TC_Id = $('#header').text().split('/')[2].trim();
+
                         $("#submit").attr('disabled','disabled');
                         $.get("Edit_TestCase",{
                                 Section_Path:newSectionPath,

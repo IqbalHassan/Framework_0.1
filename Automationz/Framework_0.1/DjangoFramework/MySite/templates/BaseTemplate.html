@@ -98,6 +98,10 @@
         /************************
          * User identicons
          ************************/
+        var user_type= $.session.get('user_type');
+        if(user_type=='manager'){
+            $('#user_column li:eq(3)').after('<li><a href="/Home/AssignTesters/"><i class="fa fa-male fa-fw fa-lg"></i>Assign Testers</a></li>');
+        }
         var full_name = $.session.get('fullname') || '';
         var username = $.session.get('username') || '';
         $.get('/Home/UserInfo/ServeProfilePictureURL/', {'username': username, 'full_name': full_name}, function(data, status) {
@@ -230,7 +234,7 @@
 						href='#'><span><img src="" id="user_identicon" width="24" height="24" style="vertical-align: middle;"></i>
 								<span id="full_name"
 								class="welcome">User</span></span></a>
-						<ul>
+						<ul id="user_column">
 							<li><a id="user_id" rel="prefetch" href=""><i class="fa fa-user fa-fw fa-lg"></i> My Account</a></li>
 							<li><a href="/Home/Admin/"><i class="fa fa-cloud-download fa-fw fa-lg"></i> Git Pull</a></li>
 							<li><a id="team_project_menu" href="#team_project_panel"><i class="fa fa-desktop fa-fw fa-lg"></i> Team & Project</a></li>

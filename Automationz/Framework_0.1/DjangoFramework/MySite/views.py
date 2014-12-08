@@ -3201,14 +3201,15 @@ def Create_Submit_New_TestCase(request):
                 print error
                 TestCaseCreateEdit.LogMessage(sModuleInfo, test_cases_result, 3)
                 return returnResult(test_cases_result)
-            
-            labels_result = TestCaseCreateEdit.Insert_Linkings(Conn, TC_Id, TC_Name, labels)
-            if labels_result != 'Pass':
-                # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
-                error = "Returns from TestCaseCreateEdit Module by Failing to enter labels for test case id %s" % TC_Id
-                print error
-                TestCaseCreateEdit.LogMessage(sModuleInfo, labels_result, 3)
-                return returnResult(labels_result)
+            if len(labels)>0:
+                if (labels[0]!=''):
+                    labels_result = TestCaseCreateEdit.Insert_Linkings(Conn, TC_Id, TC_Name, labels)
+                    if labels_result != 'Pass':
+                        # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
+                        error = "Returns from TestCaseCreateEdit Module by Failing to enter labels for test case id %s" % TC_Id
+                        print error
+                        TestCaseCreateEdit.LogMessage(sModuleInfo, labels_result, 3)
+                        return returnResult(labels_result)
         else:
             TC_Id = Is_Edit
         # 3
@@ -11802,6 +11803,32 @@ def ListAllUser(request):
             }
             result=simplejson.dumps(result)
             return HttpResponse(result,mimetype='application/json')
+        
+def AssignTesters(request):
+    query="select pul.user_id,user_names,case when user_level='assigned_tester' then 'Tester' end as Designation,default_project,default_team from permitted_user_list pul, default_choice ds, user_info ui where ui.full_name=pul.user_names and cast(ds.user_id as int)=pul.user_id and user_level in ('assigned_tester')"
+    Conn=GetConnection()
+    user_with_project=DB.GetData(Conn, query,False)
+    Conn.close()
+    query="select distinct pul.user_id,user_names, case when user_level='assigned_tester' then 'Tester' end as Designation from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names and user_level in ('assigned_tester')"
+    Conn=GetConnection()
+    user_without_project=DB.GetData(Conn,query,False)
+    Conn.close()
+    final=[]
+    name_found=[]
+    for each in user_with_project:
+        final.append(each)
+        name_found.append(each[1])
+    for each in user_without_project:
+        if each[1] not in name_found:
+            each=list(each)
+            each.append('')
+            each.append('')
+            final.append(tuple(each))
+            name_found.append(each[1])
+    print final
+    query="select distinct projects"
+    column=['User Name', 'Designation', "Project ID", 'Team']
+    return render_to_response('AssignTesters.html',{'column':column,'data':final},context_instance=RequestContext(request))
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:

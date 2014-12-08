@@ -1,0 +1,33 @@
+{% extends "BaseTemplate.html" %}
+
+{% block title%}Assign Testers{% endblock %}
+
+{% block content %}
+<table align="center" width="100%">
+    <tr>
+        {% for x in column %}
+            <th align="center">{{x}}</th>
+        {% endfor %}
+    </tr>
+    {% for x in data %}
+        <tr>
+            {% for y in x %}
+                {% if forloop.counter == 1 %}
+                    <td style="display: none;">{{y}}</td>
+                {% elif  forloop.counter == 3 % }
+                    <td>
+                        <select>
+                            <option value="">Select Project</option>
+                            {% for z in projects %}
+                                <option value="{{z}}">{{z}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                {% else %}
+                    <td align="center">{{y}}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+{%endblock%}

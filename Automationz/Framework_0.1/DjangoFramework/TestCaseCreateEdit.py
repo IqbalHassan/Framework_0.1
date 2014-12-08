@@ -1367,6 +1367,9 @@ def Insert_Linkings(Conn, TC_Id, TC_Name, labels):
                        'label_id':each.strip(),
                        'type':'TC'
             }
+            if DBUtil.IsDBConnectionGood(Conn)==False:
+                time.sleep(1)
+                Conn=GetConnection()
             result=DBUtil.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
     if result == True:
         LogMessage(sModuleInfo, "Entered labels for TC %s: %s" % (TC_Id, TC_Name), 1)

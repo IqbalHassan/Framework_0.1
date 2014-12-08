@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     url(r'^superAdminFunction/ListUser/$',superAdminFunction),
     url(r'^.*/Create_New_User/$',Create_New_User),
     url(r'^.*/ListAllUsers/$',ListAllUser),
+    url(r'^AssignTesters/$',AssignTesters),
 )
