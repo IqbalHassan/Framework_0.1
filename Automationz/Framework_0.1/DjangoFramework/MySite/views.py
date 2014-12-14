@@ -8520,7 +8520,7 @@ def Reqs_List(request):
         now=datetime.datetime.now().date()
         reqs_list = []
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query="select requirement_id,requirement_title,requirement_description,cast(requirement_startingdate as text),cast(requirement_endingdate as text),mi.name,r.status from requirements r,milestone_info mi where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone order by requirement_id desc"
+        query="select distinct requirement_id,requirement_title,requirement_description,cast(requirement_startingdate as text),cast(requirement_endingdate as text),mi.name,r.status from requirements r,milestone_info mi where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone order by requirement_id desc"
         reqs=DB.GetData(Conn, query, False)
         
         query="select requirement_path from requirements r,requirement_sections rs where project_id='"+project_id+"' and r.parent_requirement_id=rs.requirement_path_id::text order by requirement_id desc"
