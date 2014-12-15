@@ -140,14 +140,12 @@ def HomePage(req):
 
 def RunTest(request):
     #get the available machine definition
-    #query="select distinct tester_id,machine_ip,last_updated_time,status,branch_version,project_id,(select value from config_values where type='Team' and id=team_id),array_agg( distinct case when bit=0 then  type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' Bit - '||version end ) from machine_dependency_settings mds,test_run_env tre,machine_project_map mpm where tre.id=mds.machine_serial and mpm.machine_serial=tre.id and status='Unassigned' group by tester_id,last_updated_time,status,branch_version,machine_ip,mpm.project_id,mpm.team_id"
-    query="select distinct user_names from permitted_user_list pul where user_level='Manual'"
+    query="select distinct tester_id,machine_ip,last_updated_time,status,branch_version,project_id,(select value from config_values where type='Team' and id=team_id),array_agg( distinct case when bit=0 then  type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' Bit - '||version end ) from machine_dependency_settings mds,test_run_env tre,machine_project_map mpm where tre.id=mds.machine_serial and mpm.machine_serial=tre.id and status='Unassigned' group by tester_id,last_updated_time,status,branch_version,machine_ip,mpm.project_id,mpm.team_id"
     Conn=GetConnection()
-    machine_list=DB.GetData(Conn,query)
+    machine_list=DB.GetData(Conn,query,False)
     Conn.close()        
     templ = get_template('RunTest_new.html')
-    column=['Machine Name']
-    #column=['Machine Name','Machine IP','Last Updated Time','Status','Version','Project ID','Team Name' ,'Dependency']
+    column=['Machine Name','Machine IP','Last Updated Time','Status','Version','Project ID','Team Name' ,'Dependency']
     variables = Context({'machine_list':machine_list,'dependency':column})
     output = templ.render(variables)
     return HttpResponse(output)
@@ -386,32 +384,16 @@ def Create(request):
         return HttpResponse(output)
     
 def CreateNew(request):
-    query="select label_id,label_name,Label_color from labels order by label_name"
-    Conn=GetConnection()
-    labels=DB.GetData(Conn,query,False)
-    Conn.close()        
     templ = get_template('CreateTestCase.html')
-    variables = Context({'labels':labels})
-    output = templ.render(variables)
-    return HttpResponse(output)
-    """templ = get_template('CreateTestCase.html')
     variables = Context({ })
     output = templ.render(variables)
-    return HttpResponse(output)"""
+    return HttpResponse(output)
 
 def CopyTestCase(request,tc_id):
-    query="select label_id,label_name,Label_color from labels order by label_name"
-    Conn=GetConnection()
-    labels=DB.GetData(Conn,query,False)
-    Conn.close()        
     templ = get_template('CreateTestCase.html')
-    variables = Context({'labels':labels})
-    output = templ.render(variables)
-    return HttpResponse(output)
-    """templ = get_template('CreateTestCase.html')
     variables = Context({ })
     output = templ.render(variables)
-    return HttpResponse(output)"""
+    return HttpResponse(output)
     
 def ManageTestCases(request):
     templ = get_template('ManageTestCases.html')
@@ -496,44 +478,17 @@ def Edit(request,tc_id):
     if TC_Id != "":
         return ViewTestCase(TC_Id)
     else:
-        query="select label_id,label_name,Label_color from labels order by label_name"
-        Conn=GetConnection()
-        labels=DB.GetData(Conn,query,False)
-        Conn.close()        
         templ = get_template('CreateTestCase.html')
-        variables = Context({'labels':labels})
-        output = templ.render(variables)
-        return HttpResponse(output)
-        """templ = get_template('CreateTestCase.html')
         variables = Context({ })
         output = templ.render(variables)
-        return HttpResponse(output)"""
+        return HttpResponse(output)
     
 def EditMilestone(request,ms_id):
     ms_id = request.GET.get('ms_id', '')
     if ms_id != "":
         return render_to_response('Milestone.html')
     else:
-        Conn=GetConnection()
-        query="select project_id, project_name from projects"
-        project_info=DB.GetData(Conn,query,False)
-        query="select id,value from config_values where type='milestone'"
-        milestone_info=DB.GetData(Conn,query,False)
-        #get the current projects team info
-        query="select distinct id,value from config_values where type='Team'"
-        team_info=DB.GetData(Conn,query,False)
-        #get the existing requirement id for parenting
-        #query="select distinct requirement_id,requirement_title from requirements where project_id='%s' order by requirement_id"%project_id
-        #requirement_list=DB.GetData(Conn,query,False)
-        Dict={
-              #'project_id':project_id,
-              #'project_list':project_info,
-              #'milestone_list':milestone_info,
-              'team_info':team_info
-              #'requirement_list':requirement_list
-        }
-        Conn.close()
-        return render_to_response('Milestone.html',Dict)
+        return render_to_response('Milestone.html')
         """templ = get_template('Milestone.html')
         variables = Context({ })
         output = templ.render(variables)
@@ -553,7 +508,7 @@ def EditBug(request,bug_id):
         manager=DB.GetData(Conn,query)
         query="select label_name, label_color, label_id from labels order by label_name"
         labels=DB.GetData(Conn,query,False)
-        query="select distinct tc_id,tc_name from test_cases where tc_id not in (select id2 from components_map) order by tc_id"
+        query="select distinct tc_id,tc_name from test_cases where tc_id not in (select tc_id from bug_testcases_map) order by tc_id"
         cases=DB.GetData(Conn,query,False)
         query="select id,value from config_values where type='milestone'"
         milestone_list=DB.GetData(Conn,query,False)
@@ -727,7 +682,6 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             print project_id
             print team_id
             Section_Tag = 'Section'
-            Feature_Tag='Feature'
             Custom_Tag = 'CustomTag'
             Section_Path_Tag = 'section_id'
             Feature_Path_Tag = 'feature_id'
@@ -743,7 +697,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             for each in dependency:
                 wherequery+=("'"+each.strip()+"'")
                 wherequery+=','
-            wherequery+=("'"+Feature_Tag+"','"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+            wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
             print wherequery
             tag_query="select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)"%(value,wherequery)
             id_query="select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')"%(value,value)
@@ -815,31 +769,6 @@ def AutoCompleteTag(request):
             tag_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(tag_list)
-    return HttpResponse(json, mimetype='application/json')
-
-def AutoCompleteLabel(request):
-    if request.is_ajax():
-        if request.method == 'GET':
-            value = request.GET.get(u'term', '')
-            print value
-            Conn = GetConnection()
-            query = "select * from labels where label_name Ilike '%%%s%%' or label_id Ilike '%%%s%%'" % (value, value)
-            label_list = DB.GetData(Conn, query, False)
-            Conn.close()
-    json = simplejson.dumps(label_list)
-    return HttpResponse(json, mimetype='application/json')
-
-def AutoCompleteTask(request):
-    if request.is_ajax():
-        if request.method == 'GET':
-            value = request.GET.get(u'term', '')
-            project_id = request.GET.get(u'term','')
-            print value
-            Conn = GetConnection()
-            query = "select tasks_id,tasks_title from tasks where tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%'" % (value, value)
-            task_list = DB.GetData(Conn, query, False)
-            Conn.close()
-    json = simplejson.dumps(task_list)
     return HttpResponse(json, mimetype='application/json')
  
 def AutoCompleteTesterSearch(request):
@@ -1773,7 +1702,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 UserData = str(UserData.replace(u'\xa0', u''))
                 
                 if is_rerun=="rerun":
-                    query="select email_notification, assigned_tester, test_objective,test_milestone, branch_version, project_id,team_id, start_date,end_date,tester_id,machine_ip from test_run_env tre, machine_project_map mpm where mpm.machine_serial=tre.id and run_id='%s'"%previous_run
+                    query="select email_notification, assigned_tester, test_objective,test_milestone, branch_version, project_id,team_id, feature_id, start_date,end_date,tester_id,machine_ip from test_run_env tre, machine_project_map mpm where mpm.machine_serial=tre.id and run_id='%s'"%previous_run
                     Conn=GetConnection()
                     Meta_info=DB.GetData(Conn,query,False)
                     Conn.close()
@@ -1784,10 +1713,11 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     Branch_Version=Meta_info[0][4]
                     project_id=Meta_info[0][5]
                     team_id=Meta_info[0][6]
-                    starting_date=Meta_info[0][7]
-                    ending_date=Meta_info[0][8]
-                    TesterId=Meta_info[0][9]
-                    machine_ip=Meta_info[0][10]
+                    feature_id=Meta_info[0][7]
+                    starting_date=Meta_info[0][8]
+                    ending_date=Meta_info[0][9]
+                    TesterId=Meta_info[0][10]
+                    machine_ip=Meta_info[0][11]
                     query="select type,name,bit,version from machine_dependency_settings mds, test_run_env tre where mds.machine_serial=tre.id and tre.tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
                     Conn=GetConnection()
                     machine_data=DB.GetData(Conn,query,False)
@@ -1807,9 +1737,15 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     
                     project_id=request.GET.get(u'project_id','')
                     team_id=request.GET.get(u'team_id','')
+                    feature_path=request.GET.get(u'feature_path','')
                     start_date=request.GET.get(u'start_date','')
                     end_date=request.GET.get(u'end_date','')
                     
+                    query="select feature_id from product_features where feature_path ~ '%s'"%feature_path
+                    Conn=GetConnection()
+                    feature_id=DB.GetData(Conn,query)
+                    Conn.close()
+                    feature_id=int(feature_id[0])
                     start_date=start_date.split('-')
                     starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
                     end_date=end_date.split('-')
@@ -1914,7 +1850,6 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 if len(TestIDList) > 0:
                     TestCasesIDs = TestIDList
                 else:
-                    Feature_tag='Feature'
                     Section_Tag = 'Section'
                     Custom_Tag = 'CustomTag'
                     Section_Path_Tag = 'section_id'
@@ -1931,7 +1866,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     for each in dependency:
                         wherequery+=("'"+each.strip()+"'")
                         wherequery+=','
-                    wherequery+=("'"+Feature_tag+"','"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+                    wherequery+=("'"+Section_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
                     print wherequery
                     
                     count = 1
@@ -1986,6 +1921,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                       'test_milestone':TestMileStone,
                       'run_type':'Manual',
                       'assigned_tester':Testers,
+                      'feature_id':feature_id,
                       'start_date':starting_date,
                       'end_date':ending_date
                 }
@@ -2262,48 +2198,26 @@ def AddReRunInfo(run_id, previous_run):
     conn = GetConnection()
     query = "select tc_id from test_run where run_id='" + run_id + "'"
     TestCaseList = DB.GetData(conn, query)
-    conn.close()
     for eachcase in TestCaseList:
         print eachcase
-        conn=GetConnection()
         print DB.InsertNewRecordInToTable(conn, "test_case_results", run_id=run_id, tc_id=eachcase, status="Submitted")
-        conn.close()
-        query="select id from test_case_results where run_id='%s' and tc_id='%s' and status='Submitted'"%(run_id, eachcase)
-        Conn=GetConnection()
-        result_index=DB.GetData(Conn,query)
-        Conn.close()        
-        conn=GetConnection()
         TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From result_Test_Steps ts,result_test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id and ts.run_id=tsl.run_id and ts.run_id='%s' Order By teststepsequence" % (eachcase, previous_run), False)
-        conn.close()
         for eachstep in TestStepsList:
             # print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
-            Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2],'testcaseresulttindex':result_index[0]}
-            conn=GetConnection()
+            Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2]}
             print DB.InsertNewRecordInToTable(conn, "test_step_results", **Dict)
-            conn.close()
 def AddInfo(run_id):
     conn = GetConnection()
     query = "select tc_id from test_run where run_id='" + run_id + "'"
     TestCaseList = DB.GetData(conn, query)
-    conn.close()
     for eachcase in TestCaseList:
         print eachcase
-        conn=GetConnection()
         print DB.InsertNewRecordInToTable(conn, "test_case_results", run_id=run_id, tc_id=eachcase, status="Submitted")
-        conn.close()
-        query="select id from test_case_results where run_id='%s' and tc_id='%s' and status='Submitted'"%(run_id, eachcase)
-        Conn=GetConnection()
-        result_index=DB.GetData(Conn,query)
-        Conn.close()
-        conn=GetConnection()
         TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % eachcase, False)
-        conn.close()
         for eachstep in TestStepsList:
             # print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
-            Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2],'testcaseresulttindex':result_index[0]}
-            conn=GetConnection()
+            Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2]}
             print DB.InsertNewRecordInToTable(conn, "test_step_results", **Dict)
-            conn.close()
 def ReRun_Fail_TestCases(request):
     Conn = GetConnection()
     results = {}
@@ -3163,9 +3077,6 @@ def Create_Submit_New_TestCase(request):
             Step_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
             Project_id=request.GET.get(u'Project_Id','')
             Team_id=request.GET.get(u'Team_Id','')
-            labels=request.GET.get(u'labels','')
-                
-            labels=labels.split("|")
             temp_list=[]
             for each in Dependency_List:
                 temporary=each.split(":")
@@ -3201,15 +3112,6 @@ def Create_Submit_New_TestCase(request):
                 print error
                 TestCaseCreateEdit.LogMessage(sModuleInfo, test_cases_result, 3)
                 return returnResult(test_cases_result)
-            if len(labels)>0:
-                if (labels[0]!=''):
-                    labels_result = TestCaseCreateEdit.Insert_Linkings(Conn, TC_Id, TC_Name, labels)
-                    if labels_result != 'Pass':
-                        # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
-                        error = "Returns from TestCaseCreateEdit Module by Failing to enter labels for test case id %s" % TC_Id
-                        print error
-                        TestCaseCreateEdit.LogMessage(sModuleInfo, labels_result, 3)
-                        return returnResult(labels_result)
         else:
             TC_Id = Is_Edit
         # 3
@@ -3377,11 +3279,6 @@ def ViewTestCase(TC_Id):
                 Feature_Path = ''
 
             
-            query = "select distinct l.label_id,l.label_name,l.label_color from label_map blm, labels l where blm.id = '%s' and blm.type='TC' and blm.label_id = l.label_id" % TC_Id
-            Conn = GetConnection()
-            Labels = DB.GetData(Conn, query, False)
-            Conn.close()
-            
             # find all steps and data for the test case
             Steps_Data_List = []
             Conn=GetConnection()
@@ -3454,7 +3351,7 @@ def ViewTestCase(TC_Id):
                 Steps_Data_List.append((Step_Name, Step_Data, Step_Type, step_description, step_expected, step_verified, Step_General_Description[0][0], step_time, Step_Edit, each_test_step[3]))
                 Step_Iteration = Step_Iteration + 1
             # return values
-            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team, 'Labels':Labels}
+            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team}
 
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -3500,9 +3397,6 @@ def EditTestCase(request):
             Steps_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
             Project_Id=request.GET.get(u'Project_Id','')
             Team_Id=request.GET.get(u'Team_Id','')
-            labels=request.GET.get(u'labels','')
-                
-            labels=labels.split("|")
             temp_list=[]
             for each in Dependency_List:
                 temporary=each.split(":")
@@ -3541,14 +3435,6 @@ def EditTestCase(request):
                 err_msg = "Test Case Detail is not updated successfully for test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
                 return err_msg
-            """labels_result = TestCaseCreateEdit.Insert_Linkings(Conn, TC_Id, TC_Name, labels)
-            if labels_result != 'Pass':
-                # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
-                error = "Returns from TestCaseCreateEdit Module by Failing to enter labels for test case id %s" % TC_Id
-                print error
-                TestCaseCreateEdit.LogMessage(sModuleInfo, labels_result, 3)
-                return returnResult(labels_result)
-            """
             # form the test case datasets
             test_case_datasets = '%sds' % New_TC_Id
             if DB.IsDBConnectionGood(Conn) == False:
@@ -3776,26 +3662,25 @@ def Get_Users(request):
     if request.method == "GET":
         username = request.GET.get(u'user', '').strip()
         password = request.GET.get(u'pwd', '').strip()
-        # if username=='':        
-        query="select user_id,full_name,user_level from user_info usr,permitted_user_list pul where pul.user_names = usr.full_name and pul.user_level in('manager','assigned_tester','admin') and usr.username='%s' and usr.password='%s'"%(username,password)
+        # if username=='':
+        
+        query="select user_id,full_name from user_info usr,permitted_user_list pul where pul.user_names = usr.full_name and pul.user_level in('manager','assigned_tester') and usr.username='%s' and usr.password='%s'"%(username,password)
         results = DB.GetData(Conn,query,False)
     if len(results) > 0:
         message = results[0]
         Dict={'message':message}
-        query="select default_project,default_team, cv.value from default_choice dc,config_values cv where dc.user_id='%s' and dc.default_team=cv.id"%results[0][0]
+        query="select default_project,default_team from default_choice where user_id='%s'"%results[0][0]
         testConnection(Conn)
         default_choice=DB.GetData(Conn,query,False)
         if isinstance(default_choice,list) and len(default_choice)==1:
             Dict.update({
                 'project_id':default_choice[0][0],
-                'team_id':default_choice[0][1],
-                'team_name':default_choice[0][2]
+                'team_id':default_choice[0][1]
             })
         else:
             Dict.update({
                 'project_id':"",
-                'team_id':"",
-                'team_name':""
+                'team_id':""
             })
     else:
 
@@ -5874,54 +5759,6 @@ def TestStepWithTypeInTable(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def ViewRunIDTestCases(request, Run_Id, TC_Id):
-    print Run_Id
-    print TC_Id
-    Conn = GetConnection()
-    query = "select tc_name from result_test_cases where tc_id='%s' and run_id='%s'" % (TC_Id, Run_Id)
-    testcasename = DB.GetData(Conn, query, False)
-    dquery = "select name from result_test_case_tag where tc_id='%s' and property='JiraId' and run_id='%s'" % (TC_Id, Run_Id)
-    defectid = DB.GetData(Conn, dquery, False)
-    defectid = [x[0] for x in defectid]
-    id1 = ', '.join(defectid)
-    tquery = "select name from result_test_case_tag where tc_id='%s' and property='MKS' and run_id='%s'" % (TC_Id, Run_Id)
-    mksid = DB.GetData(Conn, tquery, False)
-    mksid = [x[0] for x in mksid]
-    id2 = ', '.join(mksid)
-    rquery = "select name from result_test_case_tag where tc_id='%s' and property='PRDId' and run_id='%s'" % (TC_Id, Run_Id)
-    requirementid = DB.GetData(Conn, rquery, False)
-    requirementid = [x[0] for x in requirementid]
-    id3 = ', '.join(requirementid)
-    
-    section_path = ''
-    
-    try:
-        query = '''
-        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
-        ''' % ('section_id', TC_Id)
-        data = DB.GetData(Conn, query, False, False)
-        section_id = int(data[0][0])
-        
-        query = '''
-        SELECT section_path FROM product_sections WHERE section_id=%d
-        ''' % section_id
-        data = DB.GetData(Conn, query, False, False)
-        section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
-        
-    except:
-        print '-'
-    
-    return render_to_response('ViewRunIDEditTestCases.html',
-                              {
-                              'runid':Run_Id,
-                              'testcaseid':TC_Id,
-                              'testcasename':testcasename[0][0],
-                              'defectid':id1,
-                              'mksid':id2,
-                              'requirementid':id3,
-                              'section_path': section_path
-                              })
-
 def RunIDTestCases(request, Run_Id, TC_Id):
     print Run_Id
     print TC_Id
@@ -6307,44 +6144,18 @@ def update_runid(run_id, test_case_id):
             command = "can't create"
             print DB.DeleteRecord(oConn, "test_run_env", tester_id=machine_info[0][3].strip(), status='Unassigned')
     if command == "create":
-        #currenttime = DB.GetData(oConn, "select current_timestamp", False)
-        #updated_time = str(currenttime[0][0])
-        updated_time=TimeStamp("string")
+        currenttime = DB.GetData(oConn, "select current_timestamp", False)
+        updated_time = str(currenttime[0][0])
         print DB.DeleteRecord(oConn, "test_run_env", tester_id=machine_info[0][3].strip(), status='Unassigned')
-        Dict = {'tester_id':machine_info[0][3].strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_info[0][6].strip(), 'branch_version':machine_info[0][12].strip()}
-        Conn=GetConnection()
-        print DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
-        Conn.close()
-        query="select id from test_run_env where tester_id='%s' and status='Unassigned'"%(machine_info[0][3].strip())
-        Conn=GetConnection()
-        new_index=DB.GetData(Conn,query)
-        Conn.close()
-        query="select name,bit,version,type from machine_dependency_settings where machine_serial=%d"%int(machine_info[0][0])
-        Conn=GetConnection()
-        dependency_list=DB.GetData(Conn,query,False)
-        Conn.close()
-        for each in dependency_list:
-            Dict={}
-            Dict.update({'name':each[0], 'bit':each[1],'version':each[2],'type':each[3], 'machine_serial':new_index[0]})
-            Conn=GetConnection()
-            print DB.InsertNewRecordInToTable(Conn,'machine_dependency_settings', **Dict)
-            Conn.close()
-        query="select project_id,team_id from machine_project_map where machine_serial=%d"%int(machine_info[0][0])
-        Conn=GetConnection()
-        project_map=DB.GetData(Conn,query,False)
-        Conn.close()
-        for each in project_map:
-            Dict={}
-            Dict.update({'machine_serial':new_index[0], 'project_id':each[0],'team_id':each[1]})
-            Conn=GetConnection()
-            print DB.InsertNewRecordInToTable(Conn,'machine_project_map',**Dict)
-            Conn.close()
-    """if status == 'Complete':
+        Dict = {'tester_id':machine_info[0][3].strip(), 'status':'Unassigned', 'machine_os':machine_info[0][6].strip(), 'client':machine_info[0][7].strip(), 'last_updated_time':updated_time.strip(), 'os_bit':machine_info[0][16].strip(), 'os_name':machine_info[0][15].strip(), 'os_version':machine_info[0][14].strip(), 'machine_ip':machine_info[0][11].strip(), 'product_version':machine_info[0][10].strip()}
+        print DB.InsertNewRecordInToTable(oConn, "test_run_env", **Dict)
+    if status == 'Complete':
         run_id = str(run_id)
         allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'", False)
         TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
         Tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+run_id+"'")
-        list = []     
+        list = []
+        
         pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
         passed = DB.GetData(oConn, pass_query)
         list.append(passed[0])
@@ -6369,8 +6180,8 @@ def update_runid(run_id, test_case_id):
         duration = DB.GetData(oConn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
         
         EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
-        """    
-    """try:
+            
+        """try:
             urllib2.urlopen("http://www.google.com").close()
             #import EmailNotify
             EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
@@ -6440,7 +6251,7 @@ def Send_Report(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
     #########################################################################################
-def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReason,start_time,end_time):
+def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReason):
     """test_step_id_list=[]
     for each in List:
         print each
@@ -6465,34 +6276,21 @@ def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReaso
     query = "select step_id,teststepsequence from result_test_steps where tc_id='%s' and run_id='%s' order by teststepsequence" % (test_case_id, run_id)
     Conn = GetConnection()
     test_steps_list = DB.GetData(Conn, query, False)
-    Conn.close()
     print test_steps_list
     count = 0
     for each in test_steps_list:
         name_query = "select stepname from result_test_steps_list where step_id='%s' and run_id='%s'" % (each[0], run_id)
-        Conn=GetConnection()
         stepName = DB.GetData(Conn, name_query)
-        Conn.close()
         if stepName[0] == List[count][0]:
             query = "where run_id='%s' and tc_id='%s' and teststep_id='%d' and teststepsequence='%d'" % (run_id, test_case_id, each[0], each[1])
             Dict = {}
             Dict.update({'status':List[count][2], 'failreason':List[count][1]})
-            Conn=GetConnection()
             print DB.UpdateRecordInTable(Conn, "test_step_results", query, **Dict)
-            Conn.close()
             count += 1
     query = "where run_id='%s' and tc_id='%s'" % (run_id, test_case_id)
-    test_case_select_query="select teststarttime from test_case_results "+query
-    Conn=GetConnection()
-    case_start_time=DB.GetData(Conn,test_case_select_query,False)
-    Conn.close()
     Dict = {}
-    if case_start_time[0][0]==None:
-        Dict.update({'teststarttime':start_time})
-    Dict.update({'status':test_case_status, 'failreason':failReason, 'testendtime':end_time})
-    Conn=GetConnection()
+    Dict.update({'status':test_case_status, 'failreason':failReason})
     print DB.UpdateRecordInTable(Conn, "test_case_results", query, **Dict)
-    Conn.close()
     update_runid(run_id, test_case_id)
     return "true"
 def UpdateData(request):
@@ -6503,8 +6301,6 @@ def UpdateData(request):
             step_reason = request.GET.get(u'step_reason', '').split("|")
             run_id = request.GET.get(u'run_id', '')
             test_case_id = request.GET.get(u'test_case_id', '')
-            start_time=request.GET.get(u'start_time','')
-            end_time=request.GET.get(u'end_time','')
             Conn = GetConnection()
             query = "select teststepsequence from result_test_steps where tc_id='%s' and run_id='%s'" % (test_case_id, run_id)
             test_step_sequence_list = DB.GetData(Conn, query)
@@ -6586,7 +6382,7 @@ def UpdateData(request):
                 Final_List.append(temp)
                 index += 1
             print Final_List
-            message = UpdateTestStepStatus(Final_List, run_id, test_case_id, test_case_status, failReason, start_time,end_time)
+            message = UpdateTestStepStatus(Final_List, run_id, test_case_id, test_case_status, failReason)
     result = simplejson.dumps(message)
     return HttpResponse(result, mimetype='application/json')
 def GetOS(request):
@@ -6618,7 +6414,7 @@ def GetOS(request):
             results={
                 'version_list':version_list,
                 'dependency_list':final_list
-                } 
+                }
             results = simplejson.dumps(results)
             return HttpResponse(results, mimetype='application/json')
 def Auto_MachineName(request):
@@ -7536,7 +7332,6 @@ def GetFilteredDataResult(request):
             currentPagination = request.GET.get(u'pagination', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            capacity=request.GET.get(u'capacity','')
             print currentPagination
             # UserText=str(UserText)
             UserText = UserText.replace(u'\xa0', u'|')
@@ -7572,12 +7367,12 @@ def GetFilteredDataResult(request):
                 condition += " and "
             condition = condition[:-5].strip()
             print condition
-            final = NewResultFetch(condition, currentPagination,project_id,team_id,capacity)
+            final = NewResultFetch(condition, currentPagination,project_id,team_id)
     result = simplejson.dumps(final)
     return HttpResponse(result, mimetype='application/json')
-def NewResultFetch(condition, currentPagination,project_id,team_id,capacity):
+def NewResultFetch(condition, currentPagination,project_id,team_id):
     # pagination Code
-    step = int(capacity)
+    step = 20
     limit = ""
     limit += ("limit " + str(step))
     # ##determine offset
@@ -7585,7 +7380,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id,capacity):
     stepDelete = int(step) * int(int(currentPagination) - 1)
     offset += ("offset " + str(stepDelete))
     print condition
-    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration, tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and mpm.machine_serial=tre.id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7597,7 +7392,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id,capacity):
         total_query += condition
     total_query += ") "
     total_query += "union all "
-    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration, tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and tre.id=mpm.machine_serial and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7630,7 +7425,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id,capacity):
     Conn=GetConnection()
     all_status = make_status_array(Conn, total_run)
     # make Dict
-    Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Version", "MileStone"]
+    Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Feature", "Version", "MileStone"]
     Dict = {'total':total_run, 'status':all_status, 'column':Column, 'totalGet':len(received_data)}
     Conn.close()
     return Dict
@@ -7641,12 +7436,11 @@ def RunID_New(request):
             run_id = run_id.replace("%3A", ":")
             index = request.GET.get(u'pagination', '')
             userText = request.GET.get(u'UserText', '')
-            capacity=request.GET.get(u'capacity','')
             if(userText == ""):
-                runData = GetData(run_id, index,capacity)
+                runData = GetData(run_id, index)
             else:
                 userText = FormCondition(userText)
-                runData = GetData(run_id, index, capacity,userText)
+                runData = GetData(run_id, index, userText)
             print '--------------------------- INSIDE -------------------------------------'
             print run_id
             print index
@@ -7672,8 +7466,8 @@ def FormCondition(userText):
             condition += ("rtc.tc_id='%s' and " % eachitem[0])
     condition = condition[:-5].strip()
     return condition
-def GetData(run_id, index, capacity,userText=""):
-    step = int(capacity)
+def GetData(run_id, index, userText=""):
+    step = 5
     limit = ("limit " + str(step))
     # offset
     offset = ""
@@ -7683,12 +7477,29 @@ def GetData(run_id, index, capacity,userText=""):
     # form the query
     query = ""
     query+="select * from ("
-    query+="(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id "%run_id
+    query+="(select rtc.tc_id,tc_name,tcr.status,to_char(tcr.duration,'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id "%run_id
+    """query += "select * from ("
+    query += "(select "
+    query += "tc.tc_id as MKSId, "
+    query += "tc.tc_name, "
+    query += "tr.status, "
+    query += "to_char(tr.duration,'HH24:MI:SS'), "
+    query += "tr.failreason, "
+    query += "tr.logid, "
+    query += "tc.tc_id "
+    query += "from test_case_results tr, result_test_cases tc, result_test_case_tag tct "
+    query += "where tr.run_id = '%s' and " % run_id
+    query += "tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' "
+    """
     if userText != "":
         query += "and "
         query += userText
     query += " ORDER BY tcr.id) "
     query += "union all "
+    """query += "(select tct.name as MKSId,tc.tc_name,'Pending','','','',tc.tc_id "
+    query += "from test_run tr,result_test_cases tc, result_test_case_tag tct "
+    query += "where tr.tc_id = tc.tc_id and tr.run_id=tc.run_id and tc.run_id=tct.run_id and tc.tc_id = tct.tc_id and tct.property = 'MKS' and tr.run_id = '%s'" % run_id
+    """
     query+="(select rtc.tc_id,tc_name,'Pending','','','' from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id"%run_id
     if userText != "":
         query += " and "
@@ -7702,14 +7513,8 @@ def GetData(run_id, index, capacity,userText=""):
     print runData
     AllTestCases = Modify(runData)
     AllTestCases = AddEstimatedTime(AllTestCases, run_id)
-    final=[]
-    for each in AllTestCases:
-        temp=list(each)
-        temp.append('View')
-        temp.append('Execute')
-        final.append(tuple(temp))
     DataCount = DB.GetData(Conn, count_query, False)
-    DataReturn = {'allData':final, 'count':len(DataCount)}
+    DataReturn = {'allData':AllTestCases, 'count':len(DataCount)}
     Conn.close()
     return DataReturn
 
@@ -7757,7 +7562,7 @@ def manage_test_cases(request):
             for i in data:
                 temp = {}
                 section = i[1].split('.')
-#                 print section
+                print section
                 for parent_section in parent_sections:
                     if section[0] == parent_section['text']:
                         temp['id'] = i[0]
@@ -8275,54 +8080,22 @@ def EditTask(request,task_id,project_id):
         return render_to_response('CreateNewTask.html')
     else:
         Conn=GetConnection()
-        query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
+        query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
         team_info=DB.GetData(Conn,query,False)
         query="select value from config_values where type='Priority'"
         priority=DB.GetData(Conn,query,False)
         query="select id,value from config_values where type='milestone'"
         milestone_list=DB.GetData(Conn,query,False)
         #get the names from permitted_user_list
-        query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)" 
+        query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
         user_list=DB.GetData(Conn,query,False)
-        query = "select label_id,label_name,Label_color from labels order by label_name"
-        labels = DB.GetData(Conn,query,False)
         Dict={
               'team_info':team_info,
               'priority_list':priority,
               'milestone_list':milestone_list,
-              'user_list':user_list,
-              'labels':labels
+              'user_list':user_list
         }
     return render_to_response("CreateNewTask.html",Dict)
-
-def ChildTask(request,task_id,project_id):
-    task_id = request.GET.get('task_id', '')
-    project_id = request.GET.get('project_id', '')
-    
-    if task_id != "":
-        return render_to_response('CreateNewTask.html')
-    else:
-        Conn=GetConnection()
-        query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
-        team_info=DB.GetData(Conn,query,False)
-        query="select value from config_values where type='Priority'"
-        priority=DB.GetData(Conn,query,False)
-        query="select id,value from config_values where type='milestone'"
-        milestone_list=DB.GetData(Conn,query,False)
-        #get the names from permitted_user_list
-        query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)" 
-        user_list=DB.GetData(Conn,query,False)
-        query = "select label_id,label_name,Label_color from labels order by label_name"
-        labels = DB.GetData(Conn,query,False)
-        Dict={
-              'team_info':team_info,
-              'priority_list':priority,
-              'milestone_list':milestone_list,
-              'user_list':user_list,
-              'labels':labels
-        }
-    return render_to_response("CreateNewTask.html",Dict)
-
 
 def Selected_TaskID_Analaysis(request):
     Conn = GetConnection()
@@ -8342,70 +8115,11 @@ def Selected_TaskID_Analaysis(request):
         #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
         #milestone = DB.GetData(Conn,query)
         
-        
-        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='TASK' order by label_name" % UserData
-        labels = DB.GetData(Conn,query)
-        
-        #query = "select team_id from task_team_map where task_id='%s'" %UserData
-        #team = DB.GetData(Conn,query)
-        
-        """query = "select task_path from task_sections where task_path ~ '*.%s'" %UserData.replace('-','_')
+        UserData = UserData.replace('-','_')
+        query = "select * from requirement_sections where requirement_path = '%s'" %UserData
         section = DB.GetData(Conn,query)
-        section = section.replace('_', '-')
-        section = section.split('.')
-        parents = []
-        for each in section:
-            query = "select ts.task_path, t.tasks_id, t.status, mi.name from tasks t, milestone_info mi, task_sections ts where t.tasks_id = '%s' and t.tasks_milestone=mi.id::text and ts.task_path ~ '*.%s'" %(each,each.replace('-','_'))
-            temp = DB.GetData(Conn,query,False)
-            parents.append(temp)"""
 
-    Heading = ['Path','Task-ID','Status','Milestone']
-    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels}
-    json = simplejson.dumps(results)
-    Conn.close()
-    return HttpResponse(json, mimetype='application/json')
-
-
-def Selected_Requirement_Analaysis(request):
-    Conn = GetConnection()
-    if request.is_ajax():
-        if request.method == 'GET':
-            UserData = request.GET.get(u'req_id', '')
-
-        query = "select requirement_title,status,requirement_description,cast(requirement_startingdate as text), cast(requirement_endingdate as text),requirement_priority,requirement_milestone from requirements where requirement_id = '%s'" % UserData
-        Req_Info = DB.GetData(Conn, query, False)
-        
-        
-        query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='REQ' and fm.feature_id=pf.feature_id::text" % UserData
-        feature = DB.GetData(Conn, query, False)
-        
-        #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
-        #milestone = DB.GetData(Conn,query)
-        query = "select team_id from requirement_team_map where requirement_id='%s'" %UserData
-        teams = DB.GetData(Conn,query)
-        
-        
-        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='REQ' order by label_name" % UserData
-        labels = DB.GetData(Conn,query)
-        
-        query = "select t.tasks_id, tasks_title from components_map cm, tasks t where id1='%s' and type1='REQ' and type2='TASK' and t.tasks_id=cm.id2" % UserData
-        tasks = DB.GetData(Conn,query,False)
-        
-        #query = "select team_id from task_team_map where task_id='%s'" %UserData
-        #team = DB.GetData(Conn,query)
-        
-        """query = "select task_path from task_sections where task_path ~ '*.%s'" %UserData.replace('-','_')
-        section = DB.GetData(Conn,query)
-        section = section.replace('_', '-')
-        section = section.split('.')
-        parents = []
-        for each in section:
-            query = "select ts.task_path, t.tasks_id, t.status, mi.name from tasks t, milestone_info mi, task_sections ts where t.tasks_id = '%s' and t.tasks_milestone=mi.id::text and ts.task_path ~ '*.%s'" %(each,each.replace('-','_'))
-            temp = DB.GetData(Conn,query,False)
-            parents.append(temp)"""
-
-    #Heading = ['Path','Task-ID','Status','Milestone']
-    results = {'Req_Info':Req_Info, 'Feature':feature[0][0], 'labels':labels, 'teams':teams, 'tasks':tasks}
+    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0]}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
@@ -8442,7 +8156,7 @@ def ManageBug(request):
         #ago = (now-x[8]).days + " days ago by "
         #data.append(ago)
         bugs.append(data)"""
-    query="select * from label_map"
+    query="select * from bug_label_map"
     labels=DB.GetData(Conn, query, False)
     query="select * from milestone_info"
     milestones=DB.GetData(Conn, query, False)
@@ -8461,7 +8175,7 @@ def Bugs_List(request):
         query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id order by b.bug_id desc"
         bugs=DB.GetData(Conn, query, False)
         
-        query="select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, label_map blm where l.label_id=blm.label_id"
+        query="select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, bug_label_map blm where l.label_id=blm.label_id"
         labels=DB.GetData(Conn, query, False)
         #query="select * from milestone_info"
         #milestones=DB.GetData(Conn, query, False)
@@ -8477,16 +8191,14 @@ def Tasks_List(request):
     if request.is_ajax():
         if request.method == 'GET':
             project_id = request.GET.get(u'project_id', '')
-            team_id = request.GET.get(u'team_id', '')
 
         now=datetime.datetime.now().date()
         tasks_list = []
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        #query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi,requirement_sections rs,task_team_map ttm where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text and ttm.task_id=t.tasks_id and ttm.team_id='"+team_id+"' order by tasks_id desc"
-        query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.team_id='"+team_id+"' order by tasks_id desc"
+        query="select tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi,requirement_sections rs where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text order by tasks_id desc"
         tasks=DB.GetData(Conn, query, False)
         
-        query="select task_path from tasks t,task_sections rs where t.project_id='"+project_id+"' and t.parent_id=rs.task_path_id::text and t.team_id='"+team_id+"' order by tasks_id desc"
+        query="select requirement_path from tasks t, milestone_info mi,requirement_sections rs where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text order by tasks_id desc"
         parents=DB.GetData(Conn, query, False)
         
             
@@ -8497,6 +8209,8 @@ def Tasks_List(request):
             temp=x[1][0].replace('_','-')
             temp=temp.replace('.','/')
             if temp==data[0]:
+                data.append('None')
+            elif 'REQ' in temp:
                 data.append('None')
             else:
                 data.append(temp)
@@ -8520,10 +8234,10 @@ def Reqs_List(request):
         now=datetime.datetime.now().date()
         reqs_list = []
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query="select distinct requirement_id,requirement_title,requirement_description,cast(requirement_startingdate as text),cast(requirement_endingdate as text),mi.name,r.status from requirements r,milestone_info mi where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone order by requirement_id desc"
+        query="select requirement_id,requirement_title,requirement_description,cast(requirement_startingdate as text),cast(requirement_endingdate as text),mi.name,r.status from requirements r,milestone_info mi where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone order by requirement_id desc"
         reqs=DB.GetData(Conn, query, False)
         
-        query="select requirement_path from requirements r,requirement_sections rs where project_id='"+project_id+"' and r.parent_requirement_id=rs.requirement_path_id::text order by requirement_id desc"
+        query="select requirement_path from requirements r,milestone_info mi,requirement_sections rs where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone and r.parent_requirement_id=rs.requirement_path_id::text order by requirement_id desc"
         parents=DB.GetData(Conn, query, False)
         
             
@@ -8535,6 +8249,8 @@ def Reqs_List(request):
             temp=temp.replace('.','/')
             if temp==data[0]:
                 data.append('None')
+            #elif 'REQ' in temp:
+                #data.append('None')
             else:
                 data.append(temp)
             #data.append(x[1])
@@ -8558,7 +8274,7 @@ def CreateBug(request):
     manager=DB.GetData(Conn,query)
     query="select label_name, label_color, label_id from labels order by label_name"
     labels=DB.GetData(Conn,query,False)
-    query="select distinct tc_id,tc_name from test_cases where tc_id not in (select id2 from components_map) order by tc_id"
+    query="select distinct tc_id,tc_name from test_cases where tc_id not in (select tc_id from bug_testcases_map) order by tc_id"
     cases=DB.GetData(Conn,query,False)
     query="select id,value from config_values where type='milestone'"
     milestone_list=DB.GetData(Conn,query,False)
@@ -8591,16 +8307,16 @@ def Selected_BugID_Analaysis(request):
         query = "select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs where bug_id = '%s'" % UserData
         Bug_Info = DB.GetData(Conn, query, False)
         
-        query = "select distinct l.label_id from label_map blm, labels l where blm.id = '%s' and blm.label_id = l.label_id" % UserData
+        query = "select distinct l.label_id from bug_label_map blm, labels l where blm.bug_id = '%s' and blm.label_id = l.label_id" % UserData
         Bug_Labels = DB.GetData(Conn, query)
         
-        query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 ilike '%s' and btm.id2=tc.tc_id" % UserData
+        query = "select distinct tc.tc_id, tc.tc_name from bug_testcases_map btm, test_cases tc where btm.bug_id ilike '%s' and btm.tc_id=tc.tc_id" % UserData
         Bug_Cases = DB.GetData(Conn, query, False)
         
         query = "select pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester::int=pul.user_id" % UserData
         tester = DB.GetData(Conn, query)
         
-        query = "select distinct tc.tc_id, tc.tc_name, tcr.status from test_case_results tcr, test_cases tc where tc.tc_id=tcr.tc_id and tcr.status='Failed' and tc.tc_id not in (select id2 from components_map) order by tc.tc_id"
+        query = "select distinct tc.tc_id, tc.tc_name, tcr.status from test_case_results tcr, test_cases tc where tc.tc_id=tcr.tc_id and tcr.status='Failed' and tc.tc_id not in (select tc_id from bug_testcases_map) order by tc.tc_id"
         failed_cases = DB.GetData(Conn, query, False)
         
         query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='BUG' and fm.feature_id=pf.feature_id::text" % UserData
@@ -8844,18 +8560,6 @@ def CreateLabel(request):
     Conn.close()
     return HttpResponse(result,mimetype='application/json')
 
-def Get_Labels(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            value=request.GET.get(u'term','')
-            query="select * from labels"
-            Conn=GetConnection()
-            labels=DB.GetData(Conn,query,False)
-    result=simplejson.dumps(labels)
-    Conn.close()
-    return HttpResponse(result,mimetype='application/json')
-
-
 def ManageRequirement(request):
     return render_to_response('ManageRequirement.html',{})
 def ManageTeam(request):
@@ -8914,11 +8618,11 @@ def GetAllTeam(request):
         if request.method=='GET':
             value=request.GET.get(u'term','')
             if value=='':
-                query="select id,value from config_values where type='Team'"
+                query="select value from config_values where type='Team'"
             else:
-                query="select id,value from config_values where type='Team' and value Ilike '%%%s%%'"%value
+                query="select value from config_values where type='Team' and value Ilike '%%%s%%'"%value
             Conn=GetConnection()
-            all_team=DB.GetData(Conn,query,False)
+            all_team=DB.GetData(Conn,query)
     result=simplejson.dumps(all_team)
     Conn.close()
     return HttpResponse(result,mimetype='application/json')
@@ -9208,8 +8912,16 @@ def Create_New_Project(request):
             if request.method=='GET':
                 message=""
                 user_name=request.GET.get('user_name','')
-                name=request.GET.get('project_name','')
-                owners=request.GET.get('project_owner').strip()
+                name=request.GET.get('name','')
+                description=request.GET.get('description','')
+                start_date=request.GET.get('start_date','')
+                start_date=start_date.split("-")
+                start_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip()))
+                end_date=request.GET.get('end_date','')
+                end_date=end_date.split("-")
+                end_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip()))
+                team=request.GET.get('team').split("|")
+                owners=request.GET.get('owners').strip()
                 #generate Project id
                 Conn=GetConnection()
                 tmp_id = DB.GetData(Conn, "select nextval('projectid_seq')")
@@ -9226,15 +8938,31 @@ def Create_New_Project(request):
                 current_date=now
                 if len(count)==1 and count[0]==0:
                     #create the new projects
+                    team_array=[]
+                    for each in team:
+                        query="select id from config_values where type='Team' and value='%s'"%(each.strip())
+                        Conn=GetConnection()
+                        team_id = []
+                        team_id=DB.GetData(Conn,query)
+                        Conn.close()
+                        print "team ID:"
+                        print team_id
+                        if type(team_id[0])!= int or len(team_id)!=1:
+                            continue
+                        else:
+                            team_id=team_id[0]
+                            team_array.append(team_id)
                     Dict={
                         'project_id':project_id.strip(),
                         'project_name':name.strip(),
+                        'project_description':description.strip(),
+                        'project_startingdate':start_date,
+                        'project_endingdate':end_date,
                         'project_owners':owners.strip(),
                         'project_createdby':user_name.strip(),
                         'project_creationdate':current_date,
                         'project_modifiedby':user_name.strip(),
-                        'project_modifydate':current_date,
-                        'project_description':'',
+                        'project_modifydate':current_date
                     }
                     Conn=GetConnection()
                     result = False
@@ -9245,6 +8973,21 @@ def Create_New_Project(request):
                         Conn=GetConnection()
                     else:
                         message="Success"
+                    for each in team_array:
+                        #form Dict
+                        Dict={}
+                        Dict={
+                              'project_id':project_id.strip(),
+                              'team_id':str(each).strip(),
+                              'status':False
+                        }
+                        result = False
+                        result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
+                        if result==False:
+                            Conn=GetConnection()
+                            message="Failed"
+                        else:
+                            message="Success"
             result_dict={
                  'message':message,
                  'project_id':project_id.strip()
@@ -9731,13 +9474,6 @@ def DetailRequirementView(request,project_id,req_id):
         print "Exception:",e
     comment=Comment()
     Dict.update({'comment':comment})
-    try:
-        Conn = GetConnection()
-        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='"+req_id+"' and lm.type='REQ' order by label_name"
-        labels = DB.GetData(Conn,query,False)
-        Dict.update({'labels':labels})
-    except Exception,e:
-        print "Exception:",e
     #get all the comments of this requirement_id
     return render(request,'RequirementDetail.html',Dict)
 
@@ -9798,18 +9534,14 @@ def ToNewRequirementPage(request,project_id):
     #get the existing requirement id for parenting
     query="select distinct requirement_id,requirement_title from requirements where project_id='%s' order by requirement_id"%project_id
     requirement_list=DB.GetData(Conn,query,False)
-    
-    query = "select label_id,label_name,Label_color from labels order by label_name"
-    labels = DB.GetData(Conn,query)
     Dict={
           'project_id':project_id,
           'project_list':project_info,
           'milestone_list':milestone_info,
           'team_list':team_info,
-          'requirement_list':requirement_list,
-          'labels':labels
+          'requirement_list':requirement_list
     }
-    return render_to_response('CreateNewRequirement.html',Dict)
+    return render(request,'CreateNewRequirement.html',Dict)
 
 #getting the tree information for the requirements
 
@@ -9916,73 +9648,13 @@ def CreateRequirement(request):
             user_name=request.GET.get(u'user_name','')
             feature_path=request.GET.get(u'feature_path','')
             parent_requirement_id=request.GET.get(u'requirement_id','')
-            labels=request.GET.get(u'labels','')
-            labels=labels.split("|")
-            tasks=request.GET.get(u'tasks','')
-            tasks=tasks.split("|")
             if parent_requirement_id=="":
-                result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path,labels,tasks)
+                result=RequirementOperations.CreateParentRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path)
                 if result!=False:
                     requirement_id=result
     result=simplejson.dumps(requirement_id)
     return HttpResponse(result,mimetype='application/json')
 ##getting required requirement and team info on the project_id change
-
-def SubmitEditRequirement(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            #getting all the info from the messages
-            req_id = request.GET.get(u'req_id','')
-            project_id=request.GET.get(u'project_id','')
-            team_id=request.GET.get(u'team','').split("|")
-            title=request.GET.get(u'title','')
-            description=request.GET.get(u'description','')
-            start_date=request.GET.get(u'start_date','')
-            end_date=request.GET.get(u'end_date','')
-            priority=request.GET.get(u'priority','')
-            milestone=request.GET.get(u'milestone','')
-            status=request.GET.get(u'status','')
-            user_name=request.GET.get(u'user_name','')
-            feature_path=request.GET.get(u'feature_path','')
-            parent_requirement_id=request.GET.get(u'requirement_id','')
-            labels=request.GET.get(u'labels','')
-            labels=labels.split("|")
-            tasks=request.GET.get(u'tasks','')
-            tasks=tasks.split("|")
-            result=RequirementOperations.EditRequirement(req_id, title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path,labels,tasks)
-            if result!=False:
-                requirement_id=result
-    result=simplejson.dumps(requirement_id)
-    return HttpResponse(result,mimetype='application/json')
-
-
-def SubmitChildRequirement(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            #getting all the info from the messages
-            project_id=request.GET.get(u'project_id','')
-            team_id=request.GET.get(u'team','').split("|")
-            title=request.GET.get(u'title','')
-            description=request.GET.get(u'description','')
-            start_date=request.GET.get(u'start_date','')
-            end_date=request.GET.get(u'end_date','')
-            priority=request.GET.get(u'priority','')
-            milestone=request.GET.get(u'milestone','')
-            status=request.GET.get(u'status','')
-            user_name=request.GET.get(u'user_name','')
-            feature_path=request.GET.get(u'feature_path','')
-            parent_requirement_id=request.GET.get(u'requirement_id','')
-            labels=request.GET.get(u'labels','')
-            labels=labels.split("|")
-            tasks=request.GET.get(u'tasks','')
-            tasks=tasks.split("|")
-            result=RequirementOperations.CreateChildRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path, parent_requirement_id, labels,tasks)
-            if result!=False:
-                requirement_id=result
-    result=simplejson.dumps(requirement_id)
-    return HttpResponse(result,mimetype='application/json')
-
-
 
 def GetTeamInfoToCreateRequirement(request):
     if request.is_ajax():
@@ -10187,73 +9859,12 @@ def RequirementPage(request,project_id):
     team_info=DB.GetData(Conn,query,False)
     query="select value from config_values where type='Priority'"
     priority=DB.GetData(Conn,query,False)
-    query="select id,value from config_values where type='milestone'"
+    query="select value from config_values where type='milestone'"
     milestone_list=DB.GetData(Conn,query,False)
-    query = "select label_id,label_name,Label_color from labels order by label_name"
-    labels = DB.GetData(Conn,query,False)
     Dict={
           'team_info':team_info,
           'priority_list':priority,
-          'milestone_list':milestone_list,
-          'labels':labels
-    }
-    return render_to_response("CreateNewRequirement.html",Dict)
-
-
-def Edit_Requirement(request,project_id,req_id):
-    """
-    TC_Id = request.GET.get('TC_Id', '')
-    if TC_Id != "":
-        return ViewTestCase(TC_Id)
-    else:
-        templ = get_template('CreateNewRequirement.html')
-        variables = Context({ })
-        output = templ.render(variables)
-        return HttpResponse(output)"""
-    #Get the teams for this projects
-    Conn=GetConnection()
-    query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
-    team_info=DB.GetData(Conn,query,False)
-    query="select value from config_values where type='Priority'"
-    priority=DB.GetData(Conn,query,False)
-    query="select id,value from config_values where type='milestone'"
-    milestone_list=DB.GetData(Conn,query,False)
-    query = "select label_id,label_name,Label_color from labels order by label_name"
-    labels = DB.GetData(Conn,query,False)
-    Dict={
-          'team_info':team_info,
-          'priority_list':priority,
-          'milestone_list':milestone_list,
-          'labels':labels
-    }
-    return render_to_response("CreateNewRequirement.html",Dict)
-
-
-def Child_Requirement(request,project_id,req_id):
-    """
-    TC_Id = request.GET.get('TC_Id', '')
-    if TC_Id != "":
-        return ViewTestCase(TC_Id)
-    else:
-        templ = get_template('CreateNewRequirement.html')
-        variables = Context({ })
-        output = templ.render(variables)
-        return HttpResponse(output)"""
-    #Get the teams for this projects
-    Conn=GetConnection()
-    query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
-    team_info=DB.GetData(Conn,query,False)
-    query="select value from config_values where type='Priority'"
-    priority=DB.GetData(Conn,query,False)
-    query="select id,value from config_values where type='milestone'"
-    milestone_list=DB.GetData(Conn,query,False)
-    query = "select label_id,label_name,Label_color from labels order by label_name"
-    labels = DB.GetData(Conn,query,False)
-    Dict={
-          'team_info':team_info,
-          'priority_list':priority,
-          'milestone_list':milestone_list,
-          'labels':labels
+          'milestone_list':milestone_list
     }
     return render_to_response("CreateNewRequirement.html",Dict)
 
@@ -10269,14 +9880,11 @@ def TaskPage(request,project_id):
     #get the names from permitted_user_list
     query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')"%project_id 
     user_list=DB.GetData(Conn,query,False)
-    query = "select label_id,label_name,Label_color from labels order by label_name"
-    labels = DB.GetData(Conn,query,False)
     Dict={
           'team_info':team_info,
           'priority_list':priority,
           'milestone_list':milestone_list,
-          'user_list':user_list,
-          'labels':labels
+          'user_list':user_list
     }
     return render_to_response("CreateNewTask.html",Dict)
 
@@ -10312,7 +9920,7 @@ def SubmitNewTask(request):
             end_date=request.GET.get(u'ending_date','')
             start_date=convert_date_from_string(start_date)
             end_date=convert_date_from_string(end_date)
-            teams=request.GET.get(u'team','')
+            teams=request.GET.get(u'team','').split("|")
             tester=request.GET.get(u'tester','')
             priority=request.GET.get(u'priority','')
             milestone=request.GET.get(u'milestone','')
@@ -10320,9 +9928,7 @@ def SubmitNewTask(request):
             section_path=request.GET.get(u'section_path','')
             feature_path=request.GET.get(u'feature_path','')
             user_name=request.GET.get(u'user_name','')
-            labels = request.GET.get(u'labels','')
-            labels=labels.split("|")
-            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
+            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 
@@ -10337,7 +9943,7 @@ def SubmitEditedTask(request):
             end_date=request.GET.get(u'ending_date','')
             start_date=convert_date_from_string(start_date)
             end_date=convert_date_from_string(end_date)
-            teams=request.GET.get(u'team','')
+            teams=request.GET.get(u'team','').split("|")
             tester=request.GET.get(u'tester','')
             priority=request.GET.get(u'priority','')
             milestone=request.GET.get(u'milestone','')
@@ -10345,34 +9951,7 @@ def SubmitEditedTask(request):
             section_path=request.GET.get(u'section_path','')
             feature_path=request.GET.get(u'feature_path','')
             user_name=request.GET.get(u'user_name','')
-            labels = request.GET.get(u'labels','')
-            labels=labels.split("|")
-            result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
-    results=simplejson.dumps(result)
-    return HttpResponse(results,mimetype='application/json')    
-
-
-def SubmitChildTask(request):
-    if request.is_ajax():
-        if request.method=='GET':
-            title=request.GET.get(u'title','')
-            status=request.GET.get(u'status','')
-            description=request.GET.get(u'description','')
-            start_date=request.GET.get(u'starting_date','')
-            end_date=request.GET.get(u'ending_date','')
-            start_date=convert_date_from_string(start_date)
-            end_date=convert_date_from_string(end_date)
-            teams=request.GET.get(u'team','')
-            tester=request.GET.get(u'tester','')
-            priority=request.GET.get(u'priority','')
-            milestone=request.GET.get(u'milestone','')
-            project_id=request.GET.get(u'project_id','')
-            section_path=request.GET.get(u'section_path','')
-            feature_path=request.GET.get(u'feature_path','')
-            user_name=request.GET.get(u'user_name','')
-            labels = request.GET.get(u'labels','')
-            labels=labels.split("|")
-            result=TaskOperations.CreateChildTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
+            result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 
@@ -11629,206 +11208,6 @@ def CreateLevelWiseFeature(request):
             PassMessasge(sModuleInfo, PostError, error_tag)
     except Exception,e:
             PassMessasge(sModuleInfo, e, 3)
-def AutoTestCasePass(request):
-    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    try:
-        if request.method=='GET':
-            if request.is_ajax():
-                run_id=request.GET.get(u'run_id','')
-                test_cases=request.GET.get(u'test_cases','').split('|')
-                for each in test_cases:
-                    query="select tsr.id, teststep_id from test_case_results tcr, test_step_results tsr where tcr.run_id=tsr.run_id and tsr.testcaseresulttindex=tcr.id and tcr.run_id='%s' and tcr.tc_id='%s'"%(run_id.strip(),each.strip())
-                    Conn=GetConnection()
-                    test_step_list=DB.GetData(Conn,query,False)
-                    Conn.close()
-                    Dict={'status':'Passed'}
-                    for eachitem in test_step_list:
-                        sWhereQuery="where id=%d and teststep_id=%d and run_id='%s' and tc_id='%s'"%(eachitem[0],eachitem[1],run_id.strip(),each.strip())
-                        Conn=GetConnection()
-                        print DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
-                        Conn.close()
-                    sWhereQuery="where run_id='%s' and tc_id='%s'"%(run_id.strip(),each.strip())
-                    Conn=GetConnection()
-                    Dict.update({'failreason':''})
-                    print DB.UpdateRecordInTable(Conn,"test_case_results",sWhereQuery,**Dict)
-                    Conn.close()
-                message=True
-                result=simplejson.dumps(message)
-                return HttpResponse(result,mimetype='application/json')                        
-    except Exception,e:
-            PassMessasge(sModuleInfo, e, 3)
-def specific_dependency_settings(request):
-    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    try:
-        if request.is_ajax():
-            if request.method == 'GET':
-                UserData = request.GET.get(u'Query', '')
-                if UserData!='':
-                    UserText = UserData.split(":");
-                    project_id=request.GET.get(u'project_id','')
-                    team_id=request.GET.get(u'team_id','')
-                    QueryText = []
-                    for eachitem in UserText:
-                        if len(eachitem) != 0 and  len(eachitem) != 1 and eachitem.strip() not in QueryText:
-                            QueryText.append(eachitem.strip())
-                    print QueryText
-                    Section_Tag = 'Section'
-                    Feature_Tag = 'Feature'
-                    Custom_Tag = 'CustomTag'
-                    Section_Path_Tag = 'section_id'
-                    Feature_Path_Tag = 'feature_id'
-                    Priority_Tag = 'Priority'
-                    set_type='set'
-                    tag_type='tag'
-                    Status='Status'
-                    query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
-                    Conn=GetConnection()
-                    dependency=DB.GetData(Conn,query)
-                    Conn.close()
-                    wherequery=""
-                    for each in dependency:
-                        wherequery+=("'"+each.strip()+"'")
-                        wherequery+=','
-                    wherequery+=("'"+Section_Tag+"','"+Feature_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
-                    print wherequery
-                    TestIDList = []
-                    for eachitem in QueryText:
-                        Conn=GetConnection()
-                        TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
-                        Conn.close()
-                        for eachProp in TestID:
-                            if eachProp == 'tcid':
-                                TestIDList.append(eachitem)
-                                break
-                    TableData = []
-                    if len(TestIDList) > 0:
-                        for eachitem in TestIDList:
-                            query="select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,team_id)
-                            Conn=GetConnection()
-                            tabledata = DB.GetData(Conn,query)
-                            Conn.close()
-                            print tabledata
-                            if tabledata:
-                                TableData.append(tabledata[0])
-                    else:
-                        count = 1
-                        for eachitem in QueryText:
-                            if count == 1:
-                                Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
-                                count=count+1
-                            else:
-                                Query+="AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
-                                count=count+1
-                        Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
-                        Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
-                        query = "select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
-                        Conn=GetConnection()
-                        TableData = DB.GetData(Conn, query)        
-                        Conn.close()
-                    final_data=[]    
-                    for each in TableData:
-                        final_data.append("'"+each+"'")
-                    test_case_ids="("+",".join(final_data)+")"
-                    test_case_query="select property,array_agg(distinct name) from test_case_tag tct, dependency d where d.dependency_name=tct.property and tc_id in "+test_case_ids+" group by property" 
-                    Conn=GetConnection()
-                    final_list=DB.GetData(Conn,test_case_query,False)
-                    Conn.close()
-                    result=simplejson.dumps(final_list)
-                    return HttpResponse(result,mimetype='application/json')        
-    except Exception,e:
-            PassMessasge(sModuleInfo, e, 3)
-def admin_page(request):
-    return render_to_response('superAdmin.html',{},context_instance=RequestContext(request))
-def superAdminFunction(request):
-    return render_to_response('superAdminFunction.html',{},context_instance=RequestContext(request))
-def GetProjectOwner(request):
-    if request.method=='GET':
-        if request.is_ajax():
-            value=request.GET.get(u'term','')
-            print value
-            query="select distinct user_id,user_names,case when user_level='assigned_tester' then 'Tester' when user_level='manager' then 'Manager' end  from permitted_user_list pul, user_info ui where pul.user_names=ui.full_name and user_level not in('email','admin') and user_names iLike '%%%s%%'"%(value.strip())
-            Conn=GetConnection()
-            owner_list=DB.GetData(Conn,query,False)
-            Conn.close()
-            result=simplejson.dumps(owner_list)
-            return HttpResponse(result,mimetype='application/json')
-def Create_New_User(request):
-    if request.method=='GET':
-        if request.is_ajax():
-            full_name=request.GET.get(u'full_name','').strip()
-            user_name=request.GET.get(u'user_name','').strip()
-            email=request.GET.get(u'email','').strip()
-            password=request.GET.get(u'password','').strip()
-            user_level=request.GET.get(u'user_level','').strip()
-            query="select count(*) from user_info where full_name='%s'"%(full_name.strip())
-            Conn=GetConnection()
-            count=DB.GetData(Conn,query)
-            Conn.close()
-            if len(count)==1 and count[0]==0:
-                #insert the new user
-                Dict={
-                    'username':user_name,
-                    'password':password,
-                    'full_name':full_name
-                }
-                Conn=GetConnection()
-                result=DB.InsertNewRecordInToTable(Conn,"user_info",**Dict)
-                Conn.close()
-                if result:
-                    Dict={
-                        'user_names':full_name,
-                        'user_level':user_level,
-                        'email':email
-                    }
-                    Conn=GetConnection()
-                    result=DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
-                    Conn=GetConnection()
-                    if result:
-                        message=True
-                else:
-                    message=False
-            result=simplejson.dumps(message)
-            return HttpResponse(result,mimetype='application/json')    
-def ListAllUser(request):
-    if request.method=='GET':
-        if request.is_ajax():
-            query="select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
-            Conn=GetConnection()
-            user_list=DB.GetData(Conn,query,False)
-            Conn.close()
-            Column=['User Name','Full Name','Password','Designation','Email']
-            result={
-                'user_list':user_list,
-                'column':Column
-            }
-            result=simplejson.dumps(result)
-            return HttpResponse(result,mimetype='application/json')
-        
-def AssignTesters(request):
-    query="select pul.user_id,user_names,case when user_level='assigned_tester' then 'Tester' end as Designation,default_project,default_team from permitted_user_list pul, default_choice ds, user_info ui where ui.full_name=pul.user_names and cast(ds.user_id as int)=pul.user_id and user_level in ('assigned_tester')"
-    Conn=GetConnection()
-    user_with_project=DB.GetData(Conn, query,False)
-    Conn.close()
-    query="select distinct pul.user_id,user_names, case when user_level='assigned_tester' then 'Tester' end as Designation from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names and user_level in ('assigned_tester')"
-    Conn=GetConnection()
-    user_without_project=DB.GetData(Conn,query,False)
-    Conn.close()
-    final=[]
-    name_found=[]
-    for each in user_with_project:
-        final.append(each)
-        name_found.append(each[1])
-    for each in user_without_project:
-        if each[1] not in name_found:
-            each=list(each)
-            each.append('')
-            each.append('')
-            final.append(tuple(each))
-            name_found.append(each[1])
-    print final
-    query="select distinct projects"
-    column=['User Name', 'Designation', "Project ID", 'Team']
-    return render_to_response('AssignTesters.html',{'column':column,'data':final},context_instance=RequestContext(request))
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
@@ -11962,28 +11341,5 @@ def ServeProfilePictureURL(request):
             print e
         finally:
             Conn.close()
-    
-    return HttpResponse('')
-
-def RemoveProfilePicture(request):
-    username = request.GET.get('username', None)
-    print "USERNAME: %s" % username
-    
-    Conn = GetConnection()
-    cur = Conn.cursor()
-    
-    query = '''
-    UPDATE user_info SET profile_picture_name = NULL WHERE username='%s'
-    ''' % (username)
-
-    try:
-        cur.execute(query)
-        Conn.commit()
-    except Exception as e:
-        print e
-        # Return a serever error in case of i/o failure
-        return HttpResponse(status=500)
-    finally:
-        Conn.close()
     
     return HttpResponse('')

@@ -1,7 +1,7 @@
 import os
 
 from django.conf.urls import *  # @UnusedWildImport 
-import urls_direct
+
 from MySite.views import *  # @UnusedWildImport
 from MySite.views import select2
 
@@ -25,12 +25,9 @@ urlpatterns = patterns('',
     url(r'^Home/FileUploadSuccess/(?P<success>.+)/$', FileUploadTestOnSuccess),
     url(r'^Home/UserInfo/UploadProfilePicture/$', UploadProfilePicture),
     url(r'^Home/UserInfo/ServeProfilePictureURL/$', ServeProfilePictureURL),
-    url(r'^Home/RemoveProfilePicture/', RemoveProfilePicture),
-    )
-
-urlpatterns += patterns('',
+    
     url(r'^Home/select2/$', select2),
-
+        
     # Result Page
     # url(r'^Home/Search/$',Search),
     url(r'^Home/Login/$', LoginPage),
@@ -41,7 +38,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/GetFilteredDataResult/$', GetFilteredDataResult),
     url(r'^Home/RunID/(?P<Run_Id>[^/]*)/$', Search2),
     url(r'^Home/.*/RunID_New/$', RunID_New),
-    url(r'^Home/', include('urls_direct')),
+    url(r'^Home/RunID/(?P<Run_Id>[^/]*)/TC/(?P<TC_Id>[^/]*)/$', RunIDTestCases),
     url(r'^Home/.*/DataFetchForTestCases/$', DataFetchForTestCases),
     url(r'^Home/.*/TestDataFetch/$', TestDataFetch),
     url(r'^Home/.*/UpdateData/$', UpdateData),
@@ -98,7 +95,9 @@ urlpatterns += patterns('',
     url(r'^Home/ManageTestCases/Create/Submit_New_TestCase/$', Create_Submit_New_TestCase),
     url(r'^Home/.*/Submit_New_TestCase/$', Create_Submit_New_TestCase),
     url(r'^Home/.*/GetSections/$', Get_Sections),
+    url(r'^Home/.*/GetSubSections/$', Get_SubSections),
     url(r'^Home/.*/GetFeatures/$', Get_Features),
+    url(r'^Home/.*/GetSubFeatures/$', Get_SubFeatures),
     url(r'^Home/.*/GetBrowsers/$', Get_Browsers),
     url(r'^Home/.*/GetVersions/$', Get_Versions),
     url(r'^Home/.*/GetTesters/$', Get_Testers),
@@ -248,7 +247,6 @@ urlpatterns += patterns('',
     url(r'^Home/.*/BugOperation/$',BugOperation),
     url(r'^Home/ManageLabel/$',ManageLabel),
     url(r'^Home/.*/CreateLabel/$',CreateLabel),
-    #url(r'^Home/.*/GetLabels/$',Get_Labels),
     url(r'^Home/ManageRequirement/$',ManageRequirement),
     url(r'^Home/ManageTeam/$',ManageTeam),
     url(r'^Home/.*/GetTesterManager/$',GetTesterManager),
@@ -291,9 +289,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/Get_RequirementSections/$',Get_RequirementSections),
     url(r'^Home/.*/SubmitNewTask/$',SubmitNewTask),
     url(r'^Home/.*/SubmitEditedTask/$',SubmitEditedTask),
-    url(r'^Home/.*/SubmitChildTask/$',SubmitChildTask),
     url(r'^Home/(?P<project_id>[^/]*)/EditTask/(?P<task_id>[^/]*)/$', EditTask),
-    url(r'^Home/(?P<project_id>[^/]*)/ChildTask/(?P<task_id>[^/]*)/$', ChildTask),
     url(r'^Home/.*/Tasks_List/$',Tasks_List),
     url(r'^Home/.*/GetTeamInfoPerProject/$',GetTeamInfoPerProject),
     url(r'^Home/.*/UpdateAccountInfo/$',updateAccountInfo),
@@ -332,16 +328,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/get_default_settings/$',get_default_settings),
     url(r'^Home/Machine/(?P<machine_id>[^/]*)/$',edit_machine),
     url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': site_media}),
-    )
+    
+)
 
-urlpatterns += patterns('',
-    url(r'^Home/.*/GetSubSections/$', Get_SubSections),
-    url(r'^Home/.*/GetSubFeatures/$', Get_SubFeatures),  
-    url(r'^Home/(?P<project_id>[^/]*)/EditRequirement/(?P<req_id>[^/]*)/$',Edit_Requirement),
-    url(r'^Home/(?P<project_id>[^/]*)/ChildRequirement/(?P<req_id>[^/]*)/$',Child_Requirement),
-    url(r'^Home/.*/Selected_Requirement_Analaysis/$',Selected_Requirement_Analaysis), 
-    url(r'^Home/.*/SubmitEditRequirement/$',SubmitEditRequirement), 
-    url(r'^Home/.*/SubmitChildRequirement/$',SubmitChildRequirement),
-    url(r'^Home/.*/AutoCompleteLabel/$',AutoCompleteLabel),
-    url(r'^Home/.*/AutoCompleteTask/$',AutoCompleteTask), 
-    )
+
