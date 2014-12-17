@@ -11895,10 +11895,10 @@ def UploadProfilePicture(request):
                 try:
                     os.makedirs(path)
                 except OSError as e:
-                    if e.errno == errno.EEXIST:  # This case should never be approached
-                        print "Directory already exists"
-                    else:
-                        print "Could not make directory: %s" % path
+#                     if e.errno == errno.EEXIST:  # This case should never be approached
+#                         print "Directory already exists"
+#                     else:
+                    print "Could not make directory: %s" % path
                     
                     return HttpResponseRedirect('/Home/User/%s/unsuccessful/' % user_id)
         
