@@ -11967,7 +11967,7 @@ def ServeProfilePictureURL(request):
 
 def RemoveProfilePicture(request):
     username = request.GET.get('username', None)
-    print "USERNAME: %s" % username
+#     print "USERNAME: %s" % username
     
     Conn = GetConnection()
     cur = Conn.cursor()
