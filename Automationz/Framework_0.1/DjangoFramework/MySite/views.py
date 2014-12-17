@@ -11964,3 +11964,26 @@ def ServeProfilePictureURL(request):
             Conn.close()
     
     return HttpResponse('')
+
+def RemoveProfilePicture(request):
+    username = request.GET.get('username', None)
+    print "USERNAME: %s" % username
+    
+    Conn = GetConnection()
+    cur = Conn.cursor()
+    
+    query = '''
+    UPDATE user_info SET profile_picture_name = NULL WHERE username='%s'
+    ''' % (username)
+
+    try:
+        cur.execute(query)
+        Conn.commit()
+    except Exception as e:
+        print e
+        # Return a serever error in case of i/o failure
+        return HttpResponse(status=500)
+    finally:
+        Conn.close()
+    
+    return HttpResponse('')
