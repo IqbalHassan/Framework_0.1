@@ -7723,10 +7723,11 @@ def manage_test_cases(request):
             # Convert the data into a list
 #             data = list(DB.GetData(Conn, query, False))
             Conn = GetConnection()
-            cur = Conn.cursor()
-            cur.execute(query)
-            data = cur.fetchall()
-            time.sleep(0.5)
+            data = DB.GetData(Conn, query, False, False)
+#             cur = Conn.cursor()
+#             cur.execute(query)
+#             data = cur.fetchall()
+#             time.sleep(0.5)
             
             sections = []
             parent_sections = []
@@ -7757,7 +7758,7 @@ def manage_test_cases(request):
             for i in data:
                 temp = {}
                 section = i[1].split('.')
-                print section
+#                 print section
                 for parent_section in parent_sections:
                     if section[0] == parent_section['text']:
                         temp['id'] = i[0]
@@ -7850,7 +7851,6 @@ def manage_tc_data(request):
                 Conn.close()
                 return HttpResponse(result, mimetype='application/json')
             else:
-                Conn.close()
                 return HttpResponse('', mimetype='application/json')
 def FilterDataForRunID(request):
     if request.is_ajax():
@@ -11901,10 +11901,10 @@ def UploadProfilePicture(request):
                 try:
                     os.makedirs(path)
                 except OSError as e:
-                    if e.errno == errno.EEXIST:  # This case should never be approached
-                        print "Directory already exists"
-                    else:
-                        print "Could not make directory: %s" % path
+#                     if e.errno == errno.EEXIST:  # This case should never be approached
+#                         print "Directory already exists"
+#                     else:
+                    print "Could not make directory: %s" % path
                     
                     return HttpResponseRedirect('/Home/User/%s/unsuccessful/' % user_id)
         
@@ -11968,5 +11968,28 @@ def ServeProfilePictureURL(request):
             print e
         finally:
             Conn.close()
+    
+    return HttpResponse('')
+
+def RemoveProfilePicture(request):
+    username = request.GET.get('username', None)
+#     print "USERNAME: %s" % username
+    
+    Conn = GetConnection()
+    cur = Conn.cursor()
+    
+    query = '''
+    UPDATE user_info SET profile_picture_name = NULL WHERE username='%s'
+    ''' % (username)
+
+    try:
+        cur.execute(query)
+        Conn.commit()
+    except Exception as e:
+        print e
+        # Return a serever error in case of i/o failure
+        return HttpResponse(status=500)
+    finally:
+        Conn.close()
     
     return HttpResponse('')

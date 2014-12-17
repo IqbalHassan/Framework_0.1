@@ -58,6 +58,21 @@ $(document).ready(function(){
         });
     });
     Submit_button_preparation();
+    
+    $('#remove_profile_picture').on('click', function() {
+    	var username = $('#username').val().trim();
+//    	console.log('Remove profile picture:', username);
+		$.get('/Home/RemoveProfilePicture', {'username': username})
+		.done(function(data) {
+			 alertify.success('Profile picture removed successfully.<br><span style="font-size: 0.8em;">Reloading in 3 seconds.</span>', 3000);
+			 setTimeout(function() {
+				 window.location.reload();
+			 }, 3000);
+		})
+		.fail(function() {
+			alertify.error('Could not remove profile picture.<br><span style="font-size: 0.8em;">Click to dismiss</span>');
+		});
+    });
 });
 function Submit_button_preparation(){
     $('#selected_project_id').on('change',function(){
