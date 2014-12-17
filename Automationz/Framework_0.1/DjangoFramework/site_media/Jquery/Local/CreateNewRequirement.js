@@ -220,8 +220,26 @@ function PopulateReqInfo(req_id){
             + '<input type="checkbox" checked="true" name="tasks" value="'
             + data['tasks'][i][0]
             + '"/>' +
-            '</td><td>'
+            '</td><td>' +
+            data['tasks'][i][0] +
+            '</td>' +
+            '<td>'
             + data['tasks'][i][1]
+            + "</td>" +
+            '<td>'
+            + data['tasks'][i][2]
+            + "</td>" +
+            '<td>'
+            + data['tasks'][i][3]
+            + "</td>" +
+            '<td>'
+            + data['tasks'][i][4]
+            + "</td>" +
+            '<td>'
+            + data['tasks'][i][5]
+            + "</td>" +
+            '<td>'
+            + data['tasks'][i][6]
             + "</td>" +
             "</tr>");
         });
@@ -479,9 +497,26 @@ function AutoCompleteTask(){
                 + '<input type="checkbox" checked="true" name="tasks" value="'
                 + id
                 + '"/>' +
+                '</td><td>' +
+                id +
                 '</td><td>'
                 + name
-                + "</td>" +
+                + '</td>' +
+                '<td>' +
+                ui.item[2] +
+                '</td>' +
+                '<td>' +
+                ui.item[3] +
+                '</td>' +
+                '<td>' +
+                ui.item[4] +
+                '</td>' +
+                '<td>' +
+                ui.item[5] +
+                '</td>' +
+                '<td>' +
+                ui.item[6] +
+                '</td>' +
                 "</tr>");
             }
             return false;

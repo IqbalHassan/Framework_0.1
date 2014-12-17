@@ -22,7 +22,7 @@ def insert_new_section(Conn,new_task_path):
     Conn.commit()
     return sequence
         
-def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels):
+def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases):
     try:
         Conn=GetConnection()
         query="select nextval('taskid_seq')"
@@ -98,6 +98,17 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
                                'type':'TASK'
                     }
                     hehe_result=DB.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
+                    
+            if test_cases[0] != '':
+                for each in test_cases:
+                    cases_Dict={
+                               'id1':task_id,
+                               'id2':each.strip(),
+                               'type1':'TASK',
+                               'type2':'TC'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                    
             
             return task_id
         
@@ -110,7 +121,7 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
         
         
         
-def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels):
+def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases):
     try:
         Conn=GetConnection()
         
@@ -182,6 +193,18 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
                                'type':'TASK'
                     }
                     hehe_result=DB.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
+                    
+            if test_cases[0] != '':
+                lsres=DB.DeleteRecord(Conn,"components_map", id=task_id)
+                for each in test_cases:
+                    cases_Dict={
+                               'id1':task_id,
+                               'id2':each.strip(),
+                               'type1':'TASK',
+                               'type2':'TC'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)        
+                    
             return task_id
         
         
@@ -193,7 +216,7 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
         
         
         
-def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels):
+def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases):
     try:
         Conn=GetConnection()
         query="select nextval('taskid_seq')"
@@ -274,6 +297,16 @@ def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,
                                'type':'TASK'
                     }
                     hehe_result=DB.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
+                    
+            if test_cases[0] != '':
+                for each in test_cases:
+                    cases_Dict={
+                               'id1':task_id,
+                               'id2':each.strip(),
+                               'type1':'TASK',
+                               'type2':'TC'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
             
             return task_id
         

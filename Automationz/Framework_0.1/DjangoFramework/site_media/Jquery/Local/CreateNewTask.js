@@ -356,6 +356,11 @@ function Submit_button_preparation(){
             labels.push($(this).val());
         });
 
+        var test_cases=[];
+        $('input[name="test_cases"]:checked').each(function(){
+            test_cases.push($(this).val());
+        });
+
         if(operation==1){
             $.get('SubmitNewTask/',{
                 'title':title,
@@ -371,7 +376,8 @@ function Submit_button_preparation(){
                 //'section_path':newSectionPath,
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
-                'labels':labels.join("|")
+                'labels':labels.join("|"),
+                test_cases:test_cases.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
@@ -394,7 +400,8 @@ function Submit_button_preparation(){
                 //'section_path':newSectionPath,
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
-                'labels':labels.join("|")
+                'labels':labels.join("|"),
+                test_cases:test_cases.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
@@ -416,7 +423,8 @@ function Submit_button_preparation(){
                 'section_path':newsectionpath,
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
-                'labels':labels.join("|")
+                'labels':labels.join("|"),
+                test_cases:test_cases.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);

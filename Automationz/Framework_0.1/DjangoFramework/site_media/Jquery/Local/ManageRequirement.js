@@ -62,7 +62,7 @@ function make_clickable(divname) {
             'textAlign': 'left'
         });
         $(this).click(function(){
-            window.location = '/Home/'+ $.session.get('project_id')+'/Requirements/'+$(this).text().trim()+'/';
+            window.location = '/Home/'+ $.session.get('project_id')+'/EditRequirement/'+$(this).text().trim()+'/';
         })
     });
 

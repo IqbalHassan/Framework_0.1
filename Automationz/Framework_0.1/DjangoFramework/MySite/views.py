@@ -836,7 +836,7 @@ def AutoCompleteTask(request):
             project_id = request.GET.get(u'term','')
             print value
             Conn = GetConnection()
-            query = "select tasks_id,tasks_title from tasks where tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%'" % (value, value)
+            query = "select tasks_id,tasks_title,tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%'" % (value, value)
             task_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(task_list)
@@ -6995,7 +6995,7 @@ def Get_MileStones(request):
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by id desc"
+            query = "select distinct name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by name"
             milestone_list = DB.GetData(Conn, query, False)
     Heading = ['Milestone Name','Description', 'Starting Date', 'Due Date', 'Status']
     results = {'Heading':Heading, 'TableData':milestone_list}
@@ -8388,7 +8388,7 @@ def Selected_Requirement_Analaysis(request):
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='REQ' order by label_name" % UserData
         labels = DB.GetData(Conn,query)
         
-        query = "select t.tasks_id, tasks_title from components_map cm, tasks t where id1='%s' and type1='REQ' and type2='TASK' and t.tasks_id=cm.id2" % UserData
+        query = "select distinct t.tasks_id, tasks_title, tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from components_map cm, tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and id1='%s' and type1='REQ' and type2='TASK' and t.tasks_id=cm.id2" % UserData
         tasks = DB.GetData(Conn,query,False)
         
         #query = "select team_id from task_team_map where task_id='%s'" %UserData
@@ -8458,7 +8458,7 @@ def Bugs_List(request):
 
         now=datetime.datetime.now().date()
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id order by b.bug_id desc"
+        query="select distinct bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id order by b.bug_id desc"
         bugs=DB.GetData(Conn, query, False)
         
         query="select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, label_map blm where l.label_id=blm.label_id"
@@ -8588,7 +8588,7 @@ def Selected_BugID_Analaysis(request):
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_Bug_Analysis', '')
 
-        query = "select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs where bug_id = '%s'" % UserData
+        query = "select distinct bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs where bug_id = '%s'" % UserData
         Bug_Info = DB.GetData(Conn, query, False)
         
         query = "select distinct l.label_id from label_map blm, labels l where blm.id = '%s' and blm.label_id = l.label_id" % UserData
@@ -8597,7 +8597,7 @@ def Selected_BugID_Analaysis(request):
         query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 ilike '%s' and btm.id2=tc.tc_id" % UserData
         Bug_Cases = DB.GetData(Conn, query, False)
         
-        query = "select pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester::int=pul.user_id" % UserData
+        query = "select distinct pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester::int=pul.user_id" % UserData
         tester = DB.GetData(Conn, query)
         
         query = "select distinct tc.tc_id, tc.tc_name, tcr.status from test_case_results tcr, test_cases tc where tc.tc_id=tcr.tc_id and tcr.status='Failed' and tc.tc_id not in (select id2 from components_map) order by tc.tc_id"
@@ -10322,7 +10322,9 @@ def SubmitNewTask(request):
             user_name=request.GET.get(u'user_name','')
             labels = request.GET.get(u'labels','')
             labels=labels.split("|")
-            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
+            test_cases=request.GET.get(u'test_cases','')
+            test_cases=test_cases.split("|")
+            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 
@@ -10347,7 +10349,9 @@ def SubmitEditedTask(request):
             user_name=request.GET.get(u'user_name','')
             labels = request.GET.get(u'labels','')
             labels=labels.split("|")
-            result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
+            test_cases=request.GET.get(u'test_cases','')
+            test_cases=test_cases.split("|")
+            result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 
@@ -10372,7 +10376,9 @@ def SubmitChildTask(request):
             user_name=request.GET.get(u'user_name','')
             labels = request.GET.get(u'labels','')
             labels=labels.split("|")
-            result=TaskOperations.CreateChildTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels)
+            test_cases=request.GET.get(u'test_cases','')
+            test_cases=test_cases.split("|")
+            result=TaskOperations.CreateChildTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 
