@@ -81,7 +81,7 @@ function TestCaseLinking(){
             var name=ui.item[1].trim();
 
             if(value!=""){
-                $(".linking").append('<tr>' +
+                $(".tc_linking").append('<tr>' +
                 '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
                 + '<td>'
                 + '<input type="checkbox" checked="true" name="test_cases" value="'
@@ -206,6 +206,20 @@ function PopulateTaskInfo(task_id){
                 $(this).prop('checked',true);
             }
         });
+
+        $(data['cases']).each(function(i){
+            $(".tc_linking").append('<tr>' +
+            '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+            + '<td>'
+            + '<input type="checkbox" checked="true" name="test_cases" value="'
+            + data['cases'][i][0]
+            + '"/>' +
+            '</td><td>'
+            + data['cases'][i][1]
+            + "</td>" +
+            "</tr>");
+        });
+
 
         //ResultTable(parents_table,data['Heading'],data['parents'],"Parent Tasks");
 

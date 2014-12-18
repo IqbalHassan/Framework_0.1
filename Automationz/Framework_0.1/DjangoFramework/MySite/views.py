@@ -8339,6 +8339,9 @@ def Selected_TaskID_Analaysis(request):
         query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='TASK' and fm.feature_id=pf.feature_id::text" % UserData
         feature = DB.GetData(Conn, query, False)
         
+        query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 = '%s' and btm.id2=tc.tc_id and type1='TASK' and type2='TC'" % UserData
+        cases = DB.GetData(Conn,query,False)
+        
         #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
         #milestone = DB.GetData(Conn,query)
         
@@ -8360,7 +8363,7 @@ def Selected_TaskID_Analaysis(request):
             parents.append(temp)"""
 
     Heading = ['Path','Task-ID','Status','Milestone']
-    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels}
+    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels, 'cases':cases}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')

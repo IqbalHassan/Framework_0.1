@@ -149,7 +149,7 @@ def EditBug(bug_id,title,status,description,start_date,end_date,team,priority,mi
         result = DB.UpdateRecordInTable(Conn,"bugs", condition, **Dict)
         
         if test_cases[0] != '':
-            tcres=DB.DeleteRecord(Conn, "components_map", id1=bug_id)
+            tcres=DB.DeleteRecord(Conn, "components_map", id1=bug_id, type1='BUG', type2='TC')
             for each in test_cases:
                 cases_Dict={
                            'id1':bug_id,
