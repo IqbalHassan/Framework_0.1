@@ -109,7 +109,6 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
                     }
                     new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                     
-            
             return task_id
         
         
@@ -195,7 +194,7 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
                     hehe_result=DB.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
                     
             if test_cases[0] != '':
-                lsres=DB.DeleteRecord(Conn,"components_map", id=task_id)
+                lsres=DB.DeleteRecord(Conn,"components_map", id1=task_id,type1='TASK',type2='TC')
                 for each in test_cases:
                     cases_Dict={
                                'id1':task_id,
