@@ -5758,7 +5758,53 @@ def TestStepWithTypeInTable(request):
     results = {'Result':result, 'column':column}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
-
+def ViewRunIDTestCases(request, Run_Id, TC_Id):
+    print Run_Id
+    print TC_Id
+    Conn = GetConnection()
+    query = "select tc_name from result_test_cases where tc_id='%s' and run_id='%s'" % (TC_Id, Run_Id)
+    testcasename = DB.GetData(Conn, query, False)
+    dquery = "select name from result_test_case_tag where tc_id='%s' and property='JiraId' and run_id='%s'" % (TC_Id, Run_Id)
+    defectid = DB.GetData(Conn, dquery, False)
+    defectid = [x[0] for x in defectid]
+    id1 = ', '.join(defectid)
+    tquery = "select name from result_test_case_tag where tc_id='%s' and property='MKS' and run_id='%s'" % (TC_Id, Run_Id)
+    mksid = DB.GetData(Conn, tquery, False)
+    mksid = [x[0] for x in mksid]
+    id2 = ', '.join(mksid)
+    rquery = "select name from result_test_case_tag where tc_id='%s' and property='PRDId' and run_id='%s'" % (TC_Id, Run_Id)
+    requirementid = DB.GetData(Conn, rquery, False)
+    requirementid = [x[0] for x in requirementid]
+    id3 = ', '.join(requirementid)
+    
+    section_path = ''
+    
+    try:
+        query = '''
+        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
+        ''' % ('section_id', TC_Id)
+        data = DB.GetData(Conn, query, False, False)
+        section_id = int(data[0][0])
+        
+        query = '''
+        SELECT section_path FROM product_sections WHERE section_id=%d
+        ''' % section_id
+        data = DB.GetData(Conn, query, False, False)
+        section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
+        
+    except:
+        print '-'
+    
+    return render_to_response('ViewRunIDEditTestCases.html',
+                              {
+                              'runid':Run_Id,
+                              'testcaseid':TC_Id,
+                              'testcasename':testcasename[0][0],
+                              'defectid':id1,
+                              'mksid':id2,
+                              'requirementid':id3,
+                              'section_path': section_path
+                              })
 def RunIDTestCases(request, Run_Id, TC_Id):
     print Run_Id
     print TC_Id
@@ -8094,6 +8140,33 @@ def EditTask(request,task_id,project_id):
               'priority_list':priority,
               'milestone_list':milestone_list,
               'user_list':user_list
+        }
+    return render_to_response("CreateNewTask.html",Dict)
+def ChildTask(request,task_id,project_id):
+    task_id = request.GET.get('task_id', '')
+    project_id = request.GET.get('project_id', '')
+    
+    if task_id != "":
+        return render_to_response('CreateNewTask.html')
+    else:
+        Conn=GetConnection()
+        query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
+        team_info=DB.GetData(Conn,query,False)
+        query="select value from config_values where type='Priority'"
+        priority=DB.GetData(Conn,query,False)
+        query="select id,value from config_values where type='milestone'"
+        milestone_list=DB.GetData(Conn,query,False)
+        #get the names from permitted_user_list
+        query="select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)" 
+        user_list=DB.GetData(Conn,query,False)
+        query = "select label_id,label_name,Label_color from labels order by label_name"
+        labels = DB.GetData(Conn,query,False)
+        Dict={
+              'team_info':team_info,
+              'priority_list':priority,
+              'milestone_list':milestone_list,
+              'user_list':user_list,
+              'labels':labels
         }
     return render_to_response("CreateNewTask.html",Dict)
 
@@ -11208,6 +11281,208 @@ def CreateLevelWiseFeature(request):
             PassMessasge(sModuleInfo, PostError, error_tag)
     except Exception,e:
             PassMessasge(sModuleInfo, e, 3)
+
+def AutoTestCasePass(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method=='GET':
+            if request.is_ajax():
+                run_id=request.GET.get(u'run_id','')
+                test_cases=request.GET.get(u'test_cases','').split('|')
+                for each in test_cases:
+                    query="select tsr.id, teststep_id from test_case_results tcr, test_step_results tsr where tcr.run_id=tsr.run_id and tsr.testcaseresulttindex=tcr.id and tcr.run_id='%s' and tcr.tc_id='%s'"%(run_id.strip(),each.strip())
+                    Conn=GetConnection()
+                    test_step_list=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    Dict={'status':'Passed'}
+                    for eachitem in test_step_list:
+                        sWhereQuery="where id=%d and teststep_id=%d and run_id='%s' and tc_id='%s'"%(eachitem[0],eachitem[1],run_id.strip(),each.strip())
+                        Conn=GetConnection()
+                        print DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
+                        Conn.close()
+                    sWhereQuery="where run_id='%s' and tc_id='%s'"%(run_id.strip(),each.strip())
+                    Conn=GetConnection()
+                    Dict.update({'failreason':''})
+                    print DB.UpdateRecordInTable(Conn,"test_case_results",sWhereQuery,**Dict)
+                    Conn.close()
+                message=True
+                result=simplejson.dumps(message)
+                return HttpResponse(result,mimetype='application/json')                        
+    except Exception,e:
+            PassMessasge(sModuleInfo, e, 3)
+def specific_dependency_settings(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.is_ajax():
+            if request.method == 'GET':
+                UserData = request.GET.get(u'Query', '')
+                if UserData!='':
+                    UserText = UserData.split(":");
+                    project_id=request.GET.get(u'project_id','')
+                    team_id=request.GET.get(u'team_id','')
+                    QueryText = []
+                    for eachitem in UserText:
+                        if len(eachitem) != 0 and  len(eachitem) != 1 and eachitem.strip() not in QueryText:
+                            QueryText.append(eachitem.strip())
+                    print QueryText
+                    Section_Tag = 'Section'
+                    Feature_Tag = 'Feature'
+                    Custom_Tag = 'CustomTag'
+                    Section_Path_Tag = 'section_id'
+                    Feature_Path_Tag = 'feature_id'
+                    Priority_Tag = 'Priority'
+                    set_type='set'
+                    tag_type='tag'
+                    Status='Status'
+                    query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
+                    Conn=GetConnection()
+                    dependency=DB.GetData(Conn,query)
+                    Conn.close()
+                    wherequery=""
+                    for each in dependency:
+                        wherequery+=("'"+each.strip()+"'")
+                        wherequery+=','
+                    wherequery+=("'"+Section_Tag+"','"+Feature_Tag+"','"+Custom_Tag+"','"+Section_Path_Tag+"','"+Feature_Path_Tag+"','"+Priority_Tag+"','"+Status+"','"+set_type+"','"+tag_type+"'")
+                    print wherequery
+                    TestIDList = []
+                    for eachitem in QueryText:
+                        Conn=GetConnection()
+                        TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
+                        Conn.close()
+                        for eachProp in TestID:
+                            if eachProp == 'tcid':
+                                TestIDList.append(eachitem)
+                                break
+                    TableData = []
+                    if len(TestIDList) > 0:
+                        for eachitem in TestIDList:
+                            query="select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,team_id)
+                            Conn=GetConnection()
+                            tabledata = DB.GetData(Conn,query)
+                            Conn.close()
+                            print tabledata
+                            if tabledata:
+                                TableData.append(tabledata[0])
+                    else:
+                        count = 1
+                        for eachitem in QueryText:
+                            if count == 1:
+                                Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
+                                count=count+1
+                            else:
+                                Query+="AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip(),wherequery)
+                                count=count+1
+                        Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+                        Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+                        query = "select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
+                        Conn=GetConnection()
+                        TableData = DB.GetData(Conn, query)        
+                        Conn.close()
+                    final_data=[]    
+                    for each in TableData:
+                        final_data.append("'"+each+"'")
+                    test_case_ids="("+",".join(final_data)+")"
+                    test_case_query="select property,array_agg(distinct name) from test_case_tag tct, dependency d where d.dependency_name=tct.property and tc_id in "+test_case_ids+" group by property" 
+                    Conn=GetConnection()
+                    final_list=DB.GetData(Conn,test_case_query,False)
+                    Conn.close()
+                    result=simplejson.dumps(final_list)
+                    return HttpResponse(result,mimetype='application/json')        
+    except Exception,e:
+            PassMessasge(sModuleInfo, e, 3)
+def admin_page(request):
+    return render_to_response('superAdmin.html',{},context_instance=RequestContext(request))
+def superAdminFunction(request):
+    return render_to_response('superAdminFunction.html',{},context_instance=RequestContext(request))
+def GetProjectOwner(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            value=request.GET.get(u'term','')
+            print value
+            query="select distinct user_id,user_names,case when user_level='assigned_tester' then 'Tester' when user_level='manager' then 'Manager' end  from permitted_user_list pul, user_info ui where pul.user_names=ui.full_name and user_level not in('email','admin') and user_names iLike '%%%s%%'"%(value.strip())
+            Conn=GetConnection()
+            owner_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            result=simplejson.dumps(owner_list)
+            return HttpResponse(result,mimetype='application/json')
+def Create_New_User(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            full_name=request.GET.get(u'full_name','').strip()
+            user_name=request.GET.get(u'user_name','').strip()
+            email=request.GET.get(u'email','').strip()
+            password=request.GET.get(u'password','').strip()
+            user_level=request.GET.get(u'user_level','').strip()
+            query="select count(*) from user_info where full_name='%s'"%(full_name.strip())
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            Conn.close()
+            if len(count)==1 and count[0]==0:
+                #insert the new user
+                Dict={
+                    'username':user_name,
+                    'password':password,
+                    'full_name':full_name
+                }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"user_info",**Dict)
+                Conn.close()
+                if result:
+                    Dict={
+                        'user_names':full_name,
+                        'user_level':user_level,
+                        'email':email
+                    }
+                    Conn=GetConnection()
+                    result=DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
+                    Conn=GetConnection()
+                    if result:
+                        message=True
+                else:
+                    message=False
+            result=simplejson.dumps(message)
+            return HttpResponse(result,mimetype='application/json')    
+def ListAllUser(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            query="select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
+            Conn=GetConnection()
+            user_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            Column=['User Name','Full Name','Password','Designation','Email']
+            result={
+                'user_list':user_list,
+                'column':Column
+            }
+            result=simplejson.dumps(result)
+            return HttpResponse(result,mimetype='application/json')
+        
+def AssignTesters(request):
+    query="select pul.user_id,user_names,case when user_level='assigned_tester' then 'Tester' end as Designation,default_project,default_team from permitted_user_list pul, default_choice ds, user_info ui where ui.full_name=pul.user_names and cast(ds.user_id as int)=pul.user_id and user_level in ('assigned_tester')"
+    Conn=GetConnection()
+    user_with_project=DB.GetData(Conn, query,False)
+    Conn.close()
+    query="select distinct pul.user_id,user_names, case when user_level='assigned_tester' then 'Tester' end as Designation from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names and user_level in ('assigned_tester')"
+    Conn=GetConnection()
+    user_without_project=DB.GetData(Conn,query,False)
+    Conn.close()
+    final=[]
+    name_found=[]
+    for each in user_with_project:
+        final.append(each)
+        name_found.append(each[1])
+    for each in user_without_project:
+        if each[1] not in name_found:
+            each=list(each)
+            each.append('')
+            each.append('')
+            final.append(tuple(each))
+            name_found.append(each[1])
+    print final
+    query="select distinct projects"
+    column=['User Name', 'Designation', "Project ID", 'Team']
+    return render_to_response('AssignTesters.html',{'column':column,'data':final},context_instance=RequestContext(request))
+
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
