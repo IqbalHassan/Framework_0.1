@@ -73,6 +73,7 @@ $(document).ready(function(){
 			alertify.error('Could not remove profile picture.<br><span style="font-size: 0.8em;">Click to dismiss</span>');
 		});
     });
+    
 });
 function Submit_button_preparation(){
     $('#selected_project_id').on('change',function(){
