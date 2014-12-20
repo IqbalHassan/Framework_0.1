@@ -1260,7 +1260,7 @@ def AddEstimatedTime(TestCaseList, run_id):
 def RunId_TestCases(request, RunId):  #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
     RunId = RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID", "Mahchine", "Tester", "Estd. Time", "Status", "Version","Dependency", "Machine IP", "Objective", "MileStone" ,"Email","Project","Team"]
+    Env_Details_Col = ["Run ID", "Machine", "Tester", "Estd. Time", "Status", "Version","Dependency", "Machine IP", "Objective", "MileStone" ,"Email","Project","Team"]
     run_id_status = GetRunIDStatus(RunId)
     query = "Select DISTINCT run_id,tester_id,assigned_tester,'%s',branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),machine_ip,test_objective,test_milestone from test_run_env tre,machine_dependency_settings mds Where tre.id=mds.machine_serial and run_id = '%s' group by run_id,tester_id,assigned_tester,branch_version,machine_ip,test_objective,test_milestone" % (run_id_status,RunId)
     Conn=GetConnection()
@@ -1762,15 +1762,9 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     
                     project_id=request.GET.get(u'project_id','')
                     team_id=request.GET.get(u'team_id','')
-                    feature_path=request.GET.get(u'feature_path','')
                     start_date=request.GET.get(u'start_date','')
                     end_date=request.GET.get(u'end_date','')
                     
-                    query="select feature_id from product_features where feature_path ~ '%s'"%feature_path
-                    Conn=GetConnection()
-                    feature_id=DB.GetData(Conn,query)
-                    Conn.close()
-                    feature_id=int(feature_id[0])
                     start_date=start_date.split('-')
                     starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
                     end_date=end_date.split('-')
@@ -1946,7 +1940,6 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                       'test_milestone':TestMileStone,
                       'run_type':'Manual',
                       'assigned_tester':Testers,
-                      'feature_id':feature_id,
                       'start_date':starting_date,
                       'end_date':ending_date
                 }
@@ -7403,6 +7396,7 @@ def GetFilteredDataResult(request):
             currentPagination = request.GET.get(u'pagination', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
+            capacity=request.GET.get(u'capacity','')
             print currentPagination
             # UserText=str(UserText)
             UserText = UserText.replace(u'\xa0', u'|')
@@ -7438,12 +7432,12 @@ def GetFilteredDataResult(request):
                 condition += " and "
             condition = condition[:-5].strip()
             print condition
-            final = NewResultFetch(condition, currentPagination,project_id,team_id)
+            final = NewResultFetch(condition, currentPagination,project_id,team_id,capacity)
     result = simplejson.dumps(final)
     return HttpResponse(result, mimetype='application/json')
-def NewResultFetch(condition, currentPagination,project_id,team_id):
+def NewResultFetch(condition, currentPagination,project_id,team_id,capacity):
     # pagination Code
-    step = 20
+    step = int(capacity)
     limit = ""
     limit += ("limit " + str(step))
     # ##determine offset
@@ -7451,7 +7445,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     stepDelete = int(step) * int(int(currentPagination) - 1)
     offset += ("offset " + str(stepDelete))
     print condition
-    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query = "select * from ((select distinct ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration, tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and mpm.machine_serial=tre.id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7463,7 +7457,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
         total_query += condition
     total_query += ") "
     total_query += "union all "
-    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query += "(select distinct ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration, tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and tre.id=mpm.machine_serial and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
     if project_id!="ALL":
