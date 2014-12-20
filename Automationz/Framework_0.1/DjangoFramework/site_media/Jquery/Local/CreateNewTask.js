@@ -10,6 +10,10 @@ var task_id = "";
 var newsectionpath = "";
 
 $(document).ready(function(){
+
+    var project_id= $.session.get('project_id');
+    var team_id= $.session.get('default_team_identity');
+
     $('#project_id').text($.session.get('project_id'));
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
     $('#ending_date').datepicker({ dateFormat: "yy-mm-dd" });
@@ -18,6 +22,8 @@ $(document).ready(function(){
 
     addingSections();
     TestCaseLinking();
+    Suggestion(project_id,team_id);
+    DeleteFilterData(project_id,team_id);
     //status_button_preparation();
     Submit_button_preparation();
 
@@ -47,7 +53,64 @@ $(document).ready(function(){
     console.log("Url Length:"+URL.length);
 
 });
+function Suggestion(project_id,team_id){
+    $("#searchbox").autocomplete(
+        {
+            source : function(request, response) {
+                $.ajax({
+                    url:"AutoCompleteTestCasesSearchOtherPages",
+                    dataType: "json",
+                    data:{ term: request.term,project_id:project_id,team_id:team_id},
+                    success: function( data ) {
+                        response( data );
+                    }
+                });
+            },
 
+            //source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
+            select : function(event, ui) {
+
+                var tc_id_name = ui.item[0].split(" - ");
+                var value = "";
+                if (tc_id_name != null)
+                    value = tc_id_name[0].trim();
+
+                if(value != "")
+                {
+                    $("#searchedFilter").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+                        + '<td name = "submitquery" class = "Text" style = "size:10">'
+                        + value
+                        + ":&nbsp"
+                        + '</td>'
+                    );
+                    PerformSearch(project_id,team_id);
+                }
+                $("#searchbox").val("");
+                return false;
+            }
+        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+
+    $("#searchbox").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+
+}
+function DeleteFilterData(project_id,team_id){
+    $('#searchedFilter td .delete').live('click',function(){
+        $(this).parent().next().remove();
+        $(this).remove();
+        PerformSearch(project_id,team_id);
+    });
+}
 function TestCaseLinking(){
 
     $(".search_case").autocomplete({
@@ -125,6 +188,81 @@ function TestCaseLinking(){
         $(this).parent().next().remove();
         $(this).remove();
 
+    });
+
+
+    $("#searchbox").autocomplete(
+        {
+            source : function(request, response) {
+                $.ajax({
+                    url:"AutoCompleteTestCasesSearchOtherPages",
+                    dataType: "json",
+                    data:{ term: request.term,project_id:project_id,team_id:team_id},
+                    success: function( data ) {
+                        response( data );
+                    }
+                });
+            },
+
+            //source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
+            select : function(event, ui) {
+
+                var tc_id_name = ui.item[0].split(" - ");
+                var value = "";
+                if (tc_id_name != null)
+                    value = tc_id_name[0].trim();
+
+                if(value != "")
+                {
+                    $("#searchedFilter").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+                        + '<td name = "submitquery" class = "Text" style = "size:10">'
+                        + value
+                        + ":&nbsp"
+                        + '</td>'
+                    );
+                    PerformSearch(project_id,team_id);
+                }
+                $("#searchbox").val("");
+                return false;
+            }
+        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+
+    $("#searchbox").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+
+}
+function PerformSearch(project_id,team_id){
+    $("#searchedFilter").each(function() {
+        var UserText = $(this).find("td").text();
+        UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        $.get('TableDataTestCasesOtherPages',{Query:UserText,test_status_request:false,project_id:project_id,team_id:team_id},function(data){
+            if(data['TableData'].length!=0){
+                ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
+                implementDropDown("#RunTestResultTable");
+                $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
+                    var id=$(this).closest('tr').find('td:first-child').text().trim();
+                    $(this).after('<div><input id="'+id+'" type="checkbox" class="Buttons add"/></div>');
+                });
+                $('#RunTestResultTable').css({'display':'block'});
+                $('#add_button').css({'display':'block'});
+
+            }
+            else{
+                $('#RunTestResultTable').html('<p style="font-weight: bold; text-align: center;" class="Text">There is no test cases for this filter</p>');
+                $('#RunTestResultTable').css({'display':'block'});
+                $('#add_button').css({'display':'none'});
+            }
+        });
     });
 }
 
