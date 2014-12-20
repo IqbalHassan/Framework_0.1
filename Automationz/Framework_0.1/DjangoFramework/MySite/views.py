@@ -770,7 +770,32 @@ def AutoCompleteTag(request):
             Conn.close()
     json = simplejson.dumps(tag_list)
     return HttpResponse(json, mimetype='application/json')
- 
+
+def AutoCompleteLabel(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            value = request.GET.get(u'term', '')
+            print value
+            Conn = GetConnection()
+            query = "select * from labels where label_name Ilike '%%%s%%' or label_id Ilike '%%%s%%'" % (value, value)
+            label_list = DB.GetData(Conn, query, False)
+            Conn.close()
+    json = simplejson.dumps(label_list)
+    return HttpResponse(json, mimetype='application/json')
+
+def AutoCompleteTask(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            value = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'term','')
+            print value
+            Conn = GetConnection()
+            query = "select tasks_id,tasks_title,tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%'" % (value, value)
+            task_list = DB.GetData(Conn, query, False)
+            Conn.close()
+    json = simplejson.dumps(task_list)
+    return HttpResponse(json, mimetype='application/json')
+  
 def AutoCompleteTesterSearch(request):
     if request.is_ajax():
         if request.method == 'GET':
@@ -1235,7 +1260,7 @@ def AddEstimatedTime(TestCaseList, run_id):
 def RunId_TestCases(request, RunId):  #==================Returns Test Cases When User Click on Run ID On Test Result Page===============================
     RunId = RunId.strip()
     print RunId
-    Env_Details_Col = ["Run ID", "Mahchine", "Tester", "Estd. Time", "Status", "Version","Dependency", "Machine IP", "Objective", "MileStone" ,"Email","Project","Team"]
+    Env_Details_Col = ["Run ID", "Machine", "Tester", "Estd. Time", "Status", "Version","Dependency", "Machine IP", "Objective", "MileStone" ,"Email","Project","Team"]
     run_id_status = GetRunIDStatus(RunId)
     query = "Select DISTINCT run_id,tester_id,assigned_tester,'%s',branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),machine_ip,test_objective,test_milestone from test_run_env tre,machine_dependency_settings mds Where tre.id=mds.machine_serial and run_id = '%s' group by run_id,tester_id,assigned_tester,branch_version,machine_ip,test_objective,test_milestone" % (run_id_status,RunId)
     Conn=GetConnection()
@@ -1737,15 +1762,9 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     
                     project_id=request.GET.get(u'project_id','')
                     team_id=request.GET.get(u'team_id','')
-                    feature_path=request.GET.get(u'feature_path','')
                     start_date=request.GET.get(u'start_date','')
                     end_date=request.GET.get(u'end_date','')
                     
-                    query="select feature_id from product_features where feature_path ~ '%s'"%feature_path
-                    Conn=GetConnection()
-                    feature_id=DB.GetData(Conn,query)
-                    Conn.close()
-                    feature_id=int(feature_id[0])
                     start_date=start_date.split('-')
                     starting_date=datetime.datetime(int(start_date[0].strip()),int(start_date[1].strip()),int(start_date[2].strip())).date()
                     end_date=end_date.split('-')
@@ -1921,7 +1940,6 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                       'test_milestone':TestMileStone,
                       'run_type':'Manual',
                       'assigned_tester':Testers,
-                      'feature_id':feature_id,
                       'start_date':starting_date,
                       'end_date':ending_date
                 }
@@ -7378,6 +7396,7 @@ def GetFilteredDataResult(request):
             currentPagination = request.GET.get(u'pagination', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
+            capacity=request.GET.get(u'capacity','')
             print currentPagination
             # UserText=str(UserText)
             UserText = UserText.replace(u'\xa0', u'|')
@@ -7413,12 +7432,12 @@ def GetFilteredDataResult(request):
                 condition += " and "
             condition = condition[:-5].strip()
             print condition
-            final = NewResultFetch(condition, currentPagination,project_id,team_id)
+            final = NewResultFetch(condition, currentPagination,project_id,team_id,capacity)
     result = simplejson.dumps(final)
     return HttpResponse(result, mimetype='application/json')
-def NewResultFetch(condition, currentPagination,project_id,team_id):
+def NewResultFetch(condition, currentPagination,project_id,team_id,capacity):
     # pagination Code
-    step = 20
+    step = int(capacity)
     limit = ""
     limit += ("limit " + str(step))
     # ##determine offset
@@ -7426,7 +7445,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
     stepDelete = int(step) * int(int(currentPagination) - 1)
     offset += ("offset " + str(stepDelete))
     print condition
-    total_query = "select * from ((select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query = "select * from ((select distinct ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(now()-ter.teststarttime,'HH24:MI:SS') as Duration, tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and mpm.machine_serial=tre.id and ter.status=tre.status and ter.status in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -7438,7 +7457,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id):
         total_query += condition
     total_query += ") "
     total_query += "union all "
-    total_query += "(select ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration,(select feature_path from product_features where feature_id=tre.feature_id), tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
+    total_query += "(select distinct ter.run_id as run_id,tre.test_objective,tre.run_type,tre.assigned_tester,tre.status,to_char(ter.testendtime-ter.teststarttime,'HH24:MI:SS') as Duration, tre.branch_version,tre.test_milestone,ter.teststarttime as starttime " 
     total_query += "from test_run_env tre, test_env_results ter ,machine_project_map mpm " 
     total_query += "where tre.run_id=ter.run_id and tre.id=mpm.machine_serial and ter.status=tre.status and ter.status not in ('Submitted','In-Progress')"
     if project_id!="ALL":
@@ -8197,6 +8216,49 @@ def Selected_TaskID_Analaysis(request):
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
 
+def Selected_Requirement_Analaysis(request):
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'req_id', '')
+
+        query = "select requirement_title,status,requirement_description,cast(requirement_startingdate as text), cast(requirement_endingdate as text),requirement_priority,requirement_milestone from requirements where requirement_id = '%s'" % UserData
+        Req_Info = DB.GetData(Conn, query, False)
+        
+        
+        query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='REQ' and fm.feature_id=pf.feature_id::text" % UserData
+        feature = DB.GetData(Conn, query, False)
+        
+        #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
+        #milestone = DB.GetData(Conn,query)
+        query = "select team_id from requirement_team_map where requirement_id='%s'" %UserData
+        teams = DB.GetData(Conn,query)
+        
+        
+        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='REQ' order by label_name" % UserData
+        labels = DB.GetData(Conn,query)
+        
+        query = "select distinct t.tasks_id, tasks_title, tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from components_map cm, tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and id1='%s' and type1='REQ' and type2='TASK' and t.tasks_id=cm.id2" % UserData
+        tasks = DB.GetData(Conn,query,False)
+        
+        #query = "select team_id from task_team_map where task_id='%s'" %UserData
+        #team = DB.GetData(Conn,query)
+        
+        """query = "select task_path from task_sections where task_path ~ '*.%s'" %UserData.replace('-','_')
+        section = DB.GetData(Conn,query)
+        section = section.replace('_', '-')
+        section = section.split('.')
+        parents = []
+        for each in section:
+            query = "select ts.task_path, t.tasks_id, t.status, mi.name from tasks t, milestone_info mi, task_sections ts where t.tasks_id = '%s' and t.tasks_milestone=mi.id::text and ts.task_path ~ '*.%s'" %(each,each.replace('-','_'))
+            temp = DB.GetData(Conn,query,False)
+            parents.append(temp)"""
+
+    #Heading = ['Path','Task-ID','Status','Milestone']
+    results = {'Req_Info':Req_Info, 'Feature':feature[0][0], 'labels':labels, 'teams':teams, 'tasks':tasks}
+    json = simplejson.dumps(results)
+    Conn.close()
+    return HttpResponse(json, mimetype='application/json')
 
 
 def FetchProject(request):
@@ -9728,6 +9790,59 @@ def CreateRequirement(request):
     result=simplejson.dumps(requirement_id)
     return HttpResponse(result,mimetype='application/json')
 ##getting required requirement and team info on the project_id change
+def SubmitEditRequirement(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            #getting all the info from the messages
+            req_id = request.GET.get(u'req_id','')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team','').split("|")
+            title=request.GET.get(u'title','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'start_date','')
+            end_date=request.GET.get(u'end_date','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            status=request.GET.get(u'status','')
+            user_name=request.GET.get(u'user_name','')
+            feature_path=request.GET.get(u'feature_path','')
+            parent_requirement_id=request.GET.get(u'requirement_id','')
+            labels=request.GET.get(u'labels','')
+            labels=labels.split("|")
+            tasks=request.GET.get(u'tasks','')
+            tasks=tasks.split("|")
+            result=RequirementOperations.EditRequirement(req_id, title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path,labels,tasks)
+            if result!=False:
+                requirement_id=result
+    result=simplejson.dumps(requirement_id)
+    return HttpResponse(result,mimetype='application/json')
+
+
+def SubmitChildRequirement(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            #getting all the info from the messages
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team','').split("|")
+            title=request.GET.get(u'title','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'start_date','')
+            end_date=request.GET.get(u'end_date','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            status=request.GET.get(u'status','')
+            user_name=request.GET.get(u'user_name','')
+            feature_path=request.GET.get(u'feature_path','')
+            parent_requirement_id=request.GET.get(u'requirement_id','')
+            labels=request.GET.get(u'labels','')
+            labels=labels.split("|")
+            tasks=request.GET.get(u'tasks','')
+            tasks=tasks.split("|")
+            result=RequirementOperations.CreateChildRequirement(title, description, project_id, team_id, start_date, end_date, priority, status, milestone, user_name, feature_path, parent_requirement_id, labels,tasks)
+            if result!=False:
+                requirement_id=result
+    result=simplejson.dumps(requirement_id)
+    return HttpResponse(result,mimetype='application/json')
 
 def GetTeamInfoToCreateRequirement(request):
     if request.is_ajax():
@@ -9940,7 +10055,61 @@ def RequirementPage(request,project_id):
           'milestone_list':milestone_list
     }
     return render_to_response("CreateNewRequirement.html",Dict)
+def Edit_Requirement(request,project_id,req_id):
+    """
+    TC_Id = request.GET.get('TC_Id', '')
+    if TC_Id != "":
+        return ViewTestCase(TC_Id)
+    else:
+        templ = get_template('CreateNewRequirement.html')
+        variables = Context({ })
+        output = templ.render(variables)
+        return HttpResponse(output)"""
+    #Get the teams for this projects
+    Conn=GetConnection()
+    query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
+    team_info=DB.GetData(Conn,query,False)
+    query="select value from config_values where type='Priority'"
+    priority=DB.GetData(Conn,query,False)
+    query="select id,value from config_values where type='milestone'"
+    milestone_list=DB.GetData(Conn,query,False)
+    query = "select label_id,label_name,Label_color from labels order by label_name"
+    labels = DB.GetData(Conn,query,False)
+    Dict={
+          'team_info':team_info,
+          'priority_list':priority,
+          'milestone_list':milestone_list,
+          'labels':labels
+    }
+    return render_to_response("CreateNewRequirement.html",Dict)
 
+def Child_Requirement(request,project_id,req_id):
+    """
+    TC_Id = request.GET.get('TC_Id', '')
+    if TC_Id != "":
+        return ViewTestCase(TC_Id)
+    else:
+        templ = get_template('CreateNewRequirement.html')
+        variables = Context({ })
+        output = templ.render(variables)
+        return HttpResponse(output)"""
+    #Get the teams for this projects
+    Conn=GetConnection()
+    query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
+    team_info=DB.GetData(Conn,query,False)
+    query="select value from config_values where type='Priority'"
+    priority=DB.GetData(Conn,query,False)
+    query="select id,value from config_values where type='milestone'"
+    milestone_list=DB.GetData(Conn,query,False)
+    query = "select label_id,label_name,Label_color from labels order by label_name"
+    labels = DB.GetData(Conn,query,False)
+    Dict={
+          'team_info':team_info,
+          'priority_list':priority,
+          'milestone_list':milestone_list,
+          'labels':labels
+    }
+    return render_to_response("CreateNewRequirement.html",Dict)
         
 def TaskPage(request,project_id):
     Conn=GetConnection()
@@ -10025,6 +10194,32 @@ def SubmitEditedTask(request):
             feature_path=request.GET.get(u'feature_path','')
             user_name=request.GET.get(u'user_name','')
             result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name)
+    results=simplejson.dumps(result)
+    return HttpResponse(results,mimetype='application/json')    
+
+def SubmitChildTask(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            title=request.GET.get(u'title','')
+            status=request.GET.get(u'status','')
+            description=request.GET.get(u'description','')
+            start_date=request.GET.get(u'starting_date','')
+            end_date=request.GET.get(u'ending_date','')
+            start_date=convert_date_from_string(start_date)
+            end_date=convert_date_from_string(end_date)
+            teams=request.GET.get(u'team','')
+            tester=request.GET.get(u'tester','')
+            priority=request.GET.get(u'priority','')
+            milestone=request.GET.get(u'milestone','')
+            project_id=request.GET.get(u'project_id','')
+            section_path=request.GET.get(u'section_path','')
+            feature_path=request.GET.get(u'feature_path','')
+            user_name=request.GET.get(u'user_name','')
+            labels = request.GET.get(u'labels','')
+            labels=labels.split("|")
+            test_cases=request.GET.get(u'test_cases','')
+            test_cases=test_cases.split("|")
+            result=TaskOperations.CreateChildTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 
