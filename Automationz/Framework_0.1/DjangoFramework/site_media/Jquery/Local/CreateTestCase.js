@@ -227,14 +227,14 @@ $(document).ready(function() {
                             $('a[value="Forced-Manual"]').addClass('selected');
                         }*/
                         //LabelsList
-                        /*var label_list=data['Labels'];
+                        var label_list=data['Labels'];
                         if(label_list.length!=0){
                             for(var i=0;i<label_list.length;i++){
                                 if(label_list[i]!=""){
                                     AddToListLabel(label_list[i][0],label_list[i][1],label_list[i][2]);
                                 }
                             }
-                        }*/
+                        }
                         //SectionPath
                         var sections=data['Section_Path'];
                         var sectionArray = sections.split('.');
