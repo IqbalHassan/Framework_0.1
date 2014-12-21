@@ -7343,7 +7343,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 RefinedData=dataWithTime
                 for each in RefinedData:
                     print each
-                Heading = ['ID', 'Title', 'Feature', 'Section' ,'Type','Time']
+                Heading = ['ID', 'Title', 'Feature', 'Section' ,'Type','Time','']
                 for i in dataWithTime:
                     x = i[1]
                     print x

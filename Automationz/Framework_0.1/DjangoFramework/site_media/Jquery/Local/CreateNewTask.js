@@ -25,6 +25,7 @@ $(document).ready(function(){
     Suggestion(project_id,team_id);
     DeleteFilterData(project_id,team_id);
     //status_button_preparation();
+    Buttons();
     Submit_button_preparation();
 
     URL = window.location.pathname;
@@ -147,12 +148,14 @@ function TestCaseLinking(){
                 $(".tc_linking").append('<tr>' +
                 '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
                 + '<td>'
-                + '<input type="checkbox" checked="true" name="test_cases" value="'
+                + '<input type="checkbox" class="Buttons" checked="true" name="test_cases" value="'
                 + value
                 + '"/>' +
                 '</td><td>'
-                + name
-                + "</td>" +
+                + value
+                + "</td><td>" +
+                name +
+                "</td>" +
                 "</tr>");
             }
 
@@ -198,7 +201,7 @@ function PerformSearch(project_id,team_id){
             if(data['TableData'].length!=0){
                 ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
                 implementDropDown("#RunTestResultTable");
-                $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
+                $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
                     var id=$(this).closest('tr').find('td:first-child').text().trim();
                     $(this).after('<div><input id="'+id+'" type="checkbox" class="Buttons add"/></div>');
                 });
@@ -298,12 +301,14 @@ function PopulateTaskInfo(task_id){
             $(".tc_linking").append('<tr>' +
             '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
             + '<td>'
-            + '<input type="checkbox" checked="true" name="test_cases" value="'
+            + '<input type="checkbox" class="Buttons" checked="true" name="test_cases" value="'
             + data['cases'][i][0]
             + '"/>' +
             '</td><td>'
-            + data['cases'][i][1]
-            + "</td>" +
+            + data['cases'][i][0]
+            + "</td><td>" +
+            data['cases'][i][1] +
+            "</td>" +
             "</tr>");
         });
 
@@ -541,7 +546,7 @@ function implementDropDown(wheretoplace){
         var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
         var name=$(this).text().trim();
         $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
-        $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+        $.get("TestStepWithTypeInTable/",{RunID: ID},function(data) {
             var data_list=data['Result'];
             var column=data['column'];
             ResultTable(wheretoplace+ ' #'+ID+'detail',column,data_list,"");
@@ -555,7 +560,7 @@ function implementDropDown(wheretoplace){
     });
 }
 
-function Buttons(type,name){
+function Buttons(){
     $('#add_button').click(function(event){
         event.preventDefault();
         var list=[]
@@ -563,15 +568,27 @@ function Buttons(type,name){
             list.push($(this).attr('id').trim());
         });
         if(list.length==0){
-            alert('No Test Case selected');
+            alertify.log('No Test Case selected');
             return false;
         }
         else{
-            $.get('AddTestCasesSetTag',{type:type.toLocaleUpperCase().trim(),name:name.trim(),list:list.join('|')},function(data){
+            $.each(list, function(index, value) {
+                $(".tc_linking").append('<tr>' +
+                '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+                + '<td>'
+                + '<input type="checkbox" class="Buttons" checked="true" name="test_cases" value="'
+                + value
+                + '"/>' +
+                '</td><td>'
+                + value
+                + "</td>" +
+                "</tr>");
+            });
+            /*$.get('AddTestCasesSetTag',{type:type.toLocaleUpperCase().trim(),name:name.trim(),list:list.join('|')},function(data){
                 alertify.success(data,"",3);
                 var location='/Home/ManageSetTag/'+type+'/'+name+'/';
                 window.location=location;
-            });
+            });*/
 
         }
 
