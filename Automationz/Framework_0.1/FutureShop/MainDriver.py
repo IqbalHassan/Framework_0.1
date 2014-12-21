@@ -83,15 +83,17 @@ def main():
 
     # Here we are starting the main driver operations
 
-    try:
+    """try:
         conn = DBUtil.ConnectToDataBase()
     except Exception, e:
         CommonUtil.ExecLog(sModuleInfo, "Exception : %s" % e , 3)
         #print "unable to connect to the database"
     CommonUtil.ExecLog(sModuleInfo, "Database connection successful" , 1)
-    cur = conn.cursor()
+    cur = conn.cursor()"""
+    conn=DBUtil.ConnectToDataBase()
     Userid = (CommonUtil.GetLocalUser()).lower()
     UserList = DBUtil.GetData(conn, "Select User_Names from permitted_user_list")
+    conn.close()
     if Userid not in UserList:
         CommonUtil.ExecLog(sModuleInfo, "User don't have permission to run the tests" , 3)
         return "You Don't Have Permission"
@@ -99,18 +101,9 @@ def main():
     #Get all the drivers
     Driver_list=GetAllDriver()
     #Find Test Runs scheduled for this user from test_run_env table
-    TestRunLists = DBUtil.GetData(conn, "Select run_id"
-                                  ",rundescription"
-                                  ",tester_id"
-                                  ",machine_os"
-                                  ",client"
-                                  ",data_type"
-                                  ",test_run_type"
-                                  ",os_name"
-                                  ",os_version"
-                                  ",os_bit"
-                                  " From test_run_env"
-                                  " Where tester_id = '%s' and (status = 'Submitted')" % Userid, False)
+    conn=DBUtil.ConnectToDataBase()
+    TestRunLists = DBUtil.GetData(conn, "Select run_id,rundescription,tester_id from test_run_env Where tester_id = '%s' and (status = 'Submitted')" % Userid, False)
+    conn.close()
     if len(TestRunLists) > 0:
         print "Running Test cases from Test Set : ", TestRunLists[0:len(TestRunLists)]
         CommonUtil.ExecLog(sModuleInfo, "Running Test cases from Test Set : %s" % TestRunLists[0:len(TestRunLists)], 1)
@@ -124,45 +117,25 @@ def main():
     for TestRunID in TestRunLists:
         #TestResultsEnv Table
         #Update test_run_env table with status for the current TestRunId
+        conn=DBUtil.ConnectToDataBase()
         print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "where run_id = '%s'" % TestRunID[0], status='In-Progress')
+        conn.close()
         currentTestSetStatus = 'In-Progress'
-        """RunID=TestRunID[0]
-        rerun_determine_query="select rundescription from test_env_results where run_id='%s'"%TestRunID[0]
-        run_description=DBUtil.GetData(conn,rerun_determine_query)
-        if isinstance(run_description,list):
-            Run_Description=run_description[0]
-            if ReRunTag in Run_Description:
-                #find the referred run_id
-                first_occurance=Run_Description.find((' -')+ReRunTag)
-                basic_run_objective=Run_Description[0:first_occurance]
-                basic_run_objective=basic_run_objective.strip()
-                referred_run_id_query="select run_id from test_env_results where rundescription='%s'"%basic_run_objective.strip()
-                referred_run_id=DBUtil.GetData(conn,referred_run_id_query)
-                if isinstance(referred_run_id,list) and referred_run_id[0]!="":
-                    referred_run_id=str(referred_run_id[0]).strip()
-                    Rerun=True
-                else:
-                    referred_run_id=""
-                    Rerun=False
-            else:
-                referred_run_id=""
-                Rerun=False
-        else:
-            referred_run_id=""
-            Rerun=False
-            """
         #Insert an entry to the TestResultsEnv table
         sTimeStamp = TimeStamp() #used for run_id
         #sTestResultsRunId = TestRunID[0] + '-' + sTimeStamp
         sTestResultsRunId = TestRunID[0]# + sTimeStamp
         #test set start time
+        conn=DBUtil.ConnectToDataBase()
         now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
+        conn.close()
         sTestSetStartTime = str(now[0][0])
         iTestSetStartTime = now[0][0]
         #cur.execute("insert into test_env_results (run_id,rundescription,tester_id,status,teststarttime) values ('%s','%s','%s','In-Progress','%s')" % (sTestResultsRunId, TestRunID[1], Userid, sTestSetStartTime))
         #conn.commit()
+        conn=DBUtil.ConnectToDataBase()
         DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='In-Progress', teststarttime='%s' % (sTestSetStartTime))
-
+        conn.close()
 
         # Find the type of dataset we want to run for given testset
         #no data Type is used in our framework thats why it is ommitted.
@@ -178,7 +151,9 @@ def main():
 
         #This step will remain here for now, just to make sure test case is added in the previous one
         #Find all test cases added in the test_run table for the current run id
+        conn=DBUtil.ConnectToDataBase()
         TestCaseLists = DBUtil.GetData(conn, "Select TC_ID From test_run Where run_id = '%s'" % TestRunID[0], False)
+        conn.close()
         #HYBRID RUN IMPLEMENTED HERE
         AutomationList=[]
         run_type=""
@@ -191,8 +166,10 @@ def main():
             else:
                 query="select property from result_test_case_tag where tc_id='%s' and name='Status' and run_id='%s'"%(test_case_id,referred_run_id)
             """
-            query="select property from result_test_case_tag where tc_id='%s' and name='Status' and run_id='%s'"%(test_case_id,TestRunID[0])
+            query="select name from result_test_case_tag where tc_id='%s' and property='Status' and run_id='%s'"%(test_case_id,TestRunID[0])
+            conn=DBUtil.ConnectToDataBase()
             forced=DBUtil.GetData(conn,query)
+            conn.close()
             if forced[0]=='Forced':
                 continue
             else:
@@ -208,7 +185,9 @@ def main():
                 query="select tsl.steptype from result_test_cases tc,result_test_steps_list tsl,result_test_steps ts where tsl.run_id=ts.run_id and tc.tc_id=ts.tc_id and tc.run_id=ts.run_id and tsl.step_id=ts.step_id and tc.tc_id='%s' and tc.run_id='%s' order by ts.teststepsequence"%(each[0],referred_run_id)
             """
             query="select tsl.steptype from result_test_cases tc,result_test_steps_list tsl,result_test_steps ts where tsl.run_id=ts.run_id and tc.tc_id=ts.tc_id and tc.run_id=ts.run_id and tsl.step_id=ts.step_id and tc.tc_id='%s' and tc.run_id='%s' order by ts.teststepsequence"%(each[0],TestRunID[0])
+            conn=DBUtil.ConnectToDataBase()
             status_list=DBUtil.GetData(conn,query)
+            conn.close()
             for eachstatus in status_list:
                 if eachstatus=='manual':
                     test_case_type='manual'
@@ -244,7 +223,9 @@ def main():
         Dict={}
         Dict.update({'run_type':run_type})
         sWhereQuery="where run_id='%s'" %TestRunID[0]
+        conn=DBUtil.ConnectToDataBase()
         print DBUtil.UpdateRecordInTable(conn,"test_run_env",sWhereQuery,**Dict)
+        conn.close()
         TestCaseLists=[]
         TestCaseLists=Automation
         if len(TestCaseLists) > 0:
@@ -267,7 +248,9 @@ def main():
             else:
                 TestCaseName = DBUtil.GetData(conn, "Select tc_name From result_test_cases Where tc_id = '%s' and run_id='%s'" % (TCID,referred_run_id), False)
             """
+            conn=DBUtil.ConnectToDataBase()
             TestCaseName = DBUtil.GetData(conn, "Select tc_name From result_test_cases Where tc_id = '%s' and run_id='%s'" % (TCID,TestRunID[0]), False)
+            conn.close()
             print "Running Test case id : %s :: %s" % (TCID, TestCaseName[0])
             CommonUtil.ExecLog(sModuleInfo, "-------------*************--------------", 1)
             CommonUtil.ExecLog(sModuleInfo, "Running Test case id : %s :: %s" % (TCID, TestCaseName), 1)
@@ -282,18 +265,23 @@ def main():
 
 
             #test Case start time
+            conn=DBUtil.ConnectToDataBase()
             now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
-
+            conn.close()
+            
             sTestCaseStartTime = str(now[0][0])
             iTestCaseStartTime = now[0][0]
 
             #cur.execute("insert into test_case_results (run_id,tc_id,status,teststarttime ) values ('%s','%s','In-Progress','%s')" % (sTestResultsRunId, TCID, sTestCaseStartTime))
             #conn.commit()
             condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"'"
+            conn=DBUtil.ConnectToDataBase()
             print DBUtil.UpdateRecordInTable(conn,"test_case_results", condition,status='In-Progress',teststarttime=sTestCaseStartTime)
+            conn.close()
             #Get Test Case Index to be inserted to test_step_results table
+            conn=DBUtil.ConnectToDataBase()
             TestCaseResultIndex = DBUtil.GetData(conn, "Select id From test_case_results where run_id = '%s' and TC_ID = '%s' Order By id desc limit 1" % (sTestResultsRunId, TCID), False)
-
+            conn.close()
             #get the test case steps for this test case
             #TestStepsList = DBUtil.GetData(conn,"Select teststepname From TestSteps where TC_ID = '%s' Order By teststepsequence" %TCID,False)
             """if Rerun==False:
@@ -301,41 +289,43 @@ def main():
             else:
                 TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' and ts.run_id='%s' Order By teststepsequence" % (TCID,referred_run_id), False)
             """
-            TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' and ts.run_id='%s' Order By teststepsequence" % (TCID,TestRunID[0]), False)
+            conn=DBUtil.ConnectToDataBase()
+            TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,tsl.steptype From result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' and ts.run_id='%s' Order By teststepsequence" % (TCID,TestRunID[0]), False)
+            conn.close()
             Stepscount = len(TestStepsList)
             sTestStepResultList = []
-
-
-
             #get the client name for this test case
-            sClientName = TestRunID[4]
-            sClientName=(TestRunID[4].split("("))[0].strip()
-            print sClientName
+            #sClientName = TestRunID[4]
+            #sClientName=(TestRunID[4].split("("))[0].strip()
+            #print sClientName
             """if Rerun==False:
                 #DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from test_case_datasets where tc_id='%s' and data_type='%s'" % (TCID, DataType), False) # Later we can add dataset tag like multilang here.
                 DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from test_case_datasets where tc_id='%s'" % (TCID), False)
             else:
                 DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from result_test_case_datasets where tc_id='%s' and run_id='%s'" % (TCID,referred_run_id), False)
             """
+            conn=DBUtil.ConnectToDataBase()
             DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from result_test_case_datasets where tc_id='%s' and run_id='%s'" % (TCID,TestRunID[0]), False)
+            conn.close()
             if len(DataSetList) == 0:
                 #This condition is for test cases which dont have any input data
                 DataSetList.append('NoDataSetFound')
             for EachDataSet in DataSetList:
                 #Check if this is a performance test case
-                if DataType == 'Performance':
+                """if DataType == 'Performance':
                     #this is a performance test case
                     PerfQ = Queue.Queue()
                     PerfThread = threading.Thread(target=Performance.CollectProcessMemory, args=(TestStepsList[StepSeq - 1][1], PerfQ))
                     PerfThread.start()
                     PerfQ.put('Start')
+                """
                 while StepSeq <= Stepscount:
                     # Beginning of a Test Step
                     print "Step: ", TestStepsList[StepSeq - 1][1]
                     CommonUtil.ExecLog(sModuleInfo, "Step : %s" % TestStepsList[StepSeq - 1][1], 1)
 
-                    if DataType == 'Performance':
-                        PerfQ.put(TestStepsList[StepSeq - 1][1])
+                    #if DataType == 'Performance':
+                    #    PerfQ.put(TestStepsList[StepSeq - 1][1])
                     #Check if the current test step is a Performance Test Step
                     if TestStepsList[StepSeq - 1][4] == 'Performance':
                         Global.sTestStepType = TestStepsList[StepSeq - 1][4]
@@ -343,7 +333,9 @@ def main():
                     #Test Step Log id
                     Global.sTestStepExecLogId = sTestResultsRunId + TCID + str(TestStepsList[StepSeq - 1][0]) + str(StepSeq)
                     # Test Step start time
+                    conn=DBUtil.ConnectToDataBase()
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
+                    conn.close()
                     sTestStepStartTime = str(now[0][0])
                     #TestStepStartTime = now[0][0]
                     TestStepStartTime = time.clock()
@@ -354,7 +346,9 @@ def main():
                     #conn.commit()
                     condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"' and teststep_id='"+str(TestStepsList[StepSeq - 1][0])+"' and teststepsequence='"+str(TestStepsList[StepSeq - 1][2])+"'"
                     Dict={'teststepsequence':TestStepsList[StepSeq - 1][2],'status':'In-Progress','stepstarttime':sTestStepStartTime,'logid':Global.sTestStepExecLogId,'start_memory':WinMemBegin,'testcaseresulttindex':TestCaseResultIndex[0][0]}
+                    conn=DBUtil.ConnectToDataBase()
                     DBUtil.UpdateRecordInTable(conn,"test_step_results",condition,**Dict)
+                    conn.close()
                     try:
                         #while True:
                             #If threading is enabled

@@ -5,13 +5,41 @@ from login_info import username,password,project,team,server,port,database_name,
 import CommonUtil
 import os
 import Global
+def RunProcess(sTesterid):
+    while (1):
+        try:
+            conn = DB.ConnectToDataBase()
+            status = DB.GetData(conn, "Select status from test_run_env where tester_id = '%s' and status in ('Submitted','Unassigned') limit 1 " % (sTesterid))
+            conn.close()
+            if len(status) == 0:
+                continue
+            if status[0] != "Unassigned":
+                if status[0] == "Submitted":
+                    import MainDriver
+                    MainDriver.main()
+                    print "updating db with parameter"
+                    Login()
+                    print "Successfully updated db with parameter"
+
+            elif status[0] == "Unassigned":
+                time.sleep(3)
+                conn = DBUtil.ConnectToDataBase()
+                DBUtil.UpdateRecordInTable(conn, "test_run_env", "where tester_id = '%s' and status = 'Unassigned'" % sTesterid, last_updated_time=CommonUtil.TimeStamp("string"))
+                conn.close()
+        except Exception, e:
+            print "Exception : ", e
+
+    return "Continue"
+
 def Login():
     print username
     result=Check_Credentials(username,password,project,team,server,port)
     if result:
         tester_id=update_machine(collectAlldependency(project,team,dependency))
         if tester_id!=False:
-            print tester_id
+            RunAgain = RunProcess(tester_id)
+            if RunAgain == True:
+                Login()
         else:
             print "machine not generated"
     else:
