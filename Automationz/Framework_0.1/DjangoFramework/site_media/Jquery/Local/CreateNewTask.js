@@ -22,7 +22,7 @@ $(document).ready(function(){
 
     addingSections();
     TestCaseLinking();
-    RequirementLinking(project_id);
+    RequirementLinking(project_id,team_id);
     Suggestion(project_id,team_id);
     DeleteFilterData(project_id,team_id);
     //status_button_preparation();
@@ -195,7 +195,7 @@ function TestCaseLinking(){
     });
 }
 
-function RequirementLinking(project_id){
+function RequirementLinking(project_id,team_id){
 
     $(".search_req").autocomplete({
 
@@ -205,7 +205,8 @@ function RequirementLinking(project_id){
                 dataType:"json",
                 data:{
                     term:request.term,
-                    project_id:project_id
+                    project_id:project_id,
+                    team_id:team_id
                 },
                 success:function(data){
                     response(data);

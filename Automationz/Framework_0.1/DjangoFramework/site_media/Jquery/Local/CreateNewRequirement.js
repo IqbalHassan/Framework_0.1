@@ -244,6 +244,21 @@ function PopulateReqInfo(req_id){
             "</tr>");
         });
 
+        $(data['cases']).each(function(i){
+            $(".tc_linking").append('<tr>' +
+            '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+            + '<td>'
+            + '<input type="checkbox" class="Buttons" checked="true" name="test_cases" value="'
+            + data['cases'][i][0]
+            + '"/>' +
+            '</td><td>'
+            + data['cases'][i][0]
+            + "</td><td>" +
+            data['cases'][i][1] +
+            "</td>" +
+            "</tr>");
+        });
+
         //FeaturePath
         var features=data['Feature'];
         console.log(features);

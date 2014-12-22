@@ -89,6 +89,16 @@ def CreateParentRequirement(title, description, project_id, team_list, start_dat
                                            'type2':'TASK'
                                 }
                                 hehe_result=DB.InsertNewRecordInToTable(Conn,"components_map",**task_Dict)
+                                if hehe_result==True:
+                                    t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+each+"' and type1='TASK' and type2='TC'",False)
+                                    for tc in t_cases:
+                                        cases_Dict={
+                                                   'id1':req_id,
+                                                   'id2':tc.strip(),
+                                                   'type1':'REQ',
+                                                   'type2':'TC'
+                                        }
+                                        new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                         return req_id
                     else:
                         return False
@@ -168,6 +178,16 @@ def EditRequirement(req_id,title, description, project_id, team_list, start_date
                                'type2':'TASK'
                     }
                     hehe_result=DB.InsertNewRecordInToTable(Conn,"components_map",**task_Dict)
+                    if hehe_result==True:
+                        t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+each+"' and type1='TASK' and type2='TC'",False)
+                        for tc in t_cases:
+                            cases_Dict={
+                                       'id1':req_id,
+                                       'id2':tc[0].strip(),
+                                       'type1':'REQ',
+                                       'type2':'TC'
+                            }
+                            new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
             return req_id
         else:
             return False
@@ -271,6 +291,17 @@ def CreateChildRequirement(title, description, project_id, team_list, start_date
                                        'type2':'TASK'
                             }
                             hehe_result=DB.InsertNewRecordInToTable(Conn,"components_map",**task_Dict)
+                            if hehe_result==True:
+                                t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+each+"' and type1='TASK' and type2='TC'",False)
+                                for tc in t_cases:
+                                    cases_Dict={
+                                               'id1':req_id,
+                                               'id2':tc.strip(),
+                                               'type1':'REQ',
+                                               'type2':'TC'
+                                    }
+                                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                            
                     return req_id
             except Exception,e:
                 print "Exception: ",e 
