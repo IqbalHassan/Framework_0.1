@@ -479,7 +479,8 @@ function AutoCompleteTask(){
                 dataType:"json",
                 data:{
                     term:request.term,
-                    project_id:$.session.get('project_id')
+                    project_id:$.session.get('project_id'),
+                    team_id: $.session.get('default_team_identity')
                 },
                 success:function(data){
                     response(data);

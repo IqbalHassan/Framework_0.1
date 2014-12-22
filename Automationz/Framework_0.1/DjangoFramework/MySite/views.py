@@ -833,13 +833,27 @@ def AutoCompleteTask(request):
     if request.is_ajax():
         if request.method == 'GET':
             value = request.GET.get(u'term', '')
-            project_id = request.GET.get(u'term','')
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
             print value
             Conn = GetConnection()
-            query = "select tasks_id,tasks_title,tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%'" % (value, value)
+            query = "select distinct tasks_id,tasks_title,tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and (tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%') and t.project_id='%s' and t.team_id='%s'" % (value, value, project_id,team_id)
             task_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(task_list)
+    return HttpResponse(json, mimetype='application/json')
+
+def AutoCompleteRequirements(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            value = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'project_id','')
+            
+            Conn = GetConnection()
+            query = "select distinct requirement_id,requirement_title,r.status,mi.name from requirements r, milestone_info mi where r.requirement_milestone=mi.id::text and r.project_id='%s' and (requirement_title Ilike '%%%s%%' or requirement_id Ilike '%%%s%%')" % (project_id, value, value)
+            req_list = DB.GetData(Conn, query, False)
+            Conn.close()
+    json = simplejson.dumps(req_list)
     return HttpResponse(json, mimetype='application/json')
  
 def AutoCompleteTesterSearch(request):
@@ -8348,6 +8362,9 @@ def Selected_TaskID_Analaysis(request):
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='TASK' order by label_name" % UserData
         labels = DB.GetData(Conn,query)
         
+        query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi, components_map cm where r.requirement_milestone=mi.id::text and cm.id1=r.requirement_id and cm.id2='%s' and cm.type1='REQ' and cm.type2='TASK'" %UserData
+        reqs = DB.GetData(Conn,query,False)
+        
         #query = "select team_id from task_team_map where task_id='%s'" %UserData
         #team = DB.GetData(Conn,query)
         
@@ -8362,7 +8379,7 @@ def Selected_TaskID_Analaysis(request):
             parents.append(temp)"""
 
     Heading = ['Path','Task-ID','Status','Milestone']
-    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels, 'cases':cases}
+    results = {'Task_Info':Task_Info, 'tester':tester, 'Feature':feature[0][0], 'labels':labels, 'cases':cases, 'reqs':reqs}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
@@ -10326,7 +10343,9 @@ def SubmitNewTask(request):
             labels=labels.split("|")
             test_cases=request.GET.get(u'test_cases','')
             test_cases=test_cases.split("|")
-            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases)
+            requirements=request.GET.get(u'requirements','')
+            requirements=requirements.split("|")
+            result=TaskOperations.CreateNewTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 
@@ -10353,7 +10372,9 @@ def SubmitEditedTask(request):
             labels=labels.split("|")
             test_cases=request.GET.get(u'test_cases','')
             test_cases=test_cases.split("|")
-            result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases)
+            requirements=request.GET.get(u'requirements','')
+            requirements=requirements.split("|")
+            result=TaskOperations.ModifyTask(task_id,title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 
@@ -10380,7 +10401,9 @@ def SubmitChildTask(request):
             labels=labels.split("|")
             test_cases=request.GET.get(u'test_cases','')
             test_cases=test_cases.split("|")
-            result=TaskOperations.CreateChildTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases)
+            requirements=request.GET.get(u'requirements','')
+            requirements=requirements.split("|")
+            result=TaskOperations.CreateChildTask(title,status,description,start_date,end_date,teams,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements)
     results=simplejson.dumps(result)
     return HttpResponse(results,mimetype='application/json')    
 

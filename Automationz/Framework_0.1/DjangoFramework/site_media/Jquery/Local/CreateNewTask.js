@@ -22,6 +22,7 @@ $(document).ready(function(){
 
     addingSections();
     TestCaseLinking();
+    RequirementLinking(project_id);
     Suggestion(project_id,team_id);
     DeleteFilterData(project_id,team_id);
     //status_button_preparation();
@@ -193,6 +194,95 @@ function TestCaseLinking(){
 
     });
 }
+
+function RequirementLinking(project_id){
+
+    $(".search_req").autocomplete({
+
+        source:function(request,response){
+            $.ajax({
+                url:"AutoCompleteRequirements/",
+                dataType:"json",
+                data:{
+                    term:request.term,
+                    project_id:project_id
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select : function(event, ui) {
+
+            //var value = ui.item[0]
+            //var name = ui.item[1]
+
+            /*var tc_id_name = ui.item[0].split(" - ");
+             var value = "";
+             if (tc_id_name != null)
+             {
+             value = tc_id_name[0].trim();
+             name = tc_id_name[1].trim();
+             }*/
+
+            var value=ui.item[0].trim();
+            //var name=ui.item[1].trim();
+
+            if(value!=""){
+                $(".req_linking").append('<tr>' +
+                '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+                + '<td>'
+                + '<input type="checkbox" class="Buttons" checked="true" name="requirements" value="'
+                + ui.item[0]
+                + '"/>' +
+                '</td><td>'
+                + ui.item[0]
+                + "</td><td>" +
+                ui.item[1] +
+                '</td><td>' +
+                ui.item[2] +
+                '</td><td>' +
+                ui.item[3] +
+                '</td>' +
+                "</tr>");
+            }
+
+            //$(".search_case").remove();
+
+            /*$("#test_cases").append('<tr class="linking">' +
+             '<td><input class="search_case textbox" placeholder="Search Test Case" style="width: auto" /></td>' +
+             '</tr>');
+             TestCaseLinking();*/
+
+            //$("#tester th").css('display', 'block');
+
+            $(".search_req").val("");
+            return false;
+
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+
+    $(".search_req").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteCase").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+}
+
+
 function PerformSearch(project_id,team_id){
     $("#searchedFilter").each(function() {
         var UserText = $(this).find("td").text();
@@ -309,6 +399,25 @@ function PopulateTaskInfo(task_id){
             + "</td><td>" +
             data['cases'][i][1] +
             "</td>" +
+            "</tr>");
+        });
+
+        $(data['reqs']).each(function(i){
+            $(".req_linking").append('<tr>' +
+            '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+            + '<td>'
+            + '<input type="checkbox" class="Buttons" checked="true" name="requirements" value="'
+            + data['reqs'][i][0]
+            + '"/>' +
+            '</td><td>'
+            + data['reqs'][i][0]
+            + "</td><td>" +
+            data['reqs'][i][1] +
+            '</td><td>' +
+            data['reqs'][i][2] +
+            '</td><td>' +
+            data['reqs'][i][4] +
+            '</td>' +
             "</tr>");
         });
 
@@ -467,6 +576,11 @@ function Submit_button_preparation(){
             test_cases.push($(this).val());
         });
 
+        var requirements=[];
+        $('input[name="requirements"]:checked').each(function(){
+            requirements.push($(this).val());
+        });
+
         if(operation==1){
             $.get('SubmitNewTask/',{
                 'title':title,
@@ -483,7 +597,8 @@ function Submit_button_preparation(){
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
                 'labels':labels.join("|"),
-                test_cases:test_cases.join("|")
+                test_cases:test_cases.join("|"),
+                requirements:requirements.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
@@ -507,7 +622,8 @@ function Submit_button_preparation(){
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
                 'labels':labels.join("|"),
-                test_cases:test_cases.join("|")
+                test_cases:test_cases.join("|"),
+                requirements:requirements.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
@@ -530,7 +646,8 @@ function Submit_button_preparation(){
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
                 'labels':labels.join("|"),
-                test_cases:test_cases.join("|")
+                test_cases:test_cases.join("|"),
+                requirements:requirements.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);

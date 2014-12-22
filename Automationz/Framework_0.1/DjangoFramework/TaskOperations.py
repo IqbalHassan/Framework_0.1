@@ -22,7 +22,7 @@ def insert_new_section(Conn,new_task_path):
     Conn.commit()
     return sequence
         
-def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases):
+def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements):
     try:
         Conn=GetConnection()
         query="select nextval('taskid_seq')"
@@ -109,6 +109,26 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
                     }
                     new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                     
+            if requirements[0] != '':
+                for each in requirements:
+                    req_Dict={
+                               'id1':each.strip(),
+                               'id2':task_id,
+                               'type1':'REQ',
+                               'type2':'TASK'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**req_Dict)
+                    if new_result==True:
+                        #t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+task_id+"' and type1='TASK' and type2='TC'",False)
+                        for tc in test_cases:
+                            cases_Dict={
+                                       'id1':each.strip(),
+                                       'id2':tc.strip(),
+                                       'type1':'REQ',
+                                       'type2':'TC'
+                            }
+                            new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                    
             return task_id
         
         
@@ -120,7 +140,7 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
         
         
         
-def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases):
+def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements):
     try:
         Conn=GetConnection()
         
@@ -202,7 +222,30 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
                                'type1':'TASK',
                                'type2':'TC'
                     }
-                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)        
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)      
+                    
+            if requirements[0] != '':
+                lsres=DB.DeleteRecord(Conn,"components_map", id2=task_id,type1='REQ',type2='TASK')
+                for each in requirements:
+                    req_Dict={
+                               'id1':each.strip(),
+                               'id2':task_id,
+                               'type1':'REQ',
+                               'type2':'TASK'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**req_Dict)
+                    if new_result==True:
+                        #t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+task_id+"' and type1='TASK' and type2='TC'",False)
+                        for tc in test_cases:
+                            cases_Dict={
+                                       'id1':each.strip(),
+                                       'id2':tc.strip(),
+                                       'type1':'REQ',
+                                       'type2':'TC'
+                            }
+                            #case_exist = DB.GetData(Conn,"select count(*) from components_map where id1='"+each+" and id2'"+tc+"' and type1='REQ' and type2='TC'")
+                            #if case_exist == 0:
+                            new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)  
                     
             return task_id
         
@@ -215,7 +258,7 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
         
         
         
-def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases):
+def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements):
     try:
         Conn=GetConnection()
         query="select nextval('taskid_seq')"
@@ -306,6 +349,26 @@ def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,
                                'type2':'TC'
                     }
                     new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                    
+            if requirements[0] != '':
+                for each in requirements:
+                    req_Dict={
+                               'id1':each.strip(),
+                               'id2':task_id,
+                               'type1':'REQ',
+                               'type2':'TASK'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**req_Dict)
+                    if new_result==True:
+                        #t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+task_id+"' and type1='TASK' and type2='TC'",False)
+                        for tc in test_cases:
+                            cases_Dict={
+                                       'id1':each.strip(),
+                                       'id2':tc.strip(),
+                                       'type1':'REQ',
+                                       'type2':'TC'
+                            }
+                            new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
             
             return task_id
         
