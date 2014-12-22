@@ -345,6 +345,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/SubmitChildRequirement/$',SubmitChildRequirement),
     url(r'^Home/.*/AutoCompleteLabel/$',AutoCompleteLabel),
     url(r'^Home/.*/AutoCompleteTask/$',AutoCompleteTask), 
+    url(r'^Home/.*/AutoCompleteRequirements/$',AutoCompleteRequirements),
     )
 
 
