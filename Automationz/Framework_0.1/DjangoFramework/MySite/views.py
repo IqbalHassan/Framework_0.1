@@ -848,9 +848,10 @@ def AutoCompleteRequirements(request):
         if request.method == 'GET':
             value = request.GET.get(u'term', '')
             project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
             
             Conn = GetConnection()
-            query = "select distinct requirement_id,requirement_title,r.status,mi.name from requirements r, milestone_info mi where r.requirement_milestone=mi.id::text and r.project_id='%s' and (requirement_title Ilike '%%%s%%' or requirement_id Ilike '%%%s%%')" % (project_id, value, value)
+            query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi,requirement_team_map rtm where r.requirement_milestone=mi.id::text and r.project_id='%s' and (r.requirement_title Ilike '%%%s%%' or r.requirement_id Ilike '%%%s%%') and rtm.team_id='%s' and r.requirement_id=rtm.requirement_id" % (project_id, value, value,team_id)
             req_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(req_list)
@@ -8410,6 +8411,9 @@ def Selected_Requirement_Analaysis(request):
         query = "select distinct t.tasks_id, tasks_title, tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from components_map cm, tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and id1='%s' and type1='REQ' and type2='TASK' and t.tasks_id=cm.id2" % UserData
         tasks = DB.GetData(Conn,query,False)
         
+        query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 = '%s' and btm.id2=tc.tc_id and type1='REQ' and type2='TC'" % UserData
+        cases = DB.GetData(Conn,query,False)
+        
         #query = "select team_id from task_team_map where task_id='%s'" %UserData
         #team = DB.GetData(Conn,query)
         
@@ -8424,7 +8428,7 @@ def Selected_Requirement_Analaysis(request):
             parents.append(temp)"""
 
     #Heading = ['Path','Task-ID','Status','Milestone']
-    results = {'Req_Info':Req_Info, 'Feature':feature[0][0], 'labels':labels, 'teams':teams, 'tasks':tasks}
+    results = {'Req_Info':Req_Info, 'Feature':feature[0][0], 'labels':labels, 'teams':teams, 'tasks':tasks, 'cases':cases}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
