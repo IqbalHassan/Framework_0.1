@@ -28,7 +28,8 @@ if os.name == 'posix':
     import MacCommonFoldersPaths as ComPath
     import Program_Mac as PIM
 
-"""def open_browser(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):
+"""
+def open_browser(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):
     CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
     browser = sClientName
     #Adding working around for the current bug where we are not able to select browser
@@ -97,20 +98,48 @@ def search_for_an_item(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQu
     return sTestStepReturnStatus
 """
 
-def open_browser(dependency,step_data):
+def open_browser(run_id,dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     print dependency
     print step_data
-    return 'Failed'
-def ExecuteTestSteps(CurrentStep,q,dependency_list,step_data):
+    print run_id
+    query="select rundescription from test_run_env where run_id='%s'"%run_id
+    conn=DBUtil.ConnectToDataBase()
+    rundescription=DBUtil.GetData(conn,query)
+    conn.close()
+    
+    #fetch the browser_list:
+    for each in dependency:
+        if each[0]=='Browser':
+            browser_list=each[1]
+            break
+    if isinstance(browser_list,list):    
+        if isinstance(rundescription,list) and len(rundescription)==1:
+            rundescription=rundescription[0]
+            rundescription=rundescription.split(' ')
+            print rundescription
+            for each in rundescription:
+                if each in browser_list:
+                    sClientName=each
+                    break
+            CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
+            sTestStepReturnStatus = WebProgram.BrowserSelection(sClientName)
+            print sTestStepReturnStatus
+        else:
+            sTestStepReturnStatus='Failed'
+    else:
+        sTestStepReturnStatus='Failed'
+    return sTestStepReturnStatus
+def ExecuteTestSteps(run_id,CurrentStep,q,dependency_list,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
+        print run_id
         print dependency_list
         print step_data
         #convert the current step into taking the string
         function_name=CurrentStep.lower().replace(' ','_')
         functionTocall=getattr(current_module, function_name)
-        sTestStepReturnStatus=functionTocall(dependency_list,step_data)
+        sTestStepReturnStatus=functionTocall(run_id,dependency_list,step_data)
     
     except Exception, e:
         print "Exception : ", e
