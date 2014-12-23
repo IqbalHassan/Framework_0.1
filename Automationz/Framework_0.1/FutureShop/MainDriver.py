@@ -387,15 +387,10 @@ def main():
                                 if Global.ThreadingEnabled:
                                     stepThread = threading.Thread(target=module_name.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q,TestRunID[0]))
                                 else:
+                                    #from Drivers import Futureshop
                                     sStepResult = module_name.ExecuteTestSteps(TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
                                     #sStepResult = Futureshop.ExecuteTestSteps(TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
 
-#                            elif TestStepsList[StepSeq - 1][3] == "FS":
-#                                #If threading is enabled
-#                                if Global.ThreadingEnabled:
-#                                    stepThread = threading.Thread(target=FSDriver.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q))
-#                                else:
-#                                    sStepResult = FSDriver.ExecuteTestSteps(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q)
                             else:
                                 #If threading is enabled
                                 if Global.ThreadingEnabled:
@@ -437,27 +432,14 @@ def main():
                         sStepResult = "Failed"
 
                     #Check if the db connection is alive or timed out
-                    if DBUtil.IsDBConnectionGood(conn) == False:
-                        print "DB connection is bad"
-                        CommonUtil.ExecLog(sModuleInfo, "DB connection error", 3)
-                        try:
-                            cur.close()
-                        except Exception, e:
-                            print "Cursor exception:", e
-                            CommonUtil.ExecLog(sModuleInfo, "Exception closing DB cursor:%s" % e, 2)
-                        try:
-                            conn.close()
-                        except Exception, e:
-                            print "Connection exception:", e
-                            CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % e, 2)
-                        """try:
-                            time.sleep(3)
-                            conn = DBUtil.ConnectToDataBase()
-                            cur = conn.cursor()
-                        except Exception, e:
-                            print "new connection exception:", e
-                            CommonUtil.ExecLog(sModuleInfo, "Exception creating new DB connection:%s" % e, 2)
-                        """
+                    #if DBUtil.IsDBConnectionGood(conn) == False:
+                    #    print "DB connection is bad"
+                    #    CommonUtil.ExecLog(sModuleInfo, "DB connection error", 3)
+                    try:
+                        conn.close()
+                    except Exception, e:
+                        print "Connection exception:", e
+                        CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % e, 2)
                     #test Step End time
                     conn=DBUtil.ConnectToDataBase()
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -550,6 +532,7 @@ def main():
                                                    stependtime='%s' % (sTestStepEndTime),
                                                    end_memory='%s' % (WinMemEnd),
                                                    duration='%s' % (TestStepDuration),
+                                                   memory_consumed='%s' % (TestStepMemConsumed)
                                                    )
                         conn.close()
                         #Discontinue this test case
@@ -735,11 +718,11 @@ def main():
         else:
             if automation_count>0 and automation_count==len(TestCaseLists)and (forced_count==0 and manual_count==0):
                 conn=DBUtil.ConnectToDataBase()
-                DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='Complete', testendtime='%s' % (sTestSetEndTime), duration='%s' % (TestSetDuration))
+                print DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='Complete', testendtime='%s' % (sTestSetEndTime), duration='%s' % (TestSetDuration))
                 conn.close()
                 #Update test_run_env schedule table with status so that this Test Set will not be run again
                 conn=DBUtil.ConnectToDataBase()
-                DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete')
+                print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete')
                 conn.close()
                 print "Test Set Completed"
             CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
@@ -751,7 +734,9 @@ def main():
             ToEmailAddress = DBUtil.GetData(conn, "select email_notification from test_run_env where run_id = '%s'" % (TestRunID[0]), False)
             conn.close()
             if ToEmailAddress[0][0]:
+                conn=DBUtil.ConnectToDataBase()
                 Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
+                conn.close()
                 CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
 
         #Copy the Automation Log to Network Folder
