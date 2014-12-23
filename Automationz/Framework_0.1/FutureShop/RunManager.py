@@ -5,6 +5,7 @@ from login_info import username,password,project,team,server,port,database_name,
 import CommonUtil
 import os
 import Global
+import time
 def RunProcess(sTesterid):
     while (1):
         try:
@@ -23,8 +24,9 @@ def RunProcess(sTesterid):
 
             elif status[0] == "Unassigned":
                 time.sleep(3)
-                conn = DBUtil.ConnectToDataBase()
-                DBUtil.UpdateRecordInTable(conn, "test_run_env", "where tester_id = '%s' and status = 'Unassigned'" % sTesterid, last_updated_time=CommonUtil.TimeStamp("string"))
+                conn = DB.ConnectToDataBase()
+                last_updated_time=CommonUtil.TimeStamp("string")
+                DB.UpdateRecordInTable(conn, "test_run_env", "where tester_id = '%s' and status = 'Unassigned'" % sTesterid, last_updated_time=last_updated_time)
                 conn.close()
         except Exception, e:
             print "Exception : ", e
