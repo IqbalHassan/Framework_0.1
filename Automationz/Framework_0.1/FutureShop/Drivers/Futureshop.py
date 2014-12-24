@@ -8,6 +8,7 @@ import sys, os, time, inspect
 import WebProgram
 import itertools, operator
 import Compare
+
 #Ver1.0
 #declaring the current module instance
 
@@ -96,6 +97,7 @@ def search_for_an_item(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQu
     sTestStepReturnStatus = WebProgram.SearchItem(search_text)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
+    
 def ExecuteTestSteps(run_id,CurrentStep,q,dependency_list,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
@@ -115,6 +117,86 @@ def ExecuteTestSteps(run_id,CurrentStep,q,dependency_list,step_data):
     #Put the return value into Queue to send it back to main thread
     q.put(sTestStepReturnStatus)
     return sTestStepReturnStatus
+
+#lost steps
+exp_SQLQuery = ("select  pmd.id, pmd.field, pmd.value from test_case_datasets tcd, expected_datasets ed, expected_container ec, container_type_data ctd, master_data pmd where tcd.tcdatasetid = ed.datasetid"
+        " and ed.expectedrefid = ec.exprefid"
+        " and ec.container_name = ctd.dataid"
+        " and ctd.curname = pmd.id"
+        " and ed.stepsseq = '%s'"
+        " and tcd.tcdatasetid = '%s' order by pmd.id;" % (StepSeq, DataSet))
+        
+elif CurrentStep == "Verify Filter Items Count":
+            DataSet = DBUtil.GetData(conn, exp_SQLQuery, False)
+            check_box_name = DataSet[0][1]
+            ExpDataList = [[(DataSet[0][1],DataSet[0][2])]]
+            ActDataList = [[(check_box_name,WebProgram.GetFilterCount(check_box_name))]]
+
+            objCompare = Compare.Compare()
+            retValue = objCompare.FieldCompare(ExpDataList, ActDataList, [], [])
+            if retValue == "Pass":
+                sTestStepReturnStatus = "Pass"
+            else:
+                sTestStepReturnStatus = "Critical"
+
+        elif CurrentStep == "Verify Product Details":
+            DataSet = DBUtil.GetData(conn, exp_SQLQuery, False)
+            DataGroup = []
+            DataList = []
+            ExpDataList = []
+            ActDataList = []
+            #Get expected data
+            for key, group in itertools.groupby(DataSet, operator.itemgetter(0)):
+                DataGroup.append(list(group))
+            for eachGroup in DataGroup:
+                DataList = [tuple(x[1:3])for x in eachGroup]
+                #Replace address data id with actual data
+                ExpAddrList = []
+                for i in range(len(DataList) - 1, -1, -1):
+                    eachData = DataList[i]
+                    if eachData[1].startswith(x[0]):# == 'Details':
+                        temp = list(DataList[i])
+                        address_find_SQLQuery = ("select "
+                        " pmd.field,"
+                        " pmd.value"
+                        " from master_data pmd"
+                        " where"
+                        " pmd.id = '%s'"
+                        " ;" % (temp[1]))
+                        AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
+                        temp[1] = AddressData
+                        ExpAddrList.append(tuple(temp))
+                        DataList.pop(i)
+                for eachData in ExpAddrList:
+                    DataList.append(eachData)
+                ExpDataList.append(DataList)
+
+            #Get actual data
+            ActDataList = []
+            ActItemDetail = WebProgram.GetItemDetail()
+            if ActItemDetail == "Critical":
+                CommonUtil.ExecLog(sModuleInfo, "Error in getting Product Details", 3)
+                sTestStepReturnStatus = "Critical"
+            else:
+                ActDataList.append(ActItemDetail)
+                objCompare = Compare.Compare()
+                retValue = objCompare.FieldCompare(ExpDataList, ActDataList, [], ['Web ID'])
+                if retValue == "Pass":
+                    sTestStepReturnStatus = "Pass"
+                else:
+                    sTestStepReturnStatus = "Critical"
+
+
+        else:
+            sTestStepReturnStatus = "Warning"
+            print "Unknown test step : ", CurrentStep
+            CommonUtil.ExecLog(sModuleInfo, "Unknown test step : %s" % CurrentStep , 2)
+
+    except Exception, e:
+        print "Exception : ", e
+        CommonUtil.ExecLog(sModuleInfo, "Exception : %s" % e , 3)
+        sTestStepReturnStatus = "Critical"
+
 """
 
 def open_browser(dependency,step_data):
@@ -126,7 +208,16 @@ def open_browser(dependency,step_data):
     return sTestStepReturnStatus
 def go_to_webpage(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    web_link=step_data[0][1]
+    #getting the first data set by this following lines
+    first_data_set=step_data[0]
+    web_link=first_data_set[0][2]
+    #web_link='http://www.futureshop.ca'
     sTestStepReturnStatus = WebProgram.OpenLink(web_link)
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus
+def verify_product_details(dependency,step_data):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    print step_data
+    sTestStepReturnStatus='Failed'
     print sTestStepReturnStatus
     return sTestStepReturnStatus
