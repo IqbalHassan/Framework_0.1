@@ -32,6 +32,10 @@ $(document).ready(function(){
             make_clickable('#allMilestones');
 
         }
+        else{
+            $("#allMilestones").html('<h2>No Data Available</h2>')
+        }
+
     });
 
 

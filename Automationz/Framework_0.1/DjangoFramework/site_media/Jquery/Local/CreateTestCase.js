@@ -1116,7 +1116,7 @@ $(document).ready(function() {
     }
 });
 function get_default_settings(project_id,team_id){
-    $.get('get_default_settings',{
+    $.get('get_default_settings/',{
         project_id:project_id,
         team_id:team_id
     },function(data){

@@ -86,6 +86,9 @@ $(document).ready(function(){
             make_clickable('#allBugs');
 
         }
+        else{
+            $("#allBugs").html('<h2>No Data Available</h2>')
+        }
     });
 
 
