@@ -127,6 +127,23 @@ def main():
         project_team=DBUtil.GetData(conn,query,False)
         conn.close()
         dependency_list=collectAlldependency(project_team[0][0],project_team[0][1])
+        #code for the dependency_list will go here.
+        query="select rundescription from test_run_env where run_id='%s'"%TestRunID[0]
+        conn=DBUtil.ConnectToDataBase()
+        rundescription=DBUtil.GetData(conn,query)
+        conn.close()
+        dependency_list_final={}
+        if isinstance(rundescription,list) and len(rundescription)==1:
+            rundescription=rundescription[0]
+            rundescription=rundescription.split(" ")
+            for each in rundescription:
+                for eachitem in dependency_list:
+                    current_dependency=eachitem[0]
+                    for eachitemlist in eachitem[1]:
+                        if each==eachitemlist:
+                            current_item=each
+                            dependency_list_final.update({current_dependency:current_item})
+        print dependency_list_final
         #TestResultsEnv Table
         #Update test_run_env table with status for the current TestRunId
         conn=DBUtil.ConnectToDataBase()
@@ -388,7 +405,11 @@ def main():
                                     stepThread = threading.Thread(target=module_name.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q,TestRunID[0]))
                                 else:
                                     #from Drivers import Futureshop
-                                    sStepResult = module_name.ExecuteTestSteps(TestRunID[0],TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
+                                    step_name=TestStepsList[StepSeq-1][1]
+                                    step_name=step_name.lower().replace(' ','_')
+                                    functionTocall=getattr(module_name, step_name)
+                                    sStepResult = functionTocall(dependency_list_final,q,steps_data)
+                                    #sStepResult = module_name.ExecuteTestSteps(TestRunID[0],TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
                                     #sStepResult = Futureshop.ExecuteTestSteps(TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
 
                             else:

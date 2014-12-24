@@ -96,40 +96,6 @@ def search_for_an_item(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQu
     sTestStepReturnStatus = WebProgram.SearchItem(search_text)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
-"""
-
-def open_browser(run_id,dependency,step_data):
-    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    print dependency
-    print step_data
-    print run_id
-    query="select rundescription from test_run_env where run_id='%s'"%run_id
-    conn=DBUtil.ConnectToDataBase()
-    rundescription=DBUtil.GetData(conn,query)
-    conn.close()
-    
-    #fetch the browser_list:
-    for each in dependency:
-        if each[0]=='Browser':
-            browser_list=each[1]
-            break
-    if isinstance(browser_list,list):    
-        if isinstance(rundescription,list) and len(rundescription)==1:
-            rundescription=rundescription[0]
-            rundescription=rundescription.split(' ')
-            print rundescription
-            for each in rundescription:
-                if each in browser_list:
-                    sClientName=each
-                    break
-            CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
-            sTestStepReturnStatus = WebProgram.BrowserSelection(sClientName)
-            print sTestStepReturnStatus
-        else:
-            sTestStepReturnStatus='Failed'
-    else:
-        sTestStepReturnStatus='Failed'
-    return sTestStepReturnStatus
 def ExecuteTestSteps(run_id,CurrentStep,q,dependency_list,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
@@ -148,4 +114,13 @@ def ExecuteTestSteps(run_id,CurrentStep,q,dependency_list,step_data):
 
     #Put the return value into Queue to send it back to main thread
     q.put(sTestStepReturnStatus)
+    return sTestStepReturnStatus
+"""
+
+def open_browser(dependency,q,step_data):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
+    sClientName=dependency['Browser']
+    sTestStepReturnStatus = WebProgram.BrowserSelection(sClientName)
+    print sTestStepReturnStatus
     return sTestStepReturnStatus
