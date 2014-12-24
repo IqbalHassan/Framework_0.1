@@ -126,7 +126,7 @@ def open_browser(dependency,step_data):
     return sTestStepReturnStatus
 def go_to_webpage(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    web_link=step_data[0][2]
+    web_link=step_data[0][1]
     sTestStepReturnStatus = WebProgram.OpenLink(web_link)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
