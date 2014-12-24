@@ -117,10 +117,16 @@ def ExecuteTestSteps(run_id,CurrentStep,q,dependency_list,step_data):
     return sTestStepReturnStatus
 """
 
-def open_browser(dependency,q,step_data):
+def open_browser(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
     sClientName=dependency['Browser']
     sTestStepReturnStatus = WebProgram.BrowserSelection(sClientName)
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus
+def go_to_webpage(dependency,step_data):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    web_link=step_data[0][2]
+    sTestStepReturnStatus = WebProgram.OpenLink(web_link)
     print sTestStepReturnStatus
     return sTestStepReturnStatus

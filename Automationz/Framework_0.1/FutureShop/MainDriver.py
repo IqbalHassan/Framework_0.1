@@ -385,7 +385,7 @@ def main():
                         steps_data_query="select  ctd.curname, ctd.newname from result_Test_Steps tst, result_test_case_datasets tcd, result_test_steps_data tsd, result_container_type_data ctd where tst.tc_id = tcd.tc_id and tst.run_id=tcd.run_id and tcd.tcdatasetid = tsd.tcdatasetid and tcd.run_id=tsd.run_id and tst.teststepsequence = tsd.teststepseq and tst.run_id=tsd.run_id and tsd.testdatasetid = ctd.dataid and tsd.run_id=ctd.run_id and tst.tc_id = '%s' and tst.teststepsequence = '%s' and tcd.tcdatasetid = '%s' and tst.run_id='%s'"%(TCID,int(TestStepsList[StepSeq - 1][2]), EachDataSet[0],TestRunID[0])
                     else:
                         #for data and not data
-                        steps_data_query="select pmd.id,pmd.field,pmd.value from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' order by pmd.id"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0])
+                        steps_data_query="select pmd.field,pmd.value from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' order by pmd.id"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0])
                         
                     conn=DBUtil.ConnectToDataBase()
                     steps_data=DBUtil.GetData(conn,steps_data_query,False)
@@ -408,7 +408,8 @@ def main():
                                     step_name=TestStepsList[StepSeq-1][1]
                                     step_name=step_name.lower().replace(' ','_')
                                     functionTocall=getattr(module_name, step_name)
-                                    sStepResult = functionTocall(dependency_list_final,q,steps_data)
+                                    sStepResult = functionTocall(dependency_list_final,steps_data)
+                                    q.put(sStepResult)
                                     #sStepResult = module_name.ExecuteTestSteps(TestRunID[0],TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
                                     #sStepResult = Futureshop.ExecuteTestSteps(TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
 
