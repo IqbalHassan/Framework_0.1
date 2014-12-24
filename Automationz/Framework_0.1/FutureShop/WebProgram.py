@@ -29,7 +29,7 @@ def BrowserSelection(browser):
             print "Started Chrome Browser"
             CommonUtil.ExecLog(sModuleInfo, "Started Chrome Browser", 1)
             return "PASSED"
-        elif browser == 'FireFox':
+        elif browser == 'Firefox':
             sBrowser = webdriver.Firefox()
             CommonUtil.ExecLog(sModuleInfo, "Started Firefox Browser", 1)
             print "Started Firefox Browser"

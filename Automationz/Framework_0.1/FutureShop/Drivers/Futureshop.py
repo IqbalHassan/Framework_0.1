@@ -9,6 +9,9 @@ import WebProgram
 import itertools, operator
 import Compare
 #Ver1.0
+#declaring the current module instance
+
+current_module=sys.modules[__name__]
 
 if os.name == 'nt':
     import clr, System
@@ -25,6 +28,7 @@ if os.name == 'posix':
     import MacCommonFoldersPaths as ComPath
     import Program_Mac as PIM
 
+"""
 def open_browser(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery):
     CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
     browser = sClientName
@@ -92,72 +96,17 @@ def search_for_an_item(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQu
     sTestStepReturnStatus = WebProgram.SearchItem(search_text)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
-
-#function for the query write
-#get the add_find_sql_query
-
-function_mappings={
-    'Open Browser':open_browser,
-    'Go to webpage':go_to_webpage,
-    'Close Browser':close_browser,
-    'Open Futureshop':open_futureshop,
-    'Select Main Menu':select_main_menu,
-    'Select Sub Menu 1':select_sub_menu_one,
-    'Select Sub Menu 2':select_sub_menu_two,
-    'Select Filter Checkbox':select_filter_checkbox,
-    'Search For An Item':search_for_an_item
-    #'Verify Filter Items Count':
-    #'Verify Product Details': 
-}
-
-def get_add_find_SQLQuery(TCID,StepSeq,DataSet,referred_run):
-    add_find_SQLQuery=("select pmd.id,pmd.field,pmd.value"
-                " from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd"
-                " where tc.run_id=tcd.run_id"
-                " and tc.tc_id=tcd.tc_id"
-                " and tcd.run_id=tsd.run_id"
-                " and tcd.tcdatasetid=tsd.tcdatasetid"
-                " and tsd.testdatasetid=ctd.dataid"
-                " and tsd.run_id=ctd.run_id"
-                " and ctd.curname=pmd.id"
-                " and ctd.run_id=pmd.run_id"
-                " and tc.tc_id='%s'"
-                " and tcd.tcdatasetid='%s'"
-                " and tsd.teststepseq=%d"
-                " and tc.run_id='%s' order by pmd.id"% (TCID,DataSet, StepSeq, referred_run))
-    return add_find_SQLQuery
-
-def get_edit_SQLQuery(TCID,StepSeq,Dataset,referred_run):
-    edit_SQLQuery = ("select "
-            " ctd.curname,"
-            " ctd.newname"
-            " from result_Test_Steps tst, result_test_case_datasets tcd, result_test_steps_data tsd, result_container_type_data ctd"
-            " where"
-            " tst.tc_id = tcd.tc_id"
-            " and tst.run_id=tcd.run_id"
-            " and tcd.tcdatasetid = tsd.tcdatasetid"
-            " and tcd.run_id=tsd.run_id"
-            " and tst.teststepsequence = tsd.teststepseq"
-            " and tst.run_id=tsd.run_id"
-            " and tsd.testdatasetid = ctd.dataid"
-            " and tsd.run_id=ctd.run_id"
-            " and tst.tc_id = '%s'"
-            " and tst.teststepsequence = '%s'"
-            " and tcd.tcdatasetid = '%s'"
-            " and tst.run_id='%s'" % (TCID, StepSeq, Dataset,referred_run))
-    return edit_SQLQuery    
-"""
-def ExecuteTestSteps(CurrentStep,  q,dependency_list,step_data):
+def ExecuteTestSteps(run_id,CurrentStep,q,dependency_list,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        #add_find_SQLQuery=get_add_find_SQLQuery(TCID, StepSeq, DataSet,run_id)
-        #edit_SQLQuery=get_edit_SQLQuery(TCID, StepSeq, DataSet,run_id)
-        for each in function_mappings.keys():
-            if CurrentStep==each:
-                function_name=function_mappings[each]
-                #things needed to generalize
-                sTestStepReturnStatus=function_name(conn,sModuleInfo,sClientName,add_find_SQLQuery,edit_SQLQuery)
-                break
+        print run_id
+        print dependency_list
+        print step_data
+        #convert the current step into taking the string
+        function_name=CurrentStep.lower().replace(' ','_')
+        functionTocall=getattr(current_module, function_name)
+        sTestStepReturnStatus=functionTocall(run_id,dependency_list,step_data)
+    
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Exception : %s" % e , 3)
@@ -168,18 +117,16 @@ def ExecuteTestSteps(CurrentStep,  q,dependency_list,step_data):
     return sTestStepReturnStatus
 """
 
-
-def ExecuteTestSteps(CurrentStep,q,dependency_list,step_data):
+def open_browser(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    try:
-        print dependency_list
-        print step_data
-        sTestStepReturnStatus='Failed'
-    except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Exception : %s" % e , 3)
-        sTestStepReturnStatus = "Failed"
-
-    #Put the return value into Queue to send it back to main thread
-    q.put(sTestStepReturnStatus)
+    CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
+    sClientName=dependency['Browser']
+    sTestStepReturnStatus = WebProgram.BrowserSelection(sClientName)
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus
+def go_to_webpage(dependency,step_data):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    web_link=step_data[0][1]
+    sTestStepReturnStatus = WebProgram.OpenLink(web_link)
+    print sTestStepReturnStatus
     return sTestStepReturnStatus

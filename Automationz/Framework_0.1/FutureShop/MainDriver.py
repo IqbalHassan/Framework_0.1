@@ -127,6 +127,23 @@ def main():
         project_team=DBUtil.GetData(conn,query,False)
         conn.close()
         dependency_list=collectAlldependency(project_team[0][0],project_team[0][1])
+        #code for the dependency_list will go here.
+        query="select rundescription from test_run_env where run_id='%s'"%TestRunID[0]
+        conn=DBUtil.ConnectToDataBase()
+        rundescription=DBUtil.GetData(conn,query)
+        conn.close()
+        dependency_list_final={}
+        if isinstance(rundescription,list) and len(rundescription)==1:
+            rundescription=rundescription[0]
+            rundescription=rundescription.split(" ")
+            for each in rundescription:
+                for eachitem in dependency_list:
+                    current_dependency=eachitem[0]
+                    for eachitemlist in eachitem[1]:
+                        if each==eachitemlist:
+                            current_item=each
+                            dependency_list_final.update({current_dependency:current_item})
+        print dependency_list_final
         #TestResultsEnv Table
         #Update test_run_env table with status for the current TestRunId
         conn=DBUtil.ConnectToDataBase()
@@ -368,7 +385,7 @@ def main():
                         steps_data_query="select  ctd.curname, ctd.newname from result_Test_Steps tst, result_test_case_datasets tcd, result_test_steps_data tsd, result_container_type_data ctd where tst.tc_id = tcd.tc_id and tst.run_id=tcd.run_id and tcd.tcdatasetid = tsd.tcdatasetid and tcd.run_id=tsd.run_id and tst.teststepsequence = tsd.teststepseq and tst.run_id=tsd.run_id and tsd.testdatasetid = ctd.dataid and tsd.run_id=ctd.run_id and tst.tc_id = '%s' and tst.teststepsequence = '%s' and tcd.tcdatasetid = '%s' and tst.run_id='%s'"%(TCID,int(TestStepsList[StepSeq - 1][2]), EachDataSet[0],TestRunID[0])
                     else:
                         #for data and not data
-                        steps_data_query="select pmd.id,pmd.field,pmd.value from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' order by pmd.id"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0])
+                        steps_data_query="select pmd.field,pmd.value from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' order by pmd.id"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0])
                         
                     conn=DBUtil.ConnectToDataBase()
                     steps_data=DBUtil.GetData(conn,steps_data_query,False)
@@ -387,15 +404,15 @@ def main():
                                 if Global.ThreadingEnabled:
                                     stepThread = threading.Thread(target=module_name.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q,TestRunID[0]))
                                 else:
-                                    sStepResult = module_name.ExecuteTestSteps(TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
+                                    #from Drivers import Futureshop
+                                    step_name=TestStepsList[StepSeq-1][1]
+                                    step_name=step_name.lower().replace(' ','_')
+                                    functionTocall=getattr(module_name, step_name)
+                                    sStepResult = functionTocall(dependency_list_final,steps_data)
+                                    q.put(sStepResult)
+                                    #sStepResult = module_name.ExecuteTestSteps(TestRunID[0],TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
                                     #sStepResult = Futureshop.ExecuteTestSteps(TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
 
-#                            elif TestStepsList[StepSeq - 1][3] == "FS":
-#                                #If threading is enabled
-#                                if Global.ThreadingEnabled:
-#                                    stepThread = threading.Thread(target=FSDriver.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q))
-#                                else:
-#                                    sStepResult = FSDriver.ExecuteTestSteps(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q)
                             else:
                                 #If threading is enabled
                                 if Global.ThreadingEnabled:
@@ -437,27 +454,14 @@ def main():
                         sStepResult = "Failed"
 
                     #Check if the db connection is alive or timed out
-                    if DBUtil.IsDBConnectionGood(conn) == False:
-                        print "DB connection is bad"
-                        CommonUtil.ExecLog(sModuleInfo, "DB connection error", 3)
-                        try:
-                            cur.close()
-                        except Exception, e:
-                            print "Cursor exception:", e
-                            CommonUtil.ExecLog(sModuleInfo, "Exception closing DB cursor:%s" % e, 2)
-                        try:
-                            conn.close()
-                        except Exception, e:
-                            print "Connection exception:", e
-                            CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % e, 2)
-                        """try:
-                            time.sleep(3)
-                            conn = DBUtil.ConnectToDataBase()
-                            cur = conn.cursor()
-                        except Exception, e:
-                            print "new connection exception:", e
-                            CommonUtil.ExecLog(sModuleInfo, "Exception creating new DB connection:%s" % e, 2)
-                        """
+                    #if DBUtil.IsDBConnectionGood(conn) == False:
+                    #    print "DB connection is bad"
+                    #    CommonUtil.ExecLog(sModuleInfo, "DB connection error", 3)
+                    try:
+                        conn.close()
+                    except Exception, e:
+                        print "Connection exception:", e
+                        CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % e, 2)
                     #test Step End time
                     conn=DBUtil.ConnectToDataBase()
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -550,6 +554,7 @@ def main():
                                                    stependtime='%s' % (sTestStepEndTime),
                                                    end_memory='%s' % (WinMemEnd),
                                                    duration='%s' % (TestStepDuration),
+                                                   memory_consumed='%s' % (TestStepMemConsumed)
                                                    )
                         conn.close()
                         #Discontinue this test case
@@ -735,11 +740,11 @@ def main():
         else:
             if automation_count>0 and automation_count==len(TestCaseLists)and (forced_count==0 and manual_count==0):
                 conn=DBUtil.ConnectToDataBase()
-                DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='Complete', testendtime='%s' % (sTestSetEndTime), duration='%s' % (TestSetDuration))
+                print DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='Complete', testendtime='%s' % (sTestSetEndTime), duration='%s' % (TestSetDuration))
                 conn.close()
                 #Update test_run_env schedule table with status so that this Test Set will not be run again
                 conn=DBUtil.ConnectToDataBase()
-                DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete')
+                print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete')
                 conn.close()
                 print "Test Set Completed"
             CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
@@ -751,7 +756,9 @@ def main():
             ToEmailAddress = DBUtil.GetData(conn, "select email_notification from test_run_env where run_id = '%s'" % (TestRunID[0]), False)
             conn.close()
             if ToEmailAddress[0][0]:
+                conn=DBUtil.ConnectToDataBase()
                 Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
+                conn.close()
                 CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
 
         #Copy the Automation Log to Network Folder
