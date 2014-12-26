@@ -14,7 +14,7 @@ $(document).ready(function(){
     console.log("Edit Index:"+indx);
     if(indx!=-1){
         var referred_ms=URL.substring((URL.lastIndexOf("EditMilestone/")+("EditMilestone/").length),(URL.length-1));
-        $("#header").html($.session.get('project_id')+' / Edit Milestone / '+referred_ms);
+
         PopulateMSInfo(referred_ms);
         operation=2;
     }
@@ -101,6 +101,8 @@ function PopulateMSInfo(value){
     {
         $("#msinput").val(data[0][1]);
         $("#status").val(data[0][4]);
+
+        $("#header").html($.session.get('project_id')+' / Edit Milestone / '+data[0][1]);
         /*if(data[0][4]=="not_started")
         {
             $('a[value="not_started"]').addClass('selected')
@@ -142,13 +144,13 @@ function PopulateMSInfo(value){
         $("#modified_date").text(data[0][9]);
 
 
-        $('input[name="team"]:checked').removeAttr('checked')
-        $.get("MilestoneTeams",{term : value},function(result)
+        //$('input[name="team"]:checked').removeAttr('checked')
+        $.get("MilestoneTeams",{term : data[0][1]},function(data)
         {
             $('input[name="team"]').each(function(){
-                for(var i=0;i<result.length;i++)
+                for(var i=0;i<data.length;i++)
                 {
-                    if($(this).val()==result[i])
+                    if($(this).val()==data[i])
                     {
                         $(this).attr('checked', true)
                     }
