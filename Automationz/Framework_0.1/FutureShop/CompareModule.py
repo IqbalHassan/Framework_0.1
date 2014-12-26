@@ -81,7 +81,7 @@ class CompareModule():
         print "total_match:%d"%len(total_match),total_match
         print "total_missing:%d"%len(total_missing),total_missing
         print "total_extra:%d"%len(total_extra),total_extra
-        return False
+        return "Failed"
 def main():
     oCompare=CompareModule()
     """actual_list=[

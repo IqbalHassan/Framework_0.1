@@ -10,9 +10,7 @@ import itertools, operator
 import Compare
 
 #Ver1.0
-#declaring the current module instance
-
-current_module=sys.modules[__name__]
+import CompareModule
 
 if os.name == 'nt':
     import clr, System
@@ -211,13 +209,16 @@ def go_to_webpage(dependency,step_data):
     #getting the first data set by this following lines
     first_data_set=step_data[0]
     web_link=first_data_set[0][2]
-    #web_link='http://www.futureshop.ca'
+    web_link='http://www.amazon.ca'
     sTestStepReturnStatus = WebProgram.OpenLink(web_link)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
 def verify_product_details(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    print step_data
-    sTestStepReturnStatus='Failed'
+    expected_data=[]
+    actual_data=[]
+    #declaring the object compare
+    oCompare=CompareModule.CompareModule()
+    sTestStepReturnStatus=oCompare.FieldCompare(expected_data,actual_data)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
