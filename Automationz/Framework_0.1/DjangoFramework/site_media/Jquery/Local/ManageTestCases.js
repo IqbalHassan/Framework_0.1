@@ -74,12 +74,21 @@ $(document).ready(function() {
 							}
 						},
 						"Delete" : {
-							"separator_before": true,
+							"separator_before": false,
 							"separator_after": false,
 							"icon": "fa fa-trash-o",
 							"label": "Delete Section",
 							"action": function(obj) {
 								deleteNode(node);
+							}
+						},
+						"CreateTestCase" : {
+							"separator_before": true,
+							"separator_after": false,
+							"label": "Create Test Case",
+							"icon": "fa fa-plus-square",
+							"action": function(obj) {
+								window.location.href="/Home/ManageTestCases/CreateNewTestCase/";
 							}
 						}
 					}

@@ -1199,7 +1199,7 @@ def TestCase_TestSteps(request):  #==================Returns Test Steps When Use
     Conn = GetConnection()
     results = {}
     if request.is_ajax():
-         if request.method == 'GET':
+        if request.method == 'GET':
 
             # If User Click on Test Case ID 
             TestCaseName = request.GET.get('ClickedTC', '')
