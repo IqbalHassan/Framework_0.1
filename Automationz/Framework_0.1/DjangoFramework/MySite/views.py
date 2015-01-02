@@ -55,6 +55,7 @@ import LogModule
 from LogModule import PassMessasge
 from django.contrib.messages.storage.base import Message
 from _ast import BitAnd
+from django.db.models.sql.query import Query
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -8282,10 +8283,10 @@ def ManageTask(request):
     return render_to_response('ManageTask.html',Dict)
 
 def EditTask(request,task_id,project_id):
-    task_id = request.GET.get('task_id', '')
-    project_id = request.GET.get('project_id', '')
+#     task_id = request.GET.get('task_id', '')
+#     project_id = request.GET.get('project_id', '')
     
-    if task_id != "":
+    if task_id == "":
         return render_to_response('CreateNewTask.html')
     else:
         Conn=GetConnection()
@@ -8300,12 +8301,18 @@ def EditTask(request,task_id,project_id):
         user_list=DB.GetData(Conn,query,False)
         query = "select label_id,label_name,Label_color from labels order by label_name"
         labels = DB.GetData(Conn,query,False)
+        query = '''
+        SELECT permitted_user_list.user_id FROM permitted_user_list INNER JOIN tasks ON permitted_user_list.user_id = cast(tasks.tester as int) WHERE tasks.tasks_id = '%s';
+        ''' % (task_id)
+        Conn = GetConnection()
+        tester_user_id = DB.GetData(Conn, query, False, False)[0][0]
         Dict={
               'team_info':team_info,
               'priority_list':priority,
               'milestone_list':milestone_list,
               'user_list':user_list,
-              'labels':labels
+              'labels':labels,
+              'tester_user_id': tester_user_id
         }
     return render_to_response("CreateNewTask.html",Dict)
 

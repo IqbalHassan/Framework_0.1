@@ -167,7 +167,11 @@
                                             <option value=""></option>>
                                             {% if user_list %}
                                             {% for x in user_list %}
-                                            <option value="{{x.0}}"/>{{x.1}}</option>
+	                                            {% if x.0 == tester_user_id %}
+	                                            	<option value="{{x.0}}" selected>{{x.1}}</option>
+	                                            {% else %}
+	                                            	<option value="{{x.0}}">{{x.1}}</option>
+	                                            {% endif %}
                                             {% endfor %}
                                             {% endif %}
                                         </select>
