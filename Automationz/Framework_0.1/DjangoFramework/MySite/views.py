@@ -19,6 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import connection
 from django.http import HttpResponse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -31,6 +32,7 @@ from django.template.loader import get_template
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
+
 from psycopg2.extras import DictCursor
 
 from CommonUtil import TimeStamp
@@ -56,6 +58,7 @@ from LogModule import PassMessasge
 from django.contrib.messages.storage.base import Message
 from _ast import BitAnd
 from django.db.models.sql.query import Query
+from django.contrib.admin.templatetags.admin_list import items_for_result
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
@@ -2932,16 +2935,41 @@ def Performance_ClickedBundle_Details(request, type):
 def TestCaseSearch(request):
     Conn = GetConnection()
     results = []
+    items_per_page = 10
+    has_next_page = False
+    
     if request.method == "GET":
-        value = request.GET.get(u'term', '')
-        # Ignore queries shorter than length 3
-        # if len(value) > 1:
-        # results = DB.GetData(Conn,"Select DISTINCT name from test_case_tag where name != 'Dependency' and name Ilike '%" + value + "%'")
-        # results = DB.GetData(Conn, "Select DISTINCT tc_id from test_cases")
-        results = DB.GetData(Conn, "Select  DISTINCT tc_id,tc_name,'Test Case' from test_cases where tc_id Ilike '%" + value + "%' or tc_name Ilike '%" + value + "%'", False)
+        term = request.GET.get(u'term', '')
+        page = int(request.GET.get(u'page', ''))
+#         print "#############################"
+#         print "Term:", term
+#         print "Page:", page
+        data = DB.GetData(Conn, "Select  DISTINCT tc_id,tc_name,'Test Case' from test_cases where tc_id Ilike '%" + term + "%' or tc_name Ilike '%" + term + "%'", False)
 
-    results = list(set(results))
-    json = simplejson.dumps(results)
+        for test_case in data:
+            result_dict = {}
+            # AAA-000
+            result_dict['id'] = test_case[0]
+            # In the UI, it should be displayed as, AAA-000: Test For 'X'
+            result_dict['text'] = '%s: %s' % (result_dict['id'], test_case[1]) 
+            results.append(result_dict)
+        
+        current_page = None
+        # Lazy-loading i.e loading on demand, 10 items per page/request
+        paginator = Paginator(results, items_per_page)
+        
+        try:
+            current_page = paginator.page(page)
+        except PageNotAnInteger:
+            current_page = test_case_list = paginator.page(1)
+        except EmptyPage:
+            current_page = paginator.page(paginator.num_pages)
+        
+        has_next_page = current_page.has_next()
+        test_case_list = current_page.object_list
+
+    json = simplejson.dumps({'items': test_case_list, 'more': has_next_page})
+    print "JSON:", json
     return HttpResponse(json, mimetype='application/json')
 
 

@@ -17,7 +17,82 @@ var isAtLowestFeature = false;
 var popupdivrowcount=[];
 var referred_test_case="";
 var dependency_classes=[];
+var new_test_case_text = "New test case";
+
 $(document).ready(function() {
+	
+	$("#test_case_search_box").select2({
+		placeholder: "Test Case title...",
+//		minimumInputLength: 3,
+		width: 460,
+		quietMillis: 250,
+		ajax: {
+			url: "TestCaseSearch/",
+			dataType: "json",
+			queitMillis: 250,
+			data: function(term, page) {
+				return {
+					'term': term,
+					'page': page
+				};
+			},
+			results: function(data, page) {
+				return {
+					results: data.items,
+					more: data.more
+				}
+			}
+		},
+		createSearchChoice: function(term) {
+			return {id: new_test_case_text, text: new_test_case_text + ": " + term};
+		},
+		createSearchChoicePosition: "top",
+		formatResult: formatTestCases 
+	})
+	// Listens for changes so that we can prompt the user if they want to edit or
+	// copy existing test cases
+	.on("change", function(e) {
+//		console.log(JSON.stringify({val: e.val, added: e.added, removed: e.removed}));
+		if (e.val === new_test_case_text) {
+//			console.log("New test case is being created!");
+		} else {
+//			console.log("Existing test case has been selected.");
+			var tc_title = $(this).select2("data")["text"]
+        	.split(':')[1].trim();
+        
+			var tc_id = $(this).val();
+			$("#title_prompt").html(
+				'<p style="text-align: center">You have selected ' +
+				'<span style="font-weight: bold;">' + tc_id +': '+ tc_title + '</span>' +
+				'<br/> What do you want to do?' +
+				'</p>' +
+				'<div style="padding-left: 15%">' +
+				'<a class="github" href="/Home/ManageTestCases/Edit/'+tc_id+'">Edit</a>' +
+				'<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
+				'<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+				'</div>'
+			);
+          $("#title_prompt").modal();
+          return false;
+		}
+	});
+	
+	// Should be used for formatting results, LATER
+	function formatTestCases(tc_details) {
+		var markup =
+			'<div>' +
+			'<i class="fa fa-pencil fa-fw"></i> <span style="font-weight: bold;">' + tc_details.id + '</span>' +
+			': ' +
+			'<span>' + tc_details.text.split(':')[1].trim() + '</span>'
+			'</div>';
+		
+		return markup;
+	}
+//	
+//	function formatTestCasesSelection(tc_details) {
+//		return tc_id + ": " + tc_name + " - " + tc_type
+//	}
+	
     //show_labels();
     addMainTableRow('#steps_table');
     //check_required_data();
@@ -33,11 +108,11 @@ $(document).ready(function() {
     /*****************End Shetu************************/
 
     URL = window.location.pathname
-    console.log("url:"+URL);
+//    console.log("url:"+URL);
     indx = URL.indexOf("CreateNew");
-    console.log("Create Index:"+indx);
+//    console.log("Create Index:"+indx);
     indx2 = URL.indexOf("Edit");
-    console.log("Edit Index:"+indx2);
+//    console.log("Edit Index:"+indx2);
     var template = URL.length > (URL.lastIndexOf("CreateNew/")+("CreateNew/").length) && URL.indexOf("CreateNew") != -1;
     if(indx!=-1 && template){
         referred_test_case=URL.substring((URL.lastIndexOf("CreateNew/")+("CreateNew/").length),(URL.length-1));
@@ -47,8 +122,8 @@ $(document).ready(function() {
         referred_test_case=URL.substring((URL.lastIndexOf("Edit/")+("Edit/").length),(URL.length-1));
         $("#header").html($.session.get('project_id')+' / Edit Test Case / '+referred_test_case);
     }
-    console.log("Url Length:"+URL.length);
-    console.log("Template:"+template);
+//    console.log("Url Length:"+URL.length);
+//    console.log("Template:"+template);
     if (indx != -1 || indx2 != -1) {
         $('#add_test_step').live('click',function(){
             addMainTableRow('#steps_table');
@@ -211,7 +286,7 @@ $(document).ready(function() {
                     TC_Id:referred_test_case
                 },
                 function(data){
-                    console.log(data);
+//                    console.log(data);
                     /******************Properties tab Data*******************************/
                     //Status
                     if (typeof(data)!='string'){
@@ -432,7 +507,9 @@ $(document).ready(function() {
                             var title=data['TC_Name'];
                             //$('#TC_Id').html("<b>Automation ID: "+auto_id +"</b>")
                             $('#TC_Id').css('display','block');
-                            $('#titlebox').val(title);
+//                            console.log("Title: " + title);
+//                            $('#titlebox').val(title);
+                            $("#test_case_search_box").select2("data", {"id": auto_id, "text": auto_id + ": " + title});
                         }
                         /************************End RelatedItems Tab*******************************
                         $('input[name="labels"]').each(function(){
@@ -452,7 +529,7 @@ $(document).ready(function() {
                         }
                         var row_count=$('#steps_table tr').length;
                         var converted_data=[];
-                        console.log(row_count);
+//                        console.log(row_count);
                         popupdivrowcount=[];
                         for(var i=0;i<row_count;i++){
                             $('#searchbox'+(i+1)+'name').val(steps_and_data[i][0]);
@@ -474,8 +551,8 @@ $(document).ready(function() {
                             else if(steps_and_data[i][8]){
                                 var fromdata=datasets[0][0];
                                 var todata=datasets[0][1];
-                                console.log(fromdata);
-                                console.log(todata);
+//                                console.log(fromdata);
+//                                console.log(todata);
                                 var divname='#searchbox'+(i+1)+'data_table';
                                 $(divname).attr('data-id','edit');
                                 editTypeRow(divname,i+1,1,"From");
@@ -493,7 +570,7 @@ $(document).ready(function() {
                                         temp.push(tempobject);
                                     }
                                 }
-                                console.log(temp);
+//                                console.log(temp);
                                 for(var j=0;j<temp.length-1;j++){
                                     adddataentry('step'+(i+1)+'Fromentrytable');
                                 }
@@ -525,7 +602,7 @@ $(document).ready(function() {
                                         temp.push(tempobject);
                                     }
                                 }
-                                console.log(temp);
+//                                console.log(temp);
                                 for(var j=0;j<temp.length-1;j++){
                                     adddataentry('step'+(i+1)+'Toentrytable');
                                 }
@@ -596,22 +673,19 @@ $(document).ready(function() {
         $('#submit').live('click',function(e){
             /*****************************Validation Check Here***********************************/
 
-            if ($("#titlebox").val() === "") {
+            if ($("#test_case_search_box").select2("val") === "" || $("#test_case_search_box").select2("val") === []) {
                 e.preventDefault();
 
-                alertify.error("Sorry, you need to provide 'Test Case Title'", 1500);
+                alertify.error("Please provide the <span style='font-weight: bold;'>Test Case title</span>", 2500);
 
-                $("#titlebox").css({
-                    "border-color": "red",
-                    "box-shadow": "0 0 10px red"
-                });
+                $("#test_case_search_box").select2("open");
 
-                setTimeout(function() {
-                    $("#titlebox").css({
-                        "border-color": "",
-                        "box-shadow": ""
-                    });
-                }, 1500);
+//                setTimeout(function() {
+//                    $("#titlebox").css({
+//                        "border-color": "",
+//                        "box-shadow": ""
+//                    });
+//                }, 1500);
 
                 return false;
             }
@@ -700,18 +774,18 @@ $(document).ready(function() {
             var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
             var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
-            console.log(newSectionPath);
-            console.log(newFeaturePath);
+//            console.log(newSectionPath);
+//            console.log(newFeaturePath);
             //Get TC_ID for the test case
             //Select Priority
             var priority='P'+$('#priotiy_select option:selected').val();
-            console.log(priority);
+//            console.log(priority);
             //Select Tag
             var tag = new Array();
             for(var i = 0; i < $(".submitquery").length; i++){
                 tag.push($(".submitquery:eq("+i+")").html().replace(/&nbsp;/g,''));
             }
-            console.log(tag);
+//            console.log(tag);
             /*********************************End Properties Tab Data ********************************/
             /*********************************Parameters Tab Data ********************************/
             /*var platformList=[];
@@ -738,13 +812,14 @@ $(document).ready(function() {
                 var temp=(dependency_classes[i].name+':'+temp_list.join(",")).toString();
                 dependency_list.push(temp);
             }
-            console.log(dependency_list);
+//            console.log(dependency_list);
             /*********************************End Parameters Tab Data ********************************/
             /**************************Related Item *************************************************/
             var defectId=$('#defectid_txtbox').val().trim();
             var test_case_Id=$('#id_txtbox').val().trim();
             var required_Id=$('#reqid_txtbox').val().trim();
-            var title=$('#titlebox').val().trim();
+            var title=$("#test_case_search_box").select2("data")["text"].split(':')[1].trim();
+//            console.log("TITLE:", title);
             var project_id=$('#project_identity option:selected').val().trim();
             var team_id=$('#default_team_identity option:selected').val().trim();
             /**************************End Related Item *************************************************/
@@ -824,7 +899,7 @@ $(document).ready(function() {
                             for(var j=1;j<=popupdivrowcount[i-1];j++){
                                 var dataset=[];
                                 var tableid=$('#step'+i+'data'+j+'entrytable');
-                                console.log(tableid.attr('id'));
+//                                console.log(tableid.attr('id'));
                                 var tableLength=tableid.find('tr').length;
                                 var row=tableid.find('tr:eq(1)');
                                 for(var k=0;k<tableLength-1;k++){
@@ -903,7 +978,7 @@ $(document).ready(function() {
                                     temp=temp.substring(0,temp.length-1);
                                     temp+="]";
                                 }
-                                console.log(temp);
+//                                console.log(temp);
                                 edit_data.push(temp);
                                 /*************************** end create old format Data*********************************/
                             }
@@ -953,7 +1028,7 @@ $(document).ready(function() {
                                 temp=temp.substring(0,temp.length-1);
                                 temp+="]";
                             }
-                            console.log(temp);
+//                            console.log(temp);
                             tempSTR.push(temp);
                             /*************************** end create old format Data*********************************/
 
@@ -961,7 +1036,7 @@ $(document).ready(function() {
                         /*********************** END Step Data Processing Here ********************************/
                         stepDataSTR[i-1]=tempSTR.join('%');
                     }
-                    console.log(stepDataSTR);
+//                    console.log(stepDataSTR);
                 }
             }
             /*************************End Filtering***********************************************/
@@ -972,7 +1047,7 @@ $(document).ready(function() {
             });
             /***********************Other Linking***************************************/
             var query = indx != -1?"c":(indx2 != -1?"e":"o");
-            console.log(query);
+//            console.log(query);
             $.get("GetStepNameType/",
                 {},
                 function(data){
@@ -1032,6 +1107,12 @@ $(document).ready(function() {
                             dataValidationCheck=false;
                         }
                     }
+                    
+                    var tc_title = $("#test_case_search_box").select2("data")["text"]
+                    	.split(':')[1].trim();
+                    
+                    var tc_id = $("#test_case_search_box").val();
+                    
                     if(query == "c" && dataValidationCheck){
                         $("#submit").attr('disabled','disabled');
                         $.get("Submit_New_TestCase/",{
@@ -1039,7 +1120,7 @@ $(document).ready(function() {
                             Feature_Path:newFeaturePath,
                             //Platform:platformList.join("|"),
                             //Manual_TC_Id:test_case_Id,
-                            TC_Name:title,
+                            TC_Name:tc_title,
                             TC_Creator:$.session.get('fullname').trim(),
                             Associated_Bugs_List:defectId,
                             Requirement_ID_List:required_Id,
@@ -1068,16 +1149,16 @@ $(document).ready(function() {
                         });
                     }
                     else if(query == "e" && dataValidationCheck){
-                        var _TC_Id = $('#header').text().split('/')[2].trim();
+//                        var _TC_Id = $('#header').text().split('/')[2].trim();
 
                         $("#submit").attr('disabled','disabled');
                         $.get("Edit_TestCase",{
                                 Section_Path:newSectionPath,
                                 Feature_Path:newFeaturePath,
-                                TC_Id:_TC_Id,
+                                TC_Id:tc_id,
                                 //Platform:platformList.join("|"),
                                 //Manual_TC_Id:test_case_Id,
-                                TC_Name:title,
+                                TC_Name:tc_title,
                                 TC_Creator:$.session.get('fullname').trim(),
                                 Associated_Bugs_List:defectId,
                                 Requirement_ID_List:required_Id,
@@ -1299,7 +1380,7 @@ function AutoCompleteTestStep(){
                 });
             },
             select:function(request,ui){
-                console.log(ui);
+//                console.log(ui);
                 var value=ui.item[0];
                 var fieldName=$('#'+$(this).attr('id'));
                 var index=$(this).attr('id').split('x')[1].split('n')[0].trim();
@@ -1383,7 +1464,7 @@ function AutoCompleteLabel(){
             });
         },
         select:function(request,ui){
-            console.log(ui);
+//            console.log(ui);
             var id=ui.item[0].trim();
             var name=ui.item[1].trim();
             var color=ui.item[2].trim();
@@ -1817,11 +1898,11 @@ function check_required_data(array_list)
                 message+=', #'+array_list[i].list[j];
             }
         }
-        console.log(message);
+//        console.log(message);
         $(message).live('click',function(){
            for(var i=0;i<array_list.length;i++){
                for(var j=0;j<array_list[i].list.length;j++){
-                   console.log($(array_list[i].list[j]));
+//                   console.log($(array_list[i].list[j]));
                    if($('#'+array_list[i].list[j]).is(':checked')==true){
                        $('#'+array_list[i].name+"-flag").removeClass('unfilled');
                        $('#'+array_list[i].name+"-flag").addClass('filled');
@@ -1879,7 +1960,7 @@ function vertical_sidebar(){
         $("#title_prompt").html(
             //'<p style="text-align: center">You have selected ' +
             //tc_id +'-'+ tc_name + '.' +
-            '<br/><p style="text-align: center; font-size: large; font: Helvetica, arial, freesans, clean, sans-serif;">Are you sure about leaving before saving?</p>' +
+            '<br/><p style="text-align: center; font-size: large; font: Helvetica, arial, freesans, clean, sans-serif;">Are you sure about leaving withoout saving?</p>' +
             '</p>' +
             '<div align="center" style="margin-left: 5%">' +
             '<a class="github" href="/Home/ManageTestCases/CreateStep/">Yes</a>' +
@@ -2187,52 +2268,52 @@ function desktop_notify(message){
 
 }
 function AutoCompleteSearchForPrompt(){
-    $("#titlebox").autocomplete({
-        source:function(request,response){
-            $.ajax({
-                url:"TestCaseSearch/",
-                dataType:"json",
-                data:{
-                    term:request.term
-                },
-                success:function(data){
-                    response(data);
-                }
-            });
-        },
-        select:function(event,ui){
-            var tc_id=ui.item[0].trim();
-            var tc_name=ui.item[1].trim();
-            if(tc_id!=""){
-                $(this).val(tc_name);
-                /*if(confirm("Are you sure about leaving before saving?")){
-                 window.location = '/Home/ManageTestCases/Edit/'+tc_id
-                 }
-                 else{
-                 window.location = '/Home/ManageTestCases/CreateNew/'+tc_id
-                 }*/
-                $("#title_prompt").html(
-                    '<p style="text-align: center">You have selected ' +
-                        tc_id +'-'+ tc_name + '.' +
-                        '<br/> What do you want to do?' +
-                        '</p>' +
-                        '<div style="padding-left: 15%">' +
-                        '<a class="github" href="/Home/ManageTestCases/Edit/'+tc_id+'">Edit</a>' +
-                        '<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
-                        '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
-                        '</div>'
-
-                );
-                $("#title_prompt").modal();
-                return false;
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + " - "+item[1]+"<strong> - " + item[2] + "</strong></a>" )
-            .appendTo( ul );
-    };
+//    $("#titlebox").autocomplete({
+//        source:function(request,response){
+//            $.ajax({
+//                url:"TestCaseSearch/",
+//                dataType:"json",
+//                data:{
+//                    term:request.term
+//                },
+//                success:function(data){
+//                    response(data);
+//                }
+//            });
+//        },
+//        select:function(event,ui){
+//            var tc_id=ui.item[0].trim();
+//            var tc_name=ui.item[1].trim();
+//            if(tc_id!=""){
+//                $(this).val(tc_name);
+//                /*if(confirm("Are you sure about leaving before saving?")){
+//                 window.location = '/Home/ManageTestCases/Edit/'+tc_id
+//                 }
+//                 else{
+//                 window.location = '/Home/ManageTestCases/CreateNew/'+tc_id
+//                 }*/
+//                $("#title_prompt").html(
+//                    '<p style="text-align: center">You have selected ' +
+//                        tc_id +'-'+ tc_name + '.' +
+//                        '<br/> What do you want to do?' +
+//                        '</p>' +
+//                        '<div style="padding-left: 15%">' +
+//                        '<a class="github" href="/Home/ManageTestCases/Edit/'+tc_id+'">Edit</a>' +
+//                        '<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
+//                        '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+//                        '</div>'
+//
+//                );
+//                $("#title_prompt").modal();
+//                return false;
+//            }
+//        }
+//    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+//        return $( "<li></li>" )
+//            .data( "ui-autocomplete-item", item )
+//            .append( "<a>" + item[0] + " - "+item[1]+"<strong> - " + item[2] + "</strong></a>" )
+//            .appendTo( ul );
+//    };
 }
 function auto_step_create(step){
     $.ajax({
