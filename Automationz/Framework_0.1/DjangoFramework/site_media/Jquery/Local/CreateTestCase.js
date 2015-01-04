@@ -20,7 +20,7 @@ var dependency_classes=[];
 var new_test_case_text = "New test case";
 
 $(document).ready(function() {
-	
+
 	$("#test_case_search_box").select2({
 		placeholder: "Test Case title...",
 //		minimumInputLength: 3,
@@ -47,7 +47,7 @@ $(document).ready(function() {
 			return {id: new_test_case_text, text: new_test_case_text + ": " + term};
 		},
 		createSearchChoicePosition: "top",
-		formatResult: formatTestCases 
+		formatResult: formatTestCases
 	})
 	// Listens for changes so that we can prompt the user if they want to edit or
 	// copy existing test cases
@@ -57,8 +57,10 @@ $(document).ready(function() {
 //			console.log("New test case is being created!");
 		} else {
 //			console.log("Existing test case has been selected.");
-			var tc_title = $(this).select2("data")["text"]
-        	.split(':')[1].trim();
+			var start = $(this).select2("data")["text"].indexOf(":") + 1;
+    		var length = $(this).select2("data")["text"].length;
+    		
+    		var tc_title = $(this).select2("data")["text"].substr(start, length - 1);
         
 			var tc_id = $(this).val();
 			$("#title_prompt").html(
@@ -79,11 +81,16 @@ $(document).ready(function() {
 	
 	// Should be used for formatting results, LATER
 	function formatTestCases(tc_details) {
+		var start = tc_details.text.indexOf(":") + 1;
+		var length = tc_details.text.length;
+		
+		var tc_title = tc_details.text.substr(start, length - 1);
+		
 		var markup =
 			'<div>' +
 			'<i class="fa fa-file-text fa-fw"></i> <span style="font-weight: bold;">' + tc_details.id + '</span>' +
 			': ' +
-			'<span>' + tc_details.text.split(':')[1].trim() + '</span>'
+			'<span>' + tc_title + '</span>'
 			'</div>';
 		
 		return markup;
@@ -818,8 +825,12 @@ $(document).ready(function() {
             var defectId=$('#defectid_txtbox').val().trim();
             var test_case_Id=$('#id_txtbox').val().trim();
             var required_Id=$('#reqid_txtbox').val().trim();
-            var title=$("#test_case_search_box").select2("data")["text"].split(':')[1].trim();
-//            console.log("TITLE:", title);
+    		
+            var start = $("#test_case_search_box").select2("data")["text"].indexOf(":") + 1;
+    		var length = $("#test_case_search_box").select2("data")["text"].length;
+    		
+    		var title = $("#test_case_search_box").select2("data")["text"].substr(start, length - 1);
+            
             var project_id=$('#project_identity option:selected').val().trim();
             var team_id=$('#default_team_identity option:selected').val().trim();
             /**************************End Related Item *************************************************/
@@ -1108,8 +1119,10 @@ $(document).ready(function() {
                         }
                     }
                     
-                    var tc_title = $("#test_case_search_box").select2("data")["text"]
-                    	.split(':')[1].trim();
+                    var start = $("#test_case_search_box").select2("data")["text"].indexOf(":") + 1;
+            		var length = $("#test_case_search_box").select2("data")["text"].length;
+            		
+            		var tc_title = $("#test_case_search_box").select2("data")["text"].substr(start, length - 1);
                     
                     var tc_id = $("#test_case_search_box").val();
                     
