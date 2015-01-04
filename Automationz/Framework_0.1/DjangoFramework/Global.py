@@ -2,17 +2,18 @@
 import os
 import time
 
-
 ###########Production / Dev Config variables######################
 Environment = "Test"
 #Environment = "Production"
  
-def get_ip():
+def get_ip(print_env=False):
     if Environment == "Test":
-        print "Running on Test Environment..."
+        if print_env:
+            print "Running on Test Environment..."
         return "127.0.0.1"
     elif Environment == "Production":
-        print "Running on Production Environment..."
+        if print_env:
+            print "Running on Production Environment..."
         return "135.23.123.67"
 
 def set_debug():

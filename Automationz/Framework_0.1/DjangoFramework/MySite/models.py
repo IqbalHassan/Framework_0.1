@@ -15,7 +15,7 @@ import Global
 
 
 # import CommonUtil
-ip = Global.get_ip()
+ip = Global.get_ip(True)
 
 def GetConnection():
     Conn = DB.ConnectToDataBase(sDbname="postgres", sUser="postgres", sPswd="password", sHost=ip)

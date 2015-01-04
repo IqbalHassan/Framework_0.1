@@ -81,7 +81,7 @@ $(document).ready(function() {
 	function formatTestCases(tc_details) {
 		var markup =
 			'<div>' +
-			'<i class="fa fa-pencil fa-fw"></i> <span style="font-weight: bold;">' + tc_details.id + '</span>' +
+			'<i class="fa fa-file-text fa-fw"></i> <span style="font-weight: bold;">' + tc_details.id + '</span>' +
 			': ' +
 			'<span>' + tc_details.text.split(':')[1].trim() + '</span>'
 			'</div>';
