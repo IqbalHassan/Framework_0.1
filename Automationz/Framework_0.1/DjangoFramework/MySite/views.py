@@ -2940,36 +2940,33 @@ def TestCaseSearch(request):
     
     if request.method == "GET":
         term = request.GET.get(u'term', '')
-        page = int(request.GET.get(u'page', ''))
+        requested_page = int(request.GET.get(u'page', ''))
 #         print "#############################"
 #         print "Term:", term
-#         print "Page:", page
-        data = DB.GetData(Conn, "Select  DISTINCT tc_id,tc_name,'Test Case' from test_cases where tc_id Ilike '%" + term + "%' or tc_name Ilike '%" + term + "%'", False)
+#         print "Page:", requested_page
+        data = DB.GetData(
+                          Conn,
+                          "SELECT DISTINCT tc_id,tc_name FROM test_cases WHERE tc_id Ilike '%" + term + "%' or tc_name Ilike '%" + term + "%'",
+                          bList=False,
+                          dict_cursor=False,
+                          paginate=True,
+                          page=requested_page,
+                          page_limit=items_per_page,
+                          order_by='tc_id'
+                          )
 
-        for test_case in data:
+        for test_case in data['rows']:
             result_dict = {}
             # AAA-000
             result_dict['id'] = test_case[0]
             # In the UI, it should be displayed as, AAA-000: Test For 'X'
             result_dict['text'] = '%s: %s' % (result_dict['id'], test_case[1]) 
             results.append(result_dict)
-        
-        current_page = None
-        # Lazy-loading i.e loading on demand, 10 items per page/request
-        paginator = Paginator(results, items_per_page)
-        
-        try:
-            current_page = paginator.page(page)
-        except PageNotAnInteger:
-            current_page = test_case_list = paginator.page(1)
-        except EmptyPage:
-            current_page = paginator.page(paginator.num_pages)
-        
-        has_next_page = current_page.has_next()
-        test_case_list = current_page.object_list
+         
+        has_next_page = data['has_next']
 
-    json = simplejson.dumps({'items': test_case_list, 'more': has_next_page})
-    print "JSON:", json
+    json = simplejson.dumps({'items': results, 'more': has_next_page})
+#     print "JSON:", json
     return HttpResponse(json, mimetype='application/json')
 
 

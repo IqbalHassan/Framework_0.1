@@ -69,8 +69,30 @@ def DropTable(oConn, sTableName):
     except Exception, e:
         return "Error: %s" % e
 
-def GetData(oConn, sQuery, bList=True, dict_cursor=False):
+def GetData(oConn, sQuery, bList=True, dict_cursor=False, paginate=False, **kwargs):
+    '''
+    If you want to paginate, set paginate=True when calling the function and also
+    provide the following parameters in order for the pagination to work properly
+    Arguments needed for pagination:
+    @param oConn: [Connection object] The connection object
+    @param sQuery: [string] The query to execute
+    @param bList: [unknown] unknown
+    @param dict_cursor: [bool] Enables the cursor to query with column names instead of indices
+    @param paginate: [bool] Set this argument to true if you want to paginate
+    @param **kwargs: [key-word arguments] Provide three named parameters:
+    (page[int] - page number, page_limit[int] - items per page, order_by[string] - provide a sort order)
+    
+    @return: Rows [tuple] (if not requesting for pagination)
+    @return: A dictionary object [rows: resultant rows, has_next: if another page is available] (if pagination requested)
+    '''
+    
     cur = None
+    
+    page = 1
+    page_limit = 'ALL'
+    current_page_offset = 0
+    has_next = False
+    order_by = ''
     
     # if the user wants the dictionary like cursor
     if dict_cursor:
@@ -79,20 +101,70 @@ def GetData(oConn, sQuery, bList=True, dict_cursor=False):
         cur = oConn.cursor()
     
     NameList = []
-    try:
-        cur.execute(
-                    """%s
-                    """ % (sQuery)
-                    )
-        rows = cur.fetchall()
-        if bList != True:
-            return rows
-        else:
-            for data in range(len(rows)):
-                NameList.append((rows[data])[0])
-            return NameList
-    except Exception, e:
-        return "Error: %s" % e
+    if not paginate:
+        try:
+            cur.execute(
+                        """%s
+                        """ % (sQuery)
+                        )
+            rows = cur.fetchall()
+            if bList != True:
+                return rows
+            else:
+                for data in range(len(rows)):
+                    NameList.append((rows[data])[0])
+                return NameList
+        except Exception, e:
+            return "Error: %s" % e
+    else:
+        if not kwargs:
+            return "Sorry, you must supply the required arguments"
+        for i in ('page', 'page_limit', 'order_by'):
+            if i not in kwargs:
+                return 'Sorry, you must supply a "%s" parameter for pagination' % i
+            
+        try:
+            for key in kwargs:
+                if key == 'page':
+                    page = int(kwargs[key])
+                elif key == 'page_limit':
+                    # We'll fetch 11 items if 10 items are requested because
+                    # this will help to super-efficiently check whether there
+                    # is another page remaining to be queried for next page
+                    page_limit = int(kwargs[key])
+                elif key == 'order_by':
+                    order_by = kwargs[key]
+            
+            if page != 1 and page_limit != 'ALL':
+                current_page_offset = (page - 1) * page_limit
+            
+        except ValueError as e:
+            return "Error: Could not cast 'page' and/or 'page_limit' to integer", e
+
+        try:
+            query = '''
+            %s ORDER BY %s LIMIT %d OFFSET %d
+            ''' % (sQuery, order_by, page_limit + 1, current_page_offset)
+        
+            cur.execute(query)
+            rows = cur.fetchall()
+            
+            try:
+                if len(rows) == page_limit + 1:
+                    has_next = True
+            except Exception as e:
+                pass
+            
+            result_dict = {
+                "rows": rows[0:page_limit],
+                "has_next": has_next
+            }
+            
+            return result_dict
+            
+        except Exception as e:
+            return "Error: %s" % e
+
 
 def InsertNewRecordInToTable(oConn, sTableName, **dColumnNvalues):
     ColumnName, Column, Values, ColumnValues, K, L, i = "", "", "", "", "", "", 0
