@@ -224,17 +224,21 @@ def verify_product_details(dependency,step_data):
 
 def count_shoe_size(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    expected_data=step_data[0]
-    #search for the size for now.
-    for each in expected_data:
-        if each[0]=='size':
-            size=each[2]
+    for i in range(len(step_data)):
+        CommonUtil.ExecLog(sModuleInfo, "Processing Dataset #%s" % (i + 1), 5)                
+        expected_data=step_data[i]
+        #search for the size for now.
+        for each in expected_data:
+            if each[0]=='size':
+                size=each[2]
+                break
+        actual_data=WebProgram.getShoeCount(size)
+        print actual_data
+        oCompare=CompareModule.CompareModule()
+        sTestStepReturnStatus=oCompare.FieldCompare(expected_data,actual_data)
+        print sTestStepReturnStatus
+        if sTestStepReturnStatus!="Passed":
             break
-    actual_data=WebProgram.getShoeCount(size)
-    print actual_data
-    oCompare=CompareModule.CompareModule()
-    sTestStepReturnStatus=oCompare.FieldCompare(expected_data,actual_data)
-    print sTestStepReturnStatus
     return sTestStepReturnStatus
 def close_browser(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name    

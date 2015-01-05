@@ -14,6 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 import CommonUtil
 #Ver1.0
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 
 def BrowserSelection(browser):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -523,19 +524,20 @@ def getShoeCount(size):
         print size
         #get all the list item from the footlocker webpage
         #footlocker size is id="group_Size"
-        xpath='//ul[@id="group_Size"]/li'
+        xpath='//ul[@id="group_Size"]/li/a'
         li_list_item=sBrowser.find_elements_by_xpath(xpath)
         final_list=[]
         for each in li_list_item:
-            desired_element=each.find_element(By.PARTIAL_LINK_TEXT,size)
-            print desired_element
-            description=desired_element.text
-            #take out the count in the first bracket
-            count=description[description.index('(')+1:description.index(')')]
-            final_list.append(('size','',size))
-            final_list.append(('count','',count))
-            print final_list
-            break
+            if size in each.text:
+                description=each.text
+                #take out the count in the first bracket
+                count=description[description.index('(')+1:description.index(')')]
+                final_list.append(('size','',size))
+                final_list.append(('count','',count))
+                print final_list
+                break
+            else:
+                continue
         return final_list            
     except Exception, e:
         print "Exception : ", e

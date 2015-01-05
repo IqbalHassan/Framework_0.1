@@ -107,6 +107,28 @@ class CompareModule():
 
             sVerificationStatus = "Passed"
         else:
+            print "Found              records:", len(matched_tuple)+len(match_group_data)
+            CommonUtil.ExecLog(sModuleInfo, "Found              records:%s" % (len(matched_tuple)+len(match_group_data)), 1)
+            for i in range(len(matched_tuple)):
+                CommonUtil.ExecLog(sModuleInfo, "Matching           records#%s" % (i + 1), 1)
+                CommonUtil.ExecLog(sModuleInfo, "%s" % (str(matched_tuple[i])), 1)
+            for i in range(len(match_group_data)):
+                CommonUtil.ExecLog(sModuleInfo, "Matching           records#%s" % (i + 1), 1)
+                CommonUtil.ExecLog(sModuleInfo, "%s" % (str(match_group_data[i])), 1)
+            if(len(total_missing)>0):
+                print "Missing            records:", len(total_missing)
+                CommonUtil.ExecLog(sModuleInfo, "Missing            records:%s" % len(total_missing), 3)
+                missing_list=list(set(missing_tuple+missing_group_data+match_missing_group_data))
+                for i in range(len(missing_list)):
+                    CommonUtil.ExecLog(sModuleInfo, "Missing           records#%s" % (i + 1), 3)
+                    CommonUtil.ExecLog(sModuleInfo, "%s" % (str(missing_list[i])), 3)
+            if(len(total_extra)>0):
+                print "Extra            records:", len(total_missing)
+                CommonUtil.ExecLog(sModuleInfo, "Extra            records:%s" % len(total_missing), 2)
+                extra_list=list(set(extra_tuple+extra_group_data+match_extra_group_data))
+                for i in range(len(extra_list)):
+                    CommonUtil.ExecLog(sModuleInfo, "Extra           records#%s" % (i + 1), 2)
+                    CommonUtil.ExecLog(sModuleInfo, "%s" % (str(extra_list[i])), 2) 
             sVerificationStatus = "Failed"
         return sVerificationStatus
     
