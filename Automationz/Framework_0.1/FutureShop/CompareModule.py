@@ -1,6 +1,10 @@
+import inspect
 import copy
+import CommonUtil
+
 class CompareModule():
     def FieldCompare(self,expected_list,actual_list,ignore_list=[],keyfield_list=[]):
+        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         expected_list_group_data_label=[]
         actual_list_group_data_label=[]
         
@@ -78,16 +82,33 @@ class CompareModule():
         total_extra=list(set(extra_tuple+extra_group_data+match_extra_group_data))
         #summarizing the result end here
         
-        print "total_match:%d"%len(total_match)
-        for each in total_match:
-            print each
-        print "total_missing:%d"%len(total_missing)
-        for each in total_missing:
-            print each
-        print "total_extra:%d"%len(total_extra)
-        for each in total_extra:
-            print each
-        return "Failed"
+        print "Expected           records:", len(expected_list)
+        CommonUtil.ExecLog(sModuleInfo, "Expected           records:%s" % len(expected_list), 1)
+        for i in range(len(expected_list)):
+            CommonUtil.ExecLog(sModuleInfo, "Expected           records#%s:%s" % (i, expected_list[i]), 4)
+        print "Actual             records:", len(actual_list)
+        CommonUtil.ExecLog(sModuleInfo, "Actual             records:%s" % len(actual_list), 1)
+        for i in range(len(actual_list)):
+            CommonUtil.ExecLog(sModuleInfo, "Actual             records#%s:%s" % (i, actual_list[i]), 4)
+
+        if (len(total_missing)==0 and len(total_extra)==0):
+            print "Found              records:", len(matched_tuple)+len(match_group_data)
+            CommonUtil.ExecLog(sModuleInfo, "Found              records:%s" % (len(matched_tuple)+len(match_group_data)), 1)
+            for i in range(len(matched_tuple)):
+                CommonUtil.ExecLog(sModuleInfo, "Matching           records#%s" % (i + 1), 1)
+                CommonUtil.ExecLog(sModuleInfo, "%s" % (str(matched_tuple[i])), 1)
+            for i in range(len(match_group_data)):
+                CommonUtil.ExecLog(sModuleInfo, "Matching           records#%s" % (i + 1), 1)
+                CommonUtil.ExecLog(sModuleInfo, "%s" % (str(match_group_data[i])), 1)
+            print "Missing            records:", len(total_missing)
+            CommonUtil.ExecLog(sModuleInfo, "Missing            records:%s" % len(total_missing), 1)
+            print "Verification of expected and actual  data matched"
+            CommonUtil.ExecLog(sModuleInfo, "Verification of expected and actual  data matched", 1)
+
+            sVerificationStatus = "Passed"
+        else:
+            sVerificationStatus = "Failed"
+        return sVerificationStatus
     
 def main():
     oCompare=CompareModule()

@@ -13,6 +13,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 import CommonUtil
 #Ver1.0
+from selenium.webdriver.common.by import By
 
 def BrowserSelection(browser):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -516,3 +517,29 @@ def GetItemDetail():
 #print FilterBySelection("On Sale")
 #print GetFilterCount("On Sale")
 
+def getShoeCount(size):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        print size
+        #get all the list item from the footlocker webpage
+        #footlocker size is id="group_Size"
+        xpath='//ul[@id="group_Size"]/li'
+        li_list_item=sBrowser.find_elements_by_xpath(xpath)
+        final_list=[]
+        for each in li_list_item:
+            desired_element=each.find_element(By.PARTIAL_LINK_TEXT,size)
+            print desired_element
+            description=desired_element.text
+            #take out the count in the first bracket
+            count=description[description.index('(')+1:description.index(')')]
+            final_list.append(('size','',size))
+            final_list.append(('count','',count))
+            print final_list
+            break
+        return final_list            
+    except Exception, e:
+        print "Exception : ", e
+        CommonUtil.ExecLog(sModuleInfo, "Framework error with getting shoe count: %s" % size, 3)
+        print "Framework error with getting shoe count %s" % size
+        CommonUtil.TakeScreenShot("Demo")
+        return "Failed"
