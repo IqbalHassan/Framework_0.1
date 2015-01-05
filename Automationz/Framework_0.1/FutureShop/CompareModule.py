@@ -25,9 +25,9 @@ class CompareModule():
         extra_group_data_list=list(set(actual_list_group_data_label)-set(expected_list_group_data_label))
         #finishing finding the group data label 
         
-        print match_group_data_list
-        print missing_group_data_list
-        print extra_group_data_list
+        #print match_group_data_list
+        #print missing_group_data_list
+        #print extra_group_data_list
         
         #listing all the missing and extra group data tuples are started
         missing_group_data=[]
@@ -35,14 +35,14 @@ class CompareModule():
             for i in range(len(expList)-1,-1,-1):
                 if each==expList[i][0]:
                     missing_group_data.append(expList.pop(i))
-        print missing_group_data
+        #print missing_group_data
         
         extra_group_data=[]
         for each in extra_group_data_list:
             for i in range(len(actList)-1,-1,-1):
                 if each==actList[i][0]:
                     extra_group_data.append(actList.pop(i))
-        print extra_group_data
+        #print extra_group_data
         #listing all missing and extra group data tuples are finished here
         
         #listing all the group data to be compared started
@@ -61,9 +61,9 @@ class CompareModule():
         match_missing_group_data=list(set(expected_group_data)- set(actual_group_data))
         match_extra_group_data=list(set(actual_group_data)-set(expected_group_data))
         
-        print match_group_data
-        print match_missing_group_data
-        print match_extra_group_data            
+        #print match_group_data
+        #print match_missing_group_data
+        #print match_extra_group_data            
         #listing all the group data finished here
         
         #rest is printed here
@@ -78,10 +78,17 @@ class CompareModule():
         total_extra=list(set(extra_tuple+extra_group_data+match_extra_group_data))
         #summarizing the result end here
         
-        print "total_match:%d"%len(total_match),total_match
-        print "total_missing:%d"%len(total_missing),total_missing
-        print "total_extra:%d"%len(total_extra),total_extra
+        print "total_match:%d"%len(total_match)
+        for each in total_match:
+            print each
+        print "total_missing:%d"%len(total_missing)
+        for each in total_missing:
+            print each
+        print "total_extra:%d"%len(total_extra)
+        for each in total_extra:
+            print each
         return "Failed"
+    
 def main():
     oCompare=CompareModule()
     """actual_list=[
