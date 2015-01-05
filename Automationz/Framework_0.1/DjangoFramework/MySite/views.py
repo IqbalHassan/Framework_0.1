@@ -6271,7 +6271,7 @@ def RunIDStatus(request):
              }
     result = simplejson.dumps(message)
     return HttpResponse(result, mimetype='application/json')
-def Make_List(step_name, step_reason, step_status, test_case_id, test_step_sequence_list):
+def Make_List(step_name, step_reason, step_status, test_case_id, test_step_sequence_list,run_id):
     ListAll = []
     if  isinstance(step_status, list):
         for name in zip(step_name, step_reason, step_status, test_step_sequence_list):
@@ -6279,18 +6279,18 @@ def Make_List(step_name, step_reason, step_status, test_case_id, test_step_seque
     if isinstance(step_status, basestring):
         for name in zip(step_name, step_reason, step_status, test_step_sequence_list):
             ListAll.append((name[0].strip(), name[1].strip(), step_status, name[3]))
-    """if isinstance(step_status,basestring):
-        for name in zip(step_name,step_reason,step_status):
-            ListAll.append((name[0].strip(),name[1].strip(),step_status))"""
     print ListAll
     Conn = GetConnection()
-    query = "select step_id,teststepsequence from test_steps where tc_id='%s' order by teststepsequence" % test_case_id
+    query = "select step_id,teststepsequence from result_test_steps where tc_id='%s' and run_id='%s' order by teststepsequence" %(test_case_id,run_id)
     test_step_sequence_list = DB.GetData(Conn, query, False)
+    Conn.close()
     print test_step_sequence_list
     Refined_List = []
     for each in test_step_sequence_list:
-        query = "select stepname from test_steps_list where step_id='%s'" % each[0]
+        query = "select stepname from result_test_steps_list where step_id='%s' and run_id='%s'" %(each[0],run_id)
+        Conn=GetConnection()
         stepName = DB.GetData(Conn, query, False)
+        Conn.close()
         for eachitem in ListAll:
             if eachitem[0] == stepName[0][0] and eachitem[3] == each[1]:
                 Refined_List.append(eachitem)
@@ -6549,12 +6549,12 @@ def UpdateData(request):
             start_time=request.GET.get(u'start_time','')
             end_time=request.GET.get(u'end_time','')
             Conn = GetConnection()
-            query = "select teststepsequence from result_test_steps where tc_id='%s' and run_id='%s'" % (test_case_id, run_id)
+            query = "select teststepsequence from result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and ts.step_id=tsl.step_id and ts.tc_id='%s' and tsl.run_id='%s' order by teststepsequence" % (test_case_id, run_id)
             test_step_sequence_list = DB.GetData(Conn, query)
             if(len(step_status) == 1):
-                Refined_List = Make_List(step_name, step_reason, step_status[0], test_case_id, test_step_sequence_list)
+                Refined_List = Make_List(step_name, step_reason, step_status[0], test_case_id, test_step_sequence_list,run_id)
             else:
-                Refined_List = Make_List(step_name, step_reason, step_status, test_case_id, test_step_sequence_list)
+                Refined_List = Make_List(step_name, step_reason, step_status, test_case_id, test_step_sequence_list,run_id)
             print step_name
             print step_reason
             print step_status
