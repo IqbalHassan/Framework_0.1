@@ -1,6 +1,10 @@
+import inspect
 import copy
+import CommonUtil
+
 class CompareModule():
     def FieldCompare(self,expected_list,actual_list,ignore_list=[],keyfield_list=[]):
+        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         expected_list_group_data_label=[]
         actual_list_group_data_label=[]
         
@@ -25,9 +29,9 @@ class CompareModule():
         extra_group_data_list=list(set(actual_list_group_data_label)-set(expected_list_group_data_label))
         #finishing finding the group data label 
         
-        print match_group_data_list
-        print missing_group_data_list
-        print extra_group_data_list
+        #print match_group_data_list
+        #print missing_group_data_list
+        #print extra_group_data_list
         
         #listing all the missing and extra group data tuples are started
         missing_group_data=[]
@@ -35,14 +39,14 @@ class CompareModule():
             for i in range(len(expList)-1,-1,-1):
                 if each==expList[i][0]:
                     missing_group_data.append(expList.pop(i))
-        print missing_group_data
+        #print missing_group_data
         
         extra_group_data=[]
         for each in extra_group_data_list:
             for i in range(len(actList)-1,-1,-1):
                 if each==actList[i][0]:
                     extra_group_data.append(actList.pop(i))
-        print extra_group_data
+        #print extra_group_data
         #listing all missing and extra group data tuples are finished here
         
         #listing all the group data to be compared started
@@ -61,9 +65,9 @@ class CompareModule():
         match_missing_group_data=list(set(expected_group_data)- set(actual_group_data))
         match_extra_group_data=list(set(actual_group_data)-set(expected_group_data))
         
-        print match_group_data
-        print match_missing_group_data
-        print match_extra_group_data            
+        #print match_group_data
+        #print match_missing_group_data
+        #print match_extra_group_data            
         #listing all the group data finished here
         
         #rest is printed here
@@ -78,10 +82,56 @@ class CompareModule():
         total_extra=list(set(extra_tuple+extra_group_data+match_extra_group_data))
         #summarizing the result end here
         
-        print "total_match:%d"%len(total_match),total_match
-        print "total_missing:%d"%len(total_missing),total_missing
-        print "total_extra:%d"%len(total_extra),total_extra
-        return "Failed"
+        print "Expected           records:", len(expected_list)
+        CommonUtil.ExecLog(sModuleInfo, "Expected           records:%s" % len(expected_list), 1)
+        for i in range(len(expected_list)):
+            CommonUtil.ExecLog(sModuleInfo, "Expected           records#%s:%s" % (i, expected_list[i]), 4)
+        print "Actual             records:", len(actual_list)
+        CommonUtil.ExecLog(sModuleInfo, "Actual             records:%s" % len(actual_list), 1)
+        for i in range(len(actual_list)):
+            CommonUtil.ExecLog(sModuleInfo, "Actual             records#%s:%s" % (i, actual_list[i]), 4)
+
+        if (len(total_missing)==0 and len(total_extra)==0):
+            print "Found              records:", len(matched_tuple)+len(match_group_data)
+            CommonUtil.ExecLog(sModuleInfo, "Found              records:%s" % (len(matched_tuple)+len(match_group_data)), 1)
+            for i in range(len(matched_tuple)):
+                CommonUtil.ExecLog(sModuleInfo, "Matching           records#%s" % (i + 1), 1)
+                CommonUtil.ExecLog(sModuleInfo, "%s" % (str(matched_tuple[i])), 1)
+            for i in range(len(match_group_data)):
+                CommonUtil.ExecLog(sModuleInfo, "Matching           records#%s" % (i + 1), 1)
+                CommonUtil.ExecLog(sModuleInfo, "%s" % (str(match_group_data[i])), 1)
+            print "Missing            records:", len(total_missing)
+            CommonUtil.ExecLog(sModuleInfo, "Missing            records:%s" % len(total_missing), 1)
+            print "Verification of expected and actual  data matched"
+            CommonUtil.ExecLog(sModuleInfo, "Verification of expected and actual  data matched", 1)
+
+            sVerificationStatus = "Passed"
+        else:
+            print "Found              records:", len(matched_tuple)+len(match_group_data)
+            CommonUtil.ExecLog(sModuleInfo, "Found              records:%s" % (len(matched_tuple)+len(match_group_data)), 1)
+            for i in range(len(matched_tuple)):
+                CommonUtil.ExecLog(sModuleInfo, "Matching           records#%s" % (i + 1), 1)
+                CommonUtil.ExecLog(sModuleInfo, "%s" % (str(matched_tuple[i])), 1)
+            for i in range(len(match_group_data)):
+                CommonUtil.ExecLog(sModuleInfo, "Matching           records#%s" % (i + 1), 1)
+                CommonUtil.ExecLog(sModuleInfo, "%s" % (str(match_group_data[i])), 1)
+            if(len(total_missing)>0):
+                print "Missing            records:", len(total_missing)
+                CommonUtil.ExecLog(sModuleInfo, "Missing            records:%s" % len(total_missing), 3)
+                missing_list=list(set(missing_tuple+missing_group_data+match_missing_group_data))
+                for i in range(len(missing_list)):
+                    CommonUtil.ExecLog(sModuleInfo, "Missing           records#%s" % (i + 1), 3)
+                    CommonUtil.ExecLog(sModuleInfo, "%s" % (str(missing_list[i])), 3)
+            if(len(total_extra)>0):
+                print "Extra            records:", len(total_missing)
+                CommonUtil.ExecLog(sModuleInfo, "Extra            records:%s" % len(total_missing), 2)
+                extra_list=list(set(extra_tuple+extra_group_data+match_extra_group_data))
+                for i in range(len(extra_list)):
+                    CommonUtil.ExecLog(sModuleInfo, "Extra           records#%s" % (i + 1), 2)
+                    CommonUtil.ExecLog(sModuleInfo, "%s" % (str(extra_list[i])), 2) 
+            sVerificationStatus = "Failed"
+        return sVerificationStatus
+    
 def main():
     oCompare=CompareModule()
     """actual_list=[
