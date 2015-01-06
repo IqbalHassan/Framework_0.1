@@ -905,9 +905,9 @@ def AutoCompleteTestStepSearch(request):
     if request.method == "GET":
         value = request.GET.get(u'term', '')
 
-        results = DB.GetData(Conn, "select stepname,data_required,steptype,description,step_editable,case_desc,expected,verify_point,estd_time from test_steps_list where stepname Ilike '%" + value + "%' order by stepname", False)
+        results = DB.GetData(Conn, "select stepname,data_required,steptype,description,step_editable,case_desc,expected,verify_point,estd_time from test_steps_list where stepname Ilike '%" + value + "%'", bList=False, dict_cursor=False, paginate=True, page=1, page_limit=10, order_by="stepname")
 
-    json = simplejson.dumps(results)
+    json = simplejson.dumps(results["rows"])
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
 

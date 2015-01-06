@@ -145,6 +145,9 @@ def GetData(oConn, sQuery, bList=True, dict_cursor=False, paginate=False, **kwar
             query = '''
             %s ORDER BY %s LIMIT %d OFFSET %d
             ''' % (sQuery, order_by, page_limit + 1, current_page_offset)
+            
+            print "##########################"
+            print query
         
             cur.execute(query)
             rows = cur.fetchall()
