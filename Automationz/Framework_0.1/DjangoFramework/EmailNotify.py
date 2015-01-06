@@ -130,7 +130,7 @@ def Complete_Email(Reciever, Subject, Objective, Status, List, Tester,Duration, 
         </tr>        
         </table>
         
-        <p><a style="display:inline-block;padding:7px 15px;margin-right:10px;background-color:#d44b38;color:#fff;font-size:15px;font-weight:bold;border:solid 1px #c43b28;white-space:normal;text-decoration:none" href="http://135.23.123.67:8080/Home/RunID/%s/" target="_blank">View Full Report</a></p>        
+        <p><a style="display:inline-block;padding:7px 15px;margin-right:10px;background-color:#d44b38;color:#fff;font-size:15px;font-weight:bold;border:solid 1px #c43b28;white-space:normal;text-decoration:none" href="http://demo.automationsolutionz.com/Home/RunID/%s/" target="_blank">View Full Report</a></p>        
         </span>
         </div>
         <div style="border-top:solid 1px #dfdfdf;color:#636363;font:11px Arial;line-height:1.5em;padding:3px 20px;background-color:#f5f5f5">&copy; Automation Solutionz, 1212 Countrystone Drive, Kitchener, N2N 3R4. 
