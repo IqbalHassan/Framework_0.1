@@ -17,7 +17,7 @@ if os.name == 'nt':
     import wmi
     import win32api
     import win32file
-    import ImageGrab
+    from PIL import ImageGrab
 elif os.name == 'posix':
     import MacCommonFoldersPaths as ComPath
     import plistlib
