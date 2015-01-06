@@ -33,10 +33,10 @@ def Send_Email(Reciever, Subject, Objective, Body=None , type=None):
     #Body = "Deployed Run-ID: " + Subject + "<br/>" + "Run Objective: " + Objective + "<br/>"
     #link = "<a href='135.23.123.67:8080/Home/RunID/'" + Subject + ">" +Subject + "</a>"
     #message.Html = message.Html + Body + "<br/>" + "<br/>"
-    username = "AutomationReport@automationsolutionz.com"
+    username = "automationsolutionz@gmail.com"
     password = "te@mWork"
 
-    sender = Mailer('smtp.automationsolutionz.com','25', False, username, password)
+    sender = Mailer('smtp.gmail.com','587', True, username, password)
     sender.send(message)
     
     

@@ -238,6 +238,7 @@ def count_shoe_size(dependency,step_data):
         sTestStepReturnStatus=oCompare.FieldCompare(expected_data,actual_data)
         print sTestStepReturnStatus
         if sTestStepReturnStatus!="Passed":
+            CommonUtil.ExecLog(sModuleInfo, "Expected data and actual data not match for Dataset #%s" % (i + 1), 3)
             break
     return sTestStepReturnStatus
 def close_browser(dependency,step_data):
