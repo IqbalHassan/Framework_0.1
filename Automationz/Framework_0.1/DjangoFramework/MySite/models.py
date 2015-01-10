@@ -223,7 +223,8 @@ class MachineProjectMap(models.Model):
         db_table = 'machine_project_map'
 
 class MasterData(models.Model):
-    id = models.CharField(max_length=30)
+    id = models.IntegerField(primary_key=True)
+    md_id = models.CharField(max_length=30)
     field = models.CharField(max_length=50)
     value = models.TextField()
     description = models.CharField(max_length=200, blank=True)
@@ -231,7 +232,8 @@ class MasterData(models.Model):
         db_table = 'master_data'
 
 class MilestoneInfo(models.Model):
-    id = models.IntegerField(null=True, blank=True)
+    id = models.IntegerField(primary_key=True)
+    mi_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=500, blank=True)
     starting_date = models.DateField(null=True, blank=True)
     finishing_date = models.DateField(null=True, blank=True)

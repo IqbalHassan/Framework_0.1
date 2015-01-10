@@ -117,7 +117,7 @@ def ExecuteTestSteps(run_id,CurrentStep,q,dependency_list,step_data):
     return sTestStepReturnStatus
 
 #lost steps
-exp_SQLQuery = ("select  pmd.id, pmd.field, pmd.value from test_case_datasets tcd, expected_datasets ed, expected_container ec, container_type_data ctd, master_data pmd where tcd.tcdatasetid = ed.datasetid"
+exp_SQLQuery = ("select  pmd.md_id, pmd.field, pmd.value from test_case_datasets tcd, expected_datasets ed, expected_container ec, container_type_data ctd, master_data pmd where tcd.tcdatasetid = ed.datasetid"
         " and ed.expectedrefid = ec.exprefid"
         " and ec.container_name = ctd.dataid"
         " and ctd.curname = pmd.id"
@@ -159,7 +159,7 @@ elif CurrentStep == "Verify Filter Items Count":
                         " pmd.value"
                         " from master_data pmd"
                         " where"
-                        " pmd.id = '%s'"
+                        " pmd.md_id = '%s'"
                         " ;" % (temp[1]))
                         AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
                         temp[1] = AddressData

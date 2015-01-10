@@ -86,7 +86,7 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                     eachstep = eachstep[0].strip()
                     print eachstep + "-" + eachStepData[2]
                     result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                              id=eachstep,
+                                                              md_id=eachstep,
                                                               field="step",
                                                               value="description",
                                                               description=eachStepData[2])
@@ -95,7 +95,7 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                     else:
                         LogMessage(sModuleInfo, "Failed insertion step Description in master_data", 4, result)
                     result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                              id=eachstep,
+                                                              md_id=eachstep,
                                                               field="expected",
                                                               value="result",
                                                               description=eachStepData[3])
@@ -105,7 +105,7 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                         LogMessage(sModuleInfo, "Failed insertion expected in master_data", 4, result)
                     
                     result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                              id=eachstep,
+                                                              md_id=eachstep,
                                                               field="verification",
                                                               value="point",
                                                               description=eachStepData[4])
@@ -115,7 +115,7 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                         LogMessage(sModuleInfo, "Failed insertion verification in master_data", 4, result)
                     
                     result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                              id=eachstep,
+                                                              md_id=eachstep,
                                                               field="estimated",
                                                               value="time",
                                                               description=eachStepData[5])
@@ -174,7 +174,7 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                     Data_Id = "%s_s%s" % (TC_Id, Step_Index)
                     print Data_Id + " - " + eachStepData[2]
                     result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                              id=Data_Id,
+                                                              md_id=Data_Id,
                                                               field="step",
                                                               value="description",
                                                               description=eachStepData[2])
@@ -183,7 +183,7 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                     else:
                         LogMessage(sModuleInfo, "Failed insertion step Description in master_data", 4, result)
                     result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                              id=Data_Id,
+                                                              md_id=Data_Id,
                                                               field="expected",
                                                               value="result",
                                                               description=eachStepData[3])
@@ -192,7 +192,7 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                     else:
                         LogMessage(sModuleInfo, "Failed insertion expected in master_data", 4, result)
                     result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                              id=Data_Id,
+                                                              md_id=Data_Id,
                                                               field="verification",
                                                               value="point",
                                                               description=eachStepData[4])
@@ -201,7 +201,7 @@ def Insert_TestSteps_StepsData(conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                     else:
                         LogMessage(sModuleInfo, "Failed insertion verification in master_data", 4, result)
                     result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                              id=Data_Id,
+                                                              md_id=Data_Id,
                                                               field="estimated",
                                                               value="time",
                                                               description=eachStepData[5])
@@ -328,7 +328,7 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                     Addr_Data_Id = "%s_a%s" % (Data_Id, Addr_Data_Index)
                     # Insert the Address data id
                     result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                    id=Data_Id,
+                                                    md_id=Data_Id,
                                                     field=eachData[0],
                                                     value=Addr_Data_Id
                                                      )
@@ -342,7 +342,7 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
                         if isinstance(eachAddrData, tuple):
                             # Insert the Address datas each field and value
                             result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                            id=Addr_Data_Id,
+                                                            md_id=Addr_Data_Id,
                                                             field=eachAddrData[0],
                                                             value=eachAddrData[1]
                                                              )
@@ -363,7 +363,7 @@ def Insert_PIMMasterData(conn, Data_Id, Data_List):
             else:
                 # Insert the test step
                 result = DBUtil.InsertNewRecordInToTable(conn, "master_data",
-                                                id=Data_Id,
+                                                md_id=Data_Id,
                                                 field=eachData[0],
                                                 value=eachData[1]
                                                  )
@@ -542,16 +542,16 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
                     for each_Master_Data_Id in Master_Data_Id_List:
 
                         # Check if there is address data for this master data id, if yes delete that first
-                        Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where id = '%s' and value ilike '%s%%'" % (each_Master_Data_Id, each_Master_Data_Id))
+                        Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where md_id = '%s' and value ilike '%s%%'" % (each_Master_Data_Id, each_Master_Data_Id))
 
                         for each_Address_Data_Id in Address_Data_Id_List:
 
                             # Find and delete the master data entry
-                            cur.execute("delete from master_data where id = '%s'" % each_Address_Data_Id)
+                            cur.execute("delete from master_data where md_id = '%s'" % each_Address_Data_Id)
                             conn.commit()
 
                         # Find and delete the master data entry
-                        cur.execute("delete from master_data where id = '%s'" % each_Master_Data_Id)
+                        cur.execute("delete from master_data where md_id = '%s'" % each_Master_Data_Id)
                         conn.commit()
 
                     # Find and delete the master data entry
@@ -584,16 +584,16 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
                 for each_Master_Data_Id in Master_Data_Id_List:
 
                     # Check if there is address data for this master data id, if yes delete that first
-                    Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where id = '%s' and value ilike '%s%%'" % (each_Master_Data_Id, each_Master_Data_Id))
+                    Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where md_id = '%s' and value ilike '%s%%'" % (each_Master_Data_Id, each_Master_Data_Id))
 
                     for each_Address_Data_Id in Address_Data_Id_List:
 
                         # Find and delete the master data entry
-                        cur.execute("delete from master_data where id = '%s'" % each_Address_Data_Id)
+                        cur.execute("delete from master_data where md_id = '%s'" % each_Address_Data_Id)
                         conn.commit()
 
                     # Find and delete the master data entry
-                    cur.execute("delete from master_data where id = '%s'" % each_Master_Data_Id)
+                    cur.execute("delete from master_data where md_id = '%s'" % each_Master_Data_Id)
                     conn.commit()
 
                 # Find all the container id's used for this test case's in newname field
@@ -602,16 +602,16 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
                 for each_Master_Data_Id in Master_Data_Id_List:
 
                     # Check if there is address data for this master data id, if yes delete that first
-                    Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where id = '%s' and value ilike '%s%%'" % (each_Master_Data_Id, each_Master_Data_Id))
+                    Address_Data_Id_List = DBUtil.GetData(conn, "select value from master_data where md_id = '%s' and value ilike '%s%%'" % (each_Master_Data_Id, each_Master_Data_Id))
 
                     for each_Address_Data_Id in Address_Data_Id_List:
 
                         # Find and delete the master data entry
-                        cur.execute("delete from master_data where id = '%s'" % each_Address_Data_Id)
+                        cur.execute("delete from master_data where md_id = '%s'" % each_Address_Data_Id)
                         conn.commit()
 
                     # Find and delete the master data entry
-                    cur.execute("delete from master_data where id = '%s'" % each_Master_Data_Id)
+                    cur.execute("delete from master_data where md_id = '%s'" % each_Master_Data_Id)
                     conn.commit()
 
                 # Find and delete the master data entry
@@ -631,19 +631,19 @@ def Cleanup_TestCase(conn, TC_Id, EditFlag=False, OldFormat=False, New_TC_Id=Fal
     cur.execute("delete from test_steps where tc_id = '%s'" % TC_Id)
     conn.commit()
     # 6- Clean up all the test  step description from master_data
-    cur.execute("delete from master_data where id Ilike '%s%%' and field='step' and value='description'" % TC_Id)
+    cur.execute("delete from master_data where md_id Ilike '%s%%' and field='step' and value='description'" % TC_Id)
     conn.commit()
     
     # 7-Clean up all the test expected result from master_data
-    cur.execute("delete from master_data where id Ilike '%s%%' and field='expected' and value='result'" % TC_Id)
+    cur.execute("delete from master_data where md_id Ilike '%s%%' and field='expected' and value='result'" % TC_Id)
     conn.commit()
     
     # 8-Clean up all the test verification points in master_data
-    cur.execute("delete from master_data where id Ilike '%s%%' and field='verification' and value='point'" % TC_Id)
+    cur.execute("delete from master_data where md_id Ilike '%s%%' and field='verification' and value='point'" % TC_Id)
     conn.commit()
     
     # 9-Clean up all the test step estimated time in master_data
-    cur.execute("delete from master_data where id Ilike '%s%%' and field='estimated' and value='time'" % TC_Id)
+    cur.execute("delete from master_data where md_id Ilike '%s%%' and field='estimated' and value='time'" % TC_Id)
     conn.commit()
     if EditFlag == False:
 
@@ -691,12 +691,12 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
 
     Data_List = []
     SQLQuery = ("select "
-    " pmd.id,"
+    " pmd.md_id,"
     " pmd.field,"
     " pmd.value"
     " from master_data pmd"
     " where"
-    " pmd.id = '%s';" % (Data_Id))
+    " pmd.md_id = '%s';" % (Data_Id))
 
     Data_List = DBUtil.GetData(conn, SQLQuery, False)
     Data_List = [tuple(x[1:3])for x in Data_List]
@@ -711,7 +711,7 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
                 " pmd.value"
                 " from master_data pmd"
                 " where"
-                " pmd.id = '%s'"
+                " pmd.md_id = '%s'"
                 " ;" % (eachTuple[1]))
                 AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
             else:

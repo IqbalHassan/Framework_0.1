@@ -579,7 +579,7 @@ def EditBug(request,bug_id):
 
             # find all the details about test case
             Conn = models.GetConnection()
-            query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id where bug_id='"+bug_id+"'"
+            query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.mi_id where bug_id='"+bug_id+"'"
             bug_details=DB.GetData(Conn, query, False)
             Conn.close()
             
@@ -835,7 +835,7 @@ def AutoCompleteTask(request):
             team_id = request.GET.get(u'team_id','')
             print value
             Conn = models.GetConnection()
-            query = "select distinct tasks_id,tasks_title,tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and (tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%') and t.project_id='%s' and t.team_id='%s'" % (value, value, project_id,team_id)
+            query = "select distinct tasks_id,tasks_title,tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.mi_id::text=t.tasks_milestone and (tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%') and t.project_id='%s' and t.team_id='%s'" % (value, value, project_id,team_id)
             task_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(task_list)
@@ -849,7 +849,7 @@ def AutoCompleteRequirements(request):
             team_id = request.GET.get(u'team_id','')
             
             Conn = models.GetConnection()
-            query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi,requirement_team_map rtm where r.requirement_milestone=mi.id::text and r.project_id='%s' and (r.requirement_title Ilike '%%%s%%' or r.requirement_id Ilike '%%%s%%') and rtm.team_id='%s' and r.requirement_id=rtm.requirement_id" % (project_id, value, value,team_id)
+            query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi,requirement_team_map rtm where r.requirement_milestone=mi.mi_id::text and r.project_id='%s' and (r.requirement_title Ilike '%%%s%%' or r.requirement_id Ilike '%%%s%%') and rtm.team_id='%s' and r.requirement_id=rtm.requirement_id" % (project_id, value, value,team_id)
             req_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(req_list)
@@ -1020,7 +1020,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
         step_count = DB.GetData(Conn, "select count(*) from test_steps where tc_id='%s'" % temp_tc_id)
         for eachstep in range(1, step_count[0] + 1):
             temp_id = temp_tc_id + '_s' + str(eachstep)
-            query = "select description from master_data where field='estimated' and value='time' and id='%s'" % temp_id
+            query = "select description from master_data where field='estimated' and value='time' and md_id='%s'" % temp_id
             step_time = DB.GetData(Conn, query)
             temp_tc_time += int(step_time[0])
             totalRunIDTime += int(step_time[0])
@@ -1305,7 +1305,7 @@ def AddEstimatedTime(TestCaseList, run_id):
         total_time = 0
         for eachstep in range(1, step_count[0] + 1):
             step_id = each[0] + '_s' + str(eachstep)
-            time_query = "select description from result_master_data where field='estimated' and value='time' and id='%s' and run_id='%s'" % (step_id, run_id)
+            time_query = "select description from result_master_data where field='estimated' and value='time' and md_id='%s' and run_id='%s'" % (step_id, run_id)
             step_time = DB.GetData(Conn, time_query)
             total_time += int(step_time[0])
         format_time = ConvertTime(total_time)
@@ -1341,7 +1341,7 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
         count = int(count)
         for eachstep in range(1, count + 1):
             temp_id = each + '_s' + str(eachstep)
-            query = "select description from result_master_data where field='estimated' and value='time' and id='%s' and run_id='%s'" % (temp_id, RunId)
+            query = "select description from result_master_data where field='estimated' and value='time' and md_id='%s' and run_id='%s'" % (temp_id, RunId)
             Conn=models.GetConnection()
             step_time = DB.GetData(Conn, query)
             Conn.close()
@@ -1535,7 +1535,7 @@ def TestStep_Detail_Table(request):  #==================Returns Test Step Detail
                         else:
                             stepsequence += 1
                     datasetid = tc_id[0][0] + "_s" + str(stepsequence)
-                query = "select description from master_data where id='" + datasetid + "' and field='step' and value='description'"
+                query = "select description from master_data where md_id='" + datasetid + "' and field='step' and value='description'"
                 purpose = DB.GetData(Conn, query, False)
                 TestStep_Description.append(purpose[0][0])
                 TestStep_Description = tuple(TestStep_Description)
@@ -1551,7 +1551,7 @@ def TestStep_Detail_Table(request):  #==================Returns Test Step Detail
                 dataset = []
                 if data_required == "yes":
                     datasetid += '_d'
-                    query = "select distinct id from master_data where id Ilike '" + datasetid + "%'"
+                    query = "select distinct id from master_data where md_id Ilike '" + datasetid + "%'"
                     dataset_temp = DB.GetData(Conn, query)
                     for each in dataset_temp:
                         if len(each) == 14:
@@ -1561,11 +1561,11 @@ def TestStep_Detail_Table(request):  #==================Returns Test Step Detail
                         data_val.append((count, ""))
                         count += 1
                         print str(count) + " - " + each
-                        query = "select field,value from master_data where id Ilike'" + each + "%' and field!=''"
+                        query = "select field,value from master_data where md_id Ilike'" + each + "%' and field!=''"
                         data_set_val = DB.GetData(Conn, query, False)
                         data_val_comp.append(data_set_val)        
                     """data_val.append((1,""))
-                    query="select field,value from master_data where id='"+datasetid+"'"
+                    query="select field,value from master_data where md_id='"+datasetid+"'"
                     data_set_val=DB.GetData(Conn,query,False)"""
     results = {
                'TestStep_Details':TestStep_Details,
@@ -2207,7 +2207,7 @@ def RegisterPermanentInfo(Conn, run_id, TestCasesIDs):
         ##########################################Result_Master_Data##############################################
         master_data_column_query = "select column_name from information_schema.columns where table_name='master_data'"
         master_data_column = DB.GetData(Conn, master_data_column_query)
-        master_data_query = "select * from master_data where id Ilike '%s%%'" % test_case
+        master_data_query = "select * from master_data where md_id Ilike '%s%%'" % test_case
         master_data = DB.GetData(Conn, master_data_query, False)
         for each in master_data:
             master_data_dict = {}
@@ -3430,7 +3430,7 @@ def ViewTestCase(TC_Id):
                 Step_Type = each_test_step[4]
                 Step_Edit = each_test_step[5]
                 Step_Data = []
-                query = "select description from master_data where id Ilike '%s_s" % (TC_Id)
+                query = "select description from master_data where md_id Ilike '%s_s" % (TC_Id)
                 query += "%s" % (str(Step_Iteration))
                 query += "%' and field='step' and value='description'"
                 # query="select description from master_data where id Ilike '%s_s%s%' and field='step' and value='description'" %(TC_Id,str(Step_Iteration))
@@ -3441,7 +3441,7 @@ def ViewTestCase(TC_Id):
                     step_description = Step_Description[0][0]
                 # print Step_Description[0][0]
                 # select expected Result from the master data
-                query = "select description from master_data where id Ilike '%s_s" % (TC_Id)
+                query = "select description from master_data where md_id Ilike '%s_s" % (TC_Id)
                 query += "%s" % (str(Step_Iteration))
                 query += "%' and field='expected' and value='result'"
                 Step_Expected = DB.GetData(Conn, query, False)
@@ -3450,7 +3450,7 @@ def ViewTestCase(TC_Id):
                 else:
                     step_expected = Step_Expected[0][0]
                 # select verification point from master_data
-                query = "select description from master_data where id Ilike '%s_s" % (TC_Id)
+                query = "select description from master_data where md_id Ilike '%s_s" % (TC_Id)
                 query += "%s" % (str(Step_Iteration))
                 query += "%' and field='verification' and value='point'"
                 Step_Verified = DB.GetData(Conn, query, False)
@@ -3460,7 +3460,7 @@ def ViewTestCase(TC_Id):
                     step_verified = Step_Verified[0][0]
                 query = "select description from test_steps_list where stepname='%s'" % (Step_Name.strip())
                 Step_General_Description = DB.GetData(Conn, query, False)
-                query = "select description from master_data where id Ilike '%s_s" % (TC_Id)
+                query = "select description from master_data where md_id Ilike '%s_s" % (TC_Id)
                 query += "%s" % (str(Step_Iteration))
                 query += "%' and field='estimated' and value='time'"
                 Step_Time = DB.GetData(Conn, query, False)
@@ -6059,10 +6059,10 @@ def DataFetchForTestCases(request):
                 datasetid = test_case_id + "_s" + str((each + 1))
                 print datasetid
                 # Get the description from the master_data
-                query = "select description from result_master_data where id='%s' and field='step' and value='description' and run_id='%s'" % (datasetid, run_id)
+                query = "select description from result_master_data where md_id='%s' and field='step' and value='description' and run_id='%s'" % (datasetid, run_id)
                 step_description = DB.GetData(Conn, query, False)
                 Temp_Data.append(step_description[0][0])
-                query = "select description from result_master_data where id='%s' and field='expected' and value='result' and run_id='%s'" % (datasetid, run_id)
+                query = "select description from result_master_data where md_id='%s' and field='expected' and value='result' and run_id='%s'" % (datasetid, run_id)
                 step_expected = DB.GetData(Conn, query, False)
                 Temp_Data.append(step_expected[0][0])
                 # Get the expected Result from the master data
@@ -7041,7 +7041,7 @@ def Get_MileStone_ID(request):
         if request.method == 'GET':
             Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
-            query = "select id from milestone_info where name = '"+milestone+"'"
+            query = "select mi_id from milestone_info where name = '"+milestone+"'"
             milestone_info = DB.GetData(Conn, query)
     json = simplejson.dumps(milestone_info)
     return HttpResponse(json, mimetype='application/json')
@@ -7051,7 +7051,7 @@ def Get_MileStone_By_ID(request):
         if request.method == 'GET':
             Conn = models.GetConnection()
             id = request.GET.get(u'term', '')
-            query = "select id,name,cast(starting_date as text),cast(finishing_date as text),status,description,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from milestone_info where id = '"+id+"'"
+            query = "select mi_id,name,cast(starting_date as text),cast(finishing_date as text),status,description,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from milestone_info where mi_id = '"+id+"'"
             milestone_info = DB.GetData(Conn, query, False)
     json = simplejson.dumps(milestone_info)
     return HttpResponse(json, mimetype='application/json')
@@ -7062,7 +7062,7 @@ def Milestone_Requirements(request):
             Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select r.requirement_id, r.requirement_title, r.status from requirements r, milestone_info mi where mi.id::varchar=r.requirement_milestone and mi.name like '%"+milestone+"%'"
+            query = "select r.requirement_id, r.requirement_title, r.status from requirements r, milestone_info mi where mi.mi_id::varchar=r.requirement_milestone and mi.name like '%"+milestone+"%'"
             requirements_list = DB.GetData(Conn, query, False)
     Heading = ['Requirement ID','Requirement Name', 'Status']
     results = {'Heading':Heading, 'TableData':requirements_list}
@@ -7075,7 +7075,7 @@ def Milestone_Tasks(request):
             Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select t.tasks_id,t.tasks_title,t.status from tasks t,milestone_info mi where t.tasks_milestone::int=mi.id and mi.name like '%"+milestone+"%'"
+            query = "select t.tasks_id,t.tasks_title,t.status from tasks t,milestone_info mi where t.tasks_milestone::int=mi.mi_id and mi.name like '%"+milestone+"%'"
             tasks_list = DB.GetData(Conn, query, False)
     Heading = ['Task ID','Task title', 'Status']
     results = {'Heading':Heading, 'TableData':tasks_list}
@@ -7088,7 +7088,7 @@ def Milestone_Bugs(request):
             Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select b.bug_id,b.bug_title,b.status from bugs b,milestone_info mi where b.bug_milestone::int=mi.id and mi.name like '%"+milestone+"%'"
+            query = "select b.bug_id,b.bug_title,b.status from bugs b,milestone_info mi where b.bug_milestone::int=mi.mi_id and mi.name like '%"+milestone+"%'"
             bugs_list = DB.GetData(Conn, query, False)
     Heading = ['Bug ID','Bug title', 'Status']
     results = {'Heading':Heading, 'TableData':bugs_list}
@@ -7143,7 +7143,7 @@ def Milestone_Teams(request):
             Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
-            query = "select distinct mtm.team_id from milestone_team_map mtm, milestone_info mi where mi.id=mtm.milestone_id and mi.name like '%"+milestone+"%'"
+            query = "select distinct mtm.team_id from milestone_team_map mtm, milestone_info mi where mi.mi_id=mtm.milestone_id and mi.name like '%"+milestone+"%'"
             teams_list = DB.GetData(Conn, query, False)
     json = simplejson.dumps(teams_list)
     return HttpResponse(json, mimetype='application/json')
@@ -7212,7 +7212,7 @@ def MileStoneOperation(request):
                     mid = DB.GetData(Conn,"select id from config_values where type='milestone' and value = '"+old_name+"'")
                     Dict = {'value':new_name.strip()}
                     print DB.UpdateRecordInTable(Conn, "config_values", condition, **Dict)            
-                    mcondition = "where id='%s' and name='%s'" % (mid[0],old_name)
+                    mcondition = "where mi_id='%s' and name='%s'" % (mid[0],old_name)
                     mDict = {'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date,'status':status,'description':description,'modified_by':modified_by,'modified_date':now}
                     print DB.UpdateRecordInTable(Conn, "milestone_info", mcondition, **mDict)
                     result = DB.DeleteRecord(Conn,"milestone_team_map",milestone_id=mid[0])
@@ -7242,7 +7242,7 @@ def MileStoneOperation(request):
                     Dict = {'type':'milestone', 'value':new_name.strip()}
                     print DB.InsertNewRecordInToTable(Conn, "config_values", **Dict)
                     mid = DB.GetData(Conn,"select id from config_values where type='milestone' and value = '"+new_name+"'")
-                    mDict = {'id':mid[0], 'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date,'status':status,'description':description,'created_by':created_by,'created_date':now,'modified_by':created_by,'modified_date':now}
+                    mDict = {'mi_id':mid[0], 'name':new_name, 'starting_date':starting_date, 'finishing_date':ending_date,'status':status,'description':description,'created_by':created_by,'created_date':now,'modified_by':created_by,'modified_date':now}
                     print DB.InsertNewRecordInToTable(Conn, "milestone_info", **mDict)
                     for each in team_id:
                         team_Dict={
@@ -7263,7 +7263,7 @@ def MileStoneOperation(request):
                     Dict = {'type':'milestone', 'value':new_name.strip()}
                     print DB.DeleteRecord(Conn, "config_values", **Dict)
                     mid = DB.GetData(Conn,"select id from config_values where type='milestone' and value = '"+new_name+"'")
-                    mDict = {'id':mid[0], 'name':new_name}
+                    mDict = {'mi_id':mid[0], 'name':new_name}
                     print DB.DeleteRecord(Conn, "milestone_info", **mDict)
                     confirm_message = "MileStone is deleted Successfully"
                 else:
@@ -7358,7 +7358,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     test_case_time = 0
                     for count in range(0, int(stepNumber[0])):
                         temp_id = each[0] + '_s' + str(count + 1)
-                        step_time_query = "select description from master_data where id='%s' and field='estimated' and value='time'" % temp_id.strip()
+                        step_time_query = "select description from master_data where md_id='%s' and field='estimated' and value='time'" % temp_id.strip()
                         Conn=models.GetConnection()
                         step_time = DB.GetData(Conn, step_time_query)
                         Conn.close()
@@ -8382,14 +8382,14 @@ def Selected_TaskID_Analaysis(request):
         query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 = '%s' and btm.id2=tc.tc_id and type1='TASK' and type2='TC'" % UserData
         cases = DB.GetData(Conn,query,False)
         
-        #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
+        #query = "select mi.name from milestone_info mi, tasks t where mi.mi_id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
         #milestone = DB.GetData(Conn,query)
         
         
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.lm_id='%s' and lm.type='TASK' order by label_name" % UserData
         labels = DB.GetData(Conn,query)
         
-        query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi, components_map cm where r.requirement_milestone=mi.id::text and cm.id1=r.requirement_id and cm.id2='%s' and cm.type1='REQ' and cm.type2='TASK'" %UserData
+        query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi, components_map cm where r.requirement_milestone=mi.mi_id::text and cm.id1=r.requirement_id and cm.id2='%s' and cm.type1='REQ' and cm.type2='TASK'" %UserData
         reqs = DB.GetData(Conn,query,False)
         
         #query = "select team_id from task_team_map where task_id='%s'" %UserData
@@ -8401,7 +8401,7 @@ def Selected_TaskID_Analaysis(request):
         section = section.split('.')
         parents = []
         for each in section:
-            query = "select ts.task_path, t.tasks_id, t.status, mi.name from tasks t, milestone_info mi, task_sections ts where t.tasks_id = '%s' and t.tasks_milestone=mi.id::text and ts.task_path ~ '*.%s'" %(each,each.replace('-','_'))
+            query = "select ts.task_path, t.tasks_id, t.status, mi.name from tasks t, milestone_info mi, task_sections ts where t.tasks_id = '%s' and t.tasks_milestone=mi.mi_id::text and ts.task_path ~ '*.%s'" %(each,each.replace('-','_'))
             temp = DB.GetData(Conn,query,False)
             parents.append(temp)"""
 
@@ -8434,7 +8434,7 @@ def Selected_Requirement_Analaysis(request):
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.lm_id='%s' and lm.type='REQ' order by label_name" % UserData
         labels = DB.GetData(Conn,query)
         
-        query = "select distinct t.tasks_id, tasks_title, tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from components_map cm, tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and id1='%s' and type1='REQ' and type2='TASK' and t.tasks_id=cm.id2" % UserData
+        query = "select distinct t.tasks_id, tasks_title, tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from components_map cm, tasks t, milestone_info mi where mi.mi_id::text=t.tasks_milestone and id1='%s' and type1='REQ' and type2='TASK' and t.tasks_id=cm.id2" % UserData
         tasks = DB.GetData(Conn,query,False)
         
         query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 = '%s' and btm.id2=tc.tc_id and type1='REQ' and type2='TC'" % UserData
@@ -8449,7 +8449,7 @@ def Selected_Requirement_Analaysis(request):
         section = section.split('.')
         parents = []
         for each in section:
-            query = "select ts.task_path, t.tasks_id, t.status, mi.name from tasks t, milestone_info mi, task_sections ts where t.tasks_id = '%s' and t.tasks_milestone=mi.id::text and ts.task_path ~ '*.%s'" %(each,each.replace('-','_'))
+            query = "select ts.task_path, t.tasks_id, t.status, mi.name from tasks t, milestone_info mi, task_sections ts where t.tasks_id = '%s' and t.tasks_milestone=mi.mi_id::text and ts.task_path ~ '*.%s'" %(each,each.replace('-','_'))
             temp = DB.GetData(Conn,query,False)
             parents.append(temp)"""
 
@@ -8485,7 +8485,7 @@ def ManageBug(request):
         data = []
         for x in each:
             data.append(x)
-        milestone=DB.GetData(Conn, "select mi.id, mi.name from bugs b, milestone_info mi where b.bug_milestone::int=mi.id and b.bug_id='"+each[0]+"'",False)
+        milestone=DB.GetData(Conn, "select mi.id, mi.name from bugs b, milestone_info mi where b.bug_milestone::int=mi.mi_id and b.bug_id='"+each[0]+"'",False)
         data.append(milestone[0][0])
         data.append(milestone[0][1])
         #ago = (now-x[8]).days + " days ago by "
@@ -8507,7 +8507,7 @@ def Bugs_List(request):
 
         now=datetime.datetime.now().date()
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query="select distinct bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id order by b.bug_id desc"
+        query="select distinct bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.mi_id order by b.bug_id desc"
         bugs=DB.GetData(Conn, query, False)
         
         query="select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, label_map blm where l.label_id=blm.label_id"
@@ -8532,7 +8532,7 @@ def Tasks_List(request):
         tasks_list = []
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
         #query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi,requirement_sections rs,task_team_map ttm where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text and ttm.task_id=t.tasks_id and ttm.team_id='"+team_id+"' order by tasks_id desc"
-        query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.team_id='"+team_id+"' order by tasks_id desc"
+        query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.mi_id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.team_id='"+team_id+"' order by tasks_id desc"
         tasks=DB.GetData(Conn, query, False)
         
         query="select task_path from tasks t,task_sections rs where t.project_id='"+project_id+"' and t.parent_id=rs.task_path_id::text and t.team_id='"+team_id+"' order by tasks_id desc"
@@ -8569,7 +8569,7 @@ def Reqs_List(request):
         now=datetime.datetime.now().date()
         reqs_list = []
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query="select distinct requirement_id,requirement_title,requirement_description,cast(requirement_startingdate as text),cast(requirement_endingdate as text),mi.name,r.status from requirements r,milestone_info mi where project_id='"+project_id+"' and mi.id::text=r.requirement_milestone order by requirement_id desc"
+        query="select distinct requirement_id,requirement_title,requirement_description,cast(requirement_startingdate as text),cast(requirement_endingdate as text),mi.name,r.status from requirements r,milestone_info mi where project_id='"+project_id+"' and mi.mi_id::text=r.requirement_milestone order by requirement_id desc"
         reqs=DB.GetData(Conn, query, False)
         
         query="select requirement_path from requirements r,requirement_sections rs where project_id='"+project_id+"' and r.parent_requirement_id=rs.requirement_path_id::text order by requirement_id desc"
