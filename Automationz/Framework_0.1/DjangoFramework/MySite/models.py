@@ -636,6 +636,10 @@ class UserInfo(models.Model):
     password = models.CharField(max_length=255, blank=True)
     full_name = models.CharField(max_length=511, blank=True)
     profile_picture_name = models.CharField(max_length=150, blank=True)
+    
+    def __unicode__(self):
+        return u"%s: %s" % (self.username, self.full_name)
+    
     class Meta:
         db_table = 'user_info'
 
