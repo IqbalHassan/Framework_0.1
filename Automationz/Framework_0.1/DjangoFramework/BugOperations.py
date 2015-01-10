@@ -67,7 +67,7 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
         Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
         if len(Feature_Id) > 0:
             feat_Dict={
-                           'id':bug_id,
+                           'fm_id':bug_id,
                            'type':'BUG',
                            'feature_id':Feature_Id[0]
                 }
@@ -174,9 +174,9 @@ def EditBug(bug_id,title,status,description,start_date,end_date,team,priority,mi
         
         Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
         if len(Feature_Id) > 0:
-            lsres=DB.DeleteRecord(Conn,"feature_map", id=bug_id)
+            lsres=DB.DeleteRecord(Conn,"feature_map", fm_id=bug_id)
             feat_Dict={
-                           'id':bug_id,
+                           'fm_id':bug_id,
                            'type':'BUG',
                            'feature_id':Feature_Id[0]
                 }

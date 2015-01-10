@@ -8376,7 +8376,7 @@ def Selected_TaskID_Analaysis(request):
         query = "select pul.user_names from tasks t,permitted_user_list pul where tasks_id = '%s' and t.tester::int=pul.user_id" % UserData
         tester = DB.GetData(Conn, query)
         
-        query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='TASK' and fm.feature_id=pf.feature_id::text" % UserData
+        query = "select pf.feature_path from feature_map fm, product_features pf where fm.fm_id='%s' and fm.type='TASK' and fm.feature_id=pf.feature_id::text" % UserData
         feature = DB.GetData(Conn, query, False)
         
         query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 = '%s' and btm.id2=tc.tc_id and type1='TASK' and type2='TC'" % UserData
@@ -8422,7 +8422,7 @@ def Selected_Requirement_Analaysis(request):
         Req_Info = DB.GetData(Conn, query, False)
         
         
-        query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='REQ' and fm.feature_id=pf.feature_id::text" % UserData
+        query = "select pf.feature_path from feature_map fm, product_features pf where fm.fm_id='%s' and fm.type='REQ' and fm.feature_id=pf.feature_id::text" % UserData
         feature = DB.GetData(Conn, query, False)
         
         #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
@@ -8652,7 +8652,7 @@ def Selected_BugID_Analaysis(request):
         query = "select distinct tc.tc_id, tc.tc_name, tcr.status from test_case_results tcr, test_cases tc where tc.tc_id=tcr.tc_id and tcr.status='Failed' and tc.tc_id not in (select id2 from components_map) order by tc.tc_id"
         failed_cases = DB.GetData(Conn, query, False)
         
-        query = "select pf.feature_path from feature_map fm, product_features pf where fm.id='%s' and fm.type='BUG' and fm.feature_id=pf.feature_id::text" % UserData
+        query = "select pf.feature_path from feature_map fm, product_features pf where fm.fm_id='%s' and fm.type='BUG' and fm.feature_id=pf.feature_id::text" % UserData
         feature = DB.GetData(Conn, query, False)
 
     results = {'Bug_Info':Bug_Info, 'Bug_Labels':Bug_Labels, 'Bug_Cases':Bug_Cases, 'tester':tester, 'Failed_Cases':failed_cases, 'Feature':feature[0][0] }
