@@ -350,8 +350,9 @@ class ResultContainerTypeData(models.Model):
         db_table = 'result_container_type_data'
 
 class ResultMasterData(models.Model):
+    id = models.IntegerField(primary_key=True)
     run_id = models.CharField(max_length=100)
-    id = models.CharField(max_length=30)
+    rmd_id = models.CharField(max_length=30)
     field = models.CharField(max_length=50)
     value = models.TextField()
     description = models.CharField(max_length=200, blank=True)

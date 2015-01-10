@@ -23,12 +23,12 @@ def Result_Get_PIM_Data_By_Id(conn, RunID, Data_Id):
 
     Data_List = []
     SQLQuery = ("select "
-    " pmd.id,"
+    " pmd.rmd_id,"
     " pmd.field,"
     " pmd.value"
     " from result_master_data pmd"
     " where"
-    " pmd.id = '%s' and pmd.run_id='%s'; " % (Data_Id, RunID))
+    " pmd.rmd_id = '%s' and pmd.run_id='%s'; " % (Data_Id, RunID))
 
     Data_List = DBUtil.GetData(conn, SQLQuery, False)
     Data_List = [tuple(x[1:3])for x in Data_List]
@@ -43,7 +43,7 @@ def Result_Get_PIM_Data_By_Id(conn, RunID, Data_Id):
                 " pmd.value"
                 " from result_master_data pmd"
                 " where"
-                " pmd.id = '%s' and pmd.run_id='%s'"
+                " pmd.rmd_id = '%s' and pmd.run_id='%s'"
                 " ;" % (eachTuple[1], RunID))
                 AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
             else:
