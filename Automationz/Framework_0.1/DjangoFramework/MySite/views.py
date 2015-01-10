@@ -2133,7 +2133,7 @@ def RegisterReRunPermanentInfo(Conn, run_id, previous_run, TestCasesIDs):
         ##########################################Result_Container_type_data##############################################
         container_type_data_column_query = "select column_name from information_schema.columns where table_name='result_container_type_data'"
         container_type_data_column = DB.GetData(Conn, container_type_data_column_query)
-        container_type_data_query = "select distinct ctd.run_id,ctd.id,ctd.dataid,ctd.curname,ctd.newname,ctd.items_count from result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd where tcd.tcdatasetid=tsd.tcdatasetid and ctd.dataid=tsd.testdatasetid and tcd.tc_id='%s' and ctd.run_id='%s'" % (test_case, previous_run)
+        container_type_data_query = "select distinct ctd.run_id,ctd.rctd_id,ctd.dataid,ctd.curname,ctd.newname,ctd.items_count from result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd where tcd.tcdatasetid=tsd.tcdatasetid and ctd.dataid=tsd.testdatasetid and tcd.tc_id='%s' and ctd.run_id='%s'" % (test_case, previous_run)
         container_type_data = DB.GetData(Conn, container_type_data_query, False)
         for each in container_type_data:
             ctd_dict = {}
