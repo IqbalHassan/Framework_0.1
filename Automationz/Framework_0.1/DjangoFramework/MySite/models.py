@@ -192,7 +192,8 @@ class FeatureMap(models.Model):
         db_table = 'feature_map'
 
 class LabelMap(models.Model):
-    id = models.CharField(max_length=50, blank=True)
+    id = models.IntegerField(primary_key=True)
+    lm_id = models.CharField(max_length=50, blank=True)
     label_id = models.CharField(max_length=50, blank=True)
     type = models.CharField(max_length=50, blank=True)
     class Meta:

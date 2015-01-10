@@ -93,7 +93,7 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
             if labels[0] != '':
                 for each in labels:
                     label_Dict={
-                               'id':task_id,
+                               'lm_id':task_id,
                                'label_id':each.strip(),
                                'type':'TASK'
                     }
@@ -204,10 +204,10 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
                 fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
                 
             if labels[0] != '':
-                lsres=DB.DeleteRecord(Conn,"label_map", id=task_id)
+                lsres=DB.DeleteRecord(Conn,"label_map", lm_id=task_id)
                 for each in labels:
                     label_Dict={
-                               'id':task_id,
+                               'lm_id':task_id,
                                'label_id':each.strip(),
                                'type':'TASK'
                     }
@@ -334,7 +334,7 @@ def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,
             if labels[0] != '':
                 for each in labels:
                     label_Dict={
-                               'id':task_id,
+                               'lm_id':task_id,
                                'label_id':each.strip(),
                                'type':'TASK'
                     }

@@ -1360,10 +1360,10 @@ def Insert_Linkings(Conn, TC_Id, TC_Name, labels):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     # Form the Dictionary to add test case information
     if labels[0] != '':
-        lsres=DBUtil.DeleteRecord(Conn,"label_map", id=TC_Id, type='TC')
+        lsres=DBUtil.DeleteRecord(Conn,"label_map", lm_id=TC_Id, type='TC')
         for each in labels:
             label_Dict={
-                       'id':TC_Id,
+                       'lm_id':TC_Id,
                        'label_id':each.strip(),
                        'type':'TC'
             }
