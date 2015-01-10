@@ -394,8 +394,9 @@ class ResultTestCases(models.Model):
         db_table = 'result_test_cases'
 
 class ResultTestSteps(models.Model):
+    id = models.IntegerField(primary_key=True)
+    rts_id = models.IntegerField()
     run = models.ForeignKey('ResultTestStepsList')
-    id = models.IntegerField()
     tc_id = models.CharField(max_length=10, blank=True)
     step_id = models.IntegerField()
     teststepsequence = models.IntegerField(null=True, blank=True)
@@ -638,7 +639,8 @@ class UserInfo(models.Model):
         db_table = 'user_info'
 
 class Versions(models.Model):
-    id = models.IntegerField(null=True, blank=True)
+    id = models.IntegerField(primary_key=True)
+    v_id = models.IntegerField(null=True, blank=True)
     version_name = models.CharField(max_length=50, unique=True, blank=True)
     class Meta:
         db_table = 'versions'

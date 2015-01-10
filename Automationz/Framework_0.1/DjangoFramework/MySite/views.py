@@ -6645,7 +6645,7 @@ def GetOS(request):
                     Conn.close()
                     temp.append((eachitem,names))
                 final_list.append((name,temp))
-            query="select distinct branch_name,array_agg(distinct version_name) from branch b,branch_management bm, versions v where b.id=bm.branch and v.id=b.id and bm.project_id='%s' and bm.team_id=%d group by b.branch_name"%(project_id,int(team_id))
+            query="select distinct branch_name,array_agg(distinct version_name) from branch b,branch_management bm, versions v where b.id=bm.branch and v.v_id=b.id and bm.project_id='%s' and bm.team_id=%d group by b.branch_name"%(project_id,int(team_id))
             Conn=models.GetConnection()
             version_list=DB.GetData(Conn,query,False)
             Conn.close()
@@ -11223,7 +11223,7 @@ def get_all_version_under_branch(request):
                 print value[0]
                 print project_id
                 print team_id
-                query="select distinct version_name as name from branch_management bm, versions v where v.id=bm.branch and bm.project_id='%s' and bm.team_id=%d and bm.branch=%d order by name"%(project_id,int(team_id),int(value[0]))
+                query="select distinct version_name as name from branch_management bm, versions v where v.v_id=bm.branch and bm.project_id='%s' and bm.team_id=%d and bm.branch=%d order by name"%(project_id,int(team_id),int(value[0]))
                 Conn=models.GetConnection()
                 version_list=DB.GetData(Conn,query,False)
                 Conn.close()
@@ -11255,7 +11255,7 @@ def add_new_version_branch(request):
                     if len(count)==1 and count[0]==0:
                         Dict={
                             'version_name':new_name.strip(),
-                            'id':int(new_value.strip())
+                            'v_id':int(new_value.strip())
                         }
                         Conn=models.GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"versions",**Dict)
