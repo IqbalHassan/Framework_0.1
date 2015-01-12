@@ -339,9 +339,8 @@ class Requirements(models.Model):
         db_table = 'requirements'
 
 class ResultContainerTypeData(models.Model):
-    id = models.IntegerField(primary_key=True)
-    rctd_id = models.IntegerField()
     run_id = models.CharField(max_length=100)
+    id = models.IntegerField()
     dataid = models.CharField(max_length=20, blank=True)
     curname = models.CharField(max_length=200, blank=True)
     newname = models.CharField(max_length=300, blank=True)
