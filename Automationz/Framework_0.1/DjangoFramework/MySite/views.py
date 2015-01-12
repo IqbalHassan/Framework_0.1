@@ -6638,7 +6638,7 @@ def GetOS(request):
                 listing=each[1]
                 temp=[]
                 for eachitem in listing:
-                    query="select bit_name,array_agg(distinct version) from dependency_name dn,dependency_values dv where dn.id=dv.dv_id and dn.name='%s' group by bit_name"%(eachitem)
+                    query="select bit_name,array_agg(distinct version) from dependency_name dn,dependency_values dv where dn.id=dv.id and dn.name='%s' group by bit_name"%(eachitem)
                 #   query="select distinct name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,project_id,int(team_id))
                     Conn=models.GetConnection()
                     names=DB.GetData(Conn,query,False)                
@@ -10859,14 +10859,14 @@ def add_new_version(request):
                 version=request.GET.get(u'version','')
                 value=request.GET.get(u'value','')
                 #check for occurances
-                query="select count(*) from dependency_values where bit_name='%s' and version='%s' and dv_id=%d"%(bit,version,int(value))
+                query="select count(*) from dependency_values where bit_name='%s' and version='%s' and id=%d"%(bit,version,int(value))
                 Conn=models.GetConnection()
                 count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(count,list):
                     if len(count)==1 and count[0]==0:
                         Dict={
-                            'dv_id':int(value),
+                            'id':int(value),
                             'version':version,
                             'bit_name':bit
                         }
@@ -10906,7 +10906,7 @@ def get_all_version_bit(request):
         if request.method=='GET':
             if request.is_ajax():
                 value=request.GET.get(u'value','')
-                query="select bit_name|| ' Bit' as bit,array_to_string(array_agg(distinct version),',') from dependency_values dv,dependency_name dn where dv.dv_id=dn.id and dn.id=%d group by bit_name order by bit"%(int(value))
+                query="select bit_name|| ' Bit' as bit,array_to_string(array_agg(distinct version),',') from dependency_values dv,dependency_name dn where dv.id=dn.id and dn.id=%d group by bit_name order by bit"%(int(value))
                 Conn=models.GetConnection()
                 version_list=DB.GetData(Conn,query,False)
                 Conn.close()
