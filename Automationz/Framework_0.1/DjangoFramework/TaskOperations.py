@@ -84,7 +84,7 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
             Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
             if len(Feature_Id) > 0:
                 feat_Dict={
-                               'id':task_id,
+                               'fm_id':task_id,
                                'type':'TASK',
                                'feature_id':Feature_Id[0]
                     }
@@ -93,7 +93,7 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
             if labels[0] != '':
                 for each in labels:
                     label_Dict={
-                               'id':task_id,
+                               'lm_id':task_id,
                                'label_id':each.strip(),
                                'type':'TASK'
                     }
@@ -195,19 +195,19 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
                 
             Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
             if len(Feature_Id) > 0:
-                lsres=DB.DeleteRecord(Conn,"feature_map", id=task_id)
+                lsres=DB.DeleteRecord(Conn,"feature_map", fm_id=task_id)
                 feat_Dict={
-                               'id':task_id,
+                               'fm_id':task_id,
                                'type':'TASK',
                                'feature_id':Feature_Id[0]
                     }
                 fresult = DB.InsertNewRecordInToTable(Conn,"feature_map",**feat_Dict)
                 
             if labels[0] != '':
-                lsres=DB.DeleteRecord(Conn,"label_map", id=task_id)
+                lsres=DB.DeleteRecord(Conn,"label_map", lm_id=task_id)
                 for each in labels:
                     label_Dict={
-                               'id':task_id,
+                               'lm_id':task_id,
                                'label_id':each.strip(),
                                'type':'TASK'
                     }
@@ -325,7 +325,7 @@ def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,
             Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
             if len(Feature_Id) > 0:
                 feat_Dict={
-                               'id':task_id,
+                               'fm_id':task_id,
                                'type':'TASK',
                                'feature_id':Feature_Id[0]
                     }
@@ -334,7 +334,7 @@ def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,
             if labels[0] != '':
                 for each in labels:
                     label_Dict={
-                               'id':task_id,
+                               'lm_id':task_id,
                                'label_id':each.strip(),
                                'type':'TASK'
                     }
