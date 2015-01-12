@@ -648,7 +648,7 @@ def main():
                     else:
                         step_index+=1
                 datasetid=TestCaseID[0]+'_s'+str(step_index)
-                query="select description from master_data where field='verification' and value='point' and md_id='%s'"%datasetid
+                query="select description from master_data where field='verification' and value='point' and id='%s'"%datasetid
                 #Conn=GetConnection()
                 conn=DBUtil.ConnectToDataBase()
                 status=DBUtil.GetData(conn,query,False)
