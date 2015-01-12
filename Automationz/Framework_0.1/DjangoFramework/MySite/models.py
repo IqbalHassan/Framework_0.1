@@ -184,8 +184,7 @@ class FeatureManagement(models.Model):
         db_table = 'feature_management'
 
 class FeatureMap(models.Model):
-    id = models.IntegerField(primary_key=True)
-    fm_id = models.CharField(max_length=50, blank=True)
+    id = models.CharField(max_length=50, blank=True)
     type = models.CharField(max_length=50, blank=True)
     feature_id = models.CharField(max_length=50, blank=True)
     class Meta:
