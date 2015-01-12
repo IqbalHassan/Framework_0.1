@@ -2120,7 +2120,7 @@ def RegisterReRunPermanentInfo(Conn, run_id, previous_run, TestCasesIDs):
         ##########################################Result_Test_Steps_Data##############################################
         test_steps_data_column_query = "select column_name from information_schema.columns where table_name='result_test_steps_data'"
         test_steps_data_column = DB.GetData(Conn, test_steps_data_column_query)
-        test_case_dataset_entry_query = "select distinct tsd.run_id,tsd.rtsd_id,tsd.tcdatasetid,tsd.testdatasetid,tsd.teststepseq from result_test_case_datasets tcd,result_test_steps_data tsd where tcd.tcdatasetid=tsd.tcdatasetid and tcd.tc_id='%s' and tsd.run_id='%s'" % (test_case, previous_run)
+        test_case_dataset_entry_query = "select distinct tsd.run_id,tsd.id,tsd.tcdatasetid,tsd.testdatasetid,tsd.teststepseq from result_test_case_datasets tcd,result_test_steps_data tsd where tcd.tcdatasetid=tsd.tcdatasetid and tcd.tc_id='%s' and tsd.run_id='%s'" % (test_case, previous_run)
         test_case_dataset_entry = DB.GetData(Conn, test_case_dataset_entry_query, False)
         for each in test_case_dataset_entry:
             step_data_dict = {}

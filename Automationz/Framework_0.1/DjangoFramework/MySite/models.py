@@ -405,9 +405,8 @@ class ResultTestSteps(models.Model):
         db_table = 'result_test_steps'
 
 class ResultTestStepsData(models.Model):
-    id = models.IntegerField(primary_key=True)
-    rtsd_id = models.IntegerField()
     run = models.ForeignKey(ResultTestCaseDatasets)
+    id = models.IntegerField()
     tcdatasetid = models.CharField(max_length=20, blank=True)
     testdatasetid = models.CharField(max_length=20)
     teststepseq = models.IntegerField()
