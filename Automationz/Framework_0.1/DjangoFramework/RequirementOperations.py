@@ -75,7 +75,7 @@ def CreateParentRequirement(title, description, project_id, team_list, start_dat
                         if labels[0] != '':
                             for each in labels:
                                 label_Dict={
-                                           'lm_id':req_id,
+                                           'id':req_id,
                                            'label_id':each.strip(),
                                            'type':'REQ'
                                 }
@@ -160,10 +160,10 @@ def EditRequirement(req_id,title, description, project_id, team_list, start_date
                     }
                 fresult = DB.UpdateRecordInTable(Conn,"feature_map",condition,**feat_Dict)
             if labels[0] != '': 
-                result=DB.DeleteRecord(Conn, "label_map", lm_id=req_id)
+                result=DB.DeleteRecord(Conn, "label_map", id=req_id)
                 for each in labels:
                     label_Dict={
-                               'lm_id':req_id,
+                               'id':req_id,
                                'label_id':each.strip(),
                                'type':'REQ'
                     }
@@ -277,7 +277,7 @@ def CreateChildRequirement(title, description, project_id, team_list, start_date
                     if labels[0] != '':
                         for each in labels:
                             label_Dict={
-                                       'lm_id':req_id,
+                                       'id':req_id,
                                        'label_id':each.strip(),
                                        'type':'REQ'
                             }

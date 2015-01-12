@@ -57,7 +57,7 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
         if labels[0] != '':
             for each in labels:
                 label_Dict={
-                           'lm_id':bug_id,
+                           'id':bug_id,
                            'label_id':each.strip(),
                            'type':'BUG'
                 }
@@ -160,10 +160,10 @@ def EditBug(bug_id,title,status,description,start_date,end_date,team,priority,mi
                 new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                 
         if labels[0] != '':
-            lsres=DB.DeleteRecord(Conn,"label_map", lm_id=bug_id)
+            lsres=DB.DeleteRecord(Conn,"label_map", id=bug_id)
             for each in labels:
                 label_Dict={
-                           'lm_id':bug_id,
+                           'id':bug_id,
                            'label_id':each.strip(),
                            'type':'BUG'
                 }

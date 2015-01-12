@@ -3412,7 +3412,7 @@ def ViewTestCase(TC_Id):
                 Feature_Path = ''
 
             
-            query = "select distinct l.label_id,l.label_name,l.label_color from label_map blm, labels l where blm.lm_id = '%s' and blm.type='TC' and blm.label_id = l.label_id" % TC_Id
+            query = "select distinct l.label_id,l.label_name,l.label_color from label_map blm, labels l where blm.id = '%s' and blm.type='TC' and blm.label_id = l.label_id" % TC_Id
             Conn = models.GetConnection()
             Labels = DB.GetData(Conn, query, False)
             Conn.close()
@@ -8386,7 +8386,7 @@ def Selected_TaskID_Analaysis(request):
         #milestone = DB.GetData(Conn,query)
         
         
-        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.lm_id='%s' and lm.type='TASK' order by label_name" % UserData
+        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='TASK' order by label_name" % UserData
         labels = DB.GetData(Conn,query)
         
         query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi, components_map cm where r.requirement_milestone=mi.id::text and cm.id1=r.requirement_id and cm.id2='%s' and cm.type1='REQ' and cm.type2='TASK'" %UserData
@@ -8431,7 +8431,7 @@ def Selected_Requirement_Analaysis(request):
         teams = DB.GetData(Conn,query)
         
         
-        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.lm_id='%s' and lm.type='REQ' order by label_name" % UserData
+        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='REQ' order by label_name" % UserData
         labels = DB.GetData(Conn,query)
         
         query = "select distinct t.tasks_id, tasks_title, tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from components_map cm, tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and id1='%s' and type1='REQ' and type2='TASK' and t.tasks_id=cm.id2" % UserData
@@ -8640,7 +8640,7 @@ def Selected_BugID_Analaysis(request):
         query = "select distinct bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs where bug_id = '%s'" % UserData
         Bug_Info = DB.GetData(Conn, query, False)
         
-        query = "select distinct l.label_id from label_map blm, labels l where blm.lm_id = '%s' and blm.label_id = l.label_id" % UserData
+        query = "select distinct l.label_id from label_map blm, labels l where blm.id = '%s' and blm.label_id = l.label_id" % UserData
         Bug_Labels = DB.GetData(Conn, query)
         
         query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 ilike '%s' and btm.id2=tc.tc_id" % UserData
@@ -9782,7 +9782,7 @@ def DetailRequirementView(request,project_id,req_id):
     Dict.update({'comment':comment})
     try:
         Conn = models.GetConnection()
-        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.lm_id='"+req_id+"' and lm.type='REQ' order by label_name"
+        query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='"+req_id+"' and lm.type='REQ' order by label_name"
         labels = DB.GetData(Conn,query,False)
         Dict.update({'labels':labels})
     except Exception,e:
