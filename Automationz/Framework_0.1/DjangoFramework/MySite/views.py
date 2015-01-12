@@ -75,7 +75,7 @@ path_to_uploaded_files = os.path.join(os.getcwd(), 'site_media', 'file_uploads')
 # import DjangoConstants
 # from pylab import * #http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib and http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 # import pylab
-#Conn = GetConnection()
+#Conn = models.GetConnection()
 # import logging
 
 """ Misc functions """
@@ -109,7 +109,7 @@ def GetProjectNameForTopBar(request):
     if request.is_ajax():
         if request.method=='GET':
             query="select project_id from projects"
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             project_name_id=DB.GetData(Conn, query,False)
             #Conn.close()
             #be sure that there will be a project name other wise the page will refresh
@@ -119,7 +119,7 @@ def GetProjectNameForTopBar(request):
                   }
             query="select id,value from config_values where type='Team'"
             #testConnection(Conn)
-            #Conn=GetConnection()
+            #Conn=models.GetConnection()
             all_teams=DB.GetData(Conn,query,False)
             Conn.close()
             Dict.update({
@@ -140,7 +140,7 @@ def RunTest(request):
     #get the available machine definition
     #query="select distinct tester_id,machine_ip,last_updated_time,status,branch_version,project_id,(select value from config_values where type='Team' and id=team_id),array_agg( distinct case when bit=0 then  type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' Bit - '||version end ) from machine_dependency_settings mds,test_run_env tre,machine_project_map mpm where tre.id=mds.machine_serial and mpm.machine_serial=tre.id and status='Unassigned' group by tester_id,last_updated_time,status,branch_version,machine_ip,mpm.project_id,mpm.team_id"
     query="select distinct user_names from permitted_user_list pul where user_level='Manual'"
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     machine_list=DB.GetData(Conn,query)
     Conn.close()        
     templ = get_template('RunTest_new.html')
@@ -192,43 +192,43 @@ def make_status_array(Conn, refined_list):
             print "notrun_query: %s" %notrun_query
             skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
             print "skipped_query: %s" %skipped_query
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             total = DB.GetData(Conn, total_query)
             #Conn.close()
             print "total: %s"%total
             for iTem in total:
                 print iTem
-            #Conn=GetConnection()
+            #Conn=models.GetConnection()
             passed = DB.GetData(Conn, pass_query)
             #Conn.close()
             print "passed: %s"%passed
             for iTem in passed:
                 print iTem
-            #Conn=GetConnection()
+            #Conn=models.GetConnection()
             failed = DB.GetData(Conn, fail_query)
             #Conn.close()
             print "failed: %s"%failed
             for iTem in failed:
                 print iTem
-            #Conn=GetConnection()
+            #Conn=models.GetConnection()
             blocked = DB.GetData(Conn, blocked_query)
             #Conn.close()
             print "blocked: %s"%blocked
             for iTem in blocked:
                 print iTem
-            #Conn=GetConnection()
+            #Conn=models.GetConnection()
             progress = DB.GetData(Conn, progress_query)
             #Conn.close()
             print "progress: %s"%progress
             for iTem in total:
                 print iTem
-            #Conn=GetConnection()
+            #Conn=models.GetConnection()
             submitted = DB.GetData(Conn, notrun_query)
             #Conn.close()
             print "submitted: %s"%submitted
             for iTem in progress:
                 print iTem
-            #Conn=GetConnection()
+            #Conn=models.GetConnection()
             skipped = DB.GetData(Conn, skipped_query)
             Conn.close()
             print "skipped: %s"%skipped
@@ -275,7 +275,7 @@ def ResultTableFetch(index):
         total_query += "where tre.run_id=ter.run_id and ter.status=tre.status and ter.status not in ('Submitted','In-Progress'))) as A order by starttime desc,run_id asc "
         count_query = total_query
         total_query += (limit + ' ' + offset)
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         get_list = DB.GetData(Conn, total_query, False)
         #Conn.close()
         refine_list = []
@@ -284,11 +284,11 @@ def ResultTableFetch(index):
                 refine_list.append(each)
         total_run = make_array(refine_list)
         print total_run
-        #Conn = GetConnection()
+        #Conn = models.GetConnection()
         all_status = make_status_array(Conn, total_run)
         #Conn.close()
         #time.sleep(0.5)
-        #Conn = GetConnection()
+        #Conn = models.GetConnection()
         dataCount = DB.GetData(Conn, count_query, False)
         Conn.close()
         data = {
@@ -318,7 +318,7 @@ def GetPageCount(request):
         if request.method == 'GET':
             
             query = "select count(*) from test_run_env tre,test_env_results ter where tre.run_id=ter.run_id"
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             totalEntry = DB.GetData(Conn, query)
             Conn.close()
             totalPage = totalEntry[0] / step
@@ -385,7 +385,7 @@ def Create(request):
     
 def CreateNew(request):
     query="select label_id,label_name,Label_color from labels order by label_name"
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     labels=DB.GetData(Conn,query,False)
     Conn.close()        
     templ = get_template('CreateTestCase.html')
@@ -399,7 +399,7 @@ def CreateNew(request):
 
 def CopyTestCase(request,tc_id):
     query="select label_id,label_name,Label_color from labels order by label_name"
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     labels=DB.GetData(Conn,query,False)
     Conn.close()        
     templ = get_template('CreateTestCase.html')
@@ -476,7 +476,7 @@ def ProductSectionsCreated(request):
                     sections_string += "."
                 sections_string += sections[i]
         sections_string.strip()
-        conn = GetConnection()
+        conn = models.GetConnection()
         if sections_string:
             DB.InsertNewRecordInToTable(conn, "product_sections", section_path=sections_string)
         print (sections_string)
@@ -495,7 +495,7 @@ def Edit(request,tc_id):
         return ViewTestCase(TC_Id)
     else:
         query="select label_id,label_name,Label_color from labels order by label_name"
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         labels=DB.GetData(Conn,query,False)
         Conn.close()        
         templ = get_template('CreateTestCase.html')
@@ -512,7 +512,7 @@ def EditMilestone(request,ms_id):
     if ms_id != "":
         return render_to_response('Milestone.html')
     else:
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         query="select project_id, project_name from projects"
         project_info=DB.GetData(Conn,query,False)
         query="select id,value from config_values where type='milestone'"
@@ -543,7 +543,7 @@ def EditBug(request,bug_id):
         return render_to_response('CreateBug.html')
     else:
         query="select project_id from projects"
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         project=DB.GetData(Conn,query)
         query="select distinct value from config_values where type='Team'"
         team=DB.GetData(Conn,query)
@@ -572,13 +572,13 @@ def EditBug(request,bug_id):
         bug_id=bug_id.GET.get('bug_id')
         err_msg = ''
         # Search for TC_ID
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         tmp_id = DB.GetData(Conn, "select bug_Id from bugs where bug_Id = '%s'" % bug_id)
         if len(tmp_id) > 0:
             # TestCaseOperations.LogMessage(sModuleInfo,"TEST CASE id is found:%s"%(TC_Id),4)
 
             # find all the details about test case
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query="select bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.mi_id where bug_id='"+bug_id+"'"
             bug_details=DB.GetData(Conn, query, False)
             Conn.close()
@@ -690,7 +690,7 @@ def AutoCompleteTestCasesSearch(request):  #==================Returns Data in Li
             Client = 'client'
             Feature = 'feature'
         
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         results = DB.GetData(Conn, "select distinct name,property from test_case_tag "
                                    "where name Ilike '%" + value + "%' "
                                      "and property in('" + Section + "','" + Feature + "','" + CustomTag + "','" + Test_Run_Type + "','" + Priority + "','" + CustomSet + "','" + Tag + "','" + Client + "') "
@@ -734,7 +734,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             set_type='set'
             tag_type='tag'
             query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             dependency=DB.GetData(Conn,query)
             Conn.close()
             wherequery=""
@@ -745,7 +745,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
             print wherequery
             tag_query="select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)"%(value,wherequery)
             id_query="select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')"%(value,value)
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             tag_cases=DB.GetData(Conn,tag_query,False)
             id_cases=DB.GetData(Conn,id_query,False)
             results=list(set(list(tag_cases+id_cases)))            
@@ -754,7 +754,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):  #===============Returns Ava
 
 def AutoCompleteUsersSearch(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
     
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == "GET":
             value = request.GET.get(u'term', '')
@@ -763,18 +763,18 @@ def AutoCompleteUsersSearch(request):  #==================Returns Abailable User
             print value
             Usable_Machine = []
             query = "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul,machine_project_map mpm where tre.tester_id Ilike '%%%s%%' and tre.tester_id=pul.user_names and mpm.machine_serial=tre.id and tre.status='Unassigned' and pul.user_level in('Automation') and mpm.project_id='%s' and mpm.team_id=%d"%(value,project_id,int(team_id)) 
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             Automation_Machine = DB.GetData(Conn, query, False)
             Conn.close()
             for each in Automation_Machine:
                 Usable_Machine.append(each)
             query = "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul,machine_project_map mpm where tre.tester_id Ilike '%%%s%%' and tre.tester_id=pul.user_names and mpm.machine_serial=tre.id and tre.status='Unassigned' and pul.user_level in('Manual') and mpm.project_id='%s' and mpm.team_id=%d"%(value,project_id,int(team_id))
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             Manual_Machine = DB.GetData(Conn, query, False)
             Conn.close()
             for each in Manual_Machine:
                 query = "select distinct status from test_run_env tre,machine_project_map mpm where tester_id='%s' and tre.id=mpm.machine_serial"% (each[0].strip())
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 machine_status = DB.GetData(Conn, query)
                 Conn.close()
                 if len(machine_status) == 0:
@@ -791,7 +791,7 @@ def AutoCompleteUsersSearch(request):  #==================Returns Abailable User
 
 def AutoCompleteEmailSearch(request):  #==================Returns Abailable Emails in List as user Type on Select Email Input Box on Run Test Page==============================
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -808,7 +808,7 @@ def AutoCompleteTag(request):
         if request.method == 'GET':
             value = request.GET.get(u'term', '')
             print value
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select value,type from config_values where value Ilike '%%%s%%' and type='tag'" % value
             tag_list = DB.GetData(Conn, query, False)
             Conn.close()
@@ -820,7 +820,7 @@ def AutoCompleteLabel(request):
         if request.method == 'GET':
             value = request.GET.get(u'term', '')
             print value
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select * from labels where label_name Ilike '%%%s%%' or label_id Ilike '%%%s%%'" % (value, value)
             label_list = DB.GetData(Conn, query, False)
             Conn.close()
@@ -834,7 +834,7 @@ def AutoCompleteTask(request):
             project_id = request.GET.get(u'project_id','')
             team_id = request.GET.get(u'team_id','')
             print value
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select distinct tasks_id,tasks_title,tasks_description ,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.mi_id::text=t.tasks_milestone and (tasks_title Ilike '%%%s%%' or tasks_id Ilike '%%%s%%') and t.project_id='%s' and t.team_id='%s'" % (value, value, project_id,team_id)
             task_list = DB.GetData(Conn, query, False)
             Conn.close()
@@ -848,7 +848,7 @@ def AutoCompleteRequirements(request):
             project_id = request.GET.get(u'project_id','')
             team_id = request.GET.get(u'team_id','')
             
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi,requirement_team_map rtm where r.requirement_milestone=mi.mi_id::text and r.project_id='%s' and (r.requirement_title Ilike '%%%s%%' or r.requirement_id Ilike '%%%s%%') and rtm.team_id='%s' and r.requirement_id=rtm.requirement_id" % (project_id, value, value,team_id)
             req_list = DB.GetData(Conn, query, False)
             Conn.close()
@@ -858,7 +858,7 @@ def AutoCompleteRequirements(request):
 def AutoCompleteTesterSearch(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             value = request.GET.get(u'term', '')
             results = DB.GetData(Conn, "Select DISTINCT user_names,user_id from permitted_user_list where user_names Ilike '%" + value + "%' and user_level = 'assigned_tester'")
     Conn.close()
@@ -866,7 +866,7 @@ def AutoCompleteTesterSearch(request):
     return HttpResponse(json, mimetype='application/json')
 
 def AutoCompleteTagSearch(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -893,7 +893,7 @@ def AutoCompleteTagSearch(request):
     return HttpResponse(json, mimetype='application/json')
 
 def AutoCompleteTestStepSearch(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -907,7 +907,7 @@ def AutoCompleteTestStepSearch(request):
 
 
 def Table_Data_TestCases(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     propertyValue = "Ready"
     tabledata = []
     if request.is_ajax():
@@ -988,7 +988,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
     for each in RefinedData:
         if DB.IsDBConnectionGood(Conn) == False:
             time.sleep(1)
-            Conn = GetConnection()
+            Conn = models.GetConnection()
         query = "select property from test_case_tag where tc_id='%s' and name='Status'" % each[0].strip()
         temp = []
         for eachitem in each:
@@ -1045,7 +1045,7 @@ def Table_Data_TestCases(request):  #==================Returns Test Cases When U
     return HttpResponse(json, mimetype='application/json')
 
 def Table_Data_TestResult(request):  #==================Returns Test Results When User Launch Test Result Page===============================
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     tabledata = []
     if request.is_ajax():
         if request.method == 'GET':
@@ -1132,7 +1132,7 @@ def Table_Data_TestResult(request):  #==================Returns Test Results Whe
 
 def Table_Data_DailyBuild(request):
     import datetime
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = {}
     tabledata = []
     if request.method == 'GET':
@@ -1194,7 +1194,7 @@ def Table_Data_DailyBuild(request):
 
 
 def TestCase_TestSteps(request):  #==================Returns Test Steps When User Click on Test Case on Test Run Page===============================
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = {}
     if request.is_ajax():
         if request.method == 'GET':
@@ -1218,7 +1218,7 @@ def TestCase_TestSteps(request):  #==================Returns Test Steps When Use
     return HttpResponse(json, mimetype='application/json')
 
 def TestCase_TestSteps_SearchPage(request):  #==================Returns Test Steps When User Click on Test Case on Test Search Page===============================
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = {}
     if request.is_ajax():
          if request.method == 'GET':
@@ -1247,7 +1247,7 @@ def TestCase_TestSteps_SearchPage(request):  #==================Returns Test Ste
 def GetRunIDStatus(RunId):
     run_status = ""
     query = "select status from test_case_results where run_id='%s'" % RunId
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     status_list = DB.GetData(Conn, query)
     for each in status_list:
         if each != 'Submitted':
@@ -1300,7 +1300,7 @@ def AddEstimatedTime(TestCaseList, run_id):
     for each in TestCaseList:
         print each[0]
         query = "select count(*) from result_test_steps where tc_id='%s' and run_id='%s'" % (each[0], run_id)
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         step_count = DB.GetData(Conn, query)
         total_time = 0
         for eachstep in range(1, step_count[0] + 1):
@@ -1322,19 +1322,19 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
     Env_Details_Col = ["Run ID", "Mahchine", "Tester", "Estd. Time", "Status", "Version","Dependency", "Machine IP", "Objective", "MileStone" ,"Email","Project","Team"]
     run_id_status = GetRunIDStatus(RunId)
     query = "Select DISTINCT run_id,tester_id,assigned_tester,'%s',branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),machine_ip,test_objective,test_milestone from test_run_env tre,machine_dependency_settings mds Where tre.id=mds.machine_serial and run_id = '%s' group by run_id,tester_id,assigned_tester,branch_version,machine_ip,test_objective,test_milestone" % (run_id_status,RunId)
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     Env_Details_Data = DB.GetData(Conn, query, False)
     Conn.close()
     # Code for the total estimated time for the RUNID
     totalRunIDTime = 0
     query = "select tc_id from test_run where run_id='%s'" % RunId
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     test_case_list = DB.GetData(Conn, query)
     Conn.close()
     for each in test_case_list:
         # Get the step_count
         query = "select count(*) from result_test_steps where tc_id='%s' and run_id='%s'" % (each, RunId)
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         step_count = DB.GetData(Conn, query)
         Conn.close()
         count = step_count[0]
@@ -1342,7 +1342,7 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
         for eachstep in range(1, count + 1):
             temp_id = each + '_s' + str(eachstep)
             query = "select description from result_master_data where field='estimated' and value='time' and rmd_id='%s' and run_id='%s'" % (temp_id, RunId)
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             step_time = DB.GetData(Conn, query)
             Conn.close()
             totalRunIDTime += int(step_time[0])
@@ -1350,7 +1350,7 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
     ################################################
     # code for fetching email notification
     email_query = "select email_notification from test_run_env where run_id='%s'" % RunId
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     email_list = DB.GetData(Conn, email_query, False)
     Conn.close()
     print email_list
@@ -1362,18 +1362,18 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
     for each in email_list:
         if each != "":
             query = "select user_names from permitted_user_list where user_level='email' and email='%s'" % each
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             name = DB.GetData(Conn, query)
             Conn.close()
             email_receiver.append(name[0])
     print email_receiver
     email_name = ",".join(email_receiver)
     query="select p.project_id||' - '||p.project_name from projects p, test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and p.project_id=mpm.project_id and tre.run_id='%s'"%RunId
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     project_name=DB.GetData(Conn,query,False)
     Conn.close()
     query="select value from config_values c,test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and  c.id=mpm.team_id and c.type='Team' and tre.run_id='%s'"%RunId
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     team_name=DB.GetData(Conn,query,False)
     Conn.close()
     temp = []
@@ -1390,7 +1390,7 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
     #####################################
     ReRunColumn = ['Test Case ID', 'Test Case Name', 'Type', 'Status']
     query = "select tc.tc_id,tc.tc_name,tcr.status from result_test_cases tc,test_case_results tcr where tc.run_id=tcr.run_id and tc.tc_id=tcr.tc_id and tcr.run_id='%s'" % RunId
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     ReRunList = DB.GetData(Conn, query, False)
     Conn.close()
     ReRun = Modify(ReRunList)
@@ -1404,7 +1404,7 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
     return render(request, 'RunID_Detail.html', results)
 
 def TestCase_Detail_Table(request):  #==================Returns Test Steps and Details Table When User Click on Test Case Name On Test Result Page========
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = {}
     TC_ID = ""
     TestCase_Detail_Data = []
@@ -1465,7 +1465,7 @@ def TestCase_Detail_Table(request):  #==================Returns Test Steps and D
 
 
 def TestStep_Detail_Table(request):  #==================Returns Test Step Details Table When User Click on Test Step Name On Test Result Page=======
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = {}
     TestStep_Details = ""
     TestStep_Col = ""
@@ -1586,7 +1586,7 @@ def TestStep_Detail_Table(request):  #==================Returns Test Step Detail
 
 
 def FailStep_TestCases(request):  #==================Returns Test Cases When User Click on Fail Step On Test Result Page===============================
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
 
@@ -1621,7 +1621,7 @@ def FailStep_TestCases(request):  #==================Returns Test Cases When Use
 
 
 def Verify_Query(request):  #==================Returns Message if Depandency is missing when User Click on Verify button on Test Run Page==============================
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     propertyValue = "Ready"
     if request.is_ajax():
         if request.method == 'GET':
@@ -1730,7 +1730,7 @@ def Verify_Query(request):  #==================Returns Message if Depandency is 
 
 
 def Table_Data_UserList(request):  #==================Returns Available user list When there is no error in depandency ==============================
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = {}
     if request.is_ajax():
         if request.method == 'GET':
@@ -1787,7 +1787,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 
                 if is_rerun=="rerun":
                     query="select email_notification, assigned_tester, test_objective,test_milestone, branch_version, project_id,team_id, start_date,end_date,tester_id,machine_ip from test_run_env tre, machine_project_map mpm where mpm.machine_serial=tre.id and run_id='%s'"%previous_run
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     Meta_info=DB.GetData(Conn,query,False)
                     Conn.close()
                     stEmailIds=Meta_info[0][0]
@@ -1802,7 +1802,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     TesterId=Meta_info[0][9]
                     machine_ip=Meta_info[0][10]
                     query="select type,name,bit,version from machine_dependency_settings mds, test_run_env tre where mds.machine_serial=tre.id and tre.tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     machine_data=DB.GetData(Conn,query,False)
                     Conn.close()
                 else:
@@ -1833,7 +1833,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     Emails = []
                     for eachitem in EmailIds :
                         if eachitem != "":
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             Eid = DB.GetData(Conn, "Select email from permitted_user_list where user_names = '%s'" % str(eachitem))
                             Conn.close()
                         if len(Eid) > 0:
@@ -1867,7 +1867,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     TesterId = TesterId.strip()
                 runid = TimeStamp("string")
                 query = "select user_level from permitted_user_list where user_names='%s'" % TesterId
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 Machine_Status = DB.GetData(Conn, query, False)
                 Conn.close()
                 if Machine_Status[0][0] == 'Manual':
@@ -1878,21 +1878,21 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                         print updateTime
                         Dict = {'run_id':runid,'last_updated_time':updateTime, 'test_objective':TestObjective}
                         sWhereQuery = "where tester_id='%s' and status='%s'" % (TesterId,status)
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         print DB.UpdateRecordInTable(Conn, "test_run_env", sWhereQuery, **Dict)
                         Conn.close()
                     else:
                         status='Unassigned'
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         result=DB.DeleteRecord(Conn, "test_run_env",tester_id=TesterId, status=status)
                         updated_time = TimeStamp("string")
                         Dict = {'tester_id':TesterId.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':Branch_Version.strip()}
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
                         Conn.close()
                         if(tes2 == True):
                             query="select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1"%(TesterId.strip())
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             temp_id=DB.GetData(Conn,query)
                             if isinstance(temp_id,list):
                                 machine_id=temp_id[0]
@@ -1900,10 +1900,10 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                                 for each in machine_data:
                                     Dict={}
                                     Dict.update({'machine_serial':machine_id,'name':each[1],'type':each[0],'bit':each[2],'version':each[3]})                                   
-                                    Conn=GetConnection()
+                                    Conn=models.GetConnection()
                                     result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
                                     Conn.close()
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             Dict={
                                   'machine_serial':machine_id,
                                   'project_id':project_id,
@@ -1913,11 +1913,11 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 TestIDList = []
                 for eachitem in QueryText:
                     if is_rerun == "rerun":
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         TestID = DB.GetData(Conn, "Select property from result_test_case_tag where name = '%s' and run_id='%s'" % (eachitem, previous_run))
                         Conn.close()
                     else:
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
                         Conn.close()
                     for eachProp in TestID:
@@ -1937,7 +1937,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     tag_type='tag'
                     Status='Status'
                     query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     dependency=DB.GetData(Conn,query)
                     Conn.close()
                     wherequery=""
@@ -1958,28 +1958,28 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
                     Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
                     query = "select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     TestCasesIDs = DB.GetData(Conn, query)        
                     Conn.close()
                     print TestCasesIDs
                 if is_rerun == "rerun":
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     RegisterReRunPermanentInfo(Conn, runid, previous_run, TestCasesIDs)
                     Conn.close()
                     for eachitem in TestCasesIDs:
                         Dict = {'run_id':runid, 'tc_id':str(eachitem)}
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
                         Conn.close()
                         print Result
                     AddReRunInfo(runid, previous_run)
                 else:
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     RegisterPermanentInfo(Conn, runid, TestCasesIDs)
                     Conn.close()
                     for eachitem in TestCasesIDs:
                         Dict = {'run_id':runid, 'tc_id':str(eachitem)}
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         Result = DB.InsertNewRecordInToTable(Conn, "test_run", **Dict)
                         Conn.close()
                         print Result
@@ -2002,17 +2002,17 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                       'start_date':starting_date,
                       'end_date':ending_date
                 }
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 sWhereQuery="where tester_id='%s' and status='Unassigned'"%(TesterId)
                 result=DB.UpdateRecordInTable(Conn,"test_run_env",sWhereQuery,**Dict)
                 Conn.close()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 now = DB.GetData(Conn, "SELECT CURRENT_TIMESTAMP;", False)
                 sTestSetStartTime = str(now[0][0])
                 Conn.close()
                 print sTestSetStartTime
                 Dict = {'run_id':runid, 'tester_id':str(TesterId), 'status': 'Submitted', 'rundescription':TestObjective, 'teststarttime':sTestSetStartTime}
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 EnvResults = DB.InsertNewRecordInToTable(Conn, "test_env_results", **Dict)
                 Conn.close()
                 results = {'Result': result, 'runid':runid}
@@ -2272,53 +2272,53 @@ def RegisterPermanentInfo(Conn, run_id, TestCasesIDs):
 def CleanRun(runid):
     print runid
 def AddReRunInfo(run_id, previous_run):
-    conn = GetConnection()
+    conn = models.GetConnection()
     query = "select tc_id from test_run where run_id='" + run_id + "'"
     TestCaseList = DB.GetData(conn, query)
     conn.close()
     for eachcase in TestCaseList:
         print eachcase
-        conn=GetConnection()
+        conn=models.GetConnection()
         print DB.InsertNewRecordInToTable(conn, "test_case_results", run_id=run_id, tc_id=eachcase, status="Submitted")
         conn.close()
         query="select id from test_case_results where run_id='%s' and tc_id='%s' and status='Submitted'"%(run_id, eachcase)
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         result_index=DB.GetData(Conn,query)
         Conn.close()        
-        conn=GetConnection()
+        conn=models.GetConnection()
         TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From result_Test_Steps ts,result_test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id and ts.run_id=tsl.run_id and ts.run_id='%s' Order By teststepsequence" % (eachcase, previous_run), False)
         conn.close()
         for eachstep in TestStepsList:
             # print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
             Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2],'testcaseresulttindex':result_index[0]}
-            conn=GetConnection()
+            conn=models.GetConnection()
             print DB.InsertNewRecordInToTable(conn, "test_step_results", **Dict)
             conn.close()
 def AddInfo(run_id):
-    conn = GetConnection()
+    conn = models.GetConnection()
     query = "select tc_id from test_run where run_id='" + run_id + "'"
     TestCaseList = DB.GetData(conn, query)
     conn.close()
     for eachcase in TestCaseList:
         print eachcase
-        conn=GetConnection()
+        conn=models.GetConnection()
         print DB.InsertNewRecordInToTable(conn, "test_case_results", run_id=run_id, tc_id=eachcase, status="Submitted")
         conn.close()
         query="select id from test_case_results where run_id='%s' and tc_id='%s' and status='Submitted'"%(run_id, eachcase)
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         result_index=DB.GetData(Conn,query)
         Conn.close()
-        conn=GetConnection()
+        conn=models.GetConnection()
         TestStepsList = DB.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From Test_Steps ts,test_steps_list tsl where TC_ID = '%s' and ts.step_id = tsl.step_id Order By teststepsequence" % eachcase, False)
         conn.close()
         for eachstep in TestStepsList:
             # print eachcase +"step_sequence:"+str(eachstep[2])+" - "+str(eachstep[0])
             Dict = {'run_id':run_id, 'tc_id':eachcase, 'teststep_id':eachstep[0], 'status':"Submitted", 'teststepsequence':eachstep[2],'testcaseresulttindex':result_index[0]}
-            conn=GetConnection()
+            conn=models.GetConnection()
             print DB.InsertNewRecordInToTable(conn, "test_step_results", **Dict)
             conn.close()
 def ReRun_Fail_TestCases(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = {}
     Result = []
     Response = 'False'
@@ -2436,7 +2436,7 @@ def createTablefromString(request):
 
 
 def PerformanceResult_01(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = {}
     TestCaseList = []
     if request.is_ajax():
@@ -2584,7 +2584,7 @@ def PerformanceResult(request):
             return rawlist
 
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     Environments = []
     Categories = []
     Bundles = []
@@ -2889,7 +2889,7 @@ def Performance_ClickedBundle_Details(request, type):
         variable = "pr.cpu_peak,  to_char(pr.cpu_peaktime,'HH24:MI:SS')"
         # floor(extract('epoch' from pr.cpu_peaktime))::integer"
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
 
     Performance_TestCase_Duration_Table = DB.GetData(Conn, "Select pr.run_id,ter.status as test_run_status ," + variable + ",tcr.logid "
                       "from performance_results pr, test_case_results tcr, test_env_results ter "
@@ -2927,7 +2927,7 @@ def Performance_ClickedBundle_Details(request, type):
 
 
 def TestCaseSearch(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     items_per_page = 10
     has_next_page = False
@@ -2966,7 +2966,7 @@ def TestCaseSearch(request):
 
 
 def Selected_TestCaseID_Analaysis(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_TC_Analysis', '')
@@ -2980,7 +2980,7 @@ def Selected_TestCaseID_Analaysis(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Selected_TestCaseID_History(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_TC_Analysis', '')
@@ -3000,7 +3000,7 @@ def ExecutionReport(request):
     return HttpResponse(output)
 
 def Execution_Report_Table(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     # find latest bundles for PC
     PCBundles = DB.GetData(Conn, "select split_part(split_part(product_version, E',',1),E':',2) from test_run_env where status in ('Complete') and product_version ilike '%Version:%'  and machine_os ilike 'Windows%' order by id desc" , False)
     BundleList = []
@@ -3171,7 +3171,7 @@ def Create_Submit_New_TestCase(request):
 
     try:
         sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         error = ''
         if request.is_ajax() and request.method == 'GET':
             #Platform = request.GET.get(u'Platform', '')
@@ -3320,7 +3320,7 @@ def Create_Submit_New_TestCase(request):
         print "Exception:", e
         TestCaseOperations.LogMessage(sModuleInfo, e, 2)
         # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         return "Critical"
 
 def ViewTestCase(TC_Id):
@@ -3332,20 +3332,20 @@ def ViewTestCase(TC_Id):
         TC_Id=TC_Id.GET.get('TC_Id')
         err_msg = ''
         # Search for TC_ID
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         tmp_id = DB.GetData(Conn, "select tc_id from test_cases where tc_id = '%s'" % TC_Id)
         if len(tmp_id) > 0:
             # TestCaseOperations.LogMessage(sModuleInfo,"TEST CASE id is found:%s"%(TC_Id),4)
 
             # find all the details about test case
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             test_case_details = DB.GetData(Conn, "select tc_name,tc_createdby from test_cases where tc_id = '%s'" % TC_Id, False)
             Conn.close()
             TC_Name = test_case_details[0][0]
             TC_Creator = test_case_details[0][1]
             
             # Test Case dataset details
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             test_case_dataset_details = DB.GetData(Conn, "select tcdatasetid,data_type from test_case_datasets where tc_id = '%s'" % TC_Id, False)
             Conn.close()
             if len(test_case_dataset_details) > 0:
@@ -3353,17 +3353,17 @@ def ViewTestCase(TC_Id):
             else:
                 Test_Case_DataSet_Id = ''
 
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             test_case_tag_details = DB.GetData(Conn, "select name,property from test_case_tag where tc_id = '%s'" % TC_Id, False)
             Conn.close()
             TC_Project=[x[0] for x in test_case_tag_details if x[1] == 'Project']
             TC_Team=[x[0] for x in test_case_tag_details if x[1] == 'Team']
             query="select distinct property,array_to_string(array_agg(distinct name),',') from test_case_tag tct,dependency_management dm,dependency d where d.id=dm.dependency and tct.property=d.dependency_name and dm.project_id='%s' and dm.team_id=%d and tct.tc_id='%s'group by tct.property"%(TC_Project[0],int(TC_Team[0]),TC_Id)
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             Dependency_List = DB.GetData(Conn,query,False)
             Conn.close()
             print Dependency_List
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             query="select name from dependency_name dn,dependency_management dm where dn.dependency_id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(TC_Project[0],int(TC_Team[0]))
             All_Names=DB.GetData(Conn,query)
             print All_Names
@@ -3389,7 +3389,7 @@ def ViewTestCase(TC_Id):
             
             Section_Id = [x[0] for x in test_case_tag_details if x[1] == 'section_id']
             if len(Section_Id) > 0:
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 Section_Path = DB.GetData(Conn, "select section_path from product_sections where section_id = '%d'" % int(Section_Id[0]), False)
                 Conn.close()
                 if len(Section_Path) > 0:
@@ -3401,7 +3401,7 @@ def ViewTestCase(TC_Id):
             
             Feature_Id = [x[0] for x in test_case_tag_details if x[1] == 'feature_id']
             if len(Feature_Id) > 0:
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 Feature_Path = DB.GetData(Conn, "select feature_path from product_features where feature_id = '%d'" % int(Feature_Id[0]), False)
                 Conn.close()
                 if len(Feature_Path) > 0:
@@ -3413,13 +3413,13 @@ def ViewTestCase(TC_Id):
 
             
             query = "select distinct l.label_id,l.label_name,l.label_color from label_map blm, labels l where blm.lm_id = '%s' and blm.type='TC' and blm.label_id = l.label_id" % TC_Id
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             Labels = DB.GetData(Conn, query, False)
             Conn.close()
             
             # find all steps and data for the test case
             Steps_Data_List = []
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             test_case_step_details = DB.GetData(Conn, "select ts.step_id,stepname,teststepsequence,data_required,steptype,step_editable from test_steps ts, test_steps_list tsl where ts.step_id = tsl.step_id and tc_id = '%s' order by teststepsequence" % TC_Id, False)
             Step_Iteration = 1
             for each_test_step in test_case_step_details:
@@ -3472,7 +3472,7 @@ def ViewTestCase(TC_Id):
                 if each_test_step[3]:
                     # Is this a verify step
                     container_data_id_query = "select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = '%s' and teststepseq = %s and ctd.curname Ilike '%%_s%s%%'" % (Test_Case_DataSet_Id, Step_Seq, Step_Iteration)
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     container_data_id_details = DB.GetData(Conn, container_data_id_query, False)
                     if Step_Edit:
                         for each_data_id in container_data_id_details:
@@ -3510,7 +3510,7 @@ def EditTestCase(request):
 
     try:
         sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         err_msg = ''
         if request.is_ajax() and request.method == 'GET':
             TC_Id = request.GET.get(u'TC_Id', '')
@@ -3569,7 +3569,7 @@ def EditTestCase(request):
             New_TC_Id = TC_Id
             if DB.IsDBConnectionGood(Conn) == False:
                 time.sleep(1)
-                Conn = GetConnection()
+                Conn = models.GetConnection()
             test_cases_update_result = TestCaseCreateEdit.Update_TestCaseDetails(Conn, New_TC_Id, TC_Name, TC_Creator)
             if test_cases_update_result != "Pass":
                 err_msg = "Test Case Detail is not updated successfully for test case %s" % New_TC_Id
@@ -3587,7 +3587,7 @@ def EditTestCase(request):
             test_case_datasets = '%sds' % New_TC_Id
             if DB.IsDBConnectionGood(Conn) == False:
                 time.sleep(1)
-                Conn = GetConnection()
+                Conn = models.GetConnection()
             test_case_datasets_result = TestCaseCreateEdit.Update_Test_Case_Datasets(Conn, test_case_datasets, New_TC_Id)
             if test_case_datasets_result != "Pass":
                 err_msg = "Test Case Datasets is not updated successfully for test case %s" % New_TC_Id
@@ -3644,7 +3644,7 @@ def Documentation(request):
 
 def Get_Sections(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3666,7 +3666,7 @@ def Get_Sections(request):  #==================Returns Abailable User Name in Li
 
 def Get_SubSections(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3685,7 +3685,7 @@ def Get_SubSections(request):  #==================Returns Abailable User Name in
 
 def Get_Features(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3710,7 +3710,7 @@ def Get_Features(request):  #==================Returns Abailable User Name in Li
 
 def Get_SubFeatures(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3730,7 +3730,7 @@ def Get_SubFeatures(request):  #==================Returns Abailable User Name in
 
 
 def Get_Browsers(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3745,7 +3745,7 @@ def Get_Browsers(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Go_TestCaseID(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3767,7 +3767,7 @@ def Go_TestCaseID(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Go_TestCaseStatus(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3787,7 +3787,7 @@ def Go_TestCaseStatus(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Auto_Step_Create(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3803,7 +3803,7 @@ def Auto_Step_Create(request):
 
 
 def Get_Users(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     userExists = False
     # if request.is_ajax():
@@ -3849,7 +3849,7 @@ def Get_Users(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Get_RunTypes(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3861,7 +3861,7 @@ def Get_RunTypes(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Get_Testers(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3873,7 +3873,7 @@ def Get_Testers(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Get_Status(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3885,7 +3885,7 @@ def Get_Status(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Get_Versions(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -3928,7 +3928,7 @@ def BundleReport_Table(request):
     sections = []
     passed_cases = []
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             version = request.GET.get(u'Product_Version', '')
@@ -4030,7 +4030,7 @@ def BundleReport_Table_Latest(request):
     sections = []
     passed_cases = []
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             version = request.GET.get(u'Product_Version', '')
@@ -4222,7 +4222,7 @@ def BundleReport_Table_Latest(request):
     return HttpResponse(json, mimetype='application/json')
 
 """def Single_Env(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             version = request.GET.get(u'Product_Version', '')
@@ -4248,7 +4248,7 @@ def BundleReport_Table_Latest(request):
 
 def Bundle_Report(request):  #==================Returns Report data for a specific product version (eg 1.1.1.26 and platform 'PC'==============================
 
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -4444,7 +4444,7 @@ def ManageStep(request):
     return HttpResponse(output)
 
 def Process_Git(request):
-    # Conn = GetConnection()
+    # Conn = models.GetConnection()
     import GitApi
     # if request.is_ajax():
     if request.method == "GET":
@@ -4457,7 +4457,7 @@ def Process_Git(request):
     return HttpResponse(json, mimetype='application/json')
 
 def DeleteExistingTestCase(TC_Ids):
-    conn = GetConnection()
+    conn = models.GetConnection()
     is_string = False
     
     if type(TC_Ids) == type(u''):
@@ -4479,7 +4479,7 @@ def DeleteExistingTestCase(TC_Ids):
 # Test Set and Tag Management section
 
 def TestSet_Auto(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -4493,7 +4493,7 @@ def TestSet_Auto(request):
     return HttpResponse(json, mimetype='application/json')
 
 def TestFeatureDriver_Auto(request):  # minar09
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -4505,7 +4505,7 @@ def TestFeatureDriver_Auto(request):  # minar09
     return HttpResponse(json, mimetype='application/json')
 
 def TestTag_Auto(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -4516,7 +4516,7 @@ def TestTag_Auto(request):
     return HttpResponse(json, mimetype='application/json')
 
 def TestCase_Auto(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -4552,7 +4552,7 @@ def general_work(request, data_type):
     def Check_instance(x, data_type):
         if x in request.POST:
             name = request.POST[x]
-            conn = GetConnection()
+            conn = models.GetConnection()
             result = DB.GetData(conn, "SELECT count(*) FROM config_values WHERE value='" + name + "' AND type='" + data_type + "'")
             return result[0]
         else:
@@ -4617,7 +4617,7 @@ def general_work(request, data_type):
             # output+=delete(name)
     # return output
 def TestCases_InSet(name, data_type):
-    conn = GetConnection()
+    conn = models.GetConnection()
     query = "select tc_id,tc_name from test_cases where tc_id in (select tc_id from test_case_tag where name='" + name + "' and property='" + data_type + "')"
     result = DB.GetData(conn, query, False)
     ex_tc_ids = []
@@ -4633,7 +4633,7 @@ def edit(request, name, data_type, error_message=""):
     ex_lst = TestCases_InSet(name, data_type)
     # Calculate the time for the test set
     time_required = 0
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     # new_list=[]
     for each in ex_lst:
         query = "select count(*) from test_steps where tc_id='%s' group by tc_id" % each['item1']
@@ -4656,7 +4656,7 @@ def edit(request, name, data_type, error_message=""):
     return render_to_response('ManageTestSet.html', output, context_instance=RequestContext(request))
 
 def rename(request, first, second, data_type):
-    conn = GetConnection()
+    conn = models.GetConnection()
     if first != second and first != "" and second != "":
         query = "Where  value = '" + first + "' and type='" + data_type + "'"
         testrunenv = DB.UpdateRecordInTable(conn, "config_values", query, value=second)
@@ -4673,7 +4673,7 @@ def rename(request, first, second, data_type):
     return render_to_response('TestSet_Tag.html', {'error_message':"Check the input fields or Same name in both fields"}, context_instance=RequestContext(request))
     
 def create(request, name, data_type):
-    conn = GetConnection()
+    conn = models.GetConnection()
     testrunenv = DB.InsertNewRecordInToTable(conn, "config_values", value=name, type=data_type)
     conn.close()
     if testrunenv == True:
@@ -4683,7 +4683,7 @@ def create(request, name, data_type):
     
 
 def delete(request, inputName, data_type):
-    conn = GetConnection()
+    conn = models.GetConnection()
     testrunenv = DB.DeleteRecord(conn, "config_values", value=inputName, type=data_type)
     result = DB.GetData(conn, "SELECT count(*) FROM test_case_tag WHERE name='" + inputName + "'")
     if result[0] > 0:
@@ -4706,7 +4706,7 @@ def AddTestCasesToSet(request):
             output.update({'error_message':"No check box selected", 'name':test_set_name, 'data_type':test_type})
             return render_to_response('ManageTestSet.html', output, context_instance=RequestContext(request))
         else:
-            conn = GetConnection()
+            conn = models.GetConnection()
             tc_cases = []
             available_tc = DB.GetData(conn, "SELECT tc_id FROM test_case_tag WHERE name='" + test_set_name + "'", False)
             for x in available_tc:
@@ -4738,7 +4738,7 @@ def DeleteTestCasesFromSet(request):
             output.update({'error_message':"No check box selected", 'name':test_set_name, 'data_type':test_type})
             return render_to_response('ManageTestSet.html', output, context_instance=RequestContext(request))
         else:
-            conn = GetConnection()
+            conn = models.GetConnection()
             count = 0
             for x in selected_tc:
                 testrunenv = DB.DeleteRecord(conn, "test_case_tag", tc_id=x, name=test_set_name, property=test_type)
@@ -4755,7 +4755,7 @@ def DeleteTestCasesFromSet(request):
 
 # Test Step Management Section Functions
 def TestStep_Delete(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -4766,7 +4766,7 @@ def TestStep_Delete(request):
     return HttpResponse(json, mimetype='application/json')
 
 def TestFeature_Auto(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -4777,7 +4777,7 @@ def TestFeature_Auto(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Get_Feature(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         feature = request.GET.get(u'feature', '')
@@ -4789,7 +4789,7 @@ def Get_Feature(request):
     return HttpResponse(json, mimetype='application/json')
 
 def ResultFilter(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -4800,7 +4800,7 @@ def ResultFilter(request):
     return HttpResponse(json, mimetype='application/json')
 
 def TestDriver_Auto(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -4811,7 +4811,7 @@ def TestDriver_Auto(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Get_Driver(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         driver = request.GET.get(u'driver', '')
@@ -4823,7 +4823,7 @@ def Get_Driver(request):
     return HttpResponse(json, mimetype='application/json')
 
 def TestStep_Auto(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -4834,7 +4834,7 @@ def TestStep_Auto(request):
     return HttpResponse(json, mimetype='application/json')
 
 """def Milestone_Auto(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         auto = request.GET.get(u'term', '')
@@ -4851,7 +4851,7 @@ def Milestone_Process(request):
         operation=request.GET.get(u'operation','')
         input1=request.GET.get(u'inputName','')  
 
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     if operation=='1':
         count = DB.GetData(Conn, "Select count(value) from config_values where type='milestone' and value="+input1+"")
         if (count[0]>0):
@@ -4881,7 +4881,7 @@ def Milestone_Process(request):
 """
 
 def TestCase_Results(request):
-    conn = GetConnection()
+    conn = models.GetConnection()
     TableData = []
     RefinedData = []
     if request.is_ajax():
@@ -4897,7 +4897,7 @@ def TestCase_Results(request):
     return HttpResponse(json, mimetype='application/json')
 
 def TestSteps_Results(request):
-    conn = GetConnection()
+    conn = models.GetConnection()
     TableData = []
     # RefinedData=[]
     if request.is_ajax():
@@ -4913,7 +4913,7 @@ def TestSteps_Results(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Check_TestCase(TableData, RefinedData):
-    conn = GetConnection()
+    conn = models.GetConnection()
     test_type = [u'automated', u'manual', u'performance']
     type_selector = []
     query = "select tc_id from test_case_tag where name like '%Status%' and property='Forced'"
@@ -4957,7 +4957,7 @@ def Check_TestCase(TableData, RefinedData):
             RefinedData.append(each)
             
 def Populate_info_div(request):
-    conn = GetConnection()
+    conn = models.GetConnection()
     if request.method == 'GET':
         value = request.GET.get(u'term', '')
         sQuery = "SELECT * from test_steps_list where stepname='" + value + "'"
@@ -5006,7 +5006,7 @@ def Process_TestStep(request):
         step_enable = request.POST['step_enable']
         if step_name != "" and step_desc != "" and step_feature != "" and step_data != "0" and step_enable != "0":
             if step_type != "0" and step_driver != "":
-                conn = GetConnection()
+                conn = models.GetConnection()
                 sQuery = "select count(*) from test_steps_list where stepname='" + step_name + "'"
                 result = DB.GetData(conn, sQuery)
                 if(result[0] > 0):
@@ -5109,7 +5109,7 @@ def Process_CreateStep(request):
         
         if step_name != "" and step_desc != "" and step_feature != "" and step_data != "0" and step_enable != "0" and case_desc != "" and step_expect != "" and step_time != "":
             if step_type != "0" and step_driver != "":
-                conn = GetConnection()
+                conn = models.GetConnection()
                 sQuery = "select count(*) from test_steps_list where stepname='" + step_name + "'"
                 result = DB.GetData(conn, sQuery)
                 if(result[0] > 0):
@@ -5202,7 +5202,7 @@ def Process_FeatureDriver(request):  # minar09
         input1 = request.POST['inputName']        
         if data_type != "" and operation != "" and input1 != "":
             if data_type != "0":
-                conn = GetConnection()
+                conn = models.GetConnection()
                 if operation == "1":                                       
                     query = "SELECT count(*) FROM config_values where type='" + data_type + "' and value='" + input1 + "'"
                     count = DB.GetData(conn, query)
@@ -5291,7 +5291,7 @@ def FeatureDriverOperation(request):  # minar09
         input1 = request.GET.get[u'inputName', '']       
         if data_type != "" and operation != "" and input1 != "":
             if data_type != "0":
-                conn = GetConnection()
+                conn = models.GetConnection()
                 if operation == "1":                                       
                     query = "SELECT count(*) FROM config_values where type='" + data_type + "' and value='" + input1 + "'"
                     count = DB.GetData(conn, query)
@@ -5358,7 +5358,7 @@ def FeatureDriverOperation(request):  # minar09
     return HttpResponse(json, mimetype='application/json')
     
 def FeatureDriver_Delete(request):  # minar09
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         data_type = request.GET.get(u'term', '')
@@ -5375,7 +5375,7 @@ def FeatureDriverDelete(request):  # minar09
     return render_to_response('TestStep.html', output, context_instance=RequestContext(request))
 
 def TestTypeStatus_Report(request):  # minar09
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     sections = []
     priority = ["P1", "P2", "P3", "P4", "Total"]
     testCases = []
@@ -5454,7 +5454,7 @@ def TestTypeStatus_Report(request):  # minar09
     totalP3Count = []
     totalP4Count = []
     totalCount = []
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'choice', '')
@@ -5837,7 +5837,7 @@ def Append_array(TableData, P1, P2, P3, P4, Total, RefinedData):  # minar09
 
 
 def TestStepAutoComplete(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     test = []
     if request.method == "GET":
@@ -5861,7 +5861,7 @@ def TestStepAutoComplete(request):
     return HttpResponse(json, mimetype='application/json') 
 
 def TestStep_TestCases(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     fields = [u'stepfeature', u'driver', u'steptype']
     TableData = []
     RefinedData = []
@@ -5888,7 +5888,7 @@ def TestStep_TestCases(request):
         json = simplejson.dumps(results)
         return HttpResponse(json, mimetype='application/json')
 def TestStepWithTypeInTable(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             # TestCaseName = request.GET.get('ClickedTC', '')
@@ -5911,7 +5911,7 @@ def TestStepWithTypeInTable(request):
 def ViewRunIDTestCases(request, Run_Id, TC_Id):
     print Run_Id
     print TC_Id
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     query = "select tc_name from result_test_cases where tc_id='%s' and run_id='%s'" % (TC_Id, Run_Id)
     testcasename = DB.GetData(Conn, query, False)
     dquery = "select name from result_test_case_tag where tc_id='%s' and property='JiraId' and run_id='%s'" % (TC_Id, Run_Id)
@@ -5959,7 +5959,7 @@ def ViewRunIDTestCases(request, Run_Id, TC_Id):
 def RunIDTestCases(request, Run_Id, TC_Id):
     print Run_Id
     print TC_Id
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     query = "select tc_name from result_test_cases where tc_id='%s' and run_id='%s'" % (TC_Id, Run_Id)
     testcasename = DB.GetData(Conn, query, False)
     dquery = "select name from result_test_case_tag where tc_id='%s' and property='JiraId' and run_id='%s'" % (TC_Id, Run_Id)
@@ -6011,7 +6011,7 @@ def Update_RelatedItems(request):
         Manual_TC_Id = request.GET.get(u'Manual_TC_Id', '').split(",")
         Requirement_ID_List = request.GET.get(u'Requirement_ID_List', '').split(",")
         
-        conn = GetConnection()
+        conn = models.GetConnection()
         delete = DB.DeleteRecord(conn, 'test_case_tag', tc_id=TC_Id, property='JiraId')
         for i in Associated_Bugs_List:
             update = DB.InsertNewRecordInToTable(conn, 'test_case_tag', tc_id=TC_Id, name=i, property='JiraId')
@@ -6038,13 +6038,13 @@ def DataFetchForTestCases(request):
             print run_id
             print test_case_id
             # Get the test steps from test_step_results
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select step_id,teststepsequence from result_test_steps where tc_id='%s' and run_id='%s' order by teststepsequence" % (test_case_id, run_id)
             TestStepList = DB.GetData(Conn, query, False)
             DataCollected = []
             Conn.close()
             for each in range(0, len(TestStepList)):
-                Conn = GetConnection()
+                Conn = models.GetConnection()
                 # Get the stepname fromt test_steps_list
                 query = "select stepname,steptype,data_required from result_test_steps_list where step_id=%d and run_id='%s'" % (TestStepList[each][0], run_id)
                 StepName = DB.GetData(Conn, query, False)
@@ -6099,7 +6099,7 @@ def DataFetchForTestCases(request):
                 DataCollected.append(Temp_Data)
     DataColumn = ["#", "Step", "Type", "Data", "Description", "Expected", "Comment", "Status", "Verification Point", "Cont. On Fail", "Estd. Time", "State", "Driver", "Feature"]
     query = "select status from test_case_results where tc_id='%s' and run_id='%s'" % (test_case_id, run_id)
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     test_case_status = DB.GetData(Conn, query, False)
     print DataColumn
     print DataCollected
@@ -6116,7 +6116,7 @@ def TestDataFetch(request):
             run_id = request.GET.get(u'run_id', '')
             step_sequence = request.GET.get(u'step_sequence', '')
             tc_id = request.GET.get(u'tc_id', '')
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             # get the step_sequence
             print step_sequence
             test_steps_get_query = "select step_editable,data_required,teststepsequence from result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and ts.step_id=tsl.step_id and ts.run_id='%s' and ts.tc_id='%s' order by ts.teststepsequence" % (run_id, tc_id)
@@ -6219,7 +6219,7 @@ def LogFetch(request):
             print run_id
             print test_case_id
             print step_name
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select step_id from test_steps_list where stepname='%s'" % step_name
             step_id = DB.GetData(Conn, query, False)
             query = "Select  el.status, el.modulename, el.details from test_step_results tsr, execution_log el where run_id = '%s' and tc_id = '%s' and teststep_id='%s' and tsr.logid = el.logid" % (run_id, test_case_id, str(step_id[0][0]))
@@ -6243,7 +6243,7 @@ def RunIDStatus(request):
                 blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
                 progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
                 submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
-                Conn = GetConnection()
+                Conn = models.GetConnection()
                 total = DB.GetData(Conn, total_query)
                 passed = DB.GetData(Conn, pass_query)
                 failed = DB.GetData(Conn, fail_query)
@@ -6271,7 +6271,7 @@ def Make_List(step_name, step_reason, step_status, test_case_id, test_step_seque
         for name in zip(step_name, step_reason, step_status, test_step_sequence_list):
             ListAll.append((name[0].strip(), name[1].strip(), step_status, name[3]))
     print ListAll
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     query = "select step_id,teststepsequence from result_test_steps where tc_id='%s' and run_id='%s' order by teststepsequence" %(test_case_id,run_id)
     test_step_sequence_list = DB.GetData(Conn, query, False)
     Conn.close()
@@ -6279,7 +6279,7 @@ def Make_List(step_name, step_reason, step_status, test_case_id, test_step_seque
     Refined_List = []
     for each in test_step_sequence_list:
         query = "select stepname from result_test_steps_list where step_id='%s' and run_id='%s'" %(each[0],run_id)
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         stepName = DB.GetData(Conn, query, False)
         Conn.close()
         for eachitem in ListAll:
@@ -6289,7 +6289,7 @@ def Make_List(step_name, step_reason, step_status, test_case_id, test_step_seque
     return Refined_List
 
 def update_runid(run_id, test_case_id):
-    oConn = GetConnection()
+    oConn = models.GetConnection()
     squery = "select distinct status from test_case_results where run_id='%s'" % run_id
     run_id_status = DB.GetData(oConn, squery)
     submit_count = 0
@@ -6346,31 +6346,31 @@ def update_runid(run_id, test_case_id):
         updated_time=TimeStamp("string")
         print DB.DeleteRecord(oConn, "test_run_env", tester_id=machine_info[0][3].strip(), status='Unassigned')
         Dict = {'tester_id':machine_info[0][3].strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_info[0][6].strip(), 'branch_version':machine_info[0][12].strip()}
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         print DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
         Conn.close()
         query="select id from test_run_env where tester_id='%s' and status='Unassigned'"%(machine_info[0][3].strip())
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         new_index=DB.GetData(Conn,query)
         Conn.close()
         query="select name,bit,version,type from machine_dependency_settings where machine_serial=%d"%int(machine_info[0][0])
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         dependency_list=DB.GetData(Conn,query,False)
         Conn.close()
         for each in dependency_list:
             Dict={}
             Dict.update({'name':each[0], 'bit':each[1],'version':each[2],'type':each[3], 'machine_serial':new_index[0]})
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             print DB.InsertNewRecordInToTable(Conn,'machine_dependency_settings', **Dict)
             Conn.close()
         query="select project_id,team_id from machine_project_map where machine_serial=%d"%int(machine_info[0][0])
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         project_map=DB.GetData(Conn,query,False)
         Conn.close()
         for each in project_map:
             Dict={}
             Dict.update({'machine_serial':new_index[0], 'project_id':each[0],'team_id':each[1]})
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             print DB.InsertNewRecordInToTable(Conn,'machine_project_map',**Dict)
             Conn.close()
     """if status == 'Complete':
@@ -6416,7 +6416,7 @@ def update_runid(run_id, test_case_id):
 def Send_Report(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             run_id = request.GET.get(u'runid', '')
             run_id = str(run_id)
             EmailIds = request.GET.get(u'EmailIds', '')
@@ -6479,7 +6479,7 @@ def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReaso
     for each in List:
         print each
         query="select step_id from test_steps_list where stepname='%s'" %each[0].strip()
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         step_id=DB.GetData(Conn, query, False)
         test_step_id_list.append(step_id[0][0])
     print test_step_id_list
@@ -6497,34 +6497,34 @@ def UpdateTestStepStatus(List, run_id, test_case_id, test_case_status, failReaso
     """
     ######Get the step List for the selected Test Case #######################
     query = "select step_id,teststepsequence from result_test_steps where tc_id='%s' and run_id='%s' order by teststepsequence" % (test_case_id, run_id)
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     test_steps_list = DB.GetData(Conn, query, False)
     Conn.close()
     print test_steps_list
     count = 0
     for each in test_steps_list:
         name_query = "select stepname from result_test_steps_list where step_id='%s' and run_id='%s'" % (each[0], run_id)
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         stepName = DB.GetData(Conn, name_query)
         Conn.close()
         if stepName[0] == List[count][0]:
             query = "where run_id='%s' and tc_id='%s' and teststep_id='%d' and teststepsequence='%d'" % (run_id, test_case_id, each[0], each[1])
             Dict = {}
             Dict.update({'status':List[count][2], 'failreason':List[count][1]})
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             print DB.UpdateRecordInTable(Conn, "test_step_results", query, **Dict)
             Conn.close()
             count += 1
     query = "where run_id='%s' and tc_id='%s'" % (run_id, test_case_id)
     test_case_select_query="select teststarttime from test_case_results "+query
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     case_start_time=DB.GetData(Conn,test_case_select_query,False)
     Conn.close()
     Dict = {}
     if case_start_time[0][0]==None:
         Dict.update({'teststarttime':start_time})
     Dict.update({'status':test_case_status, 'failreason':failReason, 'testendtime':end_time})
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     print DB.UpdateRecordInTable(Conn, "test_case_results", query, **Dict)
     Conn.close()
     update_runid(run_id, test_case_id)
@@ -6539,7 +6539,7 @@ def UpdateData(request):
             test_case_id = request.GET.get(u'test_case_id', '')
             start_time=request.GET.get(u'start_time','')
             end_time=request.GET.get(u'end_time','')
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select teststepsequence from result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and ts.step_id=tsl.step_id and ts.tc_id='%s' and tsl.run_id='%s' order by teststepsequence" % (test_case_id, run_id)
             test_step_sequence_list = DB.GetData(Conn, query)
             if(len(step_status) == 1):
@@ -6599,7 +6599,7 @@ def UpdateData(request):
             if test_case_status == 'Failed':
                 datasetid = test_case_id + '_s' + str(index)
                 query = "select description from result_master_data where field='verification' and value='point' and rmd.id='%s' and run_id='%s'" % (datasetid, run_id)
-                Conn = GetConnection()
+                Conn = models.GetConnection()
                 verification = DB.GetData(Conn, query, False)
                 if verification[0][0] == "no":
                     test_case_status = 'Blocked'
@@ -6630,7 +6630,7 @@ def GetOS(request):
             team_id=request.GET.get(u'team_id','')
             final_list=[]
             query="select distinct dependency_name,array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by dependency_name"%(project_id,int(team_id))
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             dependency=DB.GetData(Conn,query,False)
             Conn.close()
             for each in dependency:
@@ -6640,13 +6640,13 @@ def GetOS(request):
                 for eachitem in listing:
                     query="select bit_name,array_agg(distinct version) from dependency_name dn,dependency_values dv where dn.id=dv.dv_id and dn.name='%s' group by bit_name"%(eachitem)
                 #   query="select distinct name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,project_id,int(team_id))
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     names=DB.GetData(Conn,query,False)                
                     Conn.close()
                     temp.append((eachitem,names))
                 final_list.append((name,temp))
             query="select distinct branch_name,array_agg(distinct version_name) from branch b,branch_management bm, versions v where b.id=bm.branch and v.v_id=b.id and bm.project_id='%s' and bm.team_id=%d group by b.branch_name"%(project_id,int(team_id))
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             version_list=DB.GetData(Conn,query,False)
             Conn.close()
             results={
@@ -6661,7 +6661,7 @@ def Auto_MachineName(request):
             machine_name = request.GET.get(u'term', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select distinct user_names,user_level from permitted_user_list pul,test_run_env tre,machine_project_map mpm where pul.user_names=tre.tester_id and mpm.machine_serial=tre.id and user_level='Manual' and project_id='%s' and team_id=%d and user_names Ilike '%%%s%%' " % (project_id,int(team_id),machine_name)
             machine_list = DB.GetData(Conn, query, False)
             Conn.close()
@@ -6672,7 +6672,7 @@ def CheckMachine(request):
         if request.method == 'GET':
             name = request.GET.get(u'name', '')
             print name
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select distinct machine_ip,branch_version,array_agg(distinct type||'|'||name||'|'||bit||'|'||version ) from test_run_env tre,permitted_user_list pul,machine_dependency_settings mds where pul.user_names=tre.tester_id and mds.machine_serial=tre.id and tester_id='%s' and pul.user_level='Manual' group by branch_version,machine_ip" % name
             machine_info = DB.GetData(Conn, query, False)
             Conn.close()
@@ -6700,43 +6700,43 @@ def AddManualTestMachine(request):
                 print new_dependency
                 user_level_tag='Manual'
                 query = "select count(*) from permitted_user_list where user_names='%s' and user_level='%s'" % (machine_name,user_level_tag)
-                Conn = GetConnection()
+                Conn = models.GetConnection()
                 count = DB.GetData(Conn, query)
                 Conn.close()
                 if count[0] > 0:
                     # update will go here.
                     print "yes"
                     query="Select id,status from test_run_env where tester_id = '%s'" % machine_name
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     status = DB.GetData(Conn,query,False)
                     Conn.close()
                     for eachitem in status:
                         if eachitem[1] == "In-Progress":
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
                             Conn.close()
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'In-Progress'" % machine_name, status="Cancelled")
                             Conn.close()
                         elif eachitem[1] == "Submitted":
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % machine_name, status="Cancelled")
                             Conn.close()
                         elif eachitem[1] == "Unassigned":
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             DB.DeleteRecord(Conn, "test_run_env", tester_id=machine_name, status='Unassigned')
                             Conn.close()
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             DB.DeleteRecord(Conn,'machine_dependency_settings',machine_serial=eachitem[0])
                             Conn.close()
                     updated_time = TimeStamp("string")
                     Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':(branch+':'+version).strip()}
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
                     Conn.close()
                     if(tes2 == True):
                         query="select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1"%(machine_name.strip())
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         temp_id=DB.GetData(Conn,query)
                         if isinstance(temp_id,list):
                             machine_id=temp_id[0]
@@ -6748,7 +6748,7 @@ def AddManualTestMachine(request):
                                     Dict.update({'bit':each[2],'version':each[3]})
                                 else:
                                     Dict.update({'bit':0,'version':''})
-                                Conn=GetConnection()
+                                Conn=models.GetConnection()
                                 result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
                                 Conn.close()
                                 if result==False:
@@ -6759,7 +6759,7 @@ def AddManualTestMachine(request):
                                 message=False
                             else:
                                 Dict={'machine_serial':machine_id,'project_id':project_id,'team_id':team_id}
-                                Conn=GetConnection()
+                                Conn=models.GetConnection()
                                 result=DB.InsertNewRecordInToTable(Conn,'machine_project_map',**Dict)
                                 Conn.close()
                                 if result==True:
@@ -6778,17 +6778,17 @@ def AddManualTestMachine(request):
                     print "none"
                     # new Entry will be inserted.
                     Dict = {'user_names':machine_name.strip(), 'user_level':user_level_tag, 'email':machine_name + '@machine.com'}
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     tes1 = DB.InsertNewRecordInToTable(Conn, "permitted_user_list", **Dict)
                     Conn.close()
                     updated_time = TimeStamp("string")
                     Dict = {'tester_id':machine_name.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':(branch+':'+version).strip()}
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
                     Conn.close()
                     if(tes1 == True and tes2 == True):
                         query="select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1"%(machine_name.strip())
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         temp_id=DB.GetData(Conn,query)
                         if isinstance(temp_id,list):
                             machine_id=temp_id[0]
@@ -6799,7 +6799,7 @@ def AddManualTestMachine(request):
                                     Dict.update({'machine_serial':machine_id,'name':each[1],'bit':each[2],'version':each[3],'type':each[0]})
                                 else:
                                     Dict.update({'machine_serial':machine_id,'name':each[1],'bit':0,'version':each[3],'type':each[0]})
-                                Conn=GetConnection()
+                                Conn=models.GetConnection()
                                 result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
                                 Conn.close()
                                 if result==False:
@@ -6807,7 +6807,7 @@ def AddManualTestMachine(request):
                                     break
                             if  not problem:
                                 Dict={'machine_serial':machine_id,'project_id':project_id,'team_id':team_id}
-                                Conn=GetConnection()
+                                Conn=models.GetConnection()
                                 result=DB.InsertNewRecordInToTable(Conn,'machine_project_map',**Dict)
                                 Conn.close()
                                 if result==True:
@@ -6838,7 +6838,7 @@ def chartDraw(request):
         if request.method == 'GET':
             run_id = request.GET.get(u'runid', '')
             print run_id
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             list = []
             total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
             total = DB.GetData(Conn, total_query)
@@ -6881,7 +6881,7 @@ def ReRun(request):
                 status.append('Submitted')
             else:
                 status=[]"""
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             """if len(status)==0:
                 query="select tc.tc_id,tc.tc_name,tcr.status from test_cases tc,test_case_results tcr where tc.tc_id=tcr.tc_id and run_id='%s'"%run_id
                 tc_list=DB.GetData(Conn, query,False)
@@ -6913,7 +6913,7 @@ def User_Login(request):
         username = request.GET.get[u'username', '']
         password = request.GET.get[u'password', '']
     
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     
     user = DB.GetData(Conn, "select full_name from user_info where username='" + username + "' and password='" + password + "'")
     if(len(user) == 1):
@@ -6925,7 +6925,7 @@ def User_Login(request):
     return HttpResponse(result, mimetype='application/json')
 
 def getProductSection(request):
-    """Conn=GetConnection()
+    """Conn=models.GetConnection()
     if request.is_ajax():
         if request.method=='GET':
             section=request.GET.get(u'section','')
@@ -6937,7 +6937,7 @@ def getProductSection(request):
                     main_result.append((section_path.split('.')[0],[]))
                     
                 print section_path"""
-    """Conn = GetConnection()
+    """Conn = models.GetConnection()
     results = []
     #if request.is_ajax():
     if request.method == "GET":
@@ -6957,7 +6957,7 @@ def getProductSection(request):
                     temp.append(eachitem[0])
                 final_result.append((each[0],temp))
             print final_result"""
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             section = request.GET.get(u'section', '')
@@ -6968,7 +6968,7 @@ def getProductSection(request):
     return HttpResponse(result, mimetype='application/json')
 
 def getProductFeature(request):
-    """Conn=GetConnection()
+    """Conn=models.GetConnection()
     if request.is_ajax():
         if request.method=='GET':
             feature=request.GET.get(u'feature','')
@@ -6980,7 +6980,7 @@ def getProductFeature(request):
                     main_result.append((feature_path.split('.')[0],[]))
                     
                 print feature_path"""
-    """Conn = GetConnection()
+    """Conn = models.GetConnection()
     results = []
     #if request.is_ajax():
     if request.method == "GET":
@@ -7000,7 +7000,7 @@ def getProductFeature(request):
                     temp.append(eachitem[0])
                 final_result.append((each[0],temp))
             print final_result"""
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             feature = request.GET.get(u'feature', '')
@@ -7015,7 +7015,7 @@ def getProductFeature(request):
 def AutoMileStone(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
             query = "select name,status,description,cast(starting_date as text),cast(finishing_date as text),created_by,cast(created_date as text),modified_by,cast(modified_date as text) from milestone_info where name ilike'%%%s%%'" % milestone
@@ -7026,7 +7026,7 @@ def AutoMileStone(request):
 def Get_MileStones(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
             query = "select distinct name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by name"
@@ -7039,7 +7039,7 @@ def Get_MileStones(request):
 def Get_MileStone_ID(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             query = "select mi_id from milestone_info where name = '"+milestone+"'"
             milestone_info = DB.GetData(Conn, query)
@@ -7049,7 +7049,7 @@ def Get_MileStone_ID(request):
 def Get_MileStone_By_ID(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             id = request.GET.get(u'term', '')
             query = "select mi_id,name,cast(starting_date as text),cast(finishing_date as text),status,description,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from milestone_info where mi_id = '"+id+"'"
             milestone_info = DB.GetData(Conn, query, False)
@@ -7059,7 +7059,7 @@ def Get_MileStone_By_ID(request):
 def Milestone_Requirements(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
             query = "select r.requirement_id, r.requirement_title, r.status from requirements r, milestone_info mi where mi.mi_id::varchar=r.requirement_milestone and mi.name like '%"+milestone+"%'"
@@ -7072,7 +7072,7 @@ def Milestone_Requirements(request):
 def Milestone_Tasks(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
             query = "select t.tasks_id,t.tasks_title,t.status from tasks t,milestone_info mi where t.tasks_milestone::int=mi.mi_id and mi.name like '%"+milestone+"%'"
@@ -7085,7 +7085,7 @@ def Milestone_Tasks(request):
 def Milestone_Bugs(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
             query = "select b.bug_id,b.bug_title,b.status from bugs b,milestone_info mi where b.bug_milestone::int=mi.mi_id and mi.name like '%"+milestone+"%'"
@@ -7098,7 +7098,7 @@ def Milestone_Bugs(request):
 def Milestone_Report(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
             complete_list = DB.GetData(Conn, "select cast(count(distinct run_id) as text) from test_run_env where test_milestone like '%"+milestone+"%' and status='Complete'")
@@ -7127,7 +7127,7 @@ def Milestone_Report(request):
 def Milestone_Testings(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
             query = "select run_id,test_objective,assigned_tester,run_type,status from test_run_env where test_milestone like '%"+milestone+"%'"
@@ -7140,7 +7140,7 @@ def Milestone_Testings(request):
 def Milestone_Teams(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             milestone = request.GET.get(u'term', '')
             print milestone
             query = "select distinct mtm.team_id from milestone_team_map mtm, milestone_info mi where mi.mi_id=mtm.milestone_id and mi.name like '%"+milestone+"%'"
@@ -7152,7 +7152,7 @@ def Milestone_Teams(request):
 def Get_AssignedTests(request):
     if request.is_ajax():
         if request.method == "GET":
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             user = request.GET.get(u'user', '').strip()    
             print user    
             TableData = DB.GetData(Conn, "select run_id,rundescription,tester_id,status from test_run_env where assigned_tester like '%"+user+"%' and status not in ('Complete','Cancelled')", False)
@@ -7165,7 +7165,7 @@ def Get_AssignedTests(request):
 def Get_Requirements(request):
     if request.is_ajax():
         if request.method == "GET":
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             user = request.GET.get(u'user', '').strip()    
             print user    
             TableData = DB.GetData(Conn, "select r.requirement_id,r.requirement_title,r.requirement_description,rtm.team_id from requirements r, requirement_team_map rtm,team_info ti, permitted_user_list pul where r.requirement_id=rtm.requirement_id and rtm.team_id::int=ti.team_id and ti.user_id::int=pul.user_id and pul.user_names like '%"+user+"%'", False)
@@ -7180,7 +7180,7 @@ def MileStoneOperation(request):
     if request.is_ajax():
         if request.method == 'GET':
             now=datetime.datetime.now().date()
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             operation = request.GET.get(u'operation', '')
             description = request.GET.get(u'description','')
             status = request.GET.get(u'status','')
@@ -7275,7 +7275,7 @@ def MileStoneOperation(request):
     return HttpResponse(result, mimetype='application/json')    
 
 def TableDataTestCasesOtherPages(request):  #==================Returns Test Cases When User Send Query List From Run Page===============================
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     test_status_request = request.GET.get(u'test_status_request', '')
     total_time=request.GET.get(u'total_time','')
     if request.is_ajax():
@@ -7300,7 +7300,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 tag_type='tag'
                 Status='Status'
                 query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 dependency=DB.GetData(Conn,query)
                 Conn.close()
                 wherequery=""
@@ -7311,7 +7311,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 print wherequery
                 TestIDList = []
                 for eachitem in QueryText:
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
                     Conn.close()
                     for eachProp in TestID:
@@ -7322,7 +7322,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                 if len(TestIDList) > 0:
                     for eachitem in TestIDList:
                         query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,team_id)
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         tabledata = DB.GetData(Conn,query, False)
                         Conn.close()
                         print tabledata
@@ -7340,7 +7340,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
                     Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
                     query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     TableData = DB.GetData(Conn, query, False)        
                     Conn.close()
     
@@ -7352,14 +7352,14 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     time_collected=0
                 for each in RefinedData:
                     query = "select count(*) from test_steps where tc_id='%s'" % each[0].strip()
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     stepNumber = DB.GetData(Conn, query)
                     Conn.close()
                     test_case_time = 0
                     for count in range(0, int(stepNumber[0])):
                         temp_id = each[0] + '_s' + str(count + 1)
                         step_time_query = "select description from master_data where md_id='%s' and field='estimated' and value='time'" % temp_id.strip()
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         step_time = DB.GetData(Conn, step_time_query)
                         Conn.close()
                         if len(step_time) == 0:
@@ -7384,7 +7384,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                     print x
                     try:
                         query = "SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'" % ('section_id', i[0])
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         data = DB.GetData(Conn, query, False, False)
                         Conn.close()
                         section_id = int(data[0][0])
@@ -7395,7 +7395,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         query = '''
                         SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s' 
                         ''' % ('feature_id', i[0])
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         data = DB.GetData(Conn, query, False, False)
                         Conn.close()
                         feature_id = int(data[0][0])        
@@ -7406,7 +7406,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         query = '''
                         SELECT section_path FROM product_sections WHERE section_id=%d
                         ''' % section_id
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         data = DB.GetData(Conn, query, False, False)
                         Conn.close()
                         section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
@@ -7418,7 +7418,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                         query = '''
                         SELECT feature_path FROM product_features WHERE feature_id=%d
                         ''' % feature_id
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         data = DB.GetData(Conn, query, False, False)
                         Conn.close()
                         feature_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
@@ -7431,7 +7431,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
                             query = '''
                             SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
                             ''' % ('Status', i[0])
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             data = DB.GetData(Conn, query, False, True)
                             Conn.close()
                             i.insert(4, data[0][0])           
@@ -7451,7 +7451,7 @@ def TableDataTestCasesOtherPages(request):  #==================Returns Test Case
 def GetStepNameType(request):
     if request.is_ajax():
         if request.method == 'GET':
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             query = "select stepname,steptype from test_steps_list"
             test_steps_list = DB.GetData(Conn, query, False)
 
@@ -7471,7 +7471,7 @@ def GetResultAuto(request):
                 team_id=request.GET.get(u'team_id','')
                 # fetching the status
                 query = "select distinct status,'Status' from test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and status Ilike '%%%s%%' and project_id='%s' and team_id=%d" %(term,project_id,int(team_id))
-                Conn = GetConnection()
+                Conn = models.GetConnection()
                 status = DB.GetData(Conn, query, False)
                 Conn.close()
                 for each in status:
@@ -7479,7 +7479,7 @@ def GetResultAuto(request):
                         final.append(each)
                 ###Fetching the product version
                 query = "select distinct branch_version,'Version' from test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and branch_version Ilike '%%%s%%' and project_id='%s' and team_id=%d" %(term,project_id,int(team_id))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 products = DB.GetData(Conn, query, False)
                 Conn.close()
                 for each in products:
@@ -7487,7 +7487,7 @@ def GetResultAuto(request):
                         final.append(each)
                 #Fetching the run_type
                 query = "select distinct run_type,'Run Type' from test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and run_type Ilike '%%%s%%' and project_id='%s' and team_id=%d" %(term,project_id,int(team_id))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 run_types = DB.GetData(Conn, query, False)
                 Conn.close()
                 for each in run_types:
@@ -7495,7 +7495,7 @@ def GetResultAuto(request):
                         final.append(each)
                 # Fetching the distinct User From the Test Run Env
                 query = "select assigned_tester from test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and project_id='%s' and team_id=%d"%(project_id,int(team_id))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 Testers = DB.GetData(Conn, query, False)
                 Conn.close()
                 tester = []
@@ -7543,7 +7543,7 @@ def GetResultAuto(request):
                         final.append((each, 'Tester'))
                 # Fetch the objectives
                 query = "select distinct ter.rundescription,'Objective' from test_env_results ter,test_run_env tre,machine_project_map mpm where tre.run_id=ter.run_id and mpm.machine_serial=tre.id and ter.rundescription Ilike '%%%s%%' and project_id='%s' and team_id=%d" %(term,project_id,int(team_id))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 objectives = DB.GetData(Conn, query, False)
                 Conn.close()
                 for each in objectives:
@@ -7551,7 +7551,7 @@ def GetResultAuto(request):
                         final.append(each)
                 # Fetch the milestones
                 query = "select distinct test_milestone,'Milestone' from test_run_env tre,machine_project_map mpm where tre.id=mpm.machine_serial and test_milestone Ilike '%%%s%%'" % term
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 milestone = DB.GetData(Conn, query, False)
                 Conn.close()
                 for each in milestone:
@@ -7645,14 +7645,14 @@ def NewResultFetch(condition, currentPagination,project_id,team_id,capacity):
     count_query = total_query
     total_query += (limit + " " + offset)
     print total_query
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     total_count = DB.GetData(Conn, count_query, False)
     Conn.close()
     received_data = []
     for each in total_count:
         if each not in received_data:
             received_data.append(each)
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     get_list = DB.GetData(Conn, total_query, False)
     Conn.close()
     refine_list = []
@@ -7661,7 +7661,7 @@ def NewResultFetch(condition, currentPagination,project_id,team_id,capacity):
             refine_list.append(each)
     total_run = make_array(refine_list)
     print total_run
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     all_status = make_status_array(Conn, total_run)
     # make Dict
     Column = ["Run ID", "Objective", "Run Type", "Tester", "Report", "Status", "Duration", "Version", "MileStone"]
@@ -7731,7 +7731,7 @@ def GetData(run_id, index, capacity,userText=""):
     count_query = query
     query += " %s" % condition
     print query
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     runData = DB.GetData(Conn, query, False)
     print runData
     AllTestCases = Modify(runData)
@@ -7756,7 +7756,7 @@ def manage_test_cases(request):
             query = "select ps.section_id,ps.section_path from product_sections ps ,team_wise_settings tws where tws.parameters=ps.section_id and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d"%(project_id,int(team_id))
             # Convert the data into a list
 #             data = list(DB.GetData(Conn, query, False))
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             data = DB.GetData(Conn, query, False, False)
 #             cur = Conn.cursor()
 #             cur.execute(query)
@@ -7869,7 +7869,7 @@ def manage_tc_data(request):
                 SELECT * FROM test_case_tag WHERE property='%s' AND %s
                 ''' % ('section_id', encoded_for_sql)
                 
-                Conn = GetConnection()
+                Conn = models.GetConnection()
                 data = DB.GetData(Conn, query, False, True)
                 
                 first = True
@@ -7891,7 +7891,7 @@ def FilterDataForRunID(request):
         if request.method == 'GET':
             term = request.GET.get('term', '')
             run_id = request.GET.get('run_id', '')
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             status_query = "select distinct status,'Status' from test_case_results where run_id='%s' and status Ilike '%%%s%%'" % (run_id, term)
             status = DB.GetData(Conn, status_query, False)
             test_case_name_query = "select distinct tc.tc_id,tc_name from result_test_cases tc,test_case_results tcr where tc.run_id=tcr.run_id and tcr.run_id='%s' and (tc.tc_id Ilike'%%%s%%' or tc.tc_name Ilike '%%%s%%')" % (run_id, term, term)
@@ -7911,7 +7911,7 @@ def create_section(request):
     if request.method == 'GET' and request.is_ajax():
         section_text = request.GET.get('section_text', '')
         empty_section_id = None
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         cur = Conn.cursor()
         query = '''
         SELECT section_id FROM product_sections
@@ -7946,7 +7946,7 @@ def rename_section(request):
         new_text = request.GET.get('new_text', '')
         
         old_section_text = ''
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         cur = Conn.cursor()
         
         temp = section_path.split('.')
@@ -7984,7 +7984,7 @@ def delete_section(request):
         query = '''
         DELETE FROM product_sections WHERE section_id=%d 
         ''' % section_id
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         cur = Conn.cursor()
         cur.execute(query)
         Conn.commit()
@@ -7992,7 +7992,7 @@ def delete_section(request):
         cur.close()
         return HttpResponse(section_id)
 def DeleteTestCase(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             test_case_list = request.GET.get(u'Query', '')
@@ -8018,7 +8018,7 @@ def GetSetTag(request):
             value=request.GET.get(u'term','')
             print value
             list_value=["set","tag"]
-            conn=GetConnection()
+            conn=models.GetConnection()
             final=[]
             for each in list_value:
                 #form query
@@ -8027,7 +8027,7 @@ def GetSetTag(request):
                     query="select distinct value from config_values where type='%s'"%(each.strip())
                 if DB.IsDBConnectionGood(conn)==False:
                     time.sleep(1)
-                    conn=GetConnection()
+                    conn=models.GetConnection()
                 get_list=DB.GetData(conn,query)
                 temp=[]
                 for eachitem in get_list:
@@ -8049,7 +8049,7 @@ def createNewSetTag(request):
             if type_tag=='TAG':
                 type_tag='tag'
             available_query="select count(*) from config_values where value='%s' and type='%s'"%(name.strip(),type_tag.strip())
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             available_count=DB.GetData(Conn,available_query)
             if available_count[0]==0:
                 #from dictionary
@@ -8073,7 +8073,7 @@ def DeleteSetTag(request):
             if type_tag=='TAG':
                 type_tag='tag'
             available_query="select count(*) from config_values where value='%s' and type='%s'"%(name.strip(),type_tag.strip())
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             available_count=DB.GetData(Conn,available_query)
             if available_count[0]>0:
                 test_case_tag_result=DB.DeleteRecord(Conn, "test_case_tag",name=name.strip(), property=type_tag.strip())
@@ -8100,7 +8100,7 @@ def AddTestCasesSetTag(request):
             if type_tag=='TAG':
                 type_tag='tag'
             available_query="select count(*) from config_values where value='%s' and type='%s'"%(name.strip(),type_tag.strip())
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             available_count=DB.GetData(Conn,available_query)
             if available_count[0]>0:
                 added_list=[]
@@ -8109,7 +8109,7 @@ def AddTestCasesSetTag(request):
                     query="select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'"%(each.strip(),name.strip(),type_tag.strip())
                     if DB.IsDBConnectionGood(Conn)==False:
                         time.sleep(1)
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                     count=DB.GetData(Conn,query)
                     if count[0]==0:
                         result=DB.InsertNewRecordInToTable(Conn,"test_case_tag",tc_id=each.strip(),name=name.strip(),property=type_tag.strip())
@@ -8140,7 +8140,7 @@ def DeleteTestCasesSetTag(request):
             if type_tag=='TAG':
                 type_tag='tag'
             available_query="select count(*) from config_values where value='%s' and type='%s'"%(name.strip(),type_tag.strip())
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             available_count=DB.GetData(Conn,available_query)
             if available_count[0]>0:
                 added_list=[]
@@ -8149,7 +8149,7 @@ def DeleteTestCasesSetTag(request):
                     query="select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'"%(each.strip(),name.strip(),type_tag.strip())
                     if DB.IsDBConnectionGood(Conn)==False:
                         time.sleep(1)
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                     count=DB.GetData(Conn,query)
                     if count[0]>0:
                         result=DB.DeleteRecord(Conn,"test_case_tag",tc_id=each.strip(),name=name.strip(),property=type_tag.strip())
@@ -8176,7 +8176,7 @@ def UpdateSetTag(request):
             if type_tag=='TAG':
                 type_tag='tag'
             available_query="select count(*) from config_values where value='%s' and type='%s'"%(old_name.strip(),type_tag.strip())
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             available_count=DB.GetData(Conn,available_query)
             if available_count[0]>0:
                 test_case_get_query="select distinct tc_id from test_case_tag where name='%s' and property='%s'"%(old_name.strip(),type_tag.strip())
@@ -8186,7 +8186,7 @@ def UpdateSetTag(request):
                     query="select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'"%(each.strip(),old_name.strip(),type_tag.strip())
                     if DB.IsDBConnectionGood(Conn)==False:
                         time.sleep(1)
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                     count=DB.GetData(Conn,query)
                     if count[0]>0:
                         whereQuery="where tc_id='%s' and name='%s' and property='%s'"%(each.strip(),old_name.strip(),type_tag.strip())
@@ -8211,7 +8211,7 @@ def select2(request):
     
 def Milestone(request):
     now=datetime.datetime.now().date()
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     query="select * from milestone_info order by name"
     milestones=DB.GetData(Conn,query,False)
     """query="(select count(distinct run_id) from test_run_env where status='Complete' group by test_milestone)"
@@ -8264,7 +8264,7 @@ def Milestone(request):
     return render_to_response('ManageMilestone.html',Dict)
 
 def manageMilestone(request):
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     query="select project_id, project_name from projects"
     project_info=DB.GetData(Conn,query,False)
     query="select id,value from config_values where type='milestone'"
@@ -8287,7 +8287,7 @@ def manageMilestone(request):
 def ManageTask(request):
     #get the distinct milestone from the task table
     query="select id,value from config_values where id in(select cast(tasks_milestone as int) from tasks)"
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     tasks_milestone_id=DB.GetData(Conn,query,False)
     final=[]
     for each in tasks_milestone_id:
@@ -8308,7 +8308,7 @@ def EditTask(request,task_id,project_id):
     if task_id == "":
         return render_to_response('CreateNewTask.html')
     else:
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
         team_info=DB.GetData(Conn,query,False)
         query="select value from config_values where type='Priority'"
@@ -8323,7 +8323,7 @@ def EditTask(request,task_id,project_id):
         query = '''
         SELECT permitted_user_list.user_id FROM permitted_user_list INNER JOIN tasks ON permitted_user_list.user_id = cast(tasks.tester as int) WHERE tasks.tasks_id = '%s';
         ''' % (task_id)
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         tester_user_id = DB.GetData(Conn, query, False, False)[0][0]
         Dict={
               'team_info':team_info,
@@ -8342,7 +8342,7 @@ def ChildTask(request,task_id,project_id):
     if task_id != "":
         return render_to_response('CreateNewTask.html')
     else:
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
         team_info=DB.GetData(Conn,query,False)
         query="select value from config_values where type='Priority'"
@@ -8365,7 +8365,7 @@ def ChildTask(request,task_id,project_id):
 
 
 def Selected_TaskID_Analaysis(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_Task_Analysis', '')
@@ -8413,7 +8413,7 @@ def Selected_TaskID_Analaysis(request):
 
 
 def Selected_Requirement_Analaysis(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'req_id', '')
@@ -8465,7 +8465,7 @@ def FetchProject(request):
     if request.is_ajax():
         if request.method=='GET':
             query="select project_id from projects"
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             project=DB.GetData(Conn,query)
             query="select distinct value from config_values where type='Team'"
             team=DB.GetData(Conn,query)
@@ -8478,7 +8478,7 @@ def FetchProject(request):
 def ManageBug(request):
     now=datetime.datetime.now().date()
     query="select * from bugs"
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     bugs=DB.GetData(Conn, query, False)
     """bugs = []
     for each in bugs_list:
@@ -8500,7 +8500,7 @@ def ManageBug(request):
     return render_to_response('ManageBug.html',Dict)
 
 def Bugs_List(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             team = request.GET.get(u'team', '')
@@ -8522,7 +8522,7 @@ def Bugs_List(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Tasks_List(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             project_id = request.GET.get(u'project_id', '')
@@ -8561,7 +8561,7 @@ def Tasks_List(request):
 
 
 def Reqs_List(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             project_id = request.GET.get(u'project_id', '')
@@ -8599,7 +8599,7 @@ def Reqs_List(request):
 
 def CreateBug(request):
     query="select project_id from projects"
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     project=DB.GetData(Conn,query)
     query="select distinct value from config_values where type='Team'"
     team=DB.GetData(Conn,query)
@@ -8616,7 +8616,7 @@ def CreateBug(request):
     return render_to_response('CreateBug.html',Dict)
 
 def BugSearch(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
@@ -8632,7 +8632,7 @@ def BugSearch(request):
     return HttpResponse(json, mimetype='application/json')
 
 def Selected_BugID_Analaysis(request):
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_Bug_Analysis', '')
@@ -8665,7 +8665,7 @@ def LogNewBug(request):
         if request.method=='GET':
             #getting all the info from the messages
             try:
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team','')
                 title=request.GET.get(u'title','')
@@ -8707,7 +8707,7 @@ def ModifyBug(request):
         if request.method=='GET':
             #getting all the info from the messages
             try:
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team','')
                 bug_id=request.GET.get(u'bug_id','')
@@ -8750,7 +8750,7 @@ def BugOperation(request):
     if request.is_ajax():
         if request.method == 'GET':
             now=datetime.datetime.now().date()
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             operation = request.GET.get(u'operation', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team','')
@@ -8855,7 +8855,7 @@ def BugOperation(request):
 
 def ManageLabel(request):
     query = "select label_name, label_color, label_id from labels order by label_name"
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     labels=DB.GetData(Conn,query,False)
     Dict={'labels':labels}
     Conn.close()
@@ -8866,7 +8866,7 @@ def CreateLabel(request):
         if request.method=='GET':
             label_name = request.GET.get(u'name','').strip()
             label_color = request.GET.get(u'color','').strip()
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             query="select nextval('labelid_seq')"
             label_id=DB.GetData(Conn, query)
             label_id=('LABEL-'+str(label_id[0]))
@@ -8898,7 +8898,7 @@ def Get_Labels(request):
         if request.method=='GET':
             value=request.GET.get(u'term','')
             query="select * from labels"
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             labels=DB.GetData(Conn,query,False)
     result=simplejson.dumps(labels)
     Conn.close()
@@ -8914,7 +8914,7 @@ def GetTesterManager(request):
         if request.method=='GET':
             final=[]
             Filters=['assigned_tester','manager']
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             for each in Filters:
                 query="select distinct user_id,user_names from permitted_user_list where user_level='%s'"%each.strip()
                 get_list=DB.GetData(Conn, query,False)
@@ -8929,7 +8929,7 @@ def Create_Team(request):
             member_list=request.GET.get(u'member').split("|")
             team_name=request.GET.get(u'team_name','')
             print team_name
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             #check for existing team
             query="select count(*) from config_values where type='Team' and value='%s'"%team_name.strip()
             available_count=DB.GetData(Conn, query)
@@ -8947,7 +8947,7 @@ def Create_Team(request):
                             Dict.update({'team_id':id_list,'user_id':int(each.strip())})
                             if(DB.IsDBConnectionGood(Conn)==False):
                                 time.sleep(1)
-                                Conn=GetConnection()
+                                Conn=models.GetConnection()
                             result=DB.InsertNewRecordInToTable(Conn,"team_info",**Dict)
                             if result!=True:
                                 message="Failed inserting the member"
@@ -8966,7 +8966,7 @@ def GetAllTeam(request):
                 query="select id,value from config_values where type='Team'"
             else:
                 query="select id,value from config_values where type='Team' and value Ilike '%%%s%%'"%value
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             all_team=DB.GetData(Conn,query,False)
     result=simplejson.dumps(all_team)
     Conn.close()
@@ -8978,7 +8978,7 @@ def GetTeamInfo(request):
             print team
             list_value=['leader','tester']
             other_value=['manager','assigned_tester']
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             #Get team Id
             final=[]
             query="select id from config_values where type='Team' and value='%s'"%team.strip()
@@ -8989,7 +8989,7 @@ def GetTeamInfo(request):
                     query="select user_id,user_names,user_level from permitted_user_list where user_id in (select cast(user_id as int) from team_info where team_id =(select id from config_values where value='%s'  and type='Team')) and user_level='%s'"%(team,each[0].strip())
                     if(DB.IsDBConnectionGood(Conn)==False):
                         time.sleep(1)
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                     list_data=[]
                     list_data=DB.GetData(Conn,query,False)
                     final.append((each[1].strip(),list_data))
@@ -9027,7 +9027,7 @@ def GetTestStepsAndTestCasesOnDriverValue(request):
                  WHERE
                        config_values.value ='%s' 
                     ''' %ToDelete 
-                Conn=GetConnection()    
+                Conn=models.GetConnection()    
                 tabledata= DB.GetData(Conn, query, False)                              
                 Heading = ['ID', 'Test Case Name', 'Value', 'Step ID', 'Step Name']
             if(data_type=='feature'):
@@ -9061,7 +9061,7 @@ def TeamData(request,team_name):
     #query="select name,rank from team_info where team_id =(select id from config_values where type='Team' and value='%s')"%team_name
     query="select user_id,user_names,user_level from permitted_user_list where user_id in(select cast(user_id as int) from team_info where team_id=(select id from config_values where type='Team' and value='%s'))"%team_name
     print query
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     getData=DB.GetData(Conn,query,False)
     leader=[]
     tester=[]
@@ -9100,7 +9100,7 @@ def Add_Members(request):
             team_name=request.GET.get(u'team_name','').strip()
             #check the validity for the team name
             query="select id from config_values where type='Team' and value='%s'"%team_name
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             team_id=DB.GetData(Conn,query)
             if len(team_id)==0:
                 message="Failed.No such Team Name"
@@ -9109,7 +9109,7 @@ def Add_Members(request):
                 for each in member:
                     if DB.IsDBConnectionGood(Conn)==False:
                         time.sleep(1)
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                     result=DB.InsertNewRecordInToTable(Conn,"team_info",team_id=team_id,user_id=each)
                     if result==False:
                         break
@@ -9126,7 +9126,7 @@ def Delete_Members(request):
             team_name=request.GET.get(u'team_name','').strip()
             #check the validity for the team name
             query="select id from config_values where type='Team' and value='%s'"%team_name
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             team_id=DB.GetData(Conn,query)
             if len(team_id)==0:
                 message="Failed.No such Team Name"
@@ -9135,7 +9135,7 @@ def Delete_Members(request):
                 for each in member_list:
                     if DB.IsDBConnectionGood(Conn)==False:
                         time.sleep(1)
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                     result=DB.DeleteRecord(Conn,"team_info",team_id=team_id,user_id=each)
                     if result==False:
                         break
@@ -9151,7 +9151,7 @@ def Delete_Team(request):
             team_name=request.GET.get(u'team_name','').strip()
             #check the validity for the team name
             query="select id from config_values where type='Team' and value='%s'"%team_name
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             team_id=DB.GetData(Conn,query)
             if len(team_id)==0:
                 message="Failed.No such Team Name"
@@ -9178,7 +9178,7 @@ def UpdateTeamName(request):
             if type_tag=='TEAM':
                 type_tag='Team'
             query="select count(*) from config_values where value='%s' and type='%s'"%(old_name.strip(),type_tag.strip())
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             count=DB.GetData(Conn,query)
             
             if count[0]==1 and len(count)==1:
@@ -9204,7 +9204,7 @@ def CreateProject(request):
         query="select distinct value from config_values where type='Team'"
         try:
             team_name = []
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             team_name=DB.GetData(Conn, query)
             print team_name
             Conn.close()
@@ -9226,7 +9226,7 @@ def CreateProject(request):
         query="select distinct user_names,user_level from permitted_user_list where user_level in ('manager','assigned_tester')"
         try:
             owners = []
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             owners=DB.GetData(Conn,query,False)
             print owners
             Conn.close()
@@ -9260,14 +9260,14 @@ def Create_New_Project(request):
                 name=request.GET.get('project_name','')
                 owners=request.GET.get('project_owner').strip()
                 #generate Project id
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 tmp_id = DB.GetData(Conn, "select nextval('projectid_seq')")
                 Conn.close()
                 print tmp_id
                 project_id=('PROJ-')+str(tmp_id[0])
                 query="select count(*) from projects where project_name='%s' and project_id='%s'"%(name.strip(),project_id.strip())
                 count = []
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 count=DB.GetData(Conn,query)
                 Conn.close()
                 print count
@@ -9285,13 +9285,13 @@ def Create_New_Project(request):
                         'project_modifydate':current_date,
                         'project_description':'',
                     }
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     result = False
                     result=DB.InsertNewRecordInToTable(Conn, "projects",**Dict)
                     Conn.close()
                     if result==False:
                         message="Failed"
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                     else:
                         message="Success"
             result_dict={
@@ -9305,14 +9305,14 @@ def Create_New_Project(request):
 def Project_Detail(request,project_id):
     try:
         query="select * from projects where project_id='%s'"%project_id
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         project_data = []
         project_data=DB.GetData(Conn,query,False)
         Conn.close()
         print project_data
         #time.sleep(0.5)
         query="select column_name from information_schema.columns where table_name='projects'"
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         project_column=DB.GetData(Conn,query)
         print project_column
         Conn.close()
@@ -9331,7 +9331,7 @@ def Project_Detail(request,project_id):
         del Dict['project_owners']
         #get top 5 comments
         query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc limit 5"%(project_id)
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         top_five_comment = False
         top_five_comment=DB.GetData(Conn,query,False)
         print top_five_comment
@@ -9341,7 +9341,7 @@ def Project_Detail(request,project_id):
             temp=[]
             if each[1]==False:
                 query="select comment_text,commented_by,comment_date,rank,c.attachment from comments c where c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)    
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 temp_comment=DB.GetData(Conn,query,False)
                 Conn.close()
                 #time.sleep(0.5)
@@ -9352,7 +9352,7 @@ def Project_Detail(request,project_id):
                 temp=tuple(temp)
             if each[1]==True:
                 query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 temp=DB.GetData(Conn,query,False)
                 Conn.close()
                 #time.sleep(0.5)
@@ -9362,13 +9362,13 @@ def Project_Detail(request,project_id):
         comment=Comment()
         print comment
         team_query="select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and ptm.project_id='%s'"%project_id
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         team_number=DB.GetData(Conn,team_query,False)
         Conn.close()
         #time.sleep(0.5)
         fullTeamDetail=GetProjectTeamInfo(team_number)
         other_query="(select cast(id as text),value from config_values where type='Team') except (select distinct ptm.team_id,c.value from config_values c,project_team_map ptm  where cast(c.id as text) =ptm.team_id and project_id='%s')" %project_id
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         restTeam=DB.GetData(Conn,other_query,False)
         Conn.close()
         #time.sleep(0.5)
@@ -9387,7 +9387,7 @@ def GetProjectTeamInfo(team_number):
         for each in team_number:
             team={}
             query="select name,rank from team_info where team_id='%s'"%int(each[0])
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             team_members=DB.GetData(Conn,query,False)
             Conn.close()
             leader=[]
@@ -9408,12 +9408,12 @@ def Small_Project_Detail(request):
             if request.method=='GET':
                 name=request.GET.get(u'name','')
                 query="select * from projects where project_name='%s'"%name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 project_metadata=DB.GetData(Conn,query,False)
                 Conn.close()
                 #time.sleep(0.5)
                 project_column_query="select column_name from information_schema.columns where table_name='projects'"
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 project_column=DB.GetData(Conn,project_column_query)
                 Conn.close()
                 #time.sleep(0.5)
@@ -9445,7 +9445,7 @@ def Small_Project_Detail(request):
                     else:
                         due_message="In "+str(due_in.days)+" days"
                 query="select value from config_values where type='Team' and id in (select cast(team_id as int) from project_team_map where project_id='%s')"%(Dict['project_id'].strip())
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 team_name=DB.GetData(Conn,query)
                 Conn.close()
                 Dict.update({
@@ -9471,7 +9471,7 @@ def Get_Projects(request):
                         query="select project_name from projects"
                     else:
                         query="select project_name from projects where project_name Ilike'%%%s%%'"%name.strip()
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     team_name=[]
                     team_name=DB.GetData(Conn,query)
                     Conn.close()
@@ -9488,7 +9488,7 @@ def FileUpload(request,project_id):
         print project_id
         #Get the rank of the person
         query="select project_owners from projects where project_id='%s'"%(project_id)
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         project_owners=DB.GetData(Conn, query)
         Conn.close()
         temp=project_owners[0]
@@ -9507,7 +9507,7 @@ def FileUpload(request,project_id):
             if each not in owners:
                 owners.append(each)
         query="select distinct name,rank from team_info where cast(team_id as text) in(select team_id from project_team_map where project_id='%s')"%project_id
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         rest_rank=DB.GetData(Conn,query,False)
         Conn.close()
         members=[]
@@ -9521,7 +9521,7 @@ def FileUpload(request,project_id):
         if user_name in members:
             rank="Member"
         query="select project_createdby from projects where project_id='%s'"%project_id
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         created_by=DB.GetData(Conn,query)
         Conn.close()
         if user_name in created_by:
@@ -9536,7 +9536,7 @@ def FileUpload(request,project_id):
             #print fullfileName
             comment_time=datetime.datetime.now()
             #Genereate Comment ID
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             tmp_id = DB.GetData(Conn, "select nextval('commentid_seq')")
             Conn.close()
             comment_id=('COM-'+str(tmp_id[0]))
@@ -9547,7 +9547,7 @@ def FileUpload(request,project_id):
                 #print "Attachment Comment"
                 #new_path=
                 path=path[len(PROJECT_ROOT):]
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
                 Conn.close()
                 if result==False:
@@ -9566,7 +9566,7 @@ def FileUpload(request,project_id):
                       'rank':rank.strip(),
                       'attachment':attachment
                       }
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
                 Conn.close()
                 if result==True:
@@ -9583,7 +9583,7 @@ def FileUpload(request,project_id):
                       'rank':rank.strip(),
                       'attachment':attachment
                       }
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
                 Conn.close()
                 if result==True:
@@ -9595,7 +9595,7 @@ def FileUpload(request,project_id):
                 #print "Attachment Comment"
                 #new_path=
                 path=path[len(PROJECT_ROOT):]
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"comment_attachment",comment_id=comment_id,docfile=path)
                 Conn.close()
                 if result==False:
@@ -9613,7 +9613,7 @@ def FileUpload(request,project_id):
                       'rank':rank.strip(),
                       'attachment':attachment
                       }
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"comments",**Dict)
                 Conn.close()
                 if result==True:
@@ -9627,14 +9627,14 @@ def FileUpload(request,project_id):
 def commentView(request,project_id):
     try:
         query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc"%project_id
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         all_comments=DB.GetData(Conn,query,False)
         Conn.close()
         final=[]
         for each in all_comments:
             if each[1]==False:
                 query="select comment_text,commented_by,comment_date,rank,c.attachment from comments c where c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)    
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 temp_comment=DB.GetData(Conn,query,False)
                 Conn.close()
                 temp=[]
@@ -9645,7 +9645,7 @@ def commentView(request,project_id):
                 temp=tuple(temp)
             if each[1]==True:
                 query="select comment_text,commented_by,comment_date,rank,c.attachment,ca.docfile from comments c,comment_attachment ca where  c.comment_id=ca.comment_id and c.comment_id='%s' and c.project_id='%s'"%(each[0],project_id)
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 temp=DB.GetData(Conn,query,False)
                 Conn.close()
                 temp=temp[0]
@@ -9653,7 +9653,7 @@ def commentView(request,project_id):
             final.append(temp)
         comment=Comment()
         query="select project_name from projects where project_id='%s'"%project_id
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         project_name=DB.GetData(Conn,query)
         Conn.close()
         project_name=project_name[0]
@@ -9670,7 +9670,7 @@ def AddTeamtoProject(request):
                 project_id=request.GET.get(u'project_id').strip()
                 for each in teams:
                     query="select count(*) from project_team_map where project_id='%s' and team_id='%s'"%(project_id,str(each))
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     project_count=DB.GetData(Conn,query)
                     Conn.close()
                     if len(project_count)==1 and project_count[0]==1:
@@ -9683,12 +9683,12 @@ def AddTeamtoProject(request):
                               'status':False
                               }
                         result = False
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"project_team_map",**Dict)
                         Conn.close()
                         if result==False:
                             #time.sleep(1)
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
         message="Success"
         result=simplejson.dumps(message)
         return HttpResponse(result,mimetype='application/json')
@@ -9729,7 +9729,7 @@ def DetailRequirementView(request,project_id,req_id):
     requirement_query+="from requirements r,requirement_team_map rtm "
     requirement_query+="where r.requirement_id=rtm.requirement_id and r.requirement_id='%s'"%req_id
     try:
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         requirement_data=DB.GetData(Conn,requirement_query,False)
         print requirement_data
         for each in requirement_data:
@@ -9755,7 +9755,7 @@ def DetailRequirementView(request,project_id,req_id):
     try:
         if DB.IsDBConnectionGood(Conn)==False:
             time.sleep(1)
-            Conn=GetConnection()
+            Conn=models.GetConnection()
         query="select comment_id,attachment from comments where project_id='%s' order by comment_date desc"%req_id
         all_comments=DB.GetData(Conn,query,False)
         final=[]
@@ -9781,7 +9781,7 @@ def DetailRequirementView(request,project_id,req_id):
     comment=Comment()
     Dict.update({'comment':comment})
     try:
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.lm_id='"+req_id+"' and lm.type='REQ' order by label_name"
         labels = DB.GetData(Conn,query,False)
         Dict.update({'labels':labels})
@@ -9792,7 +9792,7 @@ def DetailRequirementView(request,project_id,req_id):
 
 def TeamWiseRequirementView(request,project_id,team_id):
     query="select project_name from projects where project_id='%s'"%project_id
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     project_name=DB.GetData(Conn,query)
     if isinstance(project_name,list):
         project_name=project_name[0]
@@ -9836,7 +9836,7 @@ def TeamWiseRequirementView(request,project_id,team_id):
 #to the new requirement page
 
 def ToNewRequirementPage(request,project_id):
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     query="select project_id, project_name from projects"
     project_info=DB.GetData(Conn,query,False)
     query="select id,value from config_values where type='milestone'"
@@ -9866,7 +9866,7 @@ def getRequirements(request,project_id):
     if request.method=='GET':
         if request.is_ajax():
             print project_id
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             query="select * from requirement_sections"
             all_section=DB.GetData(Conn,query,False)
             parent_section=list(set(each[1].split('.')[0] for each in all_section))
@@ -10038,7 +10038,7 @@ def GetTeamInfoToCreateRequirement(request):
         if request.method=='GET':
             project_id=request.GET.get('project_id','')
             team_query="select id,value from config_values c,project_team_map ptm where cast(c.id as text)=ptm.team_id and ptm.project_id='%s'"%project_id
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             team_list=DB.GetData(Conn,team_query,False)
             Dict={'teams':team_list}
     result=simplejson.dumps(Dict)
@@ -10049,7 +10049,7 @@ def GetTeamInfoToCreateRequirement(request):
 def SmallViewRequirements(request):
     if request.method=='GET':
         if request.is_ajax():
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             project_id=request.GET.get('project_id','')
             decoded_string = json.loads(request.GET.get('selected_section_ids', []))
             requested_requirement_section_id=int(list(decoded_string)[0])
@@ -10100,7 +10100,7 @@ def PostRequirementComment(request,project_id,requirement_id):
     print project_id
     #Get the rank of the person
     query="select project_owners from projects where project_id='%s'"%(project_id)
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     project_owners=DB.GetData(Conn, query)
     temp=project_owners[0]
     first_colon=temp.find(":",0)
@@ -10231,7 +10231,7 @@ def RequirementPage(request,project_id):
         output = templ.render(variables)
         return HttpResponse(output)"""
     #Get the teams for this projects
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
     team_info=DB.GetData(Conn,query,False)
     query="select value from config_values where type='Priority'"
@@ -10260,7 +10260,7 @@ def Edit_Requirement(request,project_id,req_id):
         output = templ.render(variables)
         return HttpResponse(output)"""
     #Get the teams for this projects
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
     team_info=DB.GetData(Conn,query,False)
     query="select value from config_values where type='Priority'"
@@ -10289,7 +10289,7 @@ def Child_Requirement(request,project_id,req_id):
         output = templ.render(variables)
         return HttpResponse(output)"""
     #Get the teams for this projects
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
     team_info=DB.GetData(Conn,query,False)
     query="select value from config_values where type='Priority'"
@@ -10308,7 +10308,7 @@ def Child_Requirement(request,project_id,req_id):
 
         
 def TaskPage(request,project_id):
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     query="select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')"%project_id
     team_info=DB.GetData(Conn,query,False)
     query="select value from config_values where type='Priority'"
@@ -10330,7 +10330,7 @@ def TaskPage(request,project_id):
     return render_to_response("CreateNewTask.html",Dict)
 
 def Get_RequirementSections(request):  #==================Returns Abailable User Name in List as user Type on Run Test Page==============================
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
@@ -10443,7 +10443,7 @@ def ViewTaskPage(request,project_id):
 def GetProfileInfo(request, user_id, success):
     try:
         query="select distinct user_id,full_name,user_level,username from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'"%user_id
-        Conn=GetConnection()
+        Conn=models.GetConnection()
         user_column=["UserID","FullName","Designation","Username"]
         result=DB.GetData(Conn,query,False)
         temp_dict={}
@@ -10483,7 +10483,7 @@ def GetTeamInfoPerProject(request):
         if request.method=='GET':
             project_id=request.GET.get(u'project_id','')
             query="select id,value from project_team_map ptm,config_values c where cast(ptm.team_id as int)=c.id and ptm.project_id='%s'"%project_id
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             try:
                 testConnection(Conn)
                 team_id=DB.GetData(Conn,query,False)
@@ -10502,7 +10502,7 @@ def updateAccountInfo(request):
             team_id=request.GET.get(u'team_id','')
             user_id=request.GET.get(u'user_id','')
             try:
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 #form dict according to the change
                 temp_dict={}
                 if full_name!="":
@@ -10559,7 +10559,7 @@ def UpdateDefaultTeamForUser(request):
             user_id=request.GET.get(u'user_id','').strip()
             team_id=request.GET.get(u'team_id','').strip()
             sWhereQuery="where user_id='%s'"%user_id
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             result=DB.UpdateRecordInTable(Conn, "default_choice", sWhereQuery,default_team=team_id)
             if result==True:
                 message=True
@@ -10573,7 +10573,7 @@ def UpdateDefaultProjectForUser(request):
             user_id=request.GET.get(u'user_id','').strip()
             project_id=request.GET.get(u'project_id','').strip()
             sWhereQuery="where user_id='%s'"%user_id
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             result=DB.UpdateRecordInTable(Conn, "default_choice", sWhereQuery,default_project=project_id)
             if result==True:
                 message=True
@@ -10621,27 +10621,27 @@ def get_all_data_dependency_page(request):
                 team_id=request.GET.get(u'team_id','')
                 #dependency_tab
                 query="select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 dependency_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 query="select distinct d.id,d.dependency_name as name from dependency d except(select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d) order by name"%(project_id.strip(),int(team_id.strip()))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 unused_dependency_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 query="select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 branch_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 query="select distinct id,branch_name from branch except (select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d)"%(project_id.strip(),int(team_id.strip()))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 unused_branch_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 query="select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d"%(project_id.strip(),int(team_id.strip()))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 feature_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 query="select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features except (select distinct subltree(f.feature_path,0,1),subltree(f.feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d)"%(project_id.strip(),int(team_id.strip()))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 unused_feature_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 result={
@@ -10671,7 +10671,7 @@ def add_new_dependency(request):
                 dependency=request.GET.get(u'dependency_name','')
                 #check for the occurance
                 query="select count(*) from dependency where dependency_name='%s'"%dependency.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 count=DB.GetData(Conn,query)
                 if isinstance(count,list):
                     if len(count)==1 and count[0]==0:
@@ -10679,7 +10679,7 @@ def add_new_dependency(request):
                         Dict={
                               'dependency_name':dependency.strip()
                         }
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"dependency",**Dict)
                         Conn.close()
                         if result==True:
@@ -10718,7 +10718,7 @@ def add_new_name_dependency(request):
                 new_name=request.GET.get(u'new_name','')
                 new_value=request.GET.get(u'new_value','')
                 query="select count(*) from dependency_name where name='%s'"%(new_name.strip())
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(count,list):
@@ -10727,7 +10727,7 @@ def add_new_name_dependency(request):
                             'name':new_name.strip(),
                             'dependency_id':int(new_value.strip())
                         }
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"dependency_name",**Dict)
                         Conn.close()
                         if result==True:
@@ -10772,12 +10772,12 @@ def get_all_name_under_dependency(request):
                 print project_id
                 print team_id
                 query="select dn.id,dn.name as name from dependency_name dn,dependency_management dm where dm.dependency=dn.dependency_id and project_id='%s' and team_id=%d and dm.dependency=%d order by name"%(project_id,int(team_id),int(value[0]))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 dependency_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 #get the default list
                 query="select default_choices from dependency_management where project_id ='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(value[0]))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 default_list=DB.GetData(Conn,query)
                 Conn.close()
                 result={
@@ -10801,11 +10801,11 @@ def rename_dependency(request):
                 old_name=request.GET.get(u'old_name','')
                 new_name=request.GET.get(u'new_name','')
                 query="select count(*) from dependency where dependency_name='%s'"%old_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 old_name_count=DB.GetData(Conn,query)
                 Conn.close()
                 query="select count(*) from dependency where dependency_name='%s'"%new_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 new_name_count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(old_name_count,list):
@@ -10815,7 +10815,7 @@ def rename_dependency(request):
                             Dict={
                                 'dependency_name':new_name.strip()
                             }
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             result=DB.UpdateRecordInTable(Conn,"dependency", sWhereQuery,**Dict)
                             Conn.close()
                             if result==True:
@@ -10860,7 +10860,7 @@ def add_new_version(request):
                 value=request.GET.get(u'value','')
                 #check for occurances
                 query="select count(*) from dependency_values where bit_name='%s' and version='%s' and dv_id=%d"%(bit,version,int(value))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(count,list):
@@ -10870,7 +10870,7 @@ def add_new_version(request):
                             'version':version,
                             'bit_name':bit
                         }
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"dependency_values",**Dict)
                         if result==True:
                             PassMessasge(sModuleInfo, "Version '%s':%d bit is inserted successfully"%(version,int(bit)),success_tag)
@@ -10907,7 +10907,7 @@ def get_all_version_bit(request):
             if request.is_ajax():
                 value=request.GET.get(u'value','')
                 query="select bit_name|| ' Bit' as bit,array_to_string(array_agg(distinct version),',') from dependency_values dv,dependency_name dn where dv.dv_id=dn.id and dn.id=%d group by bit_name order by bit"%(int(value))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 version_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 result={
@@ -10935,7 +10935,7 @@ def link_dependency(request):
                     'team_id':int(team_id),
                     'dependency':int(value)
                 }
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"dependency_management",**Dict)
                 Conn.close()
                 if result==True:
@@ -10972,7 +10972,7 @@ def unlink_dependency(request):
                     'team_id':int(team_id),
                     'dependency':int(value)
                 }
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.DeleteRecord(Conn,"dependency_management",**Dict)
                 Conn.close()
                 if result==True:
@@ -11004,11 +11004,11 @@ def rename_name(request):
                 old_name=request.GET.get(u'old_name','')
                 new_name=request.GET.get(u'new_name','')
                 query="select count(*) from dependency_name where name='%s'"%old_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 old_name_count=DB.GetData(Conn,query)
                 Conn.close()
                 query="select count(*) from dependency_name where name='%s'"%new_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 new_name_count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(old_name_count,list):
@@ -11018,7 +11018,7 @@ def rename_name(request):
                             Dict={
                                 'name':new_name.strip()
                             }
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             result=DB.UpdateRecordInTable(Conn,"dependency_name", sWhereQuery,**Dict)
                             Conn.close()
                             if result==True:
@@ -11066,7 +11066,7 @@ def make_default_name(request):
                 tag=request.GET.get(u'tag','')
                 #take out the default choices
                 query="select default_choices from dependency_management where project_id='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(dependency))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 default_choice=DB.GetData(Conn,query)
                 Conn.close()
                 print default_choice
@@ -11088,7 +11088,7 @@ def make_default_name(request):
                     Dict={
                         'default_choices':modified_choice.strip()
                     }
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     result=DB.UpdateRecordInTable(Conn,"dependency_management",sWhereQuery,**Dict)
                     Conn.close()
                     if result==True:
@@ -11131,13 +11131,13 @@ def get_default_settings(request):
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
                 query="select distinct d.id,d.dependency_name,array_to_string(array_agg(distinct dn.name),',') from dependency d ,dependency_management dm, dependency_name dn where d.id=dm.dependency and dm.dependency=dn.dependency_id and dn.dependency_id =d.id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,d.id order by d.dependency_name"%(project_id,int(team_id))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.GetData(Conn,query,False)
                 Conn.close()
                 final_list=[]
                 for each in result:
                     query="select default_choices from dependency_management where project_id='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(each[0]))
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     default_choices=DB.GetData(Conn,query)
                     print default_choices
                     Conn.close()
@@ -11146,7 +11146,7 @@ def get_default_settings(request):
                         if default_choices[0]!='':
                             for eachitem in default_choices[0].split(","):
                                 query="select name from dependency_name where id=%d and dependency_id=%d"%(int(eachitem),int(each[0]))
-                                Conn=GetConnection()
+                                Conn=models.GetConnection()
                                 name_list=DB.GetData(Conn,query)
                                 if isinstance(name_list,list):
                                     temp.append(name_list[0])
@@ -11174,7 +11174,7 @@ def add_new_branch(request):
                 branch_name=request.GET.get(u'dependency_name','')
                 #check for the occurance
                 query="select count(*) from branch where branch_name='%s'"%branch_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 count=DB.GetData(Conn,query)
                 if isinstance(count,list):
                     if len(count)==1 and count[0]==0:
@@ -11182,7 +11182,7 @@ def add_new_branch(request):
                         Dict={
                               'branch_name':branch_name.strip()
                         }
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"branch",**Dict)
                         Conn.close()
                         if result==True:
@@ -11224,7 +11224,7 @@ def get_all_version_under_branch(request):
                 print project_id
                 print team_id
                 query="select distinct version_name as name from branch_management bm, versions v where v.v_id=bm.branch and bm.project_id='%s' and bm.team_id=%d and bm.branch=%d order by name"%(project_id,int(team_id),int(value[0]))
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 version_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 result={
@@ -11248,7 +11248,7 @@ def add_new_version_branch(request):
                 new_name=request.GET.get(u'new_name','')
                 new_value=request.GET.get(u'new_value','')
                 query="select count(*) from versions where version_name='%s'"%(new_name.strip())
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(count,list):
@@ -11257,7 +11257,7 @@ def add_new_version_branch(request):
                             'version_name':new_name.strip(),
                             'v_id':int(new_value.strip())
                         }
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"versions",**Dict)
                         Conn.close()
                         if result==True:
@@ -11298,11 +11298,11 @@ def rename_branch(request):
                 old_name=request.GET.get(u'old_name','')
                 new_name=request.GET.get(u'new_name','')
                 query="select count(*) from branch where branch_name='%s'"%old_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 old_name_count=DB.GetData(Conn,query)
                 Conn.close()
                 query="select count(*) from branch where branch_name='%s'"%new_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 new_name_count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(old_name_count,list):
@@ -11312,7 +11312,7 @@ def rename_branch(request):
                             Dict={
                                 'branch_name':new_name.strip()
                             }
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             result=DB.UpdateRecordInTable(Conn,"branch", sWhereQuery,**Dict)
                             Conn.close()
                             if result==True:
@@ -11361,7 +11361,7 @@ def unlink_branch(request):
                     'team_id':int(team_id),
                     'branch':int(value)
                 }
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.DeleteRecord(Conn,"branch_management",**Dict)
                 Conn.close()
                 if result==True:
@@ -11397,7 +11397,7 @@ def link_branch(request):
                     'team_id':int(team_id),
                     'branch':int(value)
                 }
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"branch_management",**Dict)
                 Conn.close()
                 if result==True:
@@ -11430,7 +11430,7 @@ def add_new_feature(request):
                 dependency=request.GET.get(u'feature_path','')
                 #check for the occurance
                 query="select count(*) from product_features where feature_path='%s'"%dependency.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 count=DB.GetData(Conn,query)
                 if isinstance(count,list):
                     if len(count)==1 and count[0]==0:
@@ -11438,7 +11438,7 @@ def add_new_feature(request):
                         Dict={
                               'feature_path':dependency.strip()
                         }
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"product_features",**Dict)
                         Conn.close()
                         if result==True:
@@ -11478,7 +11478,7 @@ def link_feature(request):
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
                 query="select feature_id from product_features where feature_path ~ '%s'"%value
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 feature_id=DB.GetData(Conn,query)
                 Conn.close()
                 Dict={
@@ -11487,7 +11487,7 @@ def link_feature(request):
                     'feature':int(feature_id[0])
                 }
                 value=feature_id[0]
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"feature_management",**Dict)
                 nDict={
                     'project_id':project_id,
@@ -11527,7 +11527,7 @@ def unlink_feature(request):
                 project_id=request.GET.get(u'project_id','')
                 team_id=request.GET.get(u'team_id','')
                 query="select feature_id from product_features where feature_path ~ '%s'"%value
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 feature_id=DB.GetData(Conn,query)
                 Conn.close()
                 Dict={
@@ -11536,7 +11536,7 @@ def unlink_feature(request):
                     'feature':int(feature_id[0])
                 }
                 value=feature_id[0]
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.DeleteRecord(Conn,"feature_management",**Dict)
                 nDict={
                     'project_id':project_id,
@@ -11575,11 +11575,11 @@ def rename_feature(request):
                 old_name=request.GET.get(u'old_name','')
                 new_name=request.GET.get(u'new_name','')
                 query="select count(*) from product_features where feature_path='%s'"%old_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 old_name_count=DB.GetData(Conn,query)
                 Conn.close()
                 query="select count(*) from product_features where feature_path='%s'"%new_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 new_name_count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(old_name_count,list):
@@ -11589,7 +11589,7 @@ def rename_feature(request):
                             Dict={
                                 'feature_path':new_name.strip()
                             }
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             result=DB.UpdateRecordInTable(Conn,"product_features", sWhereQuery,**Dict)
                             Conn.close()
                             if result==True:
@@ -11638,7 +11638,7 @@ def get_all_first_level_sub_feature(request):
                 print team_id
                 level_count=name[0].count('.')+1
                 query="select distinct subltree(feature_path,%d,%d) from product_features where nlevel(feature_path)>%d and feature_path ~'*.%s.*'"%(int(level_count),int(level_count)+1,int(level_count),name[0].strip())
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 version_list=DB.GetData(Conn,query,False)
                 Conn.close()
                 result={
@@ -11658,13 +11658,13 @@ def CreateLevelWiseFeature(request):
                 type_tag='Sub Feature'
                 new_name=request.GET.get(u'name','')
                 query="select count(*) from product_features where feature_path='%s'"%new_name.strip()
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 count=DB.GetData(Conn,query)
                 Conn.close()
                 if isinstance(count,list):
                     if len(count)==1 and count[0]==0:
                         query="insert into product_features(feature_path) values('%s')"%new_name.strip()
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         cur=Conn.cursor()
                         cur.execute(query)
                         Conn.commit()
@@ -11699,17 +11699,17 @@ def AutoTestCasePass(request):
                 test_cases=request.GET.get(u'test_cases','').split('|')
                 for each in test_cases:
                     query="select tsr.id, teststep_id from test_case_results tcr, test_step_results tsr where tcr.run_id=tsr.run_id and tsr.testcaseresulttindex=tcr.id and tcr.run_id='%s' and tcr.tc_id='%s'"%(run_id.strip(),each.strip())
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     test_step_list=DB.GetData(Conn,query,False)
                     Conn.close()
                     Dict={'status':'Passed'}
                     for eachitem in test_step_list:
                         sWhereQuery="where id=%d and teststep_id=%d and run_id='%s' and tc_id='%s'"%(eachitem[0],eachitem[1],run_id.strip(),each.strip())
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         print DB.UpdateRecordInTable(Conn, "test_step_results", sWhereQuery,**Dict)
                         Conn.close()
                     sWhereQuery="where run_id='%s' and tc_id='%s'"%(run_id.strip(),each.strip())
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     Dict.update({'failreason':''})
                     print DB.UpdateRecordInTable(Conn,"test_case_results",sWhereQuery,**Dict)
                     Conn.close()
@@ -11743,7 +11743,7 @@ def specific_dependency_settings(request):
                     tag_type='tag'
                     Status='Status'
                     query="select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d"%(project_id,int(team_id))
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     dependency=DB.GetData(Conn,query)
                     Conn.close()
                     wherequery=""
@@ -11754,7 +11754,7 @@ def specific_dependency_settings(request):
                     print wherequery
                     TestIDList = []
                     for eachitem in QueryText:
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         TestID = DB.GetData(Conn, "Select property from test_case_tag where name = '%s' " % eachitem)
                         Conn.close()
                         for eachProp in TestID:
@@ -11765,7 +11765,7 @@ def specific_dependency_settings(request):
                     if len(TestIDList) > 0:
                         for eachitem in TestIDList:
                             query="select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,team_id)
-                            Conn=GetConnection()
+                            Conn=models.GetConnection()
                             tabledata = DB.GetData(Conn,query)
                             Conn.close()
                             print tabledata
@@ -11783,7 +11783,7 @@ def specific_dependency_settings(request):
                         Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
                         Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
                         query = "select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
-                        Conn=GetConnection()
+                        Conn=models.GetConnection()
                         TableData = DB.GetData(Conn, query)        
                         Conn.close()
                     final_data=[]    
@@ -11791,7 +11791,7 @@ def specific_dependency_settings(request):
                         final_data.append("'"+each+"'")
                     test_case_ids="("+",".join(final_data)+")"
                     test_case_query="select property,array_agg(distinct name) from test_case_tag tct, dependency d where d.dependency_name=tct.property and tc_id in "+test_case_ids+" group by property" 
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     final_list=DB.GetData(Conn,test_case_query,False)
                     Conn.close()
                     result=simplejson.dumps(final_list)
@@ -11808,7 +11808,7 @@ def GetProjectOwner(request):
             value=request.GET.get(u'term','')
             print value
             query="select distinct user_id,user_names,case when user_level='assigned_tester' then 'Tester' when user_level='manager' then 'Manager' end  from permitted_user_list pul, user_info ui where pul.user_names=ui.full_name and user_level not in('email','admin') and user_names iLike '%%%s%%'"%(value.strip())
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             owner_list=DB.GetData(Conn,query,False)
             Conn.close()
             result=simplejson.dumps(owner_list)
@@ -11822,7 +11822,7 @@ def Create_New_User(request):
             password=request.GET.get(u'password','').strip()
             user_level=request.GET.get(u'user_level','').strip()
             query="select count(*) from user_info where full_name='%s'"%(full_name.strip())
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             count=DB.GetData(Conn,query)
             Conn.close()
             if len(count)==1 and count[0]==0:
@@ -11832,7 +11832,7 @@ def Create_New_User(request):
                     'password':password,
                     'full_name':full_name
                 }
-                Conn=GetConnection()
+                Conn=models.GetConnection()
                 result=DB.InsertNewRecordInToTable(Conn,"user_info",**Dict)
                 Conn.close()
                 if result:
@@ -11841,9 +11841,9 @@ def Create_New_User(request):
                         'user_level':user_level,
                         'email':email
                     }
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     result=DB.InsertNewRecordInToTable(Conn,"permitted_user_list",**Dict)
-                    Conn=GetConnection()
+                    Conn=models.GetConnection()
                     if result:
                         message=True
                 else:
@@ -11854,7 +11854,7 @@ def ListAllUser(request):
     if request.method=='GET':
         if request.is_ajax():
             query="select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
-            Conn=GetConnection()
+            Conn=models.GetConnection()
             user_list=DB.GetData(Conn,query,False)
             Conn.close()
             Column=['User Name','Full Name','Password','Designation','Email']
@@ -11867,11 +11867,11 @@ def ListAllUser(request):
         
 def AssignTesters(request):
     query="select pul.user_id,user_names,case when user_level='assigned_tester' then 'Tester' end as Designation,default_project,default_team from permitted_user_list pul, default_choice ds, user_info ui where ui.full_name=pul.user_names and cast(ds.user_id as int)=pul.user_id and user_level in ('assigned_tester')"
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     user_with_project=DB.GetData(Conn, query,False)
     Conn.close()
     query="select distinct pul.user_id,user_names, case when user_level='assigned_tester' then 'Tester' end as Designation from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names and user_level in ('assigned_tester')"
-    Conn=GetConnection()
+    Conn=models.GetConnection()
     user_without_project=DB.GetData(Conn,query,False)
     Conn.close()
     final=[]
@@ -11970,7 +11970,7 @@ def UploadProfilePicture(request):
             UPDATE user_info SET profile_picture_name='%s' WHERE username='%s'
             ''' % (file_name, username)
             
-            Conn = GetConnection()
+            Conn = models.GetConnection()
             cur = Conn.cursor()
             
             try:
@@ -12004,7 +12004,7 @@ def ServeProfilePictureURL(request):
         SELECT profile_picture_name FROM user_info WHERE username='%s'
         ''' % username
 
-        Conn = GetConnection()
+        Conn = models.GetConnection()
         cur = Conn.cursor()
         
         try:
@@ -12030,7 +12030,7 @@ def RemoveProfilePicture(request):
     username = request.GET.get('username', None)
 #     print "USERNAME: %s" % username
     
-    Conn = GetConnection()
+    Conn = models.GetConnection()
     cur = Conn.cursor()
     
     query = '''
