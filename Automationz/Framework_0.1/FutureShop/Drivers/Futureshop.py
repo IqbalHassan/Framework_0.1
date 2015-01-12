@@ -117,7 +117,7 @@ def ExecuteTestSteps(run_id,CurrentStep,q,dependency_list,step_data):
     return sTestStepReturnStatus
 
 #lost steps
-exp_SQLQuery = ("select  pmd.id, pmd.field, pmd.value from test_case_datasets tcd, expected_datasets ed, expected_container ec, container_type_data ctd, master_data pmd where tcd.tcdatasetid = ed.datasetid"
+exp_SQLQuery = ("select  pmd.md_id, pmd.field, pmd.value from test_case_datasets tcd, expected_datasets ed, expected_container ec, container_type_data ctd, master_data pmd where tcd.tcdatasetid = ed.datasetid"
         " and ed.expectedrefid = ec.exprefid"
         " and ec.container_name = ctd.dataid"
         " and ctd.curname = pmd.id"
@@ -159,7 +159,7 @@ elif CurrentStep == "Verify Filter Items Count":
                         " pmd.value"
                         " from master_data pmd"
                         " where"
-                        " pmd.id = '%s'"
+                        " pmd.md_id = '%s'"
                         " ;" % (temp[1]))
                         AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
                         temp[1] = AddressData
@@ -224,7 +224,7 @@ def verify_product_details(dependency,step_data):
 
 def count_shoe_size(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    for i in range(len(step_data)):
+    """for i in range(len(step_data)):
         CommonUtil.ExecLog(sModuleInfo, "Processing Dataset #%s" % (i + 1), 5)                
         expected_data=step_data[i]
         #search for the size for now.
@@ -240,7 +240,28 @@ def count_shoe_size(dependency,step_data):
         if sTestStepReturnStatus!="Passed":
             CommonUtil.ExecLog(sModuleInfo, "Expected data and actual data not match for Dataset #%s" % (i + 1), 3)
             break
-    return sTestStepReturnStatus
+    return sTestStepReturnStatus"""
+    temp_compare=CompareModule.CompareModule()
+    expected_data=temp_compare.convert_to_new_format(step_data)
+    actual_data=  [
+                   [
+                    ('name','','Shetu'),
+                    ('roll','','0905011'),
+                    ('phone','home','01719-267494'),
+                    ('phone','mobile','0421-3466')
+                    ],
+                   [
+                    ('name','','Minar'),
+                    ('phone','home','01720-267494'),                    
+                    ('academic','dept','cse'),
+                    ('academic','cg','3.24'),
+                    ('phone','mobile','0423-3466')
+                    ]
+                   ] 
+    actual_data=temp_compare.convert_to_new_format(actual_data)
+    oCompare=Compare.Compare()
+    sTestStepReturnStatus=oCompare.FieldCompare(expected_data,actual_data)
+    print sTestStepReturnStatus
 def close_browser(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name    
     CommonUtil.ExecLog(sModuleInfo, "skipping closing browser", 1)
