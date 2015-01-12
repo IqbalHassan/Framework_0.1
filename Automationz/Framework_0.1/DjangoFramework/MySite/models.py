@@ -35,7 +35,7 @@ def GetColumnNames(sTableName):
 ### End of custom code ###
 
 class Branch(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField()
     branch_name = models.CharField(max_length=50, unique=True, blank=True)
     class Meta:
         db_table = 'branch'
@@ -60,9 +60,9 @@ class Bugs(models.Model):
     bug_modifiedby = models.CharField(max_length=40, blank=True)
     bug_modifydate = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=30, blank=True)
-    team_id = models.CharField(max_length=50, blank=True)
-    project_id = models.CharField(max_length=50, blank=True)
-    tester = models.CharField(max_length=100, blank=True)
+    team_id = models.CharField(max_length=-1, blank=True)
+    project_id = models.CharField(max_length=-1, blank=True)
+    tester = models.CharField(max_length=-1, blank=True)
     class Meta:
         db_table = 'bugs'
 
@@ -85,20 +85,20 @@ class Comments(models.Model):
     comment_date = models.DateTimeField(null=True, blank=True)
     commented_by = models.CharField(max_length=40)
     rank = models.CharField(max_length=40)
-    attachment = models.NullBooleanField(null=True, blank=True)
+    attachment = models.BooleanField(null=True, blank=True)
     class Meta:
         db_table = 'comments'
 
 class ComponentsMap(models.Model):
-    id1 = models.CharField(max_length=50, blank=True)
-    id2 = models.CharField(max_length=50, blank=True)
-    type1 = models.CharField(max_length=100, blank=True)
-    type2 = models.CharField(max_length=100, blank=True)
+    id1 = models.CharField(max_length=-1, blank=True)
+    id2 = models.CharField(max_length=-1, blank=True)
+    type1 = models.CharField(max_length=-1, blank=True)
+    type2 = models.CharField(max_length=-1, blank=True)
     class Meta:
         db_table = 'components_map'
 
 class ConfigValues(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField()
     type = models.CharField(max_length=100)
     sub_type = models.CharField(max_length=100, blank=True)
     value = models.CharField(max_length=100)
@@ -137,7 +137,7 @@ class DefaultChoice(models.Model):
         db_table = 'default_choice'
 
 class Dependency(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField()
     dependency_name = models.CharField(max_length=50, unique=True)
     class Meta:
         db_table = 'dependency'
@@ -151,15 +151,14 @@ class DependencyManagement(models.Model):
         db_table = 'dependency_management'
 
 class DependencyName(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField()
     name = models.CharField(max_length=50)
     dependency_id = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'dependency_name'
 
 class DependencyValues(models.Model):
-    id = models.IntegerField(primary_key=True)
-    dv_id = models.IntegerField()
+    id = models.IntegerField()
     version = models.CharField(max_length=50)
     bit_name = models.CharField(max_length=50)
     class Meta:
@@ -184,23 +183,23 @@ class FeatureManagement(models.Model):
         db_table = 'feature_management'
 
 class FeatureMap(models.Model):
-    id = models.CharField(max_length=50, blank=True)
-    type = models.CharField(max_length=50, blank=True)
-    feature_id = models.CharField(max_length=50, blank=True)
+    id = models.CharField(max_length=-1, blank=True)
+    type = models.CharField(max_length=-1, blank=True)
+    feature_id = models.CharField(max_length=-1, blank=True)
     class Meta:
         db_table = 'feature_map'
 
 class LabelMap(models.Model):
-    id = models.CharField(max_length=50, blank=True)
-    label_id = models.CharField(max_length=50, blank=True)
-    type = models.CharField(max_length=50, blank=True)
+    id = models.CharField(max_length=-1, blank=True)
+    label_id = models.CharField(max_length=-1, blank=True)
+    type = models.CharField(max_length=-1, blank=True)
     class Meta:
         db_table = 'label_map'
 
 class Labels(models.Model):
-    label_id = models.CharField(max_length=50, primary_key=True)
-    label_name = models.CharField(max_length=50, blank=True)
-    label_color = models.CharField(max_length=10, blank=True)
+    label_id = models.CharField(max_length=-1, primary_key=True)
+    label_name = models.CharField(max_length=-1, blank=True)
+    label_color = models.CharField(max_length=-1, blank=True)
     class Meta:
         db_table = 'labels'
 
@@ -230,13 +229,13 @@ class MasterData(models.Model):
 
 class MilestoneInfo(models.Model):
     id = models.IntegerField(null=True, blank=True)
-    name = models.CharField(max_length=500, blank=True)
+    name = models.CharField(max_length=-1, blank=True)
     starting_date = models.DateField(null=True, blank=True)
     finishing_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=30, blank=True)
-    description = models.TextField(blank=True)
-    created_by = models.TextField(blank=True)
-    modified_by = models.TextField(blank=True)
+    description = models.CharField(max_length=-1, blank=True)
+    created_by = models.CharField(max_length=-1, blank=True)
+    modified_by = models.CharField(max_length=-1, blank=True)
     created_date = models.DateField(null=True, blank=True)
     modified_date = models.DateField(null=True, blank=True)
     class Meta:
@@ -286,7 +285,7 @@ class ProductSections(models.Model):
 class ProjectTeamMap(models.Model):
     project = models.ForeignKey('Projects', null=True, blank=True)
     team_id = models.CharField(max_length=10, blank=True)
-    status = models.NullBooleanField(blank=True)
+    status = models.BooleanField(null=True, blank=True)
     class Meta:
         db_table = 'project_team_map'
 
@@ -413,14 +412,14 @@ class ResultTestStepsList(models.Model):
     description = models.CharField(max_length=200, blank=True)
     driver = models.CharField(max_length=200)
     steptype = models.CharField(max_length=100)
-    data_required = models.NullBooleanField(blank=True)
+    data_required = models.BooleanField(null=True, blank=True)
     stepfeature = models.CharField(max_length=200, blank=True)
-    stepenable = models.NullBooleanField(blank=True)
-    step_editable = models.NullBooleanField(blank=True)
+    stepenable = models.BooleanField(null=True, blank=True)
+    step_editable = models.BooleanField(null=True, blank=True)
     case_desc = models.CharField(max_length=200, blank=True)
     expected = models.CharField(max_length=200, blank=True)
-    verify_point = models.NullBooleanField(blank=True)
-    step_continue = models.NullBooleanField(blank=True)
+    verify_point = models.BooleanField(null=True, blank=True)
+    step_continue = models.BooleanField(null=True, blank=True)
     estd_time = models.CharField(max_length=100, blank=True)
     class Meta:
         db_table = 'result_test_steps_list'
@@ -446,8 +445,8 @@ class Tasks(models.Model):
     parent_id = models.CharField(max_length=10, blank=True)
     status = models.CharField(max_length=30, blank=True)
     tester = models.CharField(max_length=10, blank=True)
-    project_id = models.TextField(blank=True)
-    team_id = models.TextField(blank=True)
+    project_id = models.CharField(max_length=-1, blank=True)
+    team_id = models.CharField(max_length=-1, blank=True)
     class Meta:
         db_table = 'tasks'
 
@@ -611,14 +610,14 @@ class TestStepsList(models.Model):
     description = models.CharField(max_length=200, blank=True)
     driver = models.CharField(max_length=200)
     steptype = models.CharField(max_length=100)
-    data_required = models.NullBooleanField(blank=True)
+    data_required = models.BooleanField(null=True, blank=True)
     stepfeature = models.CharField(max_length=200, blank=True)
-    stepenable = models.NullBooleanField(blank=True)
-    step_editable = models.NullBooleanField(blank=True)
+    stepenable = models.BooleanField(null=True, blank=True)
+    step_editable = models.BooleanField(null=True, blank=True)
     case_desc = models.CharField(max_length=200, blank=True)
     expected = models.CharField(max_length=200, blank=True)
-    verify_point = models.NullBooleanField(blank=True)
-    step_continue = models.NullBooleanField(blank=True)
+    verify_point = models.BooleanField(null=True, blank=True)
+    step_continue = models.BooleanField(null=True, blank=True)
     estd_time = models.CharField(max_length=100, blank=True)
     class Meta:
         db_table = 'test_steps_list'
