@@ -1305,7 +1305,7 @@ def AddEstimatedTime(TestCaseList, run_id):
         total_time = 0
         for eachstep in range(1, step_count[0] + 1):
             step_id = each[0] + '_s' + str(eachstep)
-            time_query = "select description from result_master_data where field='estimated' and value='time' and rmd_id='%s' and run_id='%s'" % (step_id, run_id)
+            time_query = "select description from result_master_data where field='estimated' and value='time' and md_id='%s' and run_id='%s'" % (step_id, run_id)
             step_time = DB.GetData(Conn, time_query)
             total_time += int(step_time[0])
         format_time = ConvertTime(total_time)
@@ -1341,7 +1341,7 @@ def RunId_TestCases(request, RunId):  #==================Returns Test Cases When
         count = int(count)
         for eachstep in range(1, count + 1):
             temp_id = each + '_s' + str(eachstep)
-            query = "select description from result_master_data where field='estimated' and value='time' and rmd_id='%s' and run_id='%s'" % (temp_id, RunId)
+            query = "select description from result_master_data where field='estimated' and value='time' and md_id='%s' and run_id='%s'" % (temp_id, RunId)
             Conn=models.GetConnection()
             step_time = DB.GetData(Conn, query)
             Conn.close()
@@ -2081,7 +2081,7 @@ def RegisterReRunPermanentInfo(Conn, run_id, previous_run, TestCasesIDs):
         ##########################################Result_Master_Data##############################################
         master_data_column_query = "select column_name from information_schema.columns where table_name='result_master_data'"
         master_data_column = DB.GetData(Conn, master_data_column_query)
-        master_data_query = "select * from result_master_data where rmd_id Ilike '%s%%' and run_id='%s'" % (test_case, previous_run)
+        master_data_query = "select * from result_master_data where id Ilike '%s%%' and run_id='%s'" % (test_case, previous_run)
         master_data = DB.GetData(Conn, master_data_query, False)
         for each in master_data:
             master_data_dict = {}
@@ -6059,10 +6059,10 @@ def DataFetchForTestCases(request):
                 datasetid = test_case_id + "_s" + str((each + 1))
                 print datasetid
                 # Get the description from the master_data
-                query = "select description from result_master_data where rmd_id='%s' and field='step' and value='description' and run_id='%s'" % (datasetid, run_id)
+                query = "select description from result_master_data where md_id='%s' and field='step' and value='description' and run_id='%s'" % (datasetid, run_id)
                 step_description = DB.GetData(Conn, query, False)
                 Temp_Data.append(step_description[0][0])
-                query = "select description from result_master_data where rmd_id='%s' and field='expected' and value='result' and run_id='%s'" % (datasetid, run_id)
+                query = "select description from result_master_data where md_id='%s' and field='expected' and value='result' and run_id='%s'" % (datasetid, run_id)
                 step_expected = DB.GetData(Conn, query, False)
                 Temp_Data.append(step_expected[0][0])
                 # Get the expected Result from the master data
@@ -6143,7 +6143,7 @@ def TestDataFetch(request):
                         Step_Data.append(From_Data)
             else:
                 print "wrong data"
-            """query="select distinct id from result_master_data where rmd.id Ilike '%s" %data_set_id
+            """query="select distinct id from result_master_data where id Ilike '%s" %data_set_id
             query+=("_%' and run_id='"+run_id+"'")
             data_set=DB.GetData(Conn,query)
             temp_data=[]
@@ -6157,7 +6157,7 @@ def TestDataFetch(request):
             for each in data_set:
                 count=count+1
                 row_array.append((count,""))
-                query="select field,value from result_master_data where rmd.id Ilike '%s" %each
+                query="select field,value from result_master_data where id Ilike '%s" %each
                 query+=("%%' and field!='step' and field!='' and value!='description' and run_id='"+run_id+"'")
                 data=DB.GetData(Conn,query,False)
                 data_array.append(data)"""
@@ -6598,7 +6598,7 @@ def UpdateData(request):
             print test_case_status
             if test_case_status == 'Failed':
                 datasetid = test_case_id + '_s' + str(index)
-                query = "select description from result_master_data where field='verification' and value='point' and rmd.id='%s' and run_id='%s'" % (datasetid, run_id)
+                query = "select description from result_master_data where field='verification' and value='point' and id='%s' and run_id='%s'" % (datasetid, run_id)
                 Conn = models.GetConnection()
                 verification = DB.GetData(Conn, query, False)
                 if verification[0][0] == "no":

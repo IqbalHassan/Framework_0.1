@@ -386,7 +386,7 @@ def main():
                     else:
                         #for data and not data
                         #steps_data_query="select pmd.field,pmd.value from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' order by pmd.id"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0])
-                        steps_data_query="select distinct pmd.rmd_id from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' order by pmd.rmd_id"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0])
+                        steps_data_query="select distinct pmd.id from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' order by pmd.id"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0])
                         #get the distinct datasets
                         conn=DBUtil.ConnectToDataBase()
                         distinct_datasets=DBUtil.GetData(conn,steps_data_query)
@@ -394,12 +394,12 @@ def main():
                         if isinstance(distinct_datasets, list) and len(distinct_datasets)>0:
                             for each in distinct_datasets:
                                 each_data_set=[]
-                                data_query="select distinct pmd.field,pmd.value from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.rmd_id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' and pmd.rmd_id='%s'"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0],each)
+                                data_query="select distinct pmd.field,pmd.value from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' and pmd.id='%s'"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0],each)
                                 conn=DBUtil.ConnectToDataBase()
                                 data_in_each_set=DBUtil.GetData(conn,data_query,False)
                                 conn.close()
                                 for eachitem in data_in_each_set:
-                                    group_data_query="select distinct pmd.field,pmd.value from result_master_data pmd where run_id='%s' and rmd_id='%s'"%(TestRunID[0],eachitem[1])
+                                    group_data_query="select distinct pmd.field,pmd.value from result_master_data pmd where run_id='%s' and id='%s'"%(TestRunID[0],eachitem[1])
                                     conn=DBUtil.ConnectToDataBase()
                                     grouped_data=DBUtil.GetData(conn,group_data_query,False)
                                     conn.close()
