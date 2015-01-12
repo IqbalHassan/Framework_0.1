@@ -9,9 +9,9 @@
     </div>
     <table width="100%">
         <tr>
-            <td colspan="2"><input class="textbox" placeholder="Title of the Requirement" id="title" /></td>
+            <td><input class="m-wrap m-ctrl-large" placeholder="Title of the Requirement" id="title" /></td>
             <td id="relation" style="display: none">
-                <a class="createnew" id="create_child" style="float: right;cursor: pointer">Create Child</a>
+                <a class="m-btn purple" id="create_child" style="float: right;cursor: pointer">Create Child</a>
                 <!--a class="createnew" style="float: right">Create Parent</a-->
             </td>
         </tr>
@@ -27,7 +27,7 @@
                                         <b class="Text">Status:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <select id="status">
+                                        <select id="status" class="m-wrap m-ctrl-small">
                                             <option value="not_started">Not Started</option>
                                             <option value="started">Started</option>
                                             <option value="complete">Complete</option>
@@ -77,7 +77,7 @@
                                         <b class="Text">Feature:</b>
                                     </td>
                                     <td class="tc_form_input_col" id="featuregroup">
-                                        <select class="feature select-drop" data-level="" id="2">
+                                        <select class="feature m-wrap m-ctrl-small" data-level="" id="2">
                                             <option>Choose...</option>
                                         </select>
                                     </td>
@@ -94,7 +94,7 @@
                                         <b class="Text">Description:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <textarea rows="5" cols="65" id="description"></textarea>
+                                        <textarea rows="5" cols="65" id="description" class="m-wrap m-ctrl-large"></textarea>
                                     </td>
                                 </tr>
                             </table>
@@ -128,7 +128,7 @@
                                     </td>
                                     <td class="tc_form_input_col">
                                         <table>
-                                            <tr><td><input class="textbox" placeholder="Starting Date" id="starting_date"/></td></tr>
+                                            <tr><td><input class="m-wrap" placeholder="Starting Date" id="starting_date"/></td></tr>
                                         </table>
                                     </td>
                                 </tr>
@@ -142,7 +142,7 @@
                                     </td>
                                     <td class="tc_form_input_col">
                                         <table>
-                                            <tr><td><input class="textbox" placeholder="Ending Date" id="ending_date"/></td></tr>
+                                            <tr><td><input class="m-wrap" placeholder="Ending Date" id="ending_date"/></td></tr>
                                         </table>
                                     </td>
                                 </tr>
@@ -176,7 +176,7 @@
                                         <b class="Text">Milestone:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <select id="milestone">
+                                        <select id="milestone" class="m-wrap">
                                             {% if milestone_list %}
                                                 {% for x in milestone_list %}
                                                     <option value="{{x.0}}"/>{{x.1}}</option>
@@ -272,7 +272,7 @@
                 </div>
 
                 <div align="center">
-                    <input type='button' id='submit' class="new_tc_form button minibutton primary" value="Save" style="width:auto;"/>
+                    <input type='button' id='submit' class="m-btn green" value="Save" style="width:auto;"/>
                 </div>
             </td>
             <!--td width="4%">
