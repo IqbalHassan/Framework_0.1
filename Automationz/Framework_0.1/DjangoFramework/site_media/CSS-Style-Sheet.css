@@ -921,8 +921,8 @@ p.flip:ACTIVE,p.flip:HOVER {
 .ui-combobox .ui-autocomplete { max-height: 10em; overflow-y: auto; overflow-x: hidden; }
 /* =================== Text Class ========================*/
 .Text {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 18px;
+    font-family: "Segoe UI",Helvetica,Arial,sans-serif;
+    font-size: 1.2em;
     color: #707070;
 }
 
@@ -3604,6 +3604,7 @@ html, body {
     height: 100%;
     overflow: auto;
     background-color: #fff;
+	"Segoe UI",Helvetica,Arial,sans-serif;
 }
 
 .avgrund-popin {

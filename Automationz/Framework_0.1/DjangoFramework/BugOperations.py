@@ -57,7 +57,7 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
         if labels[0] != '':
             for each in labels:
                 label_Dict={
-                           'lm_id':bug_id,
+                           'id':bug_id,
                            'label_id':each.strip(),
                            'type':'BUG'
                 }
@@ -67,7 +67,7 @@ def CreateNewBug(title,status,description,start_date,end_date,team,priority,mile
         Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
         if len(Feature_Id) > 0:
             feat_Dict={
-                           'fm_id':bug_id,
+                           'id':bug_id,
                            'type':'BUG',
                            'feature_id':Feature_Id[0]
                 }
@@ -160,10 +160,10 @@ def EditBug(bug_id,title,status,description,start_date,end_date,team,priority,mi
                 new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                 
         if labels[0] != '':
-            lsres=DB.DeleteRecord(Conn,"label_map", lm_id=bug_id)
+            lsres=DB.DeleteRecord(Conn,"label_map", id=bug_id)
             for each in labels:
                 label_Dict={
-                           'lm_id':bug_id,
+                           'id':bug_id,
                            'label_id':each.strip(),
                            'type':'BUG'
                 }
@@ -174,9 +174,9 @@ def EditBug(bug_id,title,status,description,start_date,end_date,team,priority,mi
         
         Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % Feature_Path)
         if len(Feature_Id) > 0:
-            lsres=DB.DeleteRecord(Conn,"feature_map", fm_id=bug_id)
+            lsres=DB.DeleteRecord(Conn,"feature_map", id=bug_id)
             feat_Dict={
-                           'fm_id':bug_id,
+                           'id':bug_id,
                            'type':'BUG',
                            'feature_id':Feature_Id[0]
                 }

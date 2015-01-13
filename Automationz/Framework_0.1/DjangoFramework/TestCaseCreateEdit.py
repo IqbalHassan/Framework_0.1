@@ -23,12 +23,12 @@ def Result_Get_PIM_Data_By_Id(conn, RunID, Data_Id):
 
     Data_List = []
     SQLQuery = ("select "
-    " pmd.rmd_id,"
+    " pmd.id,"
     " pmd.field,"
     " pmd.value"
     " from result_master_data pmd"
     " where"
-    " pmd.rmd_id = '%s' and pmd.run_id='%s'; " % (Data_Id, RunID))
+    " pmd.id = '%s' and pmd.run_id='%s'; " % (Data_Id, RunID))
 
     Data_List = DBUtil.GetData(conn, SQLQuery, False)
     Data_List = [tuple(x[1:3])for x in Data_List]
@@ -43,7 +43,7 @@ def Result_Get_PIM_Data_By_Id(conn, RunID, Data_Id):
                 " pmd.value"
                 " from result_master_data pmd"
                 " where"
-                " pmd.rmd_id = '%s' and pmd.run_id='%s'"
+                " pmd.id = '%s' and pmd.run_id='%s'"
                 " ;" % (eachTuple[1], RunID))
                 AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
             else:
@@ -132,7 +132,7 @@ def Delete_Test_Case(Conn, tc_list):
             LogMessage(sModuleInfo, "Deleted entry %s from test_case_datasets for test case %s" % (dataset.strip(), test_case), 1)
         else:
             LogMessage(sModuleInfo, result, 3)
-        master_data_query = "select id,field,value from master_data where md_id Ilike '%s%%'" % test_case
+        master_data_query = "select id,field,value from master_data where id Ilike '%s%%'" % test_case
         if DBUtil.IsDBConnectionGood(Conn) == False:
             time.sleep(1)
             Conn = GetConnection()
@@ -379,7 +379,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                     LogMessage(sModuleInfo, result, 3)
             # get the test step sequenece
             master_id = ('%s_s' % tc_id) + str(Step_Index)
-            master_data_collect_query = "select * from master_data where md_id Ilike '%s%%'" % master_id 
+            master_data_collect_query = "select * from master_data where id Ilike '%s%%'" % master_id 
             if DBUtil.IsDBConnectionGood(Conn) == False:
                 time.sleep(1)
                 Conn = GetConnection()
@@ -535,14 +535,14 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                 if each not in master_data_collected_data:
                     # data to be inserted
                     # first check that if  there is any value on that or not..if there update that..
-                    master_data_table_query = "select id,field,value from master_data where md_id='%s' and field='%s' and value='%s'" % (each[0], each[1], each[2])
+                    master_data_table_query = "select id,field,value from master_data where id='%s' and field='%s' and value='%s'" % (each[0], each[1], each[2])
                     if DBUtil.IsDBConnectionGood(Conn) == False:
                         time.sleep(1)
                         Conn = GetConnection()
                     master_data_existing_count = DBUtil.GetData(Conn, master_data_table_query, False)
                     if len(master_data_existing_count) > 0:
                         # print update here
-                        master_data_column = ['md_id', 'field', 'value', 'description']
+                        master_data_column = ['id', 'field', 'value', 'description']
                         master_data_dict = {}
                         for eachitem in zip(master_data_column, each):
                             master_data_dict.update({eachitem[0]:eachitem[1]})
@@ -560,7 +560,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                         else:
                             LogMessage(sModuleInfo, "Failed to update Master Data while Updating step %s in test case %s" % (Step_Index, tc_id), 3)
                     else:
-                        master_data_column = ['md_id', 'field', 'value', 'description']
+                        master_data_column = ['id', 'field', 'value', 'description']
                         master_data_dict = {}
                         for eachitem in zip(master_data_column, each):
                             master_data_dict.update({eachitem[0]:eachitem[1]})
@@ -577,7 +577,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                     LogMessage(sModuleInfo, "Master Data Table already contains the tuple for step %s in test case %s" % (Step_Index, tc_id), 1)
             print master_data_collected_data
             # #Cleaning up the unnecessary data from the master_data:
-            master_data_column = ['md_id', 'field', 'value', 'description']
+            master_data_column = ['id', 'field', 'value', 'description']
             for each in master_data_collected_data:
                 master_data_dict = {}
                 for eachitem in zip(master_data_column, each):
@@ -614,9 +614,9 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
         # form query
         condition += ("id not Ilike '%s%%' and " % each)
     condition = condition[:-5].strip()
-    master_data_unnecessary_query = "select md_id,field,value from master_data where %s" % condition
+    master_data_unnecessary_query = "select id,field,value from master_data where %s" % condition
     master_data_unnecessary = DBUtil.GetData(Conn, master_data_unnecessary_query, False)
-    master_data_column = ['md_id', 'field', 'value']
+    master_data_column = ['id', 'field', 'value']
     for each in master_data_unnecessary:
         master_data_dict = {}
         for eachitem in zip(master_data_column, each):
@@ -793,12 +793,12 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
 
     Data_List = []
     SQLQuery = ("select "
-    " pmd.md_id,"
+    " pmd.id,"
     " pmd.field,"
     " pmd.value"
     " from master_data pmd"
     " where"
-    " pmd.md_id = '%s';" % (Data_Id))
+    " pmd.id = '%s';" % (Data_Id))
 
     Data_List = DBUtil.GetData(conn, SQLQuery, False)
     Data_List = [tuple(x[1:3])for x in Data_List]
@@ -813,7 +813,7 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
                 " pmd.value"
                 " from master_data pmd"
                 " where"
-                " pmd.md_id = '%s'"
+                " pmd.id = '%s'"
                 " ;" % (eachTuple[1]))
                 AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
             else:
@@ -1228,7 +1228,7 @@ def InsertMasterData(Conn, Data_ID, dataList):
                 # first give the entry for the group data
                 data_index = (Data_ID + "_a%s" % address_Index)
                 master_data_group_data = {}
-                master_data_group_data.update({'md_id':Data_ID, 'field':each[0], 'value':data_index})
+                master_data_group_data.update({'id':Data_ID, 'field':each[0], 'value':data_index})
                 if DBUtil.IsDBConnectionGood(Conn) == False:
                     time.sleep(1)
                     Conn = GetConnection()
@@ -1242,7 +1242,7 @@ def InsertMasterData(Conn, Data_ID, dataList):
                     if isinstance(eachitem, tuple):
                         # form dict
                         group_data_entry = {}
-                        group_data_entry.update({'md_id':data_index, 'field':eachitem[0], 'value':eachitem[1]})
+                        group_data_entry.update({'id':data_index, 'field':eachitem[0], 'value':eachitem[1]})
                         if DBUtil.IsDBConnectionGood(Conn) == False:
                             time.sleep(1)
                             Conn = GetConnection()
@@ -1261,7 +1261,7 @@ def InsertMasterData(Conn, Data_ID, dataList):
                 # Normal Data is to be given here
                 # form the dict for the normal tuple data
                 master_data_tuple_data = {}
-                master_data_tuple_data.update({'md_id':Data_ID, 'field':each[0], 'value':each[1]})
+                master_data_tuple_data.update({'id':Data_ID, 'field':each[0], 'value':each[1]})
                 if DBUtil.IsDBConnectionGood(Conn) == False:
                     time.sleep(1)
                     Conn = GetConnection()
@@ -1285,7 +1285,7 @@ def InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result
     for each in zip(field_array, value_array, values):
         # form Dict
         Dict = {}
-        Dict.update({'md_id':Master_Data_ID, 'field':each[0], 'value':each[1], 'description':each[2]})
+        Dict.update({'id':Master_Data_ID, 'field':each[0], 'value':each[1], 'description':each[2]})
         if DBUtil.IsDBConnectionGood(Conn) == False:
             time.sleep(1)
             Conn = GetConnection()
@@ -1360,10 +1360,10 @@ def Insert_Linkings(Conn, TC_Id, TC_Name, labels):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     # Form the Dictionary to add test case information
     if labels[0] != '':
-        lsres=DBUtil.DeleteRecord(Conn,"label_map", lm_id=TC_Id, type='TC')
+        lsres=DBUtil.DeleteRecord(Conn,"label_map", id=TC_Id, type='TC')
         for each in labels:
             label_Dict={
-                       'lm_id':TC_Id,
+                       'id':TC_Id,
                        'label_id':each.strip(),
                        'type':'TC'
             }
