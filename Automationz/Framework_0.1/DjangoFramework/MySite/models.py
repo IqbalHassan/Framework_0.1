@@ -41,12 +41,14 @@ def GetColumnNames(sTableName):
 # into your database.
 
 class Branch(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField()
     branch_name = models.CharField(max_length=50, unique=True, blank=True)
     class Meta:
         db_table = 'branch'
 
 class BranchManagement(models.Model):
+    _id = models.IntegerField(primary_key=True)
     project_id = models.CharField(max_length=10, blank=True)
     team_id = models.IntegerField(null=True, blank=True)
     branch = models.IntegerField(null=True, blank=True)
@@ -54,6 +56,7 @@ class BranchManagement(models.Model):
         db_table = 'branch_management'
 
 class Bugs(models.Model):
+    _id = models.IntegerField(primary_key=True)
     bug_id = models.CharField(max_length=20, blank=True)
     bug_title = models.CharField(max_length=100, blank=True)
     bug_description = models.TextField(blank=True)
@@ -73,18 +76,21 @@ class Bugs(models.Model):
         db_table = 'bugs'
 
 class CommentAttachment(models.Model):
+    _id = models.IntegerField(primary_key=True)
     comment_id = models.CharField(max_length=10, unique=True)
     docfile = models.CharField(max_length=300)
     class Meta:
         db_table = 'comment_attachment'
 
 class CommentTrack(models.Model):
+    _id = models.IntegerField(primary_key=True)
     child_comment = models.CharField(max_length=10, unique=True)
     parent_comment = models.CharField(max_length=300)
     class Meta:
         db_table = 'comment_track'
 
 class Comments(models.Model):
+    _id = models.IntegerField(primary_key=True)
     comment_id = models.CharField(max_length=10, unique=True)
     project_id = models.CharField(max_length=10)
     comment_text = models.TextField(blank=True)
@@ -96,6 +102,7 @@ class Comments(models.Model):
         db_table = 'comments'
 
 class ComponentsMap(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id1 = models.CharField(max_length=-1, blank=True)
     id2 = models.CharField(max_length=-1, blank=True)
     type1 = models.CharField(max_length=-1, blank=True)
@@ -104,6 +111,7 @@ class ComponentsMap(models.Model):
         db_table = 'components_map'
 
 class ConfigValues(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField()
     type = models.CharField(max_length=100)
     sub_type = models.CharField(max_length=100, blank=True)
@@ -112,6 +120,7 @@ class ConfigValues(models.Model):
         db_table = 'config_values'
 
 class ContainerTypeData(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(unique=True)
     dataid = models.CharField(max_length=20, blank=True)
     curname = models.CharField(max_length=200, blank=True)
@@ -121,6 +130,7 @@ class ContainerTypeData(models.Model):
         db_table = 'container_type_data'
 
 class DailyBuildStatus(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(unique=True)
     daily_build_user = models.CharField(max_length=100)
     status = models.CharField(max_length=100)
@@ -136,6 +146,7 @@ class DailyBuildStatus(models.Model):
         db_table = 'daily_build_status'
 
 class DefaultChoice(models.Model):
+    _id = models.IntegerField(primary_key=True)
     user_id = models.CharField(max_length=5, unique=True)
     default_project = models.CharField(max_length=10, blank=True)
     default_team = models.IntegerField(null=True, blank=True)
@@ -143,12 +154,14 @@ class DefaultChoice(models.Model):
         db_table = 'default_choice'
 
 class Dependency(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField()
     dependency_name = models.CharField(max_length=50, unique=True)
     class Meta:
         db_table = 'dependency'
 
 class DependencyManagement(models.Model):
+    _id = models.IntegerField(primary_key=True)
     project_id = models.CharField(max_length=10)
     team_id = models.IntegerField()
     dependency = models.IntegerField()
@@ -157,6 +170,7 @@ class DependencyManagement(models.Model):
         db_table = 'dependency_management'
 
 class DependencyName(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField()
     name = models.CharField(max_length=50)
     dependency_id = models.IntegerField(null=True, blank=True)
@@ -164,6 +178,7 @@ class DependencyName(models.Model):
         db_table = 'dependency_name'
 
 class DependencyValues(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField()
     version = models.CharField(max_length=50)
     bit_name = models.CharField(max_length=50)
@@ -171,6 +186,7 @@ class DependencyValues(models.Model):
         db_table = 'dependency_values'
 
 class ExecutionLog(models.Model):
+    _id = models.IntegerField(primary_key=True)
     executionlogid = models.IntegerField(unique=True)
     logid = models.CharField(max_length=40, blank=True)
     modulename = models.CharField(max_length=60)
@@ -182,6 +198,7 @@ class ExecutionLog(models.Model):
         db_table = 'execution_log'
 
 class FeatureManagement(models.Model):
+    _id = models.IntegerField(primary_key=True)
     project_id = models.CharField(max_length=10, blank=True)
     team_id = models.IntegerField(null=True, blank=True)
     feature = models.IntegerField(null=True, blank=True)
@@ -189,6 +206,7 @@ class FeatureManagement(models.Model):
         db_table = 'feature_management'
 
 class FeatureMap(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.CharField(max_length=-1, blank=True)
     type = models.CharField(max_length=-1, blank=True)
     feature_id = models.CharField(max_length=-1, blank=True)
@@ -196,6 +214,7 @@ class FeatureMap(models.Model):
         db_table = 'feature_map'
 
 class LabelMap(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.CharField(max_length=-1, blank=True)
     label_id = models.CharField(max_length=-1, blank=True)
     type = models.CharField(max_length=-1, blank=True)
@@ -203,6 +222,7 @@ class LabelMap(models.Model):
         db_table = 'label_map'
 
 class Labels(models.Model):
+    _id = models.IntegerField(primary_key=True)
     label_id = models.CharField(max_length=-1, unique=True)
     label_name = models.CharField(max_length=-1, blank=True)
     label_color = models.CharField(max_length=-1, blank=True)
@@ -210,6 +230,7 @@ class Labels(models.Model):
         db_table = 'labels'
 
 class MachineDependencySettings(models.Model):
+    _id = models.IntegerField(primary_key=True)
     machine_serial = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=50, blank=True)
     bit = models.IntegerField(null=True, blank=True)
@@ -219,6 +240,7 @@ class MachineDependencySettings(models.Model):
         db_table = 'machine_dependency_settings'
 
 class MachineProjectMap(models.Model):
+    _id = models.IntegerField(primary_key=True)
     machine_serial = models.IntegerField(null=True, blank=True)
     project_id = models.CharField(max_length=10, blank=True)
     team_id = models.IntegerField(null=True, blank=True)
@@ -226,6 +248,7 @@ class MachineProjectMap(models.Model):
         db_table = 'machine_project_map'
 
 class MasterData(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.CharField(max_length=30)
     field = models.CharField(max_length=50)
     value = models.TextField()
@@ -234,6 +257,7 @@ class MasterData(models.Model):
         db_table = 'master_data'
 
 class MilestoneInfo(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=-1, blank=True)
     starting_date = models.DateField(null=True, blank=True)
@@ -248,12 +272,14 @@ class MilestoneInfo(models.Model):
         db_table = 'milestone_info'
 
 class MilestoneTeamMap(models.Model):
+    _id = models.IntegerField(primary_key=True)
     milestone_id = models.IntegerField(null=True, blank=True)
     team_id = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'milestone_team_map'
 
 class PerformanceResults(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(unique=True)
     product_version = models.CharField(max_length=300)
     tc = models.ForeignKey('TestCases')
@@ -269,6 +295,7 @@ class PerformanceResults(models.Model):
         db_table = 'performance_results'
 
 class PermittedUserList(models.Model):
+    _id = models.IntegerField(primary_key=True)
     user_id = models.IntegerField(unique=True)
     user_names = models.CharField(max_length=255)
     user_level = models.CharField(max_length=255)
@@ -277,18 +304,21 @@ class PermittedUserList(models.Model):
         db_table = 'permitted_user_list'
 
 class ProductFeatures(models.Model):
+    _id = models.IntegerField(primary_key=True)
     feature_id = models.IntegerField()
     feature_path = models.TextField(unique=True) # This field type is a guess.
     class Meta:
         db_table = 'product_features'
 
 class ProductSections(models.Model):
+    _id = models.IntegerField(primary_key=True)
     section_id = models.IntegerField(unique=True)
     section_path = models.TextField() # This field type is a guess.
     class Meta:
         db_table = 'product_sections'
 
 class ProjectTeamMap(models.Model):
+    _id = models.IntegerField(primary_key=True)
     project = models.ForeignKey('Projects', null=True, blank=True)
     team_id = models.CharField(max_length=10, blank=True)
     status = models.BooleanField(null=True, blank=True)
@@ -296,6 +326,7 @@ class ProjectTeamMap(models.Model):
         db_table = 'project_team_map'
 
 class Projects(models.Model):
+    _id = models.IntegerField(primary_key=True)
     project_id = models.CharField(max_length=10, unique=True)
     project_name = models.CharField(max_length=100)
     project_description = models.CharField(max_length=200)
@@ -310,18 +341,21 @@ class Projects(models.Model):
         db_table = 'projects'
 
 class RequirementSections(models.Model):
+    _id = models.IntegerField(primary_key=True)
     requirement_path_id = models.IntegerField(unique=True)
     requirement_path = models.TextField() # This field type is a guess.
     class Meta:
         db_table = 'requirement_sections'
 
 class RequirementTeamMap(models.Model):
+    _id = models.IntegerField(primary_key=True)
     requirement = models.ForeignKey('Requirements', null=True, blank=True)
     team_id = models.CharField(max_length=10, blank=True)
     class Meta:
         db_table = 'requirement_team_map'
 
 class Requirements(models.Model):
+    _id = models.IntegerField(primary_key=True)
     requirement_id = models.CharField(max_length=10, unique=True)
     requirement_title = models.CharField(max_length=100)
     requirement_startingdate = models.DateField()
@@ -340,6 +374,7 @@ class Requirements(models.Model):
         db_table = 'requirements'
 
 class ResultContainerTypeData(models.Model):
+    _id = models.IntegerField(primary_key=True)
     run_id = models.CharField(max_length=100)
     id = models.IntegerField()
     dataid = models.CharField(max_length=20, blank=True)
@@ -350,6 +385,7 @@ class ResultContainerTypeData(models.Model):
         db_table = 'result_container_type_data'
 
 class ResultMasterData(models.Model):
+    _id = models.IntegerField(primary_key=True)
     run_id = models.CharField(max_length=100)
     id = models.CharField(max_length=30)
     field = models.CharField(max_length=50)
@@ -359,6 +395,7 @@ class ResultMasterData(models.Model):
         db_table = 'result_master_data'
 
 class ResultTestCaseDatasets(models.Model):
+    _id = models.IntegerField(primary_key=True)
     run = models.ForeignKey('ResultTestCases')
     tcdatasetid = models.CharField(max_length=20)
     tc_id = models.CharField(max_length=10, blank=True)
@@ -368,6 +405,7 @@ class ResultTestCaseDatasets(models.Model):
         db_table = 'result_test_case_datasets'
 
 class ResultTestCaseTag(models.Model):
+    _id = models.IntegerField(primary_key=True)
     run = models.ForeignKey('ResultTestCases')
     tc_id = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
@@ -376,6 +414,7 @@ class ResultTestCaseTag(models.Model):
         db_table = 'result_test_case_tag'
 
 class ResultTestCases(models.Model):
+    _id = models.IntegerField(primary_key=True)
     run_id = models.CharField(max_length=100)
     tc_id = models.CharField(max_length=10)
     tc_name = models.CharField(max_length=100)
@@ -393,6 +432,7 @@ class ResultTestCases(models.Model):
         db_table = 'result_test_cases'
 
 class ResultTestSteps(models.Model):
+    _id = models.IntegerField(primary_key=True)
     run = models.ForeignKey('ResultTestStepsList')
     id = models.IntegerField()
     tc_id = models.CharField(max_length=10, blank=True)
@@ -403,6 +443,7 @@ class ResultTestSteps(models.Model):
         db_table = 'result_test_steps'
 
 class ResultTestStepsData(models.Model):
+    _id = models.IntegerField(primary_key=True)
     run = models.ForeignKey(ResultTestCaseDatasets)
     id = models.IntegerField()
     tcdatasetid = models.CharField(max_length=20, blank=True)
@@ -412,6 +453,7 @@ class ResultTestStepsData(models.Model):
         db_table = 'result_test_steps_data'
 
 class ResultTestStepsList(models.Model):
+    _id = models.IntegerField(primary_key=True)
     run_id = models.CharField(max_length=100)
     step_id = models.IntegerField()
     stepname = models.CharField(max_length=200)
@@ -431,12 +473,14 @@ class ResultTestStepsList(models.Model):
         db_table = 'result_test_steps_list'
 
 class TaskSections(models.Model):
+    _id = models.IntegerField(primary_key=True)
     task_path_id = models.IntegerField(unique=True)
     task_path = models.TextField() # This field type is a guess.
     class Meta:
         db_table = 'task_sections'
 
 class Tasks(models.Model):
+    _id = models.IntegerField(primary_key=True)
     tasks_id = models.CharField(max_length=10, unique=True)
     tasks_title = models.CharField(max_length=100)
     tasks_description = models.TextField(blank=True)
@@ -457,12 +501,14 @@ class Tasks(models.Model):
         db_table = 'tasks'
 
 class TeamInfo(models.Model):
+    _id = models.IntegerField(primary_key=True)
     team_id = models.IntegerField(null=True, blank=True)
     user_id = models.CharField(max_length=10, blank=True)
     class Meta:
         db_table = 'team_info'
 
 class TeamWiseSettings(models.Model):
+    _id = models.IntegerField(primary_key=True)
     project_id = models.CharField(max_length=10, blank=True)
     team_id = models.IntegerField(null=True, blank=True)
     parameters = models.IntegerField(null=True, blank=True)
@@ -471,6 +517,7 @@ class TeamWiseSettings(models.Model):
         db_table = 'team_wise_settings'
 
 class Test(models.Model):
+    _id = models.IntegerField(primary_key=True)
     tc_id = models.CharField(max_length=10, blank=True)
     tc_name = models.CharField(max_length=100, blank=True)
     tc_type = models.CharField(max_length=10, blank=True)
@@ -487,6 +534,7 @@ class Test(models.Model):
         db_table = 'test'
 
 class TestCaseDatasets(models.Model):
+    _id = models.IntegerField(primary_key=True)
     tcdatasetid = models.CharField(max_length=20, unique=True)
     tc = models.ForeignKey('TestCases', null=True, blank=True)
     execornot = models.CharField(max_length=10)
@@ -495,6 +543,7 @@ class TestCaseDatasets(models.Model):
         db_table = 'test_case_datasets'
 
 class TestCaseResults(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(unique=True)
     run = models.ForeignKey(ResultTestCases)
     tc_id = models.CharField(max_length=20)
@@ -511,6 +560,7 @@ class TestCaseResults(models.Model):
         db_table = 'test_case_results'
 
 class TestCaseTag(models.Model):
+    _id = models.IntegerField(primary_key=True)
     tc = models.ForeignKey('TestCases')
     name = models.CharField(max_length=100)
     property = models.CharField(max_length=100)
@@ -518,6 +568,7 @@ class TestCaseTag(models.Model):
         db_table = 'test_case_tag'
 
 class TestCases(models.Model):
+    _id = models.IntegerField(primary_key=True)
     tc_id = models.CharField(max_length=10, unique=True)
     tc_name = models.CharField(max_length=100)
     tc_type = models.CharField(max_length=10)
@@ -534,6 +585,7 @@ class TestCases(models.Model):
         db_table = 'test_cases'
 
 class TestEnvResults(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(unique=True)
     run_id = models.TextField()
     tester_id = models.CharField(max_length=100)
@@ -546,6 +598,7 @@ class TestEnvResults(models.Model):
         db_table = 'test_env_results'
 
 class TestRun(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(unique=True)
     run = models.ForeignKey(ResultTestCases)
     tc_id = models.CharField(max_length=20)
@@ -574,6 +627,7 @@ class TestRunEnv(models.Model):
         db_table = 'test_run_env'
 
 class TestStepResults(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(unique=True)
     run = models.ForeignKey(ResultTestCases)
     tc_id = models.CharField(max_length=20)
@@ -594,6 +648,7 @@ class TestStepResults(models.Model):
         db_table = 'test_step_results'
 
 class TestSteps(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(unique=True)
     tc = models.ForeignKey(TestCases, null=True, blank=True)
     step = models.ForeignKey('TestStepsList')
@@ -603,6 +658,7 @@ class TestSteps(models.Model):
         db_table = 'test_steps'
 
 class TestStepsData(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(unique=True)
     tcdatasetid = models.ForeignKey(TestCaseDatasets, null=True, db_column='tcdatasetid', blank=True)
     testdatasetid = models.CharField(max_length=20)
@@ -611,6 +667,7 @@ class TestStepsData(models.Model):
         db_table = 'test_steps_data'
 
 class TestStepsList(models.Model):
+    _id = models.IntegerField(primary_key=True)
     step_id = models.IntegerField(unique=True)
     stepname = models.CharField(max_length=200)
     description = models.CharField(max_length=200, blank=True)
@@ -629,6 +686,7 @@ class TestStepsList(models.Model):
         db_table = 'test_steps_list'
 
 class UserInfo(models.Model):
+    _id = models.IntegerField(primary_key=True)
     username = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255, blank=True)
     full_name = models.CharField(max_length=511, blank=True)
@@ -637,6 +695,7 @@ class UserInfo(models.Model):
         db_table = 'user_info'
 
 class Versions(models.Model):
+    _id = models.IntegerField(primary_key=True)
     id = models.IntegerField(null=True, blank=True)
     version_name = models.CharField(max_length=50, unique=True, blank=True)
     class Meta:
