@@ -1,6 +1,10 @@
 import logging
 import os
-import wmi
+
+try:
+    import wmi
+except:
+    pass
 
 import datetime
 
