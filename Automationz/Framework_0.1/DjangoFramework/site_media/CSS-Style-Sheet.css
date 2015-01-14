@@ -1978,6 +1978,8 @@ article header{
 .one-column-emphasis tbody tr:hover td {
     color: #339;
     background: #eff2ff;
+    overflow: visible;
+    white-space: pre-wrap;
 }
 .one-column-emphasis td {
     color: #669;
@@ -1991,6 +1993,8 @@ article header{
 .one-column-emphasis tr:hover td {
     color: #339;
     background: #eff2ff;
+    overflow: visible;
+    white-space: pre-wrap;
 }
 
 /**********create test side bar***********/
