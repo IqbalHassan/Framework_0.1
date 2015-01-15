@@ -313,7 +313,7 @@ function drawStatusTable(status){
     return message;
 }
 
-var itemPerPage=1;
+var itemPerPage=2;
 var current_page=1;
 var user_text='';
 $(document).ready(function(){
