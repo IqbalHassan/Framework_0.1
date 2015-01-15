@@ -4454,11 +4454,15 @@ def Process_Git(request):
     import GitApi
     # if request.is_ajax():
     if request.method == "GET":
+        message = ''
         command = request.GET.get(u'command', '')
         if command == 'Pull':
             message = GitApi.pull_latest_git()
         elif command == 'Log':
-            message = GitApi.git_log(-4)
+            output = GitApi.git_log(-4)
+            output = output.splitlines()
+            for item in output:
+                message += "%s<br>" % item
     json = simplejson.dumps(message)
     return HttpResponse(json, mimetype='application/json')
 
