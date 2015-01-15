@@ -12054,21 +12054,3 @@ def RemoveProfilePicture(request):
         Conn.close()
     
     return HttpResponse('')
-
-def models_test(req):
-    test_user = UserInfo(username="test_user", password="test_password", full_name="Tester Dummy")
-    test_user.save()
-    data = UserInfo.objects.all()
-    
-    result_data = ''
-    for user in data:
-        result_data += '''
-    <span>Username: <span style="font-weight: bold;">%s</span></span>
-    <br>
-    <span>Password: <span style="font-weight: bold;">%s</span></span>
-    <br>
-    <span>Full name: <span style="font-weight: bold;">%s</span></span>
-    <br><br>
-    ''' % (user.username, user.password, user.full_name)
-    
-    return HttpResponse(result_data)
