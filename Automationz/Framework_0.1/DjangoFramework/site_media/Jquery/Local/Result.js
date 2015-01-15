@@ -1,176 +1,3 @@
-//var stepCount=20;
-/*var itemPerPage=10;
-$(document).ready(function(){
-    var project_id= $.session.get('project_id');
-    var team_id= $.session.get('default_team_identity');
-    AutoComplete(project_id,team_id);
-    PerformSearch(project_id,team_id,1,itemPerPage);
-   // PaginationButton(project_id,team_id);
-    DeleteFilterData(project_id,team_id);
-    $('#project_identity').on('change',function(){
-        $.session.set('project_id',$(this).val());
-        window.location.reload(true);
-    });
-    $('#default_team_identity').on('change',function(){
-        $.session.set('default_team_identity',$(this).val());
-        window.location.reload(true);
-    });
-    $("#simple-menu").sidr({
-        name: 'sidr',
-        side: 'left'
-    });
-
-});
-function DeleteFilterData(project_id,team_id){
-    $('#searchedFilter td .delete').live('click',function(){
-        $(this).parent().remove();
-        $(this).remove();
-        PerformSearch(project_id,team_id);
-    });
-}
-function AutoComplete(project_id,team_id){
-    $('#inputText').autocomplete({
-        source:function(request,response){
-            $.ajax({
-                url:"GetResultAuto",
-                dataType:"json",
-                data:{
-                    term:request.term,
-                    project_id:project_id,
-                    team_id:team_id
-                },
-                success:function(data){
-                    response(data);
-                }
-            });
-        },
-        select:function(request,ui){
-            var value=ui.item[0].trim();
-            if(value!=""){
-                $('#searchedFilter').append('<tr><td>&nbsp;&nbsp;</td><td align="left"><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /><b>'+value+':<span style="display: none;">'+ui.item[1].trim()+'</span>&nbsp;</b></td></tr>');
-                //    '<td class="Text"></td>');
-                $('#pagination_no').text(1);
-                PerformSearch(project_id,team_id);
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
-            .appendTo( ul );
-    };
-}
-/*function PaginationButton(project_id,team_id){
-    $('.previous_page').click(function(){
-        var index=$("#pagination_no").text().trim();
-        index=parseInt(index);
-        if(index>=2){
-            index--;
-        }
-        $('#pagination_no').text(index);
-        PerformSearch(project_id,team_id);
-    });
-    $('.next_page').click(function(){
-        var index=$('#pagination_no').text().trim();
-        index=parseInt(index);
-        var end=$('#end').text().trim();
-        var total_entry=$('#total').text().trim();
-        if (parseInt(end)<parseInt(total_entry)){
-            index++;
-        }
-        $('#pagination_no').text(index);
-        PerformSearch(project_id,team_id);
-    });
-    $('#filterCount').on('change',function(){
-        $('#pagination_no').html('1');
-        PerformSearch(project_id,team_id);
-    });
-}*/
-/*
-function PerformSearch(project_id,team_id,current_page,itemPerPage){
-    var message=[];
-    $('#searchedFilter td').each(function(){
-        message.push($(this).find('b').text().trim());
-    });
-    //var currentPagination=$('#pagination_no').text().trim();
-    var UserText=message.join("|");
-    //var stepCount=$('#filterCount option:selected').val().trim();
-    $.get("GetFilteredDataResult",
-        {
-            UserText:UserText,
-            pagination:current_page,
-            project_id: project_id,
-            team_id: team_id,
-            capacity:itemPerPage
-        },
-        function(data){
-            if(data['total'].length>0){
-                //make a table column
-                var message="";
-                message+='<table class="one-column-emphasis">';
-                message+='<tr>';
-                for(var i=0;i<data['column'].length;i++){
-                    message+='<th align="left">'+data['column'][i]+'</th>';
-                }
-                message+='</tr>'
-                for(var i=0;i<data['total'].length;i++){
-                    message+='<tr>';
-                    for(var j=0;j<data['total'][i].length;j++){
-                        if(data['total'][i][j]=='status'){
-                            message+=(drawStatusTable(data['status'][i]));
-                        }
-                        else{
-                            message+='<td align="left">'+data['total'][i][j]+'</td>';
-                        }
-
-                    }
-                    message+='</tr>';
-                }
-                message+='</table>';
-                $('#allRun').html(message);
-                make_clickable('#allRun');
-                make_bar_clickable('#allRun');
-                $("#allRun").find('table:eq(0) tr td:nth-child(8)').each(function(){
-                    var message=$(this).text().trim();
-                    if(message=="null"){
-                        $(this).text('N/A');
-                    }
-                    else{
-                        $(this).text(message.split(".").join('/'));
-                    }
-
-                });
-                $('#allRun').pagination({
-                    'items':data['total'].length,
-                    'itemsOnPage':itemPerPage,
-                    'currentPage':current_page
-                });
-                /*$('#total').html(data['totalGet']);
-                $('#start').html((currentPagination-1)*stepCount+1);
-                if(parseInt((currentPagination)*stepCount)>parseInt(data['totalGet'])){
-                    $('#end').html(data['totalGet']);
-                }
-                else{
-                    $('#end').html((currentPagination)*stepCount);
-                }
-                $('#pagination_div').css({'display':'block'});
-                $('#UpperDiv').css({'display':'block'});
-            }
-            else{
-                $('#allRun').html('<p>No Result is found for these filters</p>');
-                /*$('#total').html(data['totalGet']);
-                $('#start').html((currentPagination-1)*stepCount+1);
-                if(parseInt((currentPagination)*stepCount)>parseInt(data['totalGet'])){
-                    $('#end').html(data['totalGet']);
-                }
-                else{
-                    $('#end').html((currentPagination)*stepCount);
-                }
-                $('#pagination_div').css({'display':'none'});
-                $('#UpperDiv').css({'display':'none'});
-            }
-        });
-}*/
 function make_clickable(divname){
     $(divname+' tr>td:first-child').each(function(){
         $(this).css({
@@ -313,7 +140,7 @@ function drawStatusTable(status){
     return message;
 }
 
-var itemPerPage=2;
+var itemPerPage=25;
 var current_page=1;
 var user_text='';
 $(document).ready(function(){
@@ -321,10 +148,26 @@ $(document).ready(function(){
         name: 'sidr',
         side: 'left'
     });
+    $('#project_identity').on('change',function(){
+        $.session.set('project_id',$(this).val());
+        window.location.reload(true);
+    });
+    $('#default_team_identity').on('change',function(){
+        $.session.set('default_team_identity',$(this).val());
+        window.location.reload(true);
+    })
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
+    $('#perpageitem').on('change',function(){
+        if($(this).val()!=''){
+            itemPerPage=$(this).val();
+            current_page=1;
+            PerformSearch(project_id,team_id,user_text,itemPerPage,current_page);
+        }
+    });
     AutoComplete(project_id,team_id);
     DeleteFilterData(project_id,team_id);
+    itemPerPage=$('#perpageitem option:selected').val();
     PerformSearch(project_id,team_id,user_text,itemPerPage,current_page);
 });
 
@@ -383,6 +226,7 @@ function PerformSearch(project_id,team_id,user_text,itemPerPage,current_page){
                     itemsOnPage:itemPerPage,
                     cssStyle: 'dark-theme',
                     currentPage:current_page,
+                    hrefTextPrefix:'#',
                     onPageClick:function(PageNumber){
                         PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
                     }
