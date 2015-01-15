@@ -11149,7 +11149,7 @@ def get_default_settings(request):
                     Conn.close()
                     temp=[]
                     if isinstance(default_choices,list):
-                        if default_choices[0]!='':
+                        if default_choices[0]!=None and default_choices[0]!='':
                             for eachitem in default_choices[0].split(","):
                                 query="select name from dependency_name where id=%d and dependency_id=%d"%(int(eachitem),int(each[0]))
                                 Conn=GetConnection()
