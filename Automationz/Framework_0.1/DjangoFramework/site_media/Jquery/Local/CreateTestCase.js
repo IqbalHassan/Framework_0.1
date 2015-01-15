@@ -442,7 +442,7 @@ $(document).ready(function() {
                                             if($('#featuregroup select[id='+realItemIndex+']').length != 0)
                                                 $('#featuregroup select[id='+realItemIndex+']').after(tag)
                                             else
-                                                $('#featuregroup select[id=1]').after(tag)
+                                                $('#featuregroup select[id=1]').after(tag);
 
                                             $(".feature[data-level='"+handlerString+"']").append("<option>Choose...</option>");
 
