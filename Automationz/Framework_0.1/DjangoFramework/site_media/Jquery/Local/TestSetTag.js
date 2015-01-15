@@ -225,10 +225,8 @@ function formTable(data){
     var message="";
     message+='<table style="width: 100%;border-collapse: separate;border-spacing: 1.5em 3em;">';
     for(var i=0;i<data.length;i++){
-        message+='<tr><td colspan="2"><a class="createnew new" data-id="'+data[i][0]+'" href="">Create'+data[i][0].toLocaleUpperCase()+'</a></td></tr>';
+        message+='<tr><td colspan="2"><a class="m-btn purple" data-id="'+data[i][0]+'" href="">Create '+data[i][0]+'</a></td></tr>';
         if(data[i][1].length>0){
-            message+='<tr style="margin-bottom: 2%;">';
-            message+='<td style="width: 22%; border-right: 2px solid #ccc;"><b style="font-weight: bolder;font-size: 125%">'+data[i][0]+'</b></td>';
             message+='<td>';
             message+='<table data-id="'+data[i][0]+'">'
             for(var j=0;j<data[i][1].length;j++){

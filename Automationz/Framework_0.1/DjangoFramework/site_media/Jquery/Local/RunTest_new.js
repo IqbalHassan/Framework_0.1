@@ -564,7 +564,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     message+='</select></td><td><select id="branch_version" style="display: none;"></select></td>'
     message+='</tr></table></td>'
     message+='</tr>';
-    message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="create" type="button" class="button primary" id="create_manual_machine"/></td></tr>';
+    message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="Create" type="button" class="m-btn purple" id="create_manual_machine"/></td></tr>';
     $('#manual_machine_body').html(message);
     for(var i=0;i<dependency_list.length;i++){
         $('#'+dependency_list[i][0]+'_name').on('change',function(){
