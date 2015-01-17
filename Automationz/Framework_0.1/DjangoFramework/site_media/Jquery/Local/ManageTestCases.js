@@ -3,8 +3,7 @@
  * Author: Sazid
  */
 
-$(document).ready(function() {
-	
+var do_on_load = function do_on_load () {
 	window.section_has_no_tc = true;
 	
 	// code for jstree --------------------
@@ -270,4 +269,7 @@ $(document).ready(function() {
 		
 		createNode();
 	});
-});
+};
+
+$(document).ready(do_on_load);
+$(window).bind('pjax:complete', do_on_load);

@@ -1,8 +1,3 @@
-{% extends 'BaseTemplate.html' %}
-{% block title %} Manage Test Cases {% endblock %}
-{% block content %}
-
-
 <!-- Include jsTree -->
 <link rel="stylesheet" href="/site_media/Jquery/jstree/themes/default/style.css">
 <script type="text/javascript" src="/site_media/Jquery/jstree/jstree.min.js"></script>
@@ -27,7 +22,7 @@
 
 <div align="left">
     <h3 style="font-size: 19px;float: left"><a style="font-weight: bold;">Manage Test Cases</a></h3>
-    <a style="float: right; clear: both;" href="#" class="m-btn purple" id="create_section_btn" type="button">New Section</a>
+    <paper-button style="float: right; clear: both; background: purple; color: white;" id="create_section_btn" raised>New Section</paper-button>
 </div>
 
 <!-- <button style="display: none;" id="create_section_btn">Create a new section</button> -->
@@ -55,5 +50,3 @@
 		</tr>
 	</tbody>
 </table>
-
-{% endblock %}
