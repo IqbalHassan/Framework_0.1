@@ -162,6 +162,8 @@ $(document).ready(function(){
         if($(this).val()!=''){
             itemPerPage=$(this).val();
             current_page=1;
+            $('#pagination_tab').pagination('destroy');
+            window.location.hash = "#1";
             PerformSearch(project_id,team_id,user_text,itemPerPage,current_page);
         }
     });
@@ -197,12 +199,37 @@ function PerformSearch(project_id,team_id,user_text,itemPerPage,current_page){
                 message+='</tr>'
                 for(var i=0;i<data['total'].length;i++){
                     message+='<tr>';
+                    colors = {
+                        'pass' : '#65bd10',
+                        'fail' : '#fd0006',
+                        'block' : '#ff9e00',
+                        'submitted' : '#808080',
+                        'in-progress':'#0000ff',
+                        'skipped':'#cccccc'
+                    };
                     for(var j=0;j<data['total'][i].length;j++){
+                        if(data['total'][i][5]=='Complete'){
+                            var color_code=colors['pass'];
+                        }
+                        if(data['total'][i][5]=='In-Progress'){
+                            var color_code=colors['in-progress'];
+                        }
+                        if(data['total'][i][5]=='Cancelled'){
+                            var color_code=colors['fail'];
+                        }
+                        if(data['total'][i][5]=='Submitted'){
+                            var color_code=colors['submitted'];
+                        }
                         if(data['total'][i][j]=='status'){
                             message+=(drawStatusTable(data['status'][i]));
                         }
                         else{
-                            message+='<td align="left">'+data['total'][i][j]+'</td>';
+                            if(j==0){
+                                message+='<td align="left" style="border-left: 4px solid ' + color_code + '">'+data['total'][i][j]+'</td>';
+                            }else{
+                                message+='<td align="left">'+data['total'][i][j]+'</td>';
+                            }
+
                         }
 
                     }
@@ -212,6 +239,7 @@ function PerformSearch(project_id,team_id,user_text,itemPerPage,current_page){
                 $('#allRun').html(message);
                 make_clickable('#allRun');
                 make_bar_clickable('#allRun');
+
                 $("#allRun").find('table:eq(0) tr td:nth-child(8)').each(function(){
                     var message=$(this).text().trim();
                     if(message=="null"){
@@ -226,6 +254,8 @@ function PerformSearch(project_id,team_id,user_text,itemPerPage,current_page){
                     itemsOnPage:itemPerPage,
                     cssStyle: 'dark-theme',
                     currentPage:current_page,
+                    displayedPages:2,
+                    edges:2,
                     hrefTextPrefix:'#',
                     onPageClick:function(PageNumber){
                         PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
