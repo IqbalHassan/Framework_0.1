@@ -330,11 +330,11 @@ $(document).ready(function() {
 	$(document).pjax('a[data-pjax]', '#pjax-container');
 
 	$(document).on('pjax:send', function () {
-		$("#pjax-container").fadeIn('fast');
+		$("#pjax-container").fadeOut('fast');
 	});
 
 	$(document).on('pjax:complete', function () {
-		$("#pjax-container").fadeOut('fast');
+		$("#pjax-container").fadeIn('fast');
 	});
 
 	$("#devmode").click(function() {
