@@ -4006,6 +4006,19 @@ def Get_Versions(request):
     json = simplejson.dumps(tuple(results))
     return HttpResponse(json, mimetype='application/json')
 
+
+def Execution_Report(request):
+    Conn = GetConnection()
+    results = []
+    # if request.is_ajax():
+    if request.method == "GET":
+        status = request.GET.get(u'status', '')
+        if status == '':
+            results = DB.GetData(Conn, "select distinct status from test_run_env", False)
+
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 def BundleReport_Table(request):
     
     env_details = []
