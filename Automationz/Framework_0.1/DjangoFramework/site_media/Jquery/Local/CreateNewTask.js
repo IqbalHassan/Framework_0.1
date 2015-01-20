@@ -16,7 +16,7 @@ $(document).ready(function(){
 
     $('#project_id').text($.session.get('project_id'));
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
-    $('#ending_date').datepicker({ dateFormat: "yy-mm-dd" });
+    $('#ending_date').datepicker({ dateFormat: "yy-mm-dd" });    //MM dd, yy
 
     $('.combo-box').combobox();
 

@@ -542,6 +542,14 @@ def EditMilestone(request,ms_id):
         variables = Context({ })
         output = templ.render(variables)
         return HttpResponse(output)"""
+        
+        
+def ViewMilestone(request):
+    templ = get_template('ViewMilestone.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
+    
     
 def EditBug(request,bug_id):
     bug_id = request.GET.get('bug_id', '')
