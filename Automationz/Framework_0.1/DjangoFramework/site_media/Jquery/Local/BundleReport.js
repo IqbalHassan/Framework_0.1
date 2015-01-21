@@ -34,52 +34,6 @@ $(document).ready(function(){
 
     ManageMilestone(project_id,team_id);
 
-
-
-    $(".generate").click(function(event)
-    {
-        $('#BundleReportTable').empty();
-        var platform = $(".platform").val();
-        var version = $(".version").val();
-        if(version != 0)
-        {
-            $.get("Execution_Report",{project_id:project_id, team_id:team_id, platform : platform, product_version : version},function(data)
-            {
-                ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report");
-                /*for(var i=0;i<data['Env'].length;i++)
-                {
-                    $("#BundleReportTable").append(''+
-                        '<br/>' +
-                        '<hr/>' +
-                        '<h4 class="Text" style="text-align: center;font-weight: normal; line-height: 1.1;font-size: 25px;">'+data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]+'</h4>' +
-                        '<div id="env'+i+'"></div>' +
-                        '<div id="chart'+i+'"></div>');
-                    ResultTable("#env"+i+"", data['Heading'],data['ReportTable'][i],"");
-                    /*$.get("Single_Env",{Platform : platform, Product_Version : version,OS : data['Env'][i][0], Client : data['Env'][i][1]},function(env_data)
-                     {
-                     ResultTable("#env"+i+"", env_data['Heading'],"");
-                     });*/
-                    /***************pie chart***********************/
-                    /*var sc = data['ReportTable'][i].length -1;
-                    RenderPieChart('chart'+i, [
-                        ['Passed ('+data['ReportTable'][i][sc][1]+')', data['ReportTable'][i][sc][1]],
-                        ['Failed ('+data['ReportTable'][i][sc][2]+')', data['ReportTable'][i][sc][2]],
-                        ['Blocked ('+data['ReportTable'][i][sc][3]+')',  data['ReportTable'][i][sc][3]],
-                        ['Submitted ('+data['ReportTable'][i][sc][4]+')', data['ReportTable'][i][sc][4]],
-                        ['In-Progress ('+data['ReportTable'][i][sc][5]+')',  data['ReportTable'][i][sc][5]],
-                        ['Skipped ('+data['ReportTable'][i][sc][6]+')', data['ReportTable'][i][sc][6]],
-                        ['Not Run ('+data['ReportTable'][i][sc][7]+')', data['ReportTable'][i][sc][7]]
-
-                    ],data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]);
-
-                    /***************pie chart*********************/
-                //}
-
-            });
-        }
-        //event.stopPropagation();
-    });
-
     
 });
 
@@ -158,6 +112,92 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                 }
             }
         }
+    });
+
+    $(".generate").click(function(event)
+    {
+        $('#BundleReportTable').empty();
+        //var platform = $(".platform").val();
+        //var version = $(".version").val();
+        /*for(var i=0;i<dependency_list.length;i++){
+            var temp=[];
+            var name=dependency_list[i][0];
+            temp.push(name);
+            if($('#'+name+'_name option:selected').val().trim()==""){
+                alertify.error(name+' name is empty',1500);
+                return false;
+            }
+            else{
+                temp.push($('#'+name+'_name option:selected').val().trim());
+            }
+            if($('#'+name+'_bit option:selected').val()==null){
+                temp.push('Nil');
+            }
+            else if($('#'+name+'_bit option:selected').val().trim()==""){
+                alertify.error(name+' bit is empty',1500);
+                return false;
+            }
+            else{
+                temp.push($('#'+name+'_bit option:selected').val().trim());
+            }
+            if($('#'+name+'_bit option:selected').val()==null){
+                temp.push('Nil');
+            }
+            else if($('#'+name+'_version option:selected').val().trim()==""){
+                alertify.error(name+' version is empty',1500);
+                return false;
+            }
+            else{
+                temp.push($('#'+name+'_version option:selected').val().trim());
+            }
+            dependency.push(temp.join('|'));
+        }
+        if($('#branch_name').val().trim()==""){
+            alertify.error('Branch name is empty',1500);
+        }
+        if($('#branch_version').val().trim()==""){
+            alertify.error('Branch Version is empty',1500);
+        }
+        var branch_name=$('#branch_name').val().trim();
+        var branch_version=$('#branch_version').val().trim();*/
+
+        $.get("Execution_Report",
+        {
+            'project_id':project_id,
+            'team_id':team_id
+         },function(data)
+            {
+                ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report");
+                /*for(var i=0;i<data['Env'].length;i++)
+                {
+                    $("#BundleReportTable").append(''+
+                        '<br/>' +
+                        '<hr/>' +
+                        '<h4 class="Text" style="text-align: center;font-weight: normal; line-height: 1.1;font-size: 25px;">'+data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]+'</h4>' +
+                        '<div id="env'+i+'"></div>' +
+                        '<div id="chart'+i+'"></div>');
+                    ResultTable("#env"+i+"", data['Heading'],data['ReportTable'][i],"");
+                    /*$.get("Single_Env",{Platform : platform, Product_Version : version,OS : data['Env'][i][0], Client : data['Env'][i][1]},function(env_data)
+                     {
+                     ResultTable("#env"+i+"", env_data['Heading'],"");
+                     });*/
+                    /***************pie chart***********************/
+                    /*var sc = data['ReportTable'][i].length -1;
+                    RenderPieChart('chart'+i, [
+                        ['Passed ('+data['ReportTable'][i][sc][1]+')', data['ReportTable'][i][sc][1]],
+                        ['Failed ('+data['ReportTable'][i][sc][2]+')', data['ReportTable'][i][sc][2]],
+                        ['Blocked ('+data['ReportTable'][i][sc][3]+')',  data['ReportTable'][i][sc][3]],
+                        ['Submitted ('+data['ReportTable'][i][sc][4]+')', data['ReportTable'][i][sc][4]],
+                        ['In-Progress ('+data['ReportTable'][i][sc][5]+')',  data['ReportTable'][i][sc][5]],
+                        ['Skipped ('+data['ReportTable'][i][sc][6]+')', data['ReportTable'][i][sc][6]],
+                        ['Not Run ('+data['ReportTable'][i][sc][7]+')', data['ReportTable'][i][sc][7]]
+
+                    ],data['Env'][i][0]+' Bit  +  '+data['Env'][i][1]);
+
+                    /***************pie chart*********************/
+                //}
+
+            });
     });
 }
 

@@ -145,7 +145,7 @@ function GetAllData(){
 }
 function makeTable(data,col){
     var message="";
-    message+='<table class="one-column-emphasis">';
+    message+='<table class="two-column-emphasis">';
     message+='<tr>';
     for(var i=0;i<col.length;i++){
         message+='<th align="left">'+col[i]+'</th>';
@@ -210,7 +210,7 @@ function MakingReRunClickable(){
             var column=data['column'];
             var resultdata=data['Result'];
             var message="";
-            message+='<table class="one-column-emphasis">';
+            message+='<table class="two-column-emphasis">';
             message+='<tr>';
             for(var i=0;i<column.length;i++){
                 message+=('<th align="left">'+column[i]+'</th>');
@@ -256,7 +256,7 @@ function ReRunTab(){
                 }
                 else{
                     var message="";
-                    message+='<table class="one-column-emphasis"><tr><th>Select</th>';
+                    message+='<table class="two-column-emphasis"><tr><th>Select</th>';
                     for(var i=0;i<column.length;i++){
                         message+='<th>'+column[i]+'</th>';
                     }

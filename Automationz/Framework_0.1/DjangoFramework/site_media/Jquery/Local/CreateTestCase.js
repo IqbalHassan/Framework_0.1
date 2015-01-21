@@ -1614,7 +1614,7 @@ function editTypeRow(divname,stepno,dataset_num,stringName){
         '<td>' +
     /******************dataset nested table(start)************/
         /*id="step'+stepno+'data'+dataset_num+stringName+'entrytable"*/
-        '<table id="step'+stepno+stringName+'entrytable" class="one-column-emphasis" width="100%" style="font-size:75%">' +
+        '<table id="step'+stepno+stringName+'entrytable" class="two-column-emphasis" width="100%" style="font-size:75%">' +
         '<tr>' +
         '<th width="33%">Field</th>' +
         '<th width="33%">Sub-Field</th>' +
@@ -1641,7 +1641,7 @@ function addnewrow(divname,stepno,dataset_num){
         '<td>Data Set '+dataset_num+'</td>' +
         '<td>' +
     /******************dataset nested table(start)************/
-        '<table id="step'+stepno+'data'+dataset_num+'entrytable"class="one-column-emphasis" width="100%" style="font-size:75%">' +
+        '<table id="step'+stepno+'data'+dataset_num+'entrytable"class="two-column-emphasis" width="100%" style="font-size:75%">' +
         '<tr>' +
         '<th width="33%">Field</th>' +
         '<th width="33%">Sub-Field</th>' +
@@ -1689,7 +1689,7 @@ function GenerateMainRow()
 }
 function GeneratePopUpMetaData(){
     var popupmetadata="";
-    popupmetadata+=('<table id="searchbox'+step_num+'data_table" class="one-column-emphasis" width="100%">' +
+    popupmetadata+=('<table id="searchbox'+step_num+'data_table" class="two-column-emphasis" width="100%">' +
         '<tr>' +
         '<th width="20%">DataSet</th>' +
         '<th width="80%">Data</th>' +
