@@ -1,21 +1,21 @@
-
-//var stepCount=5;
+var current_page=1;
+var itemPerPage=5;
+var UserText='';
 $(document).ready(function(){
     RESPONSIVEUI.responsiveTabs();
-    GetAllData();
+    itemPerPage=$('#filterCount option:selected').val().trim();
+    GetAllData(current_page,itemPerPage,UserText);
     EnableAutocomplete();
     DeleteFilterData();
-    PaginationButton();
-    /*LoadAllTestCases("AllTestCasesTable");
-    connectLogFile("AllTestCasesTable");
-    LoadAllTestCases("PassTestCasesTable");
-    connectLogFile("PassTestCasesTable");
-    LoadAllTestCases("FailTestCasesTable");
-    connectLogFile("FailTestCasesTable");
-    LoadAllTestCases("SubmittedTestCasesTable");
-    connectLogFile("SubmittedTestCasesTable");
-    //buttonPreparation();
-    When_Clicking_On_CommonFailedTestStep()*/
+    $('#filterCount').on('change',function(){
+        if($(this).val()!=''){
+            itemPerPage=$(this).val();
+            current_page=1;
+            $('#pagination_tab').pagination('destroy');
+            window.location.hash = "#1";
+            GetAllData(current_page,itemPerPage,UserText);
+        }
+    });
     var RunID=$("#fetch_run_id").text().trim();
     $('#run_id').text(RunID.trim());
     //drawChart(RunID);
@@ -49,8 +49,7 @@ function EnableAutocomplete(){
             if(value!=""){
                 $('#searchedFilter').append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>' +
                     '<td class="Text"><b>'+value+':<b style="display: none;">'+ui.item[1].trim()+'</b>&nbsp;</b></td>');
-                $('#pagination_no').text(1);
-                GetAllData();
+                GetAllData(current_page,itemPerPage,UserText);
             }
         }
     }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
@@ -64,59 +63,33 @@ function DeleteFilterData(){
     $('#searchedFilter td .delete').live('click',function(){
         $(this).parent().next().remove();
         $(this).remove();
-        GetAllData();
+        GetAllData(current_page,itemPerPage,UserText);
     });
 }
-function PaginationButton(){
-    $('.previous_page').click(function(){
-        var index=$("#pagination_no").text().trim();
-        index=parseInt(index);
-        if(index>=2){
-            index--;
-        }
-        $('#pagination_no').text(index);
-        GetAllData();
-    });
-    $('.next_page').click(function(){
-        var index=$('#pagination_no').text().trim();
-        index=parseInt(index);
-        var end=$('#end').text().trim();
-        var total_entry=$('#total').text().trim();
-        if (parseInt(end)<parseInt(total_entry)){
-            index++;
-        }
-        $('#pagination_no').text(index);
-        GetAllData();
-    });
-    $('#filterCount').on('change',function(){
-        $('#pagination_no').html('1');
-        GetAllData();
-    });
-}
-function GetAllData(){
-    var currentPagination=$('#pagination_no').text().trim();
+function GetAllData(current_page,itemPerPage,UserText){
     $('#searchedFilter').each(function(){
-        var UserText = $(this).find("td").text();
+        UserText = $(this).find("td").text();
         //UserText+='|';
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
         console.log(UserText);
         var pathname=window.location.pathname;
         pathname=pathname.split("/")[3];
-        var stepCount=$('#filterCount option:selected').val().trim();
-        $.get("RunID_New",{run_id:pathname.trim(),pagination:currentPagination,UserText:UserText, capacity:stepCount},function(data){
-            //alert(data);
+        $.get("RunID_New",{run_id:pathname.trim(),pagination:current_page,UserText:UserText, capacity:itemPerPage},function(data){
             if(data['runData'].length>0){
                 var message=makeTable(data['runData'],data['runCol']);
                 $('#allData').html(message);
-                $('#total').text(data['total']);
-                $('#start').html((currentPagination-1)*stepCount+1);
-                if(parseInt((currentPagination)*stepCount)>parseInt(data['total'])){
-                    $('#end').html(data['total']);
-                }
-                else{
-                    $('#end').html((currentPagination)*stepCount);
-                }
-                $('#UpperDiv').css({'display':'block'});
+                $('#pagination_div').pagination({
+                    items:data['total'],
+                    itemsOnPage:itemPerPage,
+                    cssStyle: 'dark-theme',
+                    currentPage:current_page,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        GetAllData(PageNumber,itemPerPage,UserText);
+                    }
+                });
                 LoadAllTestCases("allData");
                 connectLogFile("allData");
                 $('#pass_selected').on('click',function(){
@@ -135,6 +108,7 @@ function GetAllData(){
                         }
                     });
                 });
+
             }
             else{
                 $('#allData').html('<div align="center" style="margin-top: 20%"><b style="font-size: 200%;font-weight: bolder">No Data Available</b></div>');

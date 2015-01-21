@@ -7,6 +7,8 @@
 <script type="text/javascript" src="/site_media/Jquery/Local/RunID_Detail.js"></script>
 <script src="/site_media/Jquery/js/highcharts.js"></script>
 <script src="/site_media/Jquery/js/exporting.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 
 <article>
 <div align="left">
@@ -25,7 +27,6 @@
             <tr id="searchedFilter">
                 <th><b class="Text">Filtered By:</b></th>
             </tr>
-            <tr><td style="display: none;" id="pagination_no">1</td></tr>
         </table>
     </div>
     <table width="100%">
@@ -41,30 +42,31 @@
                         <div>
                             <select id="filterCount">
                                 <option>Item Per Page</option>
-                                <option value="1">1</option>
-                                <option value="5" selected>5</option>
+                                <option value="1" selected>1</option>
+                                <option value="5">5</option>
                                 <option value="10" >10</option>
                                 <option value="15">15</option>
                             </select>
                         </div>
-                        <div>
-                            <div>
-                                <b style="font-size: 120%;">showing <b id="start"></b> - <b id="end"></b> of <b id="total"></b> entries</b>
-                            </div>
-                            <div style="display: inline-block; float: right">
-                                <input  type="button" class="minibutton previous_page" value="<"/>
-                                <input  type="button" class="minibutton next_page" value=">"/>
-                            </div>
-                        </div>
                     </div>
-
                 </div>
             </td>
         </tr>
     </table>
     <div id="allData"></div>
-    <div align="right">
-        <input type="button" class="m-btn green" id="pass_selected" value="Pass Selected"/>
+    <div>
+        <table width="100%">
+            <tr>
+                <td width="50%" align="left">
+                    <div id="pagination_div">
+
+                    </div>
+                </td>
+                <td width="50%" align="right">
+                        <input type="button" class="m-btn green" id="pass_selected" value="Pass Selected"/>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 <h3 width="12.8%">Detail</h3>
