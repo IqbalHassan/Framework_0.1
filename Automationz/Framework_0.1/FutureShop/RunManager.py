@@ -147,6 +147,9 @@ def update_machine(dependency):
                 conn=DB.ConnectToDataBase(database_name,superuser,super_password,server)
                 DB.UpdateRecordInTable(conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % testerid, status="Cancelled")
                 conn.close()
+                conn=DB.ConnectToDataBase(database_name,superuser,super_password,server)
+                DB.UpdateRecordInTable(conn, "test_env_results", "where tester_id = '%s' and status = 'Submitted'" % testerid, status="Cancelled")
+                conn.close()
             elif eachitem == "Unassigned":
                 conn=DB.ConnectToDataBase(database_name,superuser,super_password,server)
                 DB.DeleteRecord(conn, "test_run_env", tester_id=testerid, status='Unassigned')

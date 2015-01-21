@@ -1947,7 +1947,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                                   'team_id':team_id
                             }
                             print DB.InsertNewRecordInToTable(Conn,"machine_project_map", **Dict)
-                if Machine_Status[0][0]=='Automation':
+                if Machine_Status[0][0]=='Automation' and is_rerun=="rerun":
                     Conn=GetConnection()
                     DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'In-Progress'" % TesterId, status="Cancelled")
                     Conn.close()
