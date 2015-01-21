@@ -96,23 +96,26 @@ $(document).ready(function(){
                 //AnalysisTableActions();
 
 
+                $("#TestTypeStatusTable .one-column-emphasis").addClass('two-column-emphasis');
+                $("#TestTypeStatusTable .one-column-emphasis").removeClass('one-column-emphasis');
+
                 $("#TestTypeStatusTable").css({
                     'text-align':'center'
                    // 'cursor' : 'pointer',
                     //'border' : '1px solid grey'
                 });
 
-                $("#TestTypeStatusTable .one-column-emphasis th").css({
+                $("#TestTypeStatusTable .two-column-emphasis th").css({
                     //'cursor':'pointer',
                     'background' : 'black',
                     'color' : 'white'
                 });
 
-                $("#TestTypeStatusTable .one-column-emphasis tr td:first-child").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr td:first-child").css({
                     'border' : '0px'
                 });
 
-                $("#TestTypeStatusTable .one-column-emphasis tr td:first-child").each(function(){
+                $("#TestTypeStatusTable .two-column-emphasis tr td:first-child").each(function(){
 
                    /* $(this).live('click',function(){
 
@@ -129,10 +132,10 @@ $(document).ready(function(){
                         //'border-spacing': '0'
                     });
                 });
-                $("#TestTypeStatusTable .one-column-emphasis tr td:nth-child(2)").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr td:nth-child(2)").css({
                     'font-weight' : 'bold'
                 });
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n+1) td").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n+1) td").css({
                     'color':'black',
                     //'cursor':'pointer',
                     'font-weight' : 'bold',
@@ -141,23 +144,23 @@ $(document).ready(function(){
                     'font-size':'110%'
                 });
 
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n-2) td:first-child").each(function(){
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n-2) td:first-child").each(function(){
                     var t = $(this);
                     //var n = t.next();
                     t.html(t.html()+ " ");
                 });
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n-2) td:nth-child(1)").each(function(){
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n-2) td:nth-child(1)").each(function(){
                     $(this).html("");
                     $(this).css({
                         bgColor : 'black'
                     });
                 });
 
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n-3) td:nth-child(1)").each(function(){
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n-3) td:nth-child(1)").each(function(){
                     $(this).html("");
                 });
 
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n+1) td:first-child").each(function(){
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n+1) td:first-child").each(function(){
                     var t = $(this);
                     var n = t.next();
                     t.html(" "+ n.html() + "       ");
@@ -172,11 +175,11 @@ $(document).ready(function(){
                         '<hr/>' +
                         '<br/>' )
                 });*/
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n+1) td:nth-child(2)").each(function(){
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n+1) td:nth-child(2)").each(function(){
                     $(this).html("");
                 });
 
-                $("#TestTypeStatusTable .one-column-emphasis tr:last-child td:first-child").each(function(){
+                $("#TestTypeStatusTable .two-column-emphasis tr:last-child td:first-child").each(function(){
                     $(this).html("Grand Total   ");
                     $(this).css({
                         'color' : 'red',
@@ -185,32 +188,32 @@ $(document).ready(function(){
                     });
                 });
 
-                $("#TestTypeStatusTable .one-column-emphasis tr:last-child td").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr:last-child td").css({
                     'color' : 'red',
                     'font-size':'140%'
                 });
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n-3) td").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n-3) td").css({
                     'background' : '#DCFFFF'
                 });
 
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n-1) td").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n-1) td").css({
                     'background' : '#DCFFFF'
                 });
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n-3) td:first-child").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n-3) td:first-child").css({
                     'background' : 'white'
                 });
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n-1) td:first-child").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n-1) td:first-child").css({
                     'background' : 'white'
                 });
-                $("#TestTypeStatusTable .one-column-emphasistr td:last-child").css({
+                $("#TestTypeStatusTable .two-column-emphasistr td:last-child").css({
                     'font-weight':'bold',
                     'font-size':'120%'
                 });
-                $("#TestTypeStatusTable .one-column-emphasis tr:nth-child(5n+1) td:last-child").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n+1) td:last-child").css({
                     'color' : 'red',
                     'font-size':'140%'
                 });
-                $("#TestTypeStatusTable .one-column-emphasis tr:last-child td:last-child").css({
+                $("#TestTypeStatusTable .two-column-emphasis tr:last-child td:last-child").css({
                     'font-size':'160%'
                 });
                 $('#TestTypeStatusTable table').each(function () {

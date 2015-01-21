@@ -161,13 +161,26 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
         var branch_name=$('#branch_name').val().trim();
         var branch_version=$('#branch_version').val().trim();*/
 
-        $.get("Execution_Report",
+        $.get("New_Execution_Report",
         {
             'project_id':project_id,
             'team_id':team_id
          },function(data)
             {
                 ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report");
+                $("#BundleReportTable .one-column-emphasis").addClass('two-column-emphasis');
+                $("#BundleReportTable .one-column-emphasis").removeClass('one-column-emphasis');
+                var sc = data['Table'].length -1
+                RenderPieChart('BundleReportGraph', [
+                    ['Passed ('+data['Table'][sc][1]+')', data['Table'][sc][1]],
+                    ['Failed ('+data['Table'][sc][2]+')', data['Table'][sc][2]],
+                    ['Blocked ('+data['Table'][sc][3]+')',  data['Table'][sc][3]],
+                    ['Submitted ('+data['Table'][sc][4]+')', data['Table'][sc][4]],
+                    ['In-Progress ('+data['Table'][sc][5]+')',  data['Table'][sc][5]],
+                    ['Skipped ('+data['Table'][sc][6]+')', data['Table'][sc][6]],
+                    ['Not Run ('+data['Table'][sc][7]+')', data['Table'][sc][7]]
+
+                ]);
                 /*for(var i=0;i<data['Env'].length;i++)
                 {
                     $("#BundleReportTable").append(''+
@@ -198,6 +211,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                 //}
 
             });
+
     });
 }
 
@@ -216,7 +230,7 @@ function RenderPieChart(elementId, dataList, title) {
             plotShadow: false,
             height: 450
         }, title: {
-            text: 'Summary - ' + title
+            text: 'Summary'
         },
         tooltip: {
             /*formatter: function () {

@@ -4110,14 +4110,143 @@ def BundleReport_Table(request):
     return HttpResponse(json, mimetype='application/json')
 
 
-def Execution_Report(request):
+def New_Execution_Report(request):
     Conn = GetConnection()
     #results = []
     # if request.is_ajax():
     if request.method == "GET":
         #status = request.GET.get(u'status', '')
         #if status == '':
-        Table = DB.GetData(Conn, "select count(*) from test_run_env", False)
+        #section_query = "select distinct subpath(section_path,0,1) from product_sections"
+        sect_sub_q = "select ps.section_path from product_sections ps, result_test_case_tag rtct where ps.section_id::text = rtct.name and rtct.property='section_id' group by ps.section_path order by ps.section_path"
+        sections = DB.GetData(Conn, sect_sub_q, False)
+        
+        Table = []
+        allpass = 0
+        allfail = 0
+        allsubmit = 0
+        allskip = 0
+        allblock = 0
+        allprogress = 0
+        allnot = 0
+        alltotal = 0
+        
+        for s in sections:
+            temp = []
+            temp.append(s[0])
+            latest_cases = DB.GetData(Conn, "select tcr.tc_id,tcr.status,tcr.teststarttime from test_case_results tcr,test_run_env tre where tcr.run_id=tre.run_id", False)
+            # selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
+            passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Passed'" , False)
+            pass_count = len(passed_cases)
+            if pass_count != 0:
+                for m in passed_cases:
+                    for n in latest_cases:
+                        if m[0] == n[0]:
+                            if n[1] == 'Passed':
+                                break;
+                            else:
+                                pass_count = pass_count - 1;
+                                break;
+            temp.append(pass_count)
+            allpass = allpass + pass_count
+            
+            failed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Failed'" , False)
+            fail_count = len(failed_cases)
+            for m in failed_cases:
+                for n in latest_cases:
+                    if m[0] == n[0]:
+                        if n[1] == 'Failed':
+                            break;
+                        else:
+                            fail_count = fail_count - 1;
+                            break;
+            temp.append(fail_count)
+            allfail = allfail + fail_count
+            
+            blocked_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Blocked'" , False)
+            block_count = len(blocked_cases)
+            for m in blocked_cases:
+                for n in latest_cases:
+                    if m[0] == n[0]:
+                        if n[1] == 'Blocked':
+                            break;
+                        else:
+                            block_count = block_count - 1;
+                            break;
+            temp.append(block_count)
+            allblock = allblock + block_count
+                        
+            submitted_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Submitted'" , False)
+            submitted_count = len(submitted_cases)
+            for m in submitted_cases:
+                for n in latest_cases:
+                    if m[0] == n[0]:
+                        if n[1] == 'Submitted':
+                            break;
+                        else:
+                            submitted_count = submitted_count - 1;
+                            break;
+            temp.append(submitted_count)
+            allsubmit = allsubmit + submitted_count
+            
+            inprogress_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'In-Progress'" , False)
+            inprogress_count = len(inprogress_cases)
+            for m in inprogress_cases:
+                for n in latest_cases:
+                    if m[0] == n[0]:
+                        if n[1] == 'In-Progress':
+                            break;
+                        else:
+                            inprogress_count = inprogress_count - 1;
+                            break;
+            temp.append(inprogress_count)
+            allprogress = allprogress + inprogress_count
+            
+            skipped_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Skipped'" , False)
+            skipped_count = len(skipped_cases)
+            for m in skipped_cases:
+                for n in latest_cases:
+                    if m[0] == n[0]:
+                        if n[1] == 'Skipped':
+                            break;
+                        else:
+                            skipped_count = skipped_count - 1;
+                            break;
+            temp.append(skipped_count)
+            allskip = allskip + skipped_count
+            
+            env_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag", False)
+            section_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "'", False)
+            all_count = 0
+            for a in env_cases:
+                for b in section_cases:
+                    if a[0] == b[0]:
+                        all_count = all_count + 1
+            run_count = pass_count + fail_count + block_count + submitted_count + inprogress_count + skipped_count
+            if all_count > run_count:
+                notrun_count = all_count - run_count
+            else:
+                notrun_count = 0
+            temp.append(notrun_count)
+            allnot = allnot + notrun_count
+            temp.append(run_count + notrun_count)
+            alltotal = alltotal + run_count + notrun_count
+            
+            Table.append(tuple(temp))
+            
+        total=[]
+        total.append('Total')
+        total.append(allpass)
+        total.append(allfail)
+        total.append(allblock)
+        total.append(allsubmit)
+        total.append(allprogress)
+        total.append(allskip)
+        total.append(allnot)
+        total.append(alltotal)
+        
+        Table.append(tuple(total))
+        
 
     Heading = ['Section', 'Passed', 'Failed', 'Blocked', 'Submitted', 'In-Progress', 'Skipped', 'Not Run', 'Total']
     results = {'Heading':Heading, 'Table':Table}
