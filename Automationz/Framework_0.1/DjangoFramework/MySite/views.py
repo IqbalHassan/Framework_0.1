@@ -1792,13 +1792,14 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                 UserData = str(UserData.replace(u'\xa0', u''))
                 
                 if is_rerun=="rerun":
-                    query="select email_notification, assigned_tester, test_objective,test_milestone, branch_version, project_id,team_id, start_date,end_date,tester_id,machine_ip from test_run_env tre, machine_project_map mpm where mpm.machine_serial=tre.id and run_id='%s'"%previous_run
+                    query="select email_notification, assigned_tester, test_objective,test_milestone, branch_version, project_id,team_id, start_date,end_date,tester_id,machine_ip,rundescription from test_run_env tre, machine_project_map mpm where mpm.machine_serial=tre.id and run_id='%s'"%previous_run
                     Conn=GetConnection()
                     Meta_info=DB.GetData(Conn,query,False)
                     Conn.close()
                     stEmailIds=Meta_info[0][0]
+                    stEmailIds=",".join(list(set(stEmailIds.split(","))))
                     Testers=Meta_info[0][1]
-                    TestObjective=(Meta_info[0][2]+' -ReRun')
+                    TestObjective=(previous_run+' -ReRun')
                     TestMileStone=Meta_info[0][3]
                     Branch_Version=Meta_info[0][4]
                     project_id=Meta_info[0][5]
@@ -1807,10 +1808,27 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     ending_date=Meta_info[0][8]
                     TesterId=Meta_info[0][9]
                     machine_ip=Meta_info[0][10]
+                    
                     query="select type,name,bit,version from machine_dependency_settings mds, test_run_env tre where mds.machine_serial=tre.id and tre.tester_id='%s' and run_id='%s'"%(TesterId,previous_run)
                     Conn=GetConnection()
                     machine_data=DB.GetData(Conn,query,False)
                     Conn.close()
+                    #modifying the run id description
+                    query="select dependency_name, array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and project_id='%s' and team_id=%d group by dependency_name"%(project_id,int(team_id))
+                    Conn=GetConnection()
+                    dependency_list=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    run_description=Meta_info[0][11]
+                    run_description=run_description.split(" ")
+                    parameter_list=[]
+                    for each in run_description:
+                        for eachitem in dependency_list:
+                            if each.strip() in eachitem[1]:
+                                parameter_list.append(each.strip())
+                    parameter_list=": ".join(parameter_list)
+                    if len(parameter_list)>0:
+                        parameter_list+=": "
+                    UserData=UserData+parameter_list    
                 else:
                     EmailIds = request.GET.get('EmailIds', '')
                     EmailIds = str(EmailIds.replace(u'\xa0', u''))
@@ -1843,7 +1861,8 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                             Eid = DB.GetData(Conn, "Select email from permitted_user_list where user_names = '%s'" % str(eachitem))
                             Conn.close()
                         if len(Eid) > 0:
-                            Emails.append(Eid[0])    
+                            Emails.append(Eid[0])
+                    Emails=list(set(Emails))    
                     stEmailIds = ','.join(Emails)
                     
                     #getting testers
@@ -1872,7 +1891,7 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                     TesterId = QueryText.pop()
                     TesterId = TesterId.strip()
                 runid = TimeStamp("string")
-                query = "select user_level from permitted_user_list where user_names='%s'" % TesterId
+                query = "select user_level from permitted_user_list where user_names='%s' limit 1" % TesterId
                 Conn=GetConnection()
                 Machine_Status = DB.GetData(Conn, query, False)
                 Conn.close()
@@ -1888,6 +1907,19 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                         print DB.UpdateRecordInTable(Conn, "test_run_env", sWhereQuery, **Dict)
                         Conn.close()
                     else:
+                        Conn=GetConnection()
+                        DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'In-Progress'" % TesterId, status="Cancelled")
+                        Conn.close()
+                        Conn=GetConnection()
+                        DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'In-Progress'" % TesterId, status="Cancelled")
+                        Conn.close()
+                        Conn=GetConnection()
+                        DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % TesterId, status="Cancelled")
+                        Conn.close()
+                        Conn=GetConnection()
+                        DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'Submitted'" % TesterId, status="Cancelled")
+                        Conn.close()
+                        
                         status='Unassigned'
                         Conn=GetConnection()
                         result=DB.DeleteRecord(Conn, "test_run_env",tester_id=TesterId, status=status)
@@ -1902,7 +1934,6 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                             temp_id=DB.GetData(Conn,query)
                             if isinstance(temp_id,list):
                                 machine_id=temp_id[0]
-                                problem=False
                                 for each in machine_data:
                                     Dict={}
                                     Dict.update({'machine_serial':machine_id,'name':each[1],'type':each[0],'bit':each[2],'version':each[3]})                                   
@@ -1916,6 +1947,46 @@ def Run_Test(request):  #==================Returns True/Error Message  When User
                                   'team_id':team_id
                             }
                             print DB.InsertNewRecordInToTable(Conn,"machine_project_map", **Dict)
+                if Machine_Status[0][0]=='Automation':
+                    Conn=GetConnection()
+                    DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'In-Progress'" % TesterId, status="Cancelled")
+                    Conn.close()
+                    Conn=GetConnection()
+                    DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'In-Progress'" % TesterId, status="Cancelled")
+                    Conn.close()
+                    Conn=GetConnection()
+                    DB.UpdateRecordInTable(Conn, "test_run_env", "where tester_id = '%s' and status = 'Submitted'" % TesterId, status="Cancelled")
+                    Conn.close()
+                    Conn=GetConnection()
+                    DB.UpdateRecordInTable(Conn, "test_env_results", "where tester_id = '%s' and status = 'Submitted'" % TesterId, status="Cancelled")
+                    Conn.close()
+                    status='Unassigned'
+                    Conn=GetConnection()
+                    result=DB.DeleteRecord(Conn, "test_run_env",tester_id=TesterId, status=status)
+                    updated_time = TimeStamp("string")
+                    Dict = {'tester_id':TesterId.strip(), 'status':'Unassigned', 'last_updated_time':updated_time.strip(), 'machine_ip':machine_ip, 'branch_version':Branch_Version.strip()}
+                    Conn=GetConnection()
+                    tes2 = DB.InsertNewRecordInToTable(Conn, "test_run_env", **Dict)
+                    Conn.close()
+                    if(tes2 == True):
+                        query="select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1"%(TesterId.strip())
+                        Conn=GetConnection()
+                        temp_id=DB.GetData(Conn,query)
+                        if isinstance(temp_id,list):
+                            machine_id=temp_id[0]
+                            for each in machine_data:
+                                Dict={}
+                                Dict.update({'machine_serial':machine_id,'name':each[1],'type':each[0],'bit':each[2],'version':each[3]})                                   
+                                Conn=GetConnection()
+                                result=DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
+                                Conn.close()
+                        Conn=GetConnection()
+                        Dict={
+                                  'machine_serial':machine_id,
+                                  'project_id':project_id,
+                                  'team_id':team_id
+                            }
+                        print DB.InsertNewRecordInToTable(Conn,"machine_project_map", **Dict)
                 TestIDList = []
                 for eachitem in QueryText:
                     if is_rerun == "rerun":

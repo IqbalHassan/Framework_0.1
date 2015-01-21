@@ -6,6 +6,7 @@ import CommonUtil
 import os
 import Global
 import time
+import MainDriver
 def RunProcess(sTesterid):
     while (1):
         try:
@@ -16,10 +17,10 @@ def RunProcess(sTesterid):
                 continue
             if status[0] != "Unassigned":
                 if status[0] == "Submitted":
-                    import MainDriver
-                    MainDriver.main()
+                    value=MainDriver.main()
                     print "updating db with parameter"
-                    Login()
+                    if value=="pass":
+                        break
                     print "Successfully updated db with parameter"
 
             elif status[0] == "Unassigned":
@@ -31,7 +32,7 @@ def RunProcess(sTesterid):
         except Exception, e:
             print "Exception : ", e
 
-    return "Continue"
+    return True
 
 def Login():
     print username

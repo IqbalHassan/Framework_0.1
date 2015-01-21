@@ -10,7 +10,7 @@ import Drivers
 import importlib
 #import FSDriver
 import Performance
-from distutils.tests.test_check import CheckTestCase
+#from distutils.tests.test_check import CheckTestCase
 
 ReRunTag="ReRun"
 if os.name == 'nt':
@@ -788,6 +788,7 @@ def main():
 
     #Close DB Connection
     conn.close()
+    return "pass"
 
 if __name__ == "__main__":
 

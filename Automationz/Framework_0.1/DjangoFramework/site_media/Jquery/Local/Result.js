@@ -227,7 +227,13 @@ function PerformSearch(project_id,team_id,user_text,itemPerPage,current_page){
                             if(j==0){
                                 message+='<td align="left" style="border-left: 4px solid ' + color_code + '">'+data['total'][i][j]+'</td>';
                             }else{
-                                message+='<td align="left">'+data['total'][i][j]+'</td>';
+                                if(data['total'][i][j]==null){
+                                    message+='<td align="left">N/A</td>';
+                                }
+                                else{
+                                    message+='<td align="left">'+data['total'][i][j]+'</td>';
+                                }
+
                             }
 
                         }
