@@ -20,7 +20,7 @@ function UIChange(){
      'textAlign':'left'
      })
      });*/
-    $('#data_table, .one-column-emphasis').each(function(){
+    $('#data_table, .two-column-emphasis').each(function(){
         $(this).css({
             'textAlign':'left',
             'text-align':'left'
@@ -40,7 +40,7 @@ function UIChange(){
             //$(this).html("");
             $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status\"></span></a>");
         }
-        else if(value=="true"){
+        if(value=="true"){
             //$(this).html("see data");
             $(this).html("<a class=\"notification-indicator tooltipped downwards\" data-gotokey=\"n\"><span id=\"platform-flag\" class=\"mail-status filled\"></span></a>");
         }
@@ -167,7 +167,7 @@ function TestDataFetch(){
 
 function drawPopUp(data,column){
     var message="";
-    message+='<table id="data_detail" class="one-column-emphasis" width="100%">';
+    message+='<table id="data_detail" class="two-column-emphasis" width="100%">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
         message+='<th>'+column[i]+'</th>';
@@ -181,7 +181,7 @@ function drawPopUp(data,column){
             message+='<td>'+dataset+'</td>';
             var group_data=data[i][l][1];
             message+='<td>';
-            message+='<table class="one-column-emphasis" width="100%">';
+            message+='<table class="two-column-emphasis" width="100%">';
             message+='<tr>';
             for(var j=0;j<column_data.length;j++){
                 message+='<th>'+column_data[j]+'</th>';
@@ -204,7 +204,7 @@ function drawPopUp(data,column){
 }
 function draw_table(row,column){
     var message=""
-    message+='<table id="data_detail" class="one-column-emphasis" width="100%">';
+    message+='<table id="data_detail" class="two-column-emphasis" width="100%">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
         message+='<th>'+column[i]+'</th>';
@@ -337,11 +337,17 @@ function InputFailReason(){
         var step_id=tc_id+"_s"+step_no+"_reason";
         step_id=step_id.trim();
         if($(this).text().trim()!="FailReason"){
-            $(this).html('<textarea id="'+step_id+'" column="100" maxlength="200"/></textarea>');
-            $('#'+step_id).val(failreason);
+            if(failreason!=''){
+                $(this).html(failreason);
+            }
+            else{
+                $(this).html('N/A');
+            }
+
         }
     });
 }
+
 function MakeStatusSelectable(){
     $('#data_table tr td:nth-child(8)').each(function(){
         //$(this).css({'textAlign':'center'});
@@ -352,24 +358,14 @@ function MakeStatusSelectable(){
         step_id=step_id.trim();
         console.log(value);
         if(value!="Status"){
-            $(this).html('<select class="select-drop" id="'+step_id+'">' +
-                '<option value="Passed">Passed</option>' +
-                '<option value="Failed">Failed</option>' +
-                //'<option value="Not Run">Not Run</option>' +
-                '<option value="Skipped">Skipped</option>' +
-                '<option value="Submitted">Submitted</option>' +
-                '<option value="In-Progress">In-Progress</option>' +
-                '</select>'
-            );
-            $('#'+step_id+' option[value="'+value+'"]').attr({'selected':'selected'});
+            $(this).html(value);
         }
 
     });
-    $(".select-drop").selectBoxIt();
 }
 function table_message(column,tabledata){
     var message="";
-    message+='<table id="data_table" class="one-column-emphasis" style="text-align: left;" width="100%">';
+    message+='<table id="data_table" class="two-column-emphasis" style="text-align: left;" width="100%">';
     var header_message=header_print(column);
     message+=header_message;
     var data_message=data_print(tabledata);
@@ -462,7 +458,7 @@ function PopulateResultDiv(tc_id){
     $.get("Selected_TestCaseID_History",{Selected_TC_Analysis : tc_id},function(data){
         ResultTable(Resultdiv,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result");
         makeRunClickable();
-        $(".one-column-emphasis").each(function(){
+        $(".two-column-emphasis").each(function(){
             $(this).css({
                 'textAlign':'left'
             })

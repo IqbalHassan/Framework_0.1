@@ -542,6 +542,14 @@ def EditMilestone(request,ms_id):
         variables = Context({ })
         output = templ.render(variables)
         return HttpResponse(output)"""
+        
+        
+def ViewMilestone(request):
+    templ = get_template('ViewMilestone.html')
+    variables = Context({ })
+    output = templ.render(variables)
+    return HttpResponse(output)
+    
     
 def EditBug(request,bug_id):
     bug_id = request.GET.get('bug_id', '')
@@ -3998,6 +4006,7 @@ def Get_Versions(request):
     json = simplejson.dumps(tuple(results))
     return HttpResponse(json, mimetype='application/json')
 
+
 def BundleReport_Table(request):
     
     env_details = []
@@ -4099,6 +4108,22 @@ def BundleReport_Table(request):
     results = {'Heading':Heading, 'Env':env_details, 'ReportTable':ReportTable}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+
+
+def Execution_Report(request):
+    Conn = GetConnection()
+    #results = []
+    # if request.is_ajax():
+    if request.method == "GET":
+        #status = request.GET.get(u'status', '')
+        #if status == '':
+        Table = DB.GetData(Conn, "select count(*) from test_run_env", False)
+
+    Heading = ['Section', 'Passed', 'Failed', 'Blocked', 'Submitted', 'In-Progress', 'Skipped', 'Not Run', 'Total']
+    results = {'Heading':Heading, 'Table':Table}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
 
 def BundleReport_Table_Latest(request):
     
@@ -6149,26 +6174,28 @@ def DataFetchForTestCases(request):
                 Status = DB.GetData(Conn, query, False) 
                 Temp_Data.append(Status[0][1])  # FailReason
                 Temp_Data.append(Status[0][0])
-                query = "select verify_point,step_continue,estd_time,stepenable,driver,stepfeature from result_test_steps_list where step_id=%d and run_id='%s'" % (TestStepList[each][0], run_id)
+                query = "select description from result_master_data where id='%s' and field='verification' and value='point' and run_id='%s'" % (datasetid, run_id)
+                verification_point = DB.GetData(Conn, query, False)
+                if verification_point[0][0] =='yes':
+                    Temp_Data.append("true")
+                else:
+                    Temp_Data.append("false")
+                
+                query = "select step_continue,estd_time,stepenable,driver,stepfeature from result_test_steps_list where step_id=%d and run_id='%s'" % (TestStepList[each][0], run_id)
                 StepType = DB.GetData(Conn, query, False)
-                # Temp_Data.append(StepType[0][0])
+                # Temp_Data.append(StepType[0][1])
                 if StepType[0][0] == True:
                     Temp_Data.append("true")
                 else:
                     Temp_Data.append("false")
-                # Temp_Data.append(StepType[0][1])
-                if StepType[0][1] == True:
-                    Temp_Data.append("true")
-                else:
-                    Temp_Data.append("false")
-                Temp_Data.append(StepType[0][2])
+                Temp_Data.append(StepType[0][1])
                 # Temp_Data.append(StepType[0][3])
-                if StepType[0][3] == True:
+                if StepType[0][2] == True:
                     Temp_Data.append("true")
                 else:
                     Temp_Data.append("false")
+                Temp_Data.append(StepType[0][3])
                 Temp_Data.append(StepType[0][4])
-                Temp_Data.append(StepType[0][5])
                 Conn.close()
                 print Temp_Data
                 # Temp_Data.append("Log")

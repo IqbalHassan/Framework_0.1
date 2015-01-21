@@ -42,8 +42,8 @@
                         <div>
                             <select id="filterCount">
                                 <option>Item Per Page</option>
-                                <option value="1" selected>1</option>
-                                <option value="5">5</option>
+                                <option value="1">1</option>
+                                <option value="5"  selected>5</option>
                                 <option value="10" >10</option>
                                 <option value="15">15</option>
                             </select>
@@ -74,7 +74,7 @@
     <p>&nbsp;</p>
     <div id = 'EnvironmentDetailsTable' style="display: block;">
         {%if Env_length%}
-        <table class="one-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
+        <table class="two-column-emphasis" style='font-size:small; border-collapse:collapse;'  width='100%'>
             <tr>
                 {%for x in Env_Details_Col%}
                     <th style="text-align: center">{{x}}</th>
@@ -129,7 +129,7 @@
                 <div align="center" style="margin-top: 20px;" >
                     <div id="rerun">
                         {% if rerun_list %}
-                        <table class="one-column-emphasis">
+                        <table class="two-column-emphasis">
                             <tr>
                                 <th>Select</th>
                                 {% for x in rerun_col%}
