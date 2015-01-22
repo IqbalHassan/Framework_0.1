@@ -12,7 +12,7 @@ import datetime
 import EmailNotify
 import urllib2
 import datetime
-            
+from settings import TIME_ZONE 
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -145,16 +145,64 @@ def HomePage(req):
 def RunTest(request):
     #get the available machine definition
     #query="select distinct tester_id,machine_ip,last_updated_time,status,branch_version,project_id,(select value from config_values where type='Team' and id=team_id),array_agg( distinct case when bit=0 then  type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' Bit - '||version end ) from machine_dependency_settings mds,test_run_env tre,machine_project_map mpm where tre.id=mds.machine_serial and mpm.machine_serial=tre.id and status='Unassigned' group by tester_id,last_updated_time,status,branch_version,machine_ip,mpm.project_id,mpm.team_id"
-    query="select distinct user_names from permitted_user_list pul where user_level='Manual'"
-    Conn=GetConnection()
-    machine_list=DB.GetData(Conn,query)
-    Conn.close()        
     templ = get_template('RunTest_new.html')
-    column=['Machine Name']
     #column=['Machine Name','Machine IP','Last Updated Time','Status','Version','Project ID','Team Name' ,'Dependency']
-    variables = Context({'machine_list':machine_list,'dependency':column})
+    variables = Context({})
     output = templ.render(variables)
     return HttpResponse(output)
+def get_all_machine(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            current_page=int(request.GET.get(u'machinePageCurrent',''))
+            itemPerPage=int(request.GET.get(u'machinePerPage',''))
+            #form condition
+            condition="limit %d offset %d"%(itemPerPage,(current_page-1)*itemPerPage)
+            count_query="select distinct user_names,user_level from permitted_user_list where user_level in ('Manual', 'Automation')"
+            Conn=GetConnection()
+            count_list=DB.GetData(Conn,count_query)
+            Conn.close()
+            query=count_query+condition
+            Conn=GetConnection()
+            machine_listing=DB.GetData(Conn, query,False)
+            Conn.close()
+            final_machine_list=[]
+            for each in machine_listing:
+                Conn=GetConnection()
+                current_time=DB.GetData(Conn,"select current_timestamp at time zone '%s'"%TIME_ZONE,False)
+                Conn.close()
+                now=current_time[0][0]
+                temp=[]
+                for eachitem in each:
+                    temp.append(eachitem)
+                query="select distinct last_updated_time,machine_ip,branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ) from test_run_env tre,machine_dependency_settings mds where tre.id=mds.machine_serial  and tester_id='%s'group by last_updated_time,machine_ip,branch_version order by last_updated_time desc limit 1"%(each[0])
+                Conn=GetConnection()
+                temp_detail=DB.GetData(Conn,query,False)
+                Conn.close()
+                temp_null=['','','',[]]
+                if len(temp_detail)>0:
+                    for eachitem in temp_detail:
+                        for eachitemtemp in eachitem:
+                            temp.append(eachitemtemp)
+                    #convert the date time panel
+                    update_time=datetime.datetime.strptime(temp_detail[0][0],'%a-%b-%d-%H:%M:%S-%Y')
+                    diff=now-update_time
+                    if diff.days>1:
+                        temp.append('offline')
+                    else:
+                        temp.append('online')
+                else:
+                    for eachitem in temp_null:
+                        temp.append(eachitem)
+                    temp.append('offline')                        
+                final_machine_list.append(tuple(temp))
+            column=['Name','Type','Last Updated Time', 'Machine IP','Branch Version','Dependency','Status']
+            Dict={
+                  'machine':final_machine_list,
+                  'column':column,
+                  'count':len(count_list)
+            }
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='appliaction/json')
 def edit_machine(request,machine_id):
     return render_to_response('EditMachine.html',{})
 """def Search(request):

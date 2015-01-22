@@ -348,6 +348,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/AutoCompleteRequirements/$',AutoCompleteRequirements),
     url(r'^Home/ViewMilestone/$',ViewMilestone),
     url(r'^Home/.*/New_Execution_Report/$',New_Execution_Report),
+    url(r'^Home/.*/get_all_machine/$',get_all_machine),
     )
 
 

@@ -5,6 +5,12 @@ var test_cases="";
 
 var lowest_feature = 0;
 var isAtLowestFeature = false;
+var machinePerPage=10;
+var machinePageCurrent=1;
+var colors={
+    'online':'#00ff00',
+    'offline':'#ff0000'
+}
 $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
@@ -15,6 +21,7 @@ $(document).ready(function(){
     DeleteSearchQueryText(project_id,team_id);
     ManageMilestone(project_id,team_id);
     SubmitRun(project_id,team_id);
+    getAllmachine(machinePerPage,machinePageCurrent);
     /*$('.edit_machine').on('click',function(){
         $('.tabs-div').removeClass('responsive-tabs__panel--active');
 
@@ -39,6 +46,73 @@ $(document).ready(function(){
         window.location.reload(true);
     });
 });
+function getAllmachine(machinePerPage,machinePageCurrent){
+    $.get('get_all_machine',{'machinePerPage':machinePerPage ,'machinePageCurrent':machinePageCurrent},function(data){
+        var message="";
+        message+='<tr>';
+        for(var i=0;i<data['column'].length;i++){
+            message+='<td><b>'+data['column'][i]+'</b></td>';
+        }
+        message+='</tr>';
+        for(var i=0;i<data['machine'].length;i++){
+            message+='<tr>';
+            var status=data['machine'][i][data['machine'][i].length-1];
+            if(status=='online'){
+                var color=colors['online'];
+            }
+            else{
+                var color=colors['offline'];
+            }
+            for(var j=0;j<data['machine'][i].length;j++){
+                if(data['machine'][i][j] instanceof Array){
+                    if(data['machine'][i][j].length!=0){
+                        message+='<td><table>';
+                        for(var k=0;k<data['machine'][i][j].length;k++){
+                            message+='<tr>';
+                            message+='<td>'+data['machine'][i][j][k]+'</td>';
+                            message+='</tr>';
+                        }
+                        message+='</table></td>';
+                    }
+                    else{
+                        message+='<td>N/A</td>';
+                    }
+
+                }
+                else{
+                    if(data['machine'][i][j]==''){
+                        message+='<td>N/A</td>';
+                    }
+                    else{
+                        if(j==0){
+                            message+='<td style="border-left: 4px solid  '+color+'"><a href="/Home/Machine/'+data['machine'][i][j].split(' ').join('_')+'/">'+data['machine'][i][j]+'</a></td>';
+                        }
+                        else{
+                            message+='<td>'+data['machine'][i][j]+'</td>';
+                        }
+
+                    }
+                }
+            }
+            message+='</tr>';
+        }
+        $('#machine_listing').html(message);
+        $('#machine_pagination').pagination({
+            items:data['count'],
+            itemsOnPage:machinePerPage,
+            cssStyle: 'dark-theme',
+            currentPage:machinePageCurrent,
+            displayedPages:2,
+            edges:2,
+            hrefTextPrefix:'#',
+            onPageClick:function(PageNumber){
+                //PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
+                getAllmachine(machinePerPage,PageNumber);
+            }
+        });
+    });
+}
+
 function SubmitRun(project_id,team_id){
     $('#run_test').on('click',function(){
         var UserText="";
