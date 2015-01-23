@@ -4174,10 +4174,38 @@ def New_Execution_Report(request):
     #results = []
     # if request.is_ajax():
     if request.method == "GET":
+        project_id=request.GET.get(u'project_id','').strip()
+        team_id=request.GET.get(u'team_id','').strip()
+        branch=request.GET.get(u'branch_name','').strip()
+        version=request.GET.get(u'branch_version','').strip()
+        dependency=request.GET.get(u'dependency','').split('#')
+        new_dependency=[]
+        for each in dependency:
+            new_dependency.append(each.split('|'))
+            #print each
+            
+        #print new_dependency
+        browser = new_dependency[0][1]
+        bro_bit = new_dependency[0][2]
+        bro_ver = new_dependency[0][3]
+        tc_type = new_dependency[1][1]
+        platform = new_dependency[2][1]
+        plat_bit = new_dependency[2][2]
+        plat_ver = new_dependency[2][3]
+        
+        
+        xtra_qry = " "
+        if branch != '' and version == '':
+            xtra_qry += " and tre.branch_version ~ '"+branch+"' "
+        elif branch != '' and version != '':
+            xtra_qry += " and tre.branch_version ~ '"+branch+":"+version+"' "
+            
+        
+                
         #status = request.GET.get(u'status', '')
         #if status == '':
         #section_query = "select distinct subpath(section_path,0,1) from product_sections"
-        sect_sub_q = "select ps.section_path from product_sections ps, result_test_case_tag rtct where ps.section_id::text = rtct.name and rtct.property='section_id' group by ps.section_path order by ps.section_path"
+        sect_sub_q = "select ps.section_path from product_sections ps, test_case_tag rtct where ps.section_id::text = rtct.name and rtct.property='section_id' group by ps.section_path order by ps.section_path"
         sections = DB.GetData(Conn, sect_sub_q, False)
         
         Table = []
@@ -4193,9 +4221,10 @@ def New_Execution_Report(request):
         for s in sections:
             temp = []
             temp.append(s[0])
-            latest_cases = DB.GetData(Conn, "select tcr.tc_id,tcr.status,tcr.teststarttime from test_case_results tcr,test_run_env tre where tcr.run_id=tre.run_id", False)
+            #latest_cases = DB.GetData(Conn, "select tcr.tc_id,tcr.status,tcr.teststarttime from test_case_results tcr,test_run_env tre where tcr.run_id=tre.run_id order by tcr.teststarttime desc", False)
+            latest_cases = DB.GetData(Conn, "select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" order by tcr.teststarttime desc", False)
             # selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
-            passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Passed'" , False)
+            passed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Passed' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" " , False)
             pass_count = len(passed_cases)
             if pass_count != 0:
                 for m in passed_cases:
@@ -4209,7 +4238,7 @@ def New_Execution_Report(request):
             temp.append(pass_count)
             allpass = allpass + pass_count
             
-            failed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Failed'" , False)
+            failed_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Failed' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" " , False)
             fail_count = len(failed_cases)
             for m in failed_cases:
                 for n in latest_cases:
@@ -4222,7 +4251,7 @@ def New_Execution_Report(request):
             temp.append(fail_count)
             allfail = allfail + fail_count
             
-            blocked_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Blocked'" , False)
+            blocked_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Blocked' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" " , False)
             block_count = len(blocked_cases)
             for m in blocked_cases:
                 for n in latest_cases:
@@ -4235,7 +4264,7 @@ def New_Execution_Report(request):
             temp.append(block_count)
             allblock = allblock + block_count
                         
-            submitted_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Submitted'" , False)
+            submitted_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Submitted' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" " , False)
             submitted_count = len(submitted_cases)
             for m in submitted_cases:
                 for n in latest_cases:
@@ -4248,7 +4277,7 @@ def New_Execution_Report(request):
             temp.append(submitted_count)
             allsubmit = allsubmit + submitted_count
             
-            inprogress_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'In-Progress'" , False)
+            inprogress_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'In-Progress' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" " , False)
             inprogress_count = len(inprogress_cases)
             for m in inprogress_cases:
                 for n in latest_cases:
@@ -4261,7 +4290,7 @@ def New_Execution_Report(request):
             temp.append(inprogress_count)
             allprogress = allprogress + inprogress_count
             
-            skipped_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Skipped'" , False)
+            skipped_cases = DB.GetData(Conn, "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and tcr.status = 'Skipped' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" " , False)
             skipped_count = len(skipped_cases)
             for m in skipped_cases:
                 for n in latest_cases:

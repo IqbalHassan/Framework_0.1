@@ -117,52 +117,31 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     $(".generate").click(function(event)
     {
         $('#BundleReportTable').empty();
-        /*for(var i=0;i<dependency_list.length;i++){
+        var dependency=[];
+        for(var i=0;i<dependency_list.length;i++){
             var temp=[];
             var name=dependency_list[i][0];
             temp.push(name);
-            if($('#'+name+'_name option:selected').val().trim()==""){
-                alertify.error(name+' name is empty',1500);
-                return false;
-            }
-            else{
-                temp.push($('#'+name+'_name option:selected').val().trim());
-            }
-            if($('#'+name+'_bit option:selected').val()==null){
-                temp.push('Nil');
-            }
-            else if($('#'+name+'_bit option:selected').val().trim()==""){
-                alertify.error(name+' bit is empty',1500);
-                return false;
-            }
-            else{
-                temp.push($('#'+name+'_bit option:selected').val().trim());
-            }
-            if($('#'+name+'_bit option:selected').val()==null){
-                temp.push('Nil');
-            }
-            else if($('#'+name+'_version option:selected').val().trim()==""){
-                alertify.error(name+' version is empty',1500);
-                return false;
-            }
-            else{
-                temp.push($('#'+name+'_version option:selected').val().trim());
-            }
+        
+            temp.push($('#'+name+'_name option:selected').val());
+            
+            temp.push($('#'+name+'_bit option:selected').val());
+            
+            temp.push($('#'+name+'_version option:selected').val());
+            
             dependency.push(temp.join('|'));
         }
-        if($('#branch_name').val().trim()==""){
-            alertify.error('Branch name is empty',1500);
-        }
-        if($('#branch_version').val().trim()==""){
-            alertify.error('Branch Version is empty',1500);
-        }*/
-        //var branch_name=$('#branch_name').val().trim();
-        //var branch_version=$('#branch_version').val().trim();
+        
+        var branch_name=$('#branch_name').val();
+        var branch_version=$('#branch_version').val();
 
         $.get("New_Execution_Report",
         {
             'project_id':project_id,
-            'team_id':team_id
+            'team_id':team_id,
+            'dependency':dependency.join('#'),
+            'branch_name':branch_name,
+            'branch_version':branch_version
          },function(data)
             {
                 ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report");

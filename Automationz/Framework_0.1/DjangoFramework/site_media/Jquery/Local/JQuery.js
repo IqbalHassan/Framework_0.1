@@ -63,7 +63,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName, tooltip) {
 	}
 	
 	
-	content += "<table class='one-column-emphasis' style='font-size:small; border-collapse:collapse;'  width='100%'>";
+	content += "<table class='two-column-emphasis' style='font-size:small; border-collapse:collapse;'  width='100%'>";
 
 	content += '<tr>';
 	head = []
@@ -122,7 +122,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName, tooltip) {
 			}
 		else
 			{
-				var mCont = "<table class='one-column-emphasis' style='font-size:small; border-collapse:collapse;'>";
+				var mCont = "<table class='two-column-emphasis' style='font-size:small; border-collapse:collapse;'>";
 //				if ((String(mStr).indexOf(":") !== -1) == true)
 //					{
 //						mStr = mStr.split(":")[1];
@@ -196,7 +196,7 @@ function ResultTable(HtmlElementID, Heading, tabledata, ResultName, tooltip) {
 						if (mNewData.length >= 2)
 							{
 								mNewData[1] = mNewData[1].split('),')
-								var mInsideTable = "<table class='one-column-emphasis' style='font-size:small; border-collapse:collapse;'>";
+								var mInsideTable = "<table class='two-column-emphasis' style='font-size:small; border-collapse:collapse;'>";
 								for (eachinsiderow in mNewData[1])
 									{
 										mInsideTable += "<tr>";

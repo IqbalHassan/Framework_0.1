@@ -96,8 +96,8 @@ $(document).ready(function(){
                 //AnalysisTableActions();
 
 
-                $("#TestTypeStatusTable .one-column-emphasis").addClass('two-column-emphasis');
-                $("#TestTypeStatusTable .one-column-emphasis").removeClass('one-column-emphasis');
+                //$("#TestTypeStatusTable .one-column-emphasis").addClass('two-column-emphasis');
+                //$("#TestTypeStatusTable .one-column-emphasis").removeClass('one-column-emphasis');
 
                 $("#TestTypeStatusTable").css({
                     'text-align':'center'
