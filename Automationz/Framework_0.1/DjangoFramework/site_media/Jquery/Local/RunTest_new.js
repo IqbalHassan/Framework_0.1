@@ -467,6 +467,8 @@ function PerformSearch(project_id,team_id,predicate) {
                 $('#time_panel').html('<b class="Text">Time Needed: '+data['time']+'</b> ');
                 $('#time_panel').css({'display':'block'});
                 ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
+                $("#RunTestResultTable .one-column-emphasis").addClass('two-column-emphasis');
+                $("#RunTestResultTable .one-column-emphasis").removeClass('one-column-emphasis');
                 $("#RunTestResultTable").fadeIn(1000);
                 test_cases=true;
                 implementDropDown("#RunTestResultTable");

@@ -76,7 +76,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     message+='<tr>';
     message+='<td align="right"><b class="Text">Version:</b></td>';
     message+='<td align="left"><table width="100%"><tr>';
-    message+='<td width="19%"><select id="branch_name"><option value="">Branch</option>';
+    message+='<td width="19%"><select id="branch_name"><option value="">All</option>';
     for(var i=0;i<global_version_list.length;i++){
         message+='<option value="'+global_version_list[i][0]+'">'+global_version_list[i][0]+'</option> ';
     }
@@ -117,8 +117,6 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     $(".generate").click(function(event)
     {
         $('#BundleReportTable').empty();
-        //var platform = $(".platform").val();
-        //var version = $(".version").val();
         /*for(var i=0;i<dependency_list.length;i++){
             var temp=[];
             var name=dependency_list[i][0];
@@ -157,9 +155,9 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
         }
         if($('#branch_version').val().trim()==""){
             alertify.error('Branch Version is empty',1500);
-        }
-        var branch_name=$('#branch_name').val().trim();
-        var branch_version=$('#branch_version').val().trim();*/
+        }*/
+        //var branch_name=$('#branch_name').val().trim();
+        //var branch_version=$('#branch_version').val().trim();
 
         $.get("New_Execution_Report",
         {
@@ -228,7 +226,7 @@ function RenderPieChart(elementId, dataList, title) {
             plotBackgroundColor: null,
             plotBorderWidth: null,
             plotShadow: false,
-            height: 450
+            height: 500
         }, title: {
             text: 'Summary'
         },
