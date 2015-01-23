@@ -20,7 +20,6 @@ var dependency_classes=[];
 var new_test_case_text = "New test case";
 
 $(document).ready(function() {
-
 	$("#test_case_search_box").select2({
 		placeholder: "Test Case title...",
 //		minimumInputLength: 3,
@@ -1675,7 +1674,8 @@ function GenerateMainRow()
             '</a></td>' +
             '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
             '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
-            '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
+            '<td><div class="toggles toggle-light"  id="searchbox'+ step_num +'verify" data-toggle-height="20" data-toggle-width="60" style="width:40%;"></div></td>'+
+            '<td><div class="toggles toggle-light"  id="searchbox'+ step_num +'continue" data-toggle-height="20" data-toggle-width="60" style="width:40%;"></div></td>'+
             '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
             '<td><div class="input-append bootstrap-timepicker">' +
             '<input id="searchbox'+step_num+'time" type="text" class="input-small textbox timepicker">' +
@@ -1707,6 +1707,14 @@ function addMainTableRowFixedPlace(fixedPlace){
     $('#steps_table>tr:eq('+(fixedPlace-1)+')').after(GenerateMainRow());
     $('#searchbox'+fixedPlace+'datapop').after('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
     $('#searchbox'+fixedPlace+'descriptionpop').after('<div id="searchbox'+step_num+'descriptionpop"></div>');
+    $('.toggles').each(function(){
+        if($(this).attr('id')=="searchbox"+step_num+"verify" && $(this).find('div.toggle-slide').length==0){
+            $(this).toggles({});
+        }
+        if($(this).attr('id')=="searchbox"+step_num+"continue" && $(this).find('div.toggle-slide').length==0){
+            $(this).toggles({});
+        }
+    });
     AutoCompleteTestStep();
     TimePicker();
 }
@@ -1716,6 +1724,14 @@ function addMainTableRow(divname){
     $('#outer-data').append('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
     $('#step_description_general').append('<div id="searchbox'+step_num+'descriptionpop"></div>');
     $(divname).append(GenerateMainRow());
+    $('.toggles').each(function(){
+       if($(this).attr('id')=="searchbox"+step_num+"verify" && $(this).find('div.toggle-slide').length==0){
+           $(this).toggles({});
+       }
+        if($(this).attr('id')=="searchbox"+step_num+"continue" && $(this).find('div.toggle-slide').length==0){
+            $(this).toggles({});
+        }
+    });
     AutoCompleteTestStep();
     TimePicker();
 }
