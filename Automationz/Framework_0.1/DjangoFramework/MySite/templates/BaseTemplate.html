@@ -332,6 +332,8 @@
 $(document).ready(function() {
 	// Listen for pjax requests for elements with data-pjax attribute
 	$(document).pjax('a[data-pjax]', '#pjax-container');
+	
+	$.pjax.defaults.timeout = 10000;
 
 	$(document).on('pjax:send', function () {
 		$("#pjax-container").fadeOut('fast');
