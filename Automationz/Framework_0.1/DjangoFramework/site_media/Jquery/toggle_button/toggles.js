@@ -26,7 +26,7 @@ var Toggles = root['Toggles'] = function(el, opts) {
   // extend default opts with the users options
   opts = self.opts = $.extend({
     // can the toggle be dragged
-    'drag': true,
+    'drag': false,
     // can it be clicked to toggle
     'click': true,
     'text': {
@@ -115,7 +115,7 @@ Toggles.prototype.createEl = function() {
     .css({
       height: height,
       width: onOffWidth,
-      textIndent: isSelect ? '' : halfHeight,
+      textIndent: isSelect ? '' : -halfHeight,
       lineHeight: height + 'px'
     })
     .html(self.opts['text']['on']);
@@ -125,7 +125,7 @@ Toggles.prototype.createEl = function() {
       height: height,
       width: onOffWidth,
       marginLeft: isSelect ? '' : -halfHeight,
-      textIndent: isSelect ? '' : 2*halfHeight,
+      textIndent: isSelect ? '' : halfHeight,
       lineHeight: height + 'px'
     })
     .html(self.opts['text']['off'])
