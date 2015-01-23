@@ -7741,7 +7741,9 @@ def GetStepNameType(request):
     return HttpResponse(result, mimetype='appliction/json')
 
 def Result(request):
-    return render_to_response('Result.html', {}, context_instance=RequestContext(request))
+    if request.is_ajax() and request.META.get('HTTP_X_PJAX') == 'true':
+        return render_to_response('Result.html', {}, context_instance=RequestContext(request))
+    return render_to_response('ResultFULL.html', {}, context_instance=RequestContext(request))
 def GetResultAuto(request):
     try:
         if request.is_ajax():
