@@ -271,5 +271,15 @@ var do_on_load = function do_on_load () {
 	});
 };
 
-$(document).ready(do_on_load);
-$(window).bind('pjax:complete', do_on_load);
+function loadWithScript() {
+	$.getScript("/site_media/Jquery/jstree/jstree.min.js")
+	.done(function (script, textStatus) {
+		do_on_load();
+	})
+	.fail(function (jqxhr, settings, exception) {
+		window.location.reload();
+	});
+}
+
+$(document).ready(loadWithScript);
+$(window).bind('pjax:complete', loadWithScript);
