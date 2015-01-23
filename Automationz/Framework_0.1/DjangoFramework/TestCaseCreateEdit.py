@@ -876,7 +876,7 @@ def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_
         return err_msg
     else:
         for each in Steps_Data_List:
-            if not isinstance(each[0], basestring) and not isinstance(each[2], basestring) and not isinstance(each[3], basestring) and not isinstance(each[4], basestring) and not isinstance(each[5], basestring):
+            if not isinstance(each[0], basestring) and not isinstance(each[2], basestring) and not isinstance(each[3], basestring) and not isinstance(each[4], basestring) and not isinstance(each[5], basestring) and not isinstance(each[6], basestring):
                 err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case steps format. StepName,Description,ExpectedResult,Time,Verification should be a basestring.", 3)
                 return err_msg
             if not isinstance(each[1], list):
@@ -1107,13 +1107,14 @@ def Insert_TestSteps_StepsData(Conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                 expected_result = each[3]
                 verification_point = each[4]
                 time_expected = each[5]
+                continue_point=each[6]
                 if step_data_required:
                     # Data_List=each[1]
                     print seq
                     if DBUtil.IsDBConnectionGood(Conn) == False:
                         time.sleep(1)
                         Conn = GetConnection()
-                    Data_ID_List = InsertMasterDataForDataRequired(Conn, TC_Id, Step_Index, step_data, step_description, expected_result, verification_point, time_expected)
+                    Data_ID_List = InsertMasterDataForDataRequired(Conn, TC_Id, Step_Index, step_data, step_description, expected_result, verification_point, time_expected,continue_point)
                     if isinstance(Data_ID_List, list):
                         # Get them to the container_data
                         if DBUtil.IsDBConnectionGood(Conn) == False:
@@ -1136,7 +1137,7 @@ def Insert_TestSteps_StepsData(Conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                     if DBUtil.IsDBConnectionGood(Conn) == False:
                         time.sleep(1)
                         Conn = GetConnection()
-                    InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result, verification_point, time_expected)
+                    InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result, verification_point, time_expected,continue_point)
             else:
                 error_message = ("No stepsequence is listed test_steps table for test case %s and step id %s" % (TC_Id, step_id))
                 LogMessage(sModuleInfo, error_message, 2)
@@ -1171,7 +1172,7 @@ def InsertContainerData(Conn, TC_Id, Step_Index, Data_ID_List):
             error_message = LogMessage(sModuleInfo, result, 1)
             return error_message
     return container_data_id
-def InsertMasterDataForDataRequired(Conn, TC_Id, Step_Index, Data_List, step_description, expected_result, verification_point, time_expected):
+def InsertMasterDataForDataRequired(Conn, TC_Id, Step_Index, Data_List, step_description, expected_result, verification_point, time_expected,continue_point):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     DataIDList = []
     DataIndex = 1
@@ -1179,7 +1180,7 @@ def InsertMasterDataForDataRequired(Conn, TC_Id, Step_Index, Data_List, step_des
     if DBUtil.IsDBConnectionGood(Conn) == False:
                     time.sleep(1)
                     Conn = GetConnection()
-    InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result, verification_point, time_expected)
+    InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result, verification_point, time_expected,continue_point)
     for each in Data_List:
         if isinstance(each, list):
             Data_ID = Master_Data_ID + ('_d%s' % DataIndex)
@@ -1276,12 +1277,12 @@ def InsertMasterData(Conn, Data_ID, dataList):
             LogMessage(sModuleInfo, error_message, 3)
             return error_message
     return "Pass"
-def InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result, verification_point, time_expected):
+def InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result, verification_point, time_expected,continue_point):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     # create the array for entering the data
-    field_array = ['step', 'expected', 'verification', 'estimated']
-    value_array = ['description', 'result', 'point', 'time']
-    values = [step_description, expected_result, verification_point, time_expected]
+    field_array = ['step', 'expected', 'verification', 'estimated','continue']
+    value_array = ['description', 'result', 'point', 'time','point']
+    values = [step_description, expected_result, verification_point, time_expected,continue_point]
     for each in zip(field_array, value_array, values):
         # form Dict
         Dict = {}

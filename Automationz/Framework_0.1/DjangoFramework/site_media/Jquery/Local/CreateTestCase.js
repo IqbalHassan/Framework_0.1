@@ -20,7 +20,6 @@ var dependency_classes=[];
 var new_test_case_text = "New test case";
 
 $(document).ready(function() {
-
 	$("#test_case_search_box").select2({
 		placeholder: "Test Case title...",
 //		minimumInputLength: 3,
@@ -544,7 +543,10 @@ $(document).ready(function() {
                             $('#searchbox'+(i+1)+'expected').val(steps_and_data[i][4]);
                             $('#searchbox'+(i+1)+'step_type').text(steps_and_data[i][2]);
                             if(steps_and_data[i][5]=='yes'){
-                                $('#searchbox'+(i+1)+'verify').attr('checked','true');
+                                $('#searchbox'+(i+1)+'verify').toggles({'on':'true'});
+                            }
+                            if(steps_and_data[i][10]=='yes'){
+                                $('#searchbox'+(i+1)+'continue').toggles({'on':'true'});
                             }
                             $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
                             $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
@@ -707,27 +709,6 @@ $(document).ready(function() {
                 alertify.error("Feature Path is not defined Correctly","",0);
                 return false;
             }
-            /*if($('#platform-flag').hasClass('unfilled')){
-                //alert("Platform is not selected correctly");
-                alertify.error("Platform is not selected correctly","",0);
-                return false;
-            }
-            if($('#browser-flag').hasClass('unfilled')){
-                //alert("Browser is not selected correctly");
-                alertify.error("Browser is not selected correctly","",0);
-                return false;
-            }
-            if($('#type-flag').hasClass('unfilled')){
-                //alert("Test Type is not defined correctly");
-                alertify.error("Test Type is not defined correctly","",0);
-                return false;
-            }*/
-
-            /*if($('#tag_txtbox').val()!=""){
-                //alert("Tag Field must be empty as you have to select from the suggestion provided");
-                alertify.error("Tag Field must be empty as you have to select from the suggestion provided","",0);
-                return false;
-            }*/
             for(var i=0;i<dependency_classes.length;i++){
                 if($('#'+dependency_classes[i].name+'-flag').hasClass('unfilled')){
                     //alert("Platform is not selected correctly");
@@ -758,7 +739,7 @@ $(document).ready(function() {
             }
             var checked_count=0;
             for(var i=0;i<row_count;i++){
-                if($('#searchbox'+(i+1)+'verify').attr('checked')=='checked'){
+                if($('#searchbox'+(i+1)+'verify').data('toggles').active===true){
                     checked_count++;
                 }
             }
@@ -839,6 +820,7 @@ $(document).ready(function() {
             var stepExpectedList=[];
             var stepDescriptionList=[];
             var stepVerificationList=[];
+            var stepContinueList=[]
             var stepTimeList=[];
             var finalArray=[];
             var stepTypeList=[];
@@ -868,11 +850,17 @@ $(document).ready(function() {
                     stepNameList.push($('#searchbox'+i+'name').val());
                     stepExpectedList.push($('#searchbox'+i+'expected').val());
                     stepDescriptionList.push($('#searchbox'+i+'info').val());
-                    if($('#searchbox'+i+'verify').attr('checked')==='checked'){
+                    if($('#searchbox'+i+'verify').data('toggles').active){
                         stepVerificationList.push('yes');
                     }
                     else{
                         stepVerificationList.push('no');
+                    }
+                    if($('#searchbox'+i+'continue').data('toggles').active){
+                        stepContinueList.push('yes');
+                    }
+                    else{
+                        stepContinueList.push('no');
                     }
                     stepTypeList.push($('#searchbox'+i+'name').closest('tr').find('td:nth-child(8)').text());
                     /******************Convert into the seconds*******************/
@@ -1147,6 +1135,7 @@ $(document).ready(function() {
                             Steps_Description_List:stepDescriptionList.join("|"),
                             Steps_Expected_List:stepExpectedList.join("|"),
                             Steps_Verify_List:stepVerificationList.join("|"),
+                            Steps_continue_List:stepContinueList.join("|"),
                             Steps_Time_List:stepTimeList.join("|"),
                             Status:"Dev",
                             Project_Id:project_id,
@@ -1413,13 +1402,13 @@ function AutoCompleteTestStep(){
                             'cursor':'none'
                         });
                     }
-                    fieldName.closest('tr').find('td:nth-child(8)').html(ui.item[2]);
+                    fieldName.closest('tr').find('td:nth-child(9)').html(ui.item[2]);
                     if(ui.item[3]!=""){
-                        fieldName.closest('tr').find('td:nth-child(10) span:eq(0)').addClass('filled');
+                        fieldName.closest('tr').find('td:nth-child(11) span:eq(0)').addClass('filled');
                         $('#searchbox'+fieldName.closest('tr').find('td:nth-child(2)').text()+'descriptionpop').html(ui.item[3]);
                     }
                     else{
-                        fieldName.closest('tr').find('td:nth-child(9) span:eq(10)').addClass('unfilled');
+                        fieldName.closest('tr').find('td:nth-child(11) span:eq(0)').addClass('unfilled');
                         $('#searchbox'+fieldName.closest('tr').find('td:nth-child(2)').text()+'descriptionpop').html("");
                     }
                     if(ui.item[4]){
@@ -1446,7 +1435,8 @@ function AutoCompleteTestStep(){
                         $('#searchbox'+index+'expected').val(ui.item[6].trim());
                     }
                     if(ui.item[7]){
-                        $('#searchbox'+index+'verify').attr('checked',true);
+                        //$('#searchbox'+index+'verify').attr('checked',true);
+                        $('#searchbox'+index+'verify').toggles({'on':'true'});
                     }
                     if(ui.item[8]){
                         $('#searchbox'+index+'time').val(convertToString(ui.item[8]));
@@ -1550,10 +1540,11 @@ function reOrganize(){
         currentrow.find('td:nth-child(4) a:eq(0)').attr('id','searchbox'+i+'data');
         currentrow.find('td:nth-child(5) textarea:eq(0)').attr('id','searchbox'+i+'info');
         currentrow.find('td:nth-child(6) textarea:eq(0)').attr('id','searchbox'+i+'expected');
-        currentrow.find('td:nth-child(7) input:eq(0)').attr('id','searchbox'+i+'verify');
-        currentrow.find('td:nth-child(8) span:eq(0)').attr('id','searchbox'+i+'step_type');
-        currentrow.find('td:nth-child(9) input:eq(0)').attr('id','searchbox'+i+'time');
-        currentrow.find('td:nth-child(10) a:eq(0)').attr('id','searchbox'+i+'step_desc');
+        currentrow.find('td:nth-child(7) div:eq(0)').attr('id','searchbox'+i+'verify');
+        currentrow.find('td:nth-child(8) div:eq(0)').attr('id','searchbox'+i+'continue');
+        currentrow.find('td:nth-child(9) span:eq(0)').attr('id','searchbox'+i+'step_type');
+        currentrow.find('td:nth-child(10) input:eq(0)').attr('id','searchbox'+i+'time');
+        currentrow.find('td:nth-child(11) a:eq(0)').attr('id','searchbox'+i+'step_desc');
         currentrow=currentrow.closest('tr').next();
     }
     /*******************ReOrdering the Main Menu Elements End*********************/
@@ -1675,7 +1666,8 @@ function GenerateMainRow()
             '</a></td>' +
             '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
             '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
-            '<td><input type="checkbox" id="searchbox'+step_num+'verify" value="yes"></td>' +
+            '<td><div class="toggles toggle-light"  id="searchbox'+ step_num +'verify"  style="width:40%;"></div></td>'+
+            '<td><div class="toggles toggle-light"  id="searchbox'+ step_num +'continue" style="width:40%;"></div></td>'+
             '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
             '<td><div class="input-append bootstrap-timepicker">' +
             '<input id="searchbox'+step_num+'time" type="text" class="input-small textbox timepicker">' +
@@ -1707,6 +1699,14 @@ function addMainTableRowFixedPlace(fixedPlace){
     $('#steps_table>tr:eq('+(fixedPlace-1)+')').after(GenerateMainRow());
     $('#searchbox'+fixedPlace+'datapop').after('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
     $('#searchbox'+fixedPlace+'descriptionpop').after('<div id="searchbox'+step_num+'descriptionpop"></div>');
+    $('.toggles').each(function(){
+        if($(this).attr('id')=="searchbox"+step_num+"verify" && $(this).find('div.toggle-slide').length==0){
+            $(this).toggles({});
+        }
+        if($(this).attr('id')=="searchbox"+step_num+"continue" && $(this).find('div.toggle-slide').length==0){
+            $(this).toggles({});
+        }
+    });
     AutoCompleteTestStep();
     TimePicker();
 }
@@ -1716,6 +1716,14 @@ function addMainTableRow(divname){
     $('#outer-data').append('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
     $('#step_description_general').append('<div id="searchbox'+step_num+'descriptionpop"></div>');
     $(divname).append(GenerateMainRow());
+    $('.toggles').each(function(){
+       if($(this).attr('id')=="searchbox"+step_num+"verify" && $(this).find('div.toggle-slide').length==0){
+           $(this).toggles({});
+       }
+        if($(this).attr('id')=="searchbox"+step_num+"continue" && $(this).find('div.toggle-slide').length==0){
+            $(this).toggles({});
+        }
+    });
     AutoCompleteTestStep();
     TimePicker();
 }
