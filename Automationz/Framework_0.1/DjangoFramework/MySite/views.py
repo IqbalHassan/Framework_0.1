@@ -3181,15 +3181,15 @@ def Execution_Report_Table(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
-def TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected, Step_Verification_Point, Step_Time_List):
+def TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected, Step_Verification_Point, Step_Time_List,Step_Continue_Point):
     print Step_Expected
     Steps_Data_List = []
     # s = step # d = data # t = tuple # a = address
     d = 0
     index = -1
-    for name in zip(Steps_Name_List, Step_Description_List, Step_Expected, Step_Verification_Point, Step_Time_List):
+    for name in zip(Steps_Name_List, Step_Description_List, Step_Expected, Step_Verification_Point,Step_Time_List,Step_Continue_Point):
         # init step array
-        Steps_Data_List.insert(d, (name[0].strip(), [], name[1].strip(), name[2].strip(), name[3].strip(), name[4].strip()))
+        Steps_Data_List.insert(d, (name[0].strip(), [], name[1].strip(), name[2].strip(), name[3].strip(), name[4].strip(),name[5].strip()))
 
         index = Steps_Name_List.index(name[0], index + 1)
         if index < len(temp):
@@ -3328,6 +3328,7 @@ def Create_Submit_New_TestCase(request):
             Step_Description_List = Step_Description_List.split('|')
             Step_Expected_Result = request.GET.get(u'Steps_Expected_List', '').split('|')
             Step_Verification_Point = request.GET.get(u'Steps_Verify_List', '').split('|')
+            Step_Continue_Point = request.GET.get(u'Steps_continue_List', '').split('|')
             Step_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
             Project_id=request.GET.get(u'Project_Id','')
             Team_id=request.GET.get(u'Team_Id','')
@@ -3340,7 +3341,7 @@ def Create_Submit_New_TestCase(request):
                 temp_list.append((temporary[0],temporary[1].split(",")))
             Dependency_List=temp_list
             
-            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected_Result, Step_Verification_Point, Step_Time_List)
+            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected_Result, Step_Verification_Point, Step_Time_List,Step_Continue_Point)
 
         # 1
         ##########Data Validation: Check if all required input fields have data
@@ -3601,6 +3602,16 @@ def ViewTestCase(TC_Id):
                     step_time = ""
                 else:
                     step_time = Step_Time[0][0]
+                    
+                # select verification point from master_data
+                query = "select description from master_data where id Ilike '%s_s" % (TC_Id)
+                query += "%s" % (str(Step_Iteration))
+                query += "%' and field='continue' and value='point'"
+                Step_Continue = DB.GetData(Conn, query, False)
+                if len(Step_Continue) == 0:
+                    step_continue = ""
+                else:
+                    step_continue = Step_Continue[0][0]
                 # is data required for this step
                 if each_test_step[3]:
                     # Is this a verify step
@@ -3619,7 +3630,7 @@ def ViewTestCase(TC_Id):
                             From_Data = TestCaseCreateEdit.Get_PIM_Data_By_Id(Conn, each_data_id[0])
                             Step_Data.append(From_Data)
                 # append step name and data to send it back
-                Steps_Data_List.append((Step_Name, Step_Data, Step_Type, step_description, step_expected, step_verified, Step_General_Description[0][0], step_time, Step_Edit, each_test_step[3]))
+                Steps_Data_List.append((Step_Name, Step_Data, Step_Type, step_description, step_expected, step_verified, Step_General_Description[0][0], step_time, Step_Edit, each_test_step[3],step_continue))
                 Step_Iteration = Step_Iteration + 1
             # return values
             results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team, 'Labels':Labels}

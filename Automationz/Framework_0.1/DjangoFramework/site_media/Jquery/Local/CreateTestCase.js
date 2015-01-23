@@ -545,6 +545,9 @@ $(document).ready(function() {
                             if(steps_and_data[i][5]=='yes'){
                                 $('#searchbox'+(i+1)+'verify').toggles({'on':'true'});
                             }
+                            if(steps_and_data[i][10]=='yes'){
+                                $('#searchbox'+(i+1)+'continue').toggles({'on':'true'});
+                            }
                             $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
                             $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
                             $('#searchbox'+(i+1)+'time').val(convertToString(steps_and_data[i][7]));
@@ -817,6 +820,7 @@ $(document).ready(function() {
             var stepExpectedList=[];
             var stepDescriptionList=[];
             var stepVerificationList=[];
+            var stepContinueList=[]
             var stepTimeList=[];
             var finalArray=[];
             var stepTypeList=[];
@@ -851,6 +855,12 @@ $(document).ready(function() {
                     }
                     else{
                         stepVerificationList.push('no');
+                    }
+                    if($('#searchbox'+i+'continue').data('toggles').active){
+                        stepContinueList.push('yes');
+                    }
+                    else{
+                        stepContinueList.push('no');
                     }
                     stepTypeList.push($('#searchbox'+i+'name').closest('tr').find('td:nth-child(8)').text());
                     /******************Convert into the seconds*******************/
@@ -1125,6 +1135,7 @@ $(document).ready(function() {
                             Steps_Description_List:stepDescriptionList.join("|"),
                             Steps_Expected_List:stepExpectedList.join("|"),
                             Steps_Verify_List:stepVerificationList.join("|"),
+                            Steps_continue_List:stepContinueList.join("|"),
                             Steps_Time_List:stepTimeList.join("|"),
                             Status:"Dev",
                             Project_Id:project_id,
