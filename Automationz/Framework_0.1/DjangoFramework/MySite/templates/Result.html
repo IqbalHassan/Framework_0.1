@@ -1,8 +1,8 @@
-<!-- Set the document title -->
-<script type="text/javascript">
-	document.title = "Results";
-</script>
+{% extends "BaseTemplate.html" %}
 
+{% block title%}Results{% endblock %}
+
+{% block content %}
 <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400" rel="stylesheet" />
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="/site_media/Jquery/Local/Result.js"></script>
@@ -76,3 +76,4 @@
         </div>
     </div>
 </article>
+{% endblock %}
