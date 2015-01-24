@@ -4178,6 +4178,7 @@ def New_Execution_Report(request):
         team_id=request.GET.get(u'team_id','').strip()
         branch=request.GET.get(u'branch_name','').strip()
         version=request.GET.get(u'branch_version','').strip()
+        run_type=request.GET.get(u'run_type','').strip()
         dependency=request.GET.get(u'dependency','').split('#')
         new_dependency=[]
         for each in dependency:
@@ -4199,6 +4200,9 @@ def New_Execution_Report(request):
             xtra_qry += " and tre.branch_version ~ '"+branch+"' "
         elif branch != '' and version != '':
             xtra_qry += " and tre.branch_version ~ '"+branch+":"+version+"' "
+            
+        if run_type != '':
+            xtra_qry += " and tre.run_type='"+run_type+"' "
             
         
                 
@@ -4303,8 +4307,8 @@ def New_Execution_Report(request):
             temp.append(skipped_count)
             allskip = allskip + skipped_count
             
-            env_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag", False)
-            section_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "'", False)
+            env_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag where name='"+team_id+"' and property = 'Team' and tc_id in (select distinct tc_id from test_case_tag where name = '"+project_id+"' and property = 'Project')", False)
+            section_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and rtct.tc_id in (select distinct tc_id from test_case_tag where name = '"+project_id+"' and property = 'Project' and tc_id in (select distinct tc_id from test_case_tag where name = '"+team_id+"' and property = 'Team'))", False)
             all_count = 0
             for a in env_cases:
                 for b in section_cases:

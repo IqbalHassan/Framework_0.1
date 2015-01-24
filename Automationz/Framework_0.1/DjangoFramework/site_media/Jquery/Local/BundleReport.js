@@ -82,6 +82,8 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     }
     message+='</select></td><td><select id="branch_version" style="display: none;"></select></td>'
     message+='</tr></table></td>'
+    message+='<tr><td align="right"><b class="Text">Test Run Type:</b></td>';
+    message+='<td align="left"><select id="run_type"><option value="">All</option><option value="Automation">Automation</option><option value="Manual">Manual</option></select></td>'
     message+='</tr>';
     //message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="create" type="button" class="button primary" id="create_manual_machine"/></td></tr>';
     $('#choice_div').html(message);
@@ -134,6 +136,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
         
         var branch_name=$('#branch_name').val();
         var branch_version=$('#branch_version').val();
+        var run_type=$("#run_type").val();
 
         $.get("New_Execution_Report",
         {
@@ -141,7 +144,8 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             'team_id':team_id,
             'dependency':dependency.join('#'),
             'branch_name':branch_name,
-            'branch_version':branch_version
+            'branch_version':branch_version,
+            'run_type':run_type
          },function(data)
             {
                 ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report");
