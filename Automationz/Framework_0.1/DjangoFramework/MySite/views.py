@@ -4182,6 +4182,8 @@ def New_Execution_Report(request):
         team_id=request.GET.get(u'team_id','').strip()
         branch=request.GET.get(u'branch_name','').strip()
         version=request.GET.get(u'branch_version','').strip()
+        run_type=request.GET.get(u'run_type','').strip()
+        milestone=request.GET.get(u'milestone','').strip()
         dependency=request.GET.get(u'dependency','').split('#')
         new_dependency=[]
         for each in dependency:
@@ -4203,6 +4205,47 @@ def New_Execution_Report(request):
             xtra_qry += " and tre.branch_version ~ '"+branch+"' "
         elif branch != '' and version != '':
             xtra_qry += " and tre.branch_version ~ '"+branch+":"+version+"' "
+            
+        if run_type != '':
+            xtra_qry += " and tre.run_type='"+run_type+"' "
+            
+        if milestone != '':
+            xtra_qry += " and tre.test_milestone ~ '"+milestone+"' "
+            
+        if browser != '':
+            xtra_qry += " and mds.type='"+new_dependency[0][0]+"' and mds.name='"+browser+"' "
+            if bro_bit != '':
+                xtra_qry += " and mds.bit="+bro_bit+" "
+                if bro_ver != '':
+                    xtra_qry += " and mds.version='"+bro_ver+"' "
+                    
+            if tc_type != '':
+                xtra_qry += " and mds.machine_serial in (select machine_serial from machine_dependency_settings where type = '"+new_dependency[1][0]+"' and name = '"+tc_type+"') "
+            
+            if platform != '':
+                xtra_qry += " and mds.machine_serial in (select machine_serial from machine_dependency_settings where type = '"+new_dependency[2][0]+"' and name = '"+platform+"' "
+                if plat_bit != '':
+                    xtra_qry += " and bit = '"+plat_bit+"' "
+                    if plat_ver != '':
+                        xtra_qry += " and version='"+plat_ver+"' "
+                xtra_qry += " ) "
+                
+        if browser == '' and tc_type != '':
+            xtra_qry += " and mds.type = '"+new_dependency[1][0]+"' and mds.name = '"+tc_type+"' "
+            if platform != '':
+                xtra_qry += " and mds.machine_serial in (select machine_serial from machine_dependency_settings where type = '"+new_dependency[2][0]+"' and name = '"+platform+"' "
+                if plat_bit != '':
+                    xtra_qry += " and bit = '"+plat_bit+"' "
+                    if plat_ver != '':
+                        xtra_qry += " and version='"+plat_ver+"' "
+                xtra_qry += " ) "
+                
+        if browser == '' and tc_type == '' and platform != '':
+            xtra_qry += " and mds.type='"+new_dependency[2][0]+"' and mds.name='"+platform+"' "
+            if plat_bit != '':
+                xtra_qry += " and mds.bit="+plat_bit+" "
+                if plat_ver != '':
+                    xtra_qry += " and mds.version='"+plat_ver+"' " 
             
         
                 
@@ -4307,8 +4350,8 @@ def New_Execution_Report(request):
             temp.append(skipped_count)
             allskip = allskip + skipped_count
             
-            env_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag", False)
-            section_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "'", False)
+            env_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag where name='"+team_id+"' and property = 'Team' and tc_id in (select distinct tc_id from test_case_tag where name = '"+project_id+"' and property = 'Project')", False)
+            section_cases = DB.GetData(Conn, "select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and rtct.tc_id in (select distinct tc_id from test_case_tag where name = '"+project_id+"' and property = 'Project' and tc_id in (select distinct tc_id from test_case_tag where name = '"+team_id+"' and property = 'Team'))", False)
             all_count = 0
             for a in env_cases:
                 for b in section_cases:
@@ -4327,7 +4370,7 @@ def New_Execution_Report(request):
             Table.append(tuple(temp))
             
         total=[]
-        total.append('Total')
+        total.append('Summary')
         total.append(allpass)
         total.append(allfail)
         total.append(allblock)
@@ -7353,11 +7396,22 @@ def Get_MileStones(request):
         if request.method == 'GET':
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
-            print milestone
+            #print milestone
             query = "select distinct name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by name"
             milestone_list = DB.GetData(Conn, query, False)
     Heading = ['Milestone Name','Description', 'Starting Date', 'Due Date', 'Status']
     results = {'Heading':Heading, 'TableData':milestone_list}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Get_MileStone_Names(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            milestone = request.GET.get(u'term', '')
+            #print milestone
+            query = "select name from milestone_info"
+            results = DB.GetData(Conn, query, False)
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
