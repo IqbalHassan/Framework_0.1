@@ -85,7 +85,28 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     message+='<tr><td align="right"><b class="Text">Test Run Type:</b></td>';
     message+='<td align="left"><select id="run_type"><option value="">All</option><option value="Automation">Automation</option><option value="Manual">Manual</option></select></td>'
     message+='</tr>';
+    message+='<tr><td align="right"><b class="Text">Milestone:</b></td>';
+    message+='<td align="left"><select class="milestone"><option value="">All</option></select></td>'
+    message+='</tr>';
     //message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="create" type="button" class="button primary" id="create_manual_machine"/></td></tr>';
+    $.ajax({
+        url:'Get_MileStone_Names/',
+        dataType : "json",
+        data : {
+            term : '',
+            //project_id: $.session.get('project_id'),
+            //eam_id: $.session.get('default_team_identity')
+        },
+        success: function( json ) {
+            /*if(json.length > 0)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')*/
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".milestone").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
     $('#choice_div').html(message);
     for(var i=0;i<dependency_list.length;i++){
         $('#'+dependency_list[i][0]+'_name').on('change',function(){
@@ -105,7 +126,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                 if(global_version_list[i][0]==$(this).val()){
                     var version=global_version_list[i][1];
                     var message="";
-                    message+='<option value="">Version</option>';
+                    message+='<option value="">All Versions</option>';
                     for(var j=0;j<version.length;j++){
                         message+='<option value="'+version[j]+'">'+version[j]+'</option>';
                     }
@@ -137,6 +158,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
         var branch_name=$('#branch_name').val();
         var branch_version=$('#branch_version').val();
         var run_type=$("#run_type").val();
+        var milestone=$('.milestone').val();
 
         $.get("New_Execution_Report",
         {
@@ -145,12 +167,13 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             'dependency':dependency.join('#'),
             'branch_name':branch_name,
             'branch_version':branch_version,
-            'run_type':run_type
+            'run_type':run_type,
+            'milestone':milestone
          },function(data)
             {
                 ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report");
-                $("#BundleReportTable .one-column-emphasis").addClass('two-column-emphasis');
-                $("#BundleReportTable .one-column-emphasis").removeClass('one-column-emphasis');
+                //$("#BundleReportTable .one-column-emphasis").addClass('two-column-emphasis');
+                //$("#BundleReportTable .one-column-emphasis").removeClass('one-column-emphasis');
                 var sc = data['Table'].length -1
                 RenderPieChart('BundleReportGraph', [
                     ['Passed ('+data['Table'][sc][1]+')', data['Table'][sc][1]],
@@ -255,7 +278,7 @@ function generate_name(dependency_list,name,type){
                     var version_list=dependency_list[i][1][j][1];
                     if (version_list.length>0){
                         var message="";
-                        message+='<option value="">Bit</option>';
+                        message+='<option value="">All Bits</option>';
                         for(var k=0;k<version_list.length;k++){
                             message+='<option value="'+version_list[k][0]+'">'+version_list[k][0]+' Bit</option>';
                         }
@@ -281,7 +304,7 @@ function generate_version(dependency_list,name,type){
                             var version_list=bit_list[k][1];
                             console.log(version_list);
                             var message="";
-                            message+='<option value="">Version</option>';
+                            message+='<option value="">All Versions</option>';
                             for(var l=0;l<version_list.length;l++){
                                 message+='<option value="'+version_list[l]+'">'+version_list[l]+'</option>';
                             }
