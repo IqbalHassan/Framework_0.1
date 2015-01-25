@@ -716,12 +716,28 @@ def PrepareDataStep(master_data_id, step_data):
                 if isinstance(eachitem[0], basestring) and isinstance(eachitem[1], list):
                     # give entry for the grouped from data index
                     from_data_index = from_data_id + ('_a') + str(address_index)
-                    final_list.append((from_data_id, eachitem[0], from_data_index, description))
+                    final_list.append((from_data_id, eachitem[0], from_data_index, description,False,False))
                     for eachitementry in eachitem[1]:
-                        final_list.append((from_data_index, eachitementry[0], eachitementry[1], description))
+                        if eachitementry[2]=='true':
+                            keyfield=True
+                        else:
+                            keyfield=False
+                        if eachitementry[3]=='false':
+                            ignorefield=False
+                        else:
+                            ignorefield=True
+                        final_list.append((from_data_index, eachitementry[0], eachitementry[1], description,keyfield,ignorefield))
                     address_index += 1
                 elif isinstance(eachitem[0], basestring) and isinstance(eachitem[1], basestring):
-                    final_list.append((from_data_id, eachitem[0], eachitem[1], description))
+                    if eachitem[2]=='true':
+                        keyfield=True
+                    else:
+                        keyfield=False
+                    if eachitem[3]=='false':
+                        ignorefield=False
+                    else:
+                        ignorefield=True
+                    final_list.append((from_data_id, eachitem[0], eachitem[1], description,keyfield,ignorefield))
                 else:
                     LogMessage(sModuleInfo, "Wrong data format in from data while updating step %s.should be tuple or list" % master_data_id, 3)
             to_address_index = 1
@@ -730,12 +746,28 @@ def PrepareDataStep(master_data_id, step_data):
                 if isinstance(eachitem[0], basestring) and isinstance(eachitem[1], list):
                     # give entry for the grouped from data index
                     to_data_index = to_data_id + ('_a') + str(to_address_index)
-                    final_list.append((to_data_id, eachitem[0], to_data_index, description))
+                    final_list.append((to_data_id, eachitem[0], to_data_index, description,False,False))
                     for eachitementry in eachitem[1]:
-                        final_list.append((to_data_index, eachitementry[0], eachitementry[1], description))
+                        if eachitementry[2]=='true':
+                            keyfield=True
+                        else:
+                            keyfield=False
+                        if eachitementry[3]=='false':
+                            ignorefield=False
+                        else:
+                            ignorefield=True
+                        final_list.append((to_data_index, eachitementry[0], eachitementry[1], description,keyfield,ignorefield))
                     to_address_index += 1
                 elif isinstance(eachitem[0], basestring) and isinstance(eachitem[1], basestring):
-                    final_list.append((to_data_id, eachitem[0], eachitem[1], description))
+                    if eachitem[2]=='true':
+                        keyfield=True
+                    else:
+                        keyfield=False
+                    if eachitem[3]=='false':
+                        ignorefield=False
+                    else:
+                        ignorefield=True
+                    final_list.append((to_data_id, eachitem[0], eachitem[1], description,keyfield,ignorefield))
                 else:
                     LogMessage(sModuleInfo, "Wrong data format in from data while updating step %s.should be tuple or list" % master_data_id, 3)
         else:
@@ -914,15 +946,15 @@ def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_
                             if isinstance(eachitem[0], list):
                                 for eachitementry in eachitem[0]:
                                     if isinstance(eachitementry, tuple):
-                                        if isinstance(eachitementry[0], basestring) and isinstance(eachitementry[1], basestring) and len(eachitementry) == 2:
+                                        if isinstance(eachitementry[0], basestring) and isinstance(eachitementry[1], basestring) and len(eachitementry) == 4 and isinstance(eachitementry[2], basestring) and isinstance(eachitementry[3], basestring):
                                             print "edit from tuple data"
-                                            if not isinstance(eachitementry[0], basestring) and not isinstance(eachitementry[1], basestring):
+                                            if not isinstance(eachitementry[0], basestring) and not isinstance(eachitementry[1], basestring) and isinstance(eachitementry[2], basestring) and isinstance(eachitementry[3], basestring):
                                                 err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:From normal tuple must be basestring", 3)
                                                 return err_msg
                                         elif isinstance(eachitementry[0], basestring) and isinstance(eachitementry[1], list) and len(eachitementry) == 2:
                                             print "edit  from group data"
                                             for tupledata in eachitementry[1]:
-                                                if not isinstance(tupledata[0], basestring) and not isinstance(tupledata[1], basestring):
+                                                if not isinstance(tupledata[0], basestring) and not isinstance(tupledata[1], basestring) and isinstance(tupledata[2], basestring) and not isinstance(tupledata[3], basestring):
                                                     err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:From Grouped Data tuple must be basestring", 3)
                                                     return err_msg
                                         else:
@@ -938,15 +970,15 @@ def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_
                             if isinstance(eachitem[1], list):
                                 for eachitementry in eachitem[1]:
                                     if isinstance(eachitementry, tuple):
-                                        if isinstance(eachitementry[0], basestring) and isinstance(eachitementry[1], basestring) and len(eachitementry) == 2:
+                                        if isinstance(eachitementry[0], basestring) and isinstance(eachitementry[1], basestring) and len(eachitementry) == 4 and isinstance(eachitementry[2], basestring) and isinstance(eachitementry[3], basestring):
                                             print "edit to tuple data"
-                                            if not isinstance(eachitementry[0], basestring) and not isinstance(eachitementry[1], basestring):
+                                            if not isinstance(eachitementry[0], basestring) and not isinstance(eachitementry[1], basestring) and isinstance(eachitementry[2], basestring) and isinstance(eachitementry[3], basestring):
                                                 err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:To normal tuple must be basestring", 3)
                                                 return err_msg
                                         elif isinstance(eachitementry[0], basestring) and isinstance(eachitementry[1], list) and len(eachitementry) == 2:
                                             print "edit to group data"
                                             for tupledata in eachitementry[1]:
-                                                if not isinstance(tupledata[0], basestring) and not isinstance(tupledata[1], basestring):
+                                                if not isinstance(tupledata[0], basestring) and not isinstance(tupledata[1], basestring) and isinstance(tupledata[2], basestring) and not isinstance(tupledata[3], basestring):
                                                     err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:From Grouped Data tuple must be basestring", 3)
                                                     return err_msg
                                         else:
