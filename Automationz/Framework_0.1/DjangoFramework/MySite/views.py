@@ -3269,12 +3269,16 @@ def TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expect
                         strAddressTuple = tupleItem.replace('[', '').replace(']', '').split(",")
                         strAddressTuple[0] = strAddressTuple[0].strip()
                         strAddressTuple[1] = strAddressTuple[1].strip()
+                        strAddressTuple[2] = strAddressTuple[2].strip()
+                        strAddressTuple[3] = strAddressTuple[3].strip()
                         addressTuple = tuple(strAddressTuple)
                         Steps_Data_List[d][1][t][a][1].append(addressTuple)
                     else:
                         strNormalTuple = tupleItem.replace('[', '').replace(']', '').split(",")
                         strNormalTuple[0] = strNormalTuple[0].strip()
                         strNormalTuple[1] = strNormalTuple[1].strip()
+                        strNormalTuple[2] = strNormalTuple[2].strip()
+                        strNormalTuple[3] = strNormalTuple[3].strip()
                         normalTuple = tuple(strNormalTuple)
                         Steps_Data_List[d][1][t].append(normalTuple)
                         a += 1

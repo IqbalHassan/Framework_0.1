@@ -642,12 +642,12 @@ $(document).ready(function() {
                                     for(var k=0;k<currentdataset.length;k++){
                                         if(currentdataset[k][1] instanceof Array){
                                             for(var l=0;l<currentdataset[k][1].length;l++){
-                                                var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][1]};
+                                                var tempObject={field:currentdataset[k][0],sub_field:currentdataset[k][1][l][0],value:currentdataset[k][1][l][1],keyfield:currentdataset[k][1][l][2],ignorefield:currentdataset[k][1][l][3]};
                                                 temp.push(tempObject);
                                             }
                                         }
                                         else{
-                                            var tempobject={field:currentdataset[k][0],sub_field:"",value:currentdataset[k][1]};
+                                            var tempobject={field:currentdataset[k][0],sub_field:"",value:currentdataset[k][1], keyfield:currentdataset[k][2],ignorefield:currentdataset[k][3]};
                                             temp.push(tempobject);
                                         }
                                     }
@@ -656,9 +656,15 @@ $(document).ready(function() {
                                     }
                                     var currentrow=$('#step'+(i+1)+'data'+(j+1)+'entrytable tr:eq(1)');
                                     for(var k=0;k<temp.length;k++){
-                                        currentrow.find('td:eq(0)').find('input:eq(0)').val(temp[k].field);
-                                        currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].sub_field);
-                                        currentrow.find('td:eq(2)').find('textarea:eq(0)').val(temp[k].value);
+                                        if(temp[k].keyfield){
+                                            currentrow.find('td:eq(0)').find('input:eq(0)').attr('checked','checked');
+                                        }
+                                        currentrow.find('td:eq(1)').find('input:eq(0)').val(temp[k].field);
+                                        currentrow.find('td:eq(2)').find('input:eq(0)').val(temp[k].sub_field);
+                                        currentrow.find('td:eq(3)').find('textarea:eq(0)').val(temp[k].value);
+                                        if(temp[k].ignorefield){
+                                            currentrow.find('td:eq(4)').find('input:eq(0)').attr('checked','checked');
+                                        }
                                         currentrow=currentrow.next();
                                     }
                                     if(temp.length>0){
@@ -902,13 +908,25 @@ $(document).ready(function() {
                                 var tableLength=tableid.find('tr').length;
                                 var row=tableid.find('tr:eq(1)');
                                 for(var k=0;k<tableLength-1;k++){
-                                    var field=row.find('td:eq(0) input:eq(0)').val();
+                                    if(row.find('td:eq(0) input:eq(0)').is(':checked')){
+                                        var keyfield=true;
+                                    }
+                                    else{
+                                        var keyfield=false;
+                                    }
+                                    var field=row.find('td:eq(1) input:eq(0)').val();
                                     field=field.trim();
-                                    var sub_field=row.find('td:eq(1) input:eq(0)').val();
+                                    var sub_field=row.find('td:eq(2) input:eq(0)').val();
                                     sub_field=sub_field.trim();
-                                    var value=row.find('td:eq(2) textarea:eq(0)').val();
+                                    var value=row.find('td:eq(3) textarea:eq(0)').val();
                                     value=value.trim();
-                                    var tempObject={field:field , sub_field:sub_field ,value:value};
+                                    if(row.find('td:eq(4) input:eq(0)').is(':checked')){
+                                        var ignorefield=true;
+                                    }
+                                    else{
+                                        var ignorefield=false;
+                                    }
+                                    var tempObject={field:field , sub_field:sub_field ,value:value,keyfield:keyfield,ignorefield:ignorefield};
                                     dataset.push(tempObject);
                                     row=row.next();
                                 }
@@ -919,6 +937,13 @@ $(document).ready(function() {
                     }
                 };
             }
+            /*****************************************verifying the keyfield and ignore***************************/
+            return_type=keyfield_ignorefield(finalArray);
+            if(!return_type.status){
+                alertify.error("Please give correct key field in all datasets in  Step #"+return_type.index+1,"",0);
+                return false;
+            }
+            /*****************************************verifying the keyfield and ignore***************************/
             /*************************DataFetching from the Pop up***********************************************/
             /*************************Filtering***********************************************/
             var stepDataSTR=[];
@@ -991,7 +1016,7 @@ $(document).ready(function() {
                             for(var k=0;k<currentDataSet.length;k++){
                                 //First Check whether it's a mainField or Not
                                 if(currentDataSet[k].sub_field==""){
-                                    var temp_object={mainField:currentDataSet[k].field,fieldValue:currentDataSet[k].value};
+                                    var temp_object={mainField:currentDataSet[k].field,fieldValue:currentDataSet[k].value,keyfield:currentDataSet[k].keyfield,ignorefield:currentDataSet[k].ignorefield};
                                     mainFields.push(temp_object);
                                 }
                                 else{
@@ -1006,7 +1031,7 @@ $(document).ready(function() {
                             var temp="";
                             temp+="[";
                             for(var k=0;k<mainFields.length;k++){
-                                temp+=("("+mainFields[k].mainField+","+mainFields[k].fieldValue+"),");
+                                temp+=("("+mainFields[k].mainField+","+mainFields[k].fieldValue+","+mainFields[k].keyfield+","+mainFields[k].ignorefield+"),");
                             }
                             if(withsubFields.length==0 && subFieldskey==0){
                                 temp=temp.substring(0,temp.length-1);
@@ -1018,7 +1043,7 @@ $(document).ready(function() {
                                     temp+=("("+mainField+",[");
                                     for(var l=0;l<withsubFields.length;l++){
                                         if(mainField==withsubFields[l].field){
-                                            temp+=("("+withsubFields[l].sub_field+","+withsubFields[l].value+"),");
+                                            temp+=("("+withsubFields[l].sub_field+","+withsubFields[l].value+","+withsubFields[l].keyfield+","+withsubFields[l].ignorefield+"),");
                                         }
                                     }
                                     temp=temp.substring(0,temp.length-1);
@@ -1198,6 +1223,76 @@ $(document).ready(function() {
         });
     }
 });
+function keyfield_ignorefield(finalArray){
+    var status=true;
+    for(var i=0;i<finalArray.length;i++){
+        var current_data=finalArray[i];
+        if(current_data===undefined){
+            //this means data not required in this step
+            continue;
+        }
+        else{
+            if(current_data.length>1){
+                //means keyfield and ignorefield will be checked
+                //take out the first dataset key field
+                var reference_data=current_data[0];
+                var key_field=[];
+                for(var j=0;j<reference_data.length;j++){
+                    if(reference_data[j].keyfield && !reference_data[j].ignorefield){
+                        if(key_field.indexOf(reference_data[j].field)==-1){
+                            key_field.push(reference_data[j].field);
+                        }
+                    }
+                }
+                for(var j=1;j<current_data.length;j++){
+                    var temp=[];
+                    for( var k=0;k<current_data[j].length;k++){
+                        if(current_data[j][k].keyfield && !current_data[j][k].ignorefield){
+                            if(temp.indexOf(current_data[j][k].field)==-1){
+                                temp.push(current_data[j][k].field);
+                            }
+                        }
+                    }
+                    if(key_field.length!=temp.length){
+                        status=false;
+                    }
+                    else{
+                        for(var k=0;k<temp.length;k++){
+                            if(key_field.indexOf(temp[k])==-1){
+                                status=false;
+                                break;
+                            }
+                        }
+                        if(!status){
+                            break;
+                        }
+                        for(var k=0;k<key_field.length;k++){
+                            if(temp.indexOf(key_field[k])==-1){
+                                status=false;
+                                break;
+                            }
+                        }
+                        if(!status){
+                            break;
+                        }
+                    }
+                }
+                if (!status){
+                    break;
+                }
+            }
+            else{
+                //means only one dataset in this set. so no worry
+                continue;
+            }
+        }
+        if (!status){
+            break;
+        }
+    }
+    var temp={'status':status,'index':i}
+    return temp;
+}
 function get_default_settings(project_id,team_id){
     $.get('get_default_settings/',{
         project_id:project_id,
@@ -1591,10 +1686,13 @@ function reOrganize(){
 function adddataentry(tablename){
     var message="";
     message+=(
-        '<tr>' +
+        '<tr>'
+            +'<td><input type="checkbox" style="width: auto"></td>' +
             '<td><input class="textbox" style="width: auto"></td>' +
             '<td><input class="textbox" style="width: auto"></td>' +
             '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
+            '<td><input type="checkbox" style="width: auto"></td>' +
+
             '</tr>');
     $('#'+tablename).append(message);
 }
@@ -1634,14 +1732,18 @@ function addnewrow(divname,stepno,dataset_num){
     /******************dataset nested table(start)************/
         '<table id="step'+stepno+'data'+dataset_num+'entrytable"class="two-column-emphasis" width="100%" style="font-size:75%">' +
         '<tr>' +
+        '<th width="33%">KeyField</th>' +
         '<th width="33%">Field</th>' +
         '<th width="33%">Sub-Field</th>' +
         '<th width="33%">Value</th>' +
+        '<th width="33%">IgnoreField</th>' +
         '</tr>' +
         '<tr>' +
+        '<td><input type="checkbox" style="width: auto"></td>' +
         '<td><input class="textbox" style="width: auto"></td>' +
         '<td><input class="textbox" style="width: auto"></td>' +
         '<td><textarea class="ui-corner-all  ui-autocomplete-input"></textarea></td>' +
+        '<td><input type="checkbox" style="width: auto"></td>' +
         '</tr>' +
         '</table>' +
         '<div class="new_tc_form" style="text-align: center">' +

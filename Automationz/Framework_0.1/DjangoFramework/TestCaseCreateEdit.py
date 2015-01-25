@@ -795,13 +795,15 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
     SQLQuery = ("select "
     " pmd.id,"
     " pmd.field,"
-    " pmd.value"
+    " pmd.value,"
+    " pmd.keyfield,"
+    " pmd.ignorefield"
     " from master_data pmd"
     " where"
     " pmd.id = '%s';" % (Data_Id))
 
     Data_List = DBUtil.GetData(conn, SQLQuery, False)
-    Data_List = [tuple(x[1:3])for x in Data_List]
+    Data_List = [tuple(x[1:])for x in Data_List]
 
     AddressList = []
     for i in range(len(Data_List) - 1, -1, -1):
@@ -810,7 +812,9 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
             if eachTuple[1] != "":
                 address_find_SQLQuery = ("select "
                 " pmd.field,"
-                " pmd.value"
+                " pmd.value,"
+                " pmd.keyfield,"
+                " pmd.ignorefield"
                 " from master_data pmd"
                 " where"
                 " pmd.id = '%s'"
@@ -948,13 +952,13 @@ def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_
                                 if isinstance(eachitementry[0], basestring) and isinstance(eachitementry[1], list) and len(eachitementry) == 2:
                                     print "grouped_data"
                                     for tupledata in eachitementry[1]:
-                                        if not isinstance(tupledata[0], basestring) and not isinstance(tupledata[1], basestring):
+                                        if not isinstance(tupledata[0], basestring) and not isinstance(tupledata[1], basestring) and not isinstance(tupledata[2], basestring) and not isinstance(tupledata[3], basestring):
                                             err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case data format.GroupedData should contain basestring.", 3)
                                             return err_msg
-                                elif isinstance(eachitementry[0], basestring) and isinstance(eachitementry[1], basestring) and len(eachitementry) == 2:
+                                elif isinstance(eachitementry[0], basestring) and isinstance(eachitementry[1], basestring) and isinstance(eachitementry[2],basestring) and isinstance(eachitementry[3],basestring) and len(eachitementry) == 4:
                                 ######################Tuple Data Check######################################    
                                     print "tuple_data"
-                                    if not isinstance(eachitementry[0], basestring) and not isinstance(eachitementry[1], basestring):
+                                    if not isinstance(eachitementry[0], basestring) and not isinstance(eachitementry[1], basestring) and isinstance(eachitementry[2],basestring) and isinstance(eachitementry[3],basestring):
                                         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case data format.TupleData should contain basestring.", 3)
                                         return err_msg
                                 else:
@@ -999,7 +1003,7 @@ def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     Section_Id = DBUtil.GetData(conn, "select section_id from product_sections where section_path = '%s'" % Section_Path)
     if len(Section_Id) > 0:
         Tag_List.append(('%d' % Section_Id[0], Section_Path_Tag))
-
+        
     # Work around to display section names in run page
     for eachSection in Section_Path.split('.'):
         Tag_List.append(('%s' % eachSection, Section_Tag))
@@ -1244,6 +1248,16 @@ def InsertMasterData(Conn, Data_ID, dataList):
                         # form dict
                         group_data_entry = {}
                         group_data_entry.update({'id':data_index, 'field':eachitem[0], 'value':eachitem[1]})
+                        if(eachitem[2]=='true'):
+                            group_data_entry.update({'keyfield':True})
+                        else:
+                            group_data_entry.update({'keyfield':False})
+                            
+                        if(eachitem[3]=='false'):
+                            group_data_entry.update({'ignorefield':False})
+                        else:
+                            group_data_entry.update({'ignorefield':True})                  
+                        
                         if DBUtil.IsDBConnectionGood(Conn) == False:
                             time.sleep(1)
                             Conn = GetConnection()
@@ -1263,6 +1277,17 @@ def InsertMasterData(Conn, Data_ID, dataList):
                 # form the dict for the normal tuple data
                 master_data_tuple_data = {}
                 master_data_tuple_data.update({'id':Data_ID, 'field':each[0], 'value':each[1]})
+                if(each[2]=='true'):
+                    master_data_tuple_data.update({'keyfield':True})
+                else:
+                    master_data_tuple_data.update({'keyfield':False})
+                    
+                if(each[3]=='false'):
+                    master_data_tuple_data.update({'ignorefield':False})
+                else:
+                    master_data_tuple_data.update({'ignorefield':True})
+                    
+                
                 if DBUtil.IsDBConnectionGood(Conn) == False:
                     time.sleep(1)
                     Conn = GetConnection()
@@ -1286,7 +1311,7 @@ def InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result
     for each in zip(field_array, value_array, values):
         # form Dict
         Dict = {}
-        Dict.update({'id':Master_Data_ID, 'field':each[0], 'value':each[1], 'description':each[2]})
+        Dict.update({'id':Master_Data_ID, 'field':each[0], 'value':each[1], 'description':each[2],'keyfield':False,'ignorefield':False})
         if DBUtil.IsDBConnectionGood(Conn) == False:
             time.sleep(1)
             Conn = GetConnection()
