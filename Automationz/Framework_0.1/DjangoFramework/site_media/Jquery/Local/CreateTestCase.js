@@ -1371,6 +1371,7 @@ function GetBrowserSections(){
                 if(i == 0)return;
                 $(".section[data-level='']").append($('<option>').text(value).attr('value', value));
             });
+            $(".section[data-level='']").attr('id',1);
         }
     });
     $(".section[data-level='']").change(function(){
