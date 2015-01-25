@@ -6567,13 +6567,13 @@ def ProcessRunIDData(Step_Data):
         if isinstance(each, list):
             tempData = []
             for eachitem in each:
-                if isinstance(eachitem[0], basestring) and isinstance(eachitem[1], basestring):
-                    tempData.append((eachitem[0], '', eachitem[1]))
+                if isinstance(eachitem[0], basestring) and isinstance(eachitem[1], basestring) and isinstance(eachitem[2], bool) and isinstance(eachitem[3], bool):
+                    tempData.append((eachitem[0], '', eachitem[1],eachitem[2],eachitem[3]))
                 if isinstance(eachitem[0], basestring) and isinstance(eachitem[1], list):
                     group_name = eachitem[0]
                     for dataitem in eachitem[1]:
-                        if isinstance(dataitem[0], basestring) and isinstance(dataitem[1], basestring):
-                            tempData.append((group_name, dataitem[0], dataitem[1]))
+                        if isinstance(dataitem[0], basestring) and isinstance(dataitem[1], basestring) and isinstance(dataitem[2], bool) and isinstance(dataitem[3], bool):
+                            tempData.append((group_name, dataitem[0], dataitem[1],dataitem[2],dataitem[3]))
             temp.append((step_data, tempData))
         step_data += 1
         final_data.append(temp)    

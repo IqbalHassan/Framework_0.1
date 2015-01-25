@@ -154,7 +154,7 @@ function TestDataFetch(){
                         },
 
                         modal : true,
-                        width : 500,
+                        width : 780,
                         height : 620,
                         title:div_name
 
@@ -173,7 +173,7 @@ function drawPopUp(data,column){
         message+='<th>'+column[i]+'</th>';
     }
     message+='</tr>';
-    var column_data=['field','subfield','value']
+    var column_data=['field','subfield','value','keyfield','ignorefield'];
     for (var i=0;i<data.length;i++){
         for(var l=0;l<data[i].length;l++){
             message+='<tr>';
@@ -190,7 +190,16 @@ function drawPopUp(data,column){
             for(var j=0;j<group_data.length;j++){
                 message+='<tr>';
                 for(var k=0;k<group_data[j].length;k++){
-                    message+='<td>'+group_data[j][k]+'</td>';
+                    if(group_data[j][k] && (k==3 || k==4)){
+                        message+='<td style="text-align: center;"><a class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status filled"></span></a></td>';
+                    }
+                    else if(!group_data[j][k] &&(k==3 || k==4)){
+                        message+='<td style="text-align: center;"><a class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status"></span></a></td>';
+                    }
+                    else{
+                        message+='<td>'+group_data[j][k]+'</td>';
+                    }
+
                 }
                 message+='</tr>';
             }
