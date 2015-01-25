@@ -3679,6 +3679,7 @@ def EditTestCase(request):
             print Step_Description_List
             Step_Description_List = Step_Description_List.split('|')
             Step_Expected_Result = request.GET.get(u'Steps_Expected_List', '').split('|')
+            Step_Continue_Point = request.GET.get(u'Steps_continue_List', '').split('|')
             Step_Verification_Point = request.GET.get(u'Steps_Verify_List', '').split('|')
             Steps_Time_List = request.GET.get(u'Steps_Time_List', '').split('|')
             Project_Id=request.GET.get(u'Project_Id','')
@@ -3690,7 +3691,7 @@ def EditTestCase(request):
                 temporary=each.split(":")
                 temp_list.append((temporary[0],temporary[1].split(",")))
             Dependency_List=temp_list
-            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected_Result, Step_Verification_Point, Steps_Time_List)
+            Steps_Data_List = TestCase_ParseData(temp, Steps_Name_List, Step_Description_List, Step_Expected_Result, Step_Verification_Point, Steps_Time_List,Step_Continue_Point)
             Section_Path = request.GET.get(u'Section_Path', '')
             Feature_Path = request.GET.get(u'Feature_Path', '')
 

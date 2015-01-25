@@ -301,6 +301,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
         step_expected = each[3]
         step_verification = each[4]
         step_time = each[5]
+        step_continue=each[6]
         # get the step_id for the current step_name
         step_id_query = "select step_id,data_required from test_steps_list where stepname='%s'" % step_name
         if DBUtil.IsDBConnectionGood(Conn) == False:
@@ -391,7 +392,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                 if len(current_step_data) > 0:
                     for each in current_step_data:
                         if each not in master_data_collected_data:
-                            master_data_column = ['id', 'field', 'value', 'description']
+                            master_data_column = ['id', 'field', 'value', 'description','keyfield','ignorefield']
                             master_data_dict = {}
                             for eachitem in zip(master_data_column, each):
                                 master_data_dict.update({eachitem[0]:eachitem[1]})
@@ -528,7 +529,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                         else:
                             LogMessage(sModuleInfo, result, 3)
             # form master_id
-            master_data_current_data = PrepareNonDataStep(master_id, step_description, step_expected, step_verification, step_time)
+            master_data_current_data = PrepareNonDataStep(master_id, step_description, step_expected, step_verification, step_time,step_continue)
             print master_data_current_data
             # updated_master_data_list=[]
             for each in master_data_current_data:
@@ -542,7 +543,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                     master_data_existing_count = DBUtil.GetData(Conn, master_data_table_query, False)
                     if len(master_data_existing_count) > 0:
                         # print update here
-                        master_data_column = ['id', 'field', 'value', 'description']
+                        master_data_column = ['id', 'field', 'value', 'description','keyfield','ignorefield']
                         master_data_dict = {}
                         for eachitem in zip(master_data_column, each):
                             master_data_dict.update({eachitem[0]:eachitem[1]})
@@ -577,7 +578,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                     LogMessage(sModuleInfo, "Master Data Table already contains the tuple for step %s in test case %s" % (Step_Index, tc_id), 1)
             print master_data_collected_data
             # #Cleaning up the unnecessary data from the master_data:
-            master_data_column = ['id', 'field', 'value', 'description']
+            master_data_column = ['id', 'field', 'value', 'description','keyfield','ignorefield']
             for each in master_data_collected_data:
                 master_data_dict = {}
                 for eachitem in zip(master_data_column, each):
@@ -672,17 +673,33 @@ def PrepareDataStep(master_data_id, step_data):
             print "normal_data"
             group_data_id = master_data_id + ('_d') + str(dataset_id)
             for eachitem in each:
-                if isinstance(eachitem[0], basestring) and isinstance(eachitem[1], basestring):
-                    final_list.append((group_data_id, eachitem[0], eachitem[1], description))
+                if isinstance(eachitem[0], basestring) and isinstance(eachitem[1], basestring) and isinstance(eachitem[2], basestring) and isinstance(eachitem[3], basestring):
+                    if eachitem[2]=='true':
+                        keyfield=True
+                    else:
+                        keyfield=False
+                    if eachitem[3]=='false':
+                        ignorefield=False
+                    else:
+                        ignorefield=True
+                    final_list.append((group_data_id, eachitem[0], eachitem[1], description,keyfield,ignorefield))
                     print final_list
                 elif isinstance(eachitem[0], basestring) and isinstance(eachitem[1], list):
                     # form the group data entry at first
                     address_data_id = group_data_id + ('_a') + str(address_index)
                     # Enter the group data entry to final list
-                    final_list.append((group_data_id, eachitem[0], address_data_id, description))
+                    final_list.append((group_data_id, eachitem[0], address_data_id, description,False,False))
                     print final_list
                     for eachitementry in eachitem[1]:
-                        final_list.append((address_data_id, eachitementry[0], eachitementry[1], description))
+                        if eachitementry[2]=='true':
+                            keyfield=True
+                        else:
+                            keyfield=False
+                        if eachitementry[3]=='false':
+                            ignorefield=False
+                        else:
+                            ignorefield=True
+                        final_list.append((address_data_id, eachitementry[0], eachitementry[1], description,keyfield,ignorefield))
                     print final_list
                     address_index += 1
                 else:
@@ -727,14 +744,14 @@ def PrepareDataStep(master_data_id, step_data):
             return final_list
         dataset_id += 1
     return final_list
-def PrepareNonDataStep(master_data_id, description, expected, verification, time):
+def PrepareNonDataStep(master_data_id, description, expected, verification, time,continue_point):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    fields = ['step', 'expected', 'verification', 'estimated']
-    value = ['description', 'result', 'point', 'time']
-    description_values = [description, expected, verification, time]
+    fields = ['step', 'expected', 'verification', 'estimated','continue']
+    value = ['description', 'result', 'point', 'time','point']
+    description_values = [description, expected, verification, time,continue_point]
     final_list = []                    
     for each in zip(fields, value, description_values):
-        final_list.append((master_data_id, each[0], each[1], each[2]))
+        final_list.append((master_data_id, each[0], each[1], each[2],False,False))
     return final_list
 def Update_Test_Case_Datasets(Conn, dataset_id, tc_id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -1233,7 +1250,7 @@ def InsertMasterData(Conn, Data_ID, dataList):
                 # first give the entry for the group data
                 data_index = (Data_ID + "_a%s" % address_Index)
                 master_data_group_data = {}
-                master_data_group_data.update({'id':Data_ID, 'field':each[0], 'value':data_index})
+                master_data_group_data.update({'id':Data_ID, 'field':each[0], 'value':data_index,'description':None,'keyfield':False,'ignorefield':False})
                 if DBUtil.IsDBConnectionGood(Conn) == False:
                     time.sleep(1)
                     Conn = GetConnection()
@@ -1397,9 +1414,13 @@ def Insert_Linkings(Conn, TC_Id, TC_Name, labels):
                 time.sleep(1)
                 Conn=GetConnection()
             result=DBUtil.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
-    if result == True:
-        LogMessage(sModuleInfo, "Entered labels for TC %s: %s" % (TC_Id, TC_Name), 1)
-        return "Pass"
+    
+        if result == True:
+            LogMessage(sModuleInfo, "Entered labels for TC %s: %s" % (TC_Id, TC_Name), 1)
+            return "Pass"
+        else:
+            err_msg = LogMessage(sModuleInfo, "Failed to Enter labels for TC %s: %s" % (TC_Id, TC_Name), 3)
+            return err_msg
     else:
-        err_msg = LogMessage(sModuleInfo, "Failed to Enter labels for TC %s: %s" % (TC_Id, TC_Name), 3)
-        return err_msg
+        LogMessage(sModuleInfo, "No labels for TC %s: %s" % (TC_Id, TC_Name),1)
+        return "Pass"

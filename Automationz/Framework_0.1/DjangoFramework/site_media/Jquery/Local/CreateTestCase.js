@@ -1200,6 +1200,7 @@ $(document).ready(function() {
                                 Steps_Description_List:stepDescriptionList.join("|"),
                                 Steps_Expected_List:stepExpectedList.join("|"),
                                 Steps_Verify_List:stepVerificationList.join("|"),
+                                Steps_continue_List:stepContinueList.join("|"),
                                 Steps_Time_List:stepTimeList.join("|"),
                                 Project_Id:project_id,
                                 Team_Id: team_id,
