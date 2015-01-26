@@ -8133,9 +8133,7 @@ def GetData(run_id, index, capacity,userText=""):
 
 def manage_test_cases(request):
     if request.method == 'GET':
-        if request.is_ajax() and request.META.get('HTTP_X_PJAX') == 'true':
-            return render_to_response('ManageTestCases.html', {})
-        elif request.is_ajax():
+        if request.is_ajax():
             # Fetch the data from product_sections table
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
@@ -8230,7 +8228,7 @@ def manage_test_cases(request):
             return HttpResponse(result, mimetype="application/json")
 
         else:
-            return render(request, 'ManageTestCasesFULL.html', {})
+            return render(request, 'ManageTestCases.html', {})
 
 def manage_tc_data(request):
     if request.method == 'GET':
