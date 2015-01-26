@@ -8294,30 +8294,47 @@ def FilterDataForRunID(request):
 def create_section(request):
     if request.method == 'GET' and request.is_ajax():
         section_text = request.GET.get('section_text', '')
-        empty_section_id = None
+        project_id = request.GET.get('project_id', '')
+        team_id = request.GET.get('team_id', '')
+        
+#         empty_section_id = None
         Conn = GetConnection()
         cur = Conn.cursor()
-        query = '''
-        SELECT section_id FROM product_sections
-        '''
-        
-        data = DB.GetData(Conn, query, False, False)
-        data = sorted(data)
-        time.sleep(0.5)
-        empty_section_id = int(data[-1][0]) + 1
+#         query = '''
+#         SELECT section_id FROM product_sections
+#         '''
+#         
+#         data = DB.GetData(Conn, query, False, False)
+#         data = sorted(data)
+#         time.sleep(0.5)
+#         empty_section_id = int(data[-1][0]) + 1
 
         try:
             query = '''
-            INSERT INTO product_sections VALUES (%d, '%s')
-            ''' % (empty_section_id, section_text)
-            time.sleep(0.5)
+            INSERT INTO product_sections (section_path) VALUES (%s) RETURNING section_id
+            '''
+#             time.sleep(0.5)
             
-            cur.execute(query)
+            cur.execute(query, (section_text, ))
+            
+            new_section_id = cur.fetchone()[0]
+            
+            Conn.commit()
+            cur.close()
+            
+            query = '''
+            INSERT INTO team_wise_settings (project_id, team_id, parameters, type) VALUES (%s, %s, %s, %s);
+            '''
+            Conn = GetConnection()
+            cursor = Conn.cursor()
+            
+            cursor.execute(query, (project_id, team_id, new_section_id, 'Section'))
+            
             Conn.commit()
             cur.close()
 
             return HttpResponse(1)
-        except:
+        except Exception as e:
             cur.close()
             return HttpResponse(0)
         
@@ -8337,26 +8354,26 @@ def rename_section(request):
         old_section_text = temp[-1]
         temp[-1] = new_text
         temp = '.'.join(temp)
-        new_section_path = temp
+        new_section_path = temp.replace(' ', '_')
         
         try:
             query = '''
-            UPDATE product_sections SET section_path='%s' WHERE section_id=%d
-            ''' % (new_section_path, section_id)
-            time.sleep(0.5)
+            UPDATE product_sections SET section_path=%s WHERE section_id=%s
+            '''
+#             time.sleep(0.5)
              
-            cur.execute(query)
+            cur.execute(query, (new_section_path, section_id))
             Conn.commit()
-                     
+
             query = '''
-            UPDATE test_case_tag SET name='%s' WHERE name='%s' AND property='%s'
-            ''' % (new_text, old_section_text, 'Section')
-            time.sleep(0.5)
+            UPDATE test_case_tag SET name=%s WHERE name=%s AND property=%s
+            '''
+#             time.sleep(0.5)
               
-            cur.execute(query) 
+            cur.execute(query, (new_text, old_section_text, 'Section')) 
             Conn.commit()
             cur.close()
-        except:
+        except Exception as e:
             cur.close()
             return HttpResponse(0)                  
         return HttpResponse(1)
@@ -8366,14 +8383,23 @@ def delete_section(request):
     if request.method == 'GET' and request.is_ajax():
         section_id = int(request.GET.get('section_id', 0))
         query = '''
-        DELETE FROM product_sections WHERE section_id=%d 
-        ''' % section_id
+        DELETE FROM product_sections WHERE section_id=%s
+        '''
         Conn = GetConnection()
         cur = Conn.cursor()
-        cur.execute(query)
+        cur.execute(query, (section_id, ))
         Conn.commit()
-        time.sleep(1)
         cur.close()
+        
+        query = '''
+        DELETE FROM team_wise_settings WHERE parameters=%s
+        '''
+        Conn = GetConnection()
+        cur = Conn.cursor()
+        cur.execute(query, (section_id, ))
+        Conn.commit()
+        cur.close()
+#         time.sleep(1)
         return HttpResponse(section_id)
 def DeleteTestCase(request):
     Conn = GetConnection()
