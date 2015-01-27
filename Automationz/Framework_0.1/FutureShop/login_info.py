@@ -1,7 +1,7 @@
-username='riz'
-password='.'
-project='PROJ-19'
-team='Team A'
+username='user1_demo1'
+password='user1_demo1'
+project='PROJ-28'
+team='Demo1Team'
 server='127.0.0.1'
 port=5432
 
