@@ -196,8 +196,24 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                 ]);
 
                 $("#BundleReportTable tr:last-child").css({'font-weight':'bold'})
+
+                $('#BundleReportTable tr>td:nth-child(n+2)').each(function(){
+                    if($(this).text() != '0') {
+                        $(this).css({
+                        'cursor':'pointer'
+                        });
+                        var row = $(this).closest('tr').index();
+                        var col = $(this).index();
+                        $(this).live('click',function(){
+
+                            $("#inner").show();
+                            ResultTable(tc_table,'',data['Cases'][row-1][col],"Test Cases List");
+
+                        }); 
+                    }
+                });
                 
-                make_number_clickable('#BundleReportTable');
+                //make_number_clickable('#BundleReportTable',data['Cases']);
             });
 
     });
@@ -303,17 +319,20 @@ function generate_version(dependency_list,name,type){
     }
 }
 
-function make_number_clickable(divname){
+function make_number_clickable(divname,Cases){
     $(divname+' tr>td:nth-child(n+2)').each(function(){
         if($(this).text() != '0') {
             $(this).css({
             'cursor':'pointer'
             });
+            var row = $(this).closest('tr').index();
+            var col = $(this).index();
             $(this).live('click',function(){
 
-                ResultTable(tc_table,'','',"Test Cases List");
+                $("#inner").show();
+                ResultTable(tc_table,'',Cases[row][col],"Test Cases List");
 
-                $("#inner").dialog({
+                /*$("#inner").dialog({
                     buttons : {
                         "OK" : function() {
                             $(this).dialog("close");
@@ -330,7 +349,7 @@ function make_number_clickable(divname){
                     height : 650,
                     align:'center',
                     title:"Test Cases"
-                });
+                });*/
 
             }); 
         }
