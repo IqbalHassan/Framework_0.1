@@ -140,14 +140,21 @@ var do_on_load = function do_on_load () {
 				node_text = text + str;
 				node_text = node_text.split(' ').join('_');
 
-				$.get("/Home/ManageTestCases/setData/createSection/", { 'section_text': node_text }, function(data, status) {
-					if (status === 'success' && data === "1") {
-						alertify.success("Section '" + str + "' created successfully.");
-						initiateRefresh("#tree");
-					} else {
-						alertify.error("Could not eastablish connection to the server :(");
+				$.get("/Home/ManageTestCases/setData/createSection/", 
+					{
+					"section_text": node_text,
+                    "project_id": $.session.get('project_id'),
+                    "team_id": $.session.get('default_team_identity')
+                    },
+					function(data, status) {
+						if (status === 'success' && data === "1") {
+							alertify.success("Section '" + str + "' created successfully.");
+							initiateRefresh("#tree");
+						} else {
+							alertify.error("Could not eastablish connection to the server :(");
+						}
 					}
-				});
+				);
 			} else {
 				alertify.error("No text was provided", 3000);
 			}

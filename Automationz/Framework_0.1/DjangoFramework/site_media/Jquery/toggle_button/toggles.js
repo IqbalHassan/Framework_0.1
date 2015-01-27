@@ -31,8 +31,8 @@ var Toggles = root['Toggles'] = function(el, opts) {
     'click': true,
     'text': {
       // text for the ON/OFF position
-      'on': 'ON',
-      'off': 'OFF'
+      'on': '',
+      'off': ''
     },
     // is the toggle ON on init
     'on': false,

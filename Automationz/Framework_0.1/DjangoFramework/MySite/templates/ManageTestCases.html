@@ -1,8 +1,7 @@
+{% extends 'BaseTemplate.html' %}
+{% block title %} Manage Test Cases {% endblock %}
+{% block content %}
 
-<!-- Set the document title -->
-<script type="text/javascript">
-	document.title = "Manage Test Cases";
-</script>
 
 <!-- Include jsTree -->
 <link rel="stylesheet" href="/site_media/Jquery/jstree/themes/default/style.css">
@@ -27,7 +26,7 @@
 
 <div align="left">
     <h3 style="font-size: 19px;float: left"><a style="font-weight: bold;">Manage Test Cases</a></h3>
-    <paper-button style="float: right; clear: both; background: purple; color: white;" id="create_section_btn" raised>New Section</paper-button>
+    <button style="float: right; clear: both;" id="create_section_btn" class="m-btn purple">New Section</button>
 </div>
 
 <!-- <button style="display: none;" id="create_section_btn">Create a new section</button> -->
@@ -55,3 +54,5 @@
 		</tr>
 	</tbody>
 </table>
+
+{% endblock %}

@@ -543,10 +543,12 @@ $(document).ready(function() {
                             $('#searchbox'+(i+1)+'expected').val(steps_and_data[i][4]);
                             $('#searchbox'+(i+1)+'step_type').text(steps_and_data[i][2]);
                             if(steps_and_data[i][5]=='yes'){
-                                $('#searchbox'+(i+1)+'verify').toggles({'on':'true'});
+                                $('#searchbox'+(i+1)+'verify').toggles({on:true});
+                                //$('#searchbox'+(i+1)+'verify .toggle-on').addClass('active');
+                                //$('#searchbox'+(i+1)+'verify .toggle-off').removeClass('active');
                             }
                             if(steps_and_data[i][10]=='yes'){
-                                $('#searchbox'+(i+1)+'continue').toggles({'on':'true'});
+                                $('#searchbox'+(i+1)+'continue').toggles({on:true});
                             }
                             $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
                             $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
@@ -1601,7 +1603,7 @@ function AutoCompleteTestStep(){
                     }
                     if(ui.item[7]){
                         //$('#searchbox'+index+'verify').attr('checked',true);
-                        $('#searchbox'+index+'verify').toggles({'on':'true'});
+                        $('#searchbox'+index+'verify').toggles({on:true});
                     }
                     if(ui.item[8]){
                         $('#searchbox'+index+'time').val(convertToString(ui.item[8]));
