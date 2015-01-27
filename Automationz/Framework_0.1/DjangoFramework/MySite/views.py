@@ -114,16 +114,18 @@ def TimeDiff(sYourTime):
 def GetProjectNameForTopBar(request):
     if request.is_ajax():
         if request.method=='GET':
-            query="select project_id from projects"
+            user_id=request.GET.get(u'user_id')
+            query="select project_id  from project_team_map where team_id in (select cast(team_id as text) from team_info where user_id = cast(%d as text))"%int(user_id)
+            #query="select project_id from projects"
             Conn=GetConnection()
             project_name_id=DB.GetData(Conn, query,False)
             #Conn.close()
             #be sure that there will be a project name other wise the page will refresh
-            user_id=request.GET.get(u'user_id','')
             Dict={
                   'projects':project_name_id,
                   }
-            query="select id,value from config_values where type='Team'"
+            query="select id,value from config_values where id in (select team_id from team_info where user_id = cast(%d as text)) and type='Team'"%int(user_id)
+            #query="select id,value from config_values where type='Team'"
             #testConnection(Conn)
             #Conn=GetConnection()
             all_teams=DB.GetData(Conn,query,False)
