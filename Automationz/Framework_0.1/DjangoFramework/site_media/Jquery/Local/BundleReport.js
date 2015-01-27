@@ -148,6 +148,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
 
     $(".generate").click(function(event)
     {
+        $('#inner').hide();
         $('#BundleReportTable').empty();
         var dependency=[];
         for(var i=0;i<dependency_list.length;i++){
@@ -207,7 +208,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                         $(this).live('click',function(){
 
                             $("#inner").show();
-                            ResultTable(tc_table,'',data['Cases'][row-1][col],"Test Cases List");
+                            ResultTable(tc_table,'',data['Cases'][row-1][col],"Test Cases");
 
                         }); 
                     }

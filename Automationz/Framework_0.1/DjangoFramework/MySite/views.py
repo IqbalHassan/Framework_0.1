@@ -4272,11 +4272,21 @@ def New_Execution_Report(request):
         
         cases_list = []
         
+        col_pass = []
+        col_fail = []
+        col_block = []
+        col_submit = []
+        col_progress = []
+        col_skip = []
+        col_not = []
+        col_total = []
+        
         for s in sections:
             section_cases = []
+            row_cases = []
             temp = []
             temp.append(s)
-            section_cases.append(s[0])
+            section_cases.append(s)
             #latest_cases = DB.GetData(Conn, "select tcr.tc_id,tcr.status,tcr.teststarttime from test_case_results tcr,test_run_env tre where tcr.run_id=tre.run_id order by tcr.teststarttime desc", False)
             latest_cases = DB.GetData(Conn, "select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" order by tcr.teststarttime desc", False)
             # selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
@@ -4289,6 +4299,8 @@ def New_Execution_Report(request):
                         if m[0] == n[0]:
                             if n[1] == 'Passed':
                                 cases.append(m)
+                                row_cases.append(m)
+                                col_pass.append(m)
                                 break;
                             else:
                                 pass_count = pass_count - 1;
@@ -4305,6 +4317,8 @@ def New_Execution_Report(request):
                     if m[0] == n[0]:
                         if n[1] == 'Failed':
                             cases.append(m)
+                            row_cases.append(m)
+                            col_fail.append(m)
                             break;
                         else:
                             fail_count = fail_count - 1;
@@ -4321,6 +4335,8 @@ def New_Execution_Report(request):
                     if m[0] == n[0]:
                         if n[1] == 'Blocked':
                             cases.append(m)
+                            row_cases.append(m)
+                            col_block.append(m)
                             break;
                         else:
                             block_count = block_count - 1;
@@ -4337,6 +4353,8 @@ def New_Execution_Report(request):
                     if m[0] == n[0]:
                         if n[1] == 'Submitted':
                             cases.append(m)
+                            row_cases.append(m)
+                            col_submit.append(m)
                             break;
                         else:
                             submitted_count = submitted_count - 1;
@@ -4353,6 +4371,8 @@ def New_Execution_Report(request):
                     if m[0] == n[0]:
                         if n[1] == 'In-Progress':
                             cases.append(m)
+                            row_cases.append(m)
+                            col_progress.append(m)
                             break;
                         else:
                             inprogress_count = inprogress_count - 1;
@@ -4369,6 +4389,8 @@ def New_Execution_Report(request):
                     if m[0] == n[0]:
                         if n[1] == 'Skipped':
                             cases.append(m)
+                            row_cases.append(m)
+                            col_skip.append(m)
                             break;
                         else:
                             skipped_count = skipped_count - 1;
@@ -4399,8 +4421,17 @@ def New_Execution_Report(request):
             cases=DB.GetData(Conn,"select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and rtct.tc_id in (select distinct tc_id from test_case_tag where name = '"+project_id+"' and property = 'Project' and tc_id in (select distinct tc_id from test_case_tag where name = '"+team_id+"' and property = 'Team')) and tc_id not in (select distinct tcr.tc_id from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+")",False)
             section_cases.append(cases)
             
+            for m in cases:
+                row_cases.append(m)
+                col_not.append(m)
+            section_cases.append(row_cases)
+            
             Table.append(tuple(temp))
             cases_list.append(section_cases)
+            
+            for i in row_cases:
+                col_total.append(i)
+            
             
         total=[]
         total.append('Summary')
@@ -4414,8 +4445,20 @@ def New_Execution_Report(request):
         total.append(alltotal)
         
         Table.append(tuple(total))
-        print cases_list
+        #print cases_list
         
+        section_cases = []
+        section_cases.append('Summary')
+        section_cases.append(col_pass)
+        section_cases.append(col_fail)
+        section_cases.append(col_block)
+        section_cases.append(col_submit)
+        section_cases.append(col_progress)
+        section_cases.append(col_skip)
+        section_cases.append(col_not)
+        section_cases.append(col_total)
+        
+        cases_list.append(section_cases)
         
 
     Heading = ['Section', 'Passed', 'Failed', 'Blocked', 'Submitted', 'In-Progress', 'Skipped', 'Not Run', 'Total']
