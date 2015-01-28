@@ -203,11 +203,16 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                         $(this).css({
                         'cursor':'pointer'
                         });
+                        $(this).hover(function(){$(this).css("text-decoration","underline");},function(){$(this).css("text-decoration","none");});
                         var row = $(this).closest('tr').index();
                         var col = $(this).index();
+                        var pos = col + 1;
+                        var section = $(this).siblings(':first-child').text();
+                        var status = $(this).parent().siblings().first().children(':nth-child('+pos+')').text();
                         $(this).live('click',function(){
 
                             $("#inner").show();
+                            $("#tc_title").html('Test Cases List : ' + section + ' - ' + status )
                             ResultTable(tc_table,'',data['Cases'][row-1][col],"Test Cases");
 
                         }); 
