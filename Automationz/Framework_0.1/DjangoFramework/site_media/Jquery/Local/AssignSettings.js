@@ -667,6 +667,7 @@ function create_sub_feature(dep_name,project_id,team_id,dep_value){
                 if(data['message']==true){
                     alertify.success(data['log_message'],time_out);
                     get_all_data(project_id,team_id);
+                    window.location.reload();
                 }
                 else{
                     alertify.error(data['log_message'],time_out);
@@ -698,6 +699,7 @@ function rename_feature(dep_name,project_id,team_id,dep_value){
                     if(data['message']==true){
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
+                        window.location.reload();
                     }
                     else{
                         alertify.error(data['log_message'],time_out);
@@ -729,6 +731,7 @@ function unlink_feature(dep_name,project_id,team_id,dep_value){
                 if(data['message']==true){
                     alertify.success(data['log_message'],time_out);
                     get_all_data(project_id,team_id);
+                    window.location.reload();
                 }
                 else{
                     alertify.error(data['log_message'],time_out);
@@ -755,6 +758,7 @@ function link_feature(dep_name,project_id,team_id,dep_value){
                 if(data['message']==true){
                     alertify.success(data['log_message'],time_out);
                     get_all_data(project_id,team_id);
+                    window.location.reload();
                 }
                 else{
                     alertify.error(data['log_message'],time_out);
@@ -782,6 +786,7 @@ function link_branch(dep_name,project_id,team_id,dep_value){
                 if(data['message']==true){
                     alertify.success(data['log_message'],time_out);
                     get_all_data(project_id,team_id);
+                    window.location.reload();
                 }
                 else{
                     alertify.error(data['log_message'],time_out);
@@ -809,6 +814,7 @@ function unlink_branch(dep_name,project_id,team_id,dep_value){
                 if(data['message']==true){
                     alertify.success(data['log_message'],time_out);
                     get_all_data(project_id,team_id);
+                    window.location.reload();
                 }
                 else{
                     alertify.error(data['log_message'],time_out);
@@ -840,6 +846,7 @@ function rename_branch(dep_name,project_id,team_id,dep_value){
                     if(data['message']==true){
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
+                        window.location.reload();
                     }
                     else{
                         alertify.error(data['log_message'],time_out);
@@ -872,6 +879,7 @@ function create_new_version_under_branch(dep_name,project_id,team_id,dep_value){
                     if(data['message']==true){
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
+                        window.location.reload();
                     }
                     else{
                         alertify.error(data['log_message'],time_out);
@@ -903,6 +911,7 @@ function unlink_dependency(dep_name,project_id,team_id,dep_value){
                 if(data['message']==true){
                     alertify.success(data['log_message'],time_out);
                     get_all_data(project_id,team_id);
+                    window.location.reload();
                 }
                 else{
                     alertify.error(data['log_message'],time_out);
@@ -929,6 +938,7 @@ function link_dependency(dep_name,project_id,team_id,dep_value){
                 if(data['message']==true){
                     alertify.success(data['log_message'],time_out);
                     get_all_data(project_id,team_id);
+                    window.location.reload();
                 }
                 else{
                     alertify.error(data['log_message'],time_out);
@@ -962,6 +972,7 @@ function rename_dependency(dep_name,project_id,team_id,dep_value){
                     if(data['message']==true){
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
+                        window.location.reload();
                     }
                     else{
                         alertify.error(data['log_message'],time_out);
@@ -996,6 +1007,7 @@ function create_new_name_under_version(dep_name,project_id,team_id,dep_value){
                     if(data['message']==true){
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
+                        window.location.reload();
                     }
                     else{
                         alertify.error(data['log_message'],time_out);
@@ -1031,6 +1043,7 @@ function DependencyTabButtons(project_id,team_id){
                         if(data['message']==true){
                             alertify.success(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
+                            window.location.reload();
                         }
                         else{
                             alertify.error(data['log_message'],time_out);
@@ -1065,6 +1078,7 @@ function DependencyTabButtons(project_id,team_id){
                         if(data['message']==true){
                             alertify.success(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
+                            window.location.reload();
                         }
                         else{
                             alertify.error(data['log_message'],time_out);
@@ -1099,6 +1113,7 @@ function DependencyTabButtons(project_id,team_id){
                         if(data['message']==true){
                             alertify.success(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
+                            window.location.reload();
                         }
                         else{
                             alertify.error(data['log_message'],time_out);
