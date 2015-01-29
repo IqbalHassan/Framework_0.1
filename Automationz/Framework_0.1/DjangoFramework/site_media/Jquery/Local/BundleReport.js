@@ -213,7 +213,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
 
                             $("#inner").show();
                             $("#tc_title").html('Test Cases List : ' + section + ' - ' + status )
-                            ResultTable(tc_table,'',data['Cases'][row-1][col],"Test Cases");
+                            ResultTable(tc_table,data['Short'],data['Cases'][row-1][col],"Test Cases");
                             $('#tc_table tr>td:first-child').each(function () {
                                 $(this).css({
                                     'color': 'blue',
@@ -221,10 +221,27 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                                     'textAlign': 'left'
                                 });
                                 $(this).click(function(){
-                                    var data = $(this).text().trim();
-                                    var location='/Home/RunHistory/'+data+'/';
-                                    window.location=location;
+                                    var tc_id = $(this).text().trim();
+                                    //var location='/Home/RunHistory/'+data+'/';
+                                    //window.location=location;
+                                    $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id},function(data){
+                                        ResultTable(tc_table,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id);
+                                        makeRunClickable();
+                                    });
                                 });
+                            });
+                            $('#tc_table tr>td:nth-child(2)').each(function(){
+                               if($(this).text() != 'N/A'){
+                                    $(this).css({
+                                      'color':'blue',
+                                       'cursor':'pointer'
+                                   });
+                                   $(this).click(function(){
+                                      var run_id=$(this).text().trim();
+                                      var location='/Home/RunID/'+run_id;
+                                      window.location=location;
+                                   });
+                               }
                             });
 
                         }); 
@@ -237,6 +254,27 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     });
 }
 
+
+function makeRunClickable(){
+    $('#tc_table tr>td:first-child').each(function(){
+       $(this).css({
+          'color':'blue',
+           'cursor':'pointer'
+       });
+       $(this).click(function(){
+          var run_id=$(this).text().trim();
+          var location='/Home/RunID/'+run_id;
+          window.location=location;
+       });
+    });
+
+    $('#tc_table tr>td:last-child').each(function(){
+        var log=$(this).text().trim();
+        if(log != "null"){
+            $(this).html('<a href="file:///'+log+'">Log File</a>');
+        }
+    });
+}
 
     
 
