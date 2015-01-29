@@ -350,6 +350,9 @@ urlpatterns += patterns('',
     url(r'^Home/.*/New_Execution_Report/$',New_Execution_Report),
     url(r'^Home/.*/get_all_machine/$',get_all_machine),
     url(r'^Home/.*/Get_MileStone_Names/$',Get_MileStone_Names),
+    url(r'^Home/.*/Get_Feature_Path/$',Get_Feature_Path),
+    url(r'^Home/.*/Check_Feature_Path/$',Check_Feature_Path),
+    url(r'^Home/.*/SearchTestCase/$',SearchTestCase),
     )
 
 

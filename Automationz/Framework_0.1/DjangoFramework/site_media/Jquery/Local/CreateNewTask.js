@@ -119,7 +119,7 @@ function TestCaseLinking(){
 
         source:function(request,response){
             $.ajax({
-                url:"TestCaseSearch/",
+                url:"SearchTestCase/",
                 dataType:"json",
                 data:{
                     term:request.term

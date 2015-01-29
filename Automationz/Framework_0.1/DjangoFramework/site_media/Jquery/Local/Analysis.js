@@ -121,7 +121,7 @@ function AutoCompleteSearchForAnalysis(){
     $('#searchbox').autocomplete({
         source:function(request,response){
             $.ajax({
-                url:"TestCaseSearch",
+                url:"SearchTestCase",
                 dataType:"json",
                 data:{
                     term:request.term

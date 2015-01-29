@@ -3099,6 +3099,28 @@ def TestCaseSearch(request):
     return HttpResponse(json, mimetype='application/json')
 
 
+def SearchTestCase(request):
+    Conn = GetConnection()
+    results = []
+    
+    if request.method == "GET":
+        term = request.GET.get(u'term', '')
+#         print "#############################"
+#         print "Term:", term
+#         print "Page:", requested_page
+        results = DB.GetData(
+                          Conn,
+                          "SELECT DISTINCT tc_id,tc_name,'Test Case' FROM test_cases WHERE tc_id Ilike '%" + term + "%' or tc_name Ilike '%" + term + "%'",
+                          False
+                          )
+
+        
+
+    json = simplejson.dumps(results)
+#     print "JSON:", json
+    return HttpResponse(json, mimetype='application/json')
+
+
 
 def Selected_TestCaseID_Analaysis(request):
     Conn = GetConnection()
@@ -3555,6 +3577,8 @@ def ViewTestCase(TC_Id):
             else:
                 Feature_Path = ''
 
+            print Feature_Id[0]
+            print Feature_Path
             
             query = "select distinct l.label_id,l.label_name,l.label_color from label_map blm, labels l where blm.id = '%s' and blm.type='TC' and blm.label_id = l.label_id" % TC_Id
             Conn = GetConnection()
@@ -3643,7 +3667,7 @@ def ViewTestCase(TC_Id):
                 Steps_Data_List.append((Step_Name, Step_Data, Step_Type, step_description, step_expected, step_verified, Step_General_Description[0][0], step_time, Step_Edit, each_test_step[3],step_continue))
                 Step_Iteration = Step_Iteration + 1
             # return values
-            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team, 'Labels':Labels}
+            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Feature_Id':Feature_Id[0], 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team, 'Labels':Labels}
 
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -7493,6 +7517,31 @@ def Get_MileStone_Names(request):
             query = "select name from milestone_info"
             results = DB.GetData(Conn, query, False)
     json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+def Get_Feature_Path(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            feature_id = request.GET.get(u'Feature_Id', '')
+            #print milestone
+            query = "select feature_path from product_features where feature_id="+feature_id+" "
+            results = DB.GetData(Conn, query, False)  
+    
+    data = {'Path':results[0][0]}
+    json = simplejson.dumps(data)
+    return HttpResponse(json, mimetype='application/json')
+
+def Check_Feature_Path(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            feature_path = request.GET.get(u'Feature_Path', '')
+            #print milestone
+            query = "select feature_id from product_features where feature_path ~ '"+feature_path+".*' "
+            results = DB.GetData(Conn, query, False)  
+    
+    json = simplejson.dumps(results[0])
     return HttpResponse(json, mimetype='application/json')
 
 def Get_MileStone_ID(request):
