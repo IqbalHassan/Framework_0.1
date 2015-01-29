@@ -585,6 +585,7 @@ function allow_binding(type,project_id,team_id){
             switch($(this).attr("data-action")) {
                 case "create":create_new_name_under_version(dep_name,project_id,team_id,dep_value); break;
                 case "rename":rename_dependency(dep_name,project_id,team_id,dep_value); break;
+                //TODO: Remove the usage case
                 case "usage":alert('usage'); break;
                 case "unlink":unlink_dependency(dep_name,project_id,team_id,dep_value); break;
             }
@@ -597,6 +598,7 @@ function allow_binding(type,project_id,team_id){
             switch($(this).attr("data-action")) {
                 case "link": link_dependency(dep_name,project_id,team_id,dep_value);break;
                 case "rename":rename_dependency(dep_name,project_id,team_id,dep_value); break;
+                //TODO: Remove the usage case
                 case "usage":alert('usage'); break;
                 case "delete":alert("delete"); break;
             }
@@ -942,42 +944,32 @@ function link_dependency(dep_name,project_id,team_id,dep_value){
     });
 }
 function rename_dependency(dep_name,project_id,team_id,dep_value){
-   // alert(project_id+team_id);
-    var message="";
-    message+='<table width="100%">';
-    message+='<thead><tr><td colspan="2"><b>Rename</b></td></tr></thead>';
-    message+='<tbody><tr><td align="right"><b>Old Name:</b></td><td align="left"><input type="text" class="textbox" style="width:100%" id="old_name" value="'+dep_name+'"/></td></tr>';
-    message+='<tr><td align="right"><b>New Name:</b></td><td align="left"><input type="text" class="textbox" style="width:100%" id="new_name"/></td></tr></tbody>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            var old_name=$('#old_name').val().trim();
-            var new_name=$('#new_name').val().trim();
+    var message="Rename Dependency: " + dep_name + "";
 
-            if(old_name!="" && new_name!=""){
-                $.get('rename_dependency',{
-                    old_name:old_name,
-                    new_name:new_name
-                },function(data){
-                    if(data['message']==true){
-                        alertify.success(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
-            }
-            else{
-                alertify.error(name_field_error,time_out);
-            }
+    var new_name = window.prompt(message, dep_name);
+
+    if (new_name !== null) {
+        new_name = new_name.trim();
+
+        console.log("Rename: " + dep_name + " -> " + new_name);
+
+        if (new_name !== "" || dep_name !== "") {
+            $.get('rename_dependency',{
+                old_name:dep_name,
+                new_name:new_name
+            },function(data){
+                if(data['message']==true){
+                    alertify.success(data['log_message'],time_out);
+                    get_all_data(project_id,team_id);
+
+                    window.location.reload();
+                }
+                else{
+                    alertify.error(data['log_message']);
+                }
+            });
         }
-        else{
-
-        }
-
-    });
-
+    }
 }
 function create_new_name_under_version(dep_name,project_id,team_id,dep_value){
     var message="";
