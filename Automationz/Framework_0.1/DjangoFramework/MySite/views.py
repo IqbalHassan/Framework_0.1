@@ -212,6 +212,9 @@ def edit_machine(request,machine_id):
     variables = Context({ })
     output = templ.render(variables)
     return HttpResponse(output)"""
+    
+def CaseRunHistory(request,tc_id):
+    return render_to_response('Analysis.html',{})
 
 def make_array(get_list):
     refined_list = []

@@ -115,6 +115,20 @@ function AnalysisTableActions()
 */
 $(document).ready(function(){
     AutoCompleteSearchForAnalysis();
+
+    URL = window.location.pathname;
+    console.log("url:"+URL);
+    indx = URL.indexOf("RunHistory");
+    console.log("Run Case:"+indx);
+    if(indx!=-1){
+        var referred_case=URL.substring((URL.lastIndexOf("RunHistory/")+("RunHistory/").length),(URL.length-1));
+        $("#header").html('Test Case History / '+referred_case);
+        PopulateResultDiv(referred_case);
+    }
+    
+    console.log("Url Length:"+URL.length);
+
+
 });
 
 function AutoCompleteSearchForAnalysis(){

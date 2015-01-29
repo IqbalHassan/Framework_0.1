@@ -214,6 +214,18 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                             $("#inner").show();
                             $("#tc_title").html('Test Cases List : ' + section + ' - ' + status )
                             ResultTable(tc_table,'',data['Cases'][row-1][col],"Test Cases");
+                            $('#tc_table tr>td:first-child').each(function () {
+                                $(this).css({
+                                    'color': 'blue',
+                                    'cursor': 'pointer',
+                                    'textAlign': 'left'
+                                });
+                                $(this).click(function(){
+                                    var data = $(this).text().trim();
+                                    var location='/Home/RunHistory/'+data+'/';
+                                    window.location=location;
+                                });
+                            });
 
                         }); 
                     }

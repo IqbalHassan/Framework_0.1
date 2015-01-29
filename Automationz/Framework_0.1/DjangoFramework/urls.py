@@ -353,6 +353,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/Get_Feature_Path/$',Get_Feature_Path),
     url(r'^Home/.*/Check_Feature_Path/$',Check_Feature_Path),
     url(r'^Home/.*/SearchTestCase/$',SearchTestCase),
+    url(r'^Home/RunHistory/(?P<tc_id>[^/]*)/$',CaseRunHistory),
     )
 
 
