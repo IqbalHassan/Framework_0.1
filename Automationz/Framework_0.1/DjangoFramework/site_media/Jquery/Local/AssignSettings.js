@@ -1036,39 +1036,6 @@ function DependencyTabButtons(project_id,team_id){
                 }
             }
         }
-//
-//        var message="";
-//        message+='<table width="100%">';
-//        message+='<tr><td align="center" colspan="2"><b class="Text">Create New Dependency</b></td></tr>';
-//        message+='<tr style="margin-top: 2%;"><td align="right"><b class="Text">Dependency:</b></td><td><input class="textbox" style="width: 100%" id="dependency_name"></td></tr>';
-//        message+='</table>';
-//        alertify.confirm(message,function(e){
-//            if(e){
-//                var dependency_name=$('#dependency_name').val().trim();
-//                if(dependency_name!=""){
-//                    $.get('add_new_dependency',{
-//                        dependency_name:dependency_name
-//                    },function(data){
-//                        if(data['message']==true){
-//                            alertify.success(data['log_message'],time_out);
-//                            get_all_data(project_id,team_id);
-//                            window.location.reload();
-//                        }
-//                        else{
-//                            alertify.error(data['log_message'],time_out);
-//                        }
-//                    });
-//                }
-//                else{
-//                    alertify.error(name_field_error,time_out);
-//                }
-//
-//                e.stopPropagation();
-//            }
-//            else{
-//
-//            }
-//        })
     });
     $('#create_new_branch').on('click',function(event){
         event.preventDefault();
