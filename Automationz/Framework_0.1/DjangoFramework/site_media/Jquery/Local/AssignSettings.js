@@ -1080,38 +1080,31 @@ function DependencyTabButtons(project_id,team_id){
     });
     $('#create_new_branch').on('click',function(event){
         event.preventDefault();
-        var message="";
-        message+='<table width="100%">';
-        message+='<tr><td align="center" colspan="2"><b class="Text">Create New Branch</b></td></tr>';
-        message+='<tr style="margin-top: 2%;"><td align="right"><b class="Text">Branch:</b></td><td><input class="textbox" style="width: 100%" id="branch_name"></td></tr>';
-        message+='</table>';
-        alertify.confirm(message,function(e){
-            if(e){
-                var dependency_name=$('#branch_name').val().trim();
-                if(dependency_name!=""){
-                    $.get('add_new_branch',{
-                        dependency_name:dependency_name
-                    },function(data){
-                        if(data['message']==true){
-                            alertify.success(data['log_message'],time_out);
-                            get_all_data(project_id,team_id);
-                            window.location.reload();
-                        }
-                        else{
-                            alertify.error(data['log_message'],time_out);
-                        }
-                    });
-                }
-                else{
-                    alertify.error(name_field_error,time_out);
-                }
 
-                e.stopPropagation();
+        var message = "New Branch name";
+        var new_branch_name = window.prompt(message, "");
+
+        if (new_branch_name !== null) {
+            new_branch_name = new_branch_name.trim();
+
+            if(new_branch_name!==""){
+                $.get('add_new_branch',{
+                    dependency_name:new_branch_name
+                },function(data){
+                    if(data['message']==true){
+//                            alertify.success(data['log_message'],time_out);
+//                            get_all_data(project_id,team_id);
+                        window.location.reload();
+                    }
+                    else{
+                        alertify.error(data['log_message'],time_out);
+                    }
+                });
             }
             else{
-
+                alertify.error(name_field_error,time_out);
             }
-        })
+        }
     });
     $('#create_new_feature').on('click',function(event){
         event.preventDefault();
