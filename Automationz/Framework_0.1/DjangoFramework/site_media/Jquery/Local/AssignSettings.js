@@ -1100,37 +1100,29 @@ function DependencyTabButtons(project_id,team_id){
     });
     $('#create_new_feature').on('click',function(event){
         event.preventDefault();
-        var message="";
-        message+='<table width="100%">';
-        message+='<tr><td align="center" colspan="2"><b class="Text">Create New Feature</b></td></tr>';
-        message+='<tr style="margin-top: 2%;"><td align="right"><b class="Text">Feature:</b></td><td><input class="textbox" style="width: 100%" id="feature_path"></td></tr>';
-        message+='</table>';
-        alertify.confirm(message,function(e){
-            if(e){
-                var feature_path=$('#feature_path').val().trim();
-                if(feature_path!=""){
-                    $.get('add_new_feature',{
-                        feature_path:feature_path
-                    },function(data){
-                        if(data['message']==true){
-                            alertify.success(data['log_message'],time_out);
-                            get_all_data(project_id,team_id);
-                            window.location.reload();
-                        }
-                        else{
-                            alertify.error(data['log_message'],time_out);
-                        }
-                    });
-                }
-                else{
-                    alertify.error(name_field_error,time_out);
-                }
 
-                e.stopPropagation();
-            }
-            else{
+        var message = "New Feature name";
+        var feature_path = window.prompt(message, "");
 
+        if (feature_path !== null) {
+            feature_path = feature_path.trim();
+
+            if(feature_path!=""){
+                $.get('add_new_feature',{
+                    feature_path:feature_path
+                },function(data){
+                    if(data['message']==true){
+//                        alertify.success(data['log_message'],time_out);
+//                        get_all_data(project_id,team_id);
+                        window.location.reload();
+                    }
+                    else{
+                        alertify.error(data['log_message'],time_out);
+                    }
+                });
+            } else{
+                alertify.error(name_field_error,time_out);
             }
-        })
+        }
     });
 }
