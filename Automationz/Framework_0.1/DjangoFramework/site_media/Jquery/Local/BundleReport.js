@@ -181,7 +181,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             'milestone':milestone
          },function(data)
             {
-                ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report");
+                ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report", "Click on numbers to see the test cases");
                 //$("#BundleReportTable .one-column-emphasis").addClass('two-column-emphasis');
                 //$("#BundleReportTable .one-column-emphasis").removeClass('one-column-emphasis');
                 var sc = data['Table'].length -1
@@ -213,7 +213,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
 
                             $("#inner").show();
                             $("#tc_title").html('Test Cases List : ' + section + ' - ' + status )
-                            ResultTable(tc_table,data['Short'],data['Cases'][row-1][col],"Test Cases");
+                            ResultTable(tc_table,data['Short'],data['Cases'][row-1][col],"Test Cases", "Click on TC-IDs to see run history");
                             $('#tc_table tr>td:first-child').each(function () {
                                 $(this).css({
                                     'color': 'blue',
