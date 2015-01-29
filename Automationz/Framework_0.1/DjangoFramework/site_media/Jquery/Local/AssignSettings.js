@@ -952,43 +952,32 @@ function link_dependency(dep_name,project_id,team_id,dep_value){
     });
 }
 function rename_dependency(dep_name,project_id,team_id,dep_value){
-   // alert(project_id+team_id);
-    var message="";
-    message+='<table width="100%">';
-    message+='<thead><tr><td colspan="2"><b>Rename</b></td></tr></thead>';
-    message+='<tbody><tr><td align="right"><b>Old Name:</b></td><td align="left"><input type="text" class="textbox" style="width:100%" id="old_name" value="'+dep_name+'"/></td></tr>';
-    message+='<tr><td align="right"><b>New Name:</b></td><td align="left"><input type="text" class="textbox" style="width:100%" id="new_name"/></td></tr></tbody>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            var old_name=$('#old_name').val().trim();
-            var new_name=$('#new_name').val().trim();
+    var message="Rename Dependency: " + dep_name + "";
 
-            if(old_name!="" && new_name!=""){
-                $.get('rename_dependency',{
-                    old_name:old_name,
-                    new_name:new_name
-                },function(data){
-                    if(data['message']==true){
-                        alertify.success(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                        window.location.reload();
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
-            }
-            else{
-                alertify.error(name_field_error,time_out);
-            }
+    var new_name = window.prompt(message, dep_name);
+
+    if (new_name !== null) {
+        new_name = new_name.trim();
+
+        console.log("Rename: " + dep_name + " -> " + new_name);
+
+        if (new_name !== "" || dep_name !== "") {
+            $.get('rename_dependency',{
+                old_name:dep_name,
+                new_name:new_name
+            },function(data){
+                if(data['message']==true){
+//                    alertify.success(data['log_message'],time_out);
+//                    get_all_data(project_id,team_id);
+
+                    window.location.reload();
+                }
+                else{
+                    alertify.error(data['log_message']);
+                }
+            });
         }
-        else{
-
-        }
-
-    });
-
+    }
 }
 function create_new_name_under_version(dep_name,project_id,team_id,dep_value){
     var message="";
@@ -1028,21 +1017,21 @@ function create_new_name_under_version(dep_name,project_id,team_id,dep_value){
 function DependencyTabButtons(project_id,team_id){
     $('#create_new_dependency').on('click',function(event){
         event.preventDefault();
-        var message="";
-        message+='<table width="100%">';
-        message+='<tr><td align="center" colspan="2"><b class="Text">Create New Dependency</b></td></tr>';
-        message+='<tr style="margin-top: 2%;"><td align="right"><b class="Text">Dependency:</b></td><td><input class="textbox" style="width: 100%" id="dependency_name"></td></tr>';
-        message+='</table>';
-        alertify.confirm(message,function(e){
-            if(e){
-                var dependency_name=$('#dependency_name').val().trim();
-                if(dependency_name!=""){
+
+        var message = "New Dependency name";
+        var new_dependency_name = window.prompt(message, "");
+
+        if (new_dependency_name !== null) {
+            new_dependency_name = new_dependency_name.trim();
+
+            if (new_dependency_name !== "") {
+                if(new_dependency_name!=""){
                     $.get('add_new_dependency',{
-                        dependency_name:dependency_name
+                        dependency_name:new_dependency_name
                     },function(data){
                         if(data['message']==true){
-                            alertify.success(data['log_message'],time_out);
-                            get_all_data(project_id,team_id);
+//                            alertify.success(data['log_message'],time_out);
+//                            get_all_data(project_id,team_id);
                             window.location.reload();
                         }
                         else{
@@ -1053,13 +1042,41 @@ function DependencyTabButtons(project_id,team_id){
                 else{
                     alertify.error(name_field_error,time_out);
                 }
-
-                e.stopPropagation();
             }
-            else{
-
-            }
-        })
+        }
+//
+//        var message="";
+//        message+='<table width="100%">';
+//        message+='<tr><td align="center" colspan="2"><b class="Text">Create New Dependency</b></td></tr>';
+//        message+='<tr style="margin-top: 2%;"><td align="right"><b class="Text">Dependency:</b></td><td><input class="textbox" style="width: 100%" id="dependency_name"></td></tr>';
+//        message+='</table>';
+//        alertify.confirm(message,function(e){
+//            if(e){
+//                var dependency_name=$('#dependency_name').val().trim();
+//                if(dependency_name!=""){
+//                    $.get('add_new_dependency',{
+//                        dependency_name:dependency_name
+//                    },function(data){
+//                        if(data['message']==true){
+//                            alertify.success(data['log_message'],time_out);
+//                            get_all_data(project_id,team_id);
+//                            window.location.reload();
+//                        }
+//                        else{
+//                            alertify.error(data['log_message'],time_out);
+//                        }
+//                    });
+//                }
+//                else{
+//                    alertify.error(name_field_error,time_out);
+//                }
+//
+//                e.stopPropagation();
+//            }
+//            else{
+//
+//            }
+//        })
     });
     $('#create_new_branch').on('click',function(event){
         event.preventDefault();
