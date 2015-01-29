@@ -975,6 +975,7 @@ function rename_dependency(dep_name,project_id,team_id,dep_value){
         else{
 
         }
+
     });
 
 }
