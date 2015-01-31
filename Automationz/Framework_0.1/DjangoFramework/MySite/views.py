@@ -8309,49 +8309,52 @@ def manage_test_cases(request):
                 sections.append(i[1])
             
             parent_sections = list(set(i.split('.', 1)[0] for i in sections))
-            
-            for i in data:
-                temp = {}
-                for section_name in parent_sections:
-                    # If its a parent section, save it one way
-                    if section_name == i[1]:
-                        temp['id'] = i[0]
-                        temp['text'] = i[1]
-                        temp['children'] = True
-                        temp['type'] = 'parent_section'
-                        temp['undetermined'] = True
-                        temp_list.append(temp)
-                        data.remove(i)
-                        
-            parent_sections = temp_list
-            
-            for i in data:
-                temp = {}
-                section = i[1].split('.')
-#                 print section
-                for parent_section in parent_sections:
-                    if section[0] == parent_section['text']:
-                        temp['id'] = i[0]
-                        temp['text'] = section[-1]
-                        temp['type'] = 'section'
-                        if len(section) == 2:
-                            temp['parent'] = parent_section['id']
-                            temp['parent_text'] = parent_section['text']
-                        else:
-                            temp['parent_text'] = section[-2]
-                        
-                        child_sections.append(temp)
-            
-            for child_section in child_sections:
-                for parent_section in child_sections:
-                    if 'parent' not in child_section.keys() and parent_section['text'] == child_section['parent_text']:
-                        child_section['parent'] = parent_section['id']
-                        parent_section['children'] = True
 
-            for i in parent_sections:
-                i['text'] = i['text'].replace('_', ' ')
+            try:
+                for i in data:
+                    temp = {}
+                    for section_name in parent_sections:
+                        # If its a parent section, save it one way
+                        if section_name == i[1]:
+                            temp['id'] = i[0]
+                            temp['text'] = i[1]
+                            temp['children'] = True
+                            temp['type'] = 'parent_section'
+                            temp['undetermined'] = True
+                            temp_list.append(temp)
+                            data.remove(i)
 
-            requested_id = request.GET.get('id', '')
+                parent_sections = temp_list
+
+                for i in data:
+                    temp = {}
+                    section = i[1].split('.')
+    #                 print section
+                    for parent_section in parent_sections:
+                        if section[0] == parent_section['text']:
+                            temp['id'] = i[0]
+                            temp['text'] = section[-1]
+                            temp['type'] = 'section'
+                            if len(section) == 2:
+                                temp['parent'] = parent_section['id']
+                                temp['parent_text'] = parent_section['text']
+                            else:
+                                temp['parent_text'] = section[-2]
+
+                            child_sections.append(temp)
+
+                for child_section in child_sections:
+                    for parent_section in child_sections:
+                        if 'parent' not in child_section.keys() and parent_section['text'] == child_section['parent_text']:
+                            child_section['parent'] = parent_section['id']
+                            parent_section['children'] = True
+
+                for i in parent_sections:
+                    i['text'] = i['text'].replace('_', ' ')
+
+                requested_id = request.GET.get('id', '')
+            except Exception as e:
+                return HttpResponse("NULL")
             
             if requested_id == '#':
                 result = json.dumps(parent_sections)
