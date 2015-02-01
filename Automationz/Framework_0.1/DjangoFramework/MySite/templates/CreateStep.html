@@ -47,11 +47,15 @@
                             <td class="tc_form_label_col">
                                 <b class="Text">Feature:</b>
                             </td>
-                            <td>
-                                <select type="text" id="step_feature" name="step_feature" class="combo-box step-feat" data-level="">
+                            <td id="featuregroup">
+                                <input style="display: none" type="hidden" id="step_feature" name="step_feature" />
+                                <select type="text" class="feature step-feat" data-level="">
                                     <!--option value="">Select from list</option-->
+                                    <option>Choose...</option>
                                 </select>
                             </td>
+                            &nbsp;&nbsp;&nbsp;
+                            <td class="tc_form_input_col"><a class="notification-indicator" data-gotokey="n"><span id="feature-flag" class="mail-status unfilled"></span></a></td>
                         </tr>
                     </table>
                     &nbsp;&nbsp;&nbsp;
@@ -61,7 +65,7 @@
                                 <b class="Text">Driver:</b>
                             </td>
                             <td class="tc_form_input_col">
-                                <select type="text" id="step_driver" name="step_driver" class="combo-box step-driv" data-level="">
+                                <select type="text" id="step_driver" name="step_driver" class="step-driv" data-level="">
                                     <!--option value="">Select from list</option-->
                                 </select>
                             </td>
