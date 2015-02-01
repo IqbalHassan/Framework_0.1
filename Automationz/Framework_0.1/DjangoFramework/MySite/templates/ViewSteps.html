@@ -1,0 +1,68 @@
+{% extends "BaseTemplate.html" %}
+
+{% block title%}View Test Steps{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/Local/ViewSteps.js"></script>
+
+<article>
+
+    <a id="simple-menu" href="#sidr" class="button hint--right hint--bounce hint--rounded" data-hint="Apply Filter" style="text-decoration: none;"><img class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
+    <div id="sidr" class="sidr">
+        <h3>Select Filters to apply</h3>
+        <div style="text-align: center; margin: 12px;">
+            <button onclick='$.sidr("toggle", "sidr");' style="width: 100%; padding: 4px;">X</button>
+        </div>
+        <ul>
+            <li>
+                <input class="textbox" placeholder="Search & Select Filter Here" id="inputText" style="padding-left: 10px; width: 95%; margin-top: 40%;z-index: 999999"/>
+
+                <style type="text/css">
+                    .ui-widget-content {position: fixed}
+                </style>
+            </li>
+            <li>
+                <table style="margin-top: 5%; width: 100%">
+                    <tr>
+                        <th><p>Filtered By:</p></th>
+                    </tr>
+                    <tr>
+                        <table id="searchedFilter">
+
+                        </table>
+                    </tr>
+                    <!--tr><td style="display: none;" id="pagination_no">1</td></tr-->
+                </table>
+        </ul>
+    </div>
+
+    <div align="center">
+        <h3 style="font-size: 19px; float: left"><a style="font-weight: bold">View & Organize Steps</a></h3>
+        <div align="right" style="float: right">
+            <select id="perpageitem">
+                <option value="">Select Per Page Item</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+
+            </select>
+        </div>
+
+        <div id="allsteps" align="center">
+
+        </div>
+        <br/>
+        <div align="right">
+            <div id="pagination_tab" align="right">
+
+            </div>
+        </div>
+    </div>
+
+</article>
+
+{% endblock %}

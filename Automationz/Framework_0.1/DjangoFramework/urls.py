@@ -354,6 +354,8 @@ urlpatterns += patterns('',
     url(r'^Home/.*/Check_Feature_Path/$',Check_Feature_Path),
     url(r'^Home/.*/SearchTestCase/$',SearchTestCase),
     url(r'^Home/RunHistory/(?P<tc_id>[^/]*)/$',CaseRunHistory),
+    url(r'^Home/ViewSteps/$',ViewSteps),
+    url(r'^Home/.*/Steps_List/$',Steps_List),
     )
 
 

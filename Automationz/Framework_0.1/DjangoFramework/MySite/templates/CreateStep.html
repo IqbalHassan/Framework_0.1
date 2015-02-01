@@ -110,13 +110,33 @@
                     <table>
                         <tr>
                             <td class="tc_form_label_col">
-                                <b class="Text">Step Enable</b>
+                                <b class="Text">Step Enable:</b>
                             </td>
                             <td class="tc_form_input_col">
                                 <select id="step_enable" class="select-drop" name="step_enable">
                                     <!--option value="0" selected="selected">Select from list:</option-->
                                     <option value="1" selected="selected">True</option>
                                     <option value="2">False</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Automatable:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <select id="automata" class="select-drop" name="automata">
+                                    <!--option value="0" selected="selected">Select from list:</option-->
+                                    <option value="" selected="selected">None</option>
+                                    <option value="Cannot be automated">Cannot be automated</option>
+                                    <option value="Hard to automate">Hard to automate</option>
+                                    <option value="Automatable">Automatable</option>
+                                    <option value="Easily automatable">Easily automatable</option>
+                                    <option value="Very easily automatable">Very easily automatable</option>
                                 </select>
                             </td>
                         </tr>
