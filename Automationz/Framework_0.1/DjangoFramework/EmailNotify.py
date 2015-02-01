@@ -148,4 +148,25 @@ def Complete_Email(Reciever, Subject, Objective, Status, List, Tester,Duration, 
     sender = Mailer('smtp.gmail.com','587', True, username, password)
     sender.send(message)
     
+def Test_Email(Reciever,Body=None , type=None):
+    from mailer import Mailer
+    from mailer import Message
+
+    #server.ehlo()
+    #server.starttls()
+                          
+    ToAddr = Reciever
+    message = Message(From="automation.solutionz@gmail.com",
+                     To=ToAddr,
+                     charset="utf-8")
+
+   
+    message.Subject = " Test Email"
+    message.Html = """This is a test email to verify everything is working""" 
+    username = "automation.solutionz@gmail.com"
+    password = "te@mWork"
+
+    sender = Mailer('smtp.gmail.com','587', True, username, password)
+    sender.send(message)
     
+#Test_Email ("hossain.iqbal@gmail.com")      
