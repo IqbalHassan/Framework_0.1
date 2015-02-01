@@ -615,8 +615,6 @@ def Steps_List(request):
     if request.is_ajax():
         if request.method == 'GET':
             term = request.GET.get(u'term', '')
-
-        now=datetime.datetime.now().date()
         
         query="select stepname,description,driver,automatable from test_steps_list"
         steps_list=DB.GetData(Conn, query, False)
@@ -5482,7 +5480,7 @@ def Populate_info_div(request):
     conn = GetConnection()
     if request.method == 'GET':
         value = request.GET.get(u'term', '')
-        sQuery = "SELECT * from test_steps_list where stepname='" + value + "'"
+        sQuery = "SELECT step_id,stepname,description,driver,steptype,data_required,pf.feature_path,stepenable,step_editable,case_desc,expected,verify_point,step_continue,estd_time,automatable,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from test_steps_list tsl,product_features pf where tsl.stepfeature=pf.feature_id::text and stepname='" + value + "'"
     results = DB.GetData(conn, sQuery, False)
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -5630,10 +5628,14 @@ def Process_CreateStep(request):
         continue_radio = request.POST['continue_radio'].strip()
         step_time = request.POST['step_time'].strip()
         automata = request.POST['automata']
+        user = request.POST['step_user']
+        
+        now=datetime.datetime.now().date()
         
         if step_name != "" and step_desc != "" and step_feature != "" and step_data != "0" and step_enable != "0" and case_desc != "" and step_expect != "" and step_time != "":
             if step_type != "0" and step_driver != "":
                 conn = GetConnection()
+                feature_id = DB.GetData(conn,"select feature_id from product_features where feature_path = '"+step_feature+"'",False)
                 sQuery = "select count(*) from test_steps_list where stepname='" + step_name + "'"
                 result = DB.GetData(conn, sQuery)
                 if(result[0] > 0):
@@ -5657,7 +5659,7 @@ def Process_CreateStep(request):
                     if(step_enable == "2"):
                         enable = "false"
                     query = "Where  stepname = '" + step_name + "'"
-                    testrunenv = DB.UpdateRecordInTable(conn, "test_steps_list", query, description=step_desc, data_required=data, steptype=s_type, driver=step_driver, stepfeature=step_feature, stepenable=enable, step_editable=edit_data, case_desc=case_desc, expected=step_expect, verify_point=verify_radio, step_continue=continue_radio, estd_time=step_time, automatable=automata)
+                    testrunenv = DB.UpdateRecordInTable(conn, "test_steps_list", query, description=step_desc, data_required=data, steptype=s_type, driver=step_driver, stepfeature=feature_id[0][0], stepenable=enable, step_editable=edit_data, case_desc=case_desc, expected=step_expect, verify_point=verify_radio, step_continue=continue_radio, estd_time=step_time, automatable=automata, modified_by=user, modified_date=now)
                     query = "SELECT count(*) FROM config_values where type='feature' and value='" + step_feature + "'"
                     feature_count = DB.GetData(conn, query)
                     if(feature_count[0] < 1):
@@ -5693,7 +5695,7 @@ def Process_CreateStep(request):
                     if(step_enable == "2"):
                         enable = "false"
                     
-                    testrunenv = DB.InsertNewRecordInToTable(conn, "test_steps_list", stepname=step_name, description=step_desc, data_required=data, steptype=s_type, driver=step_driver, stepfeature=step_feature, stepenable=enable, step_editable=edit_data, case_desc=case_desc, expected=step_expect, verify_point=verify_radio, step_continue=continue_radio, estd_time=step_time, automatable=automata)
+                    testrunenv = DB.InsertNewRecordInToTable(conn, "test_steps_list", stepname=step_name, description=step_desc, data_required=data, steptype=s_type, driver=step_driver, stepfeature=feature_id[0][0], stepenable=enable, step_editable=edit_data, case_desc=case_desc, expected=step_expect, verify_point=verify_radio, step_continue=continue_radio, estd_time=step_time, automatable=automata,created_by=user, created_date=now,modified_by=user, modified_date=now)
                     query = "SELECT count(*) FROM config_values where type='feature' and value='" + step_feature + "'"
                     feature_count = DB.GetData(conn, query)
                     if(feature_count[0] < 1):

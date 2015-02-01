@@ -5,8 +5,11 @@
 
 var lowest_feature = 0;
 var isAtLowestFeature = false;
+var user = $.session.get('fullname');
 
 $(document).ready(function(){
+
+    $('input[name="step_user"]').val(user);
 
     description_fill();
     verification_radio();
@@ -299,6 +302,9 @@ $(document).ready(function(){
                         }
                         $("#step_time").val(row[13]);
                         $(".timepicker").timepicker('setTime', convertToString(row[13]));
+
+                        
+                        $("#automata").val(row[14]);
 
                     }
                 });
