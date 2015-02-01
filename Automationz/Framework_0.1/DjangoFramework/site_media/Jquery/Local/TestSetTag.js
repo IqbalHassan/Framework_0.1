@@ -145,8 +145,8 @@ function ClickButton(project_id,team_id){
                 $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
                     var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                    $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><img style="height:1.3em;width: 1.3em" class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png"/></span>');
-                    $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><img style="height:1.3em;width: 1.3em" class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png"/></span>');
+                    $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-pencil fa-2x templateBtn" id="'+ID+'"></i></span>');
+                    $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-copy fa-2x editBtn" id="'+ID+'"></i></span>');
 
                     indx++;
                 });
