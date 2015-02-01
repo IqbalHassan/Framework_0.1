@@ -148,6 +148,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
 
     $(".generate").click(function(event)
     {
+        $('#inner').hide();
         $('#BundleReportTable').empty();
         var dependency=[];
         for(var i=0;i<dependency_list.length;i++){
@@ -180,7 +181,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             'milestone':milestone
          },function(data)
             {
-                ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report");
+                ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report", "Click on numbers to see the test cases");
                 //$("#BundleReportTable .one-column-emphasis").addClass('two-column-emphasis');
                 //$("#BundleReportTable .one-column-emphasis").removeClass('one-column-emphasis');
                 var sc = data['Table'].length -1
@@ -202,12 +203,46 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                         $(this).css({
                         'cursor':'pointer'
                         });
+                        $(this).hover(function(){$(this).css("text-decoration","underline");},function(){$(this).css("text-decoration","none");});
                         var row = $(this).closest('tr').index();
                         var col = $(this).index();
+                        var pos = col + 1;
+                        var section = $(this).siblings(':first-child').text();
+                        var status = $(this).parent().siblings().first().children(':nth-child('+pos+')').text();
                         $(this).live('click',function(){
 
                             $("#inner").show();
-                            ResultTable(tc_table,'',data['Cases'][row-1][col],"Test Cases List");
+                            $("#tc_title").html('Test Cases List : ' + section + ' - ' + status )
+                            ResultTable(tc_table,data['Short'],data['Cases'][row-1][col],"Test Cases", "Click on TC-IDs to see run history");
+                            $('#tc_table tr>td:first-child').each(function () {
+                                $(this).css({
+                                    'color': 'blue',
+                                    'cursor': 'pointer',
+                                    'textAlign': 'left'
+                                });
+                                $(this).click(function(){
+                                    var tc_id = $(this).text().trim();
+                                    //var location='/Home/RunHistory/'+data+'/';
+                                    //window.location=location;
+                                    $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id},function(data){
+                                        ResultTable(tc_table,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id);
+                                        makeRunClickable();
+                                    });
+                                });
+                            });
+                            $('#tc_table tr>td:nth-child(2)').each(function(){
+                               if($(this).text() != 'N/A'){
+                                    $(this).css({
+                                      'color':'blue',
+                                       'cursor':'pointer'
+                                   });
+                                   $(this).click(function(){
+                                      var run_id=$(this).text().trim();
+                                      var location='/Home/RunID/'+run_id;
+                                      window.location=location;
+                                   });
+                               }
+                            });
 
                         }); 
                     }
@@ -219,6 +254,27 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     });
 }
 
+
+function makeRunClickable(){
+    $('#tc_table tr>td:first-child').each(function(){
+       $(this).css({
+          'color':'blue',
+           'cursor':'pointer'
+       });
+       $(this).click(function(){
+          var run_id=$(this).text().trim();
+          var location='/Home/RunID/'+run_id;
+          window.location=location;
+       });
+    });
+
+    $('#tc_table tr>td:last-child').each(function(){
+        var log=$(this).text().trim();
+        if(log != "null"){
+            $(this).html('<a href="file:///'+log+'">Log File</a>');
+        }
+    });
+}
 
     
 

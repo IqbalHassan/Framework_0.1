@@ -212,6 +212,9 @@ def edit_machine(request,machine_id):
     variables = Context({ })
     output = templ.render(variables)
     return HttpResponse(output)"""
+    
+def CaseRunHistory(request,tc_id):
+    return render_to_response('Analysis.html',{})
 
 def make_array(get_list):
     refined_list = []
@@ -3099,6 +3102,28 @@ def TestCaseSearch(request):
     return HttpResponse(json, mimetype='application/json')
 
 
+def SearchTestCase(request):
+    Conn = GetConnection()
+    results = []
+    
+    if request.method == "GET":
+        term = request.GET.get(u'term', '')
+#         print "#############################"
+#         print "Term:", term
+#         print "Page:", requested_page
+        results = DB.GetData(
+                          Conn,
+                          "SELECT DISTINCT tc_id,tc_name,'Test Case' FROM test_cases WHERE tc_id Ilike '%" + term + "%' or tc_name Ilike '%" + term + "%'",
+                          False
+                          )
+
+        
+
+    json = simplejson.dumps(results)
+#     print "JSON:", json
+    return HttpResponse(json, mimetype='application/json')
+
+
 
 def Selected_TestCaseID_Analaysis(request):
     Conn = GetConnection()
@@ -3555,6 +3580,8 @@ def ViewTestCase(TC_Id):
             else:
                 Feature_Path = ''
 
+            print Feature_Id[0]
+            print Feature_Path
             
             query = "select distinct l.label_id,l.label_name,l.label_color from label_map blm, labels l where blm.id = '%s' and blm.type='TC' and blm.label_id = l.label_id" % TC_Id
             Conn = GetConnection()
@@ -3643,7 +3670,7 @@ def ViewTestCase(TC_Id):
                 Steps_Data_List.append((Step_Name, Step_Data, Step_Type, step_description, step_expected, step_verified, Step_General_Description[0][0], step_time, Step_Edit, each_test_step[3],step_continue))
                 Step_Iteration = Step_Iteration + 1
             # return values
-            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team, 'Labels':Labels}
+            results = {'TC_Id':TC_Id, 'TC_Name': TC_Name, 'TC_Creator': TC_Creator, 'Tags List': Tag_List, 'Priority': Priority, 'Dependency List': Dependency_List, 'Associated Bugs': Associated_Bugs_List, 'Status': Status, 'Steps and Data':Steps_Data_List, 'Section_Path':Section_Path, 'Feature_Path':Feature_Path, 'Feature_Id':Feature_Id[0], 'Requirement Ids': Requirement_ID_List,'project_id':TC_Project,'team_id':TC_Team, 'Labels':Labels}
 
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -4274,11 +4301,21 @@ def New_Execution_Report(request):
         
         cases_list = []
         
+        col_pass = []
+        col_fail = []
+        col_block = []
+        col_submit = []
+        col_progress = []
+        col_skip = []
+        col_not = []
+        col_total = []
+        
         for s in sections:
             section_cases = []
+            row_cases = []
             temp = []
             temp.append(s)
-            section_cases.append(s[0])
+            section_cases.append(s)
             #latest_cases = DB.GetData(Conn, "select tcr.tc_id,tcr.status,tcr.teststarttime from test_case_results tcr,test_run_env tre where tcr.run_id=tre.run_id order by tcr.teststarttime desc", False)
             latest_cases = DB.GetData(Conn, "select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" order by tcr.teststarttime desc", False)
             # selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
@@ -4290,7 +4327,13 @@ def New_Execution_Report(request):
                     for n in latest_cases:
                         if m[0] == n[0]:
                             if n[1] == 'Passed':
-                                cases.append(m)
+                                data = []
+                                data.append(m)
+                                data.append(n[2])
+                                data.append(n[1])
+                                cases.append(data)
+                                row_cases.append(data)
+                                col_pass.append(data)
                                 break;
                             else:
                                 pass_count = pass_count - 1;
@@ -4306,7 +4349,13 @@ def New_Execution_Report(request):
                 for n in latest_cases:
                     if m[0] == n[0]:
                         if n[1] == 'Failed':
-                            cases.append(m)
+                            data = []
+                            data.append(m)
+                            data.append(n[2])
+                            data.append(n[1])
+                            cases.append(data)
+                            row_cases.append(data)
+                            col_fail.append(data)
                             break;
                         else:
                             fail_count = fail_count - 1;
@@ -4322,7 +4371,13 @@ def New_Execution_Report(request):
                 for n in latest_cases:
                     if m[0] == n[0]:
                         if n[1] == 'Blocked':
-                            cases.append(m)
+                            data = []
+                            data.append(m)
+                            data.append(n[2])
+                            data.append(n[1])
+                            cases.append(data)
+                            row_cases.append(data)
+                            col_block.append(data)
                             break;
                         else:
                             block_count = block_count - 1;
@@ -4338,7 +4393,13 @@ def New_Execution_Report(request):
                 for n in latest_cases:
                     if m[0] == n[0]:
                         if n[1] == 'Submitted':
-                            cases.append(m)
+                            data = []
+                            data.append(m)
+                            data.append(n[2])
+                            data.append(n[1])
+                            cases.append(data)
+                            row_cases.append(data)
+                            col_submit.append(data)
                             break;
                         else:
                             submitted_count = submitted_count - 1;
@@ -4354,7 +4415,13 @@ def New_Execution_Report(request):
                 for n in latest_cases:
                     if m[0] == n[0]:
                         if n[1] == 'In-Progress':
-                            cases.append(m)
+                            data = []
+                            data.append(m)
+                            data.append(n[2])
+                            data.append(n[1])
+                            cases.append(data)
+                            row_cases.append(data)
+                            col_progress.append(data)
                             break;
                         else:
                             inprogress_count = inprogress_count - 1;
@@ -4370,7 +4437,13 @@ def New_Execution_Report(request):
                 for n in latest_cases:
                     if m[0] == n[0]:
                         if n[1] == 'Skipped':
-                            cases.append(m)
+                            data = []
+                            data.append(m)
+                            data.append(n[2])
+                            data.append(n[1])
+                            cases.append(data)
+                            row_cases.append(data)
+                            col_skip.append(data)
                             break;
                         else:
                             skipped_count = skipped_count - 1;
@@ -4398,11 +4471,20 @@ def New_Execution_Report(request):
             
             #cases=[]
             #cases=DB.GetData(Conn,"select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and rtct.tc_id in (select distinct tc_id from test_case_tag where name = '"+project_id+"' and property = 'Project' and tc_id in (select distinct tc_id from test_case_tag where name = '"+team_id+"' and property = 'Team')) and tc_id not in (select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" order by tcr.teststarttime desc)",False)
-            cases=DB.GetData(Conn,"select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and rtct.tc_id in (select distinct tc_id from test_case_tag where name = '"+project_id+"' and property = 'Project' and tc_id in (select distinct tc_id from test_case_tag where name = '"+team_id+"' and property = 'Team')) and tc_id not in (select distinct tcr.tc_id from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+")",False)
+            cases=DB.GetData(Conn,"select distinct tc_id,'N/A','N/A' from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and rtct.tc_id in (select distinct tc_id from test_case_tag where name = '"+project_id+"' and property = 'Project' and tc_id in (select distinct tc_id from test_case_tag where name = '"+team_id+"' and property = 'Team')) and tc_id not in (select distinct tcr.tc_id from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+")",False)
             section_cases.append(cases)
+            
+            for m in cases:
+                row_cases.append(m)
+                col_not.append(m)
+            section_cases.append(row_cases)
             
             Table.append(tuple(temp))
             cases_list.append(section_cases)
+            
+            for i in row_cases:
+                col_total.append(i)
+            
             
         total=[]
         total.append('Summary')
@@ -4416,12 +4498,25 @@ def New_Execution_Report(request):
         total.append(alltotal)
         
         Table.append(tuple(total))
-        print cases_list
+        #print cases_list
         
+        section_cases = []
+        section_cases.append('Summary')
+        section_cases.append(col_pass)
+        section_cases.append(col_fail)
+        section_cases.append(col_block)
+        section_cases.append(col_submit)
+        section_cases.append(col_progress)
+        section_cases.append(col_skip)
+        section_cases.append(col_not)
+        section_cases.append(col_total)
+        
+        cases_list.append(section_cases)
         
 
     Heading = ['Section', 'Passed', 'Failed', 'Blocked', 'Submitted', 'In-Progress', 'Skipped', 'Not Run', 'Total']
-    results = {'Heading':Heading, 'Table':Table, 'Cases':cases_list}
+    Short = ['TC-ID', 'Run-ID', 'Status']
+    results = {'Heading':Heading, 'Table':Table, 'Cases':cases_list, 'Short':Short}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -7452,6 +7547,31 @@ def Get_MileStone_Names(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
+def Get_Feature_Path(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            feature_id = request.GET.get(u'Feature_Id', '')
+            #print milestone
+            query = "select feature_path from product_features where feature_id="+feature_id+" "
+            results = DB.GetData(Conn, query, False)  
+    
+    data = {'Path':results[0][0]}
+    json = simplejson.dumps(data)
+    return HttpResponse(json, mimetype='application/json')
+
+def Check_Feature_Path(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            feature_path = request.GET.get(u'Feature_Path', '')
+            #print milestone
+            query = "select feature_id from product_features where feature_path ~ '"+feature_path+".*' "
+            results = DB.GetData(Conn, query, False)  
+    
+    json = simplejson.dumps(results[0])
+    return HttpResponse(json, mimetype='application/json')
+
 def Get_MileStone_ID(request):
     if request.is_ajax():
         if request.method == 'GET':
@@ -8189,49 +8309,52 @@ def manage_test_cases(request):
                 sections.append(i[1])
             
             parent_sections = list(set(i.split('.', 1)[0] for i in sections))
-            
-            for i in data:
-                temp = {}
-                for section_name in parent_sections:
-                    # If its a parent section, save it one way
-                    if section_name == i[1]:
-                        temp['id'] = i[0]
-                        temp['text'] = i[1]
-                        temp['children'] = True
-                        temp['type'] = 'parent_section'
-                        temp['undetermined'] = True
-                        temp_list.append(temp)
-                        data.remove(i)
-                        
-            parent_sections = temp_list
-            
-            for i in data:
-                temp = {}
-                section = i[1].split('.')
-#                 print section
-                for parent_section in parent_sections:
-                    if section[0] == parent_section['text']:
-                        temp['id'] = i[0]
-                        temp['text'] = section[-1]
-                        temp['type'] = 'section'
-                        if len(section) == 2:
-                            temp['parent'] = parent_section['id']
-                            temp['parent_text'] = parent_section['text']
-                        else:
-                            temp['parent_text'] = section[-2]
-                        
-                        child_sections.append(temp)
-            
-            for child_section in child_sections:
-                for parent_section in child_sections:
-                    if 'parent' not in child_section.keys() and parent_section['text'] == child_section['parent_text']:
-                        child_section['parent'] = parent_section['id']
-                        parent_section['children'] = True
 
-            for i in parent_sections:
-                i['text'] = i['text'].replace('_', ' ')
+            try:
+                for i in data:
+                    temp = {}
+                    for section_name in parent_sections:
+                        # If its a parent section, save it one way
+                        if section_name == i[1]:
+                            temp['id'] = i[0]
+                            temp['text'] = i[1]
+                            temp['children'] = True
+                            temp['type'] = 'parent_section'
+                            temp['undetermined'] = True
+                            temp_list.append(temp)
+                            data.remove(i)
 
-            requested_id = request.GET.get('id', '')
+                parent_sections = temp_list
+
+                for i in data:
+                    temp = {}
+                    section = i[1].split('.')
+    #                 print section
+                    for parent_section in parent_sections:
+                        if section[0] == parent_section['text']:
+                            temp['id'] = i[0]
+                            temp['text'] = section[-1]
+                            temp['type'] = 'section'
+                            if len(section) == 2:
+                                temp['parent'] = parent_section['id']
+                                temp['parent_text'] = parent_section['text']
+                            else:
+                                temp['parent_text'] = section[-2]
+
+                            child_sections.append(temp)
+
+                for child_section in child_sections:
+                    for parent_section in child_sections:
+                        if 'parent' not in child_section.keys() and parent_section['text'] == child_section['parent_text']:
+                            child_section['parent'] = parent_section['id']
+                            parent_section['children'] = True
+
+                for i in parent_sections:
+                    i['text'] = i['text'].replace('_', ' ')
+
+                requested_id = request.GET.get('id', '')
+            except Exception as e:
+                return HttpResponse("NULL")
             
             if requested_id == '#':
                 result = json.dumps(parent_sections)
@@ -8352,23 +8475,26 @@ def create_section(request):
             new_section_id = cur.fetchone()[0]
             
             Conn.commit()
-            cur.close()
+            # cur.close()
             
             query = '''
             INSERT INTO team_wise_settings (project_id, team_id, parameters, type) VALUES (%s, %s, %s, %s);
             '''
-            Conn = GetConnection()
-            cursor = Conn.cursor()
+            # Conn = GetConnection()
+            # cursor = Conn.cursor()
             
-            cursor.execute(query, (project_id, team_id, new_section_id, 'Section'))
+            cur.execute(query, (project_id, team_id, new_section_id, 'Section'))
             
             Conn.commit()
-            cur.close()
+            # cur.close()
 
             return HttpResponse(1)
         except Exception as e:
-            cur.close()
+            print e
             return HttpResponse(0)
+        finally:
+            cur.close()
+            Conn.close()
         
 
 def rename_section(request):
@@ -8404,33 +8530,43 @@ def rename_section(request):
               
             cur.execute(query, (new_text, old_section_text, 'Section')) 
             Conn.commit()
-            cur.close()
         except Exception as e:
+            return HttpResponse(0)
+        finally:
             cur.close()
-            return HttpResponse(0)                  
+            Conn.close()
+            
         return HttpResponse(1)
 
 
 def delete_section(request):
     if request.method == 'GET' and request.is_ajax():
         section_id = int(request.GET.get('section_id', 0))
-        query = '''
-        DELETE FROM product_sections WHERE section_id=%s
-        '''
-        Conn = GetConnection()
-        cur = Conn.cursor()
-        cur.execute(query, (section_id, ))
-        Conn.commit()
-        cur.close()
         
-        query = '''
-        DELETE FROM team_wise_settings WHERE parameters=%s
-        '''
         Conn = GetConnection()
         cur = Conn.cursor()
-        cur.execute(query, (section_id, ))
-        Conn.commit()
-        cur.close()
+        
+        try:        
+            query = '''
+            DELETE FROM product_sections WHERE section_id=%s
+            '''
+            
+            cur.execute(query, (section_id, ))
+            Conn.commit()
+            
+            query = '''
+            DELETE FROM team_wise_settings WHERE parameters=%s
+            '''
+            
+            cur.execute(query, (section_id, ))
+            Conn.commit()
+        except Exception as e:
+            print e
+            return HttpResponse(0)
+        finally:
+            cur.close()
+            Conn.close()
+            
 #         time.sleep(1)
         return HttpResponse(section_id)
 def DeleteTestCase(request):

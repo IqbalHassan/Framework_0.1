@@ -393,7 +393,17 @@ $(document).ready(function() {
                         }
                         
                         //FeaturePath
-                        var features=data['Feature_Path'];
+                        
+                        /*var feature_id=data['Feature_Id'];
+                        var features = '';
+                        var feature_id = data['Feature_Id'];
+                        
+                        $.get("Get_Feature_Path/",{Feature_Id : feature_id},function(data)
+                        {
+                            var features = data['Path'];
+                        });*/
+
+                        var features = data['Feature_Path'];
                         var featureArray = features.split('.');
                         var dataId ="";
                         var handlerString = "";
@@ -461,6 +471,19 @@ $(document).ready(function() {
                                         isAtLowestFeature = true;
                                         $("#feature-flag").removeClass("unfilled");
                                         $("#feature-flag").addClass("filled");
+
+
+                                        /*var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+
+                                        $.get("Check_Feature_Path",{Feature_Path : newFeaturePath},function(data)
+                                            {
+                                                if (data.length > 1) {
+                                                    $("#feature-flag").removeClass("filled");
+                                                    $("#feature-flag").addClass("unfilled");
+                                                    isAtLowestFeature = false;
+                                                };
+                    
+                                            });*/
                                     }
                                 }
                             });
@@ -781,6 +804,14 @@ $(document).ready(function() {
             //Select Section Name
             var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
             var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+
+            /*$.get("Check_Feature_Path",{Feature_Path : newFeaturePath},function(data)
+                {
+                    if (data.length != 1) {
+                        $("#feature-flag").removeClass("filled");
+                        $("#feature-flag").addClass("unfilled");
+                    };
+                });*/
 
 //            console.log(newSectionPath);
 //            console.log(newFeaturePath);

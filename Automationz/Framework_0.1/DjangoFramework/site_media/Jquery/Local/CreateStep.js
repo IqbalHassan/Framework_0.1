@@ -1,6 +1,11 @@
 /**
  * Created by minar09 on 3/27/14.
  */
+
+
+var lowest_feature = 0;
+var isAtLowestFeature = false;
+
 $(document).ready(function(){
 
     description_fill();
@@ -10,6 +15,33 @@ $(document).ready(function(){
 
 
     $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+        },
+        success: function( json ) {
+            if(json.length > 0)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+            $(".feature[data-level='']").attr('id',1);
+        }
+    });
+    $(".feature[data-level='']").change(function(){
+        isAtLowestFeature = false;
+        recursivelyAddFeature(this);
+        $("#feature-flag").removeClass("filled");
+        $("#feature-flag").addClass("unfilled");
+        $('input[name="step_feature"]').val("");
+    });
+
+    /*$.ajax({
         url:'GetFeature/',
         dataType : "json",
         data : {
@@ -29,7 +61,7 @@ $(document).ready(function(){
                 }
             });
         }
-    });
+    });*/
     $.ajax({
         url:'GetDriver/',
         dataType : "json",
@@ -158,7 +190,99 @@ $(document).ready(function(){
                         if(row[4]=="performance"){
                             $("#step_type").val(3);
                         }
-                        $("#step_feature").val(row[6]);
+                        //$("#step_feature").val(row[6]);
+                        var features = row[6];
+                        var featureArray = features.split('.');
+                        var dataId ="";
+                        var handlerString = "";
+                        for(var index in featureArray){
+                            if(featureArray[index] == "")
+                                continue;
+                            $.ajax({
+                                url:'GetFeatures/',
+                                dataType : "json",
+                                data : {
+                                    feature : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_'),
+                                    project_id: $.session.get('project_id'),
+                                    team_id: $.session.get('default_team_identity')
+                                },
+                                success: function( json ) {
+                                    if(json.length != 1){
+                                        var realItemIndex = parseInt(json[0][0])
+                                        var handlerString = ""
+                                        for(var i = 0; i < realItemIndex; i++)
+                                            handlerString+=featureArray[i]+'.'
+
+                                        if(realItemIndex == 0){
+                                            $(".feature[data-level='']").find('option').each(function(){$(this).remove();});
+                                            $(".feature[data-level='']").append("<option>Choose...</option>");
+
+                                            for(var i = 0; i < json.length; i++)
+                                                json[i] = json[i][0].replace(/_/g,' ')
+                                            $.each(json, function(i, value) {
+                                                if(i == 0)return;
+                                                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+                                            });
+                                            $(".feature[data-level='']").val(featureArray[realItemIndex].replace(/_/g,' '))
+                                        }else{
+                                            var tag = jQuery('<select/>',{
+                                                'class':'feature',
+                                                'data-level':handlerString,
+                                                'id':realItemIndex+1,
+                                                change: function(){
+                                                    isAtLowestFeature = false;
+                                                    recursivelyAddFeature(this);
+                                                    $("#feature-flag").removeClass("filled");
+                                                    $("#feature-flag").addClass("unfilled");
+                                                }
+                                            })
+                                            if($('#featuregroup select[id='+realItemIndex+']').length != 0)
+                                                $('#featuregroup select[id='+realItemIndex+']').after(tag)
+                                            else
+                                                $('#featuregroup select[id=1]').after(tag);
+
+                                            $(".feature[data-level='"+handlerString+"']").append("<option>Choose...</option>");
+
+                                            var once = true;
+                                            for(var i = 0; i < json.length; i++)
+                                                json[i] = json[i][0].replace(/_/g,' ')
+                                            $.each(json, function(i, value) {
+                                                if(i == 0)return;
+                                                if(once){
+                                                    lowest_feature+=1
+                                                    once = false
+                                                }
+                                                $(".feature[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
+                                            });
+                                            $(".feature[data-level='"+handlerString+"']").val(featureArray[realItemIndex].replace(/_/g,' '))
+                                        }
+                                        isAtLowestFeature = true;
+                                        $("#feature-flag").removeClass("unfilled");
+                                        $("#feature-flag").addClass("filled");
+                                        var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+                                        $('input[name="step_feature"]').val(newFeaturePath);
+
+
+                                        /*var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+
+                                        $.get("Check_Feature_Path",{Feature_Path : newFeaturePath},function(data)
+                                            {
+                                                if (data.length > 1) {
+                                                    $("#feature-flag").removeClass("filled");
+                                                    $("#feature-flag").addClass("unfilled");
+                                                    isAtLowestFeature = false;
+                                                };
+                    
+                                            });*/
+                                    }
+                                }
+                            });
+
+                            dataId += featureArray[index] + '.'
+                        }
+
+
+
                         $("#case_desc").val(row[9]);
                         $("#step_expect").val(row[10]);
                         if(row[11]==true){
@@ -366,4 +490,70 @@ function convertToString(intTime){
     }
     var stringTime=hour+":"+minuate+":"+intTime;
     return stringTime.trim();
+}
+
+function recursivelyAddFeature(_this){
+    var fatherHeirarchy = $(_this).attr("data-level");
+    var father = $(_this).children("option:selected").text();
+    if(father == "")
+        return;
+    if(father == "Choose..."){
+        for(var i = 0; i < lowest_feature; i++){
+            $("#featuregroup select.feature:last-child").remove();
+        }
+        lowest_feature = 0
+        return;
+    }
+    var current_feature = (fatherHeirarchy.split(".").length - 1)
+    if(current_feature < lowest_feature){
+        for(var i = current_feature + 1; i <= lowest_feature; i++){
+            $("#featuregroup select.feature:last-child").remove();
+        }
+        lowest_feature = current_feature
+    }
+
+    $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : (fatherHeirarchy+father).replace(/ /g,'_'),
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+
+        },
+        success: function( json ) {
+            if(json.length != 1){
+                jQuery('<select/>',{
+                    'class':'feature',
+                    'data-level':fatherHeirarchy+father+'.',
+                    change: function(){
+                        isAtLowestFeature = false;
+                        recursivelyAddFeature(this);
+                        $("#feature-flag").removeClass("filled");
+                        $("#feature-flag").addClass("unfilled");
+                    }
+                }).appendTo('#featuregroup');
+
+                $(".feature[data-level='"+fatherHeirarchy+father+".']").append("<option>Choose...</option>");
+
+                var once = true;
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+                $.each(json, function(i, value) {
+                    if(i == 0)return;
+                    if(once){
+                        lowest_feature+=1
+                        once = false
+                    }
+                    $(".feature[data-level='"+fatherHeirarchy+father+".']").append($('<option>').text(value).attr('value', value));
+                });
+            }else{
+                isAtLowestFeature = true;
+                $("#feature-flag").removeClass("unfilled");
+                $("#feature-flag").addClass("filled");
+                var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+                $('input[name="step_feature"]').val(newFeaturePath);
+            }
+        }
+    });
 }

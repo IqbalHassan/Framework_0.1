@@ -6,7 +6,7 @@ def Send_Email(Reciever, Subject, Objective, Body=None , type=None):
     #server.starttls()
                
     ToAddr = Reciever
-    message = Message(From="AutomationReport@automationsolutionz.com",
+    message = Message(From="automation.solutionz@gmail.com",
                      To=ToAddr,
                      charset="utf-8")
 
@@ -33,7 +33,7 @@ def Send_Email(Reciever, Subject, Objective, Body=None , type=None):
     #Body = "Deployed Run-ID: " + Subject + "<br/>" + "Run Objective: " + Objective + "<br/>"
     #link = "<a href='135.23.123.67:8080/Home/RunID/'" + Subject + ">" +Subject + "</a>"
     #message.Html = message.Html + Body + "<br/>" + "<br/>"
-    username = "automationsolutionz@gmail.com"
+    username = "automation.solutionz@gmail.com"
     password = "te@mWork"
 
     sender = Mailer('smtp.gmail.com','587', True, username, password)
@@ -71,7 +71,7 @@ def Complete_Email(Reciever, Subject, Objective, Status, List, Tester,Duration, 
                
                           
     ToAddr = Reciever
-    message = Message(From="AutomationReport@automationsolutionz.com",
+    message = Message(From="automation.solutionz@gmail.com",
                      To=ToAddr,
                      charset="utf-8")
 
@@ -142,10 +142,31 @@ def Complete_Email(Reciever, Subject, Objective, Status, List, Tester,Duration, 
     #Body = "Deployed Run-ID: " + Subject + "<br/>" + "Run Objective: " + Objective + "<br/>"
     #link = "<a href='135.23.123.67:8080/Home/RunID/'" + Subject + ">" +Subject + "</a>"
     #message.Html = message.Html + Body + "<br/>" + "<br/>"
-    username = "AutomationReport@automationsolutionz.com"
+    username = "automation.solutionz@gmail.com"
     password = "te@mWork"
 
-    sender = Mailer('smtp.automationsolutionz.com','25', False, username, password)
+    sender = Mailer('smtp.gmail.com','587', True, username, password)
     sender.send(message)
     
+def Test_Email(Reciever,Body=None , type=None):
+    from mailer import Mailer
+    from mailer import Message
+
+    #server.ehlo()
+    #server.starttls()
+                          
+    ToAddr = Reciever
+    message = Message(From="automation.solutionz@gmail.com",
+                     To=ToAddr,
+                     charset="utf-8")
+
+   
+    message.Subject = " Test Email"
+    message.Html = """This is a test email to verify everything is working""" 
+    username = "automation.solutionz@gmail.com"
+    password = "te@mWork"
+
+    sender = Mailer('smtp.gmail.com','587', True, username, password)
+    sender.send(message)
     
+#Test_Email ("hossain.iqbal@gmail.com")      
