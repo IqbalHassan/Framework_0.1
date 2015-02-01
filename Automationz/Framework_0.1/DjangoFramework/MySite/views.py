@@ -8531,10 +8531,13 @@ def rename_section(request):
               
             cur.execute(query, (new_text, old_section_text, 'Section')) 
             Conn.commit()
-            cur.close()
         except Exception as e:
             cur.close()
-            return HttpResponse(0)                  
+            return HttpResponse(0)
+        finally:
+            cur.close()
+            Conn.close()
+            
         return HttpResponse(1)
 
 
