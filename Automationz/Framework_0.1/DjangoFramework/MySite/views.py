@@ -8475,23 +8475,27 @@ def create_section(request):
             new_section_id = cur.fetchone()[0]
             
             Conn.commit()
-            cur.close()
+            # cur.close()
             
             query = '''
             INSERT INTO team_wise_settings (project_id, team_id, parameters, type) VALUES (%s, %s, %s, %s);
             '''
-            Conn = GetConnection()
-            cursor = Conn.cursor()
+            # Conn = GetConnection()
+            # cursor = Conn.cursor()
             
-            cursor.execute(query, (project_id, team_id, new_section_id, 'Section'))
+            cur.execute(query, (project_id, team_id, new_section_id, 'Section'))
             
             Conn.commit()
-            cur.close()
+            # cur.close()
 
             return HttpResponse(1)
         except Exception as e:
+            print e
             cur.close()
             return HttpResponse(0)
+        finally:
+            cur.close()
+            Conn.close()
         
 
 def rename_section(request):
