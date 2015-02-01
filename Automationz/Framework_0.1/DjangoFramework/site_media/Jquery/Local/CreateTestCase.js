@@ -805,13 +805,13 @@ $(document).ready(function() {
             var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
             var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
-            $.get("Check_Feature_Path",{Feature_Path : newFeaturePath},function(data)
+            /*$.get("Check_Feature_Path",{Feature_Path : newFeaturePath},function(data)
                 {
-                    if (json.length != 1) {
+                    if (data.length != 1) {
                         $("#feature-flag").removeClass("filled");
                         $("#feature-flag").addClass("unfilled");
                     };
-                });
+                });*/
 
 //            console.log(newSectionPath);
 //            console.log(newFeaturePath);
