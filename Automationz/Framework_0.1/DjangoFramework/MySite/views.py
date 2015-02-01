@@ -8491,7 +8491,6 @@ def create_section(request):
             return HttpResponse(1)
         except Exception as e:
             print e
-            cur.close()
             return HttpResponse(0)
         finally:
             cur.close()
@@ -8532,7 +8531,6 @@ def rename_section(request):
             cur.execute(query, (new_text, old_section_text, 'Section')) 
             Conn.commit()
         except Exception as e:
-            cur.close()
             return HttpResponse(0)
         finally:
             cur.close()
@@ -8544,23 +8542,31 @@ def rename_section(request):
 def delete_section(request):
     if request.method == 'GET' and request.is_ajax():
         section_id = int(request.GET.get('section_id', 0))
-        query = '''
-        DELETE FROM product_sections WHERE section_id=%s
-        '''
-        Conn = GetConnection()
-        cur = Conn.cursor()
-        cur.execute(query, (section_id, ))
-        Conn.commit()
-        cur.close()
         
-        query = '''
-        DELETE FROM team_wise_settings WHERE parameters=%s
-        '''
         Conn = GetConnection()
         cur = Conn.cursor()
-        cur.execute(query, (section_id, ))
-        Conn.commit()
-        cur.close()
+        
+        try:        
+            query = '''
+            DELETE FROM product_sections WHERE section_id=%s
+            '''
+            
+            cur.execute(query, (section_id, ))
+            Conn.commit()
+            
+            query = '''
+            DELETE FROM team_wise_settings WHERE parameters=%s
+            '''
+            
+            cur.execute(query, (section_id, ))
+            Conn.commit()
+        except Exception as e:
+            print e
+            return HttpResponse(0)
+        finally:
+            cur.close()
+            Conn.close()
+            
 #         time.sleep(1)
         return HttpResponse(section_id)
 def DeleteTestCase(request):
