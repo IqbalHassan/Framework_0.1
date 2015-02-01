@@ -212,13 +212,29 @@ def go_to_webpage(dependency,step_data):
     sTestStepReturnStatus = WebProgram.OpenLink(web_link)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
+def search_for_an_item(dependency,step_data):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    first_data_set=step_data[0]
+    search_text=first_data_set[0][2]
+    sTestStepReturnStatus = WebProgram.SearchItem(search_text)
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus
 def verify_product_details(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    expected_data=[]
-    actual_data=[]
+    actual_data=WebProgram.GetItemDetail()
+    expected_data=step_data
+    #making data compatible with the current format
+    final_list=[]
+    for each in actual_data:
+        if isinstance(each[1],list):
+            for eachitem in each[1]:
+                final_list.append((each[0],eachitem[0],eachitem[1],False,False))
+        else:
+            final_list.append((each[0],'',each[1],False,False))
+    
     #declaring the object compare
     oCompare=CompareModule.CompareModule()
-    sTestStepReturnStatus=oCompare.FieldCompare(expected_data,actual_data)
+    sTestStepReturnStatus=oCompare.compare(expected_data,[final_list])
     print sTestStepReturnStatus
     return sTestStepReturnStatus
 
