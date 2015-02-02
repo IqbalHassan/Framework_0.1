@@ -309,7 +309,9 @@ function ExecutionLog(){
                     test_case_id:test_case_id,
                     step_name:step_name
                 },function(data){
-                    ResultTable("#inside_back",data['column'],data['log'],"");
+                    //ResultTable("#inside_back",data['column'],data['log'],"");
+                    var message=form_table(data['column'],data['log']);
+                    $('#inside_back').html(message);
                     $("#inside_back").dialog({
                         buttons : {
                             "OK" : function() {
@@ -323,7 +325,7 @@ function ExecutionLog(){
                         },
 
                         modal : true,
-                        width : 500,
+                        width : 720,
                         height : 620,
                         title:div_name
 
@@ -336,6 +338,115 @@ function ExecutionLog(){
     /*$('#data_table tr td:nth-child(3)').each(function(){
      $(this).css({'text-align':'left'});
      })*/
+}
+
+colors = {
+    'pass' : '#65bd10',
+    'fail' : '#fd0006',
+    'block' : '#ff9e00',
+    'submitted' : '#808080',
+    'in-progress':'#0000ff',
+    'skipped':'#cccccc',
+    'dev': '#aaaaaa',
+    'ready': '#65bd10'
+};
+
+function form_table(column,log){
+    var matching_regex= new RegExp(/Matching Records: (\d+)/i);
+    var missing_regex=new RegExp(/Missing Records: (\d+)/i);
+    var extra_regex=new RegExp(/Extra Records: (\d+)/i);
+    var matching_group_entry=new RegExp(/Matching Group Entry Count: (\d+)/i);
+    var non_match_group_entry=new RegExp(/Non Match Group Entry Count: (\d+)/i);
+    var missing_group_entry=new RegExp(/Missing Group Entry Count: (\d+)/i);
+    var extra_group_entry=new RegExp(/Extra Group Entry Count: (\d+)/i);
+    var message="";
+    message+='<table width="100%" class="two-column-emphasis">';
+    message+='<tr>';
+    for(var i=0;i<column.length;i++){
+        message+='<td>'+column[i]+'</th>';
+    }
+    message+='</tr>';
+    for (var i=0;i<log.length;i++){
+        message+='<tr>';
+        if(matching_regex.test(log[i])|| missing_regex.test(log[i])||extra_regex.test(log[i])||matching_group_entry.test(log[i])||non_match_group_entry.test(log[i])||missing_group_entry.test(log[i])||extra_group_entry.test(log[i])){
+            for(var j=0;j<log[i].length;j++){
+                if(j==0){
+                    if(log[i][j]=='Passed'){
+                        var color=colors['pass'];
+                    }
+                    if(log[i][j]=='Error'){
+                        var color=colors['fail'];
+                    }
+                    message+='<td style="border-left: 4px solid '+color+'">'+log[i][j]+'</td>'
+                }
+                else{
+                    message+='<td>'+log[i][j]+'</td>';
+                }
+
+            }
+            if(matching_regex.test(log[i])){
+                var column_length=matching_regex.exec(log[i][2]);
+            }
+            if(missing_regex.test(log[i])){
+                var column_length=missing_regex.exec(log[i][2]);
+            }
+            if(extra_regex.test(log[i])){
+                var column_length=extra_regex.exec(log[i][2]);
+            }
+            if(matching_group_entry.test(log[i])){
+                var column_length=matching_group_entry.exec(log[i][2]);
+            }
+            if(non_match_group_entry.test(log[i])){
+                var column_length=non_match_group_entry.exec(log[i][2]);
+            }
+            if(missing_group_entry.test(log[i])){
+                var column_length=missing_group_entry.exec(log[i][2]);
+            }
+            if(extra_group_entry.test(log[i])){
+                var column_length=extra_group_entry.exec(log[i][2]);
+            }
+            column_length=parseInt(column_length[1]);
+            if (column_length>0){
+                message+='<tr>';
+                message+='<td style="border-left: 4px solid '+color+'">'+log[i][0]+'</td>';
+                message+='<td>'+log[i][1]+'</td>';
+                message+='<td><table width="100%">';
+                message+='<tr><th>&nbsp;</th><th>Field</th><th>Expected</th><th>Actual</th></tr>'
+                for(var j=i+1;j<(i+1+column_length);j++){
+                    var table_row=log[j][2].split(" : ");
+                    message+='<tr>';
+                    for (var k=0;k<table_row.length;k++){
+                        message+='<td>'+table_row[k]+'</td>';
+                    }
+                    message+='</tr>';
+                }
+                message+='</table></td>';
+                message+='</tr>';
+                i=(i+column_length);
+            }
+        }
+
+
+        else{
+            for(var j=0;j<log[i].length;j++){
+                if(j==0){
+                    if(log[i][j]=='Passed'){
+                        var color=colors['pass'];
+                    }
+                    if(log[i][j]=='Error'){
+                        var color=colors['fail'];
+                    }
+                    message+='<td style="border-left: 4px solid '+color+'">'+log[i][j]+'</td>'
+                }
+                else{
+                    message+='<td>'+log[i][j]+'</td>';
+                }
+            }
+        }
+        message+='</tr>';
+    }
+    message+='</table>';
+    return message;
 }
 function InputFailReason(){
     $('#data_table tr td:nth-child(7)').each(function(){
