@@ -2,13 +2,33 @@
  * Created by J on 2/2/2015.
  */
 
+var itemPerPage=10;
+var PageCurrent=1;
+
 $(document).ready(function(){
 	$("#simple-menu").sidr({
         name: 'sidr',
         side: 'left'
     });
 
-    $.get("Steps_List",{term : ''},function(data)
+    itemPerPage = $("#perpageitem").val();
+    get_steps(itemPerPage, PageCurrent);
+    
+    $('#perpageitem').on('change',function(){
+        if($(this).val()!=''){
+            itemPerPage=$(this).val();
+            current_page=1;
+            $('#pagination_tab').pagination('destroy');
+            window.location.hash = "#1";
+            get_steps(itemPerPage, PageCurrent);
+        }
+    });
+
+});
+
+
+function get_steps(itemPerPage,PageCurrent){
+    $.get("Steps_List",{'itemPerPage':itemPerPage ,'PageCurrent':PageCurrent},function(data)
     {
         if(data['steps'].length>0) {
             //make a table column
@@ -30,12 +50,27 @@ $(document).ready(function(){
             }
             message += '</table>';
             $('#allsteps').html(message);
+            $('#pagination_tab').pagination({
+                items:data['count'],
+                itemsOnPage:itemPerPage,
+                cssStyle: 'dark-theme',
+                currentPage:PageCurrent,
+                displayedPages:2,
+                edges:2,
+                hrefTextPrefix:'#',
+                onPageClick:function(PageNumber){
+                    //PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
+                    get_steps(itemPerPage,PageNumber);
+                }
+            });
 
 
         }
         else{
             $("#allsteps").html('<h2>No Steps Available</h2>')
         }
-    });
 
-});
+        //$('#allsteps').html(message);
+        
+    });
+}
