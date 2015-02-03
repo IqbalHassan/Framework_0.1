@@ -18,7 +18,7 @@ var popupdivrowcount=[];
 var referred_test_case="";
 var dependency_classes=[];
 var new_test_case_text = "New test case";
-
+var test_case_format= new RegExp(/(\S+)-(\d+)/i);
 $(document).ready(function() {
 	$("#test_case_search_box").select2({
 		placeholder: "Test Case title...",
@@ -719,7 +719,21 @@ $(document).ready(function() {
                     }
                     /***************************End Steps Tab***************************************/
                 });
-
+            $('#show_format').on('click',function(){
+                if(test_case_format.test(referred_test_case)){
+                    $.get('TestCaseDataFromMainDriver/',{
+                        'test_case_id':referred_test_case
+                    },function(data){
+                        //alert(data);
+                        var message=form_table(data);
+                        $('#data_table_show').html(message);
+                    });
+                }
+                else{
+                    alert('Test Case Format Error');
+                    return false;
+                }
+            });
         }
 
         $('#submit').live('click',function(e){
@@ -1281,6 +1295,81 @@ $(document).ready(function() {
         });
     }
 });
+function form_table(data_list){
+    var dependency=data_list['dependency'];
+    data_list=data_list['data'];
+    var message="";
+    message+='<table width="100%" class="two-column-emphasis"><caption><b style="font-size: 125%">Data List</b></caption>';
+    message+='<tr><td><b>Step Name</b></td><td><b>Step Type</b></td><td><b>Step Data</b></td></tr>'
+    for(var i=0;i<data_list.length;i++){
+        message+='<tr>';
+        message+='<td>'+data_list[i][0]+'</td>';
+        message+='<td>'+data_list[i][1]+'</td>';
+        message+='<td>';
+        var step_data=data_list[i][2];
+        if(step_data.length==0){
+            message+='[ ]';
+        }
+        if(step_data.length>0){
+            message+='[ ';
+            for(var j=0;j<step_data.length;j++){
+                message+='[ ';
+                for(var k=0;k<step_data[j].length;k++){
+                    message+='( ';
+                    for(var l=0;l<step_data[j][k].length;l++){
+                        if(step_data[j][k][l]!=''){
+                            message+="'"+step_data[j][k][l]+"'";
+                        }
+                        else if(!step_data[j][k][l] && step_data[j][k][l].toString()==='false'){
+                            message+=capitalize(step_data[j][k][l].toString());
+                        }
+                        else if(step_data[j][k][l] && step_data[j][k][l].toString()==='true'){
+                            message+=capitalize(step_data[j][k][l].toString());
+                        }
+                        else{
+                            message+="''";
+                        }
+                        if(l<(step_data[j][k].length-1)){
+                            message+=' , ';
+                        }
+                    }
+                    message+=' )';
+                    if(k<(step_data[j].length-1)){
+                        message+=' , ';
+                    }
+                }
+                message+=' ] ';
+                if(j<(step_data.length-1)){
+                    message+=' , ';
+                }
+            }
+            message+=']';
+        }
+        message+='</td>';
+        message+='</tr>';
+    }
+    message+='</table>';
+    message+='<table width="100%" class="two-column-emphasis"><caption><b style="font-size: 125%">Dependency List</b></caption>';
+    message+='<tr><td><b>Type</b></td><td><b>Name</b></td></tr>';
+    for(var i=0;i<dependency.length;i++){
+        message+='<tr>';
+        message+='<td>'+dependency[i][0]+'</td>';
+        message+='<td>';
+        for(var j=0;j<dependency[i][1].length;j++){
+            message+=dependency[i][1][j];
+            if(j<(dependency[i][1].length-1)){
+                message+=' , ';
+            }
+        }
+        message+='</td>';
+        message+='</tr>';
+    }
+    message+='</table>';
+    return message;
+}
+function capitalize(stringarray){
+    return stringarray.charAt(0).toUpperCase()+stringarray.slice(1);
+}
 function keyfield_ignorefield(finalArray){
     var status=true;
     for(var i=0;i<finalArray.length;i++){
