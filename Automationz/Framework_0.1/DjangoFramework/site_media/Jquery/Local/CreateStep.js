@@ -160,6 +160,8 @@ $(document).ready(function(){
                     success:function(data){
                         console.log(data[0])
                         //info_div(data[0]);
+                        ready_feature();
+
                         var row=data[0];
                         $("#step_desc").val(row[2]);
                         $("#step_driver").val(row[3]);
@@ -194,7 +196,10 @@ $(document).ready(function(){
                             $("#step_type").val(3);
                         }
                         //$("#step_feature").val(row[6]);
-                        var features = row[6];
+                        
+                        $.get("get_feature_path",{'term':value ,'id':row[6]},function(data)
+                        {
+                            var features = data;
                         var featureArray = features.split('.');
                         var dataId ="";
                         var handlerString = "";
@@ -283,6 +288,7 @@ $(document).ready(function(){
 
                             dataId += featureArray[index] + '.'
                         }
+                    });
 
 
 
@@ -364,6 +370,45 @@ $(document).ready(function(){
         });
 
     });
+
+
+function ready_feature(){
+    $("#featuregroup").empty();
+
+    $('#featuregroup').html('' +
+        '<select type="text" class="feature step-feat" data-level="">' +
+         '<option>Choose...</option>' +
+          '</select>'
+        );
+
+    $.ajax({
+        url:'GetFeatures/',
+        dataType : "json",
+        data : {
+            feature : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+        },
+        success: function( json ) {
+            if(json.length > 0)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+            $(".feature[data-level='']").attr('id',1);
+        }
+    });
+    $(".feature[data-level='']").change(function(){
+        isAtLowestFeature = false;
+        recursivelyAddFeature(this);
+        $("#feature-flag").removeClass("filled");
+        $("#feature-flag").addClass("unfilled");
+        $('input[name="step_feature"]').val("");
+    });
+
+}
     /*$("#delete_button").click(function(){
         var name=$("#step_name").val();
         console.log(name);
