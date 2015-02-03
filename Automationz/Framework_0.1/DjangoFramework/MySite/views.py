@@ -2,25 +2,30 @@
 # -*- coding: utf-8 -*-
 
 # Create your views here.
+from _ast import BitAnd
+import datetime
+import datetime
 import inspect
 import itertools
 from mimetypes import MimeTypes
 import operator
+import os
 import re
 import time
-import datetime
-import EmailNotify
 import urllib2
-import datetime
-from settings import TIME_ZONE 
 
+from django.contrib.admin.templatetags.admin_list import items_for_result
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.messages.storage.base import Message
 from django.core.context_processors import csrf
-from django.core.urlresolvers import reverse
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.urlresolvers import reverse
 from django.db import connection
+from django.db.models.sql.query import Query
 from django.http import HttpResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -32,33 +37,28 @@ from django.template.loader import get_template
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
-
 from psycopg2.extras import DictCursor
 
+import BugOperations
 from CommonUtil import TimeStamp
-from FileUploader import FileUploader
 import DataBaseUtilities as DB
+import EmailNotify
+from FileUploader import FileUploader
+from LogModule import PassMessasge
+import LogModule
+from MySite.forms import Comment
+import RequirementOperations
+from TaskOperations import testConnection
+import TaskOperations
 from TestCaseCreateEdit import LogMessage
 import TestCaseCreateEdit
 from TestCaseOperations import Cleanup_TestCase
 import TestCaseOperations
 from models import *
+from settings import MEDIA_ROOT, PROJECT_ROOT
+from settings import TIME_ZONE
 
-from MySite.forms import Comment
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-from settings import MEDIA_ROOT,PROJECT_ROOT
-import os
-import RequirementOperations
-import TaskOperations
-from TaskOperations import testConnection
-import BugOperations
-import LogModule
-from LogModule import PassMessasge
-from django.contrib.messages.storage.base import Message
-from _ast import BitAnd
-from django.db.models.sql.query import Query
-from django.contrib.admin.templatetags.admin_list import items_for_result
+
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function
