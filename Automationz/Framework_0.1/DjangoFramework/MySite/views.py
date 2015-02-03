@@ -614,13 +614,14 @@ def Steps_List(request):
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
-            term = request.GET.get(u'term', '')
+            current_page=int(request.GET.get(u'PageCurrent',''))
+            itemPerPage=int(request.GET.get(u'itemPerPage',''))
         
-        query="select stepname,description,driver,automatable from test_steps_list"
+        query="select stepname,description,driver,automatable, created_by from test_steps_list"
         steps_list=DB.GetData(Conn, query, False)
         
         
-    Heading = ['Title','Description','Driver','Automatable']    
+    Heading = ['Title','Description','Driver','Automatable', 'Created By']    
     results = {'Heading':Heading,'steps':steps_list}
     json = simplejson.dumps(results)
     Conn.close()
@@ -5480,10 +5481,24 @@ def Populate_info_div(request):
     conn = GetConnection()
     if request.method == 'GET':
         value = request.GET.get(u'term', '')
-        sQuery = "SELECT step_id,stepname,description,driver,steptype,data_required,pf.feature_path,stepenable,step_editable,case_desc,expected,verify_point,step_continue,estd_time,automatable,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from test_steps_list tsl,product_features pf where tsl.stepfeature=pf.feature_id::text and stepname='" + value + "'"
+        sQuery = "SELECT step_id,stepname,description,driver,steptype,data_required,stepfeature,stepenable,step_editable,case_desc,expected,verify_point,step_continue,estd_time,automatable,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from test_steps_list where stepname='" + value + "'"
     results = DB.GetData(conn, sQuery, False)
+    """temp = DB.GetData(conn, "SELECT pf.feature_path from test_steps_list tsl,product_features pf where tsl.stepfeature=pf.feature_id::text and stepname='" + value + "'", False)
+    if temp is not None:
+        results.append(temp[0][0])"""
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
+
+def get_feature_path(request):
+    conn = GetConnection()
+    if request.method == 'GET':
+        value = request.GET.get(u'term', '')
+        id = request.GET.get(u'id','')
+    temp = DB.GetData(conn, "SELECT pf.feature_path from test_steps_list tsl,product_features pf where tsl.stepfeature=pf.feature_id::text and pf.feature_id="+id+" and stepname='" + value + "'", False)
+    
+    json = simplejson.dumps(temp[0][0])
+    return HttpResponse(json, mimetype='application/json')
+
 def TestStepDelete(request):
     error_message = "Test Step is deleted successfully"
     return Manage_Step(request, error_message)
