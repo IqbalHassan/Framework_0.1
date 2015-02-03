@@ -356,6 +356,7 @@ urlpatterns += patterns('',
     url(r'^Home/RunHistory/(?P<tc_id>[^/]*)/$',CaseRunHistory),
     url(r'^Home/ViewSteps/$',ViewSteps),
     url(r'^Home/.*/Steps_List/$',Steps_List),
+    url(r'^Home/.*/TestCaseDataFromMainDriver/$',TestCaseDataFromMainDriver),
     )
 
 

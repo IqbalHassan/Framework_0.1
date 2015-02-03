@@ -12496,6 +12496,74 @@ def AssignTesters(request):
     query="select distinct projects"
     column=['User Name', 'Designation', "Project ID", 'Team']
     return render_to_response('AssignTesters.html',{'column':column,'data':final},context_instance=RequestContext(request))
+
+def TestCaseDataFromMainDriver(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            test_case_id = request.GET.get(u'test_case_id', '')
+            print test_case_id
+            result = {}
+            query="select tcdatasetid from test_case_datasets where tc_id='%s'"%test_case_id.strip()
+            Conn=GetConnection()
+            test_case_dataset=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(test_case_dataset,list) and len(test_case_dataset)>0:
+                test_case_dataset=test_case_dataset[0]
+            query="select ts.step_id,stepname,teststepsequence,steptype,data_required,step_editable from test_steps_list tsl,test_steps ts where tc_id='%s' and tsl.step_id=ts.step_id order by teststepsequence"%test_case_id
+            Conn=GetConnection()
+            test_step_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            final_list=[]
+            for each in test_step_list:
+                if each[4] and not each[5]:
+                    query="select distinct pmd.id from test_cases tc,test_case_datasets tcd,test_steps_data tsd,container_type_data ctd,master_data pmd where pmd.id=ctd.curname and ctd.dataid=tsd.testdatasetid and tc.tc_id=tcd.tc_id and tcd.tcdatasetid=tsd.tcdatasetid and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d"%(test_case_id,test_case_dataset,int(each[2]))
+                    Conn=GetConnection()
+                    test_step_datasets=DB.GetData(Conn,query)
+                    Conn.close()
+                    temp_data=[]
+                    for eachitem in test_step_datasets:
+                        dataset_array=[]
+                        query="select pmd.field,pmd.value,pmd.keyfield,pmd.ignorefield from test_cases tc,test_case_datasets tcd,test_steps_data tsd,container_type_data ctd,master_data pmd where pmd.id=ctd.curname and ctd.dataid=tsd.testdatasetid and tc.tc_id=tcd.tc_id and tcd.tcdatasetid=tsd.tcdatasetid and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and pmd.id='%s'"%(test_case_id,test_case_dataset,int(each[2]),eachitem)
+                        Conn=GetConnection()
+                        step_data=DB.GetData(Conn,query,False)
+                        Conn.close()
+                        for eachitemtemp in step_data:
+                            query="select pmd.field,pmd.value,pmd.keyfield,pmd.ignorefield from master_data pmd where pmd.id='%s'"%(eachitemtemp[1])
+                            Conn=GetConnection()
+                            steps_data_final=DB.GetData(Conn,query,False)
+                            Conn.close()
+                            if isinstance(steps_data_final,list) and len(steps_data_final)>0:
+                                for datatuple in steps_data_final:
+                                    temp=[]
+                                    temp.append(eachitemtemp[0])
+                                    for eachdata in datatuple:
+                                        temp.append(eachdata)
+                                    dataset_array.append(tuple(temp))
+                            else:
+                                temp=[]
+                                temp.append(eachitemtemp[0])
+                                temp.append('')
+                                for eachdata in eachitemtemp[1:]:
+                                    temp.append(eachdata)
+                                dataset_array.append(tuple(temp))
+                        temp_data.append(dataset_array)
+                    final_list.append((each[1],each[3],temp_data))    
+                elif each[4] and each[5]:  
+                    print "edit type data will be here"
+                else:
+                    final_list.append((each[1],each[3],[]))  
+            print final_list
+            query="select distinct property,array_agg(distinct name) from test_case_tag tct, dependency d where tct.property=d.dependency_name and tct.tc_id='%s' group by tct.property"%test_case_id
+            Conn=GetConnection()
+            dependency_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            result={
+                'data':final_list,
+                'dependency':dependency_list
+            }
+            result = simplejson.dumps(result)
+            return HttpResponse(result, mimetype = 'application/json')
+
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
