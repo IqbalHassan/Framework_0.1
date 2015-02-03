@@ -15,6 +15,17 @@ class CompareModule():
             return single_dataset_compare(expected_copy[0],actual_copy[0])
         else:
             print "keyfield data is here"
+            data_return_expected=eliminate_duplicate(expected_copy, keywordlist)
+            expected_copy=copy.deepcopy(data_return_expected['valid'])
+            duplicate_expected=copy.deepcopy(data_return_expected['duplicate'])
+            
+            data_return_actual=eliminate_duplicate(actual_copy, keywordlist)
+            actual_copy=copy.deepcopy(data_return_actual['valid'])
+            duplicate_actual=copy.deepcopy(data_return_actual['duplicate'])
+            
+            print duplicate_expected
+            print duplicate_actual
+            
             dataset_without_keyfield_expected=[]
             dataset_with_keyfield_expected=[]
             #strip out all the entry that do not have the keyword as specified
@@ -52,13 +63,167 @@ class CompareModule():
                     else:
                         dataset_without_keyfield_actual.append(each)
                         actual_copy.pop(index)
-            #now match the copy of expected and actual datasets
-            #for iExp in range(len(dataset_with_keyfield_expected)-1,-1,-1)
+            print dataset_without_keyfield_expected
+            print dataset_without_keyfield_actual
+            
+            for_extra_expected=copy.deepcopy(dataset_with_keyfield_expected)
+            for_extra_actual=copy.deepcopy(dataset_with_keyfield_actual)            
+            
+            matching_list=[]
+            for iExp in range(len(dataset_with_keyfield_expected)-1, -1,-1):
+                current_expected=dataset_with_keyfield_expected[iExp]
+                for iAct in range(len(dataset_with_keyfield_actual)-1,-1,-1):
+                    current_actual=dataset_with_keyfield_actual[iAct]
+                    match_tag=match_dataset(current_expected,current_actual,keywordlist)
+                    if match_tag:
+                        temp=[]
+                        temp.append(current_expected)
+                        temp.append(current_actual)
+                        dataset_with_keyfield_expected.pop(iExp)
+                        dataset_with_keyfield_actual.pop(iAct)
+                        matching_list.append(tuple(temp))
+            print matching_list
+            missing_datasets=copy.deepcopy(dataset_with_keyfield_expected)
+            print missing_datasets
+            for iAct in range(len(for_extra_actual)-1,-1,-1):
+                current_actual=for_extra_actual[iAct]
+                for iExp in range(len(for_extra_expected)-1,-1,-1):
+                    current_expected=for_extra_expected[iExp]
+                    match_tag=match_dataset(current_expected,current_actual,keywordlist)
+                    if match_tag:
+                        for_extra_actual.pop(iAct)
+                        for_extra_expected.pop(iExp)
+            extra_datasets=copy.deepcopy(for_extra_actual)
+            print extra_datasets
+            if len(dataset_without_keyfield_actual)>0 or len(dataset_without_keyfield_expected)>0 or len(missing_datasets)>0 or len(extra_datasets)>0:
+                status_flag=3
+            else:
+                status_flag=1
+            status=[]
+            tag="Matching"
+            CommonUtil.ExecLog(sModuleInfo,"%s Datasets: %d"%(tag,len(matching_list)),status_flag)
+            for each in matching_list:
+                CommonUtil.ExecLog(sModuleInfo,"%s Dataset: #%d"%(tag,len(matching_list)),status_flag)
+                expected_list=each[0]
+                actual_list=each[1]
+                print expected_list
+                print actual_list
+                status.append(single_dataset_compare(expected_list, actual_list)) 
+            print status   
+            #convert datasets to for printing
+            non_key_field_expected=convert_to_print_format(dataset_without_keyfield_expected)
+            non_key_field_actual=convert_to_print_format(dataset_without_keyfield_actual)
+            
+            missing_datasets=convert_to_print_format(missing_datasets)
+            extra_datasets=convert_to_print_format(extra_datasets)
+            expected_duplicate=convert_to_print_format(duplicate_expected)
+            actual_duplicate=convert_to_print_format(duplicate_actual)
+            log_to_db(sModuleInfo,missing_datasets,'Missing',3)
+            log_to_db(sModuleInfo,extra_datasets,'Extra',3)
+            log_to_db(sModuleInfo,non_key_field_expected,'KeyField Missing',3)
+            log_to_db(sModuleInfo,non_key_field_actual,'KeyField Extra',3)
+            log_to_db(sModuleInfo, expected_duplicate, 'Duplicate in Expected', 3)
+            log_to_db(sModuleInfo, actual_duplicate, 'Duplicate in Actual', 3)
+            if len(dataset_without_keyfield_actual)>0 or len(dataset_without_keyfield_expected)>0 or len(missing_datasets)>0 or len(extra_datasets)>0:
+                return "Failed"
+            else:
+                tag=True
+                for each in status:
+                    if each!='Passed':
+                        tag=False
+                    if not tag:
+                        break
+                if tag:
+                    return "Passed"
+                else:
+                    return "Failed"
+            
+def log_to_db(sModuleInfo,datasets,tag,status):
+    CommonUtil.ExecLog(sModuleInfo,"%s Datasets: %d"%(tag,len(datasets)),status)
+    for i,eachdataset in enumerate(datasets):
+        CommonUtil.ExecLog(sModuleInfo,"%s Dataset: #%d"%(tag,(i+1)),status)
+        tuple_data=[]
+        for eachitem in eachdataset:
+            if isinstance(eachitem[1],basestring):
+                tuple_data.append(eachitem)
+        CommonUtil.ExecLog(sModuleInfo,"%s Tuple Data Entry Count: %d"%(tag,len(tuple_data)),status)
+        for j,eachitem in enumerate(tuple_data):
+            CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s"%((j+1),eachitem[0],eachitem[1]),status)
+        for j,eachitem in enumerate(eachdataset):
+            if isinstance(eachitem[1],list):
+                CommonUtil.ExecLog(sModuleInfo,"%s Group Data Label: %s"%(tag,eachitem[0]),status)
+                CommonUtil.ExecLog(sModuleInfo,"%s Group Data Entry Count: %d"%(tag,len(eachitem[1])),status)
+                for k,eachdata in enumerate(eachitem[1]):
+                    CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s"%((k+1),eachdata[0],eachdata[1]),status)
+            
+                        
+def convert_to_print_format(dataset):
+    final_dataset_convert=[]
+    for each in dataset:
+        temp=[]
+        group_data_label=[]
+        for i,eachitem in enumerate(each):
+            if eachitem[1]!='':
+                if eachitem[0] not in group_data_label:
+                    group_data_label.append(eachitem[0])
+            else:
+                temp.append((eachitem[0],eachitem[2]))
+        for eachitem in group_data_label:
+            temp_label=eachitem
+            temp_array=[]
+            for tempitem in each:
+                if tempitem[0]==temp_label:
+                    temp_array.append((tempitem[1],tempitem[2]))
+            temp.append((temp_label,temp_array))
+        final_dataset_convert.append(temp)
+    return final_dataset_convert
+                
+            
+def match_dataset(expected,actual,keywordlist):
+    tag=True
+    for each in keywordlist:
+        expected_value=''
+        actual_value=''
+        for eachitem in expected:
+            if each == eachitem[0] and eachitem[1]=='' and eachitem[3]:
+                expected_value=eachitem[2]
+                break
+        for eachitem in actual:
+            if each==eachitem[0] and eachitem[1]=='' and eachitem[3]:
+                actual_value=eachitem[2]
+                break
+        if expected_value!=actual_value or actual_value=='' or expected_value=='':
+            tag=False
+        if not tag:
+            break
+    return tag
+
+def eliminate_duplicate(datasets,keywordlist):
+    given_datasets=copy.deepcopy(datasets)
+    temp=[]
+    for index in range(len(given_datasets)-1,-1,-1):
+        temp.append(given_datasets[index])
+    given_datasets=copy.deepcopy(temp)
+    data_to_consider=[]
+    data_to_eliminate=[]
+    index=len(given_datasets)-1
+    while index>=0:
+        current_data=given_datasets[index]
+        data_to_consider.append(current_data)
+        given_datasets.pop(index)
+        for i in range(len(given_datasets)-1,-1,-1):
+            data=given_datasets[i]
+            match_tag=match_dataset(current_data,data, keywordlist)
+            if match_tag:
+                data_to_eliminate.append(data)
+                given_datasets.pop(i)                
+        index=len(given_datasets)-1
+    result={'valid': data_to_consider,'duplicate':data_to_eliminate}
+    return result
 def single_dataset_compare(expected_copy,actual_copy):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     expected_list=copy.deepcopy(expected_copy)
     actual_list=copy.deepcopy(actual_copy)
-    
     #take out the group data here
     expected_group_data=[]
     expected_tuple_data=[]
@@ -240,20 +405,65 @@ def main():
                     ('roll', '', '0905011', True, False),
                     ('Academic', 'dept', 'cse', False, False),
                     ('Academic', 'cg', '3.25', False, False)
+                    ],
+                   [
+                    ('name', '', 'shetu', True, False), 
+                    ('roll', '', '0905011', True, False),
+                    ('Academic', 'dept', 'mme', False, False),
+                    ],
+                   [
+                    ('Address', 'hall', 'titumir', False, False),
+                    ('Address', 'district', 'cox\'s bazar', False, False),
+                    ('name', '', 'minar', True, False), 
+                    ('roll', '', '09050105', True, False),
+                    ('Academic', 'dept', 'cse', False, False),
+                    ('Academic', 'cg', '3.25', False, False)
+                    ],
+                   [
+                    ('name', '', 'shetu', True, False), 
+                    ('roll', '', '0905011', True, False),
+                    ('Academic', 'dept', 'eee', False, False),
+                    ],
+                   [
+                    ('Address', 'hall', 'titumir', False, False),
+                    ('Address', 'district', 'cox\'s bazar', False, False),
+                    ('name', '', 'Saad', True, False), 
+                    ('roll', '', '09050105', False, False),
+                    ('Academic', 'dept', 'cse', False, False),
+                    ('Academic', 'cg', '3.25', False, False)
                     ]
                    ]
     actual_list=[
                  [
-                    ('name', '', 'minar', True, False), 
+                    ('Address', 'hall', 'titumir', False, False),
+                    ('Address', 'district', 'cox\'s bazar', False, False),
+                    ('name', '', 'shetu', True, False), 
                     ('roll', '', '0905011', True, False),
-                    ('first name','','matiur',False,False),
                     ('Academic', 'dept', 'cse', False, False),
-                    ('Academic', 'cg', '3.24', False, False),
-                    ('Contact','mobile','01719-267494',False,False),
-                    ('Contact','land','0421-71194',False,False)                  
-                 ]
+                    ('Academic', 'cg', '3.25', False, False)
+                    ],
+                 [
+                    ('Address', 'hall', 'titumir', False, False),
+                    ('Address', 'district', 'cox\'s bazar', False, False),
+                    ('name', '', 'hamid', False, False), 
+                    ('roll', '', '09050105', True, False),
+                    ('Academic', 'dept', 'cse', False, False),
+                    ('Academic', 'cg', '3.25', False, False)
+                    ],
+                 [
+                    ('Address', 'hall', 'titumir', False, False),
+                    ('Address', 'district', 'cox\'s bazar', False, False),
+                    ('name', '', 'Sajjad', True, False), 
+                    ('roll', '', '09050105', True, False),
+                    ('Academic', 'dept', 'cse', False, False),
+                    ('Academic', 'cg', '3.25', False, False)
+                    ],
+                 [
+                    ('name', '', 'Sajjad', True, False), 
+                    ('roll', '', '09050105', True, False),
                 ]
-    keyword_list=[]
+                ]
+    keyword_list=['name','roll']
     status=oCompare.compare(expected_list,actual_list,keyword_list)
     print status
 if __name__=='__main__':
