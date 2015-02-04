@@ -74,3 +74,19 @@ def close_browser(dependency,step_data):
     sTestStepReturnStatus = WebProgram.CloseBrowser()
     print sTestStepReturnStatus
     return sTestStepReturnStatus
+def verifying_contacts(dependency,step_data):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name    
+    expected_list=step_data
+    actual_list=[ 
+                 [ ( 'name' , '' , 'saad' , True , False ) , ( 'roll' , '' , '0905012' , False , False ) ] , 
+                 [ ( 'name' , '' , 'shetu' , True , False ) , ( 'roll' , '' , '0905011' , False , False ) , ( 'cg' , '' , '3.51' , False , False ) ] , 
+                 [ ( 'name' , '' , 'minar' , True , False ) , ( 'roll' , '' , '0905105' , False , False ) ],
+                 [ ( 'name' , '' , 'Saurov' , True , False ) , ( 'roll' , '' , '0905110' , False , False ) ],
+                 [ ( 'name' , '' , 'System' , False , False ) , ( 'roll' , '' , '0905189' , False , False ),('address','home','jessore',False,False),('address','road',701,False,False)  ] ,
+                 [ ( 'name' , '' , 'minar' , True , False ) , ( 'roll' , '' , '0905105' , False , False ),('address','home','jessore',False,False),('address','road',701,False,False) ],                 
+                 ]
+    keyfield_list=['name']
+    oCompare=CompareModule.CompareModule()
+    sTestStepReturnStatus=oCompare.compare(expected_list,actual_list,keyfield_list)
+    print sTestStepReturnStatus
+    return sTestStepReturnStatus

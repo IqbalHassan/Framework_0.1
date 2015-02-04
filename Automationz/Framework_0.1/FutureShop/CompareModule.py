@@ -7,14 +7,10 @@ class CompareModule():
         sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         expected_copy=copy.deepcopy(expected_list)
         actual_copy=copy.deepcopy(actual_list)
-        print expected_copy
-        print actual_copy
         
         if len(keywordlist)==0:
-            print "normal data is here"
             return single_dataset_compare(expected_copy[0],actual_copy[0])
         else:
-            print "keyfield data is here"
             data_return_expected=eliminate_duplicate(expected_copy, keywordlist)
             expected_copy=copy.deepcopy(data_return_expected['valid'])
             duplicate_expected=copy.deepcopy(data_return_expected['duplicate'])
@@ -22,9 +18,6 @@ class CompareModule():
             data_return_actual=eliminate_duplicate(actual_copy, keywordlist)
             actual_copy=copy.deepcopy(data_return_actual['valid'])
             duplicate_actual=copy.deepcopy(data_return_actual['duplicate'])
-            
-            print duplicate_expected
-            print duplicate_actual
             
             dataset_without_keyfield_expected=[]
             dataset_with_keyfield_expected=[]
@@ -63,9 +56,6 @@ class CompareModule():
                     else:
                         dataset_without_keyfield_actual.append(each)
                         actual_copy.pop(index)
-            print dataset_without_keyfield_expected
-            print dataset_without_keyfield_actual
-            
             for_extra_expected=copy.deepcopy(dataset_with_keyfield_expected)
             for_extra_actual=copy.deepcopy(dataset_with_keyfield_actual)            
             
@@ -82,9 +72,7 @@ class CompareModule():
                         dataset_with_keyfield_expected.pop(iExp)
                         dataset_with_keyfield_actual.pop(iAct)
                         matching_list.append(tuple(temp))
-            print matching_list
             missing_datasets=copy.deepcopy(dataset_with_keyfield_expected)
-            print missing_datasets
             for iAct in range(len(for_extra_actual)-1,-1,-1):
                 current_actual=for_extra_actual[iAct]
                 for iExp in range(len(for_extra_expected)-1,-1,-1):
@@ -94,7 +82,6 @@ class CompareModule():
                         for_extra_actual.pop(iAct)
                         for_extra_expected.pop(iExp)
             extra_datasets=copy.deepcopy(for_extra_actual)
-            print extra_datasets
             if len(dataset_without_keyfield_actual)>0 or len(dataset_without_keyfield_expected)>0 or len(missing_datasets)>0 or len(extra_datasets)>0:
                 status_flag=3
             else:
@@ -102,14 +89,11 @@ class CompareModule():
             status=[]
             tag="Matching"
             CommonUtil.ExecLog(sModuleInfo,"%s Datasets: %d"%(tag,len(matching_list)),status_flag)
-            for each in matching_list:
-                CommonUtil.ExecLog(sModuleInfo,"%s Dataset: #%d"%(tag,len(matching_list)),status_flag)
+            for i,each in enumerate(matching_list):
+                CommonUtil.ExecLog(sModuleInfo,"%s Dataset: #%d"%(tag,(i+1)),status_flag)
                 expected_list=each[0]
                 actual_list=each[1]
-                print expected_list
-                print actual_list
                 status.append(single_dataset_compare(expected_list, actual_list)) 
-            print status   
             #convert datasets to for printing
             non_key_field_expected=convert_to_print_format(dataset_without_keyfield_expected)
             non_key_field_actual=convert_to_print_format(dataset_without_keyfield_actual)
@@ -118,12 +102,12 @@ class CompareModule():
             extra_datasets=convert_to_print_format(extra_datasets)
             expected_duplicate=convert_to_print_format(duplicate_expected)
             actual_duplicate=convert_to_print_format(duplicate_actual)
-            log_to_db(sModuleInfo,missing_datasets,'Missing',3)
-            log_to_db(sModuleInfo,extra_datasets,'Extra',3)
-            log_to_db(sModuleInfo,non_key_field_expected,'KeyField Missing',3)
-            log_to_db(sModuleInfo,non_key_field_actual,'KeyField Extra',3)
-            log_to_db(sModuleInfo, expected_duplicate, 'Duplicate in Expected', 3)
-            log_to_db(sModuleInfo, actual_duplicate, 'Duplicate in Actual', 3)
+            log_to_db(sModuleInfo,missing_datasets,'Missing',status_flag)
+            log_to_db(sModuleInfo,extra_datasets,'Extra',status_flag)
+            log_to_db(sModuleInfo,non_key_field_expected,'KeyField Missing',status_flag)
+            log_to_db(sModuleInfo,non_key_field_actual,'KeyField Extra',status_flag)
+            log_to_db(sModuleInfo, expected_duplicate, 'Duplicate in Expected', status_flag)
+            log_to_db(sModuleInfo, actual_duplicate, 'Duplicate in Actual', status_flag)
             if len(dataset_without_keyfield_actual)>0 or len(dataset_without_keyfield_expected)>0 or len(missing_datasets)>0 or len(extra_datasets)>0:
                 return "Failed"
             else:

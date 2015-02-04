@@ -357,6 +357,23 @@ function form_table(column,log){
     var non_match_group_entry=new RegExp(/Non Match Group Entry Count: (\d+)/i);
     var missing_group_entry=new RegExp(/Missing Group Entry Count: (\d+)/i);
     var extra_group_entry=new RegExp(/Extra Group Entry Count: (\d+)/i);
+
+
+    var missing_tuple_data_entry_count=new RegExp(/Missing Tuple Data Entry Count: (\d+)/i);
+    var extra_tuple_data_entry_count=new RegExp(/Extra Tuple Data Entry Count: (\d+)/i);
+    var keyfield_missing_tuple_data_entry_count=new RegExp(/KeyField Missing Tuple Data Entry Count: (\d+)/i);
+    var keyfield_extra_tuple_data_entry_count=new RegExp(/KeyField Extra Tuple Data Entry Count: (\d+)/i);
+    var duplicate_in_expected_data_entry_count=new RegExp(/Duplicate in Expected Tuple Data Entry Count: (\d+)/i);
+    var duplicate_in_actual_data_entry_count=new RegExp(/Duplicate in Actual Tuple Data Entry Count: (\d+)/i);
+
+
+    var missing_group_data_entry_count=new RegExp(/Missing Group Data Entry Count: (\d+)/i);
+    var extra_group_data_entry_count=new RegExp(/Extra Group Data Entry Count: (\d+)/i);
+    var keyfield_missing_group_data_entry_count=new RegExp(/KeyField Missing Group Data Entry Count: (\d+)/i);
+    var keyfield_extra_group_data_entry_count=new RegExp(/KeyField Extra Group Data Entry Count: (\d+)/i);
+    var duplicate_in_expected_group_data_entry_count=new RegExp(/Duplicate in Expected Group Data Entry Count: (\d+)/i);
+    var duplicate_in_actual_group_data_entry_count=new RegExp(/Duplicate in Actual Group Data Entry Count: (\d+)/i);
+
     var message="";
     message+='<table width="100%" class="two-column-emphasis">';
     message+='<tr>';
@@ -423,7 +440,81 @@ function form_table(column,log){
                 i=(i+column_length);
             }
         }
+        else if(missing_group_data_entry_count.test(log[i])||extra_group_data_entry_count.test(log[i])||keyfield_missing_group_data_entry_count.test(log[i])||keyfield_extra_group_data_entry_count.test(log[i])||duplicate_in_expected_group_data_entry_count.test(log[i])||duplicate_in_actual_group_data_entry_count.test(log[i])||keyfield_missing_tuple_data_entry_count.test(log[i])||missing_tuple_data_entry_count.test(log[i])||duplicate_in_actual_data_entry_count.test(log[i])||keyfield_extra_tuple_data_entry_count.test(log[i])||extra_tuple_data_entry_count.test(log[i])){
+            for(var j=0;j<log[i].length;j++){
+                if(j==0){
+                    if(log[i][j]=='Passed'){
+                        var color=colors['pass'];
+                    }
+                    if(log[i][j]=='Error'){
+                        var color=colors['fail'];
+                    }
+                    message+='<td style="border-left: 4px solid '+color+'">'+log[i][j]+'</td>'
+                }
+                else{
+                    message+='<td>'+log[i][j]+'</td>';
+                }
+            }
+            if(duplicate_in_expected_data_entry_count.test(log[i])){
+                var column_length=duplicate_in_expected_data_entry_count.exec(log[i][2]);
+            }
+            if(keyfield_missing_tuple_data_entry_count.test(log[i])){
+                var column_length=keyfield_missing_tuple_data_entry_count.exec(log[i][2]);
+            }
+            if(missing_tuple_data_entry_count.test(log[i])){
+                var column_length=missing_tuple_data_entry_count.exec(log[i][2]);
+            }
+            if(extra_tuple_data_entry_count.test(log[i])){
+                var column_length=extra_tuple_data_entry_count.exec(log[i][2]);
+            }
+            if(keyfield_extra_tuple_data_entry_count.test(log[i])){
+                var column_length=keyfield_extra_tuple_data_entry_count.exec(log[i][2]);
+            }
+            if(duplicate_in_actual_data_entry_count.test(log[i])){
+                var column_length=duplicate_in_actual_data_entry_count.exec(log[i][2]);
+            }
 
+            //Group Data are Here
+            if(duplicate_in_actual_group_data_entry_count.test(log[i])){
+                var column_length=duplicate_in_actual_group_data_entry_count.exec(log[i][2]);
+            }
+            if(duplicate_in_expected_group_data_entry_count.test(log[i])){
+                var column_length=duplicate_in_expected_group_data_entry_count.exec(log[i][2]);
+            }
+
+            if(keyfield_extra_group_data_entry_count.test(log[i])){
+                var column_length=keyfield_extra_group_data_entry_count.exec(log[i][2]);
+            }
+            if(keyfield_missing_group_data_entry_count.test(log[i])){
+                var column_length=keyfield_missing_group_data_entry_count.exec(log[i][2]);
+            }
+
+            if(extra_group_data_entry_count.test(log[i])){
+                var column_length=extra_group_data_entry_count.exec(log[i][2]);
+            }
+            if(missing_group_data_entry_count.test(log[i])){
+                var column_length=missing_group_data_entry_count.exec(log[i][2]);
+            }
+            column_length=parseInt(column_length[1]);
+            if (column_length>0){
+                message+='<tr>';
+                message+='<td style="border-left: 4px solid '+color+'">'+log[i][0]+'</td>';
+                message+='<td>'+log[i][1]+'</td>';
+                message+='<td><table width="100%">';
+                message+='<tr><th>&nbsp;</th><th>Field</th><th>Value</th></tr>'
+                for(var j=i+1;j<(i+1+column_length);j++){
+                    var table_row=log[j][2].split(" : ");
+                    message+='<tr>';
+                    for (var k=0;k<table_row.length;k++){
+                        message+='<td>'+table_row[k]+'</td>';
+                    }
+                    message+='</tr>';
+                }
+                message+='</table></td>';
+                message+='</tr>';
+                i=(i+column_length);
+            }
+        }
 
         else{
             for(var j=0;j<log[i].length;j++){

@@ -1317,7 +1317,7 @@ function form_table(data_list){
                 for(var k=0;k<step_data[j].length;k++){
                     message+='( ';
                     for(var l=0;l<step_data[j][k].length;l++){
-                        if(step_data[j][k][l]!=''){
+                        if(step_data[j][k][l]!='' && typeof(step_data[j][k][l])==='string'){
                             message+="'"+step_data[j][k][l]+"'";
                         }
                         else if(!step_data[j][k][l] && step_data[j][k][l].toString()==='false'){
