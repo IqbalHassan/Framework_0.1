@@ -5833,7 +5833,7 @@ def New_Execution_Report(request):
         'Skipped',
         'Not Run',
         'Total']
-    Short = ['TC-ID', 'Run-ID', 'Status']
+    Short = ['TC-ID', 'Run-ID', 'Run Status']
     results = {
         'Heading': Heading,
         'Table': Table,
