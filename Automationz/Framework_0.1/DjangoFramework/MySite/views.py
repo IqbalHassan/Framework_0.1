@@ -10217,6 +10217,13 @@ def TableDataTestCasesOtherPages(request):
                 UserText = UserData.split(":")
                 project_id = request.GET.get(u'project_id', '')
                 team_id = request.GET.get(u'team_id', '')
+                test_case_per_page=request.GET.get(u'test_case_per_page','')
+                test_case_page_current=request.GET.get(u'test_case_page_current')
+                #form condition
+                offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+                limit=int(test_case_per_page)
+                
+                condition=" offset %d limit %d"%(offset,limit)
                 QueryText = []
                 for eachitem in UserText:
                     if len(eachitem) != 0 and len(
@@ -10278,6 +10285,8 @@ def TableDataTestCasesOtherPages(request):
                     for eachitem in TestIDList:
                         query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0" % (
                             eachitem, project_id, team_id)
+                        Query=query
+                        query=query+ condition
                         Conn = GetConnection()
                         tabledata = DB.GetData(Conn, query, False)
                         Conn.close()
@@ -10301,16 +10310,20 @@ def TableDataTestCasesOtherPages(request):
                         " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
                     query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + \
                         Query
+                    Query=query    
+                    query=query+ condition
                     Conn = GetConnection()
                     TableData = DB.GetData(Conn, query, False)
                     Conn.close()
-
+                Conn=GetConnection()
+                count_query=DB.GetData(Conn,Query,False)
+                Conn.close()
                 RefinedDataTemp = []
                 Check_TestCase(TableData, RefinedDataTemp)
                 RefinedData = list(RefinedDataTemp)
                 dataWithTime = []
                 if total_time == "true":
-                    time_collected = 0
+                    time_collected = get_all_time(count_query)
                 for each in RefinedData:
                     query = "select count(*) from test_steps where tc_id='%s'" % each[
                         0].strip()
@@ -10330,13 +10343,12 @@ def TableDataTestCasesOtherPages(request):
                         else:
                             stepTime = step_time[0]
                         test_case_time += int(stepTime)
-                        if total_time == "true":
-                            time_collected += int(stepTime)
+                        #if total_time == "true":
+                        #    time_collected += int(stepTime)
                     temp = []
                     for eachitem in each:
                         temp.append(eachitem)
                     temp.append(ConvertTime(test_case_time))
-            #         temp=tuple(temp)
                     dataWithTime.append(temp)
                 RefinedData = dataWithTime
                 for each in RefinedData:
@@ -10418,17 +10430,37 @@ def TableDataTestCasesOtherPages(request):
                                 'Time']
                         except:
                             i[4] = ' - '
-                results = {'Heading': Heading, 'TableData': RefinedData}
+                results = {'Heading': Heading, 'TableData': RefinedData,'Count':len(count_query)}
                 if total_time == "true":
                     results.update({'time': ConvertTime(time_collected)})
             else:
-                results = {'Heading': [], 'TableData': []}
+                results = {'Heading': [], 'TableData': [],'Count':0}
                 if total_time == "true":
                     results.update({'time': ""})
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
 
-
+def get_all_time(test_case_list):
+    total_time_collected=0
+    for each_test_case in test_case_list:
+        query="select count(*) from test_steps where tc_id='%s'"%each_test_case[0]
+        Conn = GetConnection()
+        stepNumber = DB.GetData(Conn, query)
+        Conn.close()
+        test_case_time = 0
+        for count in range(0, int(stepNumber[0])):
+            temp_id = each_test_case[0] + '_s' + str(count + 1)
+            step_time_query = "select description from master_data where id='%s' and field='estimated' and value='time'" % temp_id.strip()
+            Conn = GetConnection()
+            step_time = DB.GetData(Conn, step_time_query)
+            Conn.close()
+            if len(step_time) == 0:
+                stepTime = 0
+            else:
+                stepTime = step_time[0]
+            test_case_time += int(stepTime)
+        total_time_collected+=test_case_time
+    return total_time_collected
 def GetStepNameType(request):
     if request.is_ajax():
         if request.method == 'GET':

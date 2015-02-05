@@ -7,6 +7,8 @@ var lowest_feature = 0;
 var isAtLowestFeature = false;
 var machinePerPage=10;
 var machinePageCurrent=1;
+var test_case_per_page=5;
+var test_case_page_current=1;
 var colors={
     'online':'#00ff00',
     'offline':'#ff0000'
@@ -424,7 +426,7 @@ function RunAutoCompleteTestSearch(project_id,team_id){
                         + ":&nbsp"
                         + '</td>'
                     );
-                    PerformSearch(project_id,team_id);
+                    PerformSearch(1,project_id,team_id);
                 }
                 $("#searchbox").val("");
                 return false;
@@ -437,7 +439,7 @@ function RunAutoCompleteTestSearch(project_id,team_id){
     };
 }
 
-function PerformSearch(project_id,team_id,predicate) {
+function PerformSearch(pageNumber,project_id,team_id,predicate) {
 
     $("#AutoSearchResult #searchedtext").each(function() {
         var UserText = $(this).find("td").text();
@@ -451,7 +453,9 @@ function PerformSearch(project_id,team_id,predicate) {
             test_status_request:true,
             project_id:project_id,
             team_id:team_id,
-            total_time:'true'
+            total_time:'true',
+            test_case_per_page:test_case_per_page,
+            test_case_page_current:pageNumber
         },function(data) {
             if (data['TableData'].length == 0)
             {
@@ -461,12 +465,27 @@ function PerformSearch(project_id,team_id,predicate) {
                 $('#time_panel').html("");
                 $('#time_panel').css({'display':'none'});
                 test_cases=false;
+                $('#parameter_div').empty();
+                $('#pagination_div').pagination('destroy');
             }
             else
             {
                 $('#time_panel').html('<b class="Text">Time Needed: '+data['time']+'</b> ');
                 $('#time_panel').css({'display':'block'});
                 ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
+                $('#pagination_div').css({'display':'block'});
+                $('#pagination_div').pagination({
+                    items:data['Count'],
+                    itemsOnPage:test_case_per_page,
+                    cssStyle: 'dark-theme',
+                    currentPage:pageNumber,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        PerformSearch(PageNumber,project_id,team_id);
+                    }
+                });
                 //$("#RunTestResultTable .one-column-emphasis").addClass('two-column-emphasis');
                 //$("#RunTestResultTable .one-column-emphasis").removeClass('one-column-emphasis');
                 $("#RunTestResultTable").fadeIn(1000);
