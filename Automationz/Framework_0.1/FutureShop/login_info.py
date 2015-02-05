@@ -1,7 +1,7 @@
-username='user1_demo1'
-password='user1_demo1'
-project='PROJ-28'
-team='Demo1Team'
+username='rizu'
+password='.'
+project='PROJ-29'
+team='WebAutomation'
 server='127.0.0.1'
 port=5432
 
