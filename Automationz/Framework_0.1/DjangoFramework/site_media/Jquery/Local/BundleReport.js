@@ -2,6 +2,8 @@
  * Created by minar09 on 2/4/14.
  */
 
+//var itemPerPage=10;
+//var PageCurrent=1;
 
 $(document).ready(function(){
 
@@ -32,10 +34,43 @@ $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
 
+    
+
     ManageDependency(project_id,team_id);
 
+
+    /*itemPerPage = $("#perpageitem").val();
+    get_cases(itemPerPage, PageCurrent);
+
+    $('#perpageitem').on('change',function(){
+        if($(this).val()!=''){
+            itemPerPage=$(this).val();
+            current_page=1;
+            $('#pagination_tab').pagination('destroy');
+            window.location.hash = "#1";
+            get_cases(itemPerPage, PageCurrent);
+        }
+    });*/
     
 });
+
+/*function get_cases(itemPerPage, PageCurrent){
+    var count = $("#tc_table table").length;
+    $("#tc_table table tr:gt("+itemPerPage+")").hide();
+
+    $('#pagination_tab').pagination({
+        items: count,
+        itemsOnPage:itemPerPage,
+        cssStyle: 'dark-theme',
+        currentPage:PageCurrent,
+        displayedPages:2,
+        edges:2,
+        hrefTextPrefix:'#',
+        onPageClick:function(PageNumber){
+            get_cases(itemPerPage,PageNumber);
+        }
+    });
+}*/
 
 function ManageDependency(project_id,team_id){
     $.get('GetOS',{
@@ -214,6 +249,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                             $("#inner").show();
                             $("#tc_title").html('Test Cases List : ' + section + ' - ' + status )
                             ResultTable(tc_table,data['Short'],data['Cases'][row-1][col],"Test Cases", "Click on TC-IDs to see run history");
+                            pagination();
                             $('#tc_table tr>td:first-child').each(function () {
                                 $(this).css({
                                     'color': 'blue',
@@ -227,6 +263,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                                     $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id},function(data){
                                         ResultTable(tc_table,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id);
                                         makeRunClickable();
+                                        pagination();
                                     });
                                 });
                             });
@@ -254,6 +291,12 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     });
 }
 
+function pagination(){
+    $('#inner').simplePagination({
+    items_per_page: 11,
+    number_of_visible_page_numbers: 5
+});
+}
 
 function makeRunClickable(){
     $('#tc_table tr>td:first-child').each(function(){

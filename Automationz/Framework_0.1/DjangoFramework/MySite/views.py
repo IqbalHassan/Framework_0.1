@@ -681,12 +681,21 @@ def Steps_List(request):
             current_page=int(request.GET.get(u'PageCurrent',''))
             itemPerPage=int(request.GET.get(u'itemPerPage',''))
             
-            query="select stepname,description,driver,automatable from test_steps_list"
+            condition = "limit %d offset %d" % (
+                itemPerPage, (current_page - 1) * itemPerPage)
+
+            
+            query="select stepname,description,driver,steptype,automatable,created_by from test_steps_list "
             steps_list=DB.GetData(Conn, query, False)
+            count = len(steps_list)
+            
+            pquery = query + condition
+            p_steps_list = DB.GetData(Conn, pquery, False)
+            
         
         
-    Heading = ['Title','Description','Driver','Automatable']    
-    results = {'Heading':Heading,'steps':steps_list}
+    Heading = ['Title','Description','Driver','Type','Automatable','Created By']    
+    results = {'Heading':Heading,'steps':p_steps_list, 'count': count}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
@@ -5824,7 +5833,7 @@ def New_Execution_Report(request):
         'Skipped',
         'Not Run',
         'Total']
-    Short = ['TC-ID', 'Run-ID', 'Status']
+    Short = ['TC-ID', 'Run-ID', 'Run Status']
     results = {
         'Heading': Heading,
         'Table': Table,
