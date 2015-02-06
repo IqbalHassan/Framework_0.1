@@ -1,7 +1,7 @@
 ---------------------------------------------------
-Import the DjangoFramework project
+Import the WebServer project
 ---------------------------------------------------
 
 1) Open Eclipse and specify the parent directory (i.e., Framework_0.1) to be the workspace folder.
 2) In Eclipe, select File->Import, select General->Existing Projects into Workspace.
-3) Click "Select root directory", browse to the DjangoFramework sub-directory. Click Finish.
+3) Click "Select root directory", browse to the WebServer sub-directory. Click Finish.

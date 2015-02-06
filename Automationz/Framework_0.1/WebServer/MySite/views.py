@@ -3504,12 +3504,12 @@ def PerformanceResult(request):
             if GraphRequest == "Graph":
 
                 FL.DelFolderWithExpTime(
-                    "C:\Python27\WorkSpace\DjangoFramework10\site_media",
+                    "C:\Python27\WorkSpace\WebServer10\site_media",
                     "Graph",
                     1)
                 GraphFolderName = "Graph_%s" % str(time.time())
                 FL.CreateEmptyFolder(
-                    "C:\Python27\WorkSpace\DjangoFramework10\site_media",
+                    "C:\Python27\WorkSpace\WebServer10\site_media",
                     GraphFolderName)
                 # FL.CreateEmptyFolder("W:\site_media", GraphFolderName)
 
@@ -3602,7 +3602,7 @@ def PerformanceResult(request):
                     if len(
                             Graph_BundleDataTuple_List) > 1 and Target_Flag == 1:
                         GraphDataList.append(
-                            "C:\Python27\WorkSpace\DjangoFramework10\site_media\%s\%s.png" %
+                            "C:\Python27\WorkSpace\WebServer10\site_media\%s\%s.png" %
                             (GraphFolderName, TC_Name[0]))
                         Bar_Chart(GraphDataList)
                         GraphsPathList.append(
@@ -3610,7 +3610,7 @@ def PerformanceResult(request):
                             (GraphFolderName, TC_Name[0]))
                     elif len(Graph_BundleDataTuple_List) > 2 and Target_Flag == 2:
                         GraphDataList.append(
-                            "C:\Python27\WorkSpace\DjangoFramework10\site_media\%s\%s.png" %
+                            "C:\Python27\WorkSpace\WebServer10\site_media\%s\%s.png" %
                             (GraphFolderName, TC_Name[0]))
                         Bar_Chart(GraphDataList)
                         GraphsPathList.append(

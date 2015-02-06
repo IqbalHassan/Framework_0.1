@@ -11,7 +11,7 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s %(message)s',
 )
 
-# Django settings for DjangoFramework project.
+# Django settings for WebServer project.
 debug_settings = Global.set_debug()
 
 DEBUG = debug_settings
@@ -70,7 +70,7 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-#MEDIA_ROOT = '/DjangoFramework/MySite/images/static/'
+#MEDIA_ROOT = '/WebServer/MySite/images/static/'
 MEDIA_ROOT= os.path.join(PROJECT_ROOT, 'site_media')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -135,7 +135,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
-ROOT_URLCONF = 'DjangoFramework.urls'
+ROOT_URLCONF = 'WebServer.urls'
 
 TEMPLATE_DIRS = (
                  os.path.join(os.path.dirname(__file__), 'templates')
@@ -151,7 +151,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'DjangoFramework.MySite'
+    'WebServer.MySite'
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

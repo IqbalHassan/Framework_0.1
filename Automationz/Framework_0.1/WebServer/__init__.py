@@ -1,4 +1,4 @@
 import os
 
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'DjangoFramework.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'WebServer.settings'
