@@ -1,2 +1,2 @@
-cd ".\DjangoFramework"
+cd ".\WebServer"
 python manage.py runserver
