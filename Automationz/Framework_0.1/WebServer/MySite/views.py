@@ -685,7 +685,7 @@ def Steps_List(request):
                 itemPerPage, (current_page - 1) * itemPerPage)
 
             
-            query="select stepname,description,driver,steptype,automatable,created_by from test_steps_list "
+            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by from test_steps_list "
             steps_list=DB.GetData(Conn, query, False)
             count = len(steps_list)
             
@@ -699,14 +699,14 @@ def Steps_List(request):
                 Data.append(temp[0][0])
                 p_steps_list.append(tuple(Data))
                 
-            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(6),reverse=True)
+            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(8),reverse=True)
             
             #pquery = query + condition
             #p_steps_list = DB.GetData(Conn, pquery, False)
             
         
         
-    Heading = ['Title','Description','Driver','Type','Automatable','Created By','Test Cases']    
+    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Created By','Test Cases']    
     results = {'Heading':Heading,'steps':p_steps_list, 'count': count}
     json = simplejson.dumps(results)
     Conn.close()
