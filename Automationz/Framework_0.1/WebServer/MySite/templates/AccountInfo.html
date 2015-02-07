@@ -12,28 +12,22 @@
             <table width="100%" align="center" style="margin-top: 2%;padding-bottom: 2%;">
                 <tr>
                     <td align="right" width="40%" style="vertical-align: 0%;font-size: 140%;"><b class="Text">Full Name:</b></td>
-                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;"><input id="full_name" type="text" class="textbox" value="{{FullName}}"/></td>
+                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;"><input id="full_name" type="text" class="textbox"/></td>
                 </tr>
                 <tr>
                     <td align="right" width="40%" style="vertical-align: 0%;font-size: 140%;"><b class="Text">Designation:</b></td>
-                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;"><input type="text" id="designation" readonly="readonly" class="textbox" value="{{Designation}}"/></td>
+                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;"><input type="text" id="designation" readonly="readonly" class="textbox"/></td>
                 </tr>
                 <tr>
                     <td align="right" width="40%" style="vertical-align: 0%;font-size: 140%;"><b class="Text">User Name:</b></td>
-                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;"><input id="username" type="text" class="textbox" value="{{Username}}"/></td>
+                    <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;"><input id="username" type="text" class="textbox"/></td>
                 </tr>
                 <tr>
                     <td align="right" width="40%" style="vertical-align: 0%;font-size: 140%;"><b class="Text">Projects:</b></td>
                     <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;">
                         <select id="selected_project_id">
                             <option value="">Project ID</option>
-                            {% for x in projects %}
-                                <option value="{{x.0}}"
-                                {% if x.0 == selected_project_id %}
-                                    selected
-                                {% endif %}
-                                >{{x.0}} - {{x.1}}</option>
-                            {% endfor %}
+
                         </select>
                     </td>
                 </tr>
@@ -42,13 +36,6 @@
                     <td align="left" width="60%" style="vertical-align: 0%;font-size: 125%;">
                         <select id="selected_team_id">
                             <option>Select Project to Get Team</option>
-                            {% for x in teams %}
-                                <option value="{{x.0}}"
-                                    {% if x.0 == selected_team_id %}
-                                        selected
-                                    {% endif %}
-                                >{{x.0}} - {{x.1}}</option>
-                            {% endfor %}
                         </select>
                     </td>
                 </tr>
