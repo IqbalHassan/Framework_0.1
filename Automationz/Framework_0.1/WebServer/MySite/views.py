@@ -689,12 +689,24 @@ def Steps_List(request):
             steps_list=DB.GetData(Conn, query, False)
             count = len(steps_list)
             
-            pquery = query + condition
-            p_steps_list = DB.GetData(Conn, pquery, False)
+            p_steps_list = []
+            for each in steps_list:
+                query="select count(tc_id) from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='" + each[0] + "'))"
+                temp = DB.GetData(Conn, query, False)
+                Data=[]
+                for i in each:
+                    Data.append(i)
+                Data.append(temp[0][0])
+                p_steps_list.append(tuple(Data))
+                
+            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(6),reverse=True)
+            
+            #pquery = query + condition
+            #p_steps_list = DB.GetData(Conn, pquery, False)
             
         
         
-    Heading = ['Title','Description','Driver','Type','Automatable','Created By']    
+    Heading = ['Title','Description','Driver','Type','Automatable','Created By','Test Cases']    
     results = {'Heading':Heading,'steps':p_steps_list, 'count': count}
     json = simplejson.dumps(results)
     Conn.close()
@@ -7236,10 +7248,12 @@ def Process_CreateStep(request):
 
         now = datetime.datetime.now().date()
 
-        if step_name != "" and step_desc != "" and step_feature != "" and step_data != "0" and step_enable != "0" and case_desc != "" and step_expect != "" and step_time != "":
+        if step_name != "" and step_desc != "" and step_data != "0" and step_enable != "0" and case_desc != "" and step_expect != "" and step_time != "":
             if step_type != "0" and step_driver != "":
                 conn = GetConnection()
                 if "Choose" in step_feature:
+                    fid = ""
+                elif step_feature=="":
                     fid = ""
                 else:
                     feature_id = DB.GetData(

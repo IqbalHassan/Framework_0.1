@@ -293,7 +293,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
 
 function pagination(){
     $('#inner').simplePagination({
-    items_per_page: 11,
+    items_per_page: 10,
     number_of_visible_page_numbers: 5
 });
 }
