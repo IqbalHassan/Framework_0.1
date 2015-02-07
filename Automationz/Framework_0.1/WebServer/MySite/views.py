@@ -7239,12 +7239,16 @@ def Process_CreateStep(request):
         if step_name != "" and step_desc != "" and step_feature != "" and step_data != "0" and step_enable != "0" and case_desc != "" and step_expect != "" and step_time != "":
             if step_type != "0" and step_driver != "":
                 conn = GetConnection()
-                feature_id = DB.GetData(
+                if "Choose" in step_feature:
+                    fid = ""
+                else:
+                    feature_id = DB.GetData(
                     conn,
                     "select feature_id from product_features where feature_path = '" +
                     step_feature +
                     "'",
                     False)
+                    fid = feature_id[0][0] 
                 sQuery = "select count(*) from test_steps_list where stepname='" + \
                     step_name + "'"
                 result = DB.GetData(conn, sQuery)
@@ -7277,7 +7281,7 @@ def Process_CreateStep(request):
                         data_required=data,
                         steptype=s_type,
                         driver=step_driver,
-                        stepfeature=feature_id[0][0],
+                        stepfeature=fid,
                         stepenable=enable,
                         step_editable=edit_data,
                         case_desc=case_desc,
@@ -7347,7 +7351,7 @@ def Process_CreateStep(request):
                         data_required=data,
                         steptype=s_type,
                         driver=step_driver,
-                        stepfeature=feature_id[0][0],
+                        stepfeature=fid,
                         stepenable=enable,
                         step_editable=edit_data,
                         case_desc=case_desc,
