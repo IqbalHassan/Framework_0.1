@@ -11,10 +11,10 @@ $(document).ready(function(){
         side: 'left'
     });
 
-    itemPerPage = $("#perpageitem").val();
+    //itemPerPage = $("#perpageitem").val();
     get_steps(itemPerPage, PageCurrent);
     
-    $('#perpageitem').on('change',function(){
+    /*$('#perpageitem').on('change',function(){
         if($(this).val()!=''){
             itemPerPage=$(this).val();
             current_page=1;
@@ -22,7 +22,7 @@ $(document).ready(function(){
             window.location.hash = "#1";
             get_steps(itemPerPage, PageCurrent);
         }
-    });
+    });*/
 
 });
 
@@ -50,7 +50,11 @@ function get_steps(itemPerPage,PageCurrent){
             }
             message += '</table>';
             $('#allsteps').html(message);
-            $('#pagination_tab').pagination({
+            $('#main').simplePagination({
+                items_per_page: 10,
+                number_of_visible_page_numbers: 5
+            });
+            /*$('#pagination_tab').pagination({
                 items:data['count'],
                 itemsOnPage:itemPerPage,
                 cssStyle: 'dark-theme',
@@ -62,7 +66,7 @@ function get_steps(itemPerPage,PageCurrent){
                     //PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
                     get_steps(itemPerPage,PageNumber);
                 }
-            });
+            });*/
 
 
         }
