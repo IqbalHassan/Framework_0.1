@@ -38,7 +38,7 @@ function get_steps(itemPerPage,PageCurrent){
             for (var i = 0; i < data['Heading'].length; i++) {
                 message += '<th align="left">' + data['Heading'][i] + '</th>';
             }
-            message += '</tr>';
+            message += '</tr><tbody>';
             for (var i = 0; i < data['steps'].length; i++) {
                 message += '<tr>';
                 for (var j = 0; j < data['steps'][i].length; j++) {
@@ -48,11 +48,52 @@ function get_steps(itemPerPage,PageCurrent){
                 }
                 message += '</tr>';
             }
-            message += '</table>';
+            message += '</tbody></table>';
             $('#allsteps').html(message);
             $('#main').simplePagination({
                 items_per_page: 10,
                 number_of_visible_page_numbers: 5
+            });
+            $('#allsteps tr>td:last-child').each(function () {
+                if($(this).text() != '0') {
+                    $(this).css({
+                        'color': 'blue',
+                        'cursor': 'pointer',
+                        'textAlign': 'left'
+                    });
+                    $(this).click(function(){
+                        var step_name = $(this).closest('tr').find('td:first-child').text().trim();
+                        //var location='/Home/RunHistory/'+data+'/';
+                        //window.location=location;
+                        $("#inner").show();
+                        $("#tc_title").html('Test Cases List of Containing test step - ' + step_name );
+                        $.get("TestCase_Results",{Query: step_name},function(data) {
+
+                            ResultTable(tc_table,data['Heading'],data['TableData'],"Test Cases");
+                            var indx = 0;
+                            $('#tc_table tr>td:nth-child(3)').each(function(){
+                                var ID = $("#tc_table tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+                                $(this).after('<i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i>');
+                                $(this).after('<i class="fa fa-pencil fa-2x editBtn" id="'+ID+'" style="cursor:pointer"></i>');
+
+                                indx++;
+                            });
+
+                            $(".editBtn").click(function (){
+                                window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id");
+                            });
+                            $(".templateBtn").click(function (){
+                                window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id");
+                            });
+                            //VerifyQueryProcess();
+                            //$(".Buttons[title='Verify Query']").fadeIn(2000);
+                            //$(".Buttons[title='Select User']").fadeOut();
+                        
+                        });
+                    });
+                }
+                
             });
             /*$('#pagination_tab').pagination({
                 items:data['count'],
