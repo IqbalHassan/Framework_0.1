@@ -3875,16 +3875,14 @@ def TestCaseSearch(request):
     if request.method == "GET":
         term = request.GET.get(u'term', '')
         requested_page = int(request.GET.get(u'page', ''))
+        project_id=request.GET.get(u'project_id')
+        team_id=request.GET.get(u'team_id')
 #         print "#############################"
 #         print "Term:", term
 #         print "Page:", requested_page
         data = DB.GetData(
             Conn,
-            "SELECT DISTINCT tc_id,tc_name FROM test_cases WHERE tc_id Ilike '%" +
-            term +
-            "%' or tc_name Ilike '%" +
-            term +
-            "%'",
+            "SELECT DISTINCT tc.tc_id,tc_name FROM test_cases tc, test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%%%s%%' or tc_name Ilike '%%%s%%') group by tc.tc_id having count(case when name='%s' and property='Project' then 1 end)>0  and count(case when property='Team' and name='%s' then 1 end)>0"%(term,term,project_id,team_id),
             bList=False,
             dict_cursor=False,
             paginate=True,
