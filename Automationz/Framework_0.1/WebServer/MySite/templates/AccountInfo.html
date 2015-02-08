@@ -54,8 +54,8 @@
 	        	<h2 style="font-weight: italic; font-family: 'Oxygen';">Upload Profile Picture</h2>
 	        	<form method="POST" enctype="multipart/form-data" action='/Home/UserInfo/UploadProfilePicture/' id="uploadForm">
 				{% csrf_token %}
-					<input type='hidden' name='username' value=''>
-					<input type='hidden' name='user_id' value=''>
+					<input type='hidden' name='username' id="image_username" value=''>
+					<input type='hidden' name='user_id' id="image_user_id" value=''>
 					<input type="file" name="uploaded_file" id="file_field">
 					<button id="upload_file_button" class="m-btn green">Upload</button>
 				</form>

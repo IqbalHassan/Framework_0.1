@@ -14244,7 +14244,7 @@ def GetProfileInfo(request, user_id, success):
         print "Exception:", e
 
 
-def GetTeamInfoPerProject(request):
+"""def GetTeamInfoPerProject(request):
     if request.is_ajax():
         if request.method == 'GET':
             project_id = request.GET.get(u'project_id', '')
@@ -14258,48 +14258,39 @@ def GetTeamInfoPerProject(request):
                 return HttpResponse(message, mimetype='application/json')
             except Exception as e:
                 print "Exception:", e
-
+"""
 
 def updateAccountInfo(request):
     if request.is_ajax():
         if request.method == 'GET':
-            old_full_name = request.GET.get(u'old_full_name', '')
             full_name = request.GET.get(u'full_name', '')
             user_name = request.GET.get(u'user_name', '')
             project_id = request.GET.get(u'project_id', '')
             team_id = request.GET.get(u'team_id', '')
             user_id = request.GET.get(u'user_id', '')
             try:
-                Conn = GetConnection()
-                # form dict according to the change
-                temp_dict = {}
-                if full_name != "":
-                    temp_dict.update({'full_name': full_name.strip()})
-                if user_name != "":
-                    temp_dict.update({'username': user_name.strip()})
-                if len(temp_dict.keys()) != 0:
-
-                    sWhereQuery = "where full_name='%s'" % full_name
-                    result = DB.UpdateRecordInTable(
-                        Conn,
-                        "user_info",
-                        sWhereQuery,
-                        **temp_dict)
-                    if result:
-                        testConnection(Conn)
-                        if 'full_name' in temp_dict.keys(
-                        ) and 'username' in temp_dict.keys():
-                            del temp_dict['username']
-                        sWhereQuery = "where user_id='%s'" % user_id
-                        result = DB.UpdateRecordInTable(
-                            Conn,
-                            "permitted_user_list",
-                            sWhereQuery,
-                            **temp_dict)
+                query="select user_names from permitted_user_list where user_id=%d"%int(user_id)
+                Conn=GetConnection()
+                old_name=DB.GetData(Conn,query)
+                Conn.close()
+                if len(old_name)>0 and isinstance(old_name[0],basestring):
+                    old_name=old_name[0]
+                
+                sWhereQuery="where user_id=%d"%int(user_id)
+                temp_dict={'user_names':full_name}
+                Conn=GetConnection()
+                result=DB.UpdateRecordInTable(Conn,"permitted_user_list", sWhereQuery, **temp_dict)
+                Conn.close()
+                temp_dict={'username':user_name,'full_name':full_name}
+                Conn=GetConnection()
+                sWhereQuery="where full_name='%s'"%old_name.strip()
+                result=DB.UpdateRecordInTable(Conn,"user_info",sWhereQuery,**temp_dict)
+                Conn.close()
                 # check to update or create
                 query = "select count(*) from default_choice where user_id='%s'" % user_id
-                testConnection(Conn)
+                Conn=GetConnection()
                 result = DB.GetData(Conn, query)
+                Conn.close()
                 if(isinstance(result, list) and result[0] == 0):
                     # create a new dict
                     dict = {
@@ -14307,27 +14298,30 @@ def updateAccountInfo(request):
                         'default_project': project_id,
                         'default_team': team_id
                     }
-                    testConnection(Conn)
+                    Conn=GetConnection()
                     result = DB.InsertNewRecordInToTable(
                         Conn,
                         "default_choice",
                         **dict)
+                    Conn.close()
                     if result:
                         message = True
                     else:
                         message = False
                 else:
-                    dict = {}
-                    if project_id != "":
-                        dict.update({'default_project': project_id})
-                    if team_id != "":
-                        dict.update({'default_team': team_id})
+                    dict = {
+                        'user_id': user_id,
+                        'default_project': project_id,
+                        'default_team': team_id
+                    }
                     sWhereQuery = "where user_id='%s'" % user_id
+                    Conn=GetConnection()
                     result = DB.UpdateRecordInTable(
                         Conn,
                         "default_choice",
                         sWhereQuery,
                         **dict)
+                    Conn.close()
                     if result:
                         message = True
                     else:
@@ -16316,8 +16310,7 @@ def UploadProfilePicture(request):
 
         if username == '':
             return HttpResponseRedirect(
-                '/Home/User/%s/unsuccessful/' %
-                user_id)
+                '/Home/User/')
         else:
             if not os.path.isdir(path):
                 try:
@@ -16329,8 +16322,7 @@ def UploadProfilePicture(request):
                     print "Could not make directory: %s" % path
 
                     return HttpResponseRedirect(
-                        '/Home/User/%s/unsuccessful/' %
-                        user_id)
+                        '/Home/User/')
 
         file_uploader = FileUploader(request, 'uploaded_file', path)
         if file_uploader.upload_file():
@@ -16350,20 +16342,18 @@ def UploadProfilePicture(request):
                 print "Transaction unsuccessful:", e
                 print "###########################"
                 return HttpResponseRedirect(
-                    '/Home/User/%s/unsuccessful/' %
-                    user_id)
+                    '/Home/User/')
             finally:
                 Conn.close()
 
         else:
             print "Could not upload file"
             return HttpResponseRedirect(
-                '/Home/User/%s/unsuccessful/' %
-                user_id)
+                '/Home/User/')
 
-        return HttpResponseRedirect('/Home/User/%s/successful/' % user_id)
+        return HttpResponseRedirect('/Home/User/')
 
-    return HttpResponseRedirect('/Home/User/%s/' % user_id)
+    return HttpResponseRedirect('/Home/User/')
 
 
 def ServeProfilePictureURL(request):
