@@ -5,17 +5,19 @@ var user_name="";
 var full_name="";
 var project_id="";
 var team_id="";
+
+var projects=[]
 $(document).ready(function(){
     //get all the other information
     user_name=$('#username').val().trim();
-    full_name=$('#full_name').val().trim();
+    full_name=$('#user_full_name').val().trim();
     var old_full_name=full_name;
     project_id=$('#selected_project_id  option:selected').val();
     team_id=$('#selected_team_id option:selected').val();
-
+    get_all_info($.session.get('user_id'))
     $('#update').click(function(){
         var last_user_name=$('#username').val().trim();
-        var last_full_name=$('#full_name').val().trim();
+        var last_full_name=$('#user_full_name').val().trim();
         var last_project_id=$('#selected_project_id option:selected').val();
         var last_team_id=$('#selected_team_id option:selected').val();
 
@@ -88,9 +90,39 @@ function Submit_button_preparation(){
 }
 function createOption(team_info){
     var message="";
-    message+=('<option>Select Teams</option>');
+    message+=('<option val="">Select Teams</option>');
     for(var i=0;i<team_info.length;i++){
         message+=('<option value="'+team_info[i][0]+'">'+team_info[i][1]+'</option>');
     }
     return message;
+}
+
+function get_all_info(user_id){
+    $.get('ProfileDetail/',{user_id:user_id},function(data){
+        console.log(data);
+        projects=data['projects'];
+        $('#user_full_name').val(data['FullName']);
+        $('#designation').val(data['Designation']);
+        $('#username').val(data['Username']);
+        var message='';
+        message+='<option value="">Project ID</option>';
+        for (var i=0;i<projects.length;i++){
+            message+='<option value="'+projects[i][0]+'">'+projects[i][1]+'</option>';
+        }
+        $('#selected_project_id').html(message);
+        $('#selected_project_id').val(data['selected_project_id']);
+        var message="";
+        message+='<option value="">Teams</option>'
+        for(var i=0;i<projects.length;i++){
+            if(projects[i][0]==data['selected_project_id']){
+                var team_list=projects[i][2];
+                for(var j=0;j<team_list.length;j++){
+                    message+='<option value="'+team_list[j][0]+'">'+team_list[j][1]+'</option>';
+                }
+                break;
+            }
+        }
+        $('#selected_team_id').html(message);
+        $('#selected_team_id').val(data['selected_team_id']);
+    });
 }
