@@ -102,7 +102,7 @@ def update_machine(dependency):
         if os.path.isdir(Global.NetworkFolder) != True:
             print "Failed to access Network folder"
             #return False
-            local_ip = oLocalInfo.getLocalIP() + " - Network Error"
+            local_ip = oLocalInfo.getLocalIP() #+ " - Network Error"
         else:
             local_ip = oLocalInfo.getLocalIP()
         testerid = (oLocalInfo.getLocalUser()).lower()
