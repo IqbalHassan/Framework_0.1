@@ -10,6 +10,8 @@ var user = $.session.get('fullname');
 $(document).ready(function(){
 
     $('input[name="step_user"]').val(user);
+    $('input[name="step_project"]').val($.session.get('project_id'));
+    $('input[name="step_team"]').val($.session.get('default_team_identity'));
 
     description_fill();
     verification_radio();

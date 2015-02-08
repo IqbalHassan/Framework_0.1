@@ -2001,7 +2001,7 @@ article header{
 /****************/
 .two-column-emphasis {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-    font-size: 1em;
+    font-size: 0.6em;
     width: 100%;
     text-align: left;
     border-collapse: collapse;
@@ -2017,20 +2017,20 @@ article header{
     cursor: pointer;
 }
 .two-column-emphasis th {
-    font-size: 1.2em;
+    font-size: 1.1em;
     font-weight: normal;
     color: #039;
     padding: 5px 7px;
 }
 .two-column-emphasis thead tr th {
-    font-size: 1.2em;
+    font-size: 1.1em;
     font-weight: normal;
     color: #039;
     padding: 5px 7px;
 }
 
 .two-column-emphasis thead tr th span {
-    padding-right: 1.3em;
+    padding-right: 1.1em;
     background-repeat: no-repeat;
     background-position: 100% 100%;
 }

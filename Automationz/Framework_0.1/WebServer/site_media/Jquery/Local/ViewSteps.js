@@ -2,8 +2,10 @@
  * Created by J on 2/2/2015.
  */
 
-var itemPerPage=10;
-var PageCurrent=1;
+//var itemPerPage=10;
+//var PageCurrent=1;
+var project_id = $.session.get('project_id');
+var team_id = $.session.get('default_team_identity');
 
 $(document).ready(function(){
 	$("#simple-menu").sidr({
@@ -12,7 +14,7 @@ $(document).ready(function(){
     });
 
     //itemPerPage = $("#perpageitem").val();
-    get_steps(itemPerPage, PageCurrent);
+    get_steps(project_id, team_id);
     
     /*$('#perpageitem').on('change',function(){
         if($(this).val()!=''){
@@ -27,8 +29,8 @@ $(document).ready(function(){
 });
 
 
-function get_steps(itemPerPage,PageCurrent){
-    $.get("Steps_List",{'itemPerPage':itemPerPage ,'PageCurrent':PageCurrent},function(data)
+function get_steps(project_id,team_id){
+    $.get("Steps_List",{'project_id':project_id ,'team_id':team_id},function(data)
     {
         if(data['steps'].length>0) {
             //make a table column
@@ -38,7 +40,7 @@ function get_steps(itemPerPage,PageCurrent){
             for (var i = 0; i < data['Heading'].length; i++) {
                 message += '<th align="left">' + data['Heading'][i] + '</th>';
             }
-            message += '</tr><tbody>';
+            message += '</tr><tbody class="paginate">';
             for (var i = 0; i < data['steps'].length; i++) {
                 message += '<tr>';
                 for (var j = 0; j < data['steps'][i].length; j++) {
@@ -61,6 +63,7 @@ function get_steps(itemPerPage,PageCurrent){
                         'cursor': 'pointer',
                         'textAlign': 'left'
                     });
+                    $(this).hover(function(){$(this).css("text-decoration","underline");},function(){$(this).css("text-decoration","none");});
                     $(this).click(function(){
                         var step_name = $(this).closest('tr').find('td:first-child').text().trim();
                         //var location='/Home/RunHistory/'+data+'/';

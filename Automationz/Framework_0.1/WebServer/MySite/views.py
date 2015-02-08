@@ -678,14 +678,16 @@ def Steps_List(request):
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
-            current_page=int(request.GET.get(u'PageCurrent',''))
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id')
+            """current_page=int(request.GET.get(u'PageCurrent',''))
             itemPerPage=int(request.GET.get(u'itemPerPage',''))
             
             condition = "limit %d offset %d" % (
-                itemPerPage, (current_page - 1) * itemPerPage)
+                itemPerPage, (current_page - 1) * itemPerPage)"""
 
             
-            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by from test_steps_list "
+            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.value from test_steps_list tsl,config_values cv where tsl.team_id=cv.id::text and cv.type='Team' and project_id='"+project_id+"' "
             steps_list=DB.GetData(Conn, query, False)
             count = len(steps_list)
             
@@ -699,14 +701,14 @@ def Steps_List(request):
                 Data.append(temp[0][0])
                 p_steps_list.append(tuple(Data))
                 
-            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(8),reverse=True)
+            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(9),reverse=True)
             
             #pquery = query + condition
             #p_steps_list = DB.GetData(Conn, pquery, False)
             
         
         
-    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Created By','Test Cases']    
+    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Created By','Team','Test Cases']    
     results = {'Heading':Heading,'steps':p_steps_list, 'count': count}
     json = simplejson.dumps(results)
     Conn.close()
@@ -7245,6 +7247,8 @@ def Process_CreateStep(request):
         step_time = request.POST['step_time'].strip()
         automata = request.POST['automata']
         user = request.POST['step_user']
+        project_id = request.POST['step_project']
+        team_id = request.POST['step_team']
 
         now = datetime.datetime.now().date()
 
@@ -7305,7 +7309,9 @@ def Process_CreateStep(request):
                         estd_time=step_time,
                         automatable=automata,
                         modified_by=user,
-                        modified_date=now)
+                        modified_date=now,
+                        project_id = project_id,
+                        team_id = team_id)
                     query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
                         step_feature + "'"
                     feature_count = DB.GetData(conn, query)
@@ -7377,7 +7383,9 @@ def Process_CreateStep(request):
                         created_by=user,
                         created_date=now,
                         modified_by=user,
-                        modified_date=now)
+                        modified_date=now,
+                        project_id = project_id,
+                        team_id = team_id)
                     query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
                         step_feature + "'"
                     feature_count = DB.GetData(conn, query)
