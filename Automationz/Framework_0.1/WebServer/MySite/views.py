@@ -15617,23 +15617,30 @@ def link_feature(request):
                     'team_id': int(team_id),
                     'feature': int(feature_id[0])
                 }
+                query = "select feature_id from product_features where feature_path ~ '%s.*'" % value
                 value = feature_id[0]
-                Conn = GetConnection()
+                Conn=GetConnection()
                 result = DB.InsertNewRecordInToTable(
                     Conn,
                     "feature_management",
                     **Dict)
-                nDict = {
-                    'project_id': project_id,
-                    'team_id': int(team_id),
-                    'parameters': int(feature_id[0]),
-                    'type': "Feature"
-                }
-                result = DB.InsertNewRecordInToTable(
-                    Conn,
-                    "team_wise_settings",
-                    **nDict)
+                Conn.close()                
+                Conn = GetConnection()
+                feature_id=DB.GetData(Conn,query)
                 Conn.close()
+                for each in feature_id:
+                    nDict = {
+                        'project_id': project_id,
+                        'team_id': int(team_id),
+                        'parameters': int(each),
+                        'type': "Feature"
+                    }
+                    Conn=GetConnection()
+                    result = DB.InsertNewRecordInToTable(
+                        Conn,
+                        "team_wise_settings",
+                        **nDict)
+                    Conn.close()
                 if result:
                     PassMessasge(
                         sModuleInfo, "%s %d is linked successfully" %
