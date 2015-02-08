@@ -16,7 +16,8 @@ urlpatterns = patterns('',
 	url(r'^$', HomePage),
     url(r'^Home/$', HomePage),
     url(r'^Home/Dashboard/$', HomePage),
-    url(r'^Home/User/(?P<user_id>[^/]+)/*(?P<success>[A-Za-z]+)*/$',GetProfileInfo),
+    #url(r'^Home/User/(?P<user_id>[^/]+)/*(?P<success>[A-Za-z]+)*/$',GetProfileInfo),
+    url(r'^Home/User/$',AccountInfo),
     url(r'^GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/.*/GetProjectNameForTopBar/$',GetProjectNameForTopBar),
     url(r'^Home/Contact/$', contact_page),
@@ -295,7 +296,7 @@ urlpatterns += patterns('',
     url(r'^Home/(?P<project_id>[^/]*)/EditTask/(?P<task_id>[^/]*)/$', EditTask),
     url(r'^Home/(?P<project_id>[^/]*)/ChildTask/(?P<task_id>[^/]*)/$', ChildTask),
     url(r'^Home/.*/Tasks_List/$',Tasks_List),
-    url(r'^Home/.*/GetTeamInfoPerProject/$',GetTeamInfoPerProject),
+    #url(r'^Home/.*/GetTeamInfoPerProject/$',GetTeamInfoPerProject),
     url(r'^Home/.*/UpdateAccountInfo/$',updateAccountInfo),
     
     #updating the default project and team 
@@ -358,6 +359,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/Steps_List/$',Steps_List),
 	url(r'^Home/.*/TestCaseDataFromMainDriver/$',TestCaseDataFromMainDriver),
 	url(r'^Home/.*/get_feature_path/$',get_feature_path),
+    url(r'^Home/User/ProfileDetail/$',ProfileDetail),
 	)
 
 

@@ -32,7 +32,9 @@ $(document).ready(function() {
 			data: function(term, page) {
 				return {
 					'term': term,
-					'page': page
+					'page': page,
+                    'project_id': $.session.get('project_id'),
+                    'team_id': $.session.get('default_team_identity')
 				};
 			},
 			results: function(data, page) {

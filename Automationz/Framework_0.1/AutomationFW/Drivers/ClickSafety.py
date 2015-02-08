@@ -15,7 +15,7 @@ def go_to_a_weblink(dependency,step_data):
     try:
         first_data_set=step_data[0]
         web_link=first_data_set[0][2]
-        title=first_data_set[0][2]
+        title=first_data_set[1][2]
         sTestStepReturnStatus = SeleniumScript.OpenLink(web_link, title)
         print sTestStepReturnStatus
         return sTestStepReturnStatus
@@ -23,7 +23,7 @@ def go_to_a_weblink(dependency,step_data):
         sTestStepReturnStatus = "Failed"
         return
 
-def login(dependency,step_data):
+def log_in_to_clicksafety(dependency,step_data):
     try:        
         first_data_set=step_data[0]
         user_name = first_data_set[0][2]

@@ -118,6 +118,53 @@ def GetProjectNameForTopBar(request):
     if request.is_ajax():
         if request.method == 'GET':
             user_id = request.GET.get(u'user_id')
+            temp_dict={}
+            #first check out the owners there
+            query = "select project_id,project_name,string_to_array(project_owners,',') from projects"
+            Conn=GetConnection()
+            project_id = DB.GetData(Conn, query, False)
+            Conn.close()
+            final_project_id=[]
+            for each in project_id:
+                for eachitem in each[2]:
+                    if user_id in each[2]:
+                        final_project_id.append((each[0],each[1]))
+                        break
+            #get the all team if there is owner privilage to any one. 
+            temp=[]
+            temp_final=[]
+            for each in final_project_id:   
+                query="select id,value from project_team_map ptm, config_values cv where ptm.team_id=cast(cv.id as text) and ptm.project_id='%s'"%each[0]
+                Conn=GetConnection()
+                team_id=DB.GetData(Conn,query,False)
+                temp_final.append((each[0],each[1],team_id))
+                temp.append(each[0])
+                Conn.close() 
+            print temp_final
+            #go for the member ships.
+            condition=""
+            for index,each in enumerate(temp):
+                condition+=("'"+each+"'")
+                if index<len(temp)-1:
+                    condition+=','
+            query="select p.project_id, project_name ,array_agg(distinct ptm.team_id ) from projects p,project_team_map ptm,team_info ti where p.project_id=ptm.project_id and cast(ptm.team_id as int) = ti.team_id  and ptm.project_id not in(%s)  and user_id ='%s' group by p.project_id"%(condition,user_id)
+            Conn=GetConnection()
+            member_team=DB.GetData(Conn,query,False)
+            Conn.close()
+            for each in member_team:
+                if(len(each[2])>0 and isinstance(each[2],list)):
+                    for eachitem in each[2]:
+                        query="select id, value from config_values where id=%d"%int(eachitem)
+                        Conn=GetConnection()
+                        team_list=DB.GetData(Conn,query,False)
+                        Conn.close()
+                    temp_final.append((each[0],each[1],team_list))
+                if(len(each[2])==0  and isinstance(each[2],list)):
+                    temp_final.append((each[0],each[1],[]))
+            print temp_final
+            temp_dict.update({'projects': temp_final})
+            
+            """user_id = request.GET.get(u'user_id')
             query = "select project_id  from project_team_map where team_id in (select cast(team_id as text) from team_info where user_id = cast(%d as text))" % int(
                 user_id)
             #query="select project_id from projects"
@@ -138,9 +185,9 @@ def GetProjectNameForTopBar(request):
             Conn.close()
             Dict.update({
                 'teams': all_teams
-            })
-    result = simplejson.dumps(Dict)
-    return HttpResponse(result, mimetype='application/json')
+            })"""
+            result = simplejson.dumps(temp_dict)
+            return HttpResponse(result, mimetype='application/json')
 
 """ Main Pages functions """
 # @login_required(login_url='/Home/Login/')
@@ -3830,16 +3877,14 @@ def TestCaseSearch(request):
     if request.method == "GET":
         term = request.GET.get(u'term', '')
         requested_page = int(request.GET.get(u'page', ''))
+        project_id=request.GET.get(u'project_id')
+        team_id=request.GET.get(u'team_id')
 #         print "#############################"
 #         print "Term:", term
 #         print "Page:", requested_page
         data = DB.GetData(
             Conn,
-            "SELECT DISTINCT tc_id,tc_name FROM test_cases WHERE tc_id Ilike '%" +
-            term +
-            "%' or tc_name Ilike '%" +
-            term +
-            "%'",
+            "SELECT DISTINCT tc.tc_id,tc_name FROM test_cases tc, test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%%%s%%' or tc_name Ilike '%%%s%%') group by tc.tc_id having count(case when name='%s' and property='Project' then 1 end)>0  and count(case when property='Team' and name='%s' then 1 end)>0"%(term,term,project_id,team_id),
             bList=False,
             dict_cursor=False,
             paginate=True,
@@ -14133,15 +14178,89 @@ def SubmitChildTask(request):
 def ViewTaskPage(request, project_id):
     return HttpResponse(project_id)
 
-
+def AccountInfo(request):
+    return render_to_response('AccountInfo.html',{},context_instance=RequestContext(request))
+def ProfileDetail(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            user_id=request.GET.get(u'user_id')
+            query = "select distinct user_id,full_name,user_level,username from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'" % user_id
+            user_column = ["UserID", "FullName", "Designation", "Username"]
+            Conn = GetConnection()
+            result = DB.GetData(Conn, query, False)
+            Conn.close()
+            temp_dict = {}
+            for idx, each in enumerate(zip(user_column, result[0])):
+                if idx == 2:
+                    temp_dict.update({each[0]: (" ").join(each[1].split("_")).title()})
+                else:
+                    temp_dict.update({each[0]: each[1]})
+                
+            #first check out the owners there
+            query = "select project_id,project_name,string_to_array(project_owners,',') from projects"
+            Conn=GetConnection()
+            project_id = DB.GetData(Conn, query, False)
+            Conn.close()
+            final_project_id=[]
+            for each in project_id:
+                for eachitem in each[2]:
+                    if user_id in each[2]:
+                        final_project_id.append((each[0],each[1]))
+                        break
+            #get the all team if there is owner privilage to any one. 
+            temp=[]
+            temp_final=[]
+            for each in final_project_id:   
+                query="select id,value from project_team_map ptm, config_values cv where ptm.team_id=cast(cv.id as text) and ptm.project_id='%s'"%each[0]
+                Conn=GetConnection()
+                team_id=DB.GetData(Conn,query,False)
+                temp_final.append((each[0],each[1],team_id))
+                temp.append(each[0])
+                Conn.close() 
+            print temp_final
+            #go for the member ships.
+            condition=""
+            for index,each in enumerate(temp):
+                condition+=("'"+each+"'")
+                if index<len(temp)-1:
+                    condition+=','
+            query="select p.project_id, project_name ,array_agg(distinct ptm.team_id ) from projects p,project_team_map ptm,team_info ti where p.project_id=ptm.project_id and cast(ptm.team_id as int) = ti.team_id  and ptm.project_id not in(%s)  and user_id ='%s' group by p.project_id"%(condition,user_id)
+            Conn=GetConnection()
+            member_team=DB.GetData(Conn,query,False)
+            Conn.close()
+            for each in member_team:
+                if(len(each[2])>0 and isinstance(each[2],list)):
+                    for eachitem in each[2]:
+                        query="select id, value from config_values where id=%d"%int(eachitem)
+                        Conn=GetConnection()
+                        team_list=DB.GetData(Conn,query,False)
+                        Conn.close()
+                    temp_final.append((each[0],each[1],team_list))
+                if(len(each[2])==0  and isinstance(each[2],list)):
+                    temp_final.append((each[0],each[1],[]))
+            print temp_final
+            temp_dict.update({'projects': temp_final})
+            # load default projects
+        
+            query = "select default_project,default_team from default_choice where user_id='%s'" % user_id
+            Conn=GetConnection()
+            projects = DB.GetData(Conn, query, False)
+            Conn.close()
+            if isinstance(projects, list) and len(projects) == 0:
+                temp_dict.update({'selected_project_id': "", 'selected_team_id': ""})
+            else:
+                temp_dict.update({'selected_project_id': projects[0][0], 'selected_team_id': projects[0][1]})
+            result=simplejson.dumps(temp_dict)
+            return HttpResponse(result,mimetype='application/json')
 def GetProfileInfo(request, user_id, success):
     try:
-        query = "select distinct user_id,full_name,user_level,username from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'" % user_id
+        """query = "select distinct user_id,full_name,user_level,username from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'" % user_id
         Conn = GetConnection()
         user_column = ["UserID", "FullName", "Designation", "Username"]
         result = DB.GetData(Conn, query, False)
+        """
         temp_dict = {}
-        for idx, each in enumerate(zip(user_column, result[0])):
+        """for idx, each in enumerate(zip(user_column, result[0])):
             if idx == 2:
                 temp_dict.update(
                     {each[0]: (" ").join(each[1].split("_")).title()})
@@ -14169,7 +14288,7 @@ def GetProfileInfo(request, user_id, success):
             testConnection(Conn)
             team_id = DB.GetData(Conn, query, False)
             temp_dict.update({'teams': team_id})
-
+        """    
         temp_dict.update({'success': success})
 
         temp_dict = RequestContext(request, temp_dict)
@@ -14178,7 +14297,7 @@ def GetProfileInfo(request, user_id, success):
         print "Exception:", e
 
 
-def GetTeamInfoPerProject(request):
+"""def GetTeamInfoPerProject(request):
     if request.is_ajax():
         if request.method == 'GET':
             project_id = request.GET.get(u'project_id', '')
@@ -14192,48 +14311,39 @@ def GetTeamInfoPerProject(request):
                 return HttpResponse(message, mimetype='application/json')
             except Exception as e:
                 print "Exception:", e
-
+"""
 
 def updateAccountInfo(request):
     if request.is_ajax():
         if request.method == 'GET':
-            old_full_name = request.GET.get(u'old_full_name', '')
             full_name = request.GET.get(u'full_name', '')
             user_name = request.GET.get(u'user_name', '')
             project_id = request.GET.get(u'project_id', '')
             team_id = request.GET.get(u'team_id', '')
             user_id = request.GET.get(u'user_id', '')
             try:
-                Conn = GetConnection()
-                # form dict according to the change
-                temp_dict = {}
-                if full_name != "":
-                    temp_dict.update({'full_name': full_name.strip()})
-                if user_name != "":
-                    temp_dict.update({'username': user_name.strip()})
-                if len(temp_dict.keys()) != 0:
-
-                    sWhereQuery = "where full_name='%s'" % full_name
-                    result = DB.UpdateRecordInTable(
-                        Conn,
-                        "user_info",
-                        sWhereQuery,
-                        **temp_dict)
-                    if result:
-                        testConnection(Conn)
-                        if 'full_name' in temp_dict.keys(
-                        ) and 'username' in temp_dict.keys():
-                            del temp_dict['username']
-                        sWhereQuery = "where user_id='%s'" % user_id
-                        result = DB.UpdateRecordInTable(
-                            Conn,
-                            "permitted_user_list",
-                            sWhereQuery,
-                            **temp_dict)
+                query="select user_names from permitted_user_list where user_id=%d"%int(user_id)
+                Conn=GetConnection()
+                old_name=DB.GetData(Conn,query)
+                Conn.close()
+                if len(old_name)>0 and isinstance(old_name[0],basestring):
+                    old_name=old_name[0]
+                
+                sWhereQuery="where user_id=%d"%int(user_id)
+                temp_dict={'user_names':full_name}
+                Conn=GetConnection()
+                result=DB.UpdateRecordInTable(Conn,"permitted_user_list", sWhereQuery, **temp_dict)
+                Conn.close()
+                temp_dict={'username':user_name,'full_name':full_name}
+                Conn=GetConnection()
+                sWhereQuery="where full_name='%s'"%old_name.strip()
+                result=DB.UpdateRecordInTable(Conn,"user_info",sWhereQuery,**temp_dict)
+                Conn.close()
                 # check to update or create
                 query = "select count(*) from default_choice where user_id='%s'" % user_id
-                testConnection(Conn)
+                Conn=GetConnection()
                 result = DB.GetData(Conn, query)
+                Conn.close()
                 if(isinstance(result, list) and result[0] == 0):
                     # create a new dict
                     dict = {
@@ -14241,27 +14351,30 @@ def updateAccountInfo(request):
                         'default_project': project_id,
                         'default_team': team_id
                     }
-                    testConnection(Conn)
+                    Conn=GetConnection()
                     result = DB.InsertNewRecordInToTable(
                         Conn,
                         "default_choice",
                         **dict)
+                    Conn.close()
                     if result:
                         message = True
                     else:
                         message = False
                 else:
-                    dict = {}
-                    if project_id != "":
-                        dict.update({'default_project': project_id})
-                    if team_id != "":
-                        dict.update({'default_team': team_id})
+                    dict = {
+                        'user_id': user_id,
+                        'default_project': project_id,
+                        'default_team': team_id
+                    }
                     sWhereQuery = "where user_id='%s'" % user_id
+                    Conn=GetConnection()
                     result = DB.UpdateRecordInTable(
                         Conn,
                         "default_choice",
                         sWhereQuery,
                         **dict)
+                    Conn.close()
                     if result:
                         message = True
                     else:
@@ -15557,23 +15670,30 @@ def link_feature(request):
                     'team_id': int(team_id),
                     'feature': int(feature_id[0])
                 }
+                query = "select feature_id from product_features where feature_path ~ '%s.*'" % value
                 value = feature_id[0]
-                Conn = GetConnection()
+                Conn=GetConnection()
                 result = DB.InsertNewRecordInToTable(
                     Conn,
                     "feature_management",
                     **Dict)
-                nDict = {
-                    'project_id': project_id,
-                    'team_id': int(team_id),
-                    'parameters': int(feature_id[0]),
-                    'type': "Feature"
-                }
-                result = DB.InsertNewRecordInToTable(
-                    Conn,
-                    "team_wise_settings",
-                    **nDict)
+                Conn.close()                
+                Conn = GetConnection()
+                feature_id=DB.GetData(Conn,query)
                 Conn.close()
+                for each in feature_id:
+                    nDict = {
+                        'project_id': project_id,
+                        'team_id': int(team_id),
+                        'parameters': int(each),
+                        'type': "Feature"
+                    }
+                    Conn=GetConnection()
+                    result = DB.InsertNewRecordInToTable(
+                        Conn,
+                        "team_wise_settings",
+                        **nDict)
+                    Conn.close()
                 if result:
                     PassMessasge(
                         sModuleInfo, "%s %d is linked successfully" %
@@ -16250,8 +16370,7 @@ def UploadProfilePicture(request):
 
         if username == '':
             return HttpResponseRedirect(
-                '/Home/User/%s/unsuccessful/' %
-                user_id)
+                '/Home/User/')
         else:
             if not os.path.isdir(path):
                 try:
@@ -16263,8 +16382,7 @@ def UploadProfilePicture(request):
                     print "Could not make directory: %s" % path
 
                     return HttpResponseRedirect(
-                        '/Home/User/%s/unsuccessful/' %
-                        user_id)
+                        '/Home/User/')
 
         file_uploader = FileUploader(request, 'uploaded_file', path)
         if file_uploader.upload_file():
@@ -16284,20 +16402,18 @@ def UploadProfilePicture(request):
                 print "Transaction unsuccessful:", e
                 print "###########################"
                 return HttpResponseRedirect(
-                    '/Home/User/%s/unsuccessful/' %
-                    user_id)
+                    '/Home/User/')
             finally:
                 Conn.close()
 
         else:
             print "Could not upload file"
             return HttpResponseRedirect(
-                '/Home/User/%s/unsuccessful/' %
-                user_id)
+                '/Home/User/')
 
-        return HttpResponseRedirect('/Home/User/%s/successful/' % user_id)
+        return HttpResponseRedirect('/Home/User/')
 
-    return HttpResponseRedirect('/Home/User/%s/' % user_id)
+    return HttpResponseRedirect('/Home/User/')
 
 
 def ServeProfilePictureURL(request):

@@ -778,9 +778,13 @@ def main():
             conn.close()
             if ToEmailAddress[0][0]:
                 conn=DBUtil.ConnectToDataBase()
-                Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
-                conn.close()
-                CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
+                try:
+                    Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
+                    CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
+                except Exception, e:
+                    conn.close()
+                    return "pass"
+                
 
         #Copy the Automation Log to Network Folder
         if FL.CopyFile(CommonUtil.hdlr.baseFilename, Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:

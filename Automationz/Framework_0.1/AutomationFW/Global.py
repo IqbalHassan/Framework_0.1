@@ -39,7 +39,7 @@ elif Environment == "Production":
     go_url = "enter/url"
 
     #database ip
-    database_ip = "135.23.123.67"
+    database_ip = "135.23.123.206"
 
     #Folder Paths
     if os.name == 'nt':

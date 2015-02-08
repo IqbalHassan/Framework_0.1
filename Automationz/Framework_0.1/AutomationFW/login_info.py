@@ -1,8 +1,8 @@
-username='rizu'
-password='.'
+username='iqbal_hassan'
+password='password'
 project='PROJ-29'
 team='WebAutomation'
-server='127.0.0.1'
+server='135.23.123.206'
 port=5432
 
 
