@@ -20,38 +20,11 @@ $(document).ready(function(){
         var last_full_name=$('#user_full_name').val().trim();
         var last_project_id=$('#selected_project_id option:selected').val();
         var last_team_id=$('#selected_team_id option:selected').val();
-
-        if(user_name===last_user_name){
-            user_name="";
-        }
-        else{
-            user_name=last_user_name;
-        }
-
-        if(full_name===last_full_name){
-            full_name="";
-        }
-        else{
-            full_name=last_full_name;
-        }
-        if(project_id===last_project_id){
-            project_id="";
-        }
-        else{
-            project_id=last_project_id;
-        }
-        if(team_id===last_team_id){
-            team_id="";
-        }
-        else{
-            team_id=last_team_id;
-        }
-        $.get('UpdateAccountInfo',{
-            'old_full_name':old_full_name,
-            'user_name':user_name,
-            'full_name':full_name,
-            'project_id':project_id,
-            'team_id':team_id,
+        $.get('UpdateAccountInfo/',{
+            'user_name':last_user_name,
+            'full_name':last_full_name,
+            'project_id':last_project_id,
+            'team_id':last_team_id,
             'user_id': $.session.get('user_id')
         },function(data){
             if(data=='true'){
@@ -79,22 +52,27 @@ $(document).ready(function(){
 });
 function Submit_button_preparation(){
     $('#selected_project_id').on('change',function(){
-        $.get('GetTeamInfoPerProject/',{
+        //get the project_id
+        var project_id=$(this).val();
+        var message="";
+        message+='<option value="">Teams</option>'
+        for(var i=0;i<projects.length;i++){
+            if(projects[i][0]==project_id){
+                var team_list=projects[i][2];
+                for(var j=0;j<team_list.length;j++){
+                    message+='<option value="'+team_list[j][0]+'">'+team_list[j][1]+'</option>';
+                }
+            }
+        }
+        $('#selected_team_id').html(message);
+        /*$.get('GetTeamInfoPerProject/',{
             'project_id':$(this).val().trim()
         },function(data){
             var team_info=data['teams'];
             var message=createOption(team_info);
             $('#selected_team_id').html(message);
-        });
+        });*/
     });
-}
-function createOption(team_info){
-    var message="";
-    message+=('<option val="">Select Teams</option>');
-    for(var i=0;i<team_info.length;i++){
-        message+=('<option value="'+team_info[i][0]+'">'+team_info[i][1]+'</option>');
-    }
-    return message;
 }
 
 function get_all_info(user_id){
@@ -104,6 +82,8 @@ function get_all_info(user_id){
         $('#user_full_name').val(data['FullName']);
         $('#designation').val(data['Designation']);
         $('#username').val(data['Username']);
+        $('#image_username').val(data['Username']);
+        $('#image_user_id').val(data['UserID']);
         var message='';
         message+='<option value="">Project ID</option>';
         for (var i=0;i<projects.length;i++){

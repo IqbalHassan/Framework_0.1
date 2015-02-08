@@ -296,7 +296,7 @@ urlpatterns += patterns('',
     url(r'^Home/(?P<project_id>[^/]*)/EditTask/(?P<task_id>[^/]*)/$', EditTask),
     url(r'^Home/(?P<project_id>[^/]*)/ChildTask/(?P<task_id>[^/]*)/$', ChildTask),
     url(r'^Home/.*/Tasks_List/$',Tasks_List),
-    url(r'^Home/.*/GetTeamInfoPerProject/$',GetTeamInfoPerProject),
+    #url(r'^Home/.*/GetTeamInfoPerProject/$',GetTeamInfoPerProject),
     url(r'^Home/.*/UpdateAccountInfo/$',updateAccountInfo),
     
     #updating the default project and team 
