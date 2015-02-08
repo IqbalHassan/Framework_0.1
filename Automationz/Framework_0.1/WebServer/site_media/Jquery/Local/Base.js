@@ -24,7 +24,7 @@
 })(jQuery);
 
 /**********************************/
-
+var base_project_list=[];
 $(document).ready(function(){
 
 	// Initialize the desktop navigation menu
@@ -67,17 +67,24 @@ $(document).ready(function(){
     $.get('GetProjectNameForTopBar/',{
         'user_id': $.session.get('user_id')
     },function(data){
+        base_project_list=data['projects'];
         var message="";
-        var projects=data['projects'];
-        for(var i=0;i<projects.length;i++){
-            message+=('<option value="'+projects[i][0]+'">'+projects[i][0]+'</option> ');
+        message+='<option>No Default Project</option>';
+        for(var i=0;i<base_project_list.length;i++){
+            message+=('<option value="'+base_project_list[i][0]+'">'+base_project_list[i][1]+'</option> ');
         }
         $('#project_identity').append(message);
         $('#project_identity').val($.session.get('project_id'));
         var message="";
-        var teams=data['teams'];
-        for(var i=0;i<teams.length;i++){
-            message+=('<option value="'+teams[i][0]+'">'+teams[i][1]+'</option>');
+        message+='<option>No Default Team</option>';
+        for(var i=0;i<base_project_list.length;i++){
+            if(base_project_list[i][0]== $.session.get('project_id')){
+                var base_team_list=base_project_list[i][2];
+                for(var j=0;j<base_team_list.length;j++){
+                    message+=('<option value="'+base_team_list[j][0]+'">'+base_team_list[j][1]+'</option>');
+                }
+                break;
+            }
         }
         $('#default_team_identity').append(message);
         $('#default_team_identity').val($.session.get('default_team_identity'));
@@ -167,6 +174,21 @@ $(document).ready(function(){
     
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val());
+        //load default_team for the project
+
+        var message="";
+        message+='<option>No Default Team</option>';
+        for(var i=0;i<base_project_list.length;i++){
+            if(base_project_list[i][0]== $.session.get('project_id')){
+                var base_team_list=base_project_list[i][2];
+                for(var j=0;j<base_team_list.length;j++){
+                    message+='<option value="'+base_team_list[j][0]+'">'+base_team_list[j][1]+'</option>';
+                }
+                break;
+            }
+        }
+        $('#default_team_identity').html(message);
+        $('#default_team_identity').val($.session.get('default_team_identity'));
         if($(this).val()!=""){
             $.get('UpdateDefaultProjectForUser',{
                 'user_id': $.session.get('user_id'),
