@@ -14,8 +14,8 @@ def start_browser(dependency,step_data):
 def go_to_a_weblink(dependency,step_data):
     try:
         first_data_set=step_data[0]
-        web_link=first_data_set[0][2]
-        title=first_data_set[1][2]
+        web_link=first_data_set[0][1]
+        title=first_data_set[1][1]
         sTestStepReturnStatus = SeleniumScript.OpenLink(web_link, title)
         print sTestStepReturnStatus
         return sTestStepReturnStatus
@@ -26,8 +26,8 @@ def go_to_a_weblink(dependency,step_data):
 def log_in_to_clicksafety(dependency,step_data):
     try:        
         first_data_set=step_data[0]
-        user_name = first_data_set[0][2]
-        password = first_data_set[1][2]
+        user_name = first_data_set[0][1]
+        password = first_data_set[1][1]
         sTestStepReturnStatus = SeleniumScript.Login(user_name,password)
         print sTestStepReturnStatus
         return sTestStepReturnStatus
@@ -38,7 +38,7 @@ def log_in_to_clicksafety(dependency,step_data):
 def expand_menu_by_name_or_id(dependency,step_data):
     try:        
         first_data_set=step_data[0]
-        menu_name=first_data_set[0][2]
+        menu_name=first_data_set[0][1]
         sTestStepReturnStatus = SeleniumScript.Expand_Menu_By_Name_OR_ID(menu_name)
         print sTestStepReturnStatus
         return sTestStepReturnStatus       
@@ -49,7 +49,7 @@ def expand_menu_by_name_or_id(dependency,step_data):
 def click_element_by_name_or_id(dependency,step_data):
     try:        
         first_data_set=step_data[0]
-        element_name=first_data_set[0][2]
+        element_name=first_data_set[0][1]
         sTestStepReturnStatus = SeleniumScript.Click_Element_By_Name_OR_ID(element_name)
         print sTestStepReturnStatus
         return sTestStepReturnStatus  

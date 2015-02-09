@@ -11,7 +11,7 @@ import importlib
 #import FSDriver
 import Performance
 #from distutils.tests.test_check import CheckTestCase
-
+import DataFetching
 ReRunTag="ReRun"
 if os.name == 'nt':
     location = "X:\\Actions\\Common Tasks\\PythonScripts\\"
@@ -382,36 +382,20 @@ def main():
                     #get the steps data from here
                     if TestStepsList[StepSeq-1][5] and TestStepsList[StepSeq-1][6]:
                         #for the edit data steps
-                        steps_data_query="select  ctd.curname, ctd.newname from result_Test_Steps tst, result_test_case_datasets tcd, result_test_steps_data tsd, result_container_type_data ctd where tst.tc_id = tcd.tc_id and tst.run_id=tcd.run_id and tcd.tcdatasetid = tsd.tcdatasetid and tcd.run_id=tsd.run_id and tst.teststepsequence = tsd.teststepseq and tst.run_id=tsd.run_id and tsd.testdatasetid = ctd.dataid and tsd.run_id=ctd.run_id and tst.tc_id = '%s' and tst.teststepsequence = '%s' and tcd.tcdatasetid = '%s' and tst.run_id='%s'"%(TCID,int(TestStepsList[StepSeq - 1][2]), EachDataSet[0],TestRunID[0])
-                    else:
-                        #for data and not data
-                        #steps_data_query="select pmd.field,pmd.value from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' order by pmd.id"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0])
-                        steps_data_query="select distinct pmd.id from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' order by pmd.id"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0])
-                        #get the distinct datasets
+                        container_id_data_query="select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = 'CLI-0382ds' and teststepseq = 13060 and ctd.curname Ilike '%_s2%'"
+                    elif TestStepsList[StepSeq-1][5] and not TestStepsList[StepSeq-1][6]:
+                        container_id_data_query="select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = '%s' and teststepseq = %d and ctd.curname Ilike '%%_s%s%%'"%(EachDataSet[0],int(TestStepsList[StepSeq-1][2]),StepSeq)
                         conn=DBUtil.ConnectToDataBase()
-                        distinct_datasets=DBUtil.GetData(conn,steps_data_query)
+                        container_data_details=DBUtil.GetData(conn,container_id_data_query,False)
                         conn.close()
-                        if isinstance(distinct_datasets, list) and len(distinct_datasets)>0:
-                            for each in distinct_datasets:
-                                each_data_set=[]
-                                data_query="select distinct pmd.field,pmd.value,pmd.keyfield,pmd.ignorefield from result_test_cases tc,result_test_case_datasets tcd,result_test_steps_data tsd,result_container_type_data ctd,result_master_data pmd where tc.run_id=tcd.run_id and tc.tc_id=tcd.tc_id and tcd.run_id=tsd.run_id and tcd.tcdatasetid=tsd.tcdatasetid and tsd.testdatasetid=ctd.dataid and tsd.run_id=ctd.run_id and ctd.curname=pmd.id and ctd.run_id=pmd.run_id and tc.tc_id='%s' and tcd.tcdatasetid='%s' and tsd.teststepseq=%d and tc.run_id='%s' and pmd.id='%s'"%(TCID, EachDataSet[0],int(TestStepsList[StepSeq - 1][2]),TestRunID[0],each)
-                                conn=DBUtil.ConnectToDataBase()
-                                data_in_each_set=DBUtil.GetData(conn,data_query,False)
-                                conn.close()
-                                for eachitem in data_in_each_set:
-                                    group_data_query="select distinct pmd.field,pmd.value,pmd.keyfield,pmd.ignorefield from result_master_data pmd where run_id='%s' and id='%s'"%(TestRunID[0],eachitem[1])
-                                    conn=DBUtil.ConnectToDataBase()
-                                    grouped_data=DBUtil.GetData(conn,group_data_query,False)
-                                    conn.close()
-                                    if isinstance(grouped_data, list) and len(grouped_data)>0:
-                                        for eachgroupdata in grouped_data:
-                                            each_data_set.append((eachitem[0],eachgroupdata[0],eachgroupdata[1],eachgroupdata[2],eachgroupdata[3]))
-                                    else:
-                                        each_data_set.append((eachitem[0],"",eachitem[1],eachitem[2],eachitem[3]))
-                                steps_data.append(each_data_set)
-                        else:
-                            steps_data=[]
-                        print steps_data
+                        steps_data=[]
+                        for each_data_id in container_data_details:
+                            From_Data = DataFetching.Get_PIM_Data_By_Id(each_data_id[0])
+                            steps_data.append(From_Data)
+                    else:
+                        steps_data=[]
+                    print "steps data for #%d: "%StepSeq,steps_data
+                    CommonUtil.ExecLog(sModuleInfo,"steps data for #%d: %s"%(StepSeq,str(steps_data)),1)
                     try:
                         #while True:
                             #If threading is enabled

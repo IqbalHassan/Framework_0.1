@@ -136,7 +136,7 @@ def Expand_Menu_By_Name_OR_ID(name_or_id_or_id):
             #CommonUtil.TakeScreenShot("#sModuleInfo")
             #CommonUtil.ExecLog(#sModuleInfo, "Successfully to expand menu: %s"%name_or_id_or_id, 3)
             print "Successfully expanded your menu: %s"%name_or_id_or_id
-            return "PASS"
+            return "PASSED"
         else:
             #CommonUtil.ExecLog(#sModuleInfo, "Unable to expand menu: %s"%name_or_id_or_id, 3)
             print "Unable to expand Menu: %s"%name_or_id_or_id
@@ -178,7 +178,7 @@ def Click_Element_By_Name_OR_ID(name_or_id):
         Element.click()
         time.sleep(5)
         print "Successfully clicked your element by name or ID: %s"%name_or_id
-        return "PASS"
+        return "PASSED"
         #CommonUtil.TakeScreenShot("#sModuleInfo")
         #CommonUtil.ExecLog(#sModuleInfo, "Successfully clicked your element: %s"%name_or_id, 3)
     except Exception, e:
@@ -207,7 +207,7 @@ def Set_Text_Field_Value_By_ID(id,value):
         Element.click()
         time.sleep(5)
         print "Successfully set the value of to text with ID: %s"%id
-        return "PASS"
+        return "PASSED"
         #CommonUtil.TakeScreenShot("#sModuleInfo")
         #CommonUtil.ExecLog(#sModuleInfo, "Successfully set the value of to text with ID: %s"%id, 3)
     except Exception, e:
@@ -229,7 +229,7 @@ def Verify_Text_Message_By_Class(element, expected_text):
             #CommonUtil.ExecLog(#sModuleInfo, "Successfully verified your text: %s"%actual_text, 3)
             print "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text)
             #CommonUtil.ExecLog(#sModuleInfo, "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text), 3)
-            return "PASS"            
+            return "PASSED"            
         else:
             print "Failed to verify your expected text: %s"%expected_text
             #CommonUtil.ExecLog(#sModuleInfo, "Failed to verify your expected text: %s"%expected_text, 3)
@@ -286,7 +286,7 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
             print "Successfully clicked Save Config button"
             #CommonUtil.ExecLog(#sModuleInfo, "Successfully clicked Save Config button", 3)
         
-        return "PASS"      
+        return "PASSED"      
     except Exception, e:
         print "Exception : ", e
         #CommonUtil.ExecLog(#sModuleInfo, "Unable to set value course settings information", 3)
