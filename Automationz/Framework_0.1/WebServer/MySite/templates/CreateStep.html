@@ -3,6 +3,9 @@
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/CreateStep.js"></script>
 
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
+
 <div align="left">
     <h3 style="font-size: 19px;"><a style="font-weight: bold">Create/Edit Test Step</a></h3>
 </div>
@@ -248,7 +251,7 @@
 
 
         </div>
-        <br>
+
         <div id='footer_div' align="center">
             <!--input type="button" id="delete_button" class="button minibutton danger" value="Delete"/-->
             <input type="button" id="get_cases" class="m-btn blue" value="Get Test Cases"/>
@@ -256,13 +259,28 @@
         </div>
     </form>
 
-
+<br>
 <div align="center">
     <div id="delete_error" align="center">
 
     </div>
-    <div id='search_result' align="center">
+    <div id="inner" style="display: none">
+        <div align="right" style="float: right">
+            <select id="perpageitem">
+                <option value="">Select Per Page Item</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div id='search_result' align="center">
 
+        </div>
+        <div id="pagination_tab" align="right"></div>
     </div>
 </div>
 <script type="text/javascript">

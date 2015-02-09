@@ -4,8 +4,8 @@
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ViewSteps.js"></script>
-<!--script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
-<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/-->
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 <article>
 
     <a id="simple-menu" href="#sidr" class="button hint--right hint--bounce hint--rounded" data-hint="Apply Filter" style="text-decoration: none;"><img class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
@@ -73,13 +73,14 @@
             Go directly to page <select class="simple-pagination-select-specific-page"></select>.
         </div>
 
-        <div id="pagination_tab" align="right">
-
+        <!--div id="pagination_tab" align="right"-->
         </div>
+
+
         <div id="inner" style="display: none" align="center">
 
 
-            <!--div align="right" style="float: right">
+            <div align="right" style="float: right">
                 <select id="perpageitem">
                     <option value="">Select Per Page Item</option>
                     <option value="1">1</option>
@@ -91,14 +92,13 @@
                     <option value="100">100</option>
 
                 </select>
-            </div-->
+            </div>
 
             <h3 id="tc_title"></h3>
             <div id="tc_table"></div>
 
-            <!--div id="pagination_tab" align="right"></div-->
+            <div id="pagination_tab" align="right"></div>
         </div>
-
 
     </div>
 
