@@ -6904,11 +6904,12 @@ def TestStep_Auto(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
+        project = request.GET.get(u'project_id','')
         results = DB.GetData(
             Conn,
             "select  distinct stepname,steptype from test_steps_list where stepname Ilike '%" +
             value +
-            "%'",
+            "%' and project_id='"+project+"' ",
             False)
         # if len(results)>0:
         #  results.append("*Dev")
@@ -7120,6 +7121,11 @@ def CreateStep(request, error_message=""):
         'CreateStep.html',
         output,
         context_instance=RequestContext(request))
+    
+    
+def EditStep(request,stepname):
+    #Conn = GetConnection()
+    return render_to_response('CreateStep.html')
 
 
 def Process_TestStep(request):

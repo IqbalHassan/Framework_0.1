@@ -10,8 +10,33 @@ var itemPerPage=10;
 var PageCurrent=1;
 var project_id = $.session.get('project_id');
 var team_id = $.session.get('default_team_identity');
+var createpath="CreateStep/";
+var editpath="EditStep/";
+var operation = 1;
+
 
 $(document).ready(function(){
+
+    var URL=window.location.pathname;
+    var URL = decodeURIComponent(URL);
+    var create_index=URL.indexOf(createpath);
+    var edit_index=URL.indexOf(editpath);
+    var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf(createpath) != -1;
+    if(create_index != -1){
+
+        $("#header").html('Create Step');
+    }
+
+    if(edit_index!=-1){
+        var referred_step=URL.substring((URL.lastIndexOf(editpath)+(editpath).length),(URL.length-1));
+        console.log(referred_step);
+        $("#header").html('Edit Step / '+referred_step);
+        $("#step_name").val(referred_step);
+        PopulateStepInfo(referred_step);
+        operation=2;
+        //req_id = referred_req;
+    }
+
 
     $('input[name="step_user"]').val(user);
     $('input[name="step_project"]').val(project_id);
@@ -148,7 +173,7 @@ $(document).ready(function(){
             $.ajax({
                 url:"TestStep_Auto",
                 dataType:"json",
-                data:{term:request.term},
+                data:{term:request.term,project_id:project_id},
                 success:function(data){
                     response(data);
                 }
@@ -159,7 +184,38 @@ $(document).ready(function(){
             if(value!=""){
                 console.log(value);
                 $("#step_name").val(value);
-                $.ajax({
+                PopulateStepInfo(value);
+                return false;
+            }
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
+            .appendTo( ul );
+    };
+
+    $("#get_cases").click(function(){
+        var UserText=$("#step_name").val();
+        console.log(UserText);
+        itemPerPage = $("#perpageitem").val();
+        get_cases(UserText,itemPerPage, PageCurrent);
+        $('#perpageitem').on('change',function(){
+            if($(this).val()!=''){
+                itemPerPage=$(this).val();
+                current_page=1;
+                $('#pagination_tab').pagination('destroy');
+                window.location.hash = "#1";
+                get_cases(UserText,itemPerPage, PageCurrent);
+            }
+        });
+        
+        //Env = "PC"
+        
+    });
+
+function PopulateStepInfo(value){
+    $.ajax({
                     url:"Populate_info_div",
                     dataType:"json",
                     data:{term:value},
@@ -320,34 +376,7 @@ $(document).ready(function(){
 
                     }
                 });
-                return false;
-            }
-        }
-    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
-            .appendTo( ul );
-    };
-
-    $("#get_cases").click(function(){
-        var UserText=$("#step_name").val();
-        console.log(UserText);
-        itemPerPage = $("#perpageitem").val();
-        get_cases(UserText,itemPerPage, PageCurrent);
-        $('#perpageitem').on('change',function(){
-            if($(this).val()!=''){
-                itemPerPage=$(this).val();
-                current_page=1;
-                $('#pagination_tab').pagination('destroy');
-                window.location.hash = "#1";
-                get_cases(UserText,itemPerPage, PageCurrent);
-            }
-        });
-        
-        //Env = "PC"
-        
-    });
+}
 
 function get_cases(UserText,itemPerPage,PageCurrent){
     $.get("TestCase_Results",{Query: UserText,itemPerPage:itemPerPage,PageCurrent:PageCurrent},function(data) {

@@ -879,8 +879,10 @@ $(document).ready(function() {
     		
     		var title = $("#test_case_search_box").select2("data")["text"].substr(start, length - 1);
             
-            var project_id=$('#project_identity option:selected').val().trim();
-            var team_id=$('#default_team_identity option:selected').val().trim();
+            //var project_id=$('#project_identity option:selected').val().trim();
+            //var team_id=$('#default_team_identity option:selected').val().trim();
+            var project_id = $.session.get('project_id');
+            var team_id = $.session.get('default_team_identity');
             /**************************End Related Item *************************************************/
             /***************************DataFetching From the Pop UP*********************************************/
             var stepNameList=[];

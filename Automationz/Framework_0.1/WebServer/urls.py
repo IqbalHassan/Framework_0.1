@@ -360,6 +360,7 @@ urlpatterns += patterns('',
 	url(r'^Home/.*/TestCaseDataFromMainDriver/$',TestCaseDataFromMainDriver),
 	url(r'^Home/.*/get_feature_path/$',get_feature_path),
     url(r'^Home/User/ProfileDetail/$',ProfileDetail),
+    url(r'^Home/ManageTestCases/EditStep/(?P<stepname>[^/]*)/$',EditStep),
 	)
 
 

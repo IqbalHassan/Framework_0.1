@@ -56,6 +56,17 @@ function get_steps(project_id,team_id){
                 items_per_page: 10,
                 number_of_visible_page_numbers: 5
             });
+            $("#allsteps tr>td:first-child").each(function(){
+                $(this).css({
+                        'color': 'blue',
+                        'cursor': 'pointer',
+                        'textAlign': 'left'
+                    });
+                $(this).click(function(){
+                    step = $(this).text().trim();
+                    window.location = '/Home/ManageTestCases/EditStep/' + step ;
+                });
+            });
             $('#allsteps tr>td:last-child').each(function () {
                 if($(this).text() != '0') {
                     $(this).css({
@@ -166,6 +177,17 @@ function get_cases(UserText,itemPerPage,PageCurrent){
                     }
                 });
 
+                $("#tc_table tr>td:first-child").each(function(){
+                    $(this).css({
+                            'color': 'blue',
+                            'cursor': 'pointer',
+                            'textAlign': 'left'
+                        });
+                    $(this).click(function(){
+                        tc_id = $(this).text().trim();
+                        window.location = '/Home/ManageTestCases/Edit/' + tc_id ;
+                    });
+                });
                 var indx = 0;
                 $('#tc_table tr>td:nth-child(3)').each(function(){
                     var ID = $("#tc_table tr>td:nth-child(1):eq("+indx+")").text().trim();
