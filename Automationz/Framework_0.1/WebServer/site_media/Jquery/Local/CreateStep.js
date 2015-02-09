@@ -6,12 +6,16 @@
 var lowest_feature = 0;
 var isAtLowestFeature = false;
 var user = $.session.get('fullname');
+var itemPerPage=10;
+var PageCurrent=1;
+var project_id = $.session.get('project_id');
+var team_id = $.session.get('default_team_identity');
 
 $(document).ready(function(){
 
     $('input[name="step_user"]').val(user);
-    $('input[name="step_project"]').val($.session.get('project_id'));
-    $('input[name="step_team"]').val($.session.get('default_team_identity'));
+    $('input[name="step_project"]').val(project_id);
+    $('input[name="step_team"]').val(team_id);
 
     description_fill();
     verification_radio();
@@ -24,8 +28,8 @@ $(document).ready(function(){
         dataType : "json",
         data : {
             feature : '',
-            project_id: $.session.get('project_id'),
-            team_id: $.session.get('default_team_identity')
+            project_id: project_id,
+            team_id: team_id
         },
         success: function( json ) {
             if(json.length > 0)
@@ -329,8 +333,24 @@ $(document).ready(function(){
     $("#get_cases").click(function(){
         var UserText=$("#step_name").val();
         console.log(UserText);
-        Env = "PC"
-        $.get("TestCase_Results",{Query: UserText, Env: Env},function(data) {
+        itemPerPage = $("#perpageitem").val();
+        get_cases(UserText,itemPerPage, PageCurrent);
+        $('#perpageitem').on('change',function(){
+            if($(this).val()!=''){
+                itemPerPage=$(this).val();
+                current_page=1;
+                $('#pagination_tab').pagination('destroy');
+                window.location.hash = "#1";
+                get_cases(UserText,itemPerPage, PageCurrent);
+            }
+        });
+        
+        //Env = "PC"
+        
+    });
+
+function get_cases(UserText,itemPerPage,PageCurrent){
+    $.get("TestCase_Results",{Query: UserText,itemPerPage:itemPerPage,PageCurrent:PageCurrent},function(data) {
 
             if (data['TableData'].length == 0)
             {
@@ -342,7 +362,22 @@ $(document).ready(function(){
             }
             else
             {
+                $("#inner").show();
                 ResultTable('#search_result',data['Heading'],data['TableData'],"Test Cases");
+
+                $('#pagination_tab').pagination({
+                    items:data['count'],
+                    itemsOnPage:itemPerPage,
+                    cssStyle: 'dark-theme',
+                    currentPage:PageCurrent,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        //PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
+                        get_cases(UserText,itemPerPage,PageNumber);
+                    }
+                });
 
                 $("#search_result").fadeIn(1000);
                 $("p:contains('Show/Hide Test Cases')").fadeIn(0);
@@ -352,8 +387,8 @@ $(document).ready(function(){
                 $('#search_result tr>td:nth-child(3)').each(function(){
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                    $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25" style="cursor:pointer;"/>');
-                    $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25" style="cursor:pointer;"/>');
+                    $(this).after('<i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i>');
+                    $(this).after('<i class="fa fa-pencil fa-2x editBtn" id="'+ID+'" style="cursor:pointer"></i>');
 
                     indx++;
                 });
@@ -362,7 +397,7 @@ $(document).ready(function(){
                     window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id");
                 });
                 $(".templateBtn").click(function (){
-                    window.location = '/Home/ManageTestCases/Create/'+ $(this).attr("id");
+                    window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id");
                 });
                 //VerifyQueryProcess();
                 //$(".Buttons[title='Verify Query']").fadeIn(2000);
@@ -371,8 +406,7 @@ $(document).ready(function(){
 
         });
 
-    });
-
+}
 
 function ready_feature(){
     $("#featuregroup").empty();

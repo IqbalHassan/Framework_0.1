@@ -734,7 +734,7 @@ def Steps_List(request):
                 itemPerPage, (current_page - 1) * itemPerPage)"""
 
             
-            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.value from test_steps_list tsl,config_values cv where tsl.team_id=cv.id::text and cv.type='Team' and project_id='"+project_id+"' "
+            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.value,stepfeature from test_steps_list tsl,config_values cv where tsl.team_id=cv.id::text and cv.type='Team' and project_id='"+project_id+"' "
             steps_list=DB.GetData(Conn, query, False)
             count = len(steps_list)
             
@@ -748,14 +748,14 @@ def Steps_List(request):
                 Data.append(temp[0][0])
                 p_steps_list.append(tuple(Data))
                 
-            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(9),reverse=True)
+            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(10),reverse=True)
             
             #pquery = query + condition
             #p_steps_list = DB.GetData(Conn, pquery, False)
             
         
         
-    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Created By','Team','Test Cases']    
+    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Created By','Team','Feature','Test Cases']    
     results = {'Heading':Heading,'steps':p_steps_list, 'count': count}
     json = simplejson.dumps(results)
     Conn.close()
@@ -6970,12 +6970,19 @@ def TestCase_Results(request):
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
+            item = int(request.GET.get(u'itemPerPage',''))
+            page = int(request.GET.get(u'PageCurrent',''))
             sQuery = "select tc_id,tc_name from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='" + \
-                UserData + "'))"
+                UserData + "')) "
             TableData = DB.GetData(conn, sQuery, False)
-            Check_TestCase(TableData, RefinedData)
+            condition = "limit %d offset %d" % (item, (page - 1) * item)
+            
+            query = sQuery + condition
+            p_list = DB.GetData(conn,query,False)
+            conn.close()
+            Check_TestCase(p_list, RefinedData)
     Heading = ['TestCase_ID', 'TestCase_Name', 'TestCase_Type']
-    results = {'Heading': Heading, 'TableData': RefinedData}
+    results = {'Heading': Heading, 'TableData': RefinedData,'count':len(TableData)}
     # results={'TableData':TableData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
