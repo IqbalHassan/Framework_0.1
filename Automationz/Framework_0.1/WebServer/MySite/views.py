@@ -8873,7 +8873,7 @@ def LogFetch(request):
             print step_name
             print index
             Conn = GetConnection()
-            query = "select ts.step_id,teststepsequence from result_test_steps_list tsl, result_test_steps ts where ts.run_id=tsl.run_id and ts.step_id=tsl.step_id and ts.run_id='%s' order by teststepsequence" % (run_id)
+            query = "select ts.step_id,teststepsequence from result_test_steps_list tsl, result_test_steps ts where ts.run_id=tsl.run_id and ts.step_id=tsl.step_id and ts.run_id='%s' and tc_id='%s' order by teststepsequence" % (run_id,test_case_id)
             step_id = DB.GetData(Conn, query, False)
             Conn.close()
             step_id=step_id[int(index)-1]

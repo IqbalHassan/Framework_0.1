@@ -13,6 +13,10 @@ import Performance
 #from distutils.tests.test_check import CheckTestCase
 import DataFetching
 ReRunTag="ReRun"
+
+passed_tag_list=['Pass','pass','PASS','PASSED','Passed','passed','true','TRUE','True',True,1,'1','Success','success','SUCCESS']
+failed_tag_list=['Fail','fail','FAIL','Failed','failed','FAILED','false','False','FALSE',False,0,'0']
+
 if os.name == 'nt':
     location = "X:\\Actions\\Common Tasks\\PythonScripts\\"
     if location not in sys.path:
@@ -414,6 +418,10 @@ def main():
                                     step_name=step_name.lower().replace(' ','_')
                                     functionTocall=getattr(module_name, step_name)
                                     sStepResult = functionTocall(dependency_list_final,steps_data)
+                                    if sStepResult in passed_tag_list:
+                                        sStepResult='PASSED'
+                                    if sStepResult in failed_tag_list:
+                                        sStepResult='FAILED'
                                     q.put(sStepResult)
                                     #sStepResult = module_name.ExecuteTestSteps(TestRunID[0],TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
                                     #sStepResult = Futureshop.ExecuteTestSteps(TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
