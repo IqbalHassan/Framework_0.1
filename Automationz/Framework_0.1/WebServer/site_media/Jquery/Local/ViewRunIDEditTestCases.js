@@ -307,7 +307,8 @@ function ExecutionLog(){
                 $.get("LogFetch",{
                     run_id:run_id,
                     test_case_id:test_case_id,
-                    step_name:step_name
+                    step_name:step_name,
+                    index:step_no
                 },function(data){
                     //ResultTable("#inside_back",data['column'],data['log'],"");
                     var message=form_table(data['column'],data['log']);
@@ -327,7 +328,7 @@ function ExecutionLog(){
                         modal : true,
                         width : 720,
                         height : 620,
-                        title:div_name
+                        title:'#'+step_no+' - '+div_name
 
                     });
                 });

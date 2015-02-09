@@ -8867,15 +8867,20 @@ def LogFetch(request):
             run_id = request.GET.get(u'run_id', '').strip()
             test_case_id = request.GET.get(u'test_case_id', '').strip()
             step_name = request.GET.get(u'step_name', '').strip()
+            index=request.GET.get(u'index','').strip()
             print run_id
             print test_case_id
             print step_name
+            print index
             Conn = GetConnection()
-            query = "select step_id from test_steps_list where stepname='%s'" % step_name
+            query = "select ts.step_id,teststepsequence from result_test_steps_list tsl, result_test_steps ts where ts.run_id=tsl.run_id and ts.step_id=tsl.step_id and ts.run_id='%s' order by teststepsequence" % (run_id)
             step_id = DB.GetData(Conn, query, False)
-            query = "Select  el.status, el.modulename, el.details from test_step_results tsr, execution_log el where run_id = '%s' and tc_id = '%s' and teststep_id='%s' and tsr.logid = el.logid" % (
-                run_id, test_case_id, str(step_id[0][0]))
+            Conn.close()
+            step_id=step_id[int(index)-1]
+            Conn=GetConnection()
+            query = "Select  el.status, el.modulename, el.details from test_step_results tsr, execution_log el where run_id = '%s' and tc_id = '%s' and teststep_id='%s' and teststepsequence=%d and tsr.logid = el.logid" % (run_id, test_case_id, str(step_id[0]),int(step_id[1]))
             log = DB.GetData(Conn, query, False)
+            Conn.close()
             column = ["Status", "ModuleName", "Details"]
     message = {
         'column': column,

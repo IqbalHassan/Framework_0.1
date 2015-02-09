@@ -551,8 +551,27 @@ function LoadAllTestCases(divname){
         var RunID=$('#fetch_run_id').text().trim();
         $(this).html('<div id="'+TestCaseName+'name">'+name+'</div><div id="'+TestCaseName+'detail" style="display:none"></div>')
         $.get("TestCase_Detail_Table",{'RunID':RunID,'TestCaseName':TestCaseName},function(data){
-            ResultTable('#'+divname+' #'+TestCaseName+'detail',data['TestCase_Detail_Col'],data['TestCase_Detail_Data'],"");
-        })
+            //ResultTable('#'+divname+' #'+TestCaseName+'detail',data['TestCase_Detail_Col'],data['TestCase_Detail_Data'],"");
+            var column=data['TestCase_Detail_Col'];
+            var table_data=data['TestCase_Detail_Data'];
+            var message="";
+            message+='<table>';
+            message+='<tr>';
+            for(var i=0;i<column.length;i++){
+                message+='<th><b>'+column[i]+'</b></th>';
+            }
+            message+='</tr>';
+
+            for(var i=0;i<table_data.length;i++){
+                message+='<tr data-id="'+(i+1)+'">';
+                for(var j=0;j<table_data[i].length;j++){
+                    message+='<td>'+table_data[i][j]+'</td>';
+                }
+                message+='</tr>';
+            }
+            message+='</table>'
+            $('#'+divname+' #'+TestCaseName+'detail').html(message);
+        });
         $('#'+divname+' #'+TestCaseName+'name').live('click',function(){
             var TestCaseName=$($(this).closest('tr').find('td:first-child')[0]).text().trim();
             $('#'+divname+' #'+TestCaseName+'detail tr td:first-child').each(function(){
@@ -562,12 +581,14 @@ function LoadAllTestCases(divname){
                     'textAlign':'left'
                 });
                 $(this).live('click',function(){
+                    var index=$(this).parent().attr('data-id');
                     $('#inside_back').html("");
                     //alert(RunID+" "+TestCaseName+" "+$(this).text().trim());
                     $.get("LogFetch",{
                         run_id:RunID,
                         test_case_id:TestCaseName,
-                        step_name:$(this).text().trim()
+                        step_name:$(this).text().trim(),
+                        index:index
                     },function(data){
                         var stepname=data['step'];
                         var message=form_table(data['column'],data['log']);
@@ -587,11 +608,11 @@ function LoadAllTestCases(divname){
                             modal : true,
                             width : 720,
                             height : 620,
-                            title:stepname
+                            title:"#"+index +' - '+ stepname
 
                         });
                     });
-                    e.stopPropagation();
+                    //e.stopPropagation();
                 });
             });
             $('#'+divname+' #'+TestCaseName+'detail').slideToggle("slow");
