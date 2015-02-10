@@ -1,9 +1,24 @@
 
 # Administrative CMD!
 
+DUMP DB SQL:
+
 pg_dump -U postgres -h localhost --schema-only postgres > file_name.sql
               
               |            |                       |            |
               V            V                       V            V
 
            username      host                   dbname     output_file
+
+           
+
+DELTE DB:
+dropdb -U username yourdb
+
+
+CREATE DB:
+createdb -U username yourdb
+
+
+RESTORE:
+psql -U username -f yourdb.sql yourdb
