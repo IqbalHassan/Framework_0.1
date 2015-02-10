@@ -27,6 +27,9 @@
                 <td><input type="button" id="rename_step" class="button minibutton" value="Rename Title" style="display: none"/></td>
             </tr>
         </table>
+        <div class="modal" id="title_prompt" style="display:none;">
+
+        </div>
 
             <div class="responsive-tabs" style="margin-left: 30px">
 
@@ -255,7 +258,7 @@
         <div id='footer_div' align="center">
             <!--input type="button" id="delete_button" class="button minibutton danger" value="Delete"/-->
             <input type="button" id="get_cases" class="m-btn blue" value="Get Test Cases"/>
-            <input type="submit" id="submit_button" class="m-btn green" name="submit_button" value="Submit">
+            <input type="button" id="submit_button" class="m-btn green" name="submit_button" value="Submit">
         </div>
     </form>
 
@@ -283,7 +286,7 @@
         <div id="pagination_tab" align="right"></div>
     </div>
 </div>
-<script type="text/javascript">
+<!--script type="text/javascript">
     window.addEventListener('load', function () {
         // At first, let's check if we have permission for notification
         // If not, let's ask for it
@@ -338,7 +341,7 @@
             }
         });
     });
-</script>
+</script-->
 
 <script>
     // ResponsiveTabs.js | Version:1.10 | Author:Pete Love | www.petelove.com

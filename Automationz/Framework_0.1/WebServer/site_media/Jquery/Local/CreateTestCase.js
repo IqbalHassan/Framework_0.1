@@ -1283,8 +1283,8 @@ $(document).ready(function() {
                             },
                             function(data) {
                                 //alert(data+" edited successfully");
-                                alertify.success("Test Case '"+data+"' successfully edited!","",0);
-                                desktop_notify("Test Case '"+data+"' successfully edited!");
+                                alertify.success("Test Case '"+data+"' successfully updated!","",0);
+                                desktop_notify("Test Case '"+data+"' successfully updated!");
                                 $("#submit").removeAttr('disabled');
                                 var location='/Home/ManageTestCases/Edit/'+data;
                                 window.location=location;
@@ -2543,7 +2543,7 @@ function desktop_notify(message){
 
 
 }
-function desktop_notify(message){
+/*function desktop_notify(message){
     // At first, let's check if we have permission for notification
     // If not, let's ask for it
     if (Notification && Notification.permission !== "granted") {
@@ -2589,7 +2589,7 @@ function desktop_notify(message){
     }
 
 
-}
+}*/
 function AutoCompleteSearchForPrompt(){
 //    $("#titlebox").autocomplete({
 //        source:function(request,response){

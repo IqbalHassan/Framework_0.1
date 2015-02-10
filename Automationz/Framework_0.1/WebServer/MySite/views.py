@@ -7491,6 +7491,180 @@ def Process_CreateStep(request):
     return HttpResponse(output)
 
 
+
+def CreateEditStep(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            step_name = request.GET.get(u'step_name','').strip()
+            step_desc = request.GET.get(u'step_desc','').strip()
+            step_feature = request.GET.get(u'step_feature','').strip()
+            step_data = request.GET.get(u'step_data','').strip()
+            step_type = request.GET.get(u'step_type','').strip()
+            step_driver = request.GET.get(u'step_driver','').strip()
+            step_enable = request.GET.get(u'step_enable','').strip()
+            case_desc = request.GET.get(u'case_desc','').strip()
+            step_expect = request.GET.get(u'step_expect','').strip()
+            verify_radio = request.GET.get(u'verify_radio','').strip()
+            continue_radio = request.GET.get(u'continue_radio','').strip()
+            step_time = request.GET.get(u'step_time','').strip()
+            automata = request.GET.get(u'automata','').strip()
+            user = request.GET.get(u'user','').strip()
+            project_id = request.GET.get(u'project_id','').strip()
+            team_id = request.GET.get(u'team_id','').strip()
+            operation = request.GET.get(u'operation','').strip()
+            step_id = int(request.GET.get(u'step_id','').strip())
+    
+            now = datetime.datetime.now().date()
+               
+            try: 
+                sModuleInfo = inspect.stack()[0][
+                3] + " : " + inspect.getmoduleinfo(__file__).name
+    
+                conn = GetConnection()
+                if "Choose" in step_feature:
+                    fid = ""
+                elif step_feature=="":
+                    fid = ""
+                else:
+                    feature_id = DB.GetData(
+                    conn,
+                    "select feature_id from product_features where feature_path = '" +
+                    step_feature +
+                    "'",
+                    False)
+                    fid = feature_id[0][0] 
+                    """sQuery = "select count(*) from test_steps_list where stepname='" + \
+                        step_name + "'"
+                    result = DB.GetData(conn, sQuery)
+                    if(result[0] > 0):"""
+                if(step_data == "1"):
+                    data = "true"
+                    edit_data = "false"
+                if(step_data == "3"):
+                    data = "true"
+                    edit_data = "true"
+                if(step_data == "2"):
+                    data = "false"
+                    edit_data = "false"
+                if(step_type == "1"):
+                    s_type = "automated"
+                if(step_type == "2"):
+                    s_type = "manual"
+                if(step_type == "3"):
+                    s_type = "performance"
+                if(step_enable == "1"):
+                    enable = "true"
+                if(step_enable == "2"):
+                    enable = "false"
+                    
+                if operation == "2":
+                    query = "Where  step_id = %d" %step_id
+                    testrunenv = DB.UpdateRecordInTable(
+                        conn,
+                        "test_steps_list",
+                        query,
+                        stepname=step_name,
+                        description=step_desc,
+                        data_required=data,
+                        steptype=s_type,
+                        driver=step_driver,
+                        stepfeature=fid,
+                        stepenable=enable,
+                        step_editable=edit_data,
+                        case_desc=case_desc,
+                        expected=step_expect,
+                        verify_point=verify_radio,
+                        step_continue=continue_radio,
+                        estd_time=step_time,
+                        automatable=automata,
+                        modified_by=user,
+                        modified_date=now,
+                        project_id = project_id,
+                        team_id = team_id)
+                    if testrunenv:
+                        LogModule.PassMessasge(sModuleInfo,"Updated step - " +step_name +" successfully",1)
+                    else:
+                        LogModule.PassMessasge(sModuleInfo,"Test step - " +step_name +" Not updated",1)
+                    query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
+                        step_feature + "'"
+                    feature_count = DB.GetData(conn, query)
+                    if(feature_count[0] < 1):
+                        testrunenv = DB.InsertNewRecordInToTable(
+                            conn,
+                            "config_values",
+                            type='feature',
+                            value=step_feature)
+                    query = "SELECT count(*) FROM config_values where type='driver' and value='" + \
+                        step_driver + "'"
+                    driver_count = DB.GetData(conn, query)
+                    if(driver_count[0] < 1):
+                        testrunenv = DB.InsertNewRecordInToTable(
+                            conn,
+                            "config_values",
+                            type='driver',
+                            value=step_driver)
+                        
+                    """conn.close()
+                    result = simplejson.dumps(step_name)
+                    return HttpResponse(result, mimetype='application/json')"""
+
+                if operation == "1":
+                    testrunenv = DB.InsertNewRecordInToTable(
+                        conn,
+                        "test_steps_list",
+                        stepname=step_name,
+                        description=step_desc,
+                        data_required=data,
+                        steptype=s_type,
+                        driver=step_driver,
+                        stepfeature=fid,
+                        stepenable=enable,
+                        step_editable=edit_data,
+                        case_desc=case_desc,
+                        expected=step_expect,
+                        verify_point=verify_radio,
+                        step_continue=continue_radio,
+                        estd_time=step_time,
+                        automatable=automata,
+                        created_by=user,
+                        created_date=now,
+                        modified_by=user,
+                        modified_date=now,
+                        project_id = project_id,
+                        team_id = team_id)
+                    if testrunenv:
+                        LogModule.PassMessasge(sModuleInfo,"Updated step - " +step_name +" successfully",1)
+                    else:
+                        LogModule.PassMessasge(sModuleInfo,"Test step - " +step_name +" not updated",1)
+                    query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
+                        step_feature + "'"
+                    feature_count = DB.GetData(conn, query)
+                    if(feature_count[0] < 1):
+                        testrunenv = DB.InsertNewRecordInToTable(
+                            conn,
+                            "config_values",
+                            type='feature',
+                            value=step_feature)
+                    query = "SELECT count(*) FROM config_values where type='driver' and value='" + \
+                        step_driver + "'"
+                    driver_count = DB.GetData(conn, query)
+                    if(driver_count[0] < 1):
+                        testrunenv = DB.InsertNewRecordInToTable(
+                            conn,
+                            "config_values",
+                            type='driver',
+                            value=step_driver)
+                 
+                conn.close()
+                json = simplejson.dumps(step_name)
+                return HttpResponse(json, mimetype='application/json')
+            
+            except Exception as e:
+                print "Exception:", e
+            
+
+
+
 def Process_FeatureDriver(request):  # minar09
     output = "in the processing page"
     if request.method == 'POST':

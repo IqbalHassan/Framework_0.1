@@ -13,6 +13,7 @@ var team_id = $.session.get('default_team_identity');
 var createpath="CreateStep/";
 var editpath="EditStep/";
 var operation = 1;
+var step_id = 0;
 
 
 $(document).ready(function(){
@@ -46,6 +47,7 @@ $(document).ready(function(){
     verification_radio();
     Continue_radio();
     TimePicker();
+    
 
 
     $.ajax({
@@ -184,7 +186,19 @@ $(document).ready(function(){
             if(value!=""){
                 console.log(value);
                 $("#step_name").val(value);
-                PopulateStepInfo(value);
+                $("#title_prompt").html(
+                    '<p style="text-align: center">You have selected Test Step - ' +
+                    '<span style="font-weight: bold;">' + value + '</span>' +
+                    '<br/> What do you want to do?' +
+                    '</p><br>' +
+                    '<div style="padding-left: 23%">' +
+                    '<a class="twitter" href="/Home/ManageTestCases/EditStep/'+value+'">Edit Step</a>' +
+                    //'<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
+                    '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+                    '</div>'
+                );
+              $("#title_prompt").modal();
+                //PopulateStepInfo(value);
                 return false;
             }
         }
@@ -211,171 +225,174 @@ $(document).ready(function(){
         });
         
         //Env = "PC"
-        
     });
+
+    submit_step();
+});
 
 function PopulateStepInfo(value){
     $.ajax({
-                    url:"Populate_info_div",
-                    dataType:"json",
-                    data:{term:value},
-                    success:function(data){
-                        console.log(data[0])
-                        //info_div(data[0]);
-                        ready_feature();
+        url:"Populate_info_div",
+        dataType:"json",
+        data:{term:value},
+        success:function(data){
+            console.log(data[0])
+            //info_div(data[0])
+            ready_feature();
 
-                        var row=data[0];
-                        $("#step_desc").val(row[2]);
-                        $("#step_driver").val(row[3]);
-                        if(row[7]==null){
-                            $("#step_enable").val(2);
-                        }
-                        if(row[7]==false){
-                            $("#step_enable").val(2);
-                        }
-                        if(row[7]==true){
-                            $("#step_enable").val(1);
-                        }
-                        if(row[5]==null && (row[8]== false||row[8]==null)){
-                            $("#step_data").val(2);
-                        }
-                        if(row[5]==false && (row[8]== false||row[8]==null)){
-                            $("#step_data").val(2);
-                        }
-                        if(row[5]==true && (row[8]== false||row[8]==null)){
-                            $("#step_data").val(1);
-                        }
-                        if(row[5]==true && row[8]==true){
-                            $("#step_data").val(3);
-                        }
-                        if(row[4]=="manual"){
-                            $("#step_type").val(2);
-                        }
-                        if(row[4]=="automated"){
-                            $("#step_type").val(1);
-                        }
-                        if(row[4]=="performance"){
-                            $("#step_type").val(3);
-                        }
-                        //$("#step_feature").val(row[6]);
-                        
-                        $.get("get_feature_path",{'term':value ,'id':row[6]},function(data)
-                        {
-                            var features = data;
-                        var featureArray = features.split('.');
-                        var dataId ="";
-                        var handlerString = "";
-                        for(var index in featureArray){
-                            if(featureArray[index] == "")
-                                continue;
-                            $.ajax({
-                                url:'GetFeatures/',
-                                dataType : "json",
-                                data : {
-                                    feature : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_'),
-                                    project_id: $.session.get('project_id'),
-                                    team_id: $.session.get('default_team_identity')
-                                },
-                                success: function( json ) {
-                                    if(json.length != 1){
-                                        var realItemIndex = parseInt(json[0][0])
-                                        var handlerString = ""
-                                        for(var i = 0; i < realItemIndex; i++)
-                                            handlerString+=featureArray[i]+'.'
+            var row=data[0];
+            step_id = row[0];
+            $("#step_desc").val(row[2]);
+            $("#step_driver").val(row[3]);
+            if(row[7]==null){
+                $("#step_enable").val(2);
+            }
+            if(row[7]==false){
+                $("#step_enable").val(2);
+            }
+            if(row[7]==true){
+                $("#step_enable").val(1);
+            }
+            if(row[5]==null && (row[8]== false||row[8]==null)){
+                $("#step_data").val(2);
+            }
+            if(row[5]==false && (row[8]== false||row[8]==null)){
+                $("#step_data").val(2);
+            }
+            if(row[5]==true && (row[8]== false||row[8]==null)){
+                $("#step_data").val(1);
+            }
+            if(row[5]==true && row[8]==true){
+                $("#step_data").val(3);
+            }
+            if(row[4]=="manual"){
+                $("#step_type").val(2);
+            }
+            if(row[4]=="automated"){
+                $("#step_type").val(1);
+            }
+            if(row[4]=="performance"){
+                $("#step_type").val(3);
+            }
+            //$("#step_feature").val(row[6]);
+            
+            $.get("get_feature_path",{'term':value ,'id':row[6]},function(data)
+            {
+                var features = data;
+            var featureArray = features.split('.');
+            var dataId ="";
+            var handlerString = "";
+            for(var index in featureArray){
+                if(featureArray[index] == "")
+                    continue;
+                $.ajax({
+                    url:'GetFeatures/',
+                    dataType : "json",
+                    data : {
+                        feature : dataId.replace(/^\.+|\.+$/g, "").replace(/ /g,'_'),
+                        project_id: $.session.get('project_id'),
+                        team_id: $.session.get('default_team_identity')
+                    },
+                    success: function( json ) {
+                        if(json.length != 1){
+                            var realItemIndex = parseInt(json[0][0])
+                            var handlerString = ""
+                            for(var i = 0; i < realItemIndex; i++)
+                                handlerString+=featureArray[i]+'.'
 
-                                        if(realItemIndex == 0){
-                                            $(".feature[data-level='']").find('option').each(function(){$(this).remove();});
-                                            $(".feature[data-level='']").append("<option>Choose...</option>");
+                            if(realItemIndex == 0){
+                                $(".feature[data-level='']").find('option').each(function(){$(this).remove();});
+                                $(".feature[data-level='']").append("<option>Choose...</option>");
 
-                                            for(var i = 0; i < json.length; i++)
-                                                json[i] = json[i][0].replace(/_/g,' ')
-                                            $.each(json, function(i, value) {
-                                                if(i == 0)return;
-                                                $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
-                                            });
-                                            $(".feature[data-level='']").val(featureArray[realItemIndex].replace(/_/g,' '))
-                                        }else{
-                                            var tag = jQuery('<select/>',{
-                                                'class':'feature',
-                                                'data-level':handlerString,
-                                                'id':realItemIndex+1,
-                                                change: function(){
-                                                    isAtLowestFeature = false;
-                                                    recursivelyAddFeature(this);
-                                                    $("#feature-flag").removeClass("filled");
-                                                    $("#feature-flag").addClass("unfilled");
-                                                }
-                                            })
-                                            if($('#featuregroup select[id='+realItemIndex+']').length != 0)
-                                                $('#featuregroup select[id='+realItemIndex+']').after(tag)
-                                            else
-                                                $('#featuregroup select[id=1]').after(tag);
-
-                                            $(".feature[data-level='"+handlerString+"']").append("<option>Choose...</option>");
-
-                                            var once = true;
-                                            for(var i = 0; i < json.length; i++)
-                                                json[i] = json[i][0].replace(/_/g,' ')
-                                            $.each(json, function(i, value) {
-                                                if(i == 0)return;
-                                                if(once){
-                                                    lowest_feature+=1
-                                                    once = false
-                                                }
-                                                $(".feature[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
-                                            });
-                                            $(".feature[data-level='"+handlerString+"']").val(featureArray[realItemIndex].replace(/_/g,' '))
-                                        }
-                                        isAtLowestFeature = true;
-                                        $("#feature-flag").removeClass("unfilled");
-                                        $("#feature-flag").addClass("filled");
-                                        var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
-                                        $('input[name="step_feature"]').val(newFeaturePath);
-
-
-                                        /*var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
-
-                                        $.get("Check_Feature_Path",{Feature_Path : newFeaturePath},function(data)
-                                            {
-                                                if (data.length > 1) {
-                                                    $("#feature-flag").removeClass("filled");
-                                                    $("#feature-flag").addClass("unfilled");
-                                                    isAtLowestFeature = false;
-                                                };
-                    
-                                            });*/
+                                for(var i = 0; i < json.length; i++)
+                                    json[i] = json[i][0].replace(/_/g,' ')
+                                $.each(json, function(i, value) {
+                                    if(i == 0)return;
+                                    $(".feature[data-level='']").append($('<option>').text(value).attr('value', value));
+                                });
+                                $(".feature[data-level='']").val(featureArray[realItemIndex].replace(/_/g,' '))
+                            }else{
+                                var tag = jQuery('<select/>',{
+                                    'class':'feature',
+                                    'data-level':handlerString,
+                                    'id':realItemIndex+1,
+                                    change: function(){
+                                        isAtLowestFeature = false;
+                                        recursivelyAddFeature(this);
+                                        $("#feature-flag").removeClass("filled");
+                                        $("#feature-flag").addClass("unfilled");
                                     }
-                                }
-                            });
+                                })
+                                if($('#featuregroup select[id='+realItemIndex+']').length != 0)
+                                    $('#featuregroup select[id='+realItemIndex+']').after(tag)
+                                else
+                                    $('#featuregroup select[id=1]').after(tag);
 
-                            dataId += featureArray[index] + '.'
+                                $(".feature[data-level='"+handlerString+"']").append("<option>Choose...</option>");
+
+                                var once = true;
+                                for(var i = 0; i < json.length; i++)
+                                    json[i] = json[i][0].replace(/_/g,' ')
+                                $.each(json, function(i, value) {
+                                    if(i == 0)return;
+                                    if(once){
+                                        lowest_feature+=1
+                                        once = false
+                                    }
+                                    $(".feature[data-level='"+handlerString+"']").append($('<option>').text(value).attr('value', value));
+                                });
+                                $(".feature[data-level='"+handlerString+"']").val(featureArray[realItemIndex].replace(/_/g,' '))
+                            }
+                            isAtLowestFeature = true;
+                            $("#feature-flag").removeClass("unfilled");
+                            $("#feature-flag").addClass("filled");
+                            var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+                            $('input[name="step_feature"]').val(newFeaturePath);
+
+
+                            /*var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+
+                            $.get("Check_Feature_Path",{Feature_Path : newFeaturePath},function(data)
+                                {
+                                    if (data.length > 1) {
+                                        $("#feature-flag").removeClass("filled");
+                                        $("#feature-flag").addClass("unfilled");
+                                        isAtLowestFeature = false;
+                                    };
+        
+                                });*/
                         }
-                    });
-
-
-
-                        $("#case_desc").val(row[9]);
-                        $("#step_expect").val(row[10]);
-                        if(row[11]==true){
-                            $("#true_radio").trigger('click');
-                        }
-                        else if(row[11]==false){
-                            $("#false_radio").trigger('click');
-                        }
-                        if(row[12]==true){
-                            $("#yes_radio").trigger('click');
-                        }
-                        else if(row[12]==false){
-                            $("#no_radio").trigger('click');
-                        }
-                        $("#step_time").val(row[13]);
-                        $(".timepicker").timepicker('setTime', convertToString(row[13]));
-
-                        
-                        $("#automata").val(row[14]);
-
                     }
                 });
+
+                dataId += featureArray[index] + '.'
+            }
+        });
+
+
+
+            $("#case_desc").val(row[9]);
+            $("#step_expect").val(row[10]);
+            if(row[11]==true){
+                $("#true_radio").trigger('click');
+            }
+            else if(row[11]==false){
+                $("#false_radio").trigger('click');
+            }
+            if(row[12]==true){
+                $("#yes_radio").trigger('click');
+            }
+            else if(row[12]==false){
+                $("#no_radio").trigger('click');
+            }
+            $("#step_time").val(row[13]);
+            $(".timepicker").timepicker('setTime', convertToString(row[13]));
+
+            
+            $("#automata").val(row[14]);
+
+        }
+    });
 }
 
 function get_cases(UserText,itemPerPage,PageCurrent){
@@ -494,7 +511,7 @@ function ready_feature(){
         });
     });*/
 
-});
+
 function description_fill(){
     $("#step_name").keyup(function(){
         var desc = $(this).val();
@@ -667,9 +684,116 @@ function recursivelyAddFeature(_this){
                 isAtLowestFeature = true;
                 $("#feature-flag").removeClass("unfilled");
                 $("#feature-flag").addClass("filled");
-                var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
-                $('input[name="step_feature"]').val(newFeaturePath);
+                //var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+                //$('input[name="step_feature"]').val(newFeaturePath);
             }
         }
     });
+}
+
+
+function submit_step(){
+
+    $("#submit_button").live('click',function(e){
+        if($("#step_name").val()==""){
+            alertify.error('Please enter a title for test step',"",0);
+            return false;
+        }
+
+        var step_name = $("#step_name").val().trim();
+        var step_desc = $("#step_desc").val().trim();
+        var step_data = $("#step_data").val().trim();
+        var step_type = $("#step_type").val().trim();
+        var step_driver = $("#step_driver").val().trim();
+        var step_enable = $("#step_enable").val().trim();
+        var case_desc = $("#case_desc").val().trim();
+        var step_expect = $("#step_expect").val().trim();
+        var verify_radio = $("#verify_radio").val().trim();
+        var continue_radio = $("#continue_radio").val().trim();
+        var step_time = $("#step_time").val().trim();
+        var automata = $("#automata").val().trim();
+        var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
+
+        $.get("CreateEditStep/",{
+            'step_name' : step_name,
+            'step_desc' : step_desc,
+            'step_feature' : newFeaturePath,
+            'step_data' : step_data,
+            'step_type' : step_type,
+            'step_driver' : step_driver,
+            'step_enable' : step_enable,
+            'case_desc' : case_desc,
+            'step_expect' : step_expect,
+            'verify_radio' : verify_radio,
+            'continue_radio' : continue_radio,
+            'step_time' : step_time,
+            'automata' : automata,
+            'user' : user,
+            'project_id' : project_id,
+            'team_id' : team_id,
+            'operation' : operation,
+            'step_id' : step_id
+        },function(data) {
+            if (operation==1) {
+                alertify.success("Test Step '"+data+"' successfully created!","",0);
+                desktop_notify("Test Step -'"+data+"' successfully created!");
+            };
+            if (operation==2) {
+                alertify.success("Test Step '"+data+"' successfully updated!","",0);
+                desktop_notify("Test Step -'"+data+"' successfully updated!");
+            };
+            
+            var location='/Home/ManageTestCases/EditStep/'+data;
+            window.location=location;
+        });
+    });
+}
+
+
+function desktop_notify(message){
+    // At first, let's check if we have permission for notification
+    // If not, let's ask for it
+    if (Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    }
+
+    var button = document.getElementById('submit_button');
+
+    // If the user agreed to get notified
+    if (Notification && Notification.permission === "granted") {
+        var n = new Notification("Test Step Created/Updated!",{body:message, icon:"/site_media/noti.ico"});
+    }
+
+    // If the user hasn't told if he wants to be notified or not
+    // Note: because of Chrome, we are not sure the permission property
+    // is set, therefore it's unsafe to check for the "default" value.
+    else if (Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+
+            // If the user said okay
+            if (status === "granted") {
+                var n = new Notification("Test Case Created/Updated!",{body:message, icon:"/site_media/noti.ico"});
+            }
+
+            // Otherwise, we can fallback to a regular modal alert
+            else {
+                alertify.log(message,"",0);
+            }
+        });
+    }
+
+    // If the user refuses to get notified
+    else {
+        // We can fallback to a regular modal alert
+        alertify.log(message,"",0);
+    }
+
+
 }
