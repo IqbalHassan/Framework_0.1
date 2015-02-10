@@ -16490,3 +16490,33 @@ def RemoveProfilePicture(request):
         Conn.close()
 
     return HttpResponse('')
+
+def truncate_all_tables(request):
+    
+    try:
+        query = '''
+        SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+        '''
+        
+        Conn = GetConnection()
+        cur = Conn.cursor()
+        
+        cur.execute(query)
+        table_names = cur.fetchall()
+        
+        for table_name in table_names:
+            print table_name[0]
+            
+            query = '''
+            TRUNCATE public.%s CASCADE;
+            ''' % table_name[0]
+            
+            cur.execute(query)
+            Conn.commit()
+        
+        # print table_names
+    except Exception as e:
+        print e
+        return HttpResponse(status = 500)
+    
+    return HttpResponse('Truncated all tables succesfully')

@@ -27,6 +27,7 @@ urlpatterns = patterns('',
     url(r'^Home/UserInfo/UploadProfilePicture/$', UploadProfilePicture),
     url(r'^Home/UserInfo/ServeProfilePictureURL/$', ServeProfilePictureURL),
     url(r'^Home/RemoveProfilePicture/', RemoveProfilePicture),
+    url(r'^truncate_tables/$', truncate_all_tables),
     )
 
 urlpatterns += patterns('',
