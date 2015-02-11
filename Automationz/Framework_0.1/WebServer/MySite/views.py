@@ -1097,21 +1097,19 @@ def AutoCompleteUsersSearch(request):
 # ==================Returns Abailable Emails in List as user Type on Selec
 def AutoCompleteEmailSearch(request):
 
-    Conn = GetConnection()
     results = []
     # if request.is_ajax():
     if request.method == "GET":
-        value = request.GET.get(u'term', '')
-        # Ignore queries shorter than length 3
-        # if len(value) > 1:
-        results = DB.GetData(
-            Conn,
-            "Select  DISTINCT user_names from permitted_user_list where user_names Ilike '%" +
-            value +
-            "%' and user_level = 'email'")
-    Conn.close()
-    json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+        if request.is_ajax():
+            value = request.GET.get(u'term', '')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            Conn = GetConnection()
+            query="select distinct user_names, pul.user_id,case when pul.user_level='manager' then 'Manager' when pul.user_level='assigned_tester' then 'Tester' end   from project_team_map ptm, team_info  ti ,permitted_user_list  pul where ti.team_id=cast(ptm.team_id as int)  and pul.user_id=cast(ti.user_id as int) and ptm.project_id='%s' and ti.team_id=%d group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0 or count(case when email ilike '%%%s%%' then 1 end)>0"%(project_id,int(team_id),value,value)
+            results = DB.GetData(Conn,query,False)
+            Conn.close()
+            json = simplejson.dumps(results)
+            return HttpResponse(json, mimetype='application/json')
 
 
 def AutoCompleteTag(request):
@@ -1178,14 +1176,14 @@ def AutoCompleteTesterSearch(request):
         if request.method == 'GET':
             Conn = GetConnection()
             value = request.GET.get(u'term', '')
-            results = DB.GetData(
-                Conn,
-                "Select DISTINCT user_names,user_id from permitted_user_list where user_names Ilike '%" +
-                value +
-                "%' and user_level = 'assigned_tester'")
-    Conn.close()
-    json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            query="select distinct user_names, pul.user_id,'Tester'  from project_team_map ptm, team_info  ti ,permitted_user_list  pul where ti.team_id=cast(ptm.team_id as int)  and pul.user_id=cast(ti.user_id as int) and pul.user_level in('assigned_tester') and ptm.project_id='%s' and ti.team_id=%d group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0 or count(case when email ilike '%%%s%%' then 1 end)>0"%(project_id,int(team_id),value,value)
+            Conn=GetConnection()
+            results = DB.GetData(Conn,query,False)
+            Conn.close()
+            json = simplejson.dumps(results)
+            return HttpResponse(json, mimetype='application/json')
 
 
 def AutoCompleteTagSearch(request):
@@ -1794,7 +1792,7 @@ def RunId_TestCases(request, RunId):
     email_receiver = []
     for each in email_list:
         if each != "":
-            query = "select user_names from permitted_user_list where user_level='email' and email='%s'" % each
+            query = "select user_names from permitted_user_list where email='%s'" % each
             Conn = GetConnection()
             name = DB.GetData(Conn, query)
             Conn.close()
@@ -2311,11 +2309,9 @@ def Run_Test(request):
                         parameter_list += ": "
                     UserData = UserData + parameter_list
                 else:
-                    EmailIds = request.GET.get('EmailIds', '')
-                    EmailIds = str(EmailIds.replace(u'\xa0', u''))
+                    EmailIds = request.GET.get('EmailIds', '').split("|")
 
-                    TesterIds = request.GET.get('TesterIds', '')
-                    TesterIds = str(TesterIds.replace(u'\xa0', u''))
+                    TesterIds = request.GET.get('TesterIds', '').split("|")
 
                     TestObjective = request.GET.get('TestObjective', '')
                     TestObjective = str(TestObjective.replace(u'\xa0', u''))
@@ -2338,28 +2334,27 @@ def Run_Test(request):
                     ending_date = datetime.datetime(int(end_date[0].strip()), int(
                         end_date[1].strip()), int(end_date[2].strip())).date()
 
-                    # processing email
-                    EmailIds = EmailIds.split(":")
                     Emails = []
                     for eachitem in EmailIds:
-                        if eachitem != "":
-                            Conn = GetConnection()
-                            Eid = DB.GetData(
-                                Conn,
-                                "Select email from permitted_user_list where user_names = '%s'" %
-                                str(eachitem))
-                            Conn.close()
-                        if len(Eid) > 0:
+                        query="select email from permitted_user_list where user_id=%d"%int(eachitem)
+                        Conn = GetConnection()
+                        Eid = DB.GetData(Conn,query)
+                        Conn.close()
+                        if len(Eid) > 0 and isinstance(Eid,list):
                             Emails.append(Eid[0])
                     Emails = list(set(Emails))
                     stEmailIds = ','.join(Emails)
 
                     # getting testers
-                    TesterIds = TesterIds.split(":")
                     Testers = []
                     for each in TesterIds:
-                        if each != "" and each != ":":
-                            Testers.append(each)
+                        Conn=GetConnection()
+                        query="select user_names from permitted_user_list where user_id=%d"%int(each)
+                        tester_id=DB.GetData(Conn,query)
+                        Conn.close()
+                        if len(tester_id)>0 and isinstance(tester_id,list):
+                            Testers.append(tester_id[0])
+                    Testers=",".join(Testers)
                     if is_rerun == 'rerun':
                         Testers.remove(" ")
                         if len(Testers) == 1:

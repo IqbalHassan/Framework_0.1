@@ -160,21 +160,27 @@ function SubmitRun(project_id,team_id){
             alertify.log("Ending Date Must be selected","",0);
             return false;
         }
-        var TesterQuery="";
-        $("#tester").each( function()
+        var TesterQuery=[];
+        $("#tester").find('td').each( function()
         {
-            TesterQuery = $(this).find("td").text();
-            TesterQuery = TesterQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+            var temp = $(this).attr('data-id');
+            //TesterQuery = TesterQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
+            if(TesterQuery.indexOf(temp)==-1 && temp!=undefined){
+                TesterQuery.push(temp);
+            }
         });
         if(TesterQuery.length==0){
             alertify.log("Testers is to be selected from suggestion","",0);
             return false;
         }
-        var EmailQuery="";
-        $("#email").each( function()
+        var EmailQuery=[];
+        $("#email").find('td').each( function()
         {
-            EmailQuery = $(this).find("td").text();
-            EmailQuery = EmailQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+            var temp = $(this).attr('data-id');
+            //EmailQuery = EmailQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
+            if(EmailQuery.indexOf(temp)==-1 && temp!=undefined){
+                EmailQuery.push(temp);
+            }
         });
         if(EmailQuery.length==0){
             alertify.log("Email Receipient is to be selected from suggestion","",0);
@@ -209,8 +215,8 @@ function SubmitRun(project_id,team_id){
         $.get("Run_Test",
             {
                 RunTestQuery : RunTestQuery,
-                TesterIds:TesterQuery,
-                EmailIds:EmailQuery,
+                TesterIds:TesterQuery.join('|'),
+                EmailIds:EmailQuery.join('|'),
                 TestObjective:TestObjective,
                 TestMileStone:milestoneQuery,
                 project_id:project_id,
@@ -236,12 +242,25 @@ function SubmitRun(project_id,team_id){
 function AutoSuggestions(project_id,team_id){
     $("#assigned_tester").autocomplete({
 
-        source : 'AutoCompleteTesterSearch',
+        //source : 'AutoCompleteTesterSearch',
+        source:function(request,response){
+            $.ajax({
+                url:"AutoCompleteTesterSearch",
+                dataType:"json",
+                data:{
+                    term:request.term,
+                    project_id:project_id,
+                    team_id:team_id
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
         select : function(event, ui) {
-
-            var value = ui.item.value
+            var value = ui.item[0];
             $("#tester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
-                + '<td class="Text">'
+                + '<td class="Text" data-id="'+ui.item[1]+'">'
                 + value
                 + ":&nbsp"
                 + '</td>');
@@ -252,7 +271,12 @@ function AutoSuggestions(project_id,team_id){
             return false;
 
         }
-    });
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[2]+"</a>" )
+            .appendTo( ul );
+    };
     $("#assigned_tester").keypress(function(event) {
         if (event.which == 13) {
 
@@ -268,12 +292,26 @@ function AutoSuggestions(project_id,team_id){
     });
     $("#email_list").autocomplete({
 
-        source : 'AutoCompleteEmailSearch',
+        //source : 'AutoCompleteEmailSearch',
+        source:function(request,response){
+            $.ajax({
+                url:"AutoCompleteEmailSearch",
+                dataType:"json",
+                data:{
+                    term:request.term,
+                    project_id:project_id,
+                    team_id:team_id
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
         select : function(event, ui) {
 
-            var value = ui.item.value
+            var value = ui.item[0]
             $("#email").append('<td><img class="delete" id = "DeleteEmail" title = "EmailDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
-                + '<td class="Text">'
+                + '<td class="Text" data-id="'+ui.item[1]+'">'
                 + value
                 + ":&nbsp"
                 + '</td>');
@@ -284,7 +322,12 @@ function AutoSuggestions(project_id,team_id){
             return false;
 
         }
-    });
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a><strong>" + item[0] + "</strong> - "+item[2]+"</a>" )
+            .appendTo( ul );
+    };
 
     $("#email_list").keypress(function(event) {
         if (event.which == 13) {
