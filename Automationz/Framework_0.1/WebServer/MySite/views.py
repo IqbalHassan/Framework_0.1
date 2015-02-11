@@ -1802,8 +1802,7 @@ def RunId_TestCases(request, RunId):
     email_receiver = []
     for each in email_list:
         if each != "":
-            query = "select user_names from project_team_map ptm, team_info ti,permitted_user_list pul where ptm.team_id=cast(ti.team_id as text)  and pul.user_id=cast(ti.user_id as int) and project_id='%s' and ti.team_id=%d and email='%s'"%(project_id,int(team_id),each)
-            Conn = GetConnection()
+            query = "select user_names from project_team_map ptm, team_info ti,permitted_user_list pul where ptm.team_id=cast(ti.team_id as text)  and pul.user_id=cast(ti.user_id as int) and project_id='%s' and ti.team_id=%d and email='%s'"%(project_id,int(team_id),each)Conn = GetConnection()
             name = DB.GetData(Conn, query)
             Conn.close()
             email_receiver.append(name[0])
@@ -2350,13 +2349,13 @@ def Run_Test(request):
                     # getting testers
                     Testers = []
                     for each in TesterIds:
-                        Conn=GetConnection()
-                        query="select user_names from permitted_user_list where user_id=%d"%int(each)
-                        tester_id=DB.GetData(Conn,query)
-                        Conn.close()
-                        if len(tester_id)>0 and isinstance(tester_id,list):
-                            Testers.append(tester_id[0])
-                    Testers=",".join(Testers)
+                            Conn=GetConnection()
+	                        query="select user_names from permitted_user_list where user_id=%d"%int(each)
+	                        tester_id=DB.GetData(Conn,query)
+	                        Conn.close()
+	                        if len(tester_id)>0 and isinstance(tester_id,list):
+	                            Testers.append(tester_id[0])
+					Testers=",".join(Testers)
                 UserText = UserData.split(":")
                 QueryText = []
                 for eachitem in UserText:
