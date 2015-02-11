@@ -1779,6 +1779,16 @@ def RunId_TestCases(request, RunId):
             totalRunIDTime += int(step_time[0])
     formatTime = ConvertTime(totalRunIDTime)
     ################################################
+    query = "select p.project_id||' - '||p.project_name from projects p, test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and p.project_id=mpm.project_id and tre.run_id='%s'" % RunId
+    Conn = GetConnection()
+    project_name = DB.GetData(Conn, query, False)
+    Conn.close()
+    query = "select c.id,value from config_values c,test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and  c.id=mpm.team_id and c.type='Team' and tre.run_id='%s'" % RunId
+    Conn = GetConnection()
+    team_name = DB.GetData(Conn, query, False)
+    Conn.close()
+    project_id=project_name[0][0].split(' - ')[0]
+    team_id=team_name[0][0]
     # code for fetching email notification
     email_query = "select email_notification from test_run_env where run_id='%s'" % RunId
     Conn = GetConnection()
@@ -1792,28 +1802,20 @@ def RunId_TestCases(request, RunId):
     email_receiver = []
     for each in email_list:
         if each != "":
-            query = "select user_names from permitted_user_list where email='%s'" % each
+            query = "select user_names from project_team_map ptm, team_info ti,permitted_user_list pul where ptm.team_id=cast(ti.team_id as text)  and pul.user_id=cast(ti.user_id as int) and project_id='%s' and ti.team_id=%d and email='%s'"%(project_id,int(team_id),each)
             Conn = GetConnection()
             name = DB.GetData(Conn, query)
             Conn.close()
             email_receiver.append(name[0])
     print email_receiver
     email_name = ",".join(email_receiver)
-    query = "select p.project_id||' - '||p.project_name from projects p, test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and p.project_id=mpm.project_id and tre.run_id='%s'" % RunId
-    Conn = GetConnection()
-    project_name = DB.GetData(Conn, query, False)
-    Conn.close()
-    query = "select value from config_values c,test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and  c.id=mpm.team_id and c.type='Team' and tre.run_id='%s'" % RunId
-    Conn = GetConnection()
-    team_name = DB.GetData(Conn, query, False)
-    Conn.close()
     temp = []
     for each in Env_Details_Data[0]:
         temp.append(each)
     temp.insert(3, formatTime)
     temp.append(email_name)
     temp.append(project_name[0][0])
-    temp.append(team_name[0][0])
+    temp.append(team_name[0][1])
     temp = tuple(temp)
     Env_Details_Data = []
     Env_Details_Data.append(temp)
@@ -2355,15 +2357,6 @@ def Run_Test(request):
                         if len(tester_id)>0 and isinstance(tester_id,list):
                             Testers.append(tester_id[0])
                     Testers=",".join(Testers)
-                    if is_rerun == 'rerun':
-                        Testers.remove(" ")
-                        if len(Testers) == 1:
-                            Testers = Testers[0]
-                        else:
-                            Testers = ','.join(Testers)
-                    else:
-                        Testers = ','.join(Testers)
-
                 UserText = UserData.split(":")
                 QueryText = []
                 for eachitem in UserText:
