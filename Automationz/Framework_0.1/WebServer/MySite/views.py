@@ -3902,6 +3902,46 @@ def TestCaseSearch(request):
     return HttpResponse(json, mimetype='application/json')
 
 
+def TestStepSearch(request):
+    Conn = GetConnection()
+    results = []
+    items_per_page = 10
+    has_next_page = False
+    
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        project = request.GET.get(u'project_id','')
+        requested_page = int(request.GET.get(u'page', ''))
+        data = DB.GetData(
+            Conn,
+            "select  distinct stepname,steptype from test_steps_list where stepname Ilike '%" +
+            value +
+            "%' and project_id='"+project+"' ",
+            bList=False,
+            dict_cursor=False,
+            paginate=True,
+            page=requested_page,
+            page_limit=items_per_page,
+            order_by='stepname')
+        # if len(results)>0:
+        #  results.append("*Dev")
+        for test_step in data['rows']:
+            result_dict = {}
+            # AAA-000
+            result_dict['title'] = test_step[0]
+            # In the UI, it should be displayed as, AAA-000: Test For 'X'
+            result_dict['text'] = '%s: %s' % (result_dict['title'], test_step[1])
+            results.append(result_dict)
+
+        has_next_page = data['has_next']
+
+    json = simplejson.dumps({'items': results, 'more': has_next_page})
+    
+    #json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+
+
 def SearchTestCase(request):
     Conn = GetConnection()
     results = []
@@ -5478,15 +5518,8 @@ def New_Execution_Report(request):
             new_dependency.append(each.split('|'))
             # print each
 
-        # print new_dependency
-        browser = new_dependency[0][1]
-        bro_bit = new_dependency[0][2]
-        bro_ver = new_dependency[0][3]
-        tc_type = new_dependency[1][1]
-        platform = new_dependency[2][1]
-        plat_bit = new_dependency[2][2]
-        plat_ver = new_dependency[2][3]
-
+        depen = len(new_dependency)
+        
         xtra_qry = " "
         if branch != '' and version == '':
             xtra_qry += " and tre.branch_version ~ '" + branch + "' "
@@ -5499,6 +5532,36 @@ def New_Execution_Report(request):
 
         if milestone != '':
             xtra_qry += " and tre.test_milestone ~ '" + milestone + "' "
+        
+        for index,each in enumerate(new_dependency):
+            if index == 0:
+                if each[1] != '':
+                    xtra_qry += " and mds.type='" + \
+                    each[0] + "' and mds.name='" + each[1] + "' "
+                if each[2] != '':
+                    xtra_qry += " and mds.bit=" + each[2] + " "
+                    if each[3] != '':
+                        xtra_qry += " and mds.version='" + each[3] + "' "
+            else:
+                if each[1] != '':
+                    xtra_qry += " and mds.machine_serial in (select machine_serial from machine_dependency_settings where type = '" + each[0] + "' and name = '" + each[1] + "' "
+                    if each[2] != '':
+                        xtra_qry += " and bit = '" + each[2] + "' "
+                        if each[3] != '':
+                            xtra_qry += " and version='" + each[3] + "' "
+                    xtra_qry += " ) "
+                    
+        
+        """
+    
+        browser = new_dependency[0][1]
+        bro_bit = new_dependency[0][2]
+        bro_ver = new_dependency[0][3]
+        tc_type = new_dependency[1][1]
+        platform = new_dependency[2][1]
+        plat_bit = new_dependency[2][2]
+        plat_ver = new_dependency[2][3]
+
 
         if browser != '':
             xtra_qry += " and mds.type='" + \
@@ -5539,7 +5602,9 @@ def New_Execution_Report(request):
             if plat_bit != '':
                 xtra_qry += " and mds.bit=" + plat_bit + " "
                 if plat_ver != '':
-                    xtra_qry += " and mds.version='" + plat_ver + "' "
+                    xtra_qry += " and mds.version='" + plat_ver + "' "   
+                    
+        """
 
         #status = request.GET.get(u'status', '')
         # if status == '':

@@ -362,6 +362,7 @@ urlpatterns += patterns('',
     url(r'^Home/User/ProfileDetail/$',ProfileDetail),
     url(r'^Home/ManageTestCases/EditStep/(?P<stepname>[^/]*)/$',EditStep),
     url(r'^Home/.*/CreateEditStep/$',CreateEditStep),
+    url(r'^Home/.*/TestStepSearch/$',TestStepSearch),
 	)
 
 
