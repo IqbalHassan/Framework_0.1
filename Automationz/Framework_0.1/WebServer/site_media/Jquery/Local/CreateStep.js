@@ -14,9 +14,12 @@ var createpath="CreateStep/";
 var editpath="EditStep/";
 var operation = 1;
 var step_id = 0;
+var new_test_step_text = "New test step";
 
 
 $(document).ready(function(){
+
+    title_box();
 
     var URL=window.location.pathname;
     var URL = decodeURIComponent(URL);
@@ -33,6 +36,7 @@ $(document).ready(function(){
         console.log(referred_step);
         $("#header").html('Edit Step / '+referred_step);
         $("#step_name").val(referred_step);
+        $("#step_name").select2("data", {"id": "Edit test step", "text": "Edit test step" + ": " + referred_step});
         PopulateStepInfo(referred_step);
         operation=2;
         //req_id = referred_req;
@@ -170,7 +174,7 @@ $(document).ready(function(){
         $('#step_driver').append('<option value="'+driver_list[i]+'">'+driver_list[i]+'</opiton>');
     }*/
 
-    $("#step_name").autocomplete({
+    /*$("#step_name").autocomplete({
         source: function(request,response){
             $.ajax({
                 url:"TestStep_Auto",
@@ -207,7 +211,7 @@ $(document).ready(function(){
             .data( "ui-autocomplete-item", item )
             .append( "<a><strong>" + item[0] + "</strong> - " + item[1] + "</a>" )
             .appendTo( ul );
-    };
+    };*/
 
     $("#get_cases").click(function(){
         var UserText=$("#step_name").val();
@@ -229,6 +233,94 @@ $(document).ready(function(){
 
     submit_step();
 });
+
+function title_box(){
+    $("#step_name").select2({
+        placeholder: "Test Step title...",
+//      minimumInputLength: 3,
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "TestStepSearch/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': $.session.get('project_id')
+                    //'team_id': $.session.get('default_team_identity')
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        createSearchChoice: function(term) {
+            return {id: new_test_step_text, text: new_test_step_text + ": " + term};
+        },
+        createSearchChoicePosition: "top",
+        formatResult: formatTestSteps
+    })
+    // Listens for changes so that we can prompt the user if they want to edit or
+    // copy existing test cases
+    .on("change", function(e) {
+//      console.log(JSON.stringify({val: e.val, added: e.added, removed: e.removed}));
+        if (e.val === new_test_step_text) {
+//          console.log("New test case is being created!");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var desc = $(this).select2("data")["text"].substr(start, length - 1);
+            $("#step_desc").val(desc);
+            $("#case_desc").val(desc);
+            $("#step_expect").val(desc);
+        } else {
+//          console.log("Existing test case has been selected.");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var type = $(this).select2("data")["text"].substr(start, length - 1);
+        
+            var step_name = $(this).val();
+            $("#step_name").val(step_name);
+            $("#title_prompt").html(
+                    '<p style="text-align: center">You have selected Test Step - ' +
+                    '<span style="font-weight: bold;">' + step_name + '</span>' +
+                    '<br/> What do you want to do?' +
+                    '</p><br>' +
+                    '<div style="padding-left: 23%">' +
+                    '<a class="twitter" href="/Home/ManageTestCases/EditStep/'+step_name+'">Edit Step</a>' +
+                    //'<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
+                    '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+                    '</div>'
+            );
+          $("#title_prompt").modal();
+          return false;
+        }
+
+    });    
+}
+
+function formatTestSteps(step_details) {
+        var start = step_details.text.indexOf(":") + 1;
+        var length = step_details.text.length;
+        
+        var type = step_details.text.substr(start, length - 1);
+        var title = step_details.text.substr(0,start-1);
+        
+        var markup =
+            '<div>' +
+            '<i class="fa fa-file-text fa-fw"></i> <span style="font-weight: bold;">' + step_details.id + '</span>' +
+            ': ' +
+            '<span>' + type + '</span>'
+            '</div>';
+        
+        return markup;
+    }
 
 function PopulateStepInfo(value){
     $.ajax({
@@ -695,12 +787,27 @@ function recursivelyAddFeature(_this){
 function submit_step(){
 
     $("#submit_button").live('click',function(e){
-        if($("#step_name").val()==""){
-            alertify.error('Please enter a title for test step',"",0);
-            return false;
-        }
+        if ($("#step_name").select2("val") === "" || $("#step_name").select2("val") === []) {
+                e.preventDefault();
 
-        var step_name = $("#step_name").val().trim();
+                alertify.error("Please provide the <span style='font-weight: bold;'>Test Step title</span>", 2500);
+
+                $("#step_name").select2("open");
+
+//                setTimeout(function() {
+//                    $("#titlebox").css({
+//                        "border-color": "",
+//                        "box-shadow": ""
+//                    });
+//                }, 1500);
+
+                return false;
+            }
+
+        var start = $("#step_name").select2("data")["text"].indexOf(":") + 1;
+        var length = $("#step_name").select2("data")["text"].length;
+        
+        var step_name = $("#step_name").select2("data")["text"].substr(start, length - 1);
         var step_desc = $("#step_desc").val().trim();
         var step_data = $("#step_data").val().trim();
         var step_type = $("#step_type").val().trim();

@@ -3921,9 +3921,9 @@ def TestStepSearch(request):
         for test_step in data['rows']:
             result_dict = {}
             # AAA-000
-            result_dict['title'] = test_step[0]
+            result_dict['id'] = test_step[0]
             # In the UI, it should be displayed as, AAA-000: Test For 'X'
-            result_dict['text'] = '%s: %s' % (result_dict['title'], test_step[1])
+            result_dict['text'] = '%s: %s' % (result_dict['id'], test_step[1])
             results.append(result_dict)
 
         has_next_page = data['has_next']
