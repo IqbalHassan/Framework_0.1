@@ -1147,7 +1147,7 @@ $(document).ready(function() {
             /***********************Other Linking***************************************/
             var query = indx != -1?"c":(indx2 != -1?"e":"o");
 //            console.log(query);
-            $.get("GetStepNameType/",
+            $.get("GetStepNameType/",                
                 {},
                 function(data){
                     //Check for the Signal that it's okay

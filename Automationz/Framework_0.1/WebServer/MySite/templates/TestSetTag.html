@@ -4,6 +4,8 @@
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/TestSetTag.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 <style>
     #searchbox {
         width: 94%;
@@ -19,7 +21,7 @@
         box-shadow: 0 6px 6px -6px blue;
     }
 </style>
-<table style="width: 100%;">
+<table style="width: 100%;"z>
     <thead>
     <tr>
         <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Set & Tag</td>
@@ -73,6 +75,7 @@
                     </table>
                 </div>
                 <div id="RunTestResultTable"></div>
+                <div id="pagination_div"></div>
             </div>
         </td>
     </tr>

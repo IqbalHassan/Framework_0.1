@@ -4,6 +4,8 @@
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/TestSetTagEdit.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 <div align="left">
     <h3 style="font-size: 19px;"><a href="/Home/ManageSetTag/">Manage Test Set & Tag</a> / <a href="" id="type" style="font-weight: bold"></a> / <a href="" id="name" style="font-weight: bolder"></a><span id="time"></span></h3>
 </div>
@@ -62,6 +64,7 @@
                     <div width="50%">
                         <p align="center" style="font-weight: bolder;font-size: 1.2em;">Existing Test Cases</p>
                         <div id="existing"></div>
+                        <div id="pagination"></div>
                     </div>
                 </td>
             </tr>
@@ -78,13 +81,14 @@
                 <td>
                     <div width="50%">
                         <p align="center" style="font-weight: bolder;font-size: 1.2em;">Select Test Case(s)</p>
-                        <div id="RunTestResultTable" style="display: none;"></div>
+                        <div id="RunTestResultTable"></div>
+                        <div id="pagination_div"></div>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td align="center">
-                    <a id="add_button" href="" class="m-btn green" style="display: none; width: 10%">Add Selected</a>
+                    <a id="add_button" href="" class="m-btn green" style="display: none; width: 20%">Add Selected</a>
                 </td>
             </tr>
         </table>

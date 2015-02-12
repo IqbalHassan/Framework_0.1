@@ -11477,6 +11477,8 @@ def GetSetTag(request):
     if request.is_ajax():
         if request.method == 'GET':
             value = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
             print value
             list_value = ["set", "tag"]
             conn = GetConnection()
