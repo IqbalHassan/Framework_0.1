@@ -31,7 +31,7 @@ function renameDivInit(temp,name){
     message+='</div>';
     return message;
 }
-function configureLinks(temp,name){
+function configureLinks(temp,name,project_id,team_id){
     $('#rename').click(function(event){
         event.preventDefault();
         $('#inner_div').html(renameDivInit(temp,name));
@@ -93,7 +93,7 @@ function configureLinks(temp,name){
             event.preventDefault();
             var new_name=$('#inputText').val().trim();
             //alert(temp.toLocaleUpperCase()+new_name);
-            $.get("createNewSetTag",{type:temp.toLocaleUpperCase(),name:new_name.trim()},function(data){
+            $.get("createNewSetTag",{type:temp.toLocaleUpperCase(),name:new_name.trim(),project_id:project_id,team_id:team_id},function(data){
                 var str=data;
                 var substr='Failed'
                 if(str.lastIndexOf(substr, 0) == 0){
@@ -132,7 +132,7 @@ function ClickButton(project_id,team_id,test_case_per_page,test_case_page_curren
         $(this).css({'background-color':'#E7F4F9'});
         var name=$(this).text().trim();
         $('#msg').css({'display':'none'});
-        configureLinks($(this).closest('table').attr('data-id').trim(),name);
+        configureLinks($(this).closest('table').attr('data-id').trim(),name,project_id,team_id);
         $('#type').html('<p style="color: #4183c4;font-weight: bold; text-align:left;" class="Text">'+$(this).closest('table').attr('data-id').trim().toUpperCase()+' - </p>');
         $('#name').html('<p style="font-weight: bold; text-align: left;margin-left: -10%" class="Text">'+name+'<span id="time"></span></p>');
         name+=':';

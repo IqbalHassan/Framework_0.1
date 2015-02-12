@@ -11516,10 +11516,10 @@ def GetSetTag(request):
             final = []
             for each in list_value:
                 # form query
-                query = "select distinct value from config_values where type='%s' and value iLike'%%%s%%'" % (
+                query = "select distinct cv.value from config_values cv, team_wise_settings tws where cv.type='%s' and cv.id = tws.parameters and tws.type='Set' and cv.value iLike'%%%s%%'" % (
                     each.strip(), value.strip())
                 if value == "":
-                    query = "select distinct value from config_values where type='%s'" % (
+                    query = "select distinct cv.value from config_values cv, team_wise_settings tws where cv.type='%s' and cv.id = tws.parameters and tws.type='Set'" % (
                         each.strip())
                 if DB.IsDBConnectionGood(conn) == False:
                     time.sleep(1)
@@ -11544,6 +11544,8 @@ def createNewSetTag(request):
         if request.method == 'GET':
             type_tag = request.GET.get(u'type', '')
             name = request.GET.get(u'name', '')
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
             if type_tag == 'SET':
                 type_tag = 'set'
             if type_tag == 'TAG':
@@ -11552,7 +11554,7 @@ def createNewSetTag(request):
                 name.strip(), type_tag.strip())
             Conn = GetConnection()
             available_count = DB.GetData(Conn, available_query)
-            if available_count[0] == 0:
+            if available_count[0] == 0 and type_tag=='set':
                 # from dictionary
                 Dict = {'type': type_tag.strip(), 'value': name.strip()}
                 result = DB.InsertNewRecordInToTable(
@@ -11560,6 +11562,9 @@ def createNewSetTag(request):
                     "config_values",
                     **Dict)
                 if result:
+                    id = DB.GetData(Conn,"select id from config_values where type = 'set' and value = '"+name.strip()+"'",False)
+                    tDict = {'project_id':project_id,'team_id':team_id,'parameters':id[0][0],'type':'Set'}
+                    tres = DB.InsertNewRecordInToTable(Conn,"team_wise_settings",**tDict)
                     message = "Test %s with name '%s' created successfully." % (
                         type_tag.strip(), name.strip())
                 else:
