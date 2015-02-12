@@ -11510,7 +11510,8 @@ def GetSetTag(request):
             project_id = request.GET.get(u'project_id','')
             team_id = request.GET.get(u'team_id','')
             print value
-            list_value = ["set", "tag"]
+            #list_value = ["set", "tag"]
+            list_value = ["set"]
             conn = GetConnection()
             final = []
             for each in list_value:
