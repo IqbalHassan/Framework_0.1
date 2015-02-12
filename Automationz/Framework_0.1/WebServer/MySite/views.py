@@ -1052,62 +1052,81 @@ def AutoCompleteTestCasesSearchOtherPages(request):
 
 # ==================Returns Abailable User Name in List as user Type on Ru
 def AutoCompleteUsersSearch(request):
-
-    Conn = GetConnection()
     if request.is_ajax():
         if request.method == "GET":
-            value = request.GET.get(u'term', '')
-            project_id = request.GET.get(u'project_id', '')
-            team_id = request.GET.get(u'team_id', '')
-            print value
-            Usable_Machine = []
-            query = "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul,machine_project_map mpm where tre.tester_id Ilike '%%%s%%' and tre.tester_id=pul.user_names and mpm.machine_serial=tre.id and tre.status='Unassigned' and pul.user_level in('Automation') and mpm.project_id='%s' and mpm.team_id=%d" % (
-                value, project_id, int(team_id))
+            results = []
+            items_per_page = 10
+            has_next_page = False
             Conn = GetConnection()
-            Automation_Machine = DB.GetData(Conn, query, False)
-            Conn.close()
-            for each in Automation_Machine:
-                Usable_Machine.append(each)
-            query = "select distinct tre.tester_id,pul.user_level from test_run_env tre,permitted_user_list pul,machine_project_map mpm where tre.tester_id Ilike '%%%s%%' and tre.tester_id=pul.user_names and mpm.machine_serial=tre.id and tre.status='Unassigned' and pul.user_level in('Manual') and mpm.project_id='%s' and mpm.team_id=%d" % (
-                value, project_id, int(team_id))
-            Conn = GetConnection()
-            Manual_Machine = DB.GetData(Conn, query, False)
-            Conn.close()
-            for each in Manual_Machine:
-                query = "select distinct status from test_run_env tre,machine_project_map mpm where tester_id='%s' and tre.id=mpm.machine_serial" % (
-                    each[0].strip())
-                Conn = GetConnection()
-                machine_status = DB.GetData(Conn, query)
-                Conn.close()
-                if len(machine_status) == 0:
-                    continue
-                else:
-                    if 'In-Progress' in machine_status or 'Submitted' in machine_status:
-                        continue
-                    else:
-                        Usable_Machine.append(each)
-
-    json = simplejson.dumps(Usable_Machine)
-    return HttpResponse(json, mimetype='application/json')
-
-
-# ==================Returns Abailable Emails in List as user Type on Selec
-def AutoCompleteEmailSearch(request):
-
-    results = []
-    # if request.is_ajax():
-    if request.method == "GET":
-        if request.is_ajax():
+            requested_page = int(request.GET.get(u'page', ''))
             value = request.GET.get(u'term', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            Conn = GetConnection()
-            query="select distinct user_names, pul.user_id,case when pul.user_level='manager' then 'Manager' when pul.user_level='assigned_tester' then 'Tester' end   from project_team_map ptm, team_info  ti ,permitted_user_list  pul where ti.team_id=cast(ptm.team_id as int)  and pul.user_id=cast(ti.user_id as int) and ptm.project_id='%s' and ti.team_id=%d group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0 or count(case when email ilike '%%%s%%' then 1 end)>0"%(project_id,int(team_id),value,value)
-            results = DB.GetData(Conn,query,False)
+            query="select distinct tre.tester_id,pul.user_level from test_run_env tre, machine_project_map mpm ,permitted_user_list pul where tre.id=mpm.machine_serial and tre.tester_id=pul.user_names and user_level in('Manual', 'Automation') and project_id='%s' and team_id=%d and tre.tester_id iLike '%%%s%%' and tre.status='Unassigned'"%(project_id,int(team_id),value)
+            Conn=GetConnection()
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='tester_id')
             Conn.close()
-            json = simplejson.dumps(results)
+            for each_user in data['rows']:
+                result_dict = {}
+                result_dict['id'] = each_user[0]
+                result_dict['text'] = '%s - %s' % (each_user[0], each_user[1])
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            #json = simplejson.dumps(results)
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
             return HttpResponse(json, mimetype='application/json')
+# ==================Returns Abailable Emails in List as user Type on Selec
+def AutoCompleteEmailSearch(request):
 
+    # if request.is_ajax():
+    if request.method == "GET":
+        if request.is_ajax():
+            results = []
+            items_per_page = 10
+            has_next_page = False
+            Conn = GetConnection()
+            requested_page = int(request.GET.get(u'page', ''))
+            value = request.GET.get(u'term', '')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            query="select distinct user_names, pul.user_id,case when pul.user_level='manager' then 'Manager' when pul.user_level='assigned_tester' then 'Tester' end   from project_team_map ptm, team_info  ti ,permitted_user_list  pul where ti.team_id=cast(ptm.team_id as int)  and pul.user_id=cast(ti.user_id as int) and ptm.project_id='%s' and ti.team_id=%d group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(project_id,int(team_id),value)
+            Conn=GetConnection()
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='user_id')
+            Conn.close()
+            for each_user in data['rows']:
+                result_dict = {}
+                result_dict['id'] = each_user[1]
+                result_dict['text'] = '%s - %s' % (each_user[0], each_user[2])
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            #json = simplejson.dumps(results)
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
+            return HttpResponse(json, mimetype='application/json')
+def AutoCompleteMilestoneSearch(request):
+    # if request.is_ajax():
+    if request.method == "GET":
+        if request.is_ajax():
+            results = []
+            items_per_page = 10
+            has_next_page = False
+            Conn = GetConnection()
+            requested_page = int(request.GET.get(u'page', ''))
+            value = request.GET.get(u'term', '')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            query="select distinct id,name,status from milestone_info"
+            Conn=GetConnection()
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
+            Conn.close()
+            for each_user in data['rows']:
+                result_dict = {}
+                result_dict['id']=each_user[0]
+                result_dict['text'] = '%s - %s' % (each_user[1], each_user[2])
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            #json = simplejson.dumps(results)
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
+            return HttpResponse(json, mimetype='application/json')
 
 def AutoCompleteTag(request):
     if request.is_ajax():
@@ -1171,15 +1190,26 @@ def AutoCompleteRequirements(request):
 def AutoCompleteTesterSearch(request):
     if request.is_ajax():
         if request.method == 'GET':
+            results = []
+            items_per_page = 10
+            has_next_page = False
             Conn = GetConnection()
+            requested_page = int(request.GET.get(u'page', ''))
             value = request.GET.get(u'term', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            query="select distinct user_names, pul.user_id,'Tester'  from project_team_map ptm, team_info  ti ,permitted_user_list  pul where ti.team_id=cast(ptm.team_id as int)  and pul.user_id=cast(ti.user_id as int) and pul.user_level in('assigned_tester') and ptm.project_id='%s' and ti.team_id=%d group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0 or count(case when email ilike '%%%s%%' then 1 end)>0"%(project_id,int(team_id),value,value)
+            query="select distinct user_names, pul.user_id,'Tester'  from project_team_map ptm, team_info  ti ,permitted_user_list  pul where ti.team_id=cast(ptm.team_id as int)  and pul.user_id=cast(ti.user_id as int) and pul.user_level in('assigned_tester') and ptm.project_id='%s' and ti.team_id=%d group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(project_id,int(team_id),value)
             Conn=GetConnection()
-            results = DB.GetData(Conn,query,False)
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='user_id')
             Conn.close()
-            json = simplejson.dumps(results)
+            for each_user in data['rows']:
+                result_dict = {}
+                result_dict['id'] = each_user[1]
+                result_dict['text'] = '%s - %s' % (each_user[0], each_user[2])
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            #json = simplejson.dumps(results)
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
             return HttpResponse(json, mimetype='application/json')
 
 
