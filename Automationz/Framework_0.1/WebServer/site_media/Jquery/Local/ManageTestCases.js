@@ -3,7 +3,7 @@
  * Author: Sazid
  */
 
-var test_case_per_page=10;
+var test_case_per_page=1;
 var test_case_page_current=1;
 
 var do_on_load = function do_on_load () {
@@ -113,8 +113,20 @@ var do_on_load = function do_on_load () {
 			if (status === 'success') {
 				var query_string = data;
 				loadTable(query_string,test_case_per_page,test_case_page_current);
+                $("#pageitem").show();
+                test_case_per_page = $("#perpageitem").val();
+                $('#perpageitem').on('change',function(){
+                    if($(this).val()!=''){
+                        test_case_per_page=$(this).val();
+                        test_case_page_current=1;
+                        $('#pagination_tab').pagination('destroy');
+                        window.location.hash = "#1";
+                        loadTable(query_string,test_case_per_page,test_case_page_current);
+                    }
+                });
 			} else {
 				alertify.error("Could not eastablish connection to the server.");
+				$("#pageitem").hide();
 			}
 		});
 	});
@@ -247,12 +259,14 @@ var do_on_load = function do_on_load () {
 	            $('#RunTestResultTable').append("<p class = 'Text' style=\"text-align: center;\">No Test Cases to view :(<br>It's either because you have not selected any section(s) or there are no test case(s) for the selected section(s).</p>");
 	            $("#DepandencyCheckboxes").children().remove();
 	            $('#pagination_div').pagination('destroy');
+	            $('#pageitem').hide();
 	        }
 	        else
 	        {
 	        	window.section_has_no_tc = false;
 				console.log(data['TableData'])
 	            ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases", "Number of test cases for the selected section(s)");
+	            $('#pageitem').show();
 	            $('#pagination_div').pagination({
                     items:data['Count'],
                     itemsOnPage:test_case_per_page,
