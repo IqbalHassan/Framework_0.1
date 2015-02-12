@@ -1,6 +1,14 @@
+var test_case_per_page=5;
+var test_case_page_current=1;
 $(document).ready(function(){
+    test_case_per_page=$('#content_change option:selected').val().trim();
     RunAutoCompleteTestSearch();
-    DeleteSearchQueryText();
+    DeleteSearchQueryText(test_case_per_page,test_case_page_current);
+    $('#content_change').on('change',function(){
+        test_case_per_page=$(this).val().trim();
+        window.location.hash='#1';
+        PerformSearch(test_case_per_page,test_case_page_current);
+    });
 });
 function RunAutoCompleteTestSearch(){
     $("#searchbox").autocomplete(
@@ -32,7 +40,7 @@ function RunAutoCompleteTestSearch(){
                         + ":&nbsp"
                         + '</td>'
                     );
-                    PerformSearch();
+                    PerformSearch(test_case_per_page,test_case_page_current);
                 }
                 $("#searchbox").val("");
                 return false;
@@ -45,14 +53,16 @@ function RunAutoCompleteTestSearch(){
     };
 }
 
-function PerformSearch() {
+function PerformSearch(test_case_per_page,test_case_page_current) {
     $("#AutoSearchResult #searchedtext").each(function() {
         var UserText = $(this).find("td").text();
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
         $.get("TableDataTestCasesOtherPages",{
             Query: UserText,
             project_id:$('#project_identity option:selected').val().trim(),
-            team_id:$('#default_team_identity option:selected').val().trim()
+            team_id:$('#default_team_identity option:selected').val().trim(),
+            test_case_per_page:test_case_per_page,
+            test_case_page_current:test_case_page_current
         },function(data) {
 
             if (data['TableData'].length == 0)
@@ -60,12 +70,25 @@ function PerformSearch() {
                 $('#RunTestResultTable').children().remove();
                 $('#RunTestResultTable').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
                 $("#DepandencyCheckboxes").children().remove();
+                $('#pagination_div').pagination('destroy');
                 //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
             }
             else
             {
                 ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
-
+                $('#RunTestResultTable').find('p:eq(0)').html(data['Count']+' Test Cases');
+                $('#pagination_div').pagination({
+                    items:data['Count'],
+                    itemsOnPage:test_case_per_page,
+                    cssStyle: 'dark-theme',
+                    currentPage:test_case_page_current,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        PerformSearch(test_case_per_page,PageNumber);
+                    }
+                });
                 $("#RunTestResultTable").fadeIn(1000);
                 //$("p:contains('Show/Hide Test Cases')").fadeIn(0);
                 implementDropDown("#RunTestResultTable");
@@ -74,8 +97,8 @@ function PerformSearch() {
                 $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
                     var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                    $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25"/>');
-                    $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25"/>');
+                    $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25" width="25" />');
+                    $(this).after('<img class="editBtn buttonPic" id="'+ID+'" src="/site_media/edit.png" height="25" width="25"/>');
 
                     indx++;
                 });
@@ -112,7 +135,7 @@ function implementDropDown(wheretoplace){
         });
     });
 }
-function DeleteSearchQueryText(){
+function DeleteSearchQueryText(test_case_per_page,test_case_page_current){
     $("#AutoSearchResult td .delete").live('click', function() {
 
         if ($("#AutoSearchTextBoxLabel").text().trim() != "*Select Test Machine:") //If user is on select user page, do not allow him to delete the Test Data Set
@@ -143,7 +166,7 @@ function DeleteSearchQueryText(){
 
             $(".delete").css('cursor','default');
         }
-        PerformSearch();
+        PerformSearch(test_case_per_page,test_case_page_current);
 
     });
 }

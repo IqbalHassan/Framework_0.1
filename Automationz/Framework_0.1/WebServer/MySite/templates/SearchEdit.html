@@ -5,6 +5,8 @@
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/SearchEdit.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 <article>
     <div align="left">
         <h3 style="font-size: 19px;"><a style="font-weight: bold">Copy/Edit Test Case</a></h3>
@@ -12,9 +14,19 @@
     <table id='' style='display: block;'>
         <tbody>
             <tr>
-                <td>
+                <td align="left" width="95%">
                     <label > <b id = 'AutoSearchTextBoxLabel' class = 'Text'></b></label>
                     <input class = 'ui-corner-all textbox' id='searchbox' style = 'margin:5px' type='text' title = 'Please Type Keyword and Click On that to add to query' name='searchboxname' placeholder="Search Test Cases Data By Keywords:"/>
+                </td>
+                <td align="right" width="5%">
+                    <select align="right" id="content_change">
+                        <option value="">Per Page Items</option>
+                        <option value=5>5</option>
+                        <option value=10 selected>10</option>
+                        <option value=15>15</option>
+                        <option value=20>20</option>
+                        <option value=25>25</option>
+                    </select>
                 </td>
             </tr>
         </tbody>
@@ -28,6 +40,9 @@
         </tbody>
     </table>
     <div id="RunTestResultTable">
+
+    </div>
+    <div id="pagination_div">
 
     </div>
 </article>
