@@ -215,10 +215,11 @@ def get_all_machine(request):
         if request.is_ajax():
             current_page = int(request.GET.get(u'machinePageCurrent', ''))
             itemPerPage = int(request.GET.get(u'machinePerPage', ''))
+            project_id=request.GET.get(u'project_id','')
+            team_id=int(request.GET.get(u'team_id',''))
             # form condition
-            condition = "limit %d offset %d" % (
-                itemPerPage, (current_page - 1) * itemPerPage)
-            count_query = "select distinct user_names,user_level from permitted_user_list where user_level in ('Manual', 'Automation')"
+            condition = "limit %d offset %d" % (itemPerPage, (current_page - 1) * itemPerPage)
+            count_query = "select distinct user_names,user_level from machine_project_map mpm, test_run_env tre,permitted_user_list pul where tre.id=mpm.machine_serial and pul.user_names=tre.tester_id and mpm.project_id='%s' and mpm.team_id=%d and user_level in('Manual','Automation')"%(project_id,team_id)
             Conn = GetConnection()
             count_list = DB.GetData(Conn, count_query)
             Conn.close()
@@ -229,11 +230,7 @@ def get_all_machine(request):
             final_machine_list = []
             for each in machine_listing:
                 Conn = GetConnection()
-                current_time = DB.GetData(
-                    Conn,
-                    "select current_timestamp at time zone '%s'" %
-                    TIME_ZONE,
-                    False)
+                current_time = DB.GetData(Conn,"select current_timestamp at time zone '%s'" %TIME_ZONE,False)
                 Conn.close()
                 now = current_time[0][0]
                 temp = []

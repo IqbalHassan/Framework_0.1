@@ -23,7 +23,7 @@ $(document).ready(function(){
     DeleteSearchQueryText(project_id,team_id);
     ManageMilestone(project_id,team_id);
     SubmitRun(project_id,team_id);
-    getAllmachine(machinePerPage,machinePageCurrent);
+    getAllmachine(machinePerPage,machinePageCurrent,project_id,team_id);
     /*$('.edit_machine').on('click',function(){
         $('.tabs-div').removeClass('responsive-tabs__panel--active');
 
@@ -48,8 +48,8 @@ $(document).ready(function(){
         window.location.reload(true);
     });
 });
-function getAllmachine(machinePerPage,machinePageCurrent){
-    $.get('get_all_machine',{'machinePerPage':machinePerPage ,'machinePageCurrent':machinePageCurrent},function(data){
+function getAllmachine(machinePerPage,machinePageCurrent,project_id,team_id){
+    $.get('get_all_machine',{'machinePerPage':machinePerPage ,'machinePageCurrent':machinePageCurrent,project_id:project_id,team_id:team_id},function(data){
         var message="";
         message+='<tr>';
         for(var i=0;i<data['column'].length;i++){
