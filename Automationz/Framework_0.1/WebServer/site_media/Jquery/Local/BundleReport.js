@@ -83,6 +83,29 @@ function ManageDependency(project_id,team_id){
     });
 }
 
+function tctable(divname,heading,data,ResultName,tooltip){
+    if(data.length>0) {
+            //make a table column
+        var message = "";
+        message += "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + data.length + " " + ResultName
+                + "</p>"
+        message += '<table class="two-column-emphasis">';
+        message += '<tr>';
+        for (var i = 0; i < heading.length; i++) {
+            message += '<th align="left">' + heading[i] + '</th>';
+        }
+        message += '</tr><tbody class="paginate">';
+        for (var i = 0; i < data.length; i++) {
+            message += '<tr>';
+            for (var j = 0; j < data[i].length; j++) {
+                message += '<td align="left">' + data[i][j] + '</td>';
+            }
+            message += '</tr>';
+        }
+        message += '</tbody></table>';
+        $(divname).html(message);
+    }
+}
 
 function populate_manual_div(dependency_list,global_version_list,project_id,team_id){
     var message="";
@@ -248,7 +271,9 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
 
                             $("#inner").show();
                             $("#tc_title").html('Test Cases List : ' + section + ' - ' + status )
-                            ResultTable(tc_table,data['Short'],data['Cases'][row-1][col],"Test Cases", "Click on TC-IDs to see run history");
+                            //ResultTable(tc_table,data['Short'],data['Cases'][row-1][col],"Test Cases", "Click on TC-IDs to see run history");
+                            //$("#tc_table tbody").addClass("paginate");
+                            tctable('#tc_table',data['Short'],data['Cases'][row-1][col],"Test Cases", "Click on TC-IDs to see run history");
                             pagination();
                             $('#tc_table tr>td:first-child').each(function () {
                                 $(this).css({
@@ -261,7 +286,9 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                                     //var location='/Home/RunHistory/'+data+'/';
                                     //window.location=location;
                                     $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id},function(data){
-                                        ResultTable(tc_table,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id);
+                                        //ResultTable(tc_table,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id);
+                                        //$("#tc_table tbody").addClass("paginate");
+                                        tctable('#tc_table',data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id);
                                         makeRunClickable();
                                         pagination();
                                     });
@@ -290,6 +317,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
 
     });
 }
+
 
 function pagination(){
     $('#inner').simplePagination({

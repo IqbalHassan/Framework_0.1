@@ -45,8 +45,6 @@ function get_steps(project_id,team_id){
                 message += '<tr>';
                 for (var j = 0; j < data['steps'][i].length; j++) {
                     message += '<td align="left">' + data['steps'][i][j] + '</td>';
-
-
                 }
                 message += '</tr>';
             }
