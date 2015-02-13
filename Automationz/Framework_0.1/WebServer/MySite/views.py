@@ -1114,7 +1114,7 @@ def AutoCompleteMilestoneSearch(request):
             value = request.GET.get(u'term', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            query="select distinct id,name,status from milestone_info"
+            query="select distinct id,name,status from milestone_info where name ilike '%%%s%%'"%(value)
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
             Conn.close()
