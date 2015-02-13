@@ -430,47 +430,6 @@ function AutoSuggestions(project_id,team_id){
 }
 
 function RunAutoCompleteTestSearch(project_id,team_id){
-    /*$("#searchbox").autocomplete(
-        {
-            source : function(request, response) {
-                $.ajax({
-                    url:"AutoCompleteTestCasesSearchOtherPages",
-                    dataType: "json",
-                    data:{ term: request.term,project_id:project_id,team_id:team_id},
-                    success: function( data ) {
-                        response( data );
-                    }
-                });
-            },
-
-            //source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
-            select : function(event, ui) {
-
-                var tc_id_name = ui.item[0].split(" - ");
-                var value = "";
-                if (tc_id_name != null)
-                    value = tc_id_name[0].trim();
-
-                if(value != "")
-                {
-                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
-                        + '<td name = "submitquery" class = "Text" style = "size:10">'
-                        + value
-                        + ":&nbsp"
-                        + '</td>'
-                    );
-                    PerformSearch(1,project_id,team_id);
-                }
-                $("#searchbox").val("");
-                return false;
-            }
-        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
-            .appendTo( ul );
-    };
-    */
     $("#searchbox").select2({
         placeholder: "Search Test Cases....",
         width: 460,
