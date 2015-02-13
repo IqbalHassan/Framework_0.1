@@ -3,6 +3,7 @@ var test_case_page_current=1;
 $(document).ready(function(){
     test_case_per_page=$('#content_change option:selected').val().trim();
     RunAutoCompleteTestSearch();
+    PerformSearch(test_case_per_page,test_case_page_current);
     DeleteSearchQueryText(test_case_per_page,test_case_page_current);
     $('#content_change').on('change',function(){
         test_case_per_page=$(this).val().trim();
@@ -11,46 +12,56 @@ $(document).ready(function(){
     });
 });
 function RunAutoCompleteTestSearch(){
-    $("#searchbox").autocomplete(
-        {
-            source : function(request, response) {
-                $.ajax({
-                    url:"AutoCompleteTestCasesSearchOtherPages",
-                    dataType: "json",
-                    data:{ term: request.term,project_id:$.session.get('project_id'),team_id:$.session.get('default_team_identity')},
-                    success: function( data ) {
-                        response( data );
-                    }
-                });
+    $("#searchbox").select2({
+        placeholder: "Search Test Cases....",
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "AutoCompleteTestCasesSearchOtherPages",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': $.session.get('project_id'),
+                    'team_id': $.session.get('default_team_identity')
+                };
             },
-
-            //source : 'AutoCompleteTestCasesSearch?Env = ' +Env,
-            select : function(event, ui) {
-
-                var tc_id_name = ui.item[0].split(" - ");
-                var value = "";
-                if (tc_id_name != null)
-                    value = tc_id_name[0].trim();
-
-                if(value != "")
-                {
-                    $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
-                        + '<td name = "submitquery" class = "Text" style = "size:10">'
-                        + value
-                        + ":&nbsp"
-                        + '</td>'
-                    );
-                    PerformSearch(test_case_per_page,test_case_page_current);
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
                 }
-                $("#searchbox").val("");
-                return false;
             }
-        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-        return $( "<li></li>" )
-            .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
-            .appendTo( ul );
-    };
+        },
+        formatResult: formatTestCasesSearch
+    }).on("change", function(e) {
+            var tag_id=$(this).select2('data')['id'];
+            $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td class="Text" data-id="'+user_id+'">'
+                + tag_id
+                + ":&nbsp"
+                + '</td>');
+            //PerformSearch(1,project_id,team_id);
+            PerformSearch(test_case_per_page,test_case_page_current);
+            $(this).select2('val','');
+            return false;
+        });
+    function formatTestCasesSearch(test_case_details) {
+        var tag_select=test_case_details.text.split(' - ');
+        tag_select=tag_select[tag_select.length-1].trim();
+        if (tag_select=='Test Case'){
+            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        }
+        else if(tag_select=='Section'){
+            var markup ='<div><i class="fa fa-folder-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        }
+        else{
+            var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        }
+        return markup;
+    }
 }
 
 function PerformSearch(test_case_per_page,test_case_page_current) {
@@ -62,7 +73,8 @@ function PerformSearch(test_case_per_page,test_case_page_current) {
             project_id:$.session.get('project_id'),
             team_id:$.session.get('default_team_identity'),
             test_case_per_page:test_case_per_page,
-            test_case_page_current:test_case_page_current
+            test_case_page_current:test_case_page_current,
+            search_page:true
         },function(data) {
 
             if (data['TableData'].length == 0)
@@ -137,7 +149,8 @@ function implementDropDown(wheretoplace){
 }
 function DeleteSearchQueryText(test_case_per_page,test_case_page_current){
     $("#AutoSearchResult td .delete").live('click', function() {
-
+        $('#pagination_div').pagination('destroy');
+        $('#RunTestResultTable').empty();
         if ($("#AutoSearchTextBoxLabel").text().trim() != "*Select Test Machine:") //If user is on select user page, do not allow him to delete the Test Data Set
         {
             console.log("clicked");
@@ -163,7 +176,6 @@ function DeleteSearchQueryText(test_case_per_page,test_case_page_current){
 
         else
         {
-
             $(".delete").css('cursor','default');
         }
         PerformSearch(test_case_per_page,test_case_page_current);

@@ -10568,10 +10568,11 @@ def TableDataTestCasesOtherPages(request):
     Conn = GetConnection()
     test_status_request = request.GET.get(u'test_status_request', '')
     total_time = request.GET.get(u'total_time', '')
+    search_page_tag=request.GET.get(u'search_page','')
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
-            if UserData != '':
+            if UserData != '' or search_page_tag=='true':
                 UserText = UserData.split(":")
                 project_id = request.GET.get(u'project_id', '')
                 team_id = request.GET.get(u'team_id', '')
@@ -10582,97 +10583,101 @@ def TableDataTestCasesOtherPages(request):
                 limit=int(test_case_per_page)
                 
                 condition=" offset %d limit %d"%(offset,limit)
-                QueryText = []
-                for eachitem in UserText:
-                    if len(eachitem) != 0 and len(
-                            eachitem) != 1 and eachitem.strip() not in QueryText:
-                        QueryText.append(eachitem.strip())
-                print QueryText
-                Section_Tag = 'Section'
-                Feature_Tag = 'Feature'
-                Custom_Tag = 'CustomTag'
-                Section_Path_Tag = 'section_id'
-                Feature_Path_Tag = 'feature_id'
-                Priority_Tag = 'Priority'
-                set_type = 'set'
-                tag_type = 'tag'
-                Status = 'Status'
-                query = "select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
-                    project_id, int(team_id))
-                Conn = GetConnection()
-                dependency = DB.GetData(Conn, query)
-                Conn.close()
-                wherequery = ""
-                for each in dependency:
-                    wherequery += ("'" + each.strip() + "'")
-                    wherequery += ','
-                wherequery += ("'" +
-                               Section_Tag +
-                               "','" +
-                               Feature_Tag +
-                               "','" +
-                               Custom_Tag +
-                               "','" +
-                               Section_Path_Tag +
-                               "','" +
-                               Feature_Path_Tag +
-                               "','" +
-                               Priority_Tag +
-                               "','" +
-                               Status +
-                               "','" +
-                               set_type +
-                               "','" +
-                               tag_type +
-                               "'")
-                print wherequery
-                TestIDList = []
-                for eachitem in QueryText:
+                if UserData!='':
+                    QueryText = []
+                    for eachitem in UserText:
+                        if len(eachitem) != 0 and len(
+                                eachitem) != 1 and eachitem.strip() not in QueryText:
+                            QueryText.append(eachitem.strip())
+                    print QueryText
+                    Section_Tag = 'Section'
+                    Feature_Tag = 'Feature'
+                    Custom_Tag = 'CustomTag'
+                    Section_Path_Tag = 'section_id'
+                    Feature_Path_Tag = 'feature_id'
+                    Priority_Tag = 'Priority'
+                    set_type = 'set'
+                    tag_type = 'tag'
+                    Status = 'Status'
+                    query = "select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
+                        project_id, int(team_id))
                     Conn = GetConnection()
-                    TestID = DB.GetData(
-                        Conn,
-                        "Select property from test_case_tag where name = '%s' " %
-                        eachitem)
+                    dependency = DB.GetData(Conn, query)
                     Conn.close()
-                    for eachProp in TestID:
-                        if eachProp == 'tcid':
-                            TestIDList.append(eachitem)
-                            break
-                TableData = []
-                if len(TestIDList) > 0:
-                    for eachitem in TestIDList:
-                        query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0" % (
-                            eachitem, project_id, team_id)
-                        Query=query
-                        query=query+ condition
-                        Conn = GetConnection()
-                        tabledata = DB.GetData(Conn, query, False)
-                        Conn.close()
-                        print tabledata
-                        if tabledata:
-                            TableData.append(tabledata[0])
-                else:
-                    count = 1
+                    wherequery = ""
+                    for each in dependency:
+                        wherequery += ("'" + each.strip() + "'")
+                        wherequery += ','
+                    wherequery += ("'" +
+                                   Section_Tag +
+                                   "','" +
+                                   Feature_Tag +
+                                   "','" +
+                                   Custom_Tag +
+                                   "','" +
+                                   Section_Path_Tag +
+                                   "','" +
+                                   Feature_Path_Tag +
+                                   "','" +
+                                   Priority_Tag +
+                                   "','" +
+                                   Status +
+                                   "','" +
+                                   set_type +
+                                   "','" +
+                                   tag_type +
+                                   "'")
+                    print wherequery
+                    TestIDList = []
                     for eachitem in QueryText:
-                        if count == 1:
-                            Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 " % (
-                                eachitem.strip(), wherequery)
-                            count = count + 1
-                        else:
-                            Query += "AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 " % (
-                                eachitem.strip(), wherequery)
-                            count = count + 1
-                    Query = Query + \
-                        " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
-                    Query = Query + \
-                        " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
-                    query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + \
-                        Query
-                    Query=query    
-                    query=query+ condition
-                    Conn = GetConnection()
-                    TableData = DB.GetData(Conn, query, False)
-                    Conn.close()
+                        Conn = GetConnection()
+                        TestID = DB.GetData(
+                            Conn,
+                            "Select property from test_case_tag where name = '%s' " %
+                            eachitem)
+                        Conn.close()
+                        for eachProp in TestID:
+                            if eachProp == 'tcid':
+                                TestIDList.append(eachitem)
+                                break
+                    TableData = []
+                    if len(TestIDList) > 0:
+                        for eachitem in TestIDList:
+                            query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0" % (
+                                eachitem, project_id, team_id)
+                            Query=query
+                            query=query+ condition
+                            Conn = GetConnection()
+                            tabledata = DB.GetData(Conn, query, False)
+                            Conn.close()
+                            print tabledata
+                            if tabledata:
+                                TableData.append(tabledata[0])
+                    else:
+                        count = 1
+                        for eachitem in QueryText:
+                            if count == 1:
+                                Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 " % (
+                                    eachitem.strip(), wherequery)
+                                count = count + 1
+                            else:
+                                Query += "AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 " % (
+                                    eachitem.strip(), wherequery)
+                                count = count + 1
+                        Query = Query + \
+                            " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+                        Query = Query + \
+                            " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+                        query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + \
+                            Query
+                        Query=query    
+                        query=query+ condition
+                else:
+                    Query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id, tc.tc_name having count(case when property='Project' and name='%s' then 1 end )>0 and count(case when property='Team' and name='%s' then 1 end)>0"%(project_id,team_id)
+                    query=Query+condition
+                Conn = GetConnection()
+                TableData = DB.GetData(Conn, query, False)
+                Conn.close()
                 Conn=GetConnection()
                 count_query=DB.GetData(Conn,Query,False)
                 Conn.close()
