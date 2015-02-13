@@ -5635,7 +5635,8 @@ def New_Execution_Report(request):
         #status = request.GET.get(u'status', '')
         # if status == '':
         #section_query = "select distinct subpath(section_path,0,1) from product_sections"
-        sect_sub_q = "select ps.section_path from product_sections ps, test_case_tag rtct where ps.section_id::text = rtct.name and rtct.property='section_id' group by ps.section_path order by ps.section_path"
+        #sect_sub_q = "select ps.section_path from product_sections ps, test_case_tag rtct where ps.section_id::text = rtct.name and rtct.property='section_id' group by ps.section_path order by ps.section_path"
+        sect_sub_q = "select ps.section_path from product_sections ps, test_case_tag rtct, team_wise_settings tws where ps.section_id::text = rtct.name and rtct.property='section_id' and tws.parameters=ps.section_id and tws.type='Section' and tws.project_id='"+project_id+"' and tws.team_id='"+team_id+"' group by ps.section_path order by ps.section_path"
         sections = DB.GetData(Conn, sect_sub_q, False)
 
         Table = []
