@@ -1,4 +1,6 @@
 import os
+import git
+
 
 
 def pull_latest_git():
@@ -15,8 +17,10 @@ def pull_latest_git():
         
 def git_repo():
     try:
-        import git
-        git_path = str(os.path.dirname(os.path.realpath(__file__)).split("git")[0]) + "git" + os.sep + "Framework_0.1"
+        
+        #git_path = str(os.path.dirname(os.path.realpath(__file__)).split("git")[0]) + "git" + os.sep + "Framework_0.1"
+        git_path = "C:\\workspace\\Framework_0.1"
+        print git_path
         g = git.cmd.Git(git_path)
         return g
     except Exception, e:
@@ -36,7 +40,7 @@ def git_log(last_log=-3):
         print e
         return e
 
-# pull_latest_git()
+pull_latest_git()
 
 
 
