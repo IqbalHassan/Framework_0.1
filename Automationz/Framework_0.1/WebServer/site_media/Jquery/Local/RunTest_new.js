@@ -556,6 +556,7 @@ function PerformSearch(pageNumber,project_id,team_id,predicate) {
                 $('#time_panel').html('<b class="Text">Time Needed: '+data['time']+'</b> ');
                 $('#time_panel').css({'display':'block'});
                 ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
+                $('#RunTestResultTable').find('p:eq(0)').html(data['Count']+' Test Cases');
                 $('#pagination_div').css({'display':'block'});
                 $('#pagination_div').pagination({
                     items:data['Count'],
@@ -618,7 +619,7 @@ function populate_parameter_div(array_list,div_name,project_id,team_id){
     for(var i=0;i<dependency_classes.length;i++){
         for(var j=0;j<dependency_classes[i].list.length;j++){
             $('#'+dependency_classes[i].list[j]).on('click',function(){
-               PerformSearch(project_id,team_id,parseValue(dependency_classes));
+               PerformSearch(1,project_id,team_id,parseValue(dependency_classes));
             });
         }
     }

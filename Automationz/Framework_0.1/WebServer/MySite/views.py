@@ -1045,7 +1045,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):
                 value, wherequery)
             id_query = "select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')" % (
                 value, value)"""
-            query="select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !=''  group by name,property,tc.tc_name having count( case when name Ilike '%%%s%%' then 1 end )>0 or count(case when tc_name ilike'%%%s%%' then 1 end)>0"%(value,value)
+            query="select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !=''   group by name,property,tc.tc_name having count( case when name Ilike '%%%s%%' then 1 end )>0 and count(case when tc_name ilike'%%%s%%' then 1 end)>0"%(value,value)
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
             Conn.close()
@@ -16302,43 +16302,16 @@ def specific_dependency_settings(request):
                                 eachitem) != 1 and eachitem.strip() not in QueryText:
                             QueryText.append(eachitem.strip())
                     print QueryText
-                    Section_Tag = 'Section'
-                    Feature_Tag = 'Feature'
-                    Custom_Tag = 'CustomTag'
-                    Section_Path_Tag = 'section_id'
-                    Feature_Path_Tag = 'feature_id'
-                    Priority_Tag = 'Priority'
-                    set_type = 'set'
-                    tag_type = 'tag'
-                    Status = 'Status'
                     query = "select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
                         project_id, int(team_id))
                     Conn = GetConnection()
                     dependency = DB.GetData(Conn, query)
                     Conn.close()
                     wherequery = ""
-                    for each in dependency:
+                    for index,each in enumerate(dependency):
                         wherequery += ("'" + each.strip() + "'")
-                        wherequery += ','
-                    wherequery += ("'" +
-                                   Section_Tag +
-                                   "','" +
-                                   Feature_Tag +
-                                   "','" +
-                                   Custom_Tag +
-                                   "','" +
-                                   Section_Path_Tag +
-                                   "','" +
-                                   Feature_Path_Tag +
-                                   "','" +
-                                   Priority_Tag +
-                                   "','" +
-                                   Status +
-                                   "','" +
-                                   set_type +
-                                   "','" +
-                                   tag_type +
-                                   "'")
+                        if index<(len(dependency)-1):
+                            wherequery += ','
                     print wherequery
                     TestIDList = []
                     for eachitem in QueryText:
@@ -16388,7 +16361,7 @@ def specific_dependency_settings(request):
                         final_data.append("'" + each + "'")
                     test_case_ids = "(" + ",".join(final_data) + ")"
                     test_case_query = "select property,array_agg(distinct name) from test_case_tag tct, dependency d where d.dependency_name=tct.property and tc_id in " + \
-                        test_case_ids + " group by property"
+                        test_case_ids + " and property in ("+wherequery+") group by property"
                     Conn = GetConnection()
                     final_list = DB.GetData(Conn, test_case_query, False)
                     Conn.close()
