@@ -11099,11 +11099,6 @@ def RunID_New(request):
             else:
                 userText = FormCondition(userText)
                 runData = GetData(run_id, index, capacity, userText)
-            print '--------------------------- INSIDE -------------------------------------'
-            print run_id
-            print index
-            print runData['allData'][0][3]
-            print '--------------------------- INSIDE -------------------------------------'
             Col = [
                 'ID',
                 'Title',
@@ -11364,7 +11359,6 @@ def FilterDataForRunID(request):
                         results.append(result_dict)
                     if(value.lower() in each_item[2].lower()):
                        status.append(each_item[2]) 
-                    
             for each in status:
                 result_dict = {}
                 result_dict['id'] = each
