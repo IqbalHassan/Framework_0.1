@@ -1,6 +1,6 @@
 {% extends "BaseTemplate.html" %}
 
-{% block title%}Test Set & Tag{% endblock %}
+{% block title%}Test Set{% endblock %}
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/TestSetTag.js"></script>
@@ -24,7 +24,7 @@
 <table style="width: 100%;"z>
     <thead>
     <tr>
-        <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Set & Tag</td>
+        <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Set</td>
         <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text">Details</td>
     </tr>
     </thead>
@@ -34,11 +34,13 @@
             <div style="width: 100%;">
                 <input type="text" id="searchbox" placeholder="Search Set & Tag">
             </div>
+            <br/>
+            <div><a class="m-btn purple" data-id="set" id="createnewset">Create New Set</a></div>
             <div id="set_tag"></div>
         </td>
         <td style="width: 80%; border-left: 2px solid #ccc; position: relative;">
             <div style="position: absolute; min-width: 100%; top: 0;">
-                <p id='msg' style="font-weight: bold; text-align: center;" class="Text">Select any Set or Tag to display the corresponding Test Cases</p>
+                <p id='msg' style="font-weight: bold; text-align: center;" class="Text">Select any Set to display the corresponding Test Cases</p>
                 <div id="infoDiv" style="display: none;">
                     <table>
                         <tr>
