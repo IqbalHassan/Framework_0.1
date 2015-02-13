@@ -12,6 +12,40 @@ $(document).ready(function(){
         ClickButton(project_id,team_id,test_case_per_page,test_case_page_current);
     });
     GetTestSet(project_id,team_id);
+
+    $("#createnewset").click(function(event){
+        var temp=$(this).attr('data-id').trim();
+        event.preventDefault();
+        $('#inner_div').html(createDivInit(temp));
+        $("#inner_div").dialog({
+            
+            show : {
+                effect : 'drop',
+                direction : "up"
+            },
+            modal : true,
+            width : 400,
+            height : 200,
+            title:"Create New "+temp.toLocaleUpperCase()
+        });
+        $('#create').click(function(event){
+            event.preventDefault();
+            var new_name=$('#inputText').val().trim();
+            //alert(temp.toLocaleUpperCase()+new_name);
+            $.get("createNewSetTag",{type:'SET',name:new_name.trim(),project_id:project_id,team_id:team_id},function(data){
+                var str=data;
+                var substr='Failed'
+                if(str.lastIndexOf(substr, 0) == 0){
+                    alertify.error(data,"",0);
+                }
+                else{
+                    alertify.success(data,"",0);
+                }
+                var location='/Home/ManageSetTag/';
+                window.location=location;
+            });
+        });
+    });
 });
 function createDivInit(temp){
     var message="";
@@ -241,7 +275,7 @@ function formTable(data){
     var message="";
     message+='<table style="width: 100%;border-collapse: separate;border-spacing: 1.5em 3em;">';
     for(var i=0;i<data.length;i++){
-        message+='<tr><td colspan="2"><a class="m-btn purple" data-id="'+data[i][0]+'" href="">Create '+data[i][0]+'</a></td></tr>';
+        //message+='<tr><td colspan="2"><a class="m-btn purple" data-id="'+data[i][0]+'" id="createnew'+data[i][0]+'">Create '+data[i][0]+'</a></td></tr>';
         if(data[i][1].length>0){
             message+='<td>';
             message+='<table data-id="'+data[i][0]+'">'

@@ -11546,10 +11546,11 @@ def createNewSetTag(request):
             name = request.GET.get(u'name', '')
             project_id = request.GET.get(u'project_id','')
             team_id = request.GET.get(u'team_id','')
-            if type_tag == 'SET':
+            """if type_tag == 'SET':
                 type_tag = 'set'
             if type_tag == 'TAG':
-                type_tag = 'tag'
+                type_tag = 'tag' """
+            type_tag = 'set'
             available_query = "select count(*) from config_values where value='%s' and type='%s'" % (
                 name.strip(), type_tag.strip())
             Conn = GetConnection()
@@ -11562,7 +11563,7 @@ def createNewSetTag(request):
                     "config_values",
                     **Dict)
                 if result:
-                    id = DB.GetData(Conn,"select id from config_values where type = 'set' and value = '"+name.strip()+"'",False)
+                    id = DB.GetData(Conn,"select id from config_values where type = 'set' and value = '"+name+"'",False)
                     tDict = {'project_id':project_id,'team_id':team_id,'parameters':id[0][0],'type':'Set'}
                     tres = DB.InsertNewRecordInToTable(Conn,"team_wise_settings",**tDict)
                     message = "Test %s with name '%s' created successfully." % (
@@ -11589,7 +11590,7 @@ def DeleteSetTag(request):
                 name.strip(), type_tag.strip())
             Conn = GetConnection()
             available_count = DB.GetData(Conn, available_query)
-            if available_count[0] > 0:
+            if available_count[0] > 0 and type_tag=='set':
                 test_case_tag_result = DB.DeleteRecord(
                     Conn,
                     "test_case_tag",
@@ -11601,6 +11602,8 @@ def DeleteSetTag(request):
                     value=name.strip(),
                     type=type_tag.strip())
                 if test_case_tag_result and config_values_result:
+                    id = DB.GetData(Conn,"select id from config_values where type = 'set' and value = '"+name.strip()+"'",False)
+                    tres = DB.DeleteRecord(Conn,"team_wise_settings",parameters=id[0][0], type=type_tag.strip())
                     message = "Test %s with name %s is deleted succesfully" % (
                         type_tag.strip(), name.strip())
                 else:
