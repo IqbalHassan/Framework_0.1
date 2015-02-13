@@ -30,7 +30,7 @@ $(document).ready(function(){
     Report();
 });
 function EnableAutocomplete(){
-    $('#searchinput').autocomplete({
+    /*$('#searchinput').autocomplete({
         source:function(request,response){
             $.ajax({
                 url:"FilterDataForRunID",
@@ -57,7 +57,54 @@ function EnableAutocomplete(){
             .data( "ui-autocomplete-item", item )
             .append( "<a><strong>" + item[0] + "</strong> - "+item[1]+"</a>" )
             .appendTo( ul );
-    };
+    };*/
+    $("#searchinput").select2({
+        placeholder: "Search & Filter",
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "FilterDataForRunID",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'run_id':$('#run_id').text().trim()
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        formatResult: formatTestCasesSearch
+    }).on("change", function(e) {
+            var value=$(this).select2('data')['id'];
+            var hidden_value=$(this).select2('data')['text'].split(' - ');
+            hidden_value=hidden_value[hidden_value.length-1];
+            $('#searchedFilter').append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>' +
+                '<td class="Text"><b>'+value+':<b style="display: none;">'+hidden_value.trim()+'</b>&nbsp;</b></td>');
+            GetAllData(current_page,itemPerPage,UserText);
+            $(this).select2('val','');
+            return false;
+        });
+    function formatTestCasesSearch(test_case_details) {
+        var tag_select=test_case_details.text.split(' - ');
+        tag_select=tag_select[tag_select.length-1].trim();
+        if (tag_select=='Test Case'){
+            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        }
+        else if(tag_select=='Section'){
+            var markup ='<div><i class="fa fa-folder-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        }
+        else{
+            var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        }
+        return markup;
+    }
 }
 function DeleteFilterData(){
     $('#searchedFilter td .delete').live('click',function(){

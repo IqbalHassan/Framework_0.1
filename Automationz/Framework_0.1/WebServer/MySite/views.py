@@ -11337,26 +11337,43 @@ def manage_tc_data(request):
 def FilterDataForRunID(request):
     if request.is_ajax():
         if request.method == 'GET':
-            term = request.GET.get('term', '')
+            results = []
+            items_per_page = 10
+            has_next_page = False
+            requested_page = int(request.GET.get(u'page', ''))
+            value = request.GET.get('term', '').strip()
             run_id = request.GET.get('run_id', '')
             Conn = GetConnection()
-            status_query = "select distinct status,'Status' from test_case_results where run_id='%s' and status Ilike '%%%s%%'" % (
+            """status_query = "select distinct status,'Status' from test_case_results where run_id='%s' and status Ilike '%%%s%%'" % (
                 run_id, term)
             status = DB.GetData(Conn, status_query, False)
             test_case_name_query = "select distinct tc.tc_id,tc_name from result_test_cases tc,test_case_results tcr where tc.run_id=tcr.run_id and tcr.run_id='%s' and (tc.tc_id Ilike'%%%s%%' or tc.tc_name Ilike '%%%s%%')" % (
                 run_id, term, term)
             test_case_name = DB.GetData(Conn, test_case_name_query, False)
-            final = []
+            """
+            query="select distinct tc.tc_id,tc_name,status from test_case_results tcr, result_test_cases tc where tcr.tc_id=tc.tc_id and tcr.run_id=tc.run_id and tcr.run_id='%s'"%(run_id)
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='tc_name')
+            Conn.close()
+            status=[]
+            for each_item in data['rows']:
+                result_dict = {}
+                if(value.lower() in each_item[0].lower() or value.lower() in each_item[1].lower() or value.lower() in each_item[2].lower()):
+                    if(value.lower() in each_item[0].lower() or value.lower() in each_item[1].lower()):
+                        result_dict['id'] = each_item[0]
+                        result_dict['text'] = '%s - %s' % (each_item[0], each_item[1])
+                        results.append(result_dict)
+                    if(value.lower() in each_item[2].lower()):
+                       status.append(each_item[2]) 
+                    
             for each in status:
-                if each not in final:
-                    final.append(each)
-            for each in test_case_name:
-                if each not in final:
-                    final.append(each)
-    result = simplejson.dumps(final)
-    Conn.close()
-    return HttpResponse(result, mimetype='application/json')
-
+                result_dict = {}
+                result_dict['id'] = each
+                result_dict['text'] = '%s - %s' % (each, 'Status')
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            #json = simplejson.dumps(results)
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
+            return HttpResponse(json, mimetype='application/json')
 
 def create_section(request):
     if request.method == 'GET' and request.is_ajax():
