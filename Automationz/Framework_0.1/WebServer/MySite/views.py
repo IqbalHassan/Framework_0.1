@@ -995,6 +995,9 @@ def AutoCompleteTestCasesSearch(request):
 def AutoCompleteTestCasesSearchOtherPages(request):
     if request.is_ajax():
         if request.method == 'GET':
+            items_per_page = 10
+            has_next_page = False
+            requested_page = int(request.GET.get(u'page', ''))
             value = request.GET.get(u'term', '')
             project_id = request.GET.get(u'project_id', '')
             team_id = request.GET.get(u'team_id', '')
@@ -1025,10 +1028,10 @@ def AutoCompleteTestCasesSearchOtherPages(request):
                            "','" +
                            Custom_Tag +
                            "','" +
-                           Section_Path_Tag +
-                           "','" +
-                           Feature_Path_Tag +
-                           "','" +
+                           #Section_Path_Tag +
+                           #"','" +
+                           #Feature_Path_Tag +
+                           #"','" +
                            Priority_Tag +
                            "','" +
                            Status +
@@ -1038,16 +1041,23 @@ def AutoCompleteTestCasesSearchOtherPages(request):
                            tag_type +
                            "'")
             print wherequery
-            tag_query = "select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)" % (
+            """tag_query = "select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)" % (
                 value, wherequery)
             id_query = "select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')" % (
-                value, value)
-            Conn = GetConnection()
-            tag_cases = DB.GetData(Conn, tag_query, False)
-            id_cases = DB.GetData(Conn, id_query, False)
-            results = list(set(list(tag_cases + id_cases)))
-    json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+                value, value)"""
+            query="select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !=''  group by name,property,tc.tc_name having count( case when name Ilike '%%%s%%' then 1 end )>0 or count(case when tc_name ilike'%%%s%%' then 1 end)>0"%(value,value)
+            Conn=GetConnection()
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
+            Conn.close()
+            results=[]
+            for each_item in data['rows']:
+                result_dict={}
+                result_dict['id']=each_item[0].split(' - ')[0].strip()
+                result_dict['text']=each_item[0]+' - '+each_item[1]
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
+            return HttpResponse(json, mimetype='application/json')
 
 
 # ==================Returns Abailable User Name in List as user Type on Ru

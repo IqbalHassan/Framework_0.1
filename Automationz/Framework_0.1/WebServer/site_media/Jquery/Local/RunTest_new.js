@@ -430,7 +430,7 @@ function AutoSuggestions(project_id,team_id){
 }
 
 function RunAutoCompleteTestSearch(project_id,team_id){
-    $("#searchbox").autocomplete(
+    /*$("#searchbox").autocomplete(
         {
             source : function(request, response) {
                 $.ajax({
@@ -470,6 +470,56 @@ function RunAutoCompleteTestSearch(project_id,team_id){
             .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
             .appendTo( ul );
     };
+    */
+    $("#searchbox").select2({
+        placeholder: "Search Test Cases....",
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "AutoCompleteTestCasesSearchOtherPages",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': $.session.get('project_id'),
+                    'team_id': $.session.get('default_team_identity')
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        formatResult: formatTestCasesSearch
+    }).on("change", function(e) {
+            var tag_id=$(this).select2('data')['id'];
+            $("#AutoSearchResult #searchedtext").append('<td><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td class="Text" data-id="'+user_id+'">'
+                + tag_id
+                + ":&nbsp"
+                + '</td>');
+            PerformSearch(1,project_id,team_id);
+            $(this).select2('val','');
+            return false;
+        });
+    function formatTestCasesSearch(test_case_details) {
+        var tag_select=test_case_details.text.split(' - ');
+        tag_select=tag_select[tag_select.length-1].trim();
+        if (tag_select=='Test Case'){
+            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        }
+        else if(tag_select=='Section'){
+            var markup ='<div><i class="fa fa-folder-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        }
+        else{
+            var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        }
+        return markup;
+    }
 }
 
 function PerformSearch(pageNumber,project_id,team_id,predicate) {
