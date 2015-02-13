@@ -35,8 +35,8 @@ $(document).ready(function(){
         var referred_step=URL.substring((URL.lastIndexOf(editpath)+(editpath).length),(URL.length-1));
         console.log(referred_step);
         $("#header").html('Edit Step / '+referred_step);
-        $("#step_name").val(referred_step);
         $("#step_name").select2("data", {"id": "Edit test step", "text": "Edit test step" + ": " + referred_step});
+        $("#step_name").val(referred_step);
         PopulateStepInfo(referred_step);
         operation=2;
         //req_id = referred_req;

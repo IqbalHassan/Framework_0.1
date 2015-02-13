@@ -17,7 +17,7 @@ function RunAutoCompleteTestSearch(){
                 $.ajax({
                     url:"AutoCompleteTestCasesSearchOtherPages",
                     dataType: "json",
-                    data:{ term: request.term,project_id:$('#project_identity option:selected').val().trim(),team_id:$('#default_team_identity option:selected').val().trim()},
+                    data:{ term: request.term,project_id:$.session.get('project_id'),team_id:$.session.get('default_team_identity')},
                     success: function( data ) {
                         response( data );
                     }
@@ -59,8 +59,8 @@ function PerformSearch(test_case_per_page,test_case_page_current) {
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
         $.get("TableDataTestCasesOtherPages",{
             Query: UserText,
-            project_id:$('#project_identity option:selected').val().trim(),
-            team_id:$('#default_team_identity option:selected').val().trim(),
+            project_id:$.session.get('project_id'),
+            team_id:$.session.get('default_team_identity'),
             test_case_per_page:test_case_per_page,
             test_case_page_current:test_case_page_current
         },function(data) {

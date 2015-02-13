@@ -3,6 +3,9 @@
  * Author: Sazid
  */
 
+var test_case_per_page=10;
+var test_case_page_current=1;
+
 var do_on_load = function do_on_load () {
 	window.section_has_no_tc = true;
 	
@@ -109,7 +112,7 @@ var do_on_load = function do_on_load () {
 		$.get('/Home/ManageTestCases/getData/', { 'selected_section_ids': selected_sections }, function(data, status) {
 			if (status === 'success') {
 				var query_string = data;
-				loadTable(query_string);
+				loadTable(query_string,test_case_per_page,test_case_page_current);
 			} else {
 				alertify.error("Could not eastablish connection to the server.");
 			}
@@ -227,12 +230,14 @@ var do_on_load = function do_on_load () {
 	    });
 	}
 	
-	function loadTable(query_string) {
+	function loadTable(query_string,test_case_per_page,test_case_page_current) {
         var other_string=query_string;
 		$.get("TableDataTestCasesOtherPages", {'Query': other_string,
             'test_status_request': true,
             "project_id": $.session.get('project_id'),
-            "team_id": $.session.get('default_team_identity')
+            "team_id": $.session.get('default_team_identity'),
+            'test_case_per_page':test_case_per_page,
+            'test_case_page_current':test_case_page_current
         }, function(data) {
 
 	        if (data['TableData'].length == 0)
@@ -241,12 +246,25 @@ var do_on_load = function do_on_load () {
 	            $('#RunTestResultTable').children().remove();
 	            $('#RunTestResultTable').append("<p class = 'Text' style=\"text-align: center;\">No Test Cases to view :(<br>It's either because you have not selected any section(s) or there are no test case(s) for the selected section(s).</p>");
 	            $("#DepandencyCheckboxes").children().remove();
+	            $('#pagination_div').pagination('destroy');
 	        }
 	        else
 	        {
 	        	window.section_has_no_tc = false;
 				console.log(data['TableData'])
 	            ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases", "Number of test cases for the selected section(s)");
+	            $('#pagination_div').pagination({
+                    items:data['Count'],
+                    itemsOnPage:test_case_per_page,
+                    cssStyle: 'dark-theme',
+                    currentPage:test_case_page_current,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        loadTable(query_string,test_case_per_page,PageNumber);
+                    }
+                });
 	            $("#RunTestResultTable").fadeIn(1000);
 	            $("p:contains('Show/Hide Test Cases')").fadeIn(0);
 	            implementDropDown("#RunTestResultTable");
@@ -255,9 +273,9 @@ var do_on_load = function do_on_load () {
 	            $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
 	                var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-	                $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-pencil fa-2x templateBtn" id="'+ID+'"></i></span>');
 	                $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-copy fa-2x editBtn" id="'+ID+'"></i></span>');
-
+	                $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-pencil fa-2x templateBtn" id="'+ID+'"></i></span>');
+	                
 	                indx++;
 	            });
 

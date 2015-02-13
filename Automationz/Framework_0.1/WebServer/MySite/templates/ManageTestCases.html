@@ -8,6 +8,9 @@
 
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageTestCases.js"></script>
 
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
+
 <style>
 #searchbox {
 	width: 94%;
@@ -47,12 +50,16 @@
 				<div id="tree"></div>
 			</td>
 			<td style="width: 78%; border-left: 2px solid #ccc; position: relative;">
-				<div id = "RunTestResultTable" style="position: absolute; min-width: 100%; top: 0;">
+				<div style="position: absolute; min-width: 100%; top: 0;">
+					<div id = "RunTestResultTable">
 					<p style="font-weight: bold; text-align: center;" class="Text">Select any section to display the corresponding Test Cases</p>
+					</div>
+					<div id="pagination_div"></div>
 				</div>
 			</td>
 		</tr>
 	</tbody>
 </table>
+
 
 {% endblock %}

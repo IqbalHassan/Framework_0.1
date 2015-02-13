@@ -4,10 +4,12 @@
 $(document).ready(function(){
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
+    var test_case_per_page=5;
+    var test_case_page_current=1;
 
-    $.get('GetSetTag',{term:""},function(data){
+    $.get('GetSetTag',{term:"",project_id:project_id,team_id:team_id},function(data){
         $('#set_tag').html(formTable(data));
-        ClickButton(project_id,team_id);
+        ClickButton(project_id,team_id,test_case_per_page,test_case_page_current);
     });
     GetTestSet(project_id,team_id);
 });
@@ -29,7 +31,7 @@ function renameDivInit(temp,name){
     message+='</div>';
     return message;
 }
-function configureLinks(temp,name){
+function configureLinks(temp,name,project_id,team_id){
     $('#rename').click(function(event){
         event.preventDefault();
         $('#inner_div').html(renameDivInit(temp,name));
@@ -91,7 +93,7 @@ function configureLinks(temp,name){
             event.preventDefault();
             var new_name=$('#inputText').val().trim();
             //alert(temp.toLocaleUpperCase()+new_name);
-            $.get("createNewSetTag",{type:temp.toLocaleUpperCase(),name:new_name.trim()},function(data){
+            $.get("createNewSetTag",{type:temp.toLocaleUpperCase(),name:new_name.trim(),project_id:project_id,team_id:team_id},function(data){
                 var str=data;
                 var substr='Failed'
                 if(str.lastIndexOf(substr, 0) == 0){
@@ -124,20 +126,32 @@ function configureLinks(temp,name){
         });
     });
 }
-function ClickButton(project_id,team_id){
+function ClickButton(project_id,team_id,test_case_per_page,test_case_page_current){
     $('.element').click(function(){
         $('.element').css({'background-color':'#ffffff'});
         $(this).css({'background-color':'#E7F4F9'});
         var name=$(this).text().trim();
         $('#msg').css({'display':'none'});
-        configureLinks($(this).closest('table').attr('data-id').trim(),name);
+        configureLinks($(this).closest('table').attr('data-id').trim(),name,project_id,team_id);
         $('#type').html('<p style="color: #4183c4;font-weight: bold; text-align:left;" class="Text">'+$(this).closest('table').attr('data-id').trim().toUpperCase()+' - </p>');
         $('#name').html('<p style="font-weight: bold; text-align: left;margin-left: -10%" class="Text">'+name+'<span id="time"></span></p>');
         name+=':';
         $('#infoDiv').css({'display':'block'});
-        $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:true,total_time:true,project_id:project_id,team_id:team_id},function(data){
+        $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:true,total_time:true,project_id:project_id,team_id:team_id,test_case_per_page:test_case_per_page,test_case_page_current:test_case_page_current},function(data){
             if(data['TableData'].length!=0){
                 ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
+                $('#pagination_div').pagination({
+                    items:data['Count'],
+                    itemsOnPage:test_case_per_page,
+                    cssStyle: 'dark-theme',
+                    currentPage:test_case_page_current,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        PerformSearch(project_id,team_id,test_case_per_page,PageNumber);
+                    }
+                });
                 $('#time').html('<b> - '+data['time']+'</b>')
 
                 implementDropDown("#RunTestResultTable");
@@ -145,8 +159,9 @@ function ClickButton(project_id,team_id){
                 $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
                     var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                    $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-pencil fa-2x templateBtn" id="'+ID+'"></i></span>');
                     $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-copy fa-2x editBtn" id="'+ID+'"></i></span>');
+                    $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-pencil fa-2x templateBtn" id="'+ID+'"></i></span>');
+                    
 
                     indx++;
                 });
@@ -160,6 +175,7 @@ function ClickButton(project_id,team_id){
             }
             else{
                 $('#RunTestResultTable').html('<p style="font-weight: bold; text-align: center;" class="Text">There is no test cases</p>');
+                $('#pagination_div').pagination('destroy');
             }
         });
     });
@@ -244,7 +260,7 @@ function GetTestSet(project_id,team_id){
     $('#searchbox').on('input',function(){
         $.get('GetSetTag',{term:$(this).val()},function(data){
             $('#set_tag').html(formTable(data));
-            ClickButton(project_id,team_id);
+            ClickButton(project_id,team_id,test_case_per_page,test_case_page_current);
         });
     });
 };
