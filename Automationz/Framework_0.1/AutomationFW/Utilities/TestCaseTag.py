@@ -3,7 +3,7 @@ Created on Apr 10, 2012
 
 @author: jnibumon3e03
 '''
-import DataBaseUtilities as DB
+from CoreFrameWork import DataBaseUtilities as DB
 
 def AddTag(conn, tcid, name, property):
     try:

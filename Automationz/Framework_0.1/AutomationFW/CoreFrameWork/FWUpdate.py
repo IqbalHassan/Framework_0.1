@@ -8,7 +8,7 @@ import ConfigParser
 import inspect
 import time
 import stat
-import Global
+from CoreFrameWork import Global
 from Utilities import CommonUtil
 from Utilities import FileUtilities as FileUtil
 
@@ -25,13 +25,13 @@ class AutoUpdate():
 
             #self.ServerSourcePath =  Config.get('Update', 'SourcePath')
             self.Branch = Config.get('AutoUpdate', 'Branch')
-            if Global.Environment == 'Test':
+            if CoreFrameWork.Global.Environment == 'Test':
                 #print "In Test Environment"
                 if os.name == 'nt':
                     self.ServerSourcePath = "//ServerSourceFolderPath"
                 elif os.name == 'posix':
                     self.ServerSourcePath = "/Volumes/ServerSourceFolderPath"
-            elif Global.Environment == 'Production':
+            elif CoreFrameWork.Global.Environment == 'Production':
                 #print "In Production Environment"
                 if self.Branch == 'UX':
                     self.ServerSourcePath = "//ServerSourceFolderPath"

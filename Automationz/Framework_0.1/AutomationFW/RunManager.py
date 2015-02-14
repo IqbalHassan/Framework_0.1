@@ -1,12 +1,12 @@
-import DataBaseUtilities as DB
+from CoreFrameWork import DataBaseUtilities as DB
 from Utilities.dependencyCollector import dependency,product_version
 from Utilities import Cleanup
 from login_info import username,password,project,team,server,port,database_name,superuser,super_password
 from Utilities import CommonUtil
 import os
-import Global
+from CoreFrameWork import Global
 import time
-import MainDriver
+from CoreFrameWork import MainDriver
 def RunProcess(sTesterid):
     while (1):
         try:
@@ -17,7 +17,7 @@ def RunProcess(sTesterid):
                 continue
             if status[0] != "Unassigned":
                 if status[0] == "Submitted":
-                    value=MainDriver.main()
+                    value=CoreFrameWork.MainDriver.main()
                     print "updating db with parameter"
                     if value=="pass":
                         break
@@ -99,7 +99,7 @@ def update_machine(dependency):
         #Get Local Info object
         oLocalInfo = Utilities.CommonUtil.LocalInfo()
 
-        if os.path.isdir(Global.NetworkFolder) != True:
+        if os.path.isdir(CoreFrameWork.Global.NetworkFolder) != True:
             print "Failed to access Network folder"
             #return False
             local_ip = oLocalInfo.getLocalIP() #+ " - Network Error"

@@ -3,16 +3,16 @@ import os, sys
 import time, datetime
 import threading, Queue
 import inspect
-import DataBaseUtilities as DBUtil
+from CoreFrameWork import DataBaseUtilities as DBUtil
 from Utilities import FileUtilities as FL
-import Global
+from CoreFrameWork import Global
 from Utilities import CommonUtil
 import Drivers
 import importlib
 #import FSDriver
-import Performance
+from CoreFrameWork import Performance
 #from distutils.tests.test_check import CheckTestCase
-import DataFetching
+from CoreFrameWork import DataFetching
 ReRunTag="ReRun"
 
 passed_tag_list=['Pass','pass','PASS','PASSED','Passed','passed','true','TRUE','True',True,1,'1','Success','success','SUCCESS']
@@ -273,7 +273,7 @@ def main():
         #TestCaseLists = list(TestCaseLists[0])
         for TestCaseID in TestCaseLists:
             testcasecontinue="yes"
-            Global.sTestStepExecLogId = "MainDriver"
+            CoreFrameWork.Global.sTestStepExecLogId = "MainDriver"
             StepSeq = 1
             TCID = list(TestCaseID)[0]
             print "-------------*************--------------"
@@ -290,12 +290,12 @@ def main():
             Utilities.CommonUtil.ExecLog(sModuleInfo, "Running Test case id : %s :: %s" % (TCID, TestCaseName), 1)
 
             #Create Log Folder for the TC
-            Global.TCLogFolder = (Global.NetworkLogFolder + os.sep + sTestResultsRunId + os.sep + TCID + "_" + Utilities.CommonUtil.TimeStamp("utcstring")).replace(":", "-")
+            CoreFrameWork.Global.TCLogFolder = (CoreFrameWork.Global.NetworkLogFolder + os.sep + sTestResultsRunId + os.sep + TCID + "_" + Utilities.CommonUtil.TimeStamp("utcstring")).replace(":", "-")
             #Create the folder (this fn will delete if it already exists)
-            FL.CreateFolder(Global.TCLogFolder)
+            FL.CreateFolder(CoreFrameWork.Global.TCLogFolder)
             #Create sub folders needed
-            FL.CreateFolder(Global.TCLogFolder + os.sep + "ProductLog")
-            FL.CreateFolder(Global.TCLogFolder + os.sep + "Screenshots")
+            FL.CreateFolder(CoreFrameWork.Global.TCLogFolder + os.sep + "ProductLog")
+            FL.CreateFolder(CoreFrameWork.Global.TCLogFolder + os.sep + "Screenshots")
 
 
             #test Case start time
@@ -362,10 +362,10 @@ def main():
                     #    PerfQ.put(TestStepsList[StepSeq - 1][1])
                     #Check if the current test step is a Performance Test Step
                     if TestStepsList[StepSeq - 1][4] == 'Performance':
-                        Global.sTestStepType = TestStepsList[StepSeq - 1][4]
+                        CoreFrameWork.Global.sTestStepType = TestStepsList[StepSeq - 1][4]
 
                     #Test Step Log id
-                    Global.sTestStepExecLogId = sTestResultsRunId + TCID + str(TestStepsList[StepSeq - 1][0]) + str(StepSeq)
+                    CoreFrameWork.Global.sTestStepExecLogId = sTestResultsRunId + TCID + str(TestStepsList[StepSeq - 1][0]) + str(StepSeq)
                     # Test Step start time
                     conn=DBUtil.ConnectToDataBase()
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -379,7 +379,7 @@ def main():
                     #cur.execute("insert into test_step_results (run_id,tc_id,teststep_id,teststepsequence,status,stepstarttime,logid,start_memory,testcaseresulttindex ) values ('%s','%s','%d','%d','In-Progress','%s','%s', '%s', '%d')" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], sTestStepStartTime, Global.sTestStepExecLogId, WinMemBegin, TestCaseResultIndex[0][0]))
                     #conn.commit()
                     condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"' and teststep_id='"+str(TestStepsList[StepSeq - 1][0])+"' and teststepsequence='"+str(TestStepsList[StepSeq - 1][2])+"'"
-                    Dict={'teststepsequence':TestStepsList[StepSeq - 1][2],'status':'In-Progress','stepstarttime':sTestStepStartTime,'logid':Global.sTestStepExecLogId,'start_memory':WinMemBegin,'testcaseresulttindex':TestCaseResultIndex[0][0]}
+                    Dict={'teststepsequence':TestStepsList[StepSeq - 1][2],'status':'In-Progress','stepstarttime':sTestStepStartTime,'logid':CoreFrameWork.Global.sTestStepExecLogId,'start_memory':WinMemBegin,'testcaseresulttindex':TestCaseResultIndex[0][0]}
                     conn=DBUtil.ConnectToDataBase()
                     DBUtil.UpdateRecordInTable(conn,"test_step_results",condition,**Dict)
                     conn.close()
@@ -395,7 +395,7 @@ def main():
                         conn.close()
                         steps_data=[]
                         for each_data_id in container_data_details:
-                            From_Data = DataFetching.Get_PIM_Data_By_Id(each_data_id[0])
+                            From_Data = CoreFrameWork.DataFetching.Get_PIM_Data_By_Id(each_data_id[0])
                             steps_data.append(From_Data)
                     else:
                         steps_data=[]
@@ -411,7 +411,7 @@ def main():
                             if TestStepsList[StepSeq-1][3] in Driver_list:    
                                 #If threading is enabled
                                 module_name=importlib.import_module(TestStepsList[StepSeq-1][3])
-                                if Global.ThreadingEnabled:
+                                if CoreFrameWork.Global.ThreadingEnabled:
                                     stepThread = threading.Thread(target=module_name.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q,TestRunID[0]))
                                 else:
                                     #from Drivers import Futureshop
@@ -429,25 +429,25 @@ def main():
 
                             else:
                                 #If threading is enabled
-                                if Global.ThreadingEnabled:
+                                if CoreFrameWork.Global.ThreadingEnabled:
                                     stepThread = threading.Thread(target=ExecuteTestSteps, args=(TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q))
                                 else:
                                     sStepResult = ExecuteTestSteps(TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q)
 
                             #If threading is enabled
-                            if Global.ThreadingEnabled:
+                            if CoreFrameWork.Global.ThreadingEnabled:
                                 #Start the thread
                                 print "Starting Test Step Thread.."
                                 stepThread.start()
                                 #Wait for the Thread to finish or until timeout
-                                print "Waiting for Test Step Thread to finish..for (seconds) :", Global.DefaultTestStepTimeout
-                                stepThread.join(Global.DefaultTestStepTimeout)
+                                print "Waiting for Test Step Thread to finish..for (seconds) :", CoreFrameWork.Global.DefaultTestStepTimeout
+                                stepThread.join(CoreFrameWork.Global.DefaultTestStepTimeout)
                                 #Get the return value from the ExecuteTestStep fn via Queue
                                 try:
                                     sStepResult = q.get(True, 5)
                                     print "Test Step Thread Ended.."
                                 except Queue.Empty:
-                                    print "Test Step did not return after default timeout (secs) : ", Global.DefaultTestStepTimeout
+                                    print "Test Step did not return after default timeout (secs) : ", CoreFrameWork.Global.DefaultTestStepTimeout
                                     sStepResult = "Failed"
 
                                     #Clean up
@@ -679,9 +679,9 @@ def main():
             print Utilities.CommonUtil.GetProductLog()
 
             #Zip the folder
-            TCLogFile = Utilities.CommonUtil.ZipFolder(Global.TCLogFolder, Global.TCLogFolder + ".zip")
+            TCLogFile = Utilities.CommonUtil.ZipFolder(CoreFrameWork.Global.TCLogFolder, CoreFrameWork.Global.TCLogFolder + ".zip")
             #Delete the folder
-            FL.DeleteFolder(Global.TCLogFolder)
+            FL.DeleteFolder(CoreFrameWork.Global.TCLogFolder)
 
             #Find Test case failed reason
             try:
@@ -702,10 +702,10 @@ def main():
                 print "tc_name:", TestCaseName[0]
                 print "tc_section:", list(TestCaseID)[0]
                 print "run_id:", sTestResultsRunId
-                print "duration:", Global.transaction_duration
-                print "memory_avg:", Global.transaction_deltamemory
-                print "memory_peak:", Global.transaction_deltamemory
-                HWobj = Performance.ComputerHWInfo()
+                print "duration:", CoreFrameWork.Global.transaction_duration
+                print "memory_avg:", CoreFrameWork.Global.transaction_deltamemory
+                print "memory_peak:", CoreFrameWork.Global.transaction_deltamemory
+                HWobj = CoreFrameWork.Performance.ComputerHWInfo()
                 hwmodel = HWobj.CompInfo().HWModel
                 print "HW Model:", hwmodel
 
@@ -715,9 +715,9 @@ def main():
                         tc_id=list(TestCaseID)[0],
                         run_id=sTestResultsRunId,
                         machine_os=TestRunID[4],
-                        duration=Global.transaction_duration,
-                        memory_avg=Global.transaction_startmemory,
-                        memory_peak=Global.transaction_endmemory,
+                        duration=CoreFrameWork.Global.transaction_duration,
+                        memory_avg=CoreFrameWork.Global.transaction_startmemory,
+                        memory_peak=CoreFrameWork.Global.transaction_endmemory,
                         hw_model=hwmodel)
                 conn.close()
             #Check if Test Set status is 'Cancelled' When it is stopped from Website
@@ -763,7 +763,7 @@ def main():
                 print "Test Set Completed"
             Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
 
-            Global.sTestStepExecLogId = "MainDriver"
+            CoreFrameWork.Global.sTestStepExecLogId = "MainDriver"
 
             #Send Summary Email
             conn=DBUtil.ConnectToDataBase()
@@ -780,7 +780,7 @@ def main():
                 
 
         #Copy the Automation Log to Network Folder
-        if FL.CopyFile(Utilities.CommonUtil.hdlr.baseFilename, Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
+        if FL.CopyFile(Utilities.CommonUtil.hdlr.baseFilename, CoreFrameWork.Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
             Utilities.CommonUtil.ClearLog()
 
     #Close DB Connection
@@ -789,7 +789,7 @@ def main():
 
 if __name__ == "__main__":
 
-    Global.sTestStepExecLogId = "MainDriver"
+    CoreFrameWork.Global.sTestStepExecLogId = "MainDriver"
     print main()
 
 

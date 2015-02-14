@@ -8,7 +8,7 @@ import sys
 import time
 import inspect
 from Utilities import CommonUtil
-import GlobalConstant_Mac as Globals
+from CoreFrameWork import Global as Globals
 #from EasyDialogs import ProgressBar
 Global = Globals.ObjectIDs()
 

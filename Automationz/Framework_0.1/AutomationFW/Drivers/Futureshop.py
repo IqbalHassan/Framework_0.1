@@ -1,7 +1,7 @@
 import datetime
-import DataBaseUtilities as DBUtil
+from CoreFrameWork import DataBaseUtilities as DBUtil
 from Utilities import FileUtilities as FileUtil
-import Global
+from CoreFrameWork import Global
 from Utilities import CommonUtil
 from Utilities import Cleanup
 import sys, os, time, inspect
@@ -10,7 +10,7 @@ import itertools, operator
 import Compare
 
 #Ver1.0
-import CompareModule
+from CoreFrameWork import CompareModule
 
 if os.name == 'nt':
     import clr, System
@@ -63,7 +63,7 @@ def verify_product_details(dependency,step_data):
             final_list.append((each[0],'',each[1],False,False))
     
     #declaring the object compare
-    oCompare=CompareModule.CompareModule()
+    oCompare=CoreFrameWork.CompareModule.CompareModule()
     sTestStepReturnStatus=oCompare.compare(expected_data,[final_list])
     print sTestStepReturnStatus
     return sTestStepReturnStatus
@@ -86,7 +86,7 @@ def verifying_contacts(dependency,step_data):
                  [ ( 'name' , '' , 'minar' , True , False ) , ( 'roll' , '' , '0905105' , False , False ),('address','home','jessore',False,False),('address','road',701,False,False) ],                 
                  ]
     keyfield_list=['name']
-    oCompare=CompareModule.CompareModule()
+    oCompare=CoreFrameWork.CompareModule.CompareModule()
     sTestStepReturnStatus=oCompare.compare(expected_list,actual_list,keyfield_list)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
