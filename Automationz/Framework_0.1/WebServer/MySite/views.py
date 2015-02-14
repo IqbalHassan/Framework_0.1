@@ -11683,8 +11683,9 @@ def FilterDataForRunID(request):
                         result_dict['id'] = each_item[0]
                         result_dict['text'] = '%s - %s' % (each_item[0], each_item[1])
                         results.append(result_dict)
-                    if(value.lower() in each_item[2].lower()):
+                    if(value.lower() in each_item[2].lower() and each_item[2] not in status):
                        status.append(each_item[2]) 
+            status=list(set(status))
             for each in status:
                 result_dict = {}
                 result_dict['id'] = each
