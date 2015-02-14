@@ -17,7 +17,7 @@ def RunProcess(sTesterid):
                 continue
             if status[0] != "Unassigned":
                 if status[0] == "Submitted":
-                    value=CoreFrameWork.MainDriver.main()
+                    value=MainDriver.main()
                     print "updating db with parameter"
                     if value=="pass":
                         break
@@ -26,7 +26,7 @@ def RunProcess(sTesterid):
             elif status[0] == "Unassigned":
                 time.sleep(3)
                 conn = DB.ConnectToDataBase()
-                last_updated_time=Utilities.CommonUtil.TimeStamp("string")
+                last_updated_time=CommonUtil.TimeStamp("string")
                 DB.UpdateRecordInTable(conn, "test_run_env", "where tester_id = '%s' and status = 'Unassigned'" % sTesterid, last_updated_time=last_updated_time)
                 conn.close()
         except Exception, e:
@@ -57,7 +57,7 @@ def collectAlldependency(project,team_info,dependency):
     print dependency_list
 
     #Get Local Info object
-    oLocalInfo = Utilities.CommonUtil.LocalInfo()
+    oLocalInfo = CommonUtil.LocalInfo()
 
     final_dependency=[]
     for each in dependency_list:
@@ -97,9 +97,9 @@ def collectAlldependency(project,team_info,dependency):
 def update_machine(dependency):
     try:
         #Get Local Info object
-        oLocalInfo = Utilities.CommonUtil.LocalInfo()
+        oLocalInfo = CommonUtil.LocalInfo()
 
-        if os.path.isdir(CoreFrameWork.Global.NetworkFolder) != True:
+        if os.path.isdir(Global.NetworkFolder) != True:
             print "Failed to access Network folder"
             #return False
             local_ip = oLocalInfo.getLocalIP() #+ " - Network Error"
@@ -108,7 +108,7 @@ def update_machine(dependency):
         testerid = (oLocalInfo.getLocalUser()).lower()
         #product_version = ' '        
         productVersion=product_version
-        UpdatedTime = Utilities.CommonUtil.TimeStamp("string")
+        UpdatedTime = CommonUtil.TimeStamp("string")
         query="select count(*) from permitted_user_list where user_level='Automation' and user_names='%s'"%testerid
         Conn=DB.ConnectToDataBase(database_name,superuser,super_password,server)
         count=DB.GetData(Conn,query)
