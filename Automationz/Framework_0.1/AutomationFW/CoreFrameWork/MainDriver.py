@@ -1,5 +1,10 @@
 # -*- coding: cp1252 -*-
 import os, sys
+#adding driver folder to sys.path
+current_file_path=os.path.dirname(os.getcwd())#getting parent folder
+driver_folder=os.path.join(current_file_path,'Drivers')
+if driver_folder not in sys.path:
+    sys.path.append(driver_folder)
 import time, datetime
 import threading, Queue
 import inspect
@@ -410,6 +415,8 @@ def main():
                             #if TestStepsList[StepSeq - 1][3] == "Futureshop":
                             if TestStepsList[StepSeq-1][3] in Driver_list:    
                                 #If threading is enabled
+                                #import pdb
+                                #pdb.set_trace()
                                 module_name=importlib.import_module(TestStepsList[StepSeq-1][3])
                                 if Global.ThreadingEnabled:
                                     stepThread = threading.Thread(target=module_name.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q,TestRunID[0]))
