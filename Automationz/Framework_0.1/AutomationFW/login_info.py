@@ -1,7 +1,7 @@
 username='iqbal_hassan'
 password='password'
 project='PROJ-29'
-team='WebAutomation'
+team='Web'
 server='135.23.123.206'
 port=5432
 

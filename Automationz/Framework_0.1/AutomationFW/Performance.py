@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import time, datetime, inspect
-import CommonUtil, os
+import os
+from Utilities import CommonUtil
 
 if os.name == "nt":
     from wmi import WMI
@@ -136,7 +137,7 @@ def CollectProcessMemory(StepName, Input_Q, ProcName='windows.exe'):
 
     while Input_Q.get() != 'Stop':
         print "inside getting memory"
-        pid = CommonUtil.GetProcessId(ProcName)
+        pid = Utilities.CommonUtil.GetProcessId(ProcName)
         if pid != False:
             Obj = ProcessInformation()
             MemObj = Obj.ProcInfo(pid)

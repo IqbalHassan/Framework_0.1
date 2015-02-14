@@ -4,13 +4,13 @@ import os, sys, subprocess
 import shutil
 import stat, time
 import inspect
-import CommonUtil
+from Utilities import CommonUtil
 if os.name == 'nt':
-    import WinCommonFoldersPaths as ComPath
+    from PCDesktop import WinCommonFoldersPaths as ComPath
     import win32api
     from win32com.shell import shell, shellcon
 elif os.name == 'posix':
-    import MacCommonFoldersPaths as ComPath
+    from MacDesktop import MacCommonFoldersPaths as ComPath
 
 def PCtoMACpathchange(currentFilePath):
     return currentFilePath
@@ -706,7 +706,7 @@ def CopyAllFilesFromSourceToDestFolder(src, dest):
 
     except Exception, e:
         print "%s > Exception:  (%s)" % (sModuleInfo, e)
-        CommonUtil.ExecLog(sModuleInfo, "Exception:  (%s)" % e, 3)
+        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception:  (%s)" % e, 3)
         return "Critical"
 
 def ChangePermission(sFolderPath):

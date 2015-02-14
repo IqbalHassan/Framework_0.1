@@ -1,11 +1,11 @@
 import datetime
 import DataBaseUtilities as DBUtil
-import FileUtilities as FileUtil
+from Utilities import FileUtilities as FileUtil
 import Global
-import CommonUtil
-import Cleanup
+from Utilities import CommonUtil
+from Utilities import Cleanup
 import sys, os, time, inspect
-import WebProgram
+from Web import WebProgram
 import itertools, operator
 import Compare
 
@@ -21,17 +21,17 @@ if os.name == 'nt':
     from System.Windows.Forms import SendKeys
     from System.Windows.Automation import *
     from PCDesktop import Program as AutoUtil
-    import WinCommonFoldersPaths as WinCom
+    from PCDesktop import WinCommonFoldersPaths as WinCom
 
 if os.name == 'posix':
-    import MacCommonFoldersPaths as ComPath
+    from MacDesktop import MacCommonFoldersPaths as ComPath
     from MacDesktop import Program_Mac as PIM
 
 def open_browser(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
+    Utilities.CommonUtil.ExecLog(sModuleInfo, "Opening browser", 1)
     sClientName=dependency['Browser']
-    sTestStepReturnStatus = WebProgram.BrowserSelection(sClientName)
+    sTestStepReturnStatus = Web.WebProgram.BrowserSelection(sClientName)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
 def go_to_webpage(dependency,step_data):
@@ -39,19 +39,19 @@ def go_to_webpage(dependency,step_data):
     #getting the first data set by this following lines
     first_data_set=step_data[0]
     web_link=first_data_set[0][2]
-    sTestStepReturnStatus = WebProgram.OpenLink(web_link)
+    sTestStepReturnStatus = Web.WebProgram.OpenLink(web_link)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
 def search_for_an_item(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     first_data_set=step_data[0]
     search_text=first_data_set[0][2]
-    sTestStepReturnStatus = WebProgram.SearchItem(search_text)
+    sTestStepReturnStatus = Web.WebProgram.SearchItem(search_text)
     print sTestStepReturnStatus
     return sTestStepReturnStatus
 def verify_product_details(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    actual_data=WebProgram.GetItemDetail()
+    actual_data=Web.WebProgram.GetItemDetail()
     expected_data=step_data
     #making data compatible with the current format
     final_list=[]
@@ -70,8 +70,8 @@ def verify_product_details(dependency,step_data):
 
 def close_browser(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name    
-    CommonUtil.ExecLog(sModuleInfo, "skipping closing browser", 1)
-    sTestStepReturnStatus = WebProgram.CloseBrowser()
+    Utilities.CommonUtil.ExecLog(sModuleInfo, "skipping closing browser", 1)
+    sTestStepReturnStatus = Web.WebProgram.CloseBrowser()
     print sTestStepReturnStatus
     return sTestStepReturnStatus
 def verifying_contacts(dependency,step_data):

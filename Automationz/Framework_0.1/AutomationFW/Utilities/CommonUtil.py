@@ -7,19 +7,19 @@ import string
 import DataBaseUtilities as DB
 import Global
 import logging
-import FileUtilities as FileUtil
+from Utilities import FileUtilities as FileUtil
 import re
 import math
 
 if os.name == 'nt':
-    import WinCommonFoldersPaths as ComPath
+    from PCDesktop import WinCommonFoldersPaths as ComPath
     import win32com.client
     import wmi
     import win32api
     import win32file
     from PIL import ImageGrab
 elif os.name == 'posix':
-    import MacCommonFoldersPaths as ComPath
+    from MacDesktop import MacCommonFoldersPaths as ComPath
     import plistlib
     from appscript import *
 

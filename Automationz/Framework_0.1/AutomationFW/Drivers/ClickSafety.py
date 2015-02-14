@@ -1,5 +1,5 @@
 
-import SeleniumScript
+from Web import SeleniumScript
 
 def start_browser(dependency,step_data):
     try:

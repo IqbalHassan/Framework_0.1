@@ -2,9 +2,9 @@
 import os
 import time
 if os.name == 'nt':
-    import WinCommonFoldersPaths as compath
+    from PCDesktop import WinCommonFoldersPaths as compath
 else:
-    import MacCommonFoldersPaths as compath
+    from MacDesktop import MacCommonFoldersPaths as compath
 
 ###########Production / Dev Config variables######################
 Environment = "Test"
