@@ -25,16 +25,16 @@ def FindElement_New(ItemNameID):
                        
                     
         return Element
-        Utilities.CommonUtil.ExecLog(sModuleName,"(%s) elements found using (%s) Name/Id" %(Element.Count,ItemNameID),1)
+        CommonUtil.ExecLog(sModuleName,"(%s) elements found using (%s) Name/Id" %(Element.Count,ItemNameID),1)
         
     except Exception, e:
-            Utilities.CommonUtil.ExecLog(sModuleName,"Unknown error happened. Returning False and exiting",1) 
+            CommonUtil.ExecLog(sModuleName,"Unknown error happened. Returning False and exiting",1) 
             return False   
                    
                    
 def FindTheMainWindow(WindowsNameID=None):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In FindTheMainWindow fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In FindTheMainWindow fn.","Info",1)
     winFound = False
     try:
         if WindowsNameID!= None:
@@ -42,22 +42,22 @@ def FindTheMainWindow(WindowsNameID=None):
             for TheWindow in MainWindowsList:
                 
                 if TheWindow.Current.AutomationId==WindowsNameID:
-                    Utilities.CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
+                    CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
                     winFound = True
                     return TheWindow
                 elif TheWindow.Current.ClassName == WindowsNameID:
-                    Utilities.CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
+                    CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
                     winFound = True
                     return TheWindow
                 elif TheWindow.Current.Name == WindowsNameID:
-                    Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
+                    CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
                     winFound = True
                     return TheWindow
         if winFound==False:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
+            CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
             return False 
     except:
-           Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+           CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
            return False
           
 #def FindTheChildElementOfParentWindow(ParentWindowElement=None,ChildNameID=None):
@@ -90,50 +90,50 @@ def FindTheMainWindow(WindowsNameID=None):
 
 def FindTheChildElementOfParentWindow(ParentWindowElement=None,ChildNameID=None):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In FindTheMainWindow fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In FindTheMainWindow fn.","Info",1)
     childElement = False
     try:
         if ParentWindowElement != None and ChildNameID != None :
             TheChildElement = ParentWindowElement.FindFirst(TreeScope.Children,PropertyCondition(AutomationElement.ClassNameProperty,ChildNameID))
             if TheChildElement != None:
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
                 childElement = True
                 return TheChildElement
             TheChildElement = ParentWindowElement.FindFirst(TreeScope.Children,PropertyCondition(AutomationElement.AutomationIdProperty,ChildNameID))
             if TheChildElement != None:
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
                 childElement = True
                 return TheChildElement
             TheChildElement = ParentWindowElement.FindFirst(TreeScope.Children,PropertyCondition(AutomationElement.NameProperty,ChildNameID))
             if TheChildElement != None:
                 childElement = True
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
                 return TheChildElement
             TheChildElement = ParentWindowElement.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.ClassNameProperty,ChildNameID))
             if TheChildElement != None:
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
                 childElement = True
                 return TheChildElement
             TheChildElement = ParentWindowElement.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.AutomationIdProperty,ChildNameID))
             if TheChildElement != None:
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
                 childElement = True
                 return TheChildElement
             TheChildElement = ParentWindowElement.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.NameProperty,ChildNameID))
             if TheChildElement != None:
                 childElement = True
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
                 return TheChildElement
         if childElement == False:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
+            CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
             return False
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False
                      
 def SelectTheItemFromList(AutoElement=None,ItemNameID=None):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In SelectTheItemFromList fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In SelectTheItemFromList fn.","Info",1)
     itemFound = False
     try:
         if AutoElement != None and ItemNameID != None :
@@ -142,32 +142,32 @@ def SelectTheItemFromList(AutoElement=None,ItemNameID=None):
                 SelectingItem.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
                 itemFound = True
                 Thread.Sleep(100)
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
                 return True
             SelectingItem = AutoElement.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.NameProperty,ItemNameID))
             if SelectingItem != None and (SelectingItem.Current.ClassName != "CheckBox"):
                 SelectingItem.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
                 itemFound = True        
                 Thread.Sleep(100)
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
                 return True
             SelectingItem = AutoElement.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.ClassNameProperty,ItemNameID))
             if SelectingItem != None:
                 SelectingItem.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
                 itemFound = True
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
                 Thread.Sleep(100)
                 return True
         if itemFound == False:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
+            CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
             return "No Property matched: " + ItemNameID + " not found"
     except Exception,e:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return e
         
 def ClickTheButton(AutoElement,ButtonNameID):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ClickTheButton fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In ClickTheButton fn.","Info",1)
     btnClick = False
     try:
         if AutoElement != None and ButtonNameID != None :
@@ -175,31 +175,31 @@ def ClickTheButton(AutoElement,ButtonNameID):
             if ButtonElement != None:
                 ButtonElement.GetCurrentPattern(InvokePattern.Pattern).Invoke()
                 btnClick = True
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
                 return True
             ButtonElement = AutoElement.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.AutomationIdProperty,ButtonNameID))
             if ButtonElement != None:
                 ButtonElement.GetCurrentPattern(InvokePattern.Pattern).Invoke()
                 btnClick = True
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Automation id matched. Returning True and exiting","Info",1)
                 return True
             ButtonElement = AutoElement.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.ClassNameProperty,ButtonNameID))
             if ButtonElement != None:
                 ButtonElement.GetCurrentPattern(InvokePattern.Pattern).Invoke()
                 btnClick = True
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Classname id matched. Returning True and exiting","Info",1)
                 return True
         if btnClick == False:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
+            CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
             return "No property matched : " + ButtonNameID + " not found"
     except Exception,e:
         print "e: %s"%ButtonNameID,e
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False
    
 def ScrollUpAndDown(ListBoxElemet):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ScrollUpAndDown fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In ScrollUpAndDown fn.","Info",1)
     try:
         PlayList = ListBoxElemet.FindAll(TreeScope.Descendants,Condition.TrueCondition)
         IsScrollAble = ListBoxElemet.GetCurrentPattern(ScrollPattern.Pattern).Current.VerticallyScrollable
@@ -215,12 +215,12 @@ def ScrollUpAndDown(ListBoxElemet):
                 Counter=Counter+1
             Thread.Sleep(500)
     except Exception, e:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return e
 
 def ScrollDownToItem(ListBoxElemet,ItemName):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ScrollUpAndDown fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In ScrollUpAndDown fn.","Info",1)
     try:
         PlayList = ListBoxElemet.FindAll(TreeScope.Descendants,Condition.TrueCondition)
         IsScrollAble = ListBoxElemet.GetCurrentPattern(ScrollPattern.Pattern).Current.VerticallyScrollable
@@ -253,12 +253,12 @@ def ScrollDownToItem(ListBoxElemet,ItemName):
                 
             Thread.Sleep(500)
     except Exception, e:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return e
     
 def ScrollLeftToRight(ListBoxElemet):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ScrollLeftToRight fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In ScrollLeftToRight fn.","Info",1)
     try:
         PlayList = ListBoxElemet.FindAll(TreeScope.Descendants,Condition.TrueCondition)
         IsScrollAble = ListBoxElemet.GetCurrentPattern(ScrollPattern.Pattern).Current.HorizontallyScrollable
@@ -274,15 +274,15 @@ def ScrollLeftToRight(ListBoxElemet):
                 Counter=Counter+1
             Thread.Sleep(500)
     except Exception, e:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return e
                 
 def ToggleTheItem(ListBoxElement=None,ItemNameID=None):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ToggleTheItem fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In ToggleTheItem fn.","Info",1)
     def MarkUnMarkItem(ListBoxElement):
         sModuleName = inspect.stack()[0][3]+" : Program.py"
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"In MarkUnMarkItem fn.","Info",1)
+        CommonUtil.ExecutionLog(sModuleName,"In MarkUnMarkItem fn.","Info",1)
         try:
             #Checking if parent is checkbox item
             if ListBoxElement.Current.ClassName == "CheckBox":
@@ -301,7 +301,7 @@ def ToggleTheItem(ListBoxElement=None,ItemNameID=None):
                  CheckItem.GetCurrentPattern(TogglePattern.Pattern).Toggle()
                  return True
         except:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+            CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
             return False
         
         
@@ -321,74 +321,74 @@ def ToggleTheItem(ListBoxElement=None,ItemNameID=None):
                 if MarkUnMarkItem(ListItem) == True:
                     return True
         except:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+            CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
             return False
             
 def CheckBoxStatus(ListBoxElement=None,ItemNameID=None):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In CheckBoxStatus fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In CheckBoxStatus fn.","Info",1)
     try:   
         if ListBoxElement != None or ItemNameID!= None:
             ListItem = FindTheChildElementOfParentWindow(ListBoxElement,ItemNameID + " Checked")
             if ListItem.GetType() == System.Windows.Automation.AutomationElement:
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Checked returned and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Checked returned and exiting","Info",1)
                 return "Checked"
             elif FindTheChildElementOfParentWindow(ListBoxElement,ItemNameID + " Unchecked").GetType() == System.Windows.Automation.AutomationElement:
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Unchecked returned and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Unchecked returned and exiting","Info",1)
                 return "Unchecked"
             elif FindTheChildElementOfParentWindow(ListBoxElement,ItemNameID).GetType() == System.Windows.Automation.AutomationElement:
                 ListItem = FindTheChildElementOfParentWindow(ListBoxElement,ItemNameID)
                 return ListItem.Current.ToggleState
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False
                                   
 def FindSupportedPatternNames(AutoElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In FindSupportedPatternNames fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In FindSupportedPatternNames fn.","Info",1)
     PatternList = AutoElement.GetSupportedPatterns()
     for i in PatternList:
         print Automation.PatternName(i)
 
 def WaitTillMainWindowActive(WindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In WaitTillMainWindowActive fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In WaitTillMainWindowActive fn.","Info",1)
     try:
         WindowState = WindowsElement.GetCurrentPattern(WindowPattern.Pattern).Current.WindowInteractionState
         seconds = 1
         while WindowState != System.Windows.Automation.WindowInteractionState.ReadyForUserInteraction:
             if seconds == 40:
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"WaitTillMainWindowActive timed out","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"WaitTillMainWindowActive timed out","Info",1)
                 return "Time out"
             Thread.Sleep(100)
             WindowState = WindowsElement.GetCurrentPattern(WindowPattern.Pattern).Current.WindowInteractionState    
         return True
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False
 
 def WaitTillChildWindowActive(WindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In WaitTillChildWindowActive fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In WaitTillChildWindowActive fn.","Info",1)
     try:
         WindowState = WindowsElement.GetCurrentPattern(WindowPattern.Pattern).Current.WindowInteractionState
         seconds = 1
         while WindowState != System.Windows.Automation.WindowInteractionState.Running:
             if seconds == 40:
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Time exceeded for child window active. Returning False and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Time exceeded for child window active. Returning False and exiting","Info",1)
                 return "Time out"
             Thread.Sleep(100)
             WindowState = WindowsElement.GetCurrentPattern(WindowPattern.Pattern).Current.WindowInteractionState
             seconds = seconds+1  
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Window active. Returning True and exiting","Info",1)  
+        CommonUtil.ExecutionLog(sModuleName,"Window active. Returning True and exiting","Info",1)  
         return True
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False
 
 def CloseChildWindow(ParentWindowElement=None,ChildWindowNameID=None):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In CloseChildWindow fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In CloseChildWindow fn.","Info",1)
     try:
         if ParentWindowElement != None and ChildWindowNameID != None :  
             Childelements = ParentWindowElement.FindAll(TreeScope.Children,Condition.TrueCondition)
@@ -403,12 +403,12 @@ def CloseChildWindow(ParentWindowElement=None,ChildWindowNameID=None):
                     eachElement.GetCurrentPattern(WindowPattern.Pattern).Close()
                     return True          
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False
                 
 def CloseChildWindowExceptThis(ParentWindowElement=None,ChildWindowNameID=None):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In CloseChildWindowExceptThis fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In CloseChildWindowExceptThis fn.","Info",1)
     try:
         if ParentWindowElement != None and ChildWindowNameID != None :
             AllChildElements = ParentWindowElement.FindAll(TreeScope.Children,Condition.TrueCondition)
@@ -419,30 +419,30 @@ def CloseChildWindowExceptThis(ParentWindowElement=None,ChildWindowNameID=None):
                         eachElement.GetCurrentPattern(WindowPattern.Pattern).Close()
                         return True
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False
             
 def WaitForChildWindow(ParentWindowNameID=None,ChildWindowNameID=None):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In WaitForChildWindow fn.","Info",1)
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+    CommonUtil.ExecutionLog(sModuleName,"In WaitForChildWindow fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
     if ParentWindowNameID != None and ChildWindowNameID != None :
         seconds = 1
         ParentWindow = FindTheMainWindow(ParentWindowNameID)
         ChildWindow = FindTheChildElementOfParentWindow(ParentWindow, ChildWindowNameID)
         while ChildWindow == False:
             if seconds == 40:
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Time exceeded for child window. Returning False and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Time exceeded for child window. Returning False and exiting","Info",1)
                 return False
             Thread.Sleep(100)
             ChildWindow = FindTheChildElementOfParentWindow(ParentWindow, ChildWindowNameID)
             seconds = seconds + 1
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Child window found. Returning True and exiting","Info",1)  
+        CommonUtil.ExecutionLog(sModuleName,"Child window found. Returning True and exiting","Info",1)  
         return True
                   
 def WaitTillProgressComplete(WindowElement,ProgressBarID):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In WaitTillProgressComplete fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In WaitTillProgressComplete fn.","Info",1)
     try:
         ProgressBarElement = FindTheChildElementOfParentWindow(WindowElement,ProgressBarID)
         ProgressBarValue = 0
@@ -450,10 +450,10 @@ def WaitTillProgressComplete(WindowElement,ProgressBarID):
         while Value != 100:
             Thread.Sleep(100)
             Value = ProgressBarElement.GetCurrentPattern(RangeValuePattern.Pattern).Current.Value
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Progress completed. Returning True and exiting","Info",1)  
+        CommonUtil.ExecutionLog(sModuleName,"Progress completed. Returning True and exiting","Info",1)  
         return True
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False     
     
 
@@ -465,7 +465,7 @@ Following functions are made using above functions to make functionality more co
 
 def ElementExists(ItemNameID,*ParentWindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ToggleItem fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In ToggleItem fn.","Info",1)
     """
         Parameters: ItemNameID is the name or automation id 
                ParentWindowsElement is list of the parent windows of the element you are looking for
@@ -494,12 +494,12 @@ def ElementExists(ItemNameID,*ParentWindowsElement):
             else:
                  return False
         except:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+            CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
             return False
 
 def IsSelected(ItemNameID,*ParentWindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In IsItemSelected fn.","info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In IsItemSelected fn.","info",1)
     try:
         if ParentWindowsElement != None:
             arglen = len(ParentWindowsElement)
@@ -514,12 +514,12 @@ def IsSelected(ItemNameID,*ParentWindowsElement):
                 return Item.GetCurrentPattern(SelectionItemPattern.Pattern).Current.IsSelected
             
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","info",3) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","info",3) 
         return False 
     
 def IsOffscreen(ItemNameID,*ParentWindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ToggleItem fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In ToggleItem fn.","Info",1)
     """
         Parameters: ItemNameID is the name or automation id 
                ParentWindowsElement is list of the parent windows of the element you are looking for
@@ -548,13 +548,13 @@ def IsOffscreen(ItemNameID,*ParentWindowsElement):
             else:
                  return "Yes"
         except:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"%s error happened","Info",1) 
+            CommonUtil.ExecutionLog(sModuleName,"%s error happened","Info",1) 
             return False    
 
 def ReturnChildElement(*ParentWindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ReturnChildElement fn.","Info",1)
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+    CommonUtil.ExecutionLog(sModuleName,"In ReturnChildElement fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
     if ParentWindowsElement != None:
        try:
             arglen = len(ParentWindowsElement)
@@ -564,16 +564,16 @@ def ReturnChildElement(*ParentWindowsElement):
                 SubWin = ParentWindowsElement[count]
                 MainWin = FindTheChildElementOfParentWindow(MainWin,SubWin)
                 count = count+1
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"child element returned","Info",1) 
+            CommonUtil.ExecutionLog(sModuleName,"child element returned","Info",1) 
             return MainWin
        except:
-           Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+           CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
            return False
 
 def ReturnAllChildElements(*ParentWindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ReturnChildElement fn.","Info",1)
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+    CommonUtil.ExecutionLog(sModuleName,"In ReturnChildElement fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
     if ParentWindowsElement != None:
        try:
             arglen = len(ParentWindowsElement)-1
@@ -583,11 +583,11 @@ def ReturnAllChildElements(*ParentWindowsElement):
                 SubWin = ParentWindowsElement[count]
                 MainWin = FindTheChildElementOfParentWindow(MainWin,SubWin)
                 count = count+1
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"child element returned","Info",1)
+            CommonUtil.ExecutionLog(sModuleName,"child element returned","Info",1)
             ElementList = MainWin.FindAll(TreeScope.Children,PropertyCondition(AutomationElement.ClassNameProperty,ParentWindowsElement[-1]))
             return ElementList
        except:
-           Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+           CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
            return False
 
 def GetListViewItemNumber(*ParentWindowsElement):
@@ -596,8 +596,8 @@ def GetListViewItemNumber(*ParentWindowsElement):
     You can find how many radio buttons or check box are there in this listveiw element
     """
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In GetListViewItemsNumber fn.","Info",1)
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+    CommonUtil.ExecutionLog(sModuleName,"In GetListViewItemsNumber fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
     if ParentWindowsElement != None:
        try:
             arglen = len(ParentWindowsElement)
@@ -607,16 +607,16 @@ def GetListViewItemNumber(*ParentWindowsElement):
                 SubWin = ParentWindowsElement[count]
                 MainWin = FindTheChildElementOfParentWindow(MainWin,SubWin)
                 count = count+1
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"child element returned","Info",1) 
+            CommonUtil.ExecutionLog(sModuleName,"child element returned","Info",1) 
             return MainWin.GetCurrentPattern(GridPattern.Pattern).Current.RowCount
        except:
-           Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+           CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
            return False
        
 
 def WaitTillEnabled(ItemNameID = None,*ParentWindowsElement): 
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In WaitTillEnabled fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In WaitTillEnabled fn.","Info",1)
     if ParentWindowsElement != None:
         arglen = len(ParentWindowsElement)
         count = 1
@@ -630,7 +630,7 @@ def WaitTillEnabled(ItemNameID = None,*ParentWindowsElement):
             seconds = 0
             while Item == 0:
                 if seconds == 5:
-                    Utilities.CommonUtil.ExecutionLog(sModuleName,"Time exceeded for child window. Returning False and exiting","Info",1)
+                    CommonUtil.ExecutionLog(sModuleName,"Time exceeded for child window. Returning False and exiting","Info",1)
                     return False
                 Thread.Sleep(100)
                 Item = FindTheChildElementOfParentWindow(MainWin,ItemNameID)
@@ -642,20 +642,20 @@ def WaitTillEnabled(ItemNameID = None,*ParentWindowsElement):
             seconds = 0
             while MainWinStatus == 0:
                 if seconds == 15:
-                    Utilities.CommonUtil.ExecutionLog(sModuleName,"Time exceeded for child window. Returning False and exiting","Info",1)
+                    CommonUtil.ExecutionLog(sModuleName,"Time exceeded for child window. Returning False and exiting","Info",1)
                     return False
                 Thread.Sleep(100)
                 MainWinStatus = MainWin.GetCurrentPattern(WindowPattern.Pattern).Current.WindowInteractionState
                 seconds = seconds+1
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"control enabled. Returning True and exiting","Info",1)  
+            CommonUtil.ExecutionLog(sModuleName,"control enabled. Returning True and exiting","Info",1)  
             return True
                    
 def PressButton(ButtonNameID,*ParentWindowsElement):
     #Take screen capture before pressing button
-    Utilities.CommonUtil.TakeScreenShot("Before Clicking Button - "+ButtonNameID) 
+    CommonUtil.TakeScreenShot("Before Clicking Button - "+ButtonNameID) 
     
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In PressButton fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In PressButton fn.","Info",1)
     """
        Parameters: ButtonNameID is the name or automation id for the button you want to click
                    ParentWindowsElement is list of the parent windows of the button you want to click
@@ -681,19 +681,19 @@ def PressButton(ButtonNameID,*ParentWindowsElement):
                 SubWin = ParentWindowsElement[count]
                 MainWin = FindTheChildElementOfParentWindow(MainWin,SubWin)
                 count = count+1
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Calling click the button","Info",1)
+            CommonUtil.ExecutionLog(sModuleName,"Calling click the button","Info",1)
             returnvalue = ClickTheButton(MainWin,ButtonNameID)  
-            Utilities.CommonUtil.TakeScreenShot("After Clicking Button - "+ButtonNameID)
+            CommonUtil.TakeScreenShot("After Clicking Button - "+ButtonNameID)
             return returnvalue
        except Exception,e:
            print e
-           Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
-           Utilities.CommonUtil.TakeScreenShot("Error Clicking Button - " + ButtonNameID) 
+           CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+           CommonUtil.TakeScreenShot("Error Clicking Button - " + ButtonNameID) 
            return False
         
 def ToggleItemStatus(ItemNameID,*ParentWindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ToggleItemStatus fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In ToggleItemStatus fn.","Info",1)
     """
         Parameters: ItemNameID is the name or automation id for the CheckBox you want to know the status(On/Off)
                ParentWindowsElement is list of the parent windows of the CheckBox you want to know the status(On/Off)
@@ -730,17 +730,17 @@ def ToggleItemStatus(ItemNameID,*ParentWindowsElement):
                iSeconds = iSeconds + 1
             if ToggleItem.Current.ClassName == "CheckBox":
                 if ToggleItem.GetCurrentPattern(TogglePattern.Pattern).Current.ToggleState == 1:
-                    Utilities.CommonUtil.ExecutionLog(sModuleName,"Checkbox:  On","Info",1) 
+                    CommonUtil.ExecutionLog(sModuleName,"Checkbox:  On","Info",1) 
                     return "On"
                 else:
-                    Utilities.CommonUtil.ExecutionLog(sModuleName,"Checkbox: Off","Info",1) 
+                    CommonUtil.ExecutionLog(sModuleName,"Checkbox: Off","Info",1) 
                     return "Off"
             if ToggleItem == False:
                  ToggleItem  = FindTheChildElementOfParentWindow(MainWin,ItemNameID + " Checked")
                  if ToggleItem == False:
                      ToggleItem = FindTheChildElementOfParentWindow(MainWin,ItemNameID + " Unchecked")
                      if ToggleItem == False:
-                         Utilities.CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
+                         CommonUtil.ExecutionLog(sModuleName,"Control not found. Returning False and exiting","Info",1)
                          return False
             CheckItem = ToggleItem.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.ClassNameProperty,"CheckBox"))
             
@@ -757,15 +757,15 @@ def ToggleItemStatus(ItemNameID,*ParentWindowsElement):
                     return "Off"
             
         except Exception,e:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1)
+            CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1)
             time.sleep(5)
             print "Exception %s" %e 
             return False
                 
 def ToggleItem(ItemNameID,*ParentWindowsElement):
-    Utilities.CommonUtil.TakeScreenShot("Before Toggling Item - " + ItemNameID) 
+    CommonUtil.TakeScreenShot("Before Toggling Item - " + ItemNameID) 
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In ToggleItem fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In ToggleItem fn.","Info",1)
     """
         Parameters: ItemNameID is the name or automation id for the CheckBox you want to click
                ParentWindowsElement is list of the parent windows of the button you want to Toggle
@@ -790,15 +790,15 @@ def ToggleItem(ItemNameID,*ParentWindowsElement):
                 MainWin = FindTheChildElementOfParentWindow(MainWin,SubWin)
                 count = count+1    
             returnvalue = ToggleTheItem(MainWin,ItemNameID)
-            Utilities.CommonUtil.TakeScreenShot("After Toggling Item - " + ItemNameID)
+            CommonUtil.TakeScreenShot("After Toggling Item - " + ItemNameID)
             return returnvalue
         except:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
-            Utilities.CommonUtil.TakeScreenShot("Error Toggling Item - " + ItemNameID) 
+            CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+            CommonUtil.TakeScreenShot("Error Toggling Item - " + ItemNameID) 
             return False
   
 def ExpandListBox(ItemNameID,*ParentWindowsElement):
-    Utilities.CommonUtil.TakeScreenShot("Before Expanding List Box - " + ItemNameID) 
+    CommonUtil.TakeScreenShot("Before Expanding List Box - " + ItemNameID) 
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     #CommonUtil.ExecutionLog(sModuleName,"In ExpandListBox fn.","Info",1)
     """
@@ -867,19 +867,19 @@ def ExpandListBox(ItemNameID,*ParentWindowsElement):
                         ExpTimeOut = True
                 #Try to expand again
                 NumTrys = NumTrys + 1
-            Utilities.CommonUtil.TakeScreenShot("After Expanding List Box - " + ItemNameID) 
+            CommonUtil.TakeScreenShot("After Expanding List Box - " + ItemNameID) 
             return True
         except Exception,e:
             print "Exception: ",e
-            Utilities.CommonUtil.ExecLog(sModuleInfo,"Exception expanding menu : %s"%e,3)
+            CommonUtil.ExecLog(sModuleInfo,"Exception expanding menu : %s"%e,3)
             #CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
-            Utilities.CommonUtil.TakeScreenShot("Error Expanding List Box - " + ItemNameID) 
+            CommonUtil.TakeScreenShot("Error Expanding List Box - " + ItemNameID) 
             return False 
             
 def CollapseListBox(ItemNameID,*ParentWindowsElement):
-    Utilities.CommonUtil.TakeScreenShot("Before Collapsing List Box -  " + ItemNameID) 
+    CommonUtil.TakeScreenShot("Before Collapsing List Box -  " + ItemNameID) 
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In CollapseListBox fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In CollapseListBox fn.","Info",1)
     """
         Parameters: ItemNameID is the name or automation id for the ComboBoxItem you want to Collapse
                     ParentWindowsElement is list of the parent windows of the ComboBoxItem you want to collapse
@@ -909,17 +909,17 @@ def CollapseListBox(ItemNameID,*ParentWindowsElement):
             while BoxState == 1:
                 BoxState = ComboBoxItem.GetCurrentPattern(ExpandCollapsePattern.Pattern).Current.ExpandCollapseState
             #Thread.Sleep(300)
-            Utilities.CommonUtil.TakeScreenShot("After Collapsing List Box - " + ItemNameID) 
+            CommonUtil.TakeScreenShot("After Collapsing List Box - " + ItemNameID) 
             return True
         except:
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
-            Utilities.CommonUtil.TakeScreenShot("Error Collapsing List Box - " + ItemNameID) 
+            CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+            CommonUtil.TakeScreenShot("Error Collapsing List Box - " + ItemNameID) 
             return False 
           
 def SelectItemFromList(ItemNameID,*ParentWindowsElement):
-    Utilities.CommonUtil.TakeScreenShot("Before Selecting Item From List - " + ItemNameID) 
+    CommonUtil.TakeScreenShot("Before Selecting Item From List - " + ItemNameID) 
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In SelectItemFromList fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In SelectItemFromList fn.","Info",1)
     """
         Parameters: ItemNameID is the name or automation id for the List Item you want to select/click
                     ParentWindowsElement is list of the parent windows of the List item you want to select/click
@@ -944,16 +944,16 @@ def SelectItemFromList(ItemNameID,*ParentWindowsElement):
                 MainWin = FindTheChildElementOfParentWindow(MainWin,SubWin)
                 count = count+1    
             returnvalue = SelectTheItemFromList(MainWin,ItemNameID)
-            Utilities.CommonUtil.TakeScreenShot("After Selecting Item From List - " + ItemNameID)
+            CommonUtil.TakeScreenShot("After Selecting Item From List - " + ItemNameID)
             return returnvalue        
         except Exception,e :
-            Utilities.CommonUtil.TakeScreenShot("Error Selecting Item From List - " + ItemNameID) 
-            Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+            CommonUtil.TakeScreenShot("Error Selecting Item From List - " + ItemNameID) 
+            CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
             return e
    
 def GetTheWindowOrItemState(ItemNameID = None,*ParentWindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In GetTheWindowOrItemState fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In GetTheWindowOrItemState fn.","Info",1)
     try:
         if ParentWindowsElement != None:
             arglen = len(ParentWindowsElement)
@@ -969,12 +969,12 @@ def GetTheWindowOrItemState(ItemNameID = None,*ParentWindowsElement):
             else:
                 return MainWin.GetCurrentPattern(WindowPattern.Pattern).Current.WindowInteractionState
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False  
 
 def GetWindowStatus(WindowElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In GetWindowStatus fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In GetWindowStatus fn.","Info",1)
     try:
         if WindowElement != None:
             WindowState = WindowElement.GetCurrentPattern(WindowPattern.Pattern).Current.WindowInteractionState
@@ -983,12 +983,12 @@ def GetWindowStatus(WindowElement):
         if WindowState == System.Windows.Automation.WindowInteractionState.Running:
             return "Running"
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False
 
 def GetItemStatus(WindowElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In GetItemStatus fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In GetItemStatus fn.","Info",1)
     try:
         if WindowElement != None:
             WindowState = WindowElement.Current.ClassName
@@ -997,12 +997,12 @@ def GetItemStatus(WindowElement):
         else:
             return "False"
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False
 
 def IsKeyboardFocusable(ItemNameID = None,*ParentWindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In IsKeyboardFocusable fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In IsKeyboardFocusable fn.","Info",1)
     try:
         if ParentWindowsElement != None:
             arglen = len(ParentWindowsElement)
@@ -1018,12 +1018,12 @@ def IsKeyboardFocusable(ItemNameID = None,*ParentWindowsElement):
             else:
                 return MainWin.GetCurrentPattern(WindowPattern.Pattern).Current.WindowInteractionState
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False  
 
 def IsItemEnable(ItemNameID = None,*ParentWindowsElement):
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In IsItemEnable fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In IsItemEnable fn.","Info",1)
     try:
         if ParentWindowsElement != None:
             arglen = len(ParentWindowsElement)
@@ -1039,14 +1039,14 @@ def IsItemEnable(ItemNameID = None,*ParentWindowsElement):
             else:
                 return MainWin.GetCurrentPattern(WindowPattern.Pattern).Current.WindowInteractionState
     except:
-        Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+        CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
         return False 
           
 def SetTextBoxValue(sStringValue,ItemNameID = None,*ParentWindowsElement):
     
-    Utilities.CommonUtil.TakeScreenShot("Before Setting Text Value in "+ ItemNameID) 
+    CommonUtil.TakeScreenShot("Before Setting Text Value in "+ ItemNameID) 
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In SetTextBoxValue fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In SetTextBoxValue fn.","Info",1)
     if ParentWindowsElement != None and ItemNameID != None and sStringValue != None:
        try:
             arglen = len(ParentWindowsElement)
@@ -1059,11 +1059,11 @@ def SetTextBoxValue(sStringValue,ItemNameID = None,*ParentWindowsElement):
 
             TextBox = FindTheChildElementOfParentWindow(MainWin,ItemNameID)
             TextBox.GetCurrentPattern(ValuePattern.Pattern).SetValue(sStringValue)
-            Utilities.CommonUtil.TakeScreenShot("After Setting Text Value in " + ItemNameID) 
+            CommonUtil.TakeScreenShot("After Setting Text Value in " + ItemNameID) 
             return True
        except:
-           Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
-           Utilities.CommonUtil.TakeScreenShot("Error Setting Text Value in " + ItemNameID) 
+           CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+           CommonUtil.TakeScreenShot("Error Setting Text Value in " + ItemNameID) 
            return False
                              
 #def GetScreenShot(sTargetDirectoryPath):
@@ -1086,9 +1086,9 @@ def SetTextBoxValue(sStringValue,ItemNameID = None,*ParentWindowsElement):
 #    return True         
     
 def SelectTab(TabNameID,*ParentWindowsElement):
-    Utilities.CommonUtil.TakeScreenShot("Before Selecting Tab - "+ ItemNameID) 
+    CommonUtil.TakeScreenShot("Before Selecting Tab - "+ ItemNameID) 
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In SelectTab fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In SelectTab fn.","Info",1)
     """
    Parameters: TabNameID is the name or automation id for the Tab you want to Select
                ParentWindowsElement is list of the parent windows of the Tab you want to Select
@@ -1106,7 +1106,7 @@ def SelectTab(TabNameID,*ParentWindowsElement):
 
     if ParentWindowsElement != None and TabNameID != None :
        sModuleName = inspect.stack()[0][3]+" : Program.py"
-       Utilities.CommonUtil.ExecutionLog(sModuleName,"In SelectTheItemFromList fn.","Info",1)
+       CommonUtil.ExecutionLog(sModuleName,"In SelectTheItemFromList fn.","Info",1)
        try:
             arglen = len(ParentWindowsElement)
             count = 1
@@ -1119,37 +1119,37 @@ def SelectTab(TabNameID,*ParentWindowsElement):
             TabElement = MainWin.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.NameProperty,TabNameID))
             if TabElement != None:
                 TabElement.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
                 tabSelect = True
-                Utilities.CommonUtil.TakeScreenShot("After Selecting Tab - "+ ItemNameID) 
+                CommonUtil.TakeScreenShot("After Selecting Tab - "+ ItemNameID) 
                 return True
             TabElement = MainWin.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.AutomationIdProperty,ButtonNameID))
             if TabElement != None:
                 TabElement.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Automation id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Control Automation id matched. Returning True and exiting","Info",1)
                 tabSelect = True
-                Utilities.CommonUtil.TakeScreenShot("After Selecting Tab - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Selecting Tab - "+ ItemNameID)
                 return True
             TabElement = MainWin.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.ClassNameProperty,ButtonNameID))
             if TabElement != None:
                 TabElement.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"ClassName id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"ClassName id matched. Returning True and exiting","Info",1)
                 tabSelect = True
-                Utilities.CommonUtil.TakeScreenShot("After Selecting Tab - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Selecting Tab - "+ ItemNameID)
                 return True
             if tabSelect == False:
-                Utilities.CommonUtil.TakeScreenShot("After Selecting Tab - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Selecting Tab - "+ ItemNameID)
                 return "No property matched : " + TabNameID + " not found"
  
        except:
-           Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
-           Utilities.CommonUtil.TakeScreenShot("Error Selecting Tab - "+ ItemNameID)
+           CommonUtil.ExecutionLog(sModuleName,"Unknown error happened. Returning False and exiting","Info",1) 
+           CommonUtil.TakeScreenShot("Error Selecting Tab - "+ ItemNameID)
            return False
 
 def ClickByKeyboard(ItemNameID,*ParentWindowsElement):
-    Utilities.CommonUtil.TakeScreenShot("Before Clicking By Keyboard - "+ ItemNameID)
+    CommonUtil.TakeScreenShot("Before Clicking By Keyboard - "+ ItemNameID)
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In SelectTab fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In SelectTab fn.","Info",1)
     """
    Parameters: ItemNameID is the name or automation id for the Focus you want
                ParentWindowsElement is list of the parent windows of the Tab you want to Select
@@ -1167,7 +1167,7 @@ def ClickByKeyboard(ItemNameID,*ParentWindowsElement):
 
     if ParentWindowsElement != None and ItemNameID != None :
        sModuleName = inspect.stack()[0][3]+" : Program.py"
-       Utilities.CommonUtil.ExecutionLog(sModuleName,"In SelectTheItemFromList fn.","Info",1)
+       CommonUtil.ExecutionLog(sModuleName,"In SelectTheItemFromList fn.","Info",1)
        try:
             arglen = len(ParentWindowsElement)
             count = 1
@@ -1184,40 +1184,40 @@ def ClickByKeyboard(ItemNameID,*ParentWindowsElement):
                 #time.sleep(5)
                 SendKeys.SendWait(" ")
                 #ItemElement.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
                 ItemFocus = True
-                Utilities.CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
                 return True
             ItemElement = MainWin.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.AutomationIdProperty,ItemNameID))
             if ItemElement != None:
                 ItemElement.SetFocus()
                 SendKeys.SendWait(" ")
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Automation id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Control Automation id matched. Returning True and exiting","Info",1)
                 ItemFocus = True
-                Utilities.CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
                 return True
             ItemElement = MainWin.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.ClassNameProperty,ItemNameID))
             if ItemElement != None:
                 ItemElement.SetFocus()
                 SendKeys.SendWait(" ")
 #                ItemElement.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"ClassName id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"ClassName id matched. Returning True and exiting","Info",1)
                 ItemFocus = True
-                Utilities.CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
                 return True
             if ItemFocus == False:
-                Utilities.CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
                 return "No property matched : " + ItemNameID + " not found"
  
        except Exception, e:
-           Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened: %s" %e ,"Info",1) 
-           Utilities.CommonUtil.TakeScreenShot("Error Clicking By Keyboard - "+ ItemNameID)
+           CommonUtil.ExecutionLog(sModuleName,"Unknown error happened: %s" %e ,"Info",1) 
+           CommonUtil.TakeScreenShot("Error Clicking By Keyboard - "+ ItemNameID)
            return False     
 
 def ClickByMouse(ItemNameID,*ParentWindowsElement):
-    Utilities.CommonUtil.TakeScreenShot("Before Clicking By Mouse - "+ ItemNameID)
+    CommonUtil.TakeScreenShot("Before Clicking By Mouse - "+ ItemNameID)
     sModuleName = inspect.stack()[0][3]+" : Program.py"
-    Utilities.CommonUtil.ExecutionLog(sModuleName,"In SelectTab fn.","Info",1)
+    CommonUtil.ExecutionLog(sModuleName,"In SelectTab fn.","Info",1)
     """
    Parameters: ItemNameID is the name or automation id for the Focus you want
                ParentWindowsElement is list of the parent windows of the Tab you want to Select
@@ -1235,7 +1235,7 @@ def ClickByMouse(ItemNameID,*ParentWindowsElement):
 
     if ParentWindowsElement != None and ItemNameID != None :
        sModuleName = inspect.stack()[0][3]+" : Program.py"
-       Utilities.CommonUtil.ExecutionLog(sModuleName,"In SelectTheItemFromList fn.","Info",1)
+       CommonUtil.ExecutionLog(sModuleName,"In SelectTheItemFromList fn.","Info",1)
        try:
             arglen = len(ParentWindowsElement)
             count = 1
@@ -1252,9 +1252,9 @@ def ClickByMouse(ItemNameID,*ParentWindowsElement):
                 #time.sleep(5)
                 SendKeys.SendWait(" ")
                 #ItemElement.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"Control Name id matched. Returning True and exiting","Info",1)
                 ItemFocus = True
-                Utilities.CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
                 return True
             ItemElement = MainWin.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.AutomationIdProperty,ItemNameID))
             if ItemElement != None:
@@ -1267,24 +1267,24 @@ def ClickByMouse(ItemNameID,*ParentWindowsElement):
                 win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
                 time.sleep(1)
                 ItemFocus = True
-                Utilities.CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
                 return True
             ItemElement = MainWin.FindFirst(TreeScope.Descendants,PropertyCondition(AutomationElement.ClassNameProperty,ItemNameID))
             if ItemElement != None:
                 ItemElement.SetFocus()
                 SendKeys.SendWait(" ")
 #                ItemElement.GetCurrentPattern(SelectionItemPattern.Pattern).Select()
-                Utilities.CommonUtil.ExecutionLog(sModuleName,"ClassName id matched. Returning True and exiting","Info",1)
+                CommonUtil.ExecutionLog(sModuleName,"ClassName id matched. Returning True and exiting","Info",1)
                 ItemFocus = True
-                Utilities.CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
                 return True
             if ItemFocus == False:
-                Utilities.CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
+                CommonUtil.TakeScreenShot("After Clicking By Keyboard - "+ ItemNameID)
                 return "No property matched : " + ItemNameID + " not found"
  
        except Exception, e:
-           Utilities.CommonUtil.ExecutionLog(sModuleName,"Unknown error happened: %s" %e ,"Info",1) 
-           Utilities.CommonUtil.TakeScreenShot("Error Clicking By Keyboard - "+ ItemNameID)
+           CommonUtil.ExecutionLog(sModuleName,"Unknown error happened: %s" %e ,"Info",1) 
+           CommonUtil.TakeScreenShot("Error Clicking By Keyboard - "+ ItemNameID)
            return False     
             
 def WaitTillItemAvailable(ItemNameID = None,*ParentWindowsElement):

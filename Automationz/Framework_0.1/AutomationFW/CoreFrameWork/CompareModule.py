@@ -88,9 +88,9 @@ class CompareModule():
                 status_flag=1
             status=[]
             tag="Matching"
-            Utilities.CommonUtil.ExecLog(sModuleInfo,"%s Datasets: %d"%(tag,len(matching_list)),status_flag)
+            CommonUtil.ExecLog(sModuleInfo,"%s Datasets: %d"%(tag,len(matching_list)),status_flag)
             for i,each in enumerate(matching_list):
-                Utilities.CommonUtil.ExecLog(sModuleInfo,"%s Dataset: #%d"%(tag,(i+1)),status_flag)
+                CommonUtil.ExecLog(sModuleInfo,"%s Dataset: #%d"%(tag,(i+1)),status_flag)
                 expected_list=each[0]
                 actual_list=each[1]
                 status.append(single_dataset_compare(expected_list, actual_list)) 
@@ -123,22 +123,22 @@ class CompareModule():
                     return "Failed"
             
 def log_to_db(sModuleInfo,datasets,tag,status):
-    Utilities.CommonUtil.ExecLog(sModuleInfo,"%s Datasets: %d"%(tag,len(datasets)),status)
+    CommonUtil.ExecLog(sModuleInfo,"%s Datasets: %d"%(tag,len(datasets)),status)
     for i,eachdataset in enumerate(datasets):
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"%s Dataset: #%d"%(tag,(i+1)),status)
+        CommonUtil.ExecLog(sModuleInfo,"%s Dataset: #%d"%(tag,(i+1)),status)
         tuple_data=[]
         for eachitem in eachdataset:
             if isinstance(eachitem[1],basestring):
                 tuple_data.append(eachitem)
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"%s Tuple Data Entry Count: %d"%(tag,len(tuple_data)),status)
+        CommonUtil.ExecLog(sModuleInfo,"%s Tuple Data Entry Count: %d"%(tag,len(tuple_data)),status)
         for j,eachitem in enumerate(tuple_data):
-            Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s"%((j+1),eachitem[0],eachitem[1]),status)
+            CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s"%((j+1),eachitem[0],eachitem[1]),status)
         for j,eachitem in enumerate(eachdataset):
             if isinstance(eachitem[1],list):
-                Utilities.CommonUtil.ExecLog(sModuleInfo,"%s Group Data Label: %s"%(tag,eachitem[0]),status)
-                Utilities.CommonUtil.ExecLog(sModuleInfo,"%s Group Data Entry Count: %d"%(tag,len(eachitem[1])),status)
+                CommonUtil.ExecLog(sModuleInfo,"%s Group Data Label: %s"%(tag,eachitem[0]),status)
+                CommonUtil.ExecLog(sModuleInfo,"%s Group Data Entry Count: %d"%(tag,len(eachitem[1])),status)
                 for k,eachdata in enumerate(eachitem[1]):
-                    Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s"%((k+1),eachdata[0],eachdata[1]),status)
+                    CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s"%((k+1),eachdata[0],eachdata[1]),status)
             
                         
 def convert_to_print_format(dataset):
@@ -307,33 +307,33 @@ def single_dataset_compare(expected_copy,actual_copy):
         status=3
     else:
         status=1
-    Utilities.CommonUtil.ExecLog(sModuleInfo,"Matching Records: %d"%len(matching_tuple_data),status)
+    CommonUtil.ExecLog(sModuleInfo,"Matching Records: %d"%len(matching_tuple_data),status)
     for i,each in enumerate(matching_tuple_data):
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),each[0],each[2],each[2]),status)
+        CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),each[0],each[2],each[2]),status)
         
-    Utilities.CommonUtil.ExecLog(sModuleInfo,"Missing Records: %d"%len(missing_tuple_data),status)
+    CommonUtil.ExecLog(sModuleInfo,"Missing Records: %d"%len(missing_tuple_data),status)
     for i,each in enumerate(missing_tuple_data):
         element=each
         found=False
         for j,eachitem in enumerate(extra_tuple_data):
             if((element[0],element[1])==(eachitem[0],eachitem[1])):
-                Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((j+1),element[0],element[2],eachitem[2]),status)
+                CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((j+1),element[0],element[2],eachitem[2]),status)
                 extra_tuple_data.pop(j)
                 found=True
                 break
         if not found:
-            Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),element[0],element[2],'N/A'),status)                
-    Utilities.CommonUtil.ExecLog(sModuleInfo,"Extra Records: %d"%len(extra_tuple_data),status)
+            CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),element[0],element[2],'N/A'),status)                
+    CommonUtil.ExecLog(sModuleInfo,"Extra Records: %d"%len(extra_tuple_data),status)
     for i,each in enumerate(extra_tuple_data):
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),each[0],'N/A',each[2]),status)
+        CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),each[0],'N/A',each[2]),status)
     
-    Utilities.CommonUtil.ExecLog(sModuleInfo,"Matching Group Records: %d"%len(matching_group_data),status)
+    CommonUtil.ExecLog(sModuleInfo,"Matching Group Records: %d"%len(matching_group_data),status)
     for i,each in enumerate(matching_group_data):
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"Matching Group Record: #%d"%(i+1),status)
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"Matching Group Label: %s"%each[0],status)
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"Matching Group Entry Count: %d"%len(each[1]),status) 
+        CommonUtil.ExecLog(sModuleInfo,"Matching Group Record: #%d"%(i+1),status)
+        CommonUtil.ExecLog(sModuleInfo,"Matching Group Label: %s"%each[0],status)
+        CommonUtil.ExecLog(sModuleInfo,"Matching Group Entry Count: %d"%len(each[1]),status) 
         for j,eachitem in enumerate(each[1]):
-            Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((j+1),eachitem[0],eachitem[1],eachitem[1]),status)
+            CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((j+1),eachitem[0],eachitem[1],eachitem[1]),status)
     final_list=[] 
     for each in group_data_not_matching:
         temp_label=each[0][0]
@@ -345,24 +345,24 @@ def single_dataset_compare(expected_copy,actual_copy):
                 if eachitem[0]==eachitemtemp[0]:
                     temp.append((eachitem[0],eachitem[1],eachitemtemp[1]))
         final_list.append((temp_label,temp))
-    Utilities.CommonUtil.ExecLog(sModuleInfo,"Non Match Group Data: %d"%len(final_list),status)
+    CommonUtil.ExecLog(sModuleInfo,"Non Match Group Data: %d"%len(final_list),status)
     for each in final_list:
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"Non Match Group Label: %s"%each[0],status)
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"Non Match Group Entry Count: %d"%len(each[1]),status) 
+        CommonUtil.ExecLog(sModuleInfo,"Non Match Group Label: %s"%each[0],status)
+        CommonUtil.ExecLog(sModuleInfo,"Non Match Group Entry Count: %d"%len(each[1]),status) 
         for i,eachitem in enumerate(each[1]):
-            Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s :%s"%((i+1),eachitem[0],eachitem[1],eachitem[2]),status)
-    Utilities.CommonUtil.ExecLog(sModuleInfo,"Missing Group Data: %d"%len(final_missing_group_data),status)
+            CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s :%s"%((i+1),eachitem[0],eachitem[1],eachitem[2]),status)
+    CommonUtil.ExecLog(sModuleInfo,"Missing Group Data: %d"%len(final_missing_group_data),status)
     for each in final_missing_group_data:
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"Missing Group Label: %s"%each[0],status)
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"Missing Group Entry Count: %d"%len(each[1]),status) 
+        CommonUtil.ExecLog(sModuleInfo,"Missing Group Label: %s"%each[0],status)
+        CommonUtil.ExecLog(sModuleInfo,"Missing Group Entry Count: %d"%len(each[1]),status) 
         for i,eachitem in enumerate(each[1]):
-            Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),eachitem[0],eachitem[1],'N/A'),status)
-    Utilities.CommonUtil.ExecLog(sModuleInfo,"Extra Group Data: %d"%len(final_extra_group_data),status)
+            CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),eachitem[0],eachitem[1],'N/A'),status)
+    CommonUtil.ExecLog(sModuleInfo,"Extra Group Data: %d"%len(final_extra_group_data),status)
     for each in final_extra_group_data:
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"Extra Group Label: %s"%each[0],status)
-        Utilities.CommonUtil.ExecLog(sModuleInfo,"Extra Group Entry Count: %d"%len(each[1]),status)         
+        CommonUtil.ExecLog(sModuleInfo,"Extra Group Label: %s"%each[0],status)
+        CommonUtil.ExecLog(sModuleInfo,"Extra Group Entry Count: %d"%len(each[1]),status)         
         for i,eachitem in enumerate(each[1]):
-            Utilities.CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),eachitem[0],'N/A',eachitem[1]),status)
+            CommonUtil.ExecLog(sModuleInfo,"#%d : %s : %s : %s"%((i+1),eachitem[0],'N/A',eachitem[1]),status)
     
     if status==1:
         return "Passed"

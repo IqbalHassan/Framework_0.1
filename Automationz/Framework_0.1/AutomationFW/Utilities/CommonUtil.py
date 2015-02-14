@@ -49,15 +49,15 @@ def ExecLog(sModuleInfo, sDetails, iLogLevel=1, sStatus="",):
     sDetails = to_unicode(sDetails)
     if iLogLevel == 1:
         logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=CoreFrameWork.Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Passed", loglevel=iLogLevel)
+        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Passed", loglevel=iLogLevel)
 
     elif iLogLevel == 2:
         logger.warning(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=CoreFrameWork.Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Warning", loglevel=iLogLevel)
+        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Warning", loglevel=iLogLevel)
 
     elif iLogLevel == 3:
         logger.error(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=CoreFrameWork.Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Error", loglevel=iLogLevel)
+        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Error", loglevel=iLogLevel)
 
     elif iLogLevel == 4:
         logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
@@ -578,7 +578,7 @@ def PhysicalAvailableMemory():
 def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
     from mailer import Mailer
     from mailer import Message
-    import MKSDevTaskFinder as MKS
+    
 
     ToAddr = ToEmailAddress.split(',')
     message = Message(From="automation.solutionz@gmail.com",
@@ -622,7 +622,7 @@ def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
         else:
             SubjectLine = "Mac %s Test - %s - %s" % (EnvInfo[0][5], BranchInfo, BundleInfo)
         message.Subject = "Started %s" % SubjectLine
-        message.Html = """<strong>Starting Test Run with id <a href="http://%s/Search/RunID/%s">%s</a>.</strong>! Click on the link for details.""" % (CoreFrameWork.Global.go_url, Subject, Subject)
+        message.Html = """<strong>Starting Test Run with id <a href="http://%s/Search/RunID/%s">%s</a>.</strong>! Click on the link for details.""" % (Global.go_url, Subject, Subject)
 
         # Environmnet Details Section
         Body = """<Body>
@@ -736,7 +736,7 @@ def SendEmail(ToEmailAddress, Subject, Body=None , type=None):
             message.Subject = "Completed %s" % SubjectLine
         else:
             message.Subject = "Completed %s" % EnvInfo[0][1]
-        message.Html = """<strong>Test Run with id <a href="http://%s/Search/RunID/%s">%s</a> is completed.</strong>! Click on the link for details.""" % (CoreFrameWork.Global.go_url, Subject, Subject)
+        message.Html = """<strong>Test Run with id <a href="http://%s/Search/RunID/%s">%s</a> is completed.</strong>! Click on the link for details.""" % (Global.go_url, Subject, Subject)
         #message.Body = """%s""" %Body
 
         #Start building the body of the email
@@ -873,7 +873,7 @@ def TakeScreenShot(ImageName):
     #TakeScreenShot("TestStepName")
     """
     try:
-        ImageFolder = CoreFrameWork.Global.TCLogFolder + os.sep + "Screenshots"
+        ImageFolder = Global.TCLogFolder + os.sep + "Screenshots"
         if os.name == 'posix':
             ImageFolder = FileUtil.ConvertWinPathToMac(ImageFolder)
             path = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".png"

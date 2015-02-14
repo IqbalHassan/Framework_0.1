@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import selenium.selenium as Sal
 import time
-#import inspect
+import inspect
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait

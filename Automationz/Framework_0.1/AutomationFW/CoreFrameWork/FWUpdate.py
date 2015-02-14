@@ -25,13 +25,13 @@ class AutoUpdate():
 
             #self.ServerSourcePath =  Config.get('Update', 'SourcePath')
             self.Branch = Config.get('AutoUpdate', 'Branch')
-            if CoreFrameWork.Global.Environment == 'Test':
+            if Global.Environment == 'Test':
                 #print "In Test Environment"
                 if os.name == 'nt':
                     self.ServerSourcePath = "//ServerSourceFolderPath"
                 elif os.name == 'posix':
                     self.ServerSourcePath = "/Volumes/ServerSourceFolderPath"
-            elif CoreFrameWork.Global.Environment == 'Production':
+            elif Global.Environment == 'Production':
                 #print "In Production Environment"
                 if self.Branch == 'UX':
                     self.ServerSourcePath = "//ServerSourceFolderPath"
@@ -52,7 +52,7 @@ class AutoUpdate():
             #CommonUtil.ExecLog(sModuleInfo,"Server Fw Version:%s"%self.ServerVersion,4)
         except Exception, e:
             print "Exception %s" % e
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception:%s" % e, 4)
+            CommonUtil.ExecLog(sModuleInfo, "Exception:%s" % e, 4)
 
 
     def CheckUpdate(self):
@@ -61,7 +61,7 @@ class AutoUpdate():
             #print "Checking if FW Update is available"
             if self.ServerVersion > self.LocalVersion:
                 print "A new version of framework is available"
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "A new version of framework is available", 4)
+                CommonUtil.ExecLog(sModuleInfo, "A new version of framework is available", 4)
                 return True
             else:
                 #print "You've the latest framework!"
@@ -70,7 +70,7 @@ class AutoUpdate():
 
         except Exception, e:
             print "Exception %s" % e
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception:%s" % e, 4)
+            CommonUtil.ExecLog(sModuleInfo, "Exception:%s" % e, 4)
             return False
 
     def GetUpdate(self):
@@ -79,9 +79,9 @@ class AutoUpdate():
             print "Getting FW Update"
             if os.path.isdir(self.ServerSourcePath):
                 ServerFWPath = self.ServerSourcePath + os.sep + 'Framework'
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Server Path:%s" % ServerFWPath, 4)
+                CommonUtil.ExecLog(sModuleInfo, "Server Path:%s" % ServerFWPath, 4)
                 LocalFWPath = os.path.dirname(os.path.realpath(__file__))
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Local Path:%s" % LocalFWPath, 4)
+                CommonUtil.ExecLog(sModuleInfo, "Local Path:%s" % LocalFWPath, 4)
                 #Get all files
                 ServerFWFiles = [ os.path.join(ServerFWPath, f) for f in os.listdir(ServerFWPath) if os.path.isfile(os.path.join(ServerFWPath, f)) ]
                 LocalFWFiles = [ os.path.join(LocalFWPath, f) for f in os.listdir(LocalFWPath) if os.path.isfile(os.path.join(LocalFWPath, f)) ]
@@ -128,14 +128,14 @@ class AutoUpdate():
                 for eachfile in FilesToDelete:
                     if os.path.isfile(eachfile):
                         print "Deleting unwanted file:%s" % os.path.basename(eachfile)
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "Deleting unwanted file:%s" % os.path.basename(eachfile), 4)
+                        CommonUtil.ExecLog(sModuleInfo, "Deleting unwanted file:%s" % os.path.basename(eachfile), 4)
                         os.chmod(eachfile, stat.S_IWRITE)
                         FileUtil.DeleteFile(eachfile)
 
                 for eachfile in FilesToUpdate:
                     if os.path.isfile(eachfile):
                         print "Deleting file to update:%s" % os.path.basename(eachfile)
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "Deleting file to update:%s" % os.path.basename(eachfile), 4)
+                        CommonUtil.ExecLog(sModuleInfo, "Deleting file to update:%s" % os.path.basename(eachfile), 4)
                         os.chmod(eachfile, stat.S_IWRITE)
                         FileUtil.DeleteFile(eachfile)
 
@@ -143,13 +143,13 @@ class AutoUpdate():
                 for eachfile in FilesToAdd:
                     if os.path.isfile(eachfile):
                         print "Adding new file:%s" % os.path.basename(eachfile)
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "Adding new file:%s" % os.path.basename(eachfile), 4)
+                        CommonUtil.ExecLog(sModuleInfo, "Adding new file:%s" % os.path.basename(eachfile), 4)
                         FileUtil.CopyFile(eachfile, LocalFWPath)
 
                 for eachfile in FilesToUpdateWith:
                     if os.path.isfile(eachfile):
                         print "Adding updated file:%s" % os.path.basename(eachfile)
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "Adding updated file:%s" % os.path.basename(eachfile), 4)
+                        CommonUtil.ExecLog(sModuleInfo, "Adding updated file:%s" % os.path.basename(eachfile), 4)
                         FileUtil.CopyFile(eachfile, LocalFWPath)
 
                 return True
@@ -159,7 +159,7 @@ class AutoUpdate():
 
         except Exception, e:
             print "Exception %s" % e
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception:%s" % e, 4)
+            CommonUtil.ExecLog(sModuleInfo, "Exception:%s" % e, 4)
             return False
 
     def Restart(self):
@@ -176,7 +176,7 @@ class AutoUpdate():
         try:
             if self.EnableUpdate == False:
                 #print "Framework update check is disabled"
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Framework update check is disabled", 4)
+                CommonUtil.ExecLog(sModuleInfo, "Framework update check is disabled", 4)
                 return False
 
             if self.CheckUpdate():
@@ -190,7 +190,7 @@ class AutoUpdate():
                             return self.Restart()
                     else:
                         return False
-                    Utilities.CommonUtil.ExecLog(sModuleInfo, "Framework update check is disabled", 4)
+                    CommonUtil.ExecLog(sModuleInfo, "Framework update check is disabled", 4)
                     return False
                 else:
                     print "Performing Auto Update to the newest framework"
@@ -203,6 +203,6 @@ class AutoUpdate():
 
         except Exception, e:
             print "Exception %s" % e
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception:%s" % e, 4)
+            CommonUtil.ExecLog(sModuleInfo, "Exception:%s" % e, 4)
             return False
 

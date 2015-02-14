@@ -63,7 +63,7 @@ def get_all_obj_main_win(MenuOrWindow=None):
         return all_obj
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 def get_child_obj(obj_list):
     try:
@@ -87,7 +87,7 @@ def get_child_obj(obj_list):
             return get_child_obj
         else: return None
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 
 def get_elem_with_role_nd_title(obj_list, role_type, elem_title):
@@ -110,7 +110,7 @@ def get_elem_with_role_nd_title(obj_list, role_type, elem_title):
                 return obj
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 
@@ -139,7 +139,7 @@ def get_elem_with_role(obj_list, role_type):
         return elem_with_role
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 
@@ -162,7 +162,7 @@ def get_obj_list_txt_value_nd_obj_id(obj_list, txt_value, obj_id):
         return result_list
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 def get_obj_list_txt_value(obj_list, txt_value):
@@ -178,7 +178,7 @@ def get_obj_list_txt_value(obj_list, txt_value):
         return result_list
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 def get_elem_with_role_nd_index(obj_list, elem_index):
@@ -196,7 +196,7 @@ def get_elem_with_role_nd_index(obj_list, elem_index):
                 return obj
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 
@@ -217,7 +217,7 @@ def Find_Element(elem_id=None, elem_path=None, elem_role=None, elem_value=None, 
                 if str(obj_temp) == str(elem_path):
                     obj_id_list.append(obj_temp)
                     elem_id = elem_path
-                if str(Utilities.CommonUtil.to_unicode(obj_id_temp)) == elem_id:
+                if str(CommonUtil.to_unicode(obj_id_temp)) == elem_id:
                     obj_id_list.append(obj_temp)
             return obj_id_list
 
@@ -271,7 +271,7 @@ def Find_Element(elem_id=None, elem_path=None, elem_role=None, elem_value=None, 
 
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 
 
@@ -285,7 +285,7 @@ def get_title_of_element(id_path):
         return True
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 
@@ -330,7 +330,7 @@ def is_app_running(app_name):
             return False
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 def Run_Application(app_name):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -351,7 +351,7 @@ def Run_Application(app_name):
             return True
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 def close_app(app_name):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -375,7 +375,7 @@ def close_app(app_name):
             return True
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 
@@ -401,7 +401,7 @@ def wait_for_obj_to_appear(ElemId=None, ElemPath=None, ElemRole=None, ElemValue=
         return True
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 def check_uncheck_box(ElemId=None, ElemPath=None, check_uncheck=None, ElemRole=None, ElemValue=None, ElemPosition=None):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -429,7 +429,7 @@ def check_uncheck_box(ElemId=None, ElemPath=None, check_uncheck=None, ElemRole=N
         else: return False
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 def click_button(ElemId=None, ElemPath=None, ElemRole=None, ElemValue=None, ElemPosition=None):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -445,19 +445,19 @@ def click_button(ElemId=None, ElemPath=None, ElemRole=None, ElemValue=None, Elem
             if element[0].enabled.get() == True:
                 element[0].click()
 #                print "%s > Button (%s) has been clicked" %(sModuleInfo,ElementName)
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Button (%s) has been clicked" % ElementName, 1)
+                CommonUtil.ExecLog(sModuleInfo, "Button (%s) has been clicked" % ElementName, 1)
                 return True
             else:
 #                print "%s > Button (%s) was not enabled" %(sModuleInfo,ElementName)
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Button (%s) was not enabled" % ElementName, 1)
+                CommonUtil.ExecLog(sModuleInfo, "Button (%s) was not enabled" % ElementName, 1)
                 return False
         else:
 #            print "%s > Button (%s) was not be found" %(sModuleInfo,ElementName)
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Button (%s) was not be found" % ElementName, 1)
+            CommonUtil.ExecLog(sModuleInfo, "Button (%s) was not be found" % ElementName, 1)
             return False
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 def click_given_loc_appscript(id_path):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -495,7 +495,7 @@ def click_given_loc_appscript(id_path):
         return True
     except Exception, e:
         print "Exception:", e
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception in clicking: %s" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception in clicking: %s" % e, 3)
         return False
 
 
@@ -510,7 +510,7 @@ def is_check_box_enable_disabled(ElemId=None, ElemPath=None, ElemRole=None, Elem
         else: return "Critical"
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 def is_check_box_checked_unchecked(ElemId=None, ElemPath=None, ElemRole=None, ElemValue=None, ElemPosition=None):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -523,7 +523,7 @@ def is_check_box_checked_unchecked(ElemId=None, ElemPath=None, ElemRole=None, El
         else: return "Critical"
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 def is_button_enabled_disabled(ElemId=None, ElemPath=None, ElemRole=None, ElemValue=None, ElemPosition=None):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -539,7 +539,7 @@ def is_button_enabled_disabled(ElemId=None, ElemPath=None, ElemRole=None, ElemVa
         else: return "Critical"
 
     except Exception, e:
-        return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+        return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 
 
@@ -555,7 +555,7 @@ def set_txt_value(id_path, txt):
         return True
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 def set_txt_value_by_keystroke(id_path, txt):
@@ -587,7 +587,7 @@ def set_txt_value_by_keystroke(id_path, txt):
         return True
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 def verify_txt_field_value(id_path, txt):
@@ -640,7 +640,7 @@ def click_given_loc(loc):
         time.sleep(1)
     except Exception, e:
         print "%s > Exception Happened (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception Happened (%s)" % e, 3)
         return False
 
 
