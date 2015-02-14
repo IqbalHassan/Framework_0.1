@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import time, datetime, inspect
 import os
-from Utilities import CommonUtil
+import CommonUtil
 
 if os.name == "nt":
     from wmi import WMI

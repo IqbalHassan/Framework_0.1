@@ -4,10 +4,10 @@ from dateutil.relativedelta import relativedelta
 import os, signal, stat
 import subprocess, psutil
 import string
-from CoreFrameWork import DataBaseUtilities as DB
-from CoreFrameWork import Global
+import DataBaseUtilities as DB
+import Global
 import logging
-from Utilities import FileUtilities as FileUtil
+import FileUtilities as FileUtil
 import re
 import math
 

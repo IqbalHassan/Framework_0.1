@@ -3,10 +3,10 @@ import os, sys
 import time, datetime
 import threading, Queue
 import inspect
-from CoreFrameWork import DataBaseUtilities as DBUtil
-from Utilities import FileUtilities as FL
-from CoreFrameWork import Global
-from Utilities import CommonUtil
+import DataBaseUtilities as DBUtil
+import FileUtilities as FL
+import Global
+import CommonUtil
 import Drivers
 import importlib
 #import FSDriver

@@ -1,12 +1,11 @@
-from CoreFrameWork import DataBaseUtilities as DB
-from Utilities.dependencyCollector import dependency,product_version
-from Utilities import Cleanup
+import DataBaseUtilities as DB
+from dependencyCollector import dependency,product_version
 from login_info import username,password,project,team,server,port,database_name,superuser,super_password
-from Utilities import CommonUtil
+import CommonUtil
 import os
-from CoreFrameWork import Global
+import Global
 import time
-from CoreFrameWork import MainDriver
+import MainDriver
 def RunProcess(sTesterid):
     while (1):
         try:

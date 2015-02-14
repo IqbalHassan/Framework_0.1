@@ -7,8 +7,8 @@ import os, subprocess
 import time
 import inspect
 import stat
-from Utilities import CommonUtil
-from Utilities import FileUtilities as FileUtil
+import CommonUtil
+import FileUtilities as FileUtil
 
 if os.name == 'nt':
     from PCDesktop import WinCommonFoldersPaths as ComPath

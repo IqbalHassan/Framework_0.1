@@ -4,7 +4,7 @@ import os, sys, subprocess
 import shutil
 import stat, time
 import inspect
-from Utilities import CommonUtil
+import CommonUtil
 if os.name == 'nt':
     from PCDesktop import WinCommonFoldersPaths as ComPath
     import win32api

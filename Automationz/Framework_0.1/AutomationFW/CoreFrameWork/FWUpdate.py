@@ -1,16 +1,14 @@
 '''
-Created on 2013-05-18
 
-@author: jnibumon01e10
 '''
 import os
 import ConfigParser
 import inspect
 import time
 import stat
-from CoreFrameWork import Global
-from Utilities import CommonUtil
-from Utilities import FileUtilities as FileUtil
+import Global
+import CommonUtil
+import FileUtilities as FileUtil
 
 
 class AutoUpdate():

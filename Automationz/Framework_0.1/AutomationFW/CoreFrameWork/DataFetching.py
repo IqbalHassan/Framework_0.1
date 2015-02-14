@@ -1,9 +1,7 @@
 '''
-Created on Feb 9, 2015
 
-@author: 09
 '''
-from CoreFrameWork import DataBaseUtilities as DBUtil
+import DataBaseUtilities as DBUtil
 import inspect
 def Get_PIM_Data_By_Id(Data_Id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name

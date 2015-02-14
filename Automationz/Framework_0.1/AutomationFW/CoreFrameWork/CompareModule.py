@@ -1,6 +1,6 @@
 import inspect
 import copy
-from Utilities import CommonUtil
+import CommonUtil
 from _elementtree import Element
 class CompareModule():
     def compare(self, expected_list,actual_list,keywordlist=[],ignorelist=[]):
