@@ -8,6 +8,8 @@ Created on Jun 8, 2012
 System File Locations
 Retrieves common system path names on MAC
 """
+import sys
+sys.path.append("..")
 
 from Carbon import Folder, Folders
 

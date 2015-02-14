@@ -1,5 +1,5 @@
 # -*- coding: cp1252 -*-
-import os, sys
+import os
 import time, datetime
 import threading, Queue
 import inspect
@@ -9,6 +9,9 @@ import Global
 import CommonUtil
 import Drivers
 import importlib
+import sys
+sys.path.append("..")
+
 #import FSDriver
 from CoreFrameWork import Performance
 #from distutils.tests.test_check import CheckTestCase

@@ -6,6 +6,9 @@ import os
 import Global
 import time
 import MainDriver
+import sys
+sys.path.append("..")
+
 def RunProcess(sTesterid):
     while (1):
         try:

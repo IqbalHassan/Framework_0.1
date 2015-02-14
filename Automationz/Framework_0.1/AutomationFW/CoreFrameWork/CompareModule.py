@@ -2,6 +2,9 @@ import inspect
 import copy
 import CommonUtil
 from _elementtree import Element
+import sys
+sys.path.append("..")
+
 class CompareModule():
     def compare(self, expected_list,actual_list,keywordlist=[],ignorelist=[]):
         sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name

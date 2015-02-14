@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import psycopg2, inspect, sys, time
 import Global
+import sys
+sys.path.append("..")
 
 
 

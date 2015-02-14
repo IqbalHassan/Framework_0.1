@@ -12,6 +12,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 import CoreFrameWork
+import sys
+sys.path.append("..")
 
 #Ver1.0
 from selenium.webdriver.common.by import By

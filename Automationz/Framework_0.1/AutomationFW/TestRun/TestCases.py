@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-#from myapp import SomeObject
+
 
 
 from Web import SeleniumScript

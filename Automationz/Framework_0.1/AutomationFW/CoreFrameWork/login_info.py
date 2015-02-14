@@ -1,3 +1,6 @@
+import sys
+sys.path.append("..")
+
 username='iqbal_hassan'
 password='password'
 project='PROJ-29'

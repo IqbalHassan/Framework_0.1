@@ -10,6 +10,8 @@ from System.Threading import Thread
 from System.Windows.Forms import SendKeys
 import time,datetime
 import win32api,win32con
+import sys
+sys.path.append("..")
 
 
 def FindElement_New(ItemNameID):

@@ -10,6 +10,8 @@ import logging
 import FileUtilities as FileUtil
 import re
 import math
+import sys
+sys.path.append("..")
 
 if os.name == 'nt':
     from PCDesktop import WinCommonFoldersPaths as ComPath
