@@ -137,7 +137,7 @@ def CollectProcessMemory(StepName, Input_Q, ProcName='windows.exe'):
 
     while Input_Q.get() != 'Stop':
         print "inside getting memory"
-        pid = Utilities.CommonUtil.GetProcessId(ProcName)
+        pid = CommonUtil.GetProcessId(ProcName)
         if pid != False:
             Obj = ProcessInformation()
             MemObj = Obj.ProcInfo(pid)

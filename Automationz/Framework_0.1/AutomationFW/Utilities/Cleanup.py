@@ -39,15 +39,15 @@ class CleanUp():
             os.chmod(sFolderPath, stat.S_IWRITE)
             sTestStepReturnStatus = FileUtil.DeleteFolderContents(sFolderPath)
             print "Deleted Data from the Desktop App Data folder!"
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Cleaned up Desktop App Data folder!", 1)
+            CommonUtil.ExecLog(sModuleInfo, "Cleaned up Desktop App Data folder!", 1)
 
             sFolderPath = ComPath.Get_local_Appdata_Path() + "\ProductFolderName"
             os.chmod(sFolderPath, stat.S_IWRITE)
             sTestStepReturnStatus = FileUtil.DeleteFolderContents(sFolderPath)
             print "Deleted Data from the Desktop Local App Data folder!"
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Cleaned up Desktop Local App Data folder!", 1)
+            CommonUtil.ExecLog(sModuleInfo, "Cleaned up Desktop Local App Data folder!", 1)
 
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Cleaned up Desktop Log files in Temp folder!", 1)
+            CommonUtil.ExecLog(sModuleInfo, "Cleaned up Desktop Log files in Temp folder!", 1)
 
         elif os.name == 'posix':
             sFolderPath = ComPath.Get_Appdata_Path() + os.sep + "logs"
@@ -62,12 +62,12 @@ class CleanUp():
                     FileUtil.DeleteFile(eachfile)
 
                 print "Deleted Data from the Desktop App Data folder!"
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Deleted Data from the Desktop App Data folder!", 1)
+                CommonUtil.ExecLog(sModuleInfo, "Deleted Data from the Desktop App Data folder!", 1)
             else:
                 print "Logs folder not found"
                 sTestStepReturnStatus = "Pass"
 
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Completed Desktop Cleanup", 1)
+        CommonUtil.ExecLog(sModuleInfo, "Completed Desktop Cleanup", 1)
 
         return sTestStepReturnStatus
 
@@ -76,7 +76,7 @@ class CleanUp():
         sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         #import WinCommonFoldersPaths as WinPath
         try:
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Starting Automation files cleanup", 1)
+            CommonUtil.ExecLog(sModuleInfo, "Starting Automation files cleanup", 1)
             print "Removing all automation test data from previous test runs"
             if os.path.isdir(ComPath.Get_Desktop_Path() + os.sep + 'Temp' + os.sep + 'AutomationTestData'):
                 os.chmod(ComPath.Get_Desktop_Path() + os.sep + 'Temp' + os.sep + 'AutomationTestData', 0777)
@@ -90,16 +90,16 @@ class CleanUp():
             else:
                 sTestStepReturnStatus = FileUtil.CreateFolder(ComPath.Get_Desktop_Path() + os.sep + 'AutomationTestData', False)
                 sTestStepReturnStatus = "Pass"
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Finished Automation files cleanup", 1)
+            CommonUtil.ExecLog(sModuleInfo, "Finished Automation files cleanup", 1)
             return sTestStepReturnStatus
         except Exception, e:
-            return Utilities.CommonUtil.LogCriticalException(sModuleInfo, e)
+            return CommonUtil.LogCriticalException(sModuleInfo, e)
 
 
     def CleanUpMyFolderFiles(self, sFolderType='All'):
         sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         #Remove all files with MyPictures, MyVideo or MyMusic default folders
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Starting Windows My folder files cleanup", 1)
+        CommonUtil.ExecLog(sModuleInfo, "Starting Windows My folder files cleanup", 1)
         print "Removing all data form %s" % sFolderType
 
         if sFolderType == "MyPictures":
@@ -107,7 +107,7 @@ class CleanUp():
             sTestStepReturnStatus = FileUtil.DeleteFolderContents(ComPath.Get_My_Pictures_Path())
             #RenameFolder(WinPath.Get_My_Pictures_Path(), "Pictures", "My Pictures")                 
             print "My Pictures folder is cleaned"
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "My Pictures Cleaned", 1)
+            CommonUtil.ExecLog(sModuleInfo, "My Pictures Cleaned", 1)
 
         if sFolderType == "MyVideos":
             os.chmod(ComPath.Get_My_Videos_Path(), 0777)
@@ -124,26 +124,26 @@ class CleanUp():
             try:
                 os.chmod(ComPath.Get_My_Pictures_Path(), 0777)
                 sTestStepReturnStatus = FileUtil.DeleteFolderContents(ComPath.Get_My_Pictures_Path())
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "My Pictures Cleaned", 1)
+                CommonUtil.ExecLog(sModuleInfo, "My Pictures Cleaned", 1)
                 os.chmod(ComPath.Get_CommonPictures_Path(), 0777)
                 sTestStepReturnStatus = FileUtil.DeleteFolderContents(ComPath.Get_CommonPictures_Path())
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Public Pictures Cleaned", 1)
+                CommonUtil.ExecLog(sModuleInfo, "Public Pictures Cleaned", 1)
             except Exception, e:
                 print e
             try:
                 os.chmod(ComPath.Get_My_Videos_Path(), 0777)
                 sTestStepReturnStatus = FileUtil.DeleteFolderContents(ComPath.Get_My_Videos_Path())
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "My Videos Cleaned", 1)
+                CommonUtil.ExecLog(sModuleInfo, "My Videos Cleaned", 1)
                 os.chmod(ComPath.Get_CommonVideos_Path(), 0777)
                 sTestStepReturnStatus = FileUtil.DeleteFolderContents(ComPath.Get_CommonVideos_Path())
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Public Videos Cleaned", 1)
+                CommonUtil.ExecLog(sModuleInfo, "Public Videos Cleaned", 1)
             except Exception, e:
                 print e
             try:
                 if os.name == 'nt':
                     os.chmod(ComPath.Get_MyMusic_Path(), 0777)
                     sTestStepReturnStatus = self.DeleteMusicFolderContents(ComPath.Get_MyMusic_Path())
-                    Utilities.CommonUtil.ExecLog(sModuleInfo, "My Music Cleaned", 1)
+                    CommonUtil.ExecLog(sModuleInfo, "My Music Cleaned", 1)
                 elif os.name == 'posix':
                     iTunes.CloseiTunes()
                     time.sleep(4)
@@ -151,7 +151,7 @@ class CleanUp():
                     ##os.system("rm -rf %s/iTunes"%ComPath.Get_MyMusic_Path())
                     time.sleep(2)
                     iTunes.OpeniTunes()
-                    Utilities.CommonUtil.ExecLog(sModuleInfo, "My Music Cleaned", 1)
+                    CommonUtil.ExecLog(sModuleInfo, "My Music Cleaned", 1)
                 #os.chmod(ComPath.Get_CommonMusic_Path(), 0777)
                 #sTestStepReturnStatus = FileUtil.DeleteFolderContents(ComPath.Get_CommonMusic_Path())
                 #CommonUtil.ExecLog(sModuleInfo,"Public Music Cleaned",1)
@@ -161,12 +161,12 @@ class CleanUp():
             try:
                 os.chmod(ComPath.Get_My_Documents_Path(), 0777)
                 sTestStepReturnStatus = FileUtil.DeleteFolderContents(ComPath.Get_My_Documents_Path())
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "My Documents Cleaned", 1)
+                CommonUtil.ExecLog(sModuleInfo, "My Documents Cleaned", 1)
                 os.chmod(ComPath.Get_CommonMusic_Path(), 0777)
                 sTestStepReturnStatus = FileUtil.DeleteFolderContents(ComPath.Get_Common_Documents_Path())
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Public Documents Cleaned", 1)
+                CommonUtil.ExecLog(sModuleInfo, "Public Documents Cleaned", 1)
             except Exception, e:
                 print e
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Finished Windows My folder files cleanup", 1)
+        CommonUtil.ExecLog(sModuleInfo, "Finished Windows My folder files cleanup", 1)
         return sTestStepReturnStatus
 

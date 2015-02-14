@@ -706,7 +706,7 @@ def CopyAllFilesFromSourceToDestFolder(src, dest):
 
     except Exception, e:
         print "%s > Exception:  (%s)" % (sModuleInfo, e)
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception:  (%s)" % e, 3)
+        CommonUtil.ExecLog(sModuleInfo, "Exception:  (%s)" % e, 3)
         return "Critical"
 
 def ChangePermission(sFolderPath):

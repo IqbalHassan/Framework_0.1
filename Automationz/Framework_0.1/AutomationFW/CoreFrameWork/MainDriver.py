@@ -75,9 +75,9 @@ def main():
         try:
             sTestStepReturnStatus = "Warning"
             print "Unknown test step : ", CurrentStep
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Unknown test step : %s" % CurrentStep , 2)
+            CommonUtil.ExecLog(sModuleInfo, "Unknown test step : %s" % CurrentStep , 2)
         except Exception, e:
-            return Utilities.CommonUtil.LogFailedException(sModuleInfo, e)
+            return CommonUtil.LogFailedException(sModuleInfo, e)
 
         #Put the return value into Queue to send it back to main thread
         q.put(sTestStepReturnStatus)
@@ -102,11 +102,11 @@ def main():
     CommonUtil.ExecLog(sModuleInfo, "Database connection successful" , 1)
     cur = conn.cursor()"""
     conn=DBUtil.ConnectToDataBase()
-    Userid = (Utilities.CommonUtil.GetLocalUser()).lower()
+    Userid = (CommonUtil.GetLocalUser()).lower()
     UserList = DBUtil.GetData(conn, "Select User_Names from permitted_user_list")
     conn.close()
     if Userid not in UserList:
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "User don't have permission to run the tests" , 3)
+        CommonUtil.ExecLog(sModuleInfo, "User don't have permission to run the tests" , 3)
         return "You Don't Have Permission"
     
     #Get all the drivers
@@ -117,11 +117,11 @@ def main():
     conn.close()
     if len(TestRunLists) > 0:
         print "Running Test cases from Test Set : ", TestRunLists[0:len(TestRunLists)]
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "Running Test cases from Test Set : %s" % TestRunLists[0:len(TestRunLists)], 1)
+        CommonUtil.ExecLog(sModuleInfo, "Running Test cases from Test Set : %s" % TestRunLists[0:len(TestRunLists)], 1)
         
     else:
         print "No Test Run Schedule found for the current user :", Userid
-        Utilities.CommonUtil.ExecLog(sModuleInfo, "No Test Run Schedule found for the current user : %s" % Userid, 2)
+        CommonUtil.ExecLog(sModuleInfo, "No Test Run Schedule found for the current user : %s" % Userid, 2)
         return False
 
     #Loop thru all the test runs scheduled for this user
@@ -264,16 +264,16 @@ def main():
         TestCaseLists=Automation
         if len(TestCaseLists) > 0:
             print "Running Test cases from list : ", TestCaseLists[0:len(TestCaseLists)]
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Running Test cases from list : %s" % TestCaseLists[0:len(TestCaseLists)], 1)
+            CommonUtil.ExecLog(sModuleInfo, "Running Test cases from list : %s" % TestCaseLists[0:len(TestCaseLists)], 1)
             print "Total number of test cases ", len(TestCaseLists)
         else:
             print "No test cases found for the current user :", Userid
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "No test cases found for the current user : %s" % Userid, 2)
+            CommonUtil.ExecLog(sModuleInfo, "No test cases found for the current user : %s" % Userid, 2)
             return False
         #TestCaseLists = list(TestCaseLists[0])
         for TestCaseID in TestCaseLists:
             testcasecontinue="yes"
-            CoreFrameWork.Global.sTestStepExecLogId = "MainDriver"
+            Global.sTestStepExecLogId = "MainDriver"
             StepSeq = 1
             TCID = list(TestCaseID)[0]
             print "-------------*************--------------"
@@ -286,16 +286,16 @@ def main():
             TestCaseName = DBUtil.GetData(conn, "Select tc_name From result_test_cases Where tc_id = '%s' and run_id='%s'" % (TCID,TestRunID[0]), False)
             conn.close()
             print "Running Test case id : %s :: %s" % (TCID, TestCaseName[0])
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "-------------*************--------------", 1)
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Running Test case id : %s :: %s" % (TCID, TestCaseName), 1)
+            CommonUtil.ExecLog(sModuleInfo, "-------------*************--------------", 1)
+            CommonUtil.ExecLog(sModuleInfo, "Running Test case id : %s :: %s" % (TCID, TestCaseName), 1)
 
             #Create Log Folder for the TC
-            CoreFrameWork.Global.TCLogFolder = (CoreFrameWork.Global.NetworkLogFolder + os.sep + sTestResultsRunId + os.sep + TCID + "_" + Utilities.CommonUtil.TimeStamp("utcstring")).replace(":", "-")
+            Global.TCLogFolder = (Global.NetworkLogFolder + os.sep + sTestResultsRunId + os.sep + TCID + "_" + CommonUtil.TimeStamp("utcstring")).replace(":", "-")
             #Create the folder (this fn will delete if it already exists)
-            FL.CreateFolder(CoreFrameWork.Global.TCLogFolder)
+            FL.CreateFolder(Global.TCLogFolder)
             #Create sub folders needed
-            FL.CreateFolder(CoreFrameWork.Global.TCLogFolder + os.sep + "ProductLog")
-            FL.CreateFolder(CoreFrameWork.Global.TCLogFolder + os.sep + "Screenshots")
+            FL.CreateFolder(Global.TCLogFolder + os.sep + "ProductLog")
+            FL.CreateFolder(Global.TCLogFolder + os.sep + "Screenshots")
 
 
             #test Case start time
@@ -356,16 +356,16 @@ def main():
                 while StepSeq <= Stepscount:
                     # Beginning of a Test Step
                     print "Step: ", TestStepsList[StepSeq - 1][1]
-                    Utilities.CommonUtil.ExecLog(sModuleInfo, "Step : %s" % TestStepsList[StepSeq - 1][1], 1)
+                    CommonUtil.ExecLog(sModuleInfo, "Step : %s" % TestStepsList[StepSeq - 1][1], 1)
 
                     #if DataType == 'Performance':
                     #    PerfQ.put(TestStepsList[StepSeq - 1][1])
                     #Check if the current test step is a Performance Test Step
                     if TestStepsList[StepSeq - 1][4] == 'Performance':
-                        CoreFrameWork.Global.sTestStepType = TestStepsList[StepSeq - 1][4]
+                        Global.sTestStepType = TestStepsList[StepSeq - 1][4]
 
                     #Test Step Log id
-                    CoreFrameWork.Global.sTestStepExecLogId = sTestResultsRunId + TCID + str(TestStepsList[StepSeq - 1][0]) + str(StepSeq)
+                    Global.sTestStepExecLogId = sTestResultsRunId + TCID + str(TestStepsList[StepSeq - 1][0]) + str(StepSeq)
                     # Test Step start time
                     conn=DBUtil.ConnectToDataBase()
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -374,12 +374,12 @@ def main():
                     #TestStepStartTime = now[0][0]
                     TestStepStartTime = time.clock()
                     # Memory calculation at the beginning of test step
-                    WinMemBegin = Utilities.CommonUtil.PhysicalAvailableMemory()#MemoryManager.winmem() 
+                    WinMemBegin = CommonUtil.PhysicalAvailableMemory()#MemoryManager.winmem() 
                     #update test_step_results table
                     #cur.execute("insert into test_step_results (run_id,tc_id,teststep_id,teststepsequence,status,stepstarttime,logid,start_memory,testcaseresulttindex ) values ('%s','%s','%d','%d','In-Progress','%s','%s', '%s', '%d')" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], sTestStepStartTime, Global.sTestStepExecLogId, WinMemBegin, TestCaseResultIndex[0][0]))
                     #conn.commit()
                     condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"' and teststep_id='"+str(TestStepsList[StepSeq - 1][0])+"' and teststepsequence='"+str(TestStepsList[StepSeq - 1][2])+"'"
-                    Dict={'teststepsequence':TestStepsList[StepSeq - 1][2],'status':'In-Progress','stepstarttime':sTestStepStartTime,'logid':CoreFrameWork.Global.sTestStepExecLogId,'start_memory':WinMemBegin,'testcaseresulttindex':TestCaseResultIndex[0][0]}
+                    Dict={'teststepsequence':TestStepsList[StepSeq - 1][2],'status':'In-Progress','stepstarttime':sTestStepStartTime,'logid':Global.sTestStepExecLogId,'start_memory':WinMemBegin,'testcaseresulttindex':TestCaseResultIndex[0][0]}
                     conn=DBUtil.ConnectToDataBase()
                     DBUtil.UpdateRecordInTable(conn,"test_step_results",condition,**Dict)
                     conn.close()
@@ -395,12 +395,12 @@ def main():
                         conn.close()
                         steps_data=[]
                         for each_data_id in container_data_details:
-                            From_Data = CoreFrameWork.DataFetching.Get_PIM_Data_By_Id(each_data_id[0])
+                            From_Data = DataFetching.Get_PIM_Data_By_Id(each_data_id[0])
                             steps_data.append(From_Data)
                     else:
                         steps_data=[]
                     print "steps data for #%d: "%StepSeq,steps_data
-                    Utilities.CommonUtil.ExecLog(sModuleInfo,"steps data for #%d: %s"%(StepSeq,str(steps_data)),1)
+                    CommonUtil.ExecLog(sModuleInfo,"steps data for #%d: %s"%(StepSeq,str(steps_data)),1)
                     try:
                         #while True:
                             #If threading is enabled
@@ -411,7 +411,7 @@ def main():
                             if TestStepsList[StepSeq-1][3] in Driver_list:    
                                 #If threading is enabled
                                 module_name=importlib.import_module(TestStepsList[StepSeq-1][3])
-                                if CoreFrameWork.Global.ThreadingEnabled:
+                                if Global.ThreadingEnabled:
                                     stepThread = threading.Thread(target=module_name.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q,TestRunID[0]))
                                 else:
                                     #from Drivers import Futureshop
@@ -429,25 +429,25 @@ def main():
 
                             else:
                                 #If threading is enabled
-                                if CoreFrameWork.Global.ThreadingEnabled:
+                                if Global.ThreadingEnabled:
                                     stepThread = threading.Thread(target=ExecuteTestSteps, args=(TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q))
                                 else:
                                     sStepResult = ExecuteTestSteps(TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q)
 
                             #If threading is enabled
-                            if CoreFrameWork.Global.ThreadingEnabled:
+                            if Global.ThreadingEnabled:
                                 #Start the thread
                                 print "Starting Test Step Thread.."
                                 stepThread.start()
                                 #Wait for the Thread to finish or until timeout
-                                print "Waiting for Test Step Thread to finish..for (seconds) :", CoreFrameWork.Global.DefaultTestStepTimeout
-                                stepThread.join(CoreFrameWork.Global.DefaultTestStepTimeout)
+                                print "Waiting for Test Step Thread to finish..for (seconds) :", Global.DefaultTestStepTimeout
+                                stepThread.join(Global.DefaultTestStepTimeout)
                                 #Get the return value from the ExecuteTestStep fn via Queue
                                 try:
                                     sStepResult = q.get(True, 5)
                                     print "Test Step Thread Ended.."
                                 except Queue.Empty:
-                                    print "Test Step did not return after default timeout (secs) : ", CoreFrameWork.Global.DefaultTestStepTimeout
+                                    print "Test Step did not return after default timeout (secs) : ", Global.DefaultTestStepTimeout
                                     sStepResult = "Failed"
 
                                     #Clean up
@@ -464,7 +464,7 @@ def main():
 
                     except Exception, e:
                         print "Exception occurred in test step : ", e
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception occurred in test step : %s" % e, 3)
+                        CommonUtil.ExecLog(sModuleInfo, "Exception occurred in test step : %s" % e, 3)
                         sStepResult = "Failed"
 
                     #Check if the db connection is alive or timed out
@@ -475,7 +475,7 @@ def main():
                         conn.close()
                     except Exception, e:
                         print "Connection exception:", e
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % e, 2)
+                        CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % e, 2)
                     #test Step End time
                     conn=DBUtil.ConnectToDataBase()
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -488,10 +488,10 @@ def main():
                     TimeDiff = TestStepEndTime - TestStepStartTime
                     #TimeInSec = TimeDiff.seconds
                     TimeInSec = int(TimeDiff)
-                    TestStepDuration = Utilities.CommonUtil.FormatSeconds(TimeInSec)
+                    TestStepDuration = CommonUtil.FormatSeconds(TimeInSec)
 
                     # Memory at the end of Test Step
-                    WinMemEnd = Utilities.CommonUtil.PhysicalAvailableMemory() #MemoryManager.winmem()
+                    WinMemEnd = CommonUtil.PhysicalAvailableMemory() #MemoryManager.winmem()
 
                     # Total memory consumed during the test step
                     TestStepMemConsumed = WinMemBegin - WinMemEnd
@@ -504,17 +504,17 @@ def main():
                     else:
                         sTestStepResultList.append("FAILED")
                         print "sStepResult : ", sStepResult
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "sStepResult : %s" % sStepResult, 1)
+                        CommonUtil.ExecLog(sModuleInfo, "sStepResult : %s" % sStepResult, 1)
                         sStepResult = "Failed"
 
                     #Take ScreenShot
-                    Utilities.CommonUtil.TakeScreenShot(sStepResult + "_" + TestStepsList[StepSeq - 1][1])
+                    CommonUtil.TakeScreenShot(sStepResult + "_" + TestStepsList[StepSeq - 1][1])
 
                     #Update Results
                     if sStepResult.upper() == "PASSED":
                         #Step Passed
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Passed"
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Passed" % TestStepsList[StepSeq - 1][1], 1)
+                        CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Passed" % TestStepsList[StepSeq - 1][1], 1)
                         #Update Test Step Results table
                         conn=DBUtil.ConnectToDataBase()
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
@@ -528,7 +528,7 @@ def main():
                     elif sStepResult.upper() == "WARNING":
                         #Step has Warning, but continue running next test step for this test case
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Warning"
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Warning" % TestStepsList[StepSeq - 1][1], 2)
+                        CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Warning" % TestStepsList[StepSeq - 1][1], 2)
                         #Update Test Step Results table
                         conn=DBUtil.ConnectToDataBase()
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
@@ -542,7 +542,7 @@ def main():
                     elif sStepResult.upper() == "NOT RUN":
                         #Step has Warning, but continue running next test step for this test case
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Not Run"
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Not Run" % TestStepsList[StepSeq - 1][1], 2)
+                        CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Not Run" % TestStepsList[StepSeq - 1][1], 2)
                         #Update Test Step Results table
                         conn=DBUtil.ConnectToDataBase()
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
@@ -560,7 +560,7 @@ def main():
                     elif sStepResult.upper() == "FAILED":
                         #Step has a Critial failure, fail the test step and test case. go to next test case
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Failed Failure"
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Failed Failure" % TestStepsList[StepSeq - 1][1], 3)
+                        CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Failed Failure" % TestStepsList[StepSeq - 1][1], 3)
                         #Update Test Step Results table
                         conn=DBUtil.ConnectToDataBase()
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
@@ -581,7 +581,7 @@ def main():
                     elif sStepResult.upper() == "BLOCKED":
                         #Step is Blocked, Block the test step and test case. go to next test case
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Blocked"
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Blocked" % TestStepsList[StepSeq - 1][1], 3)
+                        CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Blocked" % TestStepsList[StepSeq - 1][1], 3)
                         #Update Test Step Results table
                         conn=DBUtil.ConnectToDataBase()
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
@@ -612,7 +612,7 @@ def main():
                     currentTestSetStatus = currentTestSetStatus[0][0]
                     if currentTestSetStatus == 'Cancelled':
                         print "Test Run status is Cancelled. Exiting the current Test Case... ", TCID
-                        Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Run status is Cancelled. Exiting the current Test Case...%s" % TCID, 2)
+                        CommonUtil.ExecLog(sModuleInfo, "Test Run status is Cancelled. Exiting the current Test Case...%s" % TCID, 2)
                         break
                 if DataType == 'Performance':
                     PerfQ.put('Stop')
@@ -630,7 +630,7 @@ def main():
             #Decide if Test Case Pass/Failed
             if 'BLOCKED' in sTestStepResultList:
                 print "Test Case Blocked"
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Case Blocked", 3)
+                CommonUtil.ExecLog(sModuleInfo, "Test Case Blocked", 3)
                 sTestCaseStatus = "Blocked"
             elif 'FAILED' in sTestStepResultList:
                 print "Test Case Failed"
@@ -650,42 +650,42 @@ def main():
                     sTestCaseStatus='Failed'
                 else:
                     sTestCaseStatus='Blocked'
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Case "+sTestCaseStatus, 3)
+                CommonUtil.ExecLog(sModuleInfo, "Test Case "+sTestCaseStatus, 3)
             elif 'WARNING' in sTestStepResultList:
                 print "Test Case Contain Warning(s)"
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Case Contain Warning(s)", 2)
+                CommonUtil.ExecLog(sModuleInfo, "Test Case Contain Warning(s)", 2)
                 sTestCaseStatus = "Failed"
             elif 'NOT RUN' in sTestStepResultList:
                 print "Test Case Contain Not Run Steps"
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Case Contain Warning(s)", 2)
+                CommonUtil.ExecLog(sModuleInfo, "Test Case Contain Warning(s)", 2)
                 sTestCaseStatus = "Failed"
             elif 'PASSED' in sTestStepResultList:
                 print "Test Case Passed"
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Case Passed", 1)
+                CommonUtil.ExecLog(sModuleInfo, "Test Case Passed", 1)
                 sTestCaseStatus = "Passed"
             else:
                 print "Test Case Status Unknown"
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Case Status Unknown", 2)
+                CommonUtil.ExecLog(sModuleInfo, "Test Case Status Unknown", 2)
                 sTestCaseStatus = "Unknown"
 
             # Time it took to run the test case
             TimeDiff = iTestCaseEndTime - iTestCaseStartTime
             TimeInSec = TimeDiff.seconds
-            TestCaseDuration = Utilities.CommonUtil.FormatSeconds(TimeInSec)
+            TestCaseDuration = CommonUtil.FormatSeconds(TimeInSec)
 
             #Collect Log if Test case Failed
             #if sTestCaseStatus != "Passed":
             #Get DTS Logs
-            print Utilities.CommonUtil.GetProductLog()
+            print CommonUtil.GetProductLog()
 
             #Zip the folder
-            TCLogFile = Utilities.CommonUtil.ZipFolder(CoreFrameWork.Global.TCLogFolder, CoreFrameWork.Global.TCLogFolder + ".zip")
+            TCLogFile = CommonUtil.ZipFolder(Global.TCLogFolder, Global.TCLogFolder + ".zip")
             #Delete the folder
-            FL.DeleteFolder(CoreFrameWork.Global.TCLogFolder)
+            FL.DeleteFolder(Global.TCLogFolder)
 
             #Find Test case failed reason
             try:
-                FailReason = Utilities.CommonUtil.FindTestCaseFailedReason(conn, sTestResultsRunId, TCID)
+                FailReason = CommonUtil.FindTestCaseFailedReason(conn, sTestResultsRunId, TCID)
             except Exception, e:
                 print "Unable to find Fail Reason for Test case: ", TCID
                 FailReason = ""
@@ -696,16 +696,16 @@ def main():
             conn.close()
             #Update Performance Results if Its a Performance test case And if test case had Passed
             if DataType == 'Performance' and sTestCaseStatus == 'Passed':
-                product_version = Utilities.CommonUtil.GetProductVersion()
+                product_version = CommonUtil.GetProductVersion()
                 print "machine_os:", TestRunID[4]
                 print "tc_id:", list(TestCaseID)[0]
                 print "tc_name:", TestCaseName[0]
                 print "tc_section:", list(TestCaseID)[0]
                 print "run_id:", sTestResultsRunId
-                print "duration:", CoreFrameWork.Global.transaction_duration
-                print "memory_avg:", CoreFrameWork.Global.transaction_deltamemory
-                print "memory_peak:", CoreFrameWork.Global.transaction_deltamemory
-                HWobj = CoreFrameWork.Performance.ComputerHWInfo()
+                print "duration:", Global.transaction_duration
+                print "memory_avg:", Global.transaction_deltamemory
+                print "memory_peak:", Global.transaction_deltamemory
+                HWobj = Performance.ComputerHWInfo()
                 hwmodel = HWobj.CompInfo().HWModel
                 print "HW Model:", hwmodel
 
@@ -715,9 +715,9 @@ def main():
                         tc_id=list(TestCaseID)[0],
                         run_id=sTestResultsRunId,
                         machine_os=TestRunID[4],
-                        duration=CoreFrameWork.Global.transaction_duration,
-                        memory_avg=CoreFrameWork.Global.transaction_startmemory,
-                        memory_peak=CoreFrameWork.Global.transaction_endmemory,
+                        duration=Global.transaction_duration,
+                        memory_avg=Global.transaction_startmemory,
+                        memory_peak=Global.transaction_endmemory,
                         hw_model=hwmodel)
                 conn.close()
             #Check if Test Set status is 'Cancelled' When it is stopped from Website
@@ -730,7 +730,7 @@ def main():
 
             if currentTestSetStatus == 'Cancelled':
                 print "Test Run status is Cancelled. Exiting the current Test Set... ", sTestResultsRunId
-                Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Run status is Cancelled. Exiting the current Test Set...%s" % sTestResultsRunId, 2)
+                CommonUtil.ExecLog(sModuleInfo, "Test Run status is Cancelled. Exiting the current Test Set...%s" % sTestResultsRunId, 2)
                 break
 
 
@@ -742,7 +742,7 @@ def main():
         conn.close()
         sTestSetEndTime = str(now[0][0])
         iTestSetEndTime = now[0][0]
-        TestSetDuration = Utilities.CommonUtil.FormatSeconds((iTestSetEndTime - iTestSetStartTime).seconds)
+        TestSetDuration = CommonUtil.FormatSeconds((iTestSetEndTime - iTestSetStartTime).seconds)
 
         #Update Test Run tables based on the Test Set Status
         if currentTestSetStatus == 'Cancelled':
@@ -750,7 +750,7 @@ def main():
             DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='Cancelled', testendtime='%s' % (sTestSetEndTime), duration='%s' % (TestSetDuration))
             conn.close()
             print "Test Set Cancelled by the User"
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Set Cancelled by the User", 1)
+            CommonUtil.ExecLog(sModuleInfo, "Test Set Cancelled by the User", 1)
         else:
             if automation_count>0 and automation_count==len(TestCaseLists)and (forced_count==0 and manual_count==0):
                 conn=DBUtil.ConnectToDataBase()
@@ -761,9 +761,9 @@ def main():
                 print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete')
                 conn.close()
                 print "Test Set Completed"
-            Utilities.CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
+            CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
 
-            CoreFrameWork.Global.sTestStepExecLogId = "MainDriver"
+            Global.sTestStepExecLogId = "MainDriver"
 
             #Send Summary Email
             conn=DBUtil.ConnectToDataBase()
@@ -773,15 +773,15 @@ def main():
                 conn=DBUtil.ConnectToDataBase()
                 try:
                     Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
-                    Utilities.CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
+                    CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
                 except Exception, e:
                     conn.close()
                     return "pass"
                 
 
         #Copy the Automation Log to Network Folder
-        if FL.CopyFile(Utilities.CommonUtil.hdlr.baseFilename, CoreFrameWork.Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
-            Utilities.CommonUtil.ClearLog()
+        if FL.CopyFile(CommonUtil.hdlr.baseFilename, Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
+            CommonUtil.ClearLog()
 
     #Close DB Connection
     conn.close()
@@ -789,7 +789,7 @@ def main():
 
 if __name__ == "__main__":
 
-    CoreFrameWork.Global.sTestStepExecLogId = "MainDriver"
+    Global.sTestStepExecLogId = "MainDriver"
     print main()
 
 
