@@ -131,7 +131,7 @@ function Suggestion(project_id,team_id,test_case_per_page,test_case_page_current
         {
             source : function(request, response) {
                 $.ajax({
-                    url:"AutoCompleteTestCasesSearchOtherPages",
+                    url:"AutoCompleteTestCasesSearchTestSet",
                     dataType: "json",
                     data:{ term: request.term,project_id:project_id,team_id:team_id},
                     success: function( data ) {

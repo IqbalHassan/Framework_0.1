@@ -1056,6 +1056,66 @@ def AutoCompleteTestCasesSearchOtherPages(request):
             return HttpResponse(json, mimetype='application/json')
 
 
+
+def AutoCompleteTestCasesSearchTestSet(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            value = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            print project_id
+            print team_id
+            Section_Tag = 'Section'
+            Feature_Tag = 'Feature'
+            Custom_Tag = 'CustomTag'
+            Section_Path_Tag = 'section_id'
+            Feature_Path_Tag = 'feature_id'
+            Priority_Tag = 'Priority'
+            Status = 'Status'
+            set_type = 'set'
+            tag_type = 'tag'
+            query = "select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
+                project_id, int(team_id))
+            Conn = GetConnection()
+            dependency = DB.GetData(Conn, query)
+            Conn.close()
+            wherequery = ""
+            for each in dependency:
+                wherequery += ("'" + each.strip() + "'")
+                wherequery += ','
+            wherequery += ("'" +
+                           Feature_Tag +
+                           "','" +
+                           Section_Tag +
+                           "','" +
+                           Custom_Tag +
+                           "','" +
+                           Section_Path_Tag +
+                           "','" +
+                           Feature_Path_Tag +
+                           "','" +
+                           Priority_Tag +
+                           "','" +
+                           Status +
+                           "','" +
+                           set_type +
+                           "','" +
+                           tag_type +
+                           "'")
+            print wherequery
+            tag_query = "select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)" % (
+                value, wherequery)
+            id_query = "select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')" % (
+                value, value)
+            Conn = GetConnection()
+            tag_cases = DB.GetData(Conn, tag_query, False)
+            id_cases = DB.GetData(Conn, id_query, False)
+            results = list(set(list(tag_cases + id_cases)))
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+
+
 # ==================Returns Abailable User Name in List as user Type on Ru
 def AutoCompleteUsersSearch(request):
     if request.is_ajax():

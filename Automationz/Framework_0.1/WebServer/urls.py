@@ -366,6 +366,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/CreateEditStep/$',CreateEditStep),
     url(r'^Home/.*/TestStepSearch/$',TestStepSearch),
     url(r'^Home/.*/ViewAndOrganizeTestCases/$',ViewAndOrganizeTestCases),
+    url(r'^Home/.*/AutoCompleteTestCasesSearchTestSet/$',AutoCompleteTestCasesSearchTestSet),
 	)
 
 
