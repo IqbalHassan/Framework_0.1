@@ -2,9 +2,10 @@
 import os
 import time
 if os.name == 'nt':
-    from PCDesktop import WinCommonFoldersPaths as compath
+    from PCDesktop import WinCommonFoldersPaths
+    #from AutomationFW import PCDesktop.WinCommonFoldersPaths as WinCommonFoldersPaths
 else:
-    from MacDesktop import MacCommonFoldersPaths as compath
+    from MacDesktop import MacCommonFoldersPaths as WinCommonFoldersPaths
 
 ###########Production / Dev Config variables######################
 Environment = "Test"
@@ -25,8 +26,8 @@ if Environment == "Test":
 
     #Folder Paths
     if os.name == 'nt':
-        NetworkFolder = compath.Get_My_Documents_Path()
-        NetworkLogFolder = compath.Get_My_Documents_Path()
+        NetworkFolder = WinCommonFoldersPaths.Get_My_Documents_Path()
+        NetworkLogFolder = WinCommonFoldersPaths.Get_My_Documents_Path()
     elif os.name == 'posix':
         NetworkFolder = "/Volumes/AutomationNetworkFolderPath"
         NetworkLogFolder = "/Volumes/AutomationLogNetworkPath"
