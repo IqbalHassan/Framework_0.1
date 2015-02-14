@@ -1,14 +1,12 @@
-'''
-Created on Apr 25, 2012
 
-@author: jnibumon3e03
-'''
 import os, subprocess
 import time
 import inspect
 import stat
 import CommonUtil
 import FileUtilities as FileUtil
+import sys
+sys.path.append("..")
 
 if os.name == 'nt':
     from PCDesktop import WinCommonFoldersPaths as ComPath

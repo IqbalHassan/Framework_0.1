@@ -2,6 +2,8 @@
 import time, datetime, inspect
 import os
 import CommonUtil
+import sys
+sys.path.append("..")
 
 if os.name == "nt":
     from wmi import WMI

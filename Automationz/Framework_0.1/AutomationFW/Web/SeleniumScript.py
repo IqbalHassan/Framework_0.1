@@ -12,6 +12,8 @@ from CoreFrameWork import CommonUtil
 #Ver1.0
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+import sys
+sys.path.append("..")
 
 def BrowserSelection(browser):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name

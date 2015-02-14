@@ -1,6 +1,9 @@
 # -*- coding: cp1252 -*-
 import os
 import time
+import sys
+sys.path.append("..")
+
 if os.name == 'nt':
     from PCDesktop import WinCommonFoldersPaths
     #from AutomationFW import PCDesktop.WinCommonFoldersPaths as WinCommonFoldersPaths

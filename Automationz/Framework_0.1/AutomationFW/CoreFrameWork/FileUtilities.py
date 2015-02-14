@@ -1,10 +1,14 @@
 # coding=utf-8
 import datetime
-import os, sys, subprocess
+import os, subprocess
 import shutil
 import stat, time
 import inspect
 import CommonUtil
+
+import sys
+sys.path.append("..")
+
 if os.name == 'nt':
     from PCDesktop import WinCommonFoldersPaths as ComPath
     import win32api

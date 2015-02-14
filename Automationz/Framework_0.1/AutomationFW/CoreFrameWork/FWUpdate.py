@@ -9,6 +9,8 @@ import stat
 import Global
 import CommonUtil
 import FileUtilities as FileUtil
+import sys
+sys.path.append("..")
 
 
 class AutoUpdate():
