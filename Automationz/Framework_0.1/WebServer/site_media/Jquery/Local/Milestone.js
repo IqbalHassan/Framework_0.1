@@ -2,6 +2,9 @@
  * Created by lent400 on 5/21/14.
  */
 var operation = 1;
+var project_id= $.session.get('project_id');
+var team_id= $.session.get('default_team_identity');
+
 $(document).ready(function(){
    //MileStoneTab();
     New_UI();
@@ -255,7 +258,7 @@ function Other_Info(value){
 function New_UI(){
     //status_button_preparation();
 
-    $.get("GetMileStones",{term : ''},function(data)
+    $.get("GetMileStones",{project_id : project_id, team_id:team_id},function(data)
     {
         ResultTable(all_milestones,data['Heading'],data['TableData'],"Milestones");
         make_ms_clickable();
@@ -326,7 +329,7 @@ function New_UI(){
                 $("#modified_date").text(ui.item[8]);
 
 
-                $('input[name="team"]:checked').removeAttr('checked')
+                /*$('input[name="team"]:checked').removeAttr('checked')
                 $.get("MilestoneTeams",{term : value},function(data)
                 {
                     $('input[name="team"]').each(function(){
@@ -338,7 +341,7 @@ function New_UI(){
                             }
                         }
                     });
-                });
+                });*/
 
 
                 Other_Info(value);
@@ -399,10 +402,10 @@ function New_UI(){
         var created_by = "";
         var modified_by = "";
 
-        var team=[];
+        /*var team=[];
         $('input[name="team"]:checked').each(function(){
             team.push($(this).val());
-        });
+        });*/
 
        // var operation=$('#operation_milestone option:selected').val();
         if(operation==1){
@@ -444,7 +447,7 @@ function New_UI(){
             $('#error_milestone').css({'display':'block'});
         }
         else {
-            $.get('MileStoneOperation/',{status:status,description:description.trim(),old_name:old_name,new_name:new_name,operation:operation,'team':team.join("|").trim(),start_date:start_date.trim(),end_date:end_date.trim(),created_by:created_by,modified_by:modified_by},function(data){
+            $.get('MileStoneOperation/',{status:status,description:description.trim(),old_name:old_name,new_name:new_name,operation:operation,start_date:start_date.trim(),end_date:end_date.trim(),created_by:created_by,modified_by:modified_by,project_id:project_id,team_id:team_id},function(data){
                 if(data['confirm_message']==""){
                     var color='red';
                 }

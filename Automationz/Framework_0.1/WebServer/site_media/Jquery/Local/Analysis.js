@@ -113,6 +113,10 @@ function AnalysisTableActions()
 
 }
 */
+
+    var project_id= $.session.get('project_id');
+    var team_id= $.session.get('default_team_identity');
+
 $(document).ready(function(){
     AutoCompleteSearchForAnalysis();
 
@@ -163,7 +167,7 @@ function AutoCompleteSearchForAnalysis(){
 }
 
 function PopulateResultDiv(tc_id){
-    $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id},function(data){
+    $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id,project_id:project_id,team_id:team_id},function(data){
         ResultTable(Resultdiv,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result");
         makeRunClickable();
     });

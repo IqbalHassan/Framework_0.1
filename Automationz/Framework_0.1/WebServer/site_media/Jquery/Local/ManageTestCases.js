@@ -3,7 +3,7 @@
  * Author: Sazid
  */
 
-var test_case_per_page=1;
+var test_case_per_page=5;
 var test_case_page_current=1;
 
 var do_on_load = function do_on_load () {

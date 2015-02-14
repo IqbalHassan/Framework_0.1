@@ -3996,6 +3996,8 @@ def Selected_TestCaseID_Analaysis(request):
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Selected_TC_Analysis', '')
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
 
     query = "select run_id,tc.tc_name,status,failreason,logid from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc" % UserData
     TestCase_Analysis_Result = DB.GetData(Conn, query, False)
@@ -10167,9 +10169,11 @@ def Get_MileStones(request):
     if request.is_ajax():
         if request.method == 'GET':
             Conn = GetConnection()
-            milestone = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id','')
             # print milestone
-            query = "select distinct name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by name"
+            #query = "select distinct name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info order by name"
+            query = "select distinct name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" order by name"
             milestone_list = DB.GetData(Conn, query, False)
     Heading = [
         'Milestone Name',
@@ -10430,7 +10434,9 @@ def MileStoneOperation(request):
             operation = request.GET.get(u'operation', '')
             description = request.GET.get(u'description', '')
             status = request.GET.get(u'status', '')
-            team_id = request.GET.get(u'team', '').split("|")
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
+            #team_id = request.GET.get(u'team', '').split("|")
             confirm_message = ""
             error_message = ""
             if operation == "2":
@@ -10475,7 +10481,15 @@ def MileStoneOperation(request):
                         'modified_by': modified_by,
                         'modified_date': now}
                     print DB.UpdateRecordInTable(Conn, "milestone_info", mcondition, **mDict)
-                    result = DB.DeleteRecord(
+                    tDict = {
+                             'project_id':project_id,
+                             'team_id':team_id,
+                             'parameters':int(mid[0]),
+                             'type':'Milestone'
+                             }
+                    tCond = "where parameters=%d and type='Milestone' " %int(mid[0])
+                    tRes = DB.UpdateRecordInTable(Conn,"team_wise_settings",tCond,**tDict)
+                    """result = DB.DeleteRecord(
                         Conn,
                         "milestone_team_map",
                         milestone_id=mid[0])
@@ -10487,7 +10501,7 @@ def MileStoneOperation(request):
                         result = DB.InsertNewRecordInToTable(
                             Conn,
                             "milestone_team_map",
-                            **team_Dict)
+                            **team_Dict)"""
                     confirm_message = "MileStone is modified"
                 else:
                     confirm_message = "No milestone is found"
@@ -10526,7 +10540,14 @@ def MileStoneOperation(request):
                         'modified_by': created_by,
                         'modified_date': now}
                     print DB.InsertNewRecordInToTable(Conn, "milestone_info", **mDict)
-                    for each in team_id:
+                    tDict = {
+                             'project_id':project_id,
+                             'team_id':team_id,
+                             'parameters':int(mid[0]),
+                             'type':'Milestone'
+                             }
+                    tRes = DB.InsertNewRecordInToTable(Conn,"team_wise_settings",**tDict)
+                    """for each in team_id:
                         team_Dict = {
                             'milestone_id': mid[0],
                             'team_id': each.strip(),
@@ -10534,7 +10555,7 @@ def MileStoneOperation(request):
                         result = DB.InsertNewRecordInToTable(
                             Conn,
                             "milestone_team_map",
-                            **team_Dict)
+                            **team_Dict)"""
                     confirm_message = "MileStone is created Successfully"
                 else:
                     error_message = "MileStone name exists. Can't create a new one"
@@ -10554,6 +10575,13 @@ def MileStoneOperation(request):
                         "'")
                     mDict = {'id': mid[0], 'name': new_name}
                     print DB.DeleteRecord(Conn, "milestone_info", **mDict)
+                    tDict = {
+                             'project_id':project_id,
+                             'team_id':team_id,
+                             'parameters':int(mid[0]),
+                             'type':'Milestone'
+                             }
+                    tRes = DB.DeleteRecord(Conn,"team_wise_settings",**tDict)
                     confirm_message = "MileStone is deleted Successfully"
                 else:
                     error_message = "MileStone Not Found"

@@ -3,12 +3,15 @@
  */
 $(document).ready(function(){
 
+    var project_id= $.session.get('project_id');
+    var team_id= $.session.get('default_team_identity');
+
     $("#simple-menu").sidr({
         name: 'sidr',
         side: 'left'
     });
 
-    $.get("GetMileStones",{term : ''},function(data)
+    $.get("GetMileStones",{project_id : project_id, team_id:team_id},function(data)
     {
         if(data['TableData'].length>0) {
             //make a table column
