@@ -20,12 +20,12 @@ if os.name == 'nt':
     from System.Threading import Thread
     from System.Windows.Forms import SendKeys
     from System.Windows.Automation import *
-    import Program as AutoUtil
+    from PCDesktop import Program as AutoUtil
     import WinCommonFoldersPaths as WinCom
 
 if os.name == 'posix':
     import MacCommonFoldersPaths as ComPath
-    import Program_Mac as PIM
+    from MacDesktop import Program_Mac as PIM
 
 def open_browser(dependency,step_data):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
