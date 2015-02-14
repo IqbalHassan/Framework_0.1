@@ -16654,6 +16654,37 @@ def specific_dependency_settings(request):
                         if index<(len(dependency)-1):
                             wherequery += ','
                     print wherequery
+                    Section_Tag = 'Section'
+                    Feature_Tag = 'Feature'
+                    Custom_Tag = 'CustomTag'
+                    Section_Path_Tag = 'section_id'
+                    Feature_Path_Tag = 'feature_id'
+                    Priority_Tag = 'Priority'
+                    set_type = 'set'
+                    tag_type = 'tag'
+                    Status = 'Status'
+                    dependency_query=wherequery
+                    wherequery += (",'" +
+                                   Section_Tag +
+                                   "','" +
+                                   Feature_Tag +
+                                   "','" +
+                                   Custom_Tag +
+                                   "','" +
+                                   Section_Path_Tag +
+                                   "','" +
+                                   Feature_Path_Tag +
+                                   "','" +
+                                   Priority_Tag +
+                                   "','" +
+                                   Status +
+                                   "','" +
+                                   set_type +
+                                   "','" +
+                                   tag_type +
+                                   "'")
+                    print wherequery
+                    
                     TestIDList = []
                     for eachitem in QueryText:
                         Conn = GetConnection()
@@ -16702,7 +16733,7 @@ def specific_dependency_settings(request):
                         final_data.append("'" + each + "'")
                     test_case_ids = "(" + ",".join(final_data) + ")"
                     test_case_query = "select property,array_agg(distinct name) from test_case_tag tct, dependency d where d.dependency_name=tct.property and tc_id in " + \
-                        test_case_ids + " and property in ("+wherequery+") group by property"
+                        test_case_ids + " and property in ("+dependency_query+") group by property"
                     Conn = GetConnection()
                     final_list = DB.GetData(Conn, test_case_query, False)
                     Conn.close()
