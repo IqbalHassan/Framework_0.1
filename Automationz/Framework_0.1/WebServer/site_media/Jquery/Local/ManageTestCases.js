@@ -244,7 +244,7 @@ var do_on_load = function do_on_load () {
 	
 	function loadTable(query_string,test_case_per_page,test_case_page_current) {
         var other_string=query_string;
-		$.get("TableDataTestCasesOtherPages", {'Query': other_string,
+		$.get("ViewAndOrganizeTestCases", {'Query': other_string,
             'test_status_request': true,
             "project_id": $.session.get('project_id'),
             "team_id": $.session.get('default_team_identity'),

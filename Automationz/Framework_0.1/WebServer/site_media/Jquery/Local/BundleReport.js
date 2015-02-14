@@ -288,7 +288,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                                     $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id,project_id:project_id,team_id:team_id},function(data){
                                         //ResultTable(tc_table,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id);
                                         //$("#tc_table tbody").addClass("paginate");
-                                        tctable('#tc_table',data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id);
+                                        tctable('#tc_table',data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id, "Click Run-IDs to go to run details page");
                                         makeRunClickable();
                                         pagination();
                                     });
