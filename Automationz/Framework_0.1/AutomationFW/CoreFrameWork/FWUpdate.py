@@ -1,17 +1,17 @@
 '''
 
 '''
+import sys
+sys.path.append("..")
+
 import os
 import ConfigParser
 import inspect
 import time
 import stat
-import Global
-import CommonUtil
 import FileUtilities as FileUtil
-import sys
-sys.path.append("..")
-
+import CommonUtil
+import Global
 
 class AutoUpdate():
 

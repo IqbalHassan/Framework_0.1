@@ -11,10 +11,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
-from CoreFrameWork import CommonUtil
+
 #Ver1.0
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from CoreFrameWork import MainDriver
+from CoreFrameWork import CommonUtil
 
 def BrowserSelection(browser):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -59,20 +61,20 @@ def OpenLink(link, page_title):
         WebDriverWait(sBrowser, 30)
         CommonUtil.ExecLog(sModuleInfo, "Successfully opened your link: %s" % link, 1)
         print "Successfully opened your link: " + link
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         assert page_title in sBrowser.title
         return "PASSED"
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Failed to open your link: %s" % link, 3)
         print "Failed to open your link: %s" % link
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         return "Failed"
 
 def Login(user_name,password):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         elem = sBrowser.find_element_by_link_text("Log in")
         elem.send_keys(Keys.RETURN)
         sBrowser.implicitly_wait(20)
@@ -82,7 +84,7 @@ def Login(user_name,password):
         elem.send_keys(password)
         elem = sBrowser.find_element_by_id("loginbtn")
         elem.send_keys(Keys.RETURN)
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Successfully logged in", 1)
         print "Successfully logged in"
         return "PASSED"
@@ -95,7 +97,7 @@ def Login(user_name,password):
 def Expand_Menu_By_Name_OR_ID(name_or_id_or_id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         #Find all elements containing the name
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%name_or_id_or_id, 1)
         print "Trying to find element by name: %s"%name_or_id_or_id
@@ -136,7 +138,7 @@ def Expand_Menu_By_Name_OR_ID(name_or_id_or_id):
         #Verify if it was expanded 
         expand_status = grand_parent.get_attribute("aria-expanded")
         if (expand_status== "true") or (expand_status == True):
-            #CommonUtil.TakeScreenShot("sModuleInfo")
+            CommonUtil.TakeScreenShot("sModuleInfo")
             CommonUtil.ExecLog(sModuleInfo, "Successfully to expand menu: %s"%name_or_id_or_id, 1)
             print "Successfully expanded your menu: %s"%name_or_id_or_id
             return "PASSED"
@@ -153,7 +155,7 @@ def Expand_Menu_By_Name_OR_ID(name_or_id_or_id):
 def Click_Element_By_Name_OR_ID(name_or_id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         #Find all elements containing the name
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%name_or_id, 1)
         print "Trying to find element by name: %s"%name_or_id
@@ -181,7 +183,7 @@ def Click_Element_By_Name_OR_ID(name_or_id):
         Element.click()
         time.sleep(5)
         print "Successfully clicked your element by name or ID: %s"%name_or_id
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your element: %s"%name_or_id, 1)
         return "PASSED"
 
@@ -194,7 +196,7 @@ def Click_Element_By_Name_OR_ID(name_or_id):
 def Set_Text_Field_Value_By_ID(id,value):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by id: %s"%id, 1)
         print "Trying to find element by id: %s"%id
         try:
@@ -211,7 +213,7 @@ def Set_Text_Field_Value_By_ID(id,value):
         Element.click()
         time.sleep(5)
         print "Successfully set the value of to text with ID: %s"%id
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Successfully set the value of to text with ID: %s"%id, 1)
         return "PASSED"
 
@@ -224,7 +226,7 @@ def Set_Text_Field_Value_By_ID(id,value):
 def Verify_Text_Message_By_Class(element, expected_text):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Entering completion time in minutes", 1)
         print "Getting text string from the web"
         Elem = sBrowser.find_element_by_class_name("message")
@@ -253,14 +255,14 @@ def Verify_Text_Message_By_Class(element, expected_text):
 def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_time_id, daily_time_value,submit_id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Entering completion time in minutes", 1)
         print "Entering completion time in minutes"
         result = Set_Text_Field_Value_By_ID(completion_time_id,completion_time_value)
         if result == "Failed":
             print "Failed to entered the completion time value"
             CommonUtil.ExecLog(sModuleInfo, "Failed to entered the completion time value", 3)
-            #CommonUtil.TakeScreenShot("sModuleInfo")
+            CommonUtil.TakeScreenShot("sModuleInfo")
             return "Failed"
         else: 
             print "Successfully entered the completion time value"
@@ -268,12 +270,12 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
 
         #----------------
         print "Entering daily time limit"
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         result = Set_Text_Field_Value_By_ID(daily_time_id,daily_time_value)
         if result == "Failed":
             print "Failed to entered the daily time limit"
             CommonUtil.ExecLog(sModuleInfo, "Failed to entered the daily time limit", 3)
-            #CommonUtil.TakeScreenShot("sModuleInfo") 
+            CommonUtil.TakeScreenShot("sModuleInfo") 
             return "Failed"
         else: 
             print "Successfully entered the daily time limit"
@@ -293,7 +295,7 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
         else: 
             print "Successfully clicked Save Config button"
             CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
-        #CommonUtil.TakeScreenShot("sModuleInfo") 
+        CommonUtil.TakeScreenShot("sModuleInfo") 
         return "PASSED"      
     except Exception, e:
         print "Exception : ", e
@@ -305,7 +307,7 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
 def Tear_Down():
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        #CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.TakeScreenShot("sModuleInfo")
         sBrowser.close()
         print "Successfully closed your browser"
         CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)

@@ -1,5 +1,7 @@
 # -*- coding: cp1252 -*-
-import os, sys
+import os
+import sys
+sys.path.append("..")
 #adding driver folder to sys.path
 current_file_path=os.path.dirname(os.getcwd())#getting parent folder
 driver_folder=os.path.join(current_file_path,'Drivers')
@@ -11,12 +13,11 @@ import threading, Queue
 import inspect
 import DataBaseUtilities as DBUtil
 import FileUtilities as FL
-import Global
 import CommonUtil
 import Drivers
 import importlib
-import sys
-sys.path.append("..")
+import Global
+
 
 #import FSDriver
 from CoreFrameWork import Performance

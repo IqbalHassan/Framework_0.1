@@ -5600,6 +5600,7 @@ def New_Execution_Report(request):
         version = request.GET.get(u'branch_version', '').strip()
         run_type = request.GET.get(u'run_type', '').strip()
         milestone = request.GET.get(u'milestone', '').strip()
+        objective = request.GET.get(u'objective','').strip()
         dependency = request.GET.get(u'dependency', '').split('#')
         new_dependency = []
         for each in dependency:
@@ -5620,6 +5621,9 @@ def New_Execution_Report(request):
 
         if milestone != '':
             xtra_qry += " and tre.test_milestone ~ '" + milestone + "' "
+            
+        if objective != '':
+            xtra_qry += " and tre.test_objective = '" + objective + "' "
         
         for index,each in enumerate(new_dependency):
             if index == 0:
@@ -10250,9 +10254,23 @@ def Get_MileStone_Names(request):
     if request.is_ajax():
         if request.method == 'GET':
             Conn = GetConnection()
-            milestone = request.GET.get(u'term', '')
+            project = request.GET.get(u'project_id', '')
+            team = request.GET.get(u'team_id','')
             # print milestone
-            query = "select name from milestone_info"
+            query = "select mi.name from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.project_id='"+project+"' and tws.team_id="+team+" and tws.type='Milestone'"
+            results = DB.GetData(Conn, query, False)
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+
+def get_run_objectives(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            project = request.GET.get(u'project_id', '')
+            team = request.GET.get(u'team_id','')
+            
+            query = "select distinct test_objective from test_run_env tre, machine_project_map mpm where tre.id = mpm.machine_serial and mpm.project_id='"+project+"' and mpm.team_id="+team+" "
             results = DB.GetData(Conn, query, False)
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')

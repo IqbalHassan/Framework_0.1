@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
+import sys
+sys.path.append("..")
+
 import time, datetime, inspect
 from dateutil.relativedelta import relativedelta
 import os, signal, stat
 import subprocess, psutil
 import string
 import DataBaseUtilities as DB
-import Global
 import logging
 import FileUtilities as FileUtil
 import re
 import math
-import sys
+
 import ConfigParser
-sys.path.append("..")
 
 if os.name == 'nt':
     from PCDesktop import WinCommonFoldersPaths as ComPath

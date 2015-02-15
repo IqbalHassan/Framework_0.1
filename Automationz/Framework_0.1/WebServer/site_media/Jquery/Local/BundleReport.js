@@ -76,7 +76,7 @@ function ManageDependency(project_id,team_id){
     $.get('GetOS',{
         project_id:project_id,
         team_id:team_id
-    },function(data){
+    },function(data){ 
         dependency_list=data['dependency_list'];
         global_version_list=data['version_list'];
         populate_manual_div(dependency_list,global_version_list,project_id,team_id);
@@ -146,14 +146,16 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     message+='<tr><td align="right"><b class="Text">Milestone:</b></td>';
     message+='<td align="left"><select class="milestone"><option value="">All</option></select></td>'
     message+='</tr>';
+    message+='<tr><td align="right"><b class="Text">Run Objective:</b></td>';
+    message+='<td align="left"><select class="objective"><option value="">All</option></select></td>'
+    message+='</tr>';
     //message+='<tr><td align="right">&nbsp;</td><td align="left"><input value="create" type="button" class="button primary" id="create_manual_machine"/></td></tr>';
     $.ajax({
         url:'Get_MileStone_Names/',
         dataType : "json",
         data : {
-            term : '',
-            //project_id: $.session.get('project_id'),
-            //eam_id: $.session.get('default_team_identity')
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
         },
         success: function( json ) {
             /*if(json.length > 0)
@@ -162,6 +164,23 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             $.each(json, function(i, value) {
                 //if(i == 0)return;
                 $(".milestone").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+    $.ajax({
+        url:'get_run_objectives/',
+        dataType : "json",
+        data : {
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+        },
+        success: function( json ) {
+            /*if(json.length > 0)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')*/
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".objective").append($('<option>').text(value).attr('value', value));
             });
         }
     });
@@ -227,6 +246,7 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
         var branch_version=$('#branch_version').val();
         var run_type=$("#run_type").val();
         var milestone=$('.milestone').val();
+        var objective=$('.objective').val();
 
         $.get("New_Execution_Report",
         {
@@ -236,7 +256,8 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             'branch_name':branch_name,
             'branch_version':branch_version,
             'run_type':run_type,
-            'milestone':milestone
+            'milestone':milestone,
+            'objective':objective
          },function(data)
             {
                 ResultTable(BundleReportTable,data['Heading'], data['Table'],"Execution Report", "Click on numbers to see the test cases");
