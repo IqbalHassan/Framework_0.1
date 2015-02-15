@@ -7,6 +7,7 @@ import Global
 import time
 import MainDriver
 import sys
+from CoreFrameWork import FileUtilities
 sys.path.append("..")
 
 def RunProcess(sTesterid):
@@ -19,6 +20,11 @@ def RunProcess(sTesterid):
                 continue
             if status[0] != "Unassigned":
                 if status[0] == "Submitted":
+                    #first Create a temp folder in the samefolder
+                    current_path=os.getcwd()+os.sep+'TempRun'
+                    retVal=FileUtilities.CreateFolder(current_path)
+                    if retVal:
+                        Global.RunIdTempPath=current_path
                     value=MainDriver.main()
                     print "updating db with parameter"
                     if value=="pass":
