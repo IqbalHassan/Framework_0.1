@@ -1,4 +1,6 @@
 
+import sys
+sys.path.append("..")
 from Web import SeleniumScript
 
 

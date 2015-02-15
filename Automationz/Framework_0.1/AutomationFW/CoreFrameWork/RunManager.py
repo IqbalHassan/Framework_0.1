@@ -1,13 +1,14 @@
+import sys
+sys.path.append("..")
+
 import DataBaseUtilities as DB
 from dependencyCollector import dependency,product_version
 from login_info import username,password,project,team,server,port,database_name,superuser,super_password
 import CommonUtil
 import os
-import Global
 import time
 import MainDriver
-import sys
-sys.path.append("..")
+import Global
 
 def RunProcess(sTesterid):
     while (1):

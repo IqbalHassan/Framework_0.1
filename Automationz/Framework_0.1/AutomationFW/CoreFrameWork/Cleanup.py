@@ -1,12 +1,13 @@
 
+import sys
+sys.path.append("..")
+
 import os, subprocess
 import time
 import inspect
 import stat
 import CommonUtil
 import FileUtilities as FileUtil
-import sys
-sys.path.append("..")
 
 if os.name == 'nt':
     from PCDesktop import WinCommonFoldersPaths as ComPath

@@ -50,8 +50,8 @@ elif Environment == "Production":
         #Email List for Daily Build
         dl_list = "test@test.com"
 
-        NetworkFolder = "\\\\AutomationNetworkFolderPath"
-        NetworkLogFolder = "\\\\AutomationLogNetworkPath"
+        NetworkFolder = WinCommonFoldersPaths.Get_My_Documents_Path()
+        NetworkLogFolder = WinCommonFoldersPaths.Get_My_Documents_Path()
     elif os.name == 'posix':
         #Email List for Daily Build
         dl_list = "test@test.com"
