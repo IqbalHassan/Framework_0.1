@@ -310,27 +310,4 @@ def Tear_Down():
         print "No open browser to close"
         return "Failed"
 
-def Repurchase_the_course_when_the_final_exam_is_failed_for_third_time():
-    #make your test cases by re-using same steps
-    print BrowserSelection('Firefox')
-    print OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
-    print Login('admin','R@1ndrops')
-    print Click_Element_By_Name_OR_ID('Turn editing on')
-    print Expand_Menu_By_Name_OR_ID('Site administration')
-    print Expand_Menu_By_Name_OR_ID('Plugins')
-    print Expand_Menu_By_Name_OR_ID('Local plugins')
-    print Expand_Menu_By_Name_OR_ID('ClickSafety')
-    print Click_Element_By_Name_OR_ID('Course settings')
-    print Click_Element_By_Name_OR_ID('Edit')
-    print Course_Settings_Time_Limit('id_minlimit', '600','id_dailylimit', '500','id_submitbutton')
-    print Verify_Text_Message_By_Class('message', 'Updated successfully')
-    print Tear_Down()
-
-
-def Test_Suite():
-    #add additional test cases
-    Repurchase_the_course_when_the_final_exam_is_failed_for_third_time()
-
-Test_Suite()
-
 

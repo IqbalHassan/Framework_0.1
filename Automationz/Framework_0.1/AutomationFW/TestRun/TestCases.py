@@ -1,6 +1,5 @@
 import sys
 sys.path.append("..")
-#from myapp import SomeObject
 
 
 from Web import SeleniumScript
@@ -28,4 +27,4 @@ def Test_Suite():
     #add additional test cases
     Repurchase_the_course_when_the_final_exam_is_failed_for_third_time()
 
-Test_Suite()
+#Test_Suite()
