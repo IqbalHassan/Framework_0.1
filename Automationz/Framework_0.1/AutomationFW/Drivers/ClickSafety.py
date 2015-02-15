@@ -64,11 +64,12 @@ def click_element_by_name_or_id(dependency,step_data):
 def course_settings_time_limit(dependency,step_data):
     try:        
         first_data_set=step_data[0]
+        print first_data_set
         id_minlimit=first_data_set[0][0]
-        minlimit_value =first_data_set[0][2]
+        minlimit_value =first_data_set[0][1]
         id_dailylimit=first_data_set[1][0]
-        dailylimit_value =first_data_set[1][2]
-        id_submitbutton =first_data_set[2][2]  
+        dailylimit_value =first_data_set[1][1]
+        id_submitbutton =first_data_set[2][1]  
         sTestStepReturnStatus = SeleniumScript.Course_Settings_Time_Limit(id_minlimit,minlimit_value,id_dailylimit,dailylimit_value,id_submitbutton)
         print (id_minlimit,minlimit_value,id_dailylimit,dailylimit_value,id_submitbutton)
         print sTestStepReturnStatus
@@ -81,7 +82,7 @@ def verify_text_message_by_class(dependency,step_data):
     try:        
         first_data_set=step_data[0]
         message=first_data_set[0][0]
-        expected_text =first_data_set[0][2]
+        expected_text =first_data_set[0][1]
         sTestStepReturnStatus = SeleniumScript.Verify_Text_Message_By_Class(message,expected_text)
         print (message,expected_text)
         print sTestStepReturnStatus
