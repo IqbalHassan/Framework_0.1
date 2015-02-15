@@ -11,6 +11,7 @@ import FileUtilities as FileUtil
 import re
 import math
 import sys
+import ConfigParser
 sys.path.append("..")
 
 if os.name == 'nt':
@@ -47,19 +48,28 @@ def ExecLog(sModuleInfo, sDetails, iLogLevel=1, sStatus="",):
     2 - warning
     3 - error
     """
+    if Global.sTestStepExecLogId=='':
+        #global_config.ini file get is dynamically
+        file_path=os.getcwd()+os.sep+'global_config.ini'
+        config=ConfigParser.ConfigParser()
+        config.read(file_path)
+        log_id=config.get('sectionOne','sTestStepExecLogId')
+    else:
+        log_id=Global.sTestStepExecLogId
+        
     conn = DB.ConnectToDataBase()
     sDetails = to_unicode(sDetails)
     if iLogLevel == 1:
         logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Passed", loglevel=iLogLevel)
+        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=log_id, modulename=sModuleInfo, details=sDetails, status="Passed", loglevel=iLogLevel)
 
     elif iLogLevel == 2:
         logger.warning(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Warning", loglevel=iLogLevel)
+        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=log_id, modulename=sModuleInfo, details=sDetails, status="Warning", loglevel=iLogLevel)
 
     elif iLogLevel == 3:
         logger.error(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=Global.sTestStepExecLogId, modulename=sModuleInfo, details=sDetails, status="Error", loglevel=iLogLevel)
+        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=log_id, modulename=sModuleInfo, details=sDetails, status="Error", loglevel=iLogLevel)
 
     elif iLogLevel == 4:
         logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)

@@ -5,6 +5,7 @@ current_file_path=os.path.dirname(os.getcwd())#getting parent folder
 driver_folder=os.path.join(current_file_path,'Drivers')
 if driver_folder not in sys.path:
     sys.path.append(driver_folder)
+import ConfigParser
 import time, datetime
 import threading, Queue
 import inspect
@@ -304,7 +305,7 @@ def main():
             #Create sub folders needed
             FL.CreateFolder(Global.TCLogFolder + os.sep + "ProductLog")
             FL.CreateFolder(Global.TCLogFolder + os.sep + "Screenshots")
-
+            
 
             #test Case start time
             conn=DBUtil.ConnectToDataBase()
@@ -374,6 +375,15 @@ def main():
 
                     #Test Step Log id
                     Global.sTestStepExecLogId = sTestResultsRunId + TCID + str(TestStepsList[StepSeq - 1][0]) + str(StepSeq)
+                    
+                    #open a file handler and write it to it
+                    file_name=os.getcwd()+os.sep+'global_config.ini'
+                    open_file=open(file_name,'w')
+                    config=ConfigParser.SafeConfigParser()
+                    config.add_section('sectionOne')
+                    config.set('sectionOne', 'sTestStepExecLogId',Global.sTestStepExecLogId)
+                    config.write(open_file)
+                    open_file.close()
                     # Test Step start time
                     conn=DBUtil.ConnectToDataBase()
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
