@@ -91,3 +91,5 @@ TCLogFolder = ""
 
 #BuildFolders for Install
 BuildPath = "C:\\Test"
+
+RunIdTempPath=''

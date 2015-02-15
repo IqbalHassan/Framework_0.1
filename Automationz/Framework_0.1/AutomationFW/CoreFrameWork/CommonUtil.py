@@ -12,7 +12,7 @@ import logging
 import FileUtilities as FileUtil
 import re
 import math
-
+import Global
 import ConfigParser
 
 if os.name == 'nt':

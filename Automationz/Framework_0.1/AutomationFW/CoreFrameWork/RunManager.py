@@ -8,7 +8,7 @@ import CommonUtil
 import os
 import time
 import MainDriver
-sys.path.append("..")
+import Global
 from CoreFrameWork import FileUtilities
 def RunProcess(sTesterid):
     while (1):
