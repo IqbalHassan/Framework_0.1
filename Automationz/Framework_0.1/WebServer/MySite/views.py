@@ -4059,7 +4059,8 @@ def Selected_TestCaseID_Analaysis(request):
             project_id = request.GET.get(u'project_id','')
             team_id = request.GET.get(u'team_id','')
 
-    query = "select run_id,tc.tc_name,status,failreason,logid from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc" % UserData
+    #query = "select run_id,tc.tc_name,status,failreason,logid from test_case_results tcr,test_cases tc where tc.tc_id='%s' and tcr.tc_id = tc.tc_id order by tcr.teststarttime desc" % UserData
+    query = "select tcr.run_id,tc.tc_name,tcr.status,tcr.failreason,tcr.logid from test_case_results tcr,test_cases tc, test_run_env tre, machine_project_map mpm where tc.tc_id='"+UserData+"' and tcr.tc_id = tc.tc_id and tcr.run_id=tre.run_id and tre.id=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" order by tcr.id desc"
     TestCase_Analysis_Result = DB.GetData(Conn, query, False)
     Col = [
         "Run ID",
