@@ -22,6 +22,7 @@ if os.name == 'nt':
     import win32api
     import win32file
     from PIL import ImageGrab
+    from PIL import Image
 elif os.name == 'posix':
     from MacDesktop import MacCommonFoldersPaths as ComPath
     import plistlib
@@ -890,6 +891,7 @@ def TakeScreenShot(ImageName):
         if os.name == 'posix':
             ImageFolder = FileUtil.ConvertWinPathToMac(ImageFolder)
             path = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".png"
+
             newpath = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".jpg"
             path = path.replace(" ", "_")
             newpath = newpath.replace(" ", "_")
@@ -900,6 +902,10 @@ def TakeScreenShot(ImageName):
         elif os.name == 'nt':
             path = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".jpg"
             img = ImageGrab.grab()
+            basewidth = 1200
+            wpercent = (basewidth/float(img.size[0]))
+            hsize = int((float(img.size[1])*float(wpercent)))
+            img = img.resize((basewidth,hsize), Image.ANTIALIAS)
             img.save(path, 'JPEG')
     except Exception, e:
         print "Exception : ", e
