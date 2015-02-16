@@ -5732,17 +5732,15 @@ def New_Execution_Report(request):
             temp = []
             temp.append(s)
             section_cases.append(s)
+            
             #latest_cases = DB.GetData(Conn, "select tcr.tc_id,tcr.status,tcr.teststarttime from test_case_results tcr,test_run_env tre where tcr.run_id=tre.run_id order by tcr.teststarttime desc", False)
-            latest_cases = DB.GetData(
-                Conn,
-                "select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" +
-                project_id +
-                "' and mpm.team_id=" +
-                team_id +
-                " " +
-                xtra_qry +
-                " order by tcr.teststarttime desc",
-                False)
+            
+            """latestq = "(select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" + project_id + "' and mpm.team_id=" + team_id + " " + xtra_qry + " and tcr.status not in ('Submitted', 'In-Progress') order by tcr.teststarttime desc, tre.run_id asc)"
+            latestq += " union all "
+            latestq += "(select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" + project_id + "' and mpm.team_id=" + team_id + " " + xtra_qry + " and tcr.status in ('Submitted', 'In-Progress') order by tcr.teststarttime desc)"
+            """
+            latestq = "select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" + project_id + "' and mpm.team_id=" + team_id + " " + xtra_qry + " and tre.status not in ('Cancelled') order by tcr.teststarttime desc"
+            latest_cases = DB.GetData(Conn, latestq, False)
             # selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
             passed_cases = DB.GetData(
                 Conn,
