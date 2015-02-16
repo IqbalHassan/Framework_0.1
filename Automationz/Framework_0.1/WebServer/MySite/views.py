@@ -1210,17 +1210,22 @@ def AutoCompleteObjectiveSearch(request):
             team_id=request.GET.get(u'team_id','')
             query="select distinct test_objective from test_run_env tre, machine_project_map mpm where tre.id = mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" and tre.test_objective ilike '%%%s%%'"%(value)
             Conn=GetConnection()
-            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='test_objective')
             Conn.close()
-            for each_user in data['rows']:
+            for test in data['rows']:
                 result_dict = {}
-                result_dict['id']=each_user[0]
-                result_dict['text'] = '%s - %s' % (each_user[1], each_user[2])
+                # AAA-000
+                result_dict['id'] = test[0]
+                # In the UI, it should be displayed as, AAA-000: Test For 'X'
+                #result_dict['text'] = '%s: %s' % (result_dict['id'], test_step[1])
                 results.append(result_dict)
-            has_next_page = data['has_next']
-            #json = simplejson.dumps(results)
-            json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+
+        has_next_page = data['has_next']
+
+    json = simplejson.dumps({'items': results, 'more': has_next_page})
+    
+    #json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
 
 
 
@@ -10299,7 +10304,7 @@ def get_run_objectives(request):
             project = request.GET.get(u'project_id', '')
             team = request.GET.get(u'team_id','')
             
-            query = "select distinct test_objective from test_run_env tre, machine_project_map mpm where tre.id = mpm.machine_serial and mpm.project_id='"+project+"' and mpm.team_id="+team+" "
+            query = "select distinct test_objective from test_run_env tre, machine_project_map mpm where tre.id = mpm.machine_serial and mpm.project_id='"+project+"' and mpm.team_id="+team+" order by tre.test_objective"
             results = DB.GetData(Conn, query, False)
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
