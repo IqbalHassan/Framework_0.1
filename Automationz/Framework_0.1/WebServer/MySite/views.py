@@ -5643,7 +5643,7 @@ def New_Execution_Report(request):
             new_dependency.append(each.split('|'))
             # print each
 
-        depen = len(new_dependency)
+        #depen = len(new_dependency)
         
         xtra_qry = " "
         if branch != '' and version == '':
@@ -5679,6 +5679,11 @@ def New_Execution_Report(request):
                             xtra_qry += " and version='" + each[3] + "' "
                     xtra_qry += " ) "
                     
+        
+        sec_xtra = " "
+        for each in new_dependency:
+            if each[1] != '' and each[0] != '':
+                sec_xtra += " and tc_id in (select tc_id from test_case_tag where property='"+each[0]+"' and name='"+each[1]+"')"
         
         """
     
@@ -5993,7 +5998,7 @@ def New_Execution_Report(request):
                 project_id +
                 "' and property = 'Project' and tc_id in (select distinct tc_id from test_case_tag where name = '" +
                 team_id +
-                "' and property = 'Team'))",
+                "' and property = 'Team')) "+sec_xtra+" ",
                 False)
             all_count = 0
             for a in env_cases:
@@ -6021,7 +6026,7 @@ def New_Execution_Report(request):
                 project_id +
                 "' and property = 'Project' and tc_id in (select distinct tc_id from test_case_tag where name = '" +
                 team_id +
-                "' and property = 'Team')) and tc_id not in (select distinct tcr.tc_id from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" +
+                "' and property = 'Team')) "+sec_xtra+" and tc_id not in (select distinct tcr.tc_id from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" +
                 project_id +
                 "' and mpm.team_id=" +
                 team_id +
