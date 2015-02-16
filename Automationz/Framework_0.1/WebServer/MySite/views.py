@@ -1168,6 +1168,7 @@ def AutoCompleteEmailSearch(request):
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
             return HttpResponse(json, mimetype='application/json')
+        
 def AutoCompleteMilestoneSearch(request):
     # if request.is_ajax():
     if request.method == "GET":
@@ -1180,7 +1181,7 @@ def AutoCompleteMilestoneSearch(request):
             value = request.GET.get(u'term', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            query="select distinct id,name,status from milestone_info where name ilike '%%%s%%'"%(value)
+            query="select distinct id,name,status from milestone_info mi, team_wise_settings tws where tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and tws.parameters=mi.id and tws.type='Milestone' and name ilike '%%%s%%'"%(value)
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
             Conn.close()
@@ -1193,6 +1194,35 @@ def AutoCompleteMilestoneSearch(request):
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
             return HttpResponse(json, mimetype='application/json')
+
+
+def AutoCompleteObjectiveSearch(request):
+    # if request.is_ajax():
+    if request.method == "GET":
+        if request.is_ajax():
+            results = []
+            items_per_page = 10
+            has_next_page = False
+            Conn = GetConnection()
+            requested_page = int(request.GET.get(u'page', ''))
+            value = request.GET.get(u'term', '')
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            query="select distinct test_objective from test_run_env tre, machine_project_map mpm where tre.id = mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" and tre.test_objective ilike '%%%s%%'"%(value)
+            Conn=GetConnection()
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
+            Conn.close()
+            for each_user in data['rows']:
+                result_dict = {}
+                result_dict['id']=each_user[0]
+                result_dict['text'] = '%s - %s' % (each_user[1], each_user[2])
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            #json = simplejson.dumps(results)
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
+            return HttpResponse(json, mimetype='application/json')
+
+
 
 def AutoCompleteTag(request):
     if request.is_ajax():
