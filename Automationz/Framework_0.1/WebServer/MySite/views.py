@@ -4082,7 +4082,7 @@ def SearchTestCase(request):
             term +
             "%' or tc.tc_name Ilike '%" +
             term +
-            "%') group by tc.tc_id having count(case when name='"+project_id+"' and property='Project' then 1 end)>0  and count(case when property='Team' and name='"+team_id+"' then 1 end)>0",
+            "%') and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+") group by tc.tc_id having count(case when name='"+project_id+"' and property='Project' then 1 end)>0  and count(case when property='Team' and name='"+team_id+"' then 1 end)>0",
             False)
 
     json = simplejson.dumps(results)
