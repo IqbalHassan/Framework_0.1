@@ -5789,7 +5789,7 @@ def New_Execution_Report(request):
             # selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
             passed_cases = DB.GetData(
                 Conn,
-                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" +
+                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm, team_wise_settings tws where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and tws.parameters=ps.section_id and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and tws.type='Section' and ps.section_path ~ '" +
                 s[0] +
                 "' and tcr.status = 'Passed' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" +
                 project_id +
@@ -5823,7 +5823,7 @@ def New_Execution_Report(request):
 
             failed_cases = DB.GetData(
                 Conn,
-                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" +
+                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm, team_wise_settings tws where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and tws.parameters=ps.section_id and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and tws.type='Section' and ps.section_path ~ '" +
                 s[0] +
                 "' and tcr.status = 'Failed' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" +
                 project_id +
@@ -5856,7 +5856,7 @@ def New_Execution_Report(request):
 
             blocked_cases = DB.GetData(
                 Conn,
-                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" +
+                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm , team_wise_settings tws where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and tws.parameters=ps.section_id and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and tws.type='Section' and ps.section_path ~ '" +
                 s[0] +
                 "' and tcr.status = 'Blocked' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" +
                 project_id +
@@ -5889,7 +5889,7 @@ def New_Execution_Report(request):
 
             submitted_cases = DB.GetData(
                 Conn,
-                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" +
+                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm, team_wise_settings tws where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and tws.parameters=ps.section_id and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and tws.type='Section' and ps.section_path ~ '" +
                 s[0] +
                 "' and tcr.status = 'Submitted' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" +
                 project_id +
@@ -5922,7 +5922,7 @@ def New_Execution_Report(request):
 
             inprogress_cases = DB.GetData(
                 Conn,
-                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" +
+                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm, team_wise_settings tws where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and tws.parameters=ps.section_id and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and tws.type='Section' and ps.section_path ~ '" +
                 s[0] +
                 "' and tcr.status = 'In-Progress' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" +
                 project_id +
@@ -5955,7 +5955,7 @@ def New_Execution_Report(request):
 
             skipped_cases = DB.GetData(
                 Conn,
-                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path ~ '" +
+                "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, result_test_case_tag tct, product_sections ps, machine_dependency_settings mds, machine_project_map mpm, team_wise_settings tws where tcr.run_id = tre.run_id and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and tws.parameters=ps.section_id and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and tws.type='Section' and ps.section_path ~ '" +
                 s[0] +
                 "' and tcr.status = 'Skipped' and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" +
                 project_id +
@@ -5996,7 +5996,7 @@ def New_Execution_Report(request):
                 False)
             sect_cases = DB.GetData(
                 Conn,
-                "select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" +
+                "select distinct tc_id from test_case_tag rtct, product_sections ps, team_wise_settings tws where rtct.property='section_id' and rtct.name::int = ps.section_id and tws.parameters=ps.section_id and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and tws.type='Section' and ps.section_path ~ '" +
                 s[0] +
                 "' and rtct.tc_id in (select distinct tc_id from test_case_tag where name = '" +
                 project_id +
@@ -6024,7 +6024,7 @@ def New_Execution_Report(request):
             #cases=DB.GetData(Conn,"select distinct tc_id from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" + s[0] + "' and rtct.tc_id in (select distinct tc_id from test_case_tag where name = '"+project_id+"' and property = 'Project' and tc_id in (select distinct tc_id from test_case_tag where name = '"+team_id+"' and property = 'Team')) and tc_id not in (select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='"+project_id+"' and mpm.team_id="+team_id+" "+xtra_qry+" order by tcr.teststarttime desc)",False)
             cases = DB.GetData(
                 Conn,
-                "select distinct tc_id,'N/A','N/A' from test_case_tag rtct, product_sections ps where rtct.property='section_id' and rtct.name::int = ps.section_id and ps.section_path ~ '" +
+                "select distinct tc_id,'N/A','N/A' from test_case_tag rtct, product_sections ps, team_wise_settings tws where rtct.property='section_id' and rtct.name::int = ps.section_id and tws.parameters=ps.section_id and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and tws.type='Section' and ps.section_path ~ '" +
                 s[0] +
                 "' and rtct.tc_id in (select distinct tc_id from test_case_tag where name = '" +
                 project_id +
