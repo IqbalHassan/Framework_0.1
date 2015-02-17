@@ -1645,7 +1645,8 @@ function AutoCompleteTestStep(){
                 $.ajax({
                     url:"AutoCompleteTestStepSearch/",
                     dataType:"json",
-                    data:{term:request.term},
+                    data:{term:request.term,project_id: $.session.get('project_id'),
+                    team_id: $.session.get('default_team_identity')},
                     success:function(data){
                         /*var auto_list=[];
                          for(var i=0;i<data.length;i++){

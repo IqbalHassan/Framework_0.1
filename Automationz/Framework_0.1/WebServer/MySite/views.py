@@ -1347,10 +1347,12 @@ def AutoCompleteTestStepSearch(request):
     # if request.is_ajax():
     if request.method == "GET":
         value = request.GET.get(u'term', '')
+        project_id = request.GET.get(u'project_id','')
+        team_id = request.GET.get(u'team_id','')
 
         results = DB.GetData(
             Conn,
-            "select stepname,data_required,steptype,description,step_editable,case_desc,expected,verify_point,estd_time from test_steps_list where stepname Ilike '%" +
+            "select stepname,data_required,steptype,description,step_editable,case_desc,expected,verify_point,estd_time from test_steps_list where project_id='"+project_id+"' and team_id='"+team_id+"' and stepname Ilike '%" +
             value +
             "%'",
             bList=False,
@@ -4069,16 +4071,18 @@ def SearchTestCase(request):
 
     if request.method == "GET":
         term = request.GET.get(u'term', '')
+        project_id=request.GET.get(u'project_id')
+        team_id=request.GET.get(u'team_id')
 #         print "#############################"
 #         print "Term:", term
 #         print "Page:", requested_page
         results = DB.GetData(
             Conn,
-            "SELECT DISTINCT tc_id,tc_name,'Test Case' FROM test_cases WHERE tc_id Ilike '%" +
+            "SELECT DISTINCT tc.tc_id,tc_name,'Test Case' FROM test_cases tc,test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%" +
             term +
-            "%' or tc_name Ilike '%" +
+            "%' or tc.tc_name Ilike '%" +
             term +
-            "%'",
+            "%') group by tc.tc_id having count(case when name='"+project_id+"' and property='Project' then 1 end)>0  and count(case when property='Team' and name='"+team_id+"' then 1 end)>0",
             False)
 
     json = simplejson.dumps(results)
