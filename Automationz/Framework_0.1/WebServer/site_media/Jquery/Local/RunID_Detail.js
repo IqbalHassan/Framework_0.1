@@ -819,7 +819,53 @@ function RenderPieChart(elementId, dataList, title) {
 }
 
 function Report(){
-    $("#email_list").autocomplete({
+    $("#email_list").select2({
+        placeholder: "Send Emails...",
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "AutoCompleteEmailSearch/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': $.session.get('project_id'),
+                    'team_id': $.session.get('default_team_identity')
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        formatResult: formatEmails
+    }).on("change", function(e) {
+            var user_id=$(this).select2('data')['id'];
+            var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+            $("#email").append('<td><img class="delete" id = "DeleteEmail" title = "EmailDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td class="Text" data-id="'+user_id+'">'
+                + user_name
+                + ":&nbsp"
+                + '</td>');
+            $(this).select2('val','');
+            return false;
+        });
+    function formatEmails(user_details) {
+        var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + user_details.text + '</span></div>';
+
+        return markup;
+    }
+    $("#DeleteEmail").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+    /*$("#email_list").autocomplete({
 
         source : 'AutoCompleteEmailSearch',
         select : function(event, ui) {
@@ -853,7 +899,7 @@ function Report(){
         $(this).parent().next().remove();
         $(this).remove();
 
-    });
+    });*/
 
     $("#send_report").click(function(){
         var RunID=$("#fetch_run_id").text().trim();

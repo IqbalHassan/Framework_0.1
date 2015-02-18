@@ -6,6 +6,8 @@ var operation = 1;
 var bugid;
 var lowest_feature = 0;
 var isAtLowestFeature = false;
+var project_id= $.session.get('project_id');
+var team_id= $.session.get('default_team_identity');
 
 $(document).ready(function(){
 
@@ -44,6 +46,56 @@ $(document).ready(function(){
     });
 
 
+    $("#assigned_tester").select2({
+        placeholder: "Assigned Testers...",
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "AutoCompleteTesterSearch/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': $.session.get('project_id'),
+                    'team_id': $.session.get('default_team_identity')
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        formatResult: formatUsers
+    }).on("change", function(e) {
+            var user_id=$(this).select2('data')['id'];
+            var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+            $("#tester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                + '<td class="Text" data-id="'+user_id+'">'
+                + user_name
+                + ":&nbsp"
+                + '</td>');
+            $(this).select2('val','');
+            return false;
+        });
+
+    // Should be used for formatting results, LATER
+    function formatUsers(user_details) {
+        var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + user_details.text + '</span></div>';
+
+        return markup;
+    }
+    $("#DeleteTester").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+
+
     ActivateNecessaryButton();
     ButtonSet();
     BugSearchAuto();
@@ -53,14 +105,14 @@ $(document).ready(function(){
 
     $("#submit").live('click',function(){
 
-        if($('#project_identity option:selected').val()==""){
+        /*if($('#project_identity option:selected').val()==""){
             alertify.error("Please select a project topbar",1500);
             return false;
         }
         if($('#default_team_identity option:selected').val()==""){
             alertify.error("Please select a team from topbar",1500);
             return false;
-        }
+        }*/
 
         if($('#feature-flag').hasClass('unfilled')){
             //alert("Feature Path is not defined Correctly");
@@ -68,11 +120,11 @@ $(document).ready(function(){
             return false;
         }
 
-        var project = $("#project_identity").val();
+        //var project = $("#project_identity").val();
         var bug_desc=$("#bug_desc").val();
         var start_date=$('#start_date').val();
         var end_date=$('#end_date').val();
-        var team=$("#default_team_identity").val();
+        var team=team_id;
         var priority= 'P' + $('#priority').val();
         var milestone=$("#milestone").val();
         var title=$('#title').val();
@@ -552,8 +604,8 @@ function PerformSearch() {
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
         $.get("TableDataTestCasesOtherPages",{
             Query: UserText,
-            project_id:$('#project_identity option:selected').val().trim(),
-            team_id:$('#default_team_identity option:selected').val().trim()
+            project_id:project_id,
+            team_id:team_id
         },function(data) {
 
             if (data['TableData'].length == 0)

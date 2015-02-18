@@ -21,7 +21,7 @@ $(document).ready(function(){
         side: 'left'
     });
 
-    $.get("Bugs_List/",{team:$('#default_team_identity option:selected').val().trim()},function(data) {
+    $.get("Bugs_List/",{project:project_id,team:team_id},function(data) {
         /*$(data['bugs']).each(function(i){
 
             per_bug = '<div style="padding-top: 10px;padding-bottom: 10px;padding: 1px 10px;background: #fff;border: 1px solid #d8d8d8;border-top: 0px;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;color: #666;font-size: 13px;">' +
@@ -76,7 +76,6 @@ $(document).ready(function(){
                 message += '<tr>';
                 for (var j = 0; j < data['bugs'][i].length; j++) {
                     message += '<td align="left">' + data['bugs'][i][j] + '</td>';
-
 
                 }
                 message += '</tr>';
