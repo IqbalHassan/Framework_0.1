@@ -20,7 +20,6 @@ def go_to_a_weblink(dependency,step_data):
         web_link=first_data_set[0][1]
         title=first_data_set[1][1]
         sTestStepReturnStatus = SeleniumScript.OpenLink(web_link, title)
-        print (web_link, title)
         print sTestStepReturnStatus
         return sTestStepReturnStatus
     except:
@@ -32,8 +31,6 @@ def log_in_to_clicksafety(dependency,step_data):
         first_data_set=step_data[0]
         user_name = first_data_set[0][1]
         password = first_data_set[1][1]
-        print user_name
-        print password
         sTestStepReturnStatus = SeleniumScript.Login(user_name,password)
         print sTestStepReturnStatus
         return sTestStepReturnStatus
@@ -66,14 +63,12 @@ def click_element_by_name_or_id(dependency,step_data):
 def course_settings_time_limit(dependency,step_data):
     try:        
         first_data_set=step_data[0]
-        print first_data_set
         id_minlimit=first_data_set[0][0]
         minlimit_value =first_data_set[0][1]
         id_dailylimit=first_data_set[1][0]
         dailylimit_value =first_data_set[1][1]
         id_submitbutton =first_data_set[2][1]  
         sTestStepReturnStatus = SeleniumScript.Course_Settings_Time_Limit(id_minlimit,minlimit_value,id_dailylimit,dailylimit_value,id_submitbutton)
-        print (id_minlimit,minlimit_value,id_dailylimit,dailylimit_value,id_submitbutton)
         print sTestStepReturnStatus
         return sTestStepReturnStatus  
     except:
@@ -86,7 +81,17 @@ def verify_text_message_by_class(dependency,step_data):
         message=first_data_set[0][0]
         expected_text =first_data_set[0][1]
         sTestStepReturnStatus = SeleniumScript.Verify_Text_Message_By_Class(message,expected_text)
-        print (message,expected_text)
+        print sTestStepReturnStatus
+        return sTestStepReturnStatus 
+    except:
+        sTestStepReturnStatus = "Failed"
+        return
+
+def turn_editing_on_or_off(dependency,step_data):
+    try:        
+        first_data_set=step_data[0]
+        on_off =first_data_set[0][1]
+        sTestStepReturnStatus = SeleniumScript.Turn_Editing_On_OR_Off(on_off)
         print sTestStepReturnStatus
         return sTestStepReturnStatus 
     except:

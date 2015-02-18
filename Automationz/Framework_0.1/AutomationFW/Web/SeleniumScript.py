@@ -15,7 +15,6 @@ from selenium.webdriver.common.keys import Keys
 #Ver1.0
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-from CoreFrameWork import MainDriver
 from CoreFrameWork import CommonUtil
 
 def BrowserSelection(browser):
@@ -48,6 +47,7 @@ def BrowserSelection(browser):
             print "You did not select a valid browser: %s" % browser
             CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser: %s" % browser, 3)
             return "Failed"
+        time.sleep(3)
     except Exception, e:
         print "Exception : ", e
         print "Unable to start WebDriver"
@@ -63,6 +63,7 @@ def OpenLink(link, page_title):
         print "Successfully opened your link: " + link
         CommonUtil.TakeScreenShot("sModuleInfo")
         assert page_title in sBrowser.title
+        time.sleep(3)
         return "PASSED"
     except Exception, e:
         print "Exception : ", e
@@ -74,6 +75,8 @@ def OpenLink(link, page_title):
 def Login(user_name,password):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
+        
+        
         CommonUtil.TakeScreenShot("sModuleInfo")
         elem = sBrowser.find_element_by_link_text("Log in")
         elem.send_keys(Keys.RETURN)
@@ -87,6 +90,7 @@ def Login(user_name,password):
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Successfully logged in", 1)
         print "Successfully logged in"
+        time.sleep(3)
         return "PASSED"
     except Exception, e:
         print "Exception : ", e
@@ -127,9 +131,11 @@ def Expand_Menu_By_Name_OR_ID(name_or_id_or_id):
         parent = Element.find_element_by_xpath("..")
         grand_parent = parent.find_element_by_xpath("..")
         expand_status = grand_parent.get_attribute("aria-expanded")
-        if grand_parent.get_attribute("aria-expanded") == True:
+        expand_status = str(expand_status).lower()
+        if expand_status == 'true':
             CommonUtil.ExecLog(sModuleInfo, "%s is already expanded "%name_or_id_or_id, 2)
             print "%s is already expanded "%name_or_id_or_id
+            return "PASSED"
         else:
             CommonUtil.ExecLog(sModuleInfo, "%s is not expanded. Expanding.. "%name_or_id_or_id, 1)
             sBrowser.implicitly_wait(20)
@@ -137,9 +143,11 @@ def Expand_Menu_By_Name_OR_ID(name_or_id_or_id):
             time.sleep(5)
         #Verify if it was expanded 
         expand_status = grand_parent.get_attribute("aria-expanded")
-        if (expand_status== "true") or (expand_status == True):
+        expand_status = str(expand_status).lower()
+        if (expand_status== "true"):
             CommonUtil.TakeScreenShot("sModuleInfo")
             CommonUtil.ExecLog(sModuleInfo, "Successfully to expand menu: %s"%name_or_id_or_id, 1)
+            time.sleep(3)
             print "Successfully expanded your menu: %s"%name_or_id_or_id
             return "PASSED"
         else:
@@ -152,7 +160,11 @@ def Expand_Menu_By_Name_OR_ID(name_or_id_or_id):
         print "Unable to expand Menu: %s"%name_or_id_or_id
         return "Failed"    
 
+
+
+
 def Click_Element_By_Name_OR_ID(name_or_id):
+    
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         CommonUtil.TakeScreenShot("sModuleInfo")
@@ -223,11 +235,36 @@ def Set_Text_Field_Value_By_ID(id,value):
         print "Unable to set value for your ID: %s"%id
         return "Failed"    
 
+def Click_Element_By_Custome_Field_Value(field,value):
+    
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.ExecLog(sModuleInfo, "Trying to find element by field: %s and value: %s"%(field,value), 1)
+        print "Trying to find element by field: %s and value: %s"%(field,value)
+        Element = sBrowser.find_element_by_xpath("//input[@%s='%s']"%(field,value))
+        #Now we simply click it
+        sBrowser.implicitly_wait(20)
+        Element.click()
+        time.sleep(5)
+        print "Successfully clicked your element by field: %s and value: %s"%(field,value)
+        CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your element by field: %s and value: %s"%(field,value), 1)
+        return "PASSED"
+
+    except Exception, e:
+        print "Exception : ", e
+        CommonUtil.ExecLog(sModuleInfo, "Unable to click your element by field: %s and value: %s"%(field,value), 3)
+        print "Unable to click your element by field: %s and value: %s"%(field,value)
+        return "Failed"    
+
+
+
 def Verify_Text_Message_By_Class(element, expected_text):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Entering completion time in minutes", 1)
+        CommonUtil.ExecLog(sModuleInfo, "Getting text string from the web", 1)
         print "Getting text string from the web"
         Elem = sBrowser.find_element_by_class_name("message")
         actual_text = Elem.text
@@ -236,6 +273,7 @@ def Verify_Text_Message_By_Class(element, expected_text):
             CommonUtil.ExecLog(sModuleInfo, "Successfully verified your text: %s"%actual_text, 1)
             print "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text)
             CommonUtil.ExecLog(sModuleInfo, "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text), 1)
+            time.sleep(3)
             return "PASSED"            
         else:
             print "Failed to verify your expected text: %s"%expected_text
@@ -249,6 +287,29 @@ def Verify_Text_Message_By_Class(element, expected_text):
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Error occur during verification process", 3)
         print "Error occur during verification process"
+        return "Failed"  
+
+
+def Verify_Text_Message_By_Text(expected_text):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.ExecLog(sModuleInfo, "Getting text string from the web", 1)
+        print "Getting text string from the web"
+        Elem = sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text)
+        actual_text = Elem.text
+        if actual_text == expected_text:
+            print "Successfully verified your text: %s"%actual_text
+            CommonUtil.ExecLog(sModuleInfo, "Successfully verified your text: %s"%actual_text, 1)
+            print "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text)
+            CommonUtil.ExecLog(sModuleInfo, "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text), 1)
+            time.sleep(3)
+            return "PASSED"            
+     
+    except Exception, e:
+        print "Exception : ", e
+        CommonUtil.ExecLog(sModuleInfo, "Could not find your expected text: %s"%expected_text, 3)
+        print "Could not find your expected text: %s"%expected_text
         return "Failed"  
 
 
@@ -296,12 +357,98 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
             print "Successfully clicked Save Config button"
             CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
         CommonUtil.TakeScreenShot("sModuleInfo") 
+        time.sleep(3)
         return "PASSED"      
     except Exception, e:
         print "Exception : ", e
         CommonUtil.ExecLog(sModuleInfo, "Unable to set value course settings information", 3)
         print "Unable to set value course settings information"
         return "Failed"  
+
+
+def Delete_A_Course(course_name):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name   
+    try:
+        CommonUtil.TakeScreenShot("sModuleInfo")
+
+        print "Successfully closed your browser"
+        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
+        return "PASSED"
+    except Exception, e:
+        print "Exception : ", e
+        CommonUtil.ExecLog(sModuleInfo, "No open browser to close", 3)
+        print "No open browser to close"
+        return "Failed"
+        
+    
+
+def Turn_Editing_On_OR_Off(on_off):
+    '''
+    This function expects the word "on" or "off".  
+    If editing is already turned on and you are trying to turn it on again, 
+    it will not fail and return as warning.
+    Example:
+        To turn editing on: Turn_Editing_On_OR_off('on')
+    '''
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name   
+    try:
+        CommonUtil.TakeScreenShot("sModuleInfo")
+        if on_off == "on":
+            print "Checking if Editing is Turned On or Off"
+            CommonUtil.ExecLog(sModuleInfo, "Checking if Editing is Turned On or Off", 1)
+            result = Expand_Menu_By_Name_OR_ID('Front page settings')
+            if result == "Failed":
+                print "Unable to find the menu Front Page settings."
+                return "Failed"
+            expected_text = 'Turn editing'
+            try:
+                Elem = sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text)
+            except Exception, e:
+                print "Exception : ", e
+                print "No option was found to turn Editing on or off"
+                CommonUtil.ExecLog(sModuleInfo, "No option was found to turn Editing on or off", 3)
+                return "Failed"
+            if (Elem.text) ==  'Turn editing off':
+                print "Editing is already on"
+                CommonUtil.ExecLog(sModuleInfo, "Editing is already on", 1)
+                return "PASSED"
+            else:
+                print "Turning Editing on"
+                result = Click_Element_By_Name_OR_ID('Turn editing on')
+                if result == "Failed":
+                    return "Failed"
+                else:
+                    return "Passed"
+        elif on_off == "off":
+            print "Checking if Editing is Turned On or Off"
+            CommonUtil.ExecLog(sModuleInfo, "Checking if Editing is Turned On or Off", 1)
+            Expand_Menu_By_Name_OR_ID('Front page settings')
+            expected_text = 'Turn editing'
+            try:
+                Elem = sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text)
+            except Exception, e:
+                print "Exception : ", e
+                print "No option was found to turn Editing on or off"
+                CommonUtil.ExecLog(sModuleInfo, "No option was found to turn Editing on or off", 3)
+                return "Failed"
+            if (Elem.text) ==  'Turn editing on':
+                print "Editing is already off"
+                CommonUtil.ExecLog(sModuleInfo, "Editing is already off", 1)
+                return "PASSED"
+            else:
+                print "Turning Editing on"
+                result = Click_Element_By_Name_OR_ID('Turn editing off')              
+                if result == "Failed":
+                    return "Failed"
+                else:
+                    return "Passed"        
+    except Exception, e:
+        print "Exception : ", e
+        CommonUtil.ExecLog(sModuleInfo, "We are unable to control the editing option", 3)
+        print "We are unable to control the editing option"
+        return "Failed"
+        
+    
 
 
 def Tear_Down():
@@ -319,3 +466,7 @@ def Tear_Down():
         return "Failed"
 
 
+# BrowserSelection('Firefox')
+# OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
+# Login('admin','R@1ndrops')
+# print sBrowser

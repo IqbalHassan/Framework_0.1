@@ -427,6 +427,54 @@ function AutoSuggestions(project_id,team_id){
 
     });
 
+    $("#testObjective").select2({
+        placeholder: "Run Objective.. ",
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "AutoCompleteObjectiveSearch/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': project_id,
+                    'team_id': team_id
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        createSearchChoice: function(term) {
+            return {id: term};
+        },
+        createSearchChoicePosition: "top",
+        formatResult: formatObjectives,
+        formatSelection: formatObjectives
+    }).on("change", function(e) {
+            $(this).select2("val");
+            return false;
+        });
+
+    function formatObjectives(obj_details) {
+        //var start = obj_details.text.indexOf(":") + 1;
+        //var length = obj_details.text.length;
+        
+        //var obj = step_details.text.substr(start, length - 1);
+        //var title = step_details.text.substr(0,start-1);
+        
+        var markup =
+            '<div>' +
+            '<i class="fa fa-file-text fa-fw"></i> <span style="font-weight: bold;">' + obj_details.id + '</span>' +
+            '</div>';
+        
+        return markup;
+    }
 }
 
 function RunAutoCompleteTestSearch(project_id,team_id){
