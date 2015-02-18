@@ -12427,8 +12427,8 @@ def Selected_Requirement_Analaysis(request):
 
         #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
         #milestone = DB.GetData(Conn,query)
-        query = "select team_id from requirement_team_map where requirement_id='%s'" % UserData
-        teams = DB.GetData(Conn, query)
+        #query = "select team_id from requirement_team_map where requirement_id='%s'" % UserData
+        #teams = DB.GetData(Conn, query)
 
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='REQ' order by label_name" % UserData
         labels = DB.GetData(Conn, query)
@@ -12457,7 +12457,7 @@ def Selected_Requirement_Analaysis(request):
         'Req_Info': Req_Info,
         'Feature': feature[0][0],
         'labels': labels,
-        'teams': teams,
+        #'teams': teams,
         'tasks': tasks,
         'cases': cases}
     json = simplejson.dumps(results)
@@ -14238,7 +14238,7 @@ def CreateRequirement(request):
         if request.method == 'GET':
             # getting all the info from the messages
             project_id = request.GET.get(u'project_id', '')
-            team_id = request.GET.get(u'team', '').split("|")
+            team_id = request.GET.get(u'team', '')
             title = request.GET.get(u'title', '')
             description = request.GET.get(u'description', '')
             start_date = request.GET.get(u'start_date', '')
@@ -14281,7 +14281,7 @@ def SubmitEditRequirement(request):
             # getting all the info from the messages
             req_id = request.GET.get(u'req_id', '')
             project_id = request.GET.get(u'project_id', '')
-            team_id = request.GET.get(u'team', '').split("|")
+            team_id = request.GET.get(u'team', '')
             title = request.GET.get(u'title', '')
             description = request.GET.get(u'description', '')
             start_date = request.GET.get(u'start_date', '')
@@ -14322,7 +14322,7 @@ def SubmitChildRequirement(request):
         if request.method == 'GET':
             # getting all the info from the messages
             project_id = request.GET.get(u'project_id', '')
-            team_id = request.GET.get(u'team', '').split("|")
+            team_id = request.GET.get(u'team', '')
             title = request.GET.get(u'title', '')
             description = request.GET.get(u'description', '')
             start_date = request.GET.get(u'start_date', '')
@@ -14624,16 +14624,16 @@ def Edit_Requirement(request, project_id, req_id):
         return HttpResponse(output)"""
     # Get the teams for this projects
     Conn = GetConnection()
-    query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
-    team_info = DB.GetData(Conn, query, False)
+    #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
+    #team_info = DB.GetData(Conn, query, False)
     query = "select value from config_values where type='Priority'"
     priority = DB.GetData(Conn, query, False)
-    query = "select id,value from config_values where type='milestone'"
+    query = "select id,value from config_values cv, team_wise_settings tws where cv.type='milestone' and tws.project_id='"+project_id+"' and tws.parameters=cv.id and tws.type='Milestone'"
     milestone_list = DB.GetData(Conn, query, False)
     query = "select label_id,label_name,Label_color from labels order by label_name"
     labels = DB.GetData(Conn, query, False)
     Dict = {
-        'team_info': team_info,
+        #'team_info': team_info,
         'priority_list': priority,
         'milestone_list': milestone_list,
         'labels': labels
@@ -14653,16 +14653,16 @@ def Child_Requirement(request, project_id, req_id):
         return HttpResponse(output)"""
     # Get the teams for this projects
     Conn = GetConnection()
-    query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
-    team_info = DB.GetData(Conn, query, False)
+    #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
+    #team_info = DB.GetData(Conn, query, False)
     query = "select value from config_values where type='Priority'"
     priority = DB.GetData(Conn, query, False)
-    query = "select id,value from config_values where type='milestone'"
+    query = "select id,value from config_values cv, team_wise_settings tws where cv.type='milestone' and tws.project_id='"+project_id+"' and tws.parameters=cv.id and tws.type='Milestone'"
     milestone_list = DB.GetData(Conn, query, False)
     query = "select label_id,label_name,Label_color from labels order by label_name"
     labels = DB.GetData(Conn, query, False)
     Dict = {
-        'team_info': team_info,
+        #'team_info': team_info,
         'priority_list': priority,
         'milestone_list': milestone_list,
         'labels': labels

@@ -84,10 +84,10 @@ $(document).ready(function(){
         var start_date=$('#starting_date').val();
         //var end_date="";
         var end_date=$('#ending_date').val();
-        var team=[];
+        /*var team=[];
         $('input[name="team"]:checked').each(function(){
             team.push($(this).val());
-        });
+        });*/
         //var priority="";
         var priority=$('input[name="priority"]:checked').val();
         var milestone=$('#milestone option:selected').val();
@@ -112,7 +112,7 @@ $(document).ready(function(){
                 'status':status.trim(),
                 'start_date':start_date.trim(),
                 'end_date':end_date.trim(),
-                'team':team.join("|").trim(),
+                'team':$.session.get('default_team_identity'),
                 'priority':priority.trim(),
                 'milestone':milestone.trim(),
                 'project_id': $.session.get('project_id'),
@@ -132,7 +132,7 @@ $(document).ready(function(){
                 'status':status.trim(),
                 'start_date':start_date.trim(),
                 'end_date':end_date.trim(),
-                'team':team.join("|").trim(),
+                'team':$.session.get('default_team_identity'),
                 'priority':priority.trim(),
                 'milestone':milestone.trim(),
                 'project_id': $.session.get('project_id'),
@@ -151,7 +151,7 @@ $(document).ready(function(){
                 'status':status.trim(),
                 'start_date':start_date.trim(),
                 'end_date':end_date.trim(),
-                'team':team.join("|").trim(),
+                'team':$.session.get('default_team_identity'),
                 'priority':priority.trim(),
                 'milestone':milestone.trim(),
                 'project_id': $.session.get('project_id'),
@@ -179,14 +179,14 @@ function PopulateReqInfo(req_id){
         $("#status").val(data['Req_Info'][0][1]);
         $("#description").val(data['Req_Info'][0][2]);
 
-        $('input[name="team"]').each(function(){
+        /*$('input[name="team"]').each(function(){
             $(this).prop('checked',false);
         });
         $('input[name="team"]').each(function(){
             if(data['teams'].indexOf($(this).val())>-1){
                 $(this).prop('checked',true);
             }
-        });
+        });*/
 
         $("#starting_date").val(data['Req_Info'][0][3]);
         $("#ending_date").val(data['Req_Info'][0][4]);
