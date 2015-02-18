@@ -368,11 +368,8 @@ urlpatterns += patterns('',
     url(r'^Home/.*/ViewAndOrganizeTestCases/$',ViewAndOrganizeTestCases),
     url(r'^Home/.*/AutoCompleteTestCasesSearchTestSet/$',AutoCompleteTestCasesSearchTestSet),
     url(r'^Home/.*/get_run_objectives/$',get_run_objectives),
-<<<<<<< HEAD
     url(r'^Home/uploadZip/$',uploadZip),
-=======
     url(r'^Home/.*/AutoCompleteObjectiveSearch/$',AutoCompleteObjectiveSearch),
->>>>>>> 37e918f18708d94ef7ece4f10489626af4d58412
 	)
 
 

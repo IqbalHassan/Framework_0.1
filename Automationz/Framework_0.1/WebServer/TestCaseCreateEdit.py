@@ -2,6 +2,7 @@
 Created on May 1, 2014
 Author: @Taitalus
 '''
+#from celery.tests.contrib.test_migrate import Message
 """
     1- info
     2 - warning
@@ -28,7 +29,7 @@ def Result_Get_PIM_Data_By_Id(conn, RunID, Data_Id):
     " pmd.value,pmd.keyfield,pmd.ignorefield"
     " from result_master_data pmd"
     " where"
-    " pmd.id = '%s' and pmd.run_id='%s'; " % (Data_Id, RunID))
+    " pmd.id = '%s' and pmd.run_id='%s' order by description; " % (Data_Id, RunID))
 
     Data_List = DBUtil.GetData(conn, SQLQuery, False)
     Data_List = [tuple(x[1:])for x in Data_List]
@@ -43,7 +44,7 @@ def Result_Get_PIM_Data_By_Id(conn, RunID, Data_Id):
                 " pmd.value,pmd.keyfield,pmd.ignorefield"
                 " from result_master_data pmd"
                 " where"
-                " pmd.id = '%s' and pmd.run_id='%s'"
+                " pmd.id = '%s' and pmd.run_id='%s' order by description"
                 " ;" % (eachTuple[1], RunID))
                 AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
             else:
@@ -595,6 +596,21 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
             update_master_data_list.append(master_id)
         Step_Index += 1
     test_step_column = ['tc_id', 'step_id', 'teststepsequence']
+    message=''
+    for index,each in enumerate(updated_test_step_list):
+        message+=str(each[2])
+        if index<(len(updated_test_step_list)-1):
+            message+=','
+    print message 
+    query="delete from test_steps where teststepsequence not in(%s) and tc_id='%s'"%(message,tc_id)
+    if DBUtil.IsDBConnectionGood(Conn) == False:
+        time.sleep(1)
+        Conn = GetConnection()
+    cur=Conn.cursor()
+    cur.execute(query)
+    Conn.commit()
+    LogMessage(sModuleInfo, "Deleting unnecessary %s tuple from test_steps for step %s" % (message, Step_Index), 1)
+    """
     for each in test_step_collected_data:
         if each not in updated_test_step_list:
             test_steps_dict = {}
@@ -608,7 +624,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                 LogMessage(sModuleInfo, "Deleting unnecessary %s tuple from masterdata for step %s" % (each, Step_Index), 1)
             else:
                 LogMessage(sModuleInfo, result, 3)
-    
+    """
     condition = ""
     condition += ("id Ilike '%s%%' and " % tc_id) 
     for each in update_master_data_list:
@@ -672,7 +688,7 @@ def PrepareDataStep(master_data_id, step_data):
         if isinstance(each, list):
             print "normal_data"
             group_data_id = master_data_id + ('_d') + str(dataset_id)
-            for eachitem in each:
+            for step_sequence,eachitem in enumerate(each):
                 if isinstance(eachitem[0], basestring) and isinstance(eachitem[1], basestring) and isinstance(eachitem[2], basestring) and isinstance(eachitem[3], basestring):
                     if eachitem[2]=='true':
                         keyfield=True
@@ -682,15 +698,15 @@ def PrepareDataStep(master_data_id, step_data):
                         ignorefield=False
                     else:
                         ignorefield=True
-                    final_list.append((group_data_id, eachitem[0], eachitem[1], description,keyfield,ignorefield))
+                    final_list.append((group_data_id, eachitem[0], eachitem[1], str(step_sequence),keyfield,ignorefield))
                     print final_list
                 elif isinstance(eachitem[0], basestring) and isinstance(eachitem[1], list):
                     # form the group data entry at first
                     address_data_id = group_data_id + ('_a') + str(address_index)
                     # Enter the group data entry to final list
-                    final_list.append((group_data_id, eachitem[0], address_data_id, description,False,False))
+                    final_list.append((group_data_id, eachitem[0], address_data_id, str(step_sequence),False,False))
                     print final_list
-                    for eachitementry in eachitem[1]:
+                    for steps_id,eachitementry in enumerate(eachitem[1]):
                         if eachitementry[2]=='true':
                             keyfield=True
                         else:
@@ -699,7 +715,7 @@ def PrepareDataStep(master_data_id, step_data):
                             ignorefield=False
                         else:
                             ignorefield=True
-                        final_list.append((address_data_id, eachitementry[0], eachitementry[1], description,keyfield,ignorefield))
+                        final_list.append((address_data_id, eachitementry[0], eachitementry[1], str(steps_id),keyfield,ignorefield))
                     print final_list
                     address_index += 1
                 else:
@@ -849,7 +865,7 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
     " pmd.ignorefield"
     " from master_data pmd"
     " where"
-    " pmd.id = '%s';" % (Data_Id))
+    " pmd.id = '%s' order by description;" % (Data_Id))
 
     Data_List = DBUtil.GetData(conn, SQLQuery, False)
     Data_List = [tuple(x[1:])for x in Data_List]
@@ -867,7 +883,7 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
                 " from master_data pmd"
                 " where"
                 " pmd.id = '%s'"
-                " ;" % (eachTuple[1]))
+                " order by description;" % (eachTuple[1]))
                 AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
             else:
                 AddressData = ''
@@ -1275,14 +1291,14 @@ def InsertMasterDataForDataRequired(Conn, TC_Id, Step_Index, Data_List, step_des
 def InsertMasterData(Conn, Data_ID, dataList):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     address_Index = 1
-    for each in dataList:
+    for step_sequence,each in enumerate(dataList):
         if isinstance(each, tuple):
             if isinstance(each[1], list):
                 print "Grouped Data Entry"
                 # first give the entry for the group data
                 data_index = (Data_ID + "_a%s" % address_Index)
                 master_data_group_data = {}
-                master_data_group_data.update({'id':Data_ID, 'field':each[0], 'value':data_index,'description':None,'keyfield':False,'ignorefield':False})
+                master_data_group_data.update({'id':Data_ID, 'field':each[0], 'value':data_index,'description':str(step_sequence),'keyfield':False,'ignorefield':False})
                 if DBUtil.IsDBConnectionGood(Conn) == False:
                     time.sleep(1)
                     Conn = GetConnection()
@@ -1292,11 +1308,11 @@ def InsertMasterData(Conn, Data_ID, dataList):
                     LogMessage(sModuleInfo, msg, 1)
                 else:
                     LogMessage(sModuleInfo, result, 3)
-                for eachitem in each[1]:
+                for sequence_steps,eachitem in enumerate(each[1]):
                     if isinstance(eachitem, tuple):
                         # form dict
                         group_data_entry = {}
-                        group_data_entry.update({'id':data_index, 'field':eachitem[0], 'value':eachitem[1]})
+                        group_data_entry.update({'id':data_index, 'field':eachitem[0], 'value':eachitem[1],'description':str(sequence_steps)})
                         if(eachitem[2]=='true'):
                             group_data_entry.update({'keyfield':True})
                         else:
@@ -1325,7 +1341,7 @@ def InsertMasterData(Conn, Data_ID, dataList):
                 # Normal Data is to be given here
                 # form the dict for the normal tuple data
                 master_data_tuple_data = {}
-                master_data_tuple_data.update({'id':Data_ID, 'field':each[0], 'value':each[1]})
+                master_data_tuple_data.update({'id':Data_ID, 'field':each[0], 'value':each[1],'description':str(step_sequence)})
                 if(each[2]=='true'):
                     master_data_tuple_data.update({'keyfield':True})
                 else:
