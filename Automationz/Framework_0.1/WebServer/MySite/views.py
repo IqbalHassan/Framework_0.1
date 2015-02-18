@@ -4861,7 +4861,7 @@ def EditTestCase(request):
         Conn = GetConnection()
         err_msg = ''
         if request.is_ajax() and request.method == 'GET':
-            TC_Id = request.GET.get(u'TC_Id', '')
+            TC_Id = request.GET['TC_Id']
             #Platform = request.GET.get(u'Platform', '')
             #Manual_TC_Id = request.GET.get(u'Manual_TC_Id', '')
             TC_Name = request.GET.get(u'TC_Name', '')
@@ -16949,6 +16949,9 @@ def TestCaseDataFromMainDriver(request):
             result = simplejson.dumps(result)
             return HttpResponse(result, mimetype = 'application/json')
 
+def uploadZip(request):
+    print request
+    return HttpResponse(request.FILES)
 '''
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:

@@ -5,7 +5,7 @@ username='iqbal_hassan'
 password='password'
 project='PROJ-29'
 team='WebAutomation'
-server='135.23.123.206'
+server='127.0.0.1'
 port=5432
 
 

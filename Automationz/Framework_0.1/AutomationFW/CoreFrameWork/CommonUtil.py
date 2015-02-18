@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+from ConfigParser import NoOptionError
 sys.path.append("..")
 
 import time, datetime, inspect
@@ -27,23 +28,7 @@ elif os.name == 'posix':
     from MacDesktop import MacCommonFoldersPaths as ComPath
     import plistlib
     from appscript import *
-
-
-
-logger = logging.getLogger(__name__)
-FWLogFile = 'execlog.log'
-if os.name == 'posix':
-    try:
-        hdlr = logging.FileHandler(FWLogFile)
-    except:
-        pass
-elif os.name == 'nt':
-    hdlr = logging.FileHandler(FWLogFile)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
-logger.setLevel(logging.DEBUG)
-
+    
 def ExecLog(sModuleInfo, sDetails, iLogLevel=1, sStatus="",):
     """
     1- info
@@ -58,7 +43,28 @@ def ExecLog(sModuleInfo, sDetails, iLogLevel=1, sStatus="",):
         log_id=config.get('sectionOne','sTestStepExecLogId')
     else:
         log_id=Global.sTestStepExecLogId
-        
+    
+    config=ConfigParser.ConfigParser()
+    file_path=os.getcwd()+os.sep+'global_config.ini' 
+    config.read(file_path)
+    try:
+        FWLogFile = config.get('sectionOne','log_folder')+os.sep+'temp.log'
+    except NoOptionError,e:
+        FWLogFile=config.get('sectionOne','temp_run_file_path')+os.sep+'execlog.log'
+    
+    logger = logging.getLogger(__name__)
+    if os.name == 'posix':
+        try:
+            hdlr = logging.FileHandler(FWLogFile)
+        except:
+            pass
+    elif os.name == 'nt':
+        hdlr = logging.FileHandler(FWLogFile)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    hdlr.setFormatter(formatter)
+    logger.addHandler(hdlr)
+    logger.setLevel(logging.DEBUG)
+    
     conn = DB.ConnectToDataBase()
     sDetails = to_unicode(sDetails)
     if iLogLevel == 1:
@@ -78,7 +84,8 @@ def ExecLog(sModuleInfo, sDetails, iLogLevel=1, sStatus="",):
 
     else:
         print "unknown log level"
-
+    
+    logger.removeHandler(hdlr)
     conn.close()
 
 def ClearLog():
@@ -887,7 +894,11 @@ def TakeScreenShot(ImageName):
     #TakeScreenShot("TestStepName")
     """
     try:
-        ImageFolder = Global.TCLogFolder + os.sep + "Screenshots"
+        config=ConfigParser.ConfigParser()
+        config.read(os.getcwd()+os.sep+'global_config.ini')
+        image_folder=config.get('sectionOne','screen_capture_folder')
+        #ImageFolder = Global.TCLogFolder + os.sep + "Screenshots"
+        ImageFolder=image_folder
         if os.name == 'posix':
             ImageFolder = FileUtil.ConvertWinPathToMac(ImageFolder)
             path = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".png"

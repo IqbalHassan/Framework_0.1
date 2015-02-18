@@ -1,6 +1,11 @@
 # -*- coding: cp1252 -*-
 import os
 import sys
+from ConfigParser import DuplicateSectionError
+import requests
+from poster.streaminghttp import register_openers
+import urllib2
+from poster.encode import multipart_encode
 sys.path.append("..")
 #adding driver folder to sys.path
 current_file_path=os.path.dirname(os.getcwd())#getting parent folder
@@ -48,6 +53,32 @@ def collectAlldependency(project,team):
     dependency_list=DBUtil.GetData(conn,query,False)
     conn.close()
     return dependency_list
+def update_global_config(section,key,value):
+    file_name=os.getcwd()+os.sep+'global_config.ini'
+    config=ConfigParser.SafeConfigParser()
+    config.read(file_name)
+    temp=config.sections()
+    list_item=[]
+    for each in temp:
+        temp_dict=dict(config.items(each))
+        if key.lower() in temp_dict.keys():
+            #update the key
+            temp_dict[key.lower()]=value
+        else:
+            temp_dict.update({key.lower():value})
+        list_item.append((each,temp_dict))
+    print list_item
+    for each in list_item:
+        section=each[0]
+        temp_dict=each[1]
+        if not config.has_section(section):
+            config.add_section(section)
+        for eachitem in temp_dict.keys():
+            config.set(section,eachitem,temp_dict[eachitem])
+            
+    with(open(file_name,'w')) as open_file:
+        config.write(open_file)
+                    
 def main():
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     def TimeStamp():
@@ -111,6 +142,8 @@ def main():
         #print "unable to connect to the database"
     CommonUtil.ExecLog(sModuleInfo, "Database connection successful" , 1)
     cur = conn.cursor()"""
+    #first setup the config.ini file
+    update_global_config('sectionOne','sTestStepExecLogId', sModuleInfo)
     conn=DBUtil.ConnectToDataBase()
     Userid = (CommonUtil.GetLocalUser()).lower()
     UserList = DBUtil.GetData(conn, "Select User_Names from permitted_user_list")
@@ -295,18 +328,45 @@ def main():
             conn=DBUtil.ConnectToDataBase()
             TestCaseName = DBUtil.GetData(conn, "Select tc_name From result_test_cases Where tc_id = '%s' and run_id='%s'" % (TCID,TestRunID[0]), False)
             conn.close()
+            #Create Log Folder for the TC
+            #get the config_global.ini
+            config=ConfigParser.ConfigParser()
+            global_config_file=os.getcwd()+os.sep+'global_config.ini'
+            config.read(global_config_file)
+            try:
+                log_file_path=config.get('sectionOne', 'temp_run_file_path')
+            except Exception, e:
+                print "Exception: ",e
+            Global.TCLogFolder=log_file_path+os.sep+(TCID.replace(":",'-'))
+            #Global.TCLogFolder = (Global.NetworkLogFolder + os.sep + sTestResultsRunId + os.sep + TCID + "_" + CommonUtil.TimeStamp("utcstring")).replace(":", "-")
+            test_case_folder=log_file_path+os.sep+(TCID.replace(":",'-'))
+            update_global_config('sectionOne', 'test_case',TCID)
+            update_global_config('sectionOne','test_case_folder',test_case_folder)
+            log_folder=test_case_folder+os.sep+'Log'
+            update_global_config('sectionOne', 'log_folder',log_folder)
+            screenshot_folder=test_case_folder+os.sep+'screenshots'
+            update_global_config('sectionOne', 'screen_capture_folder',screenshot_folder)
+            
+            config=ConfigParser.ConfigParser()
+            config.read(global_config_file)
+            
+            #create_test_case_folder
+            test_case_folder=config.get('sectionOne','test_case_folder')
+            FL.CreateFolder(test_case_folder)
+            
+            #FL.CreateFolder(Global.TCLogFolder + os.sep + "ProductLog")
+            log_folder=config.get('sectionOne','log_folder')
+            FL.CreateFolder(log_folder)
+            
+            #FL.CreateFolder(Global.TCLogFolder + os.sep + "Screenshots")
+            #creating ScreenShot File
+            screen_capture_folder=config.get('sectionOne','screen_capture_folder')
+            FL.CreateFolder(screen_capture_folder)
+            
             print "Running Test case id : %s :: %s" % (TCID, TestCaseName[0])
             CommonUtil.ExecLog(sModuleInfo, "-------------*************--------------", 1)
             CommonUtil.ExecLog(sModuleInfo, "Running Test case id : %s :: %s" % (TCID, TestCaseName), 1)
 
-            #Create Log Folder for the TC
-            Global.TCLogFolder = (Global.NetworkLogFolder + os.sep + sTestResultsRunId + os.sep + TCID + "_" + CommonUtil.TimeStamp("utcstring")).replace(":", "-")
-            #Create the folder (this fn will delete if it already exists)
-            FL.CreateFolder(Global.TCLogFolder)
-            #Create sub folders needed
-            FL.CreateFolder(Global.TCLogFolder + os.sep + "ProductLog")
-            FL.CreateFolder(Global.TCLogFolder + os.sep + "Screenshots")
-            
 
             #test Case start time
             conn=DBUtil.ConnectToDataBase()
@@ -378,13 +438,7 @@ def main():
                     Global.sTestStepExecLogId = sTestResultsRunId + TCID + str(TestStepsList[StepSeq - 1][0]) + str(StepSeq)
                     
                     #open a file handler and write it to it
-                    file_name=os.getcwd()+os.sep+'global_config.ini'
-                    open_file=open(file_name,'w')
-                    config=ConfigParser.SafeConfigParser()
-                    config.add_section('sectionOne')
-                    config.set('sectionOne', 'sTestStepExecLogId',Global.sTestStepExecLogId)
-                    config.write(open_file)
-                    open_file.close()
+                    update_global_config('sectionOne', 'sTestStepExecLogId', Global.sTestStepExecLogId)
                     # Test Step start time
                     conn=DBUtil.ConnectToDataBase()
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -700,10 +754,34 @@ def main():
             print CommonUtil.GetProductLog()
 
             #Zip the folder
-            TCLogFile = CommonUtil.ZipFolder(Global.TCLogFolder, Global.TCLogFolder + ".zip")
+            config=ConfigParser.ConfigParser()
+            config.read(global_config_file)
+            #removing duplicates line from here. 
+            current_log_file=config.get('sectionOne','log_folder')+os.sep+'temp.log'
+            temp_log_file=config.get('sectionOne','log_folder')+os.sep+TCID+'.log'
+            lines_seen=set()
+            outfile=open(temp_log_file,'w')
+            for line in open(current_log_file,'r'):
+                if line not in lines_seen:
+                    outfile.write(line)
+                    lines_seen.add(line)
+            outfile.close()
+            FL.DeleteFile(current_log_file)
+            FL.RenameFile(config.get('sectionOne','log_folder'), 'temp.log',TCID+'.log')
+            TCLogFile = CommonUtil.ZipFolder(config.get('sectionOne','test_case_folder'),config.get('sectionOne','test_case_folder') + ".zip")
             #Delete the folder
-            FL.DeleteFolder(Global.TCLogFolder)
-
+            FL.DeleteFolder(config.get('sectionOne','test_case_folder'))
+            #upload will go here.
+            upload_link='http://localhost:8000/Home/UploadZip'
+            register_openers()
+            datagen, headers = multipart_encode({
+                'categoryID' : 1,
+                'cID'        : -3,
+                'FileType'   : 'zip',
+                'name'       : sTestResultsRunId,
+                'file1'      : open(config.get('sectionOne','test_case_folder') + ".zip")
+            })
+            request = urllib2.Request(upload_link, datagen, headers)
             #Find Test case failed reason
             try:
                 FailReason = CommonUtil.FindTestCaseFailedReason(conn, sTestResultsRunId, TCID)

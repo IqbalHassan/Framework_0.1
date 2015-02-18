@@ -10,6 +10,7 @@ import time
 import MainDriver
 import Global
 from CoreFrameWork import FileUtilities
+import ConfigParser
 def RunProcess(sTesterid):
     while (1):
         try:
@@ -25,6 +26,13 @@ def RunProcess(sTesterid):
                     retVal=FileUtilities.CreateFolder(current_path)
                     if retVal:
                         Global.RunIdTempPath=current_path
+                        #now save it in the global_config.ini
+                        current_path_file=os.getcwd()+os.sep+'global_config.ini'
+                        config=ConfigParser.SafeConfigParser()
+                        config.add_section('sectionOne')
+                        config.set('sectionOne','temp_run_file_path',current_path)
+                        with (open(current_path_file,'w')) as configFile:
+                            config.write(configFile)
                     value=MainDriver.main()
                     print "updating db with parameter"
                     if value=="pass":
