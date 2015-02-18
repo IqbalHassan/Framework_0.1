@@ -19,7 +19,7 @@ def Get_PIM_Data_By_Id(Data_Id):
     " pmd.ignorefield"
     " from master_data pmd"
     " where"
-    " pmd.id = '%s';" % (Data_Id))
+    " pmd.id = '%s' order by description;" % (Data_Id))
     conn=DBUtil.ConnectToDataBase()
     Data_List = DBUtil.GetData(conn, SQLQuery, False)
     Data_List = [tuple(x[1:])for x in Data_List]
@@ -36,7 +36,7 @@ def Get_PIM_Data_By_Id(Data_Id):
                 " pmd.ignorefield"
                 " from master_data pmd"
                 " where"
-                " pmd.id = '%s'"
+                " pmd.id = '%s' order by description"
                 " ;" % (eachTuple[1]))
                 conn=DBUtil.ConnectToDataBase()
                 AddressData = DBUtil.GetData(conn, address_find_SQLQuery, False)
