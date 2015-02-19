@@ -4021,7 +4021,8 @@ def TestCaseSearch(request):
 #         print "Page:", requested_page
         data = DB.GetData(
             Conn,
-            "SELECT DISTINCT tc.tc_id,tc_name FROM test_cases tc, test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%%%s%%' or tc_name Ilike '%%%s%%') group by tc.tc_id having count(case when name='%s' and property='Project' then 1 end)>0  and count(case when property='Team' and name='%s' then 1 end)>0"%(term,term,project_id,team_id),
+            #"SELECT DISTINCT tc.tc_id,tc_name FROM test_cases tc, test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%%%s%%' or tc_name Ilike '%%%s%%') group by tc.tc_id having count(case when name='%s' and property='Project' then 1 end)>0  and count(case when property='Team' and name='%s' then 1 end)>0"%(term,term,project_id,team_id),
+            "SELECT DISTINCT tc.tc_id,tc_name FROM test_cases tc, test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%%%s%%' or tc_name Ilike '%%%s%%') and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) group by tc.tc_id having count(case when name='%s' and property='Project' then 1 end)>0  and count(case when property='Team' and name='%s' then 1 end)>0"%(term,term,project_id,int(team_id),project_id,team_id),
             bList=False,
             dict_cursor=False,
             paginate=True,
@@ -10589,7 +10590,7 @@ def Get_Requirements(request):
             print user
             TableData = DB.GetData(
                 Conn,
-                "select r.requirement_id,r.requirement_title,r.requirement_description,rtm.team_id from requirements r, requirement_team_map rtm,team_info ti, permitted_user_list pul where r.requirement_id=rtm.requirement_id and rtm.team_id::int=ti.team_id and ti.user_id::int=pul.user_id and pul.user_names like '%" +
+                "select r.requirement_id,r.requirement_title,r.requirement_description,r.team_id from requirements r,team_info ti, permitted_user_list pul where r.team_id::int=ti.team_id and ti.user_id::int=pul.user_id and pul.user_names like '%" +
                 user +
                 "%'",
                 False)
