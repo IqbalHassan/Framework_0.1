@@ -1286,7 +1286,7 @@ def AutoCompleteRequirements(request):
             team_id = request.GET.get(u'team_id', '')
 
             Conn = GetConnection()
-            query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi,requirement_team_map rtm where r.requirement_milestone=mi.id::text and r.project_id='%s' and (r.requirement_title Ilike '%%%s%%' or r.requirement_id Ilike '%%%s%%') and rtm.team_id='%s' and r.requirement_id=rtm.requirement_id" % (
+            query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi where r.requirement_milestone=mi.id::text and r.project_id='%s' and (r.requirement_title Ilike '%%%s%%' or r.requirement_id Ilike '%%%s%%') and r.team_id='%s'" % (
                 project_id, value, value, team_id)
             req_list = DB.GetData(Conn, query, False)
             Conn.close()
@@ -12368,11 +12368,11 @@ def EditTask(request, task_id, project_id):
         return render_to_response('CreateNewTask.html')
     else:
         Conn = GetConnection()
-        query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
-        team_info = DB.GetData(Conn, query, False)
+        #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
+        #team_info = DB.GetData(Conn, query, False)
         query = "select value from config_values where type='Priority'"
         priority = DB.GetData(Conn, query, False)
-        query = "select id,value from config_values where type='milestone'"
+        query = "select cv.id,cv.value from config_values cv, team_wise_settings tws where cv.type='milestone' and cv.id=tws.parameters and tws.project_id='"+project_id+"' and tws.type='Milestone'"
         milestone_list = DB.GetData(Conn, query, False)
         # get the names from permitted_user_list
         query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)"
@@ -12385,7 +12385,7 @@ def EditTask(request, task_id, project_id):
         Conn = GetConnection()
         tester_user_id = DB.GetData(Conn, query, False, False)[0][0]
         Dict = {
-            'team_info': team_info,
+            #'team_info': team_info,
             'priority_list': priority,
             'milestone_list': milestone_list,
             'user_list': user_list,
@@ -12403,11 +12403,11 @@ def ChildTask(request, task_id, project_id):
         return render_to_response('CreateNewTask.html')
     else:
         Conn = GetConnection()
-        query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
-        team_info = DB.GetData(Conn, query, False)
+        #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
+        #team_info = DB.GetData(Conn, query, False)
         query = "select value from config_values where type='Priority'"
         priority = DB.GetData(Conn, query, False)
-        query = "select id,value from config_values where type='milestone'"
+        query = "select cv.id, cv.value from config_values cv, team_wise_settings tws where cv.type='milestone' and cv.id=tws.parameters and tws.project_id='"+project_id+"' and tws.type='Milestone'"
         milestone_list = DB.GetData(Conn, query, False)
         # get the names from permitted_user_list
         query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)"
@@ -12415,7 +12415,7 @@ def ChildTask(request, task_id, project_id):
         query = "select label_id,label_name,Label_color from labels order by label_name"
         labels = DB.GetData(Conn, query, False)
         Dict = {
-            'team_info': team_info,
+            #'team_info': team_info,
             'priority_list': priority,
             'milestone_list': milestone_list,
             'user_list': user_list,
@@ -14737,11 +14737,11 @@ def Child_Requirement(request, project_id, req_id):
 
 def TaskPage(request, project_id):
     Conn = GetConnection()
-    query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
-    team_info = DB.GetData(Conn, query, False)
+    #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
+    #team_info = DB.GetData(Conn, query, False)
     query = "select value from config_values where type='Priority'"
     priority = DB.GetData(Conn, query, False)
-    query = "select id,value from config_values where type='milestone'"
+    query = "select cv.id,cv.value from config_values cv, team_wise_settings tws where cv.type='milestone' and cv.id=tws.parameters and tws.project_id='"+project_id+"' and tws.type='Milestone'"
     milestone_list = DB.GetData(Conn, query, False)
     # get the names from permitted_user_list
     query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
@@ -14749,7 +14749,7 @@ def TaskPage(request, project_id):
     query = "select label_id,label_name,Label_color from labels order by label_name"
     labels = DB.GetData(Conn, query, False)
     Dict = {
-        'team_info': team_info,
+        #'team_info': team_info,
         'priority_list': priority,
         'milestone_list': milestone_list,
         'user_list': user_list,
