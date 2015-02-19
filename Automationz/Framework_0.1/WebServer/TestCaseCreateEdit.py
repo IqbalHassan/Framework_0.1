@@ -295,6 +295,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
     updated_test_step_list = []
     update_master_data_list = []
     Step_Index = 1
+    test_step_insertion=False
     for each in steps_data_list:
         step_name = each[0]
         step_data = each[1]
@@ -334,13 +335,14 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                     err_msg = "Failed to add new test step at postion %s while updating test_case %s" % (Step_Index, tc_id)
                     LogMessage(sModuleInfo, err_msg, 3)
                     return err_msg
-            elif Step_Index <= len(test_step_collected_data) and ((test_step_collected_data[Step_Index - 1][0], test_step_collected_data[Step_Index - 1][1]) == test_steps_table_tuple) :
+            elif Step_Index <= len(test_step_collected_data) and ((test_step_collected_data[Step_Index - 1][0], test_step_collected_data[Step_Index - 1][1]) == test_steps_table_tuple) and not test_step_insertion:
                 # del test_step_collected_data[Step_Index-1]
                 Step_Seq = test_step_collected_data[Step_Index - 1][2]
                 updated_test_step_list.append((test_step_collected_data[Step_Index - 1][0], test_step_collected_data[Step_Index - 1][1], Step_Seq))     
                 LogMessage(sModuleInfo, "Test Steps is not changed for the Step Index %s of test case %s" % (Step_Index, tc_id), 1)
             else:
                 # insert the test_steps in the table,first form the dict
+                test_step_insertion=True
                 test_step_dict = {'tc_id':tc_id, 'step_id':step_info[0][0]}
                 if DBUtil.IsDBConnectionGood(Conn) == False:
                     time.sleep(1)
