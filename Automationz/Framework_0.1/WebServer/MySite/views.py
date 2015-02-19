@@ -5158,8 +5158,10 @@ def Get_Sections(request):
             levelnumber = 0
         else:
             levelnumber = section.count('.') + 1
-            query = "select distinct subltree(section_path,%d,%d) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d and section_path~'*.%s.*' and nlevel(section_path)>%d" % (
-                int(levelnumber), int(levelnumber + 1), project_id, int(team_id), section, int(levelnumber))
+            query = "select distinct subltree(section_path,%d,%d) from product_sections ps where section_path~'*.%s.*' and nlevel(section_path)>%d" % (
+                int(levelnumber), int(levelnumber + 1), section, int(levelnumber))
+            """query = "select distinct subltree(section_path,%d,%d) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d and section_path~'*.%s.*' and nlevel(section_path)>%d" % (
+                int(levelnumber), int(levelnumber + 1), project_id, int(team_id), section, int(levelnumber))"""
             results = DB.GetData(Conn, query, False)
 
     results.insert(0, (str(levelnumber),))
@@ -5213,8 +5215,10 @@ def Get_Features(request):
         else:
             levelnumber = feature.count('.') + 1
 
-            query = "select distinct subltree(feature_path,%d,%d) from team_wise_settings tws,product_features ps where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d and feature_path~'*.%s.*' and nlevel(feature_path)>%d" % (
-                int(levelnumber), int(levelnumber + 1), project_id, int(team_id), feature, int(levelnumber))
+            query = "select distinct subltree(feature_path,%d,%d) from product_features where feature_path~'*.%s.*' and nlevel(feature_path)>%d" % (
+                int(levelnumber), int(levelnumber + 1), feature, int(levelnumber))
+            #query = "select distinct subltree(feature_path,%d,%d) from team_wise_settings tws,product_features ps where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d and feature_path~'*.%s.*' and nlevel(feature_path)>%d" % (
+                #int(levelnumber), int(levelnumber + 1), project_id, int(team_id), feature, int(levelnumber))
             #query = "select distinct subltree(feature_path,0,1) from product_features"
             results = DB.GetData(Conn, query, False)
 
@@ -11954,7 +11958,7 @@ def delete_section(request):
             Conn.commit()
 
             query = '''
-            DELETE FROM team_wise_settings WHERE parameters=%s
+            DELETE FROM team_wise_settings WHERE parameters=%s and type = 'Section'
             '''
 
             cur.execute(query, (section_id, ))
@@ -16361,7 +16365,7 @@ def add_new_feature(request):
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = "feature"
-                dependency = request.GET.get(u'feature_path', '')
+                dependency = request.GET.get(u'feature_path', '').strip().replace(' ','_')
                 # check for the occurance
                 query = "select count(*) from product_features where feature_path='%s'" % dependency.strip(
                 )
@@ -16674,7 +16678,7 @@ def CreateLevelWiseFeature(request):
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = 'Sub Feature'
-                new_name = request.GET.get(u'name', '')
+                new_name = request.GET.get(u'name', '').strip().replace(' ','_')
                 query = "select count(*) from product_features where feature_path='%s'" % new_name.strip(
                 )
                 Conn = GetConnection()
