@@ -370,6 +370,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/get_run_objectives/$',get_run_objectives),
     url(r'^Home/uploadZip/$',uploadZip),
     url(r'^Home/.*/AutoCompleteObjectiveSearch/$',AutoCompleteObjectiveSearch),
+    url(r'^Home/tc_file_upload/$',test_case_file_upload),
 	)
 
 

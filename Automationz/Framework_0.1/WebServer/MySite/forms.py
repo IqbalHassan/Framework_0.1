@@ -14,3 +14,8 @@ class Comment(forms.Form):
         self.fields['comment'].widget.attrs['placeholder']='Comment Here...'
         self.fields['commented_by'].widget=forms.HiddenInput()
         
+class tc_file_upload(forms.Form):
+    docfile=forms.FileField(label='Attach file')
+    def __init__(self,*args,**kwargs):
+        super(tc_file_upload,self).__init__(*args,**kwargs)
+        
