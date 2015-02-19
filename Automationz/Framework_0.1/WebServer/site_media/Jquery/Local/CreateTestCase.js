@@ -19,6 +19,7 @@ var referred_test_case="";
 var dependency_classes=[];
 var new_test_case_text = "New test case";
 var test_case_format= new RegExp(/(\S+)-(\d+)/i);
+var image_list=['jpg','jpeg','gif','tiff','png','bitmap'];
 $(document).ready(function() {
 	$("#test_case_search_box").select2({
 		placeholder: "Test Case title...",
@@ -536,9 +537,15 @@ $(document).ready(function() {
                         $('#default_team_identity').val(get_team_id);
                         if(data['attachement'].length>0){
                             var message='';
-                            message+='<table>';
+                            message+='<table class="two-column-emphasis">';
                             for(var i=0;i<data['attachement'].length;i++){
-                                message+='<tr><td><a target="_blank" href="'+data['attachement'][i][1]+'">'+data['attachement'][i][0]+'</a> </td></tr>';
+                                if(image_list.indexOf(data['attachement'][i][2])!=-1){
+                                    message+='<tr><td>'+data['attachement'][i][0]+'.'+data['attachement'][i][2]+'<img src="'+data['attachement'][i][1]+'"/></td></tr>';
+                                }
+                                else{
+                                    message+='<tr><td><a target="_blank" href="'+data['attachement'][i][1]+'">'+data['attachement'][i][0]+'.'+data['attachement'][i][2]+'</a> </td></tr>';
+                                }
+                                //message+='<tr><td><iframe src="'+data['attachement'][i][1]+'">'+data['attachement'][i][0]+'.'+data['attachement'][i][2]+'</iframe></td></tr>'
                             }
                             message+='</table>';
                             $('#attachement_div').empty();

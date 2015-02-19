@@ -4878,7 +4878,7 @@ def ViewTestCase(TC_Id):
                 Step_Iteration = Step_Iteration + 1
             # return values
             Conn=GetConnection()
-            query="select file_name,file_path from tc_attachement where tc_id='%s'"%TC_Id
+            query="select file_name,file_path,file_type from tc_attachement where tc_id='%s'"%TC_Id
             attachement_list=DB.GetData(Conn,query,False)
             Conn.close()
             results = {
@@ -17065,9 +17065,10 @@ def test_case_file_upload(request):
         if request.FILES!=0:
             path = default_storage.save(os.path.join(individual_test_case_folder, str(file_name).replace(' ','_')), ContentFile(file_name.read()))
             print path
-            file_name=path[len(individual_test_case_folder)+1:].split('.')[0]
+            file_name=path[len(individual_test_case_folder)+1:].split('.')[0].strip()
+            file_type=path[len(individual_test_case_folder)+1:].split('.')[1].strip()  
             Conn=GetConnection()
-            test_case_dict={'tc_id':request.POST['file_upload_tc'],'file_path':'/site_media'+path[len(MEDIA_ROOT):],'file_name':str(file_name)}
+            test_case_dict={'file_type':str(file_type),'tc_id':request.POST['file_upload_tc'],'file_path':'/site_media'+path[len(MEDIA_ROOT):],'file_name':str(file_name)}
             result=DB.InsertNewRecordInToTable(Conn,'tc_attachement',**test_case_dict)
             Conn.close()
             return HttpResponseRedirect('/Home/ManageTestCases/Edit/'+request.POST['file_upload_tc']+'/')
