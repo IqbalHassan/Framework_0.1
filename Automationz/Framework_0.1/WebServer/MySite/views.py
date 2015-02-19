@@ -725,7 +725,7 @@ def Steps_List(request):
                 itemPerPage, (current_page - 1) * itemPerPage)"""
 
             
-            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.value,stepfeature from test_steps_list tsl,config_values cv where tsl.team_id=cv.id::text and cv.type='Team' and project_id='"+project_id+"' "
+            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.value,pf.feature_path from test_steps_list tsl,config_values cv, product_features pf where tsl.team_id=cv.id::text and cv.type='Team' and project_id='"+project_id+"' and pf.feature_id::text=tsl.stepfeature "
             steps_list=DB.GetData(Conn, query, False)
             count = len(steps_list)
             
@@ -1035,7 +1035,8 @@ def AutoCompleteTestCasesSearchOtherPages(request):
                            tag_type +
                            "'")
             print wherequery
-            query="select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !='' and case when property != 'tcid' then name ilike '%%%s%%' when property='tcid' then  tc_name ilike '%%%s%%' end group by name,property,tc.tc_name"%(value,value)
+            #query="select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !='' and case when property != 'tcid' then name ilike '%%%s%%' when property='tcid' then  tc_name ilike '%%%s%%' end group by name,property,tc.tc_name"%(value,value)
+            query = "select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !='' and case when property != 'tcid' then name ilike '%%%s%%' when property='tcid' then  tc_name ilike '%%%s%%' end group by name,property,tc.tc_name"%(project_id,int(team_id),value,value)
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
             Conn.close()
@@ -1097,14 +1098,19 @@ def AutoCompleteTestCasesSearchTestSet(request):
                            tag_type +
                            "'")
             print wherequery
-            tag_query = "select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)" % (
+            """tag_query = "select distinct name,property from test_case_tag where name Ilike '%%%s%%' and property in(%s)" % (
                 value, wherequery)
-            id_query = "select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')" % (
-                value, value)
+            id_query = "select distinct name || ' - ' || tc_name,'Test Case' from test_case_tag tct,test_cases tc where tct.tc_id = tc.tc_id and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) and (tct.tc_id Ilike '%%%s%%' or tc.tc_name Ilike '%%%s%%') and property in('tcid')" % (
+                project_id,int(team_id),value, value)
             Conn = GetConnection()
             tag_cases = DB.GetData(Conn, tag_query, False)
             id_cases = DB.GetData(Conn, id_query, False)
-            results = list(set(list(tag_cases + id_cases)))
+            results = list(set(list(tag_cases + id_cases)))"""
+            
+            query = "select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !='' and case when property != 'tcid' then name ilike '%%%s%%' when property='tcid' then  tc_name ilike '%%%s%%' end group by name,property,tc.tc_name"%(project_id,int(team_id),value,value)
+            Conn = GetConnection()
+            results = DB.GetData(Conn,query,False)
+            Conn.close()
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
 
@@ -1274,7 +1280,7 @@ def AutoCompleteRequirements(request):
             team_id = request.GET.get(u'team_id', '')
 
             Conn = GetConnection()
-            query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi,requirement_team_map rtm where r.requirement_milestone=mi.id::text and r.project_id='%s' and (r.requirement_title Ilike '%%%s%%' or r.requirement_id Ilike '%%%s%%') and rtm.team_id='%s' and r.requirement_id=rtm.requirement_id" % (
+            query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi where r.requirement_milestone=mi.id::text and r.project_id='%s' and (r.requirement_title Ilike '%%%s%%' or r.requirement_id Ilike '%%%s%%') and r.team_id='%s'" % (
                 project_id, value, value, team_id)
             req_list = DB.GetData(Conn, query, False)
             Conn.close()
@@ -4015,7 +4021,8 @@ def TestCaseSearch(request):
 #         print "Page:", requested_page
         data = DB.GetData(
             Conn,
-            "SELECT DISTINCT tc.tc_id,tc_name FROM test_cases tc, test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%%%s%%' or tc_name Ilike '%%%s%%') group by tc.tc_id having count(case when name='%s' and property='Project' then 1 end)>0  and count(case when property='Team' and name='%s' then 1 end)>0"%(term,term,project_id,team_id),
+            #"SELECT DISTINCT tc.tc_id,tc_name FROM test_cases tc, test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%%%s%%' or tc_name Ilike '%%%s%%') group by tc.tc_id having count(case when name='%s' and property='Project' then 1 end)>0  and count(case when property='Team' and name='%s' then 1 end)>0"%(term,term,project_id,team_id),
+            "SELECT DISTINCT tc.tc_id,tc_name FROM test_cases tc, test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%%%s%%' or tc_name Ilike '%%%s%%') and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) group by tc.tc_id having count(case when name='%s' and property='Project' then 1 end)>0  and count(case when property='Team' and name='%s' then 1 end)>0"%(term,term,project_id,int(team_id),project_id,team_id),
             bList=False,
             dict_cursor=False,
             paginate=True,
@@ -10589,7 +10596,7 @@ def Get_Requirements(request):
             print user
             TableData = DB.GetData(
                 Conn,
-                "select r.requirement_id,r.requirement_title,r.requirement_description,rtm.team_id from requirements r, requirement_team_map rtm,team_info ti, permitted_user_list pul where r.requirement_id=rtm.requirement_id and rtm.team_id::int=ti.team_id and ti.user_id::int=pul.user_id and pul.user_names like '%" +
+                "select r.requirement_id,r.requirement_title,r.requirement_description,r.team_id from requirements r,team_info ti, permitted_user_list pul where r.team_id::int=ti.team_id and ti.user_id::int=pul.user_id and pul.user_names like '%" +
                 user +
                 "%'",
                 False)
@@ -12361,11 +12368,11 @@ def EditTask(request, task_id, project_id):
         return render_to_response('CreateNewTask.html')
     else:
         Conn = GetConnection()
-        query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
-        team_info = DB.GetData(Conn, query, False)
+        #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
+        #team_info = DB.GetData(Conn, query, False)
         query = "select value from config_values where type='Priority'"
         priority = DB.GetData(Conn, query, False)
-        query = "select id,value from config_values where type='milestone'"
+        query = "select cv.id,cv.value from config_values cv, team_wise_settings tws where cv.type='milestone' and cv.id=tws.parameters and tws.project_id='"+project_id+"' and tws.type='Milestone'"
         milestone_list = DB.GetData(Conn, query, False)
         # get the names from permitted_user_list
         query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)"
@@ -12378,7 +12385,7 @@ def EditTask(request, task_id, project_id):
         Conn = GetConnection()
         tester_user_id = DB.GetData(Conn, query, False, False)[0][0]
         Dict = {
-            'team_info': team_info,
+            #'team_info': team_info,
             'priority_list': priority,
             'milestone_list': milestone_list,
             'user_list': user_list,
@@ -12396,11 +12403,11 @@ def ChildTask(request, task_id, project_id):
         return render_to_response('CreateNewTask.html')
     else:
         Conn = GetConnection()
-        query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
-        team_info = DB.GetData(Conn, query, False)
+        #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
+        #team_info = DB.GetData(Conn, query, False)
         query = "select value from config_values where type='Priority'"
         priority = DB.GetData(Conn, query, False)
-        query = "select id,value from config_values where type='milestone'"
+        query = "select cv.id, cv.value from config_values cv, team_wise_settings tws where cv.type='milestone' and cv.id=tws.parameters and tws.project_id='"+project_id+"' and tws.type='Milestone'"
         milestone_list = DB.GetData(Conn, query, False)
         # get the names from permitted_user_list
         query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)"
@@ -12408,7 +12415,7 @@ def ChildTask(request, task_id, project_id):
         query = "select label_id,label_name,Label_color from labels order by label_name"
         labels = DB.GetData(Conn, query, False)
         Dict = {
-            'team_info': team_info,
+            #'team_info': team_info,
             'priority_list': priority,
             'milestone_list': milestone_list,
             'user_list': user_list,
@@ -14730,11 +14737,11 @@ def Child_Requirement(request, project_id, req_id):
 
 def TaskPage(request, project_id):
     Conn = GetConnection()
-    query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
-    team_info = DB.GetData(Conn, query, False)
+    #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
+    #team_info = DB.GetData(Conn, query, False)
     query = "select value from config_values where type='Priority'"
     priority = DB.GetData(Conn, query, False)
-    query = "select id,value from config_values where type='milestone'"
+    query = "select cv.id,cv.value from config_values cv, team_wise_settings tws where cv.type='milestone' and cv.id=tws.parameters and tws.project_id='"+project_id+"' and tws.type='Milestone'"
     milestone_list = DB.GetData(Conn, query, False)
     # get the names from permitted_user_list
     query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
@@ -14742,7 +14749,7 @@ def TaskPage(request, project_id):
     query = "select label_id,label_name,Label_color from labels order by label_name"
     labels = DB.GetData(Conn, query, False)
     Dict = {
-        'team_info': team_info,
+        #'team_info': team_info,
         'priority_list': priority,
         'milestone_list': milestone_list,
         'user_list': user_list,

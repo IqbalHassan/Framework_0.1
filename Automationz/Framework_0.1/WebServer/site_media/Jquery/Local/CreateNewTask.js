@@ -8,11 +8,15 @@ var lowest_feature = 0;
 var isAtLowestFeature = false;
 var task_id = "";
 var newsectionpath = "";
+var test_case_per_page=5;
+var test_case_page_current=1;
 
 $(document).ready(function(){
 
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
+    var test_case_per_page=5;
+    var test_case_page_current=1;
 
     $('#project_id').text($.session.get('project_id'));
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
@@ -60,7 +64,7 @@ function Suggestion(project_id,team_id){
         {
             source : function(request, response) {
                 $.ajax({
-                    url:"AutoCompleteTestCasesSearchOtherPages/",
+                    url:"AutoCompleteTestCasesSearchTestSet/",
                     dataType: "json",
                     data:{ term: request.term,project_id:project_id,team_id:team_id},
                     success: function( data ) {
@@ -85,7 +89,7 @@ function Suggestion(project_id,team_id){
                         + ":&nbsp"
                         + '</td>'
                     );
-                    PerformSearch(project_id,team_id);
+                    PerformSearch(project_id,team_id,test_case_per_page,test_case_page_current);
                 }
                 $("#searchbox").val("");
                 return false;
@@ -110,7 +114,7 @@ function DeleteFilterData(project_id,team_id){
     $('#searchedFilter td .delete').live('click',function(){
         $(this).parent().next().remove();
         $(this).remove();
-        PerformSearch(project_id,team_id);
+        PerformSearch(project_id,team_id,test_case_per_page,test_case_page_current);
     });
 }
 function TestCaseLinking(){
@@ -122,7 +126,9 @@ function TestCaseLinking(){
                 url:"SearchTestCase/",
                 dataType:"json",
                 data:{
-                    term:request.term
+                    term:request.term,
+                    project_id:$.session.get('project_id'),
+                    team_id: $.session.get('default_team_identity')
                 },
                 success:function(data){
                     response(data);
@@ -284,11 +290,13 @@ function RequirementLinking(project_id,team_id){
 }
 
 
-function PerformSearch(project_id,team_id){
+function PerformSearch(project_id,team_id,test_case_per_page,test_case_page_current){
     $("#searchedFilter").each(function() {
         var UserText = $(this).find("td").text();
         UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
-        $.get('TableDataTestCasesOtherPages/',{Query:UserText,test_status_request:false,project_id:project_id,team_id:team_id},function(data){
+        $.get('TableDataTestCasesOtherPages/',{Query:UserText,test_status_request:false,project_id:project_id,team_id:team_id,
+            test_case_per_page:test_case_per_page,
+            test_case_page_current:test_case_page_current},function(data){
             if(data['TableData'].length!=0){
                 ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
                 implementDropDown("#RunTestResultTable");
@@ -298,12 +306,25 @@ function PerformSearch(project_id,team_id){
                 });
                 $('#RunTestResultTable').css({'display':'block'});
                 $('#add_button').css({'display':'block'});
+                $('#pagination_div').pagination({
+                    items:data['Count'],
+                    itemsOnPage:test_case_per_page,
+                    cssStyle: 'dark-theme',
+                    currentPage:test_case_page_current,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        PerformSearch(project_id,team_id,test_case_per_page,PageNumber);
+                    }
+                });
 
             }
             else{
                 $('#RunTestResultTable').html('<p style="font-weight: bold; text-align: center;" class="Text">There is no test cases for this filter</p>');
                 $('#RunTestResultTable').css({'display':'block'});
                 $('#add_button').css({'display':'none'});
+                $('#pagination_div').pagination('destroy');
             }
         });
     });

@@ -3,6 +3,8 @@
 {% block content %}
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script type="text/javascript" src="/site_media/Jquery/Local/CreateNewTask.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 <article>
 <div align="left">
     <h3 style="font-size: 19px;"><a style="font-weight: bold" id="header">CreateTask</a></h3>
@@ -378,8 +380,9 @@
                         </table-->
 
                         <div id="RunTestResultTable" style="display: none;"></div>
+                        <div id="pagination_div"></div>
                         <a id="add_button" href="" class="m-btn green" style="margin-left:35%;width: 10%;display: none">Add Selected</a>
-
+                        <hr>
                     </div>
 
                     <h2>Labels</h2>
@@ -412,8 +415,7 @@
                 </div>
 
     <div align="center">
-        <br>
-        <input type='button' id='submit' class="new_tc_form button minibutton primary" value="Save" style="width:auto;"/>
+        <input type='button' id='submit' class="m-btn green" value="Save" style="width:auto;"/>
     </div>
             <!--/td>
             <td width="4%">
