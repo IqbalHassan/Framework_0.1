@@ -278,7 +278,7 @@ function AutoSuggestions(project_id,team_id){
 
     // Should be used for formatting results, LATER
     function formatUsers(user_details) {
-        var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + user_details.text + '</span></div>';
+        var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + ' ' + user_details.text + '</span></div>';
 
         return markup;
     }
@@ -325,7 +325,7 @@ function AutoSuggestions(project_id,team_id){
             return false;
         });
     function formatEmails(user_details) {
-        var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + user_details.text + '</span></div>';
+        var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + ' ' + user_details.text + '</span></div>';
 
         return markup;
     }
@@ -370,7 +370,7 @@ function AutoSuggestions(project_id,team_id){
             return false;
         });
     function formatMilestone(milestone) {
-        var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' +milestone.text + '</span></div>';
+        var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' + ' ' +milestone.text + '</span></div>';
         return markup;
     }
     $("#DeleteMileStone").live('click', function() {
@@ -415,7 +415,7 @@ function AutoSuggestions(project_id,team_id){
             return false;
         });
     function formatMachine(machine) {
-        var markup ='<div><i class="fa fa-machine"></i><span style="font-weight: bold;"><span>' +machine.text + '</span></div>';
+        var markup ='<div><i class="fa fa-machine"></i><span style="font-weight: bold;"><span>'+ " " +machine.text + '</span></div>';
         return markup;
     }
 
@@ -517,13 +517,13 @@ function RunAutoCompleteTestSearch(project_id,team_id){
         var tag_select=test_case_details.text.split(' - ');
         tag_select=tag_select[tag_select.length-1].trim();
         if (tag_select=='Test Case'){
-            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + '  ' + test_case_details.text + '</span></div>';
         }
         else if(tag_select=='Section'){
-            var markup ='<div><i class="fa fa-folder-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+            var markup ='<div><i class="fa fa-folder-o"></i><span style="font-weight: bold;"><span>' + '  ' + test_case_details.text + '</span></div>';
         }
         else{
-            var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+            var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' + '  ' + test_case_details.text + '</span></div>';
         }
         return markup;
     }

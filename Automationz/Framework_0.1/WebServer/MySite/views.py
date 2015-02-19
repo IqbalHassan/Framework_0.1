@@ -764,11 +764,11 @@ def EditBug(request, bug_id):
     if bug_id != "":
         return render_to_response('CreateBug.html')
     else:
-        query = "select project_id from projects"
+        #query = "select project_id from projects"
         Conn = GetConnection()
-        project = DB.GetData(Conn, query)
-        query = "select distinct value from config_values where type='Team'"
-        team = DB.GetData(Conn, query)
+        #project = DB.GetData(Conn, query)
+        #query = "select distinct value from config_values where type='Team'"
+        #team = DB.GetData(Conn, query)
         query = "select distinct user_names from permitted_user_list where user_level='manager'"
         manager = DB.GetData(Conn, query)
         query = "select label_name, label_color, label_id from labels order by label_name"
@@ -778,8 +778,8 @@ def EditBug(request, bug_id):
         query = "select id,value from config_values where type='milestone'"
         milestone_list = DB.GetData(Conn, query, False)
         Dict = {
-            'project': project,
-            'team': team,
+            #'project': project,
+            #'team': team,
             'manager': manager,
             'labels': labels,
             'cases': cases,
@@ -12396,32 +12396,26 @@ def EditTask(request, task_id, project_id):
 
 
 def ChildTask(request, task_id, project_id):
-    task_id = request.GET.get('task_id', '')
-    project_id = request.GET.get('project_id', '')
-
-    if task_id != "":
-        return render_to_response('CreateNewTask.html')
-    else:
-        Conn = GetConnection()
-        #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
-        #team_info = DB.GetData(Conn, query, False)
-        query = "select value from config_values where type='Priority'"
-        priority = DB.GetData(Conn, query, False)
-        query = "select cv.id, cv.value from config_values cv, team_wise_settings tws where cv.type='milestone' and cv.id=tws.parameters and tws.project_id='"+project_id+"' and tws.type='Milestone'"
-        milestone_list = DB.GetData(Conn, query, False)
-        # get the names from permitted_user_list
-        query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)"
-        user_list = DB.GetData(Conn, query, False)
-        query = "select label_id,label_name,Label_color from labels order by label_name"
-        labels = DB.GetData(Conn, query, False)
-        Dict = {
-            #'team_info': team_info,
-            'priority_list': priority,
-            'milestone_list': milestone_list,
-            'user_list': user_list,
-            'labels': labels
-        }
-    return render_to_response("CreateNewTask.html", Dict)
+    Conn = GetConnection()
+    #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map)"
+    #team_info = DB.GetData(Conn, query, False)
+    query = "select value from config_values where type='Priority'"
+    priority = DB.GetData(Conn, query, False)
+    query = "select cv.id, cv.value from config_values cv, team_wise_settings tws where cv.type='milestone' and cv.id=tws.parameters and tws.project_id='%s' and tws.type='Milestone'"%project_id
+    milestone_list = DB.GetData(Conn, query, False)
+    # get the names from permitted_user_list
+    query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti where pul.user_level='assigned_tester' and pul.user_id=cast(ti.user_id as int) and team_id in (select cast(team_id as int) from project_team_map)"
+    user_list = DB.GetData(Conn, query, False)
+    query = "select label_id,label_name,Label_color from labels order by label_name"
+    labels = DB.GetData(Conn, query, False)
+    Dict = {
+        #'team_info': team_info,
+        'priority_list': priority,
+        'milestone_list': milestone_list,
+        'user_list': user_list,
+        'labels': labels
+    }
+    return render_to_response("CreateNewTask.html", Dict)    
 
 
 def Selected_TaskID_Analaysis(request):
@@ -12833,8 +12827,8 @@ def LogNewBug(request):
                     Feature_Path)
                 if result:
                     bug_id = result
-                result = simplejson.dumps(bug_id)
-                return HttpResponse(result, mimetype='application/json')
+                json = simplejson.dumps(bug_id)
+                return HttpResponse(json, mimetype='application/json')
             except Exception as e:
                 print "Exception:", e
 

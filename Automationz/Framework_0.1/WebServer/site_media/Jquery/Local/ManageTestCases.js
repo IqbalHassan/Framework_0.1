@@ -286,9 +286,8 @@ var do_on_load = function do_on_load () {
 	            var indx = 0;
 	            $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
 	                var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
-
-	                $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-copy fa-2x editBtn" id="'+ID+'"></i></span>');
-	                $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-pencil fa-2x templateBtn" id="'+ID+'"></i></span>');
+	                $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-copy fa-2x templateBtn" id="'+ID+'"></i></span>');
+	                $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-pencil fa-2x editBtn" id="'+ID+'"></i></span>');
 	                
 	                indx++;
 	            });
