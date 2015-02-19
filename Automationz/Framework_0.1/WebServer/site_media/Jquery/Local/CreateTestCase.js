@@ -529,10 +529,21 @@ $(document).ready(function() {
                         $('#defectid_txtbox').val(assoc_bugs);
                         //Manual Test Case Id
                         $('#id_txtbox').val(tc_id);
+                        $('#file_upload_tc').val(data['TC_Id']);
                         //Requirement Id
                         $('#reqid_txtbox').val(req_id);
                         $('#project_identity').val(get_project_id);
                         $('#default_team_identity').val(get_team_id);
+                        if(data['attachement'].length>0){
+                            var message='';
+                            message+='<table>';
+                            for(var i=0;i<data['attachement'].length;i++){
+                                message+='<tr><td><a target="_blank" href="'+data['attachement'][i][1]+'">'+data['attachement'][i][0]+'</a> </td></tr>';
+                            }
+                            message+='</table>';
+                            $('#attachement_div').empty();
+                            $('#attachement_div').html(message);
+                        }
                         if(!template){
                             var auto_id=data['TC_Id'];
                             var title=data['TC_Name'];

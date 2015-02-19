@@ -48,6 +48,7 @@
                 <li>Steps</li>
                 <li>Plugins</li>
                 <li>Detail</li>
+                <li>Attachment(s)</li>
                 <li>Requirement</li>
                 <li>Task(s)</li>
                 <li>Bug(s)</li>
@@ -259,6 +260,23 @@
                         </div>
                     </div>
                 </div>
+                <div>
+                    <div style="margin: 30px" align="left">
+                        <div id="attachement_div">
+
+                        </div>
+                        <form onsubmit="return check_test_case_edit_mode()" action="/Home/tc_file_upload/" method="post" enctype="multipart/form-data">
+                            {%csrf_token%}
+                            <div style="width:50%;margin-top: 2%">
+                                <table>
+                                    {{file_upload}}
+                                    <tr><input type="hidden" name="file_upload_tc" id="file_upload_tc"></tr>
+                                    <tr><td>&nbsp;</td><td><input id="file_attachement" type="submit" class="m-btn green" value="Add Attachment"/></td></tr>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -351,6 +369,18 @@
 
     <!--Plug-in Initialisation-->
     <script type="text/javascript">
+    function check_test_case_edit_mode(){
+        URL = window.location.pathname
+        indx2 = URL.indexOf("Edit");
+        if(indx2!=-1){
+            return true;
+        }
+        else{
+            alert('Test case Format error');
+            return false;
+        }
+
+    }
     $(document).ready(function() {
         //Horizontal Tab
         $('#parentHorizontalTab').easyResponsiveTabs({

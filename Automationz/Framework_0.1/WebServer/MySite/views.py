@@ -46,7 +46,7 @@ import EmailNotify
 from FileUploader import FileUploader
 from LogModule import PassMessasge
 import LogModule
-from MySite.forms import Comment
+from MySite.forms import Comment,tc_file_upload
 import RequirementOperations
 from TaskOperations import testConnection
 import TaskOperations
@@ -543,10 +543,8 @@ def CreateNew(request):
     Conn = GetConnection()
     labels = DB.GetData(Conn, query, False)
     Conn.close()
-    templ = get_template('CreateTestCase.html')
-    variables = Context({'labels': labels})
-    output = templ.render(variables)
-    return HttpResponse(output)
+    file_upload=tc_file_upload()
+    return render_to_response('CreateTestCase.html',{'labels': labels,'file_upload':file_upload},context_instance=RequestContext(request))
     """templ = get_template('CreateTestCase.html')
     variables = Context({ })
     output = templ.render(variables)
@@ -558,10 +556,8 @@ def CopyTestCase(request, tc_id):
     Conn = GetConnection()
     labels = DB.GetData(Conn, query, False)
     Conn.close()
-    templ = get_template('CreateTestCase.html')
-    variables = Context({'labels': labels})
-    output = templ.render(variables)
-    return HttpResponse(output)
+    file_upload=tc_file_upload()
+    return render_to_response('CreateTestCase.html',{'file_upload':file_upload,'labels': labels},context_instance=RequestContext(request))
     """templ = get_template('CreateTestCase.html')
     variables = Context({ })
     output = templ.render(variables)
@@ -663,10 +659,8 @@ def Edit(request, tc_id):
         Conn = GetConnection()
         labels = DB.GetData(Conn, query, False)
         Conn.close()
-        templ = get_template('CreateTestCase.html')
-        variables = Context({'labels': labels})
-        output = templ.render(variables)
-        return HttpResponse(output)
+        file_upload=tc_file_upload
+        return render_to_response('CreateTestCase.html',{'labels':labels,'file_upload':file_upload},context_instance=RequestContext(request))
         """templ = get_template('CreateTestCase.html')
         variables = Context({ })
         output = templ.render(variables)
@@ -4876,6 +4870,10 @@ def ViewTestCase(TC_Id):
                         step_continue))
                 Step_Iteration = Step_Iteration + 1
             # return values
+            Conn=GetConnection()
+            query="select file_name,file_path from tc_attachement where tc_id='%s'"%TC_Id
+            attachement_list=DB.GetData(Conn,query,False)
+            Conn.close()
             results = {
                 'TC_Id': TC_Id,
                 'TC_Name': TC_Name,
@@ -4892,7 +4890,9 @@ def ViewTestCase(TC_Id):
                 'Requirement Ids': Requirement_ID_List,
                 'project_id': TC_Project,
                 'team_id': TC_Team,
-                'Labels': Labels}
+                'Labels': Labels,
+                'attachement':attachement_list
+            }
 
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -17049,7 +17049,25 @@ def TestCaseDataFromMainDriver(request):
             }
             result = simplejson.dumps(result)
             return HttpResponse(result, mimetype = 'application/json')
-
+def test_case_file_upload(request):
+    if request.method=='POST':
+        print request.FILES
+        test_case_attachment_folder=os.path.join(MEDIA_ROOT,'tc_folder')
+        individual_test_case_folder=os.path.join(test_case_attachment_folder,request.POST['file_upload_tc'])
+        file_name = request.FILES['docfile']
+        if request.FILES!=0:
+            path = default_storage.save(os.path.join(individual_test_case_folder, str(file_name).replace(' ','_')), ContentFile(file_name.read()))
+            print path
+            file_name=path[len(individual_test_case_folder)+1:].split('.')[0]
+            Conn=GetConnection()
+            test_case_dict={'tc_id':request.POST['file_upload_tc'],'file_path':'/site_media'+path[len(MEDIA_ROOT):],'file_name':str(file_name)}
+            result=DB.InsertNewRecordInToTable(Conn,'tc_attachement',**test_case_dict)
+            Conn.close()
+            return HttpResponseRedirect('/Home/ManageTestCases/Edit/'+request.POST['file_upload_tc']+'/')
+        
+        
+        
+                
 def uploadZip(request):
     print request
     return HttpResponse(request.FILES)
