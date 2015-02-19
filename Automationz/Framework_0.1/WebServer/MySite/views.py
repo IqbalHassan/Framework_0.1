@@ -2474,6 +2474,13 @@ def Run_Test(request):
                         Conn.close()
                         if len(Eid) > 0 and isinstance(Eid,list):
                             Emails.append(Eid[0])
+                    for eachitem in TesterIds:
+                        query="select email from permitted_user_list where user_id=%d"%int(eachitem)
+                        Conn = GetConnection()
+                        Eid = DB.GetData(Conn,query)
+                        Conn.close()
+                        if len(Eid) > 0 and isinstance(Eid,list):
+                            Emails.append(Eid[0])
                     Emails = list(set(Emails))
                     stEmailIds = ','.join(Emails)
 
@@ -2835,6 +2842,18 @@ def Run_Test(request):
                     "test_env_results",
                     **Dict)
                 Conn.close()
+                
+                #email notify
+                try:
+                    urllib2.urlopen("http://www.google.com").close()
+                    EmailNotify.Send_Email(stEmailIds, runid, TestObjective, '' , '')
+                    print "connected"
+                    results = ['OK']
+                except urllib2.URLError:
+                    print "disconnected"
+                    results = ['NOK']
+                
+                
                 results = {'Result': result, 'runid': runid}
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -9377,10 +9396,48 @@ def update_runid(run_id, test_case_id):
         status = 'Complete'
         endtime = DB.GetData(oConn, "select current_timestamp", False)
         Dict.update({'testendtime': str(endtime[0][0])})
-        """allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'", False)
-        TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'", False)
-        import EmailNotify
-        EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')"""
+        allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'")
+        TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
+        tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+run_id+"'")
+        #import EmailNotify
+        #EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')
+        list = []
+
+        pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
+        passed = DB.GetData(oConn, pass_query)
+        list.append(passed[0])
+        fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % run_id
+        fail = DB.GetData(oConn, fail_query)
+        list.append(fail[0])
+        blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
+        blocked = DB.GetData(oConn, blocked_query)
+        list.append(blocked[0])
+        progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
+        progress = DB.GetData(oConn, progress_query)
+        list.append(progress[0])
+        submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
+        submitted = DB.GetData(oConn, submitted_query)
+        list.append(submitted[0])
+        skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
+        skipped = DB.GetData(oConn, skipped_query)
+        list.append(skipped[0])
+        total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
+        total = DB.GetData(oConn, total_query)
+        list.append(total[0])
+        duration = DB.GetData(
+            oConn,
+            "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '" +
+            run_id +
+            "'")
+        try:
+            urllib2.urlopen("http://www.google.com").close()
+            EmailNotify.Complete_Email(allEmailIds[0],run_id,TestObjective[0],status,list,tester,duration,'','')
+            print "connected"
+            results = ['OK']
+        except urllib2.URLError:
+            print "disconnected"
+            results = ['NOK']
+
 
     elif progress > 0 or submit_count > 0:
         status = 'In-Progress'
@@ -9562,12 +9619,12 @@ def Send_Report(request):
                 run_id +
                 "'")
 
-            EmailNotify.Complete_Email(
+            """EmailNotify.Complete_Email(
                 stEmailIds, run_id, str(
                     TestObjective[0]), status[0], list, Tester, duration, '', '')
-            results = ['OK']
+            results = ['OK']"""
 
-            """try:
+            try:
                 urllib2.urlopen("http://www.google.com").close()
                 #import EmailNotify
                 EmailNotify.Complete_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,duration,'','')
@@ -9576,7 +9633,7 @@ def Send_Report(request):
             except urllib2.URLError:
                 print "disconnected"
                 results = ['NOK']
-            """
+            
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
     ##########################################################################
@@ -12427,8 +12484,8 @@ def Selected_Requirement_Analaysis(request):
 
         #query = "select mi.name from milestone_info mi, tasks t where mi.id::text=t.tasks_milestone and t.tasks_id='%s'" %UserData
         #milestone = DB.GetData(Conn,query)
-        query = "select team_id from requirement_team_map where requirement_id='%s'" % UserData
-        teams = DB.GetData(Conn, query)
+        #query = "select team_id from requirement_team_map where requirement_id='%s'" % UserData
+        #teams = DB.GetData(Conn, query)
 
         query = "select l.label_id,l.label_name,l.Label_color from labels l, label_map lm where l.label_id=lm.label_id and lm.id='%s' and lm.type='REQ' order by label_name" % UserData
         labels = DB.GetData(Conn, query)
@@ -12457,7 +12514,7 @@ def Selected_Requirement_Analaysis(request):
         'Req_Info': Req_Info,
         'Feature': feature[0][0],
         'labels': labels,
-        'teams': teams,
+        #'teams': teams,
         'tasks': tasks,
         'cases': cases}
     json = simplejson.dumps(results)
@@ -12510,11 +12567,12 @@ def Bugs_List(request):
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
+            project = request.GET.get(u'project','')
             team = request.GET.get(u'team', '')
 
-        now = datetime.datetime.now().date()
+        #now = datetime.datetime.now().date()
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query = "select distinct bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id order by b.bug_id desc"
+        query = "select distinct bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id and b.project_id='"+project+"' and b.bug_id='"+team+"' order by b.bug_id desc"
         bugs = DB.GetData(Conn, query, False)
 
         query = "select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, label_map blm where l.label_id=blm.label_id"
@@ -12629,11 +12687,11 @@ def Reqs_List(request):
 
 
 def CreateBug(request):
-    query = "select project_id from projects"
     Conn = GetConnection()
+    """query = "select project_id from projects"
     project = DB.GetData(Conn, query)
     query = "select distinct value from config_values where type='Team'"
-    team = DB.GetData(Conn, query)
+    team = DB.GetData(Conn, query)"""
     query = "select distinct user_names from permitted_user_list where user_level='manager'"
     manager = DB.GetData(Conn, query)
     query = "select label_name, label_color, label_id from labels order by label_name"
@@ -12643,8 +12701,8 @@ def CreateBug(request):
     query = "select id,value from config_values where type='milestone'"
     milestone_list = DB.GetData(Conn, query, False)
     Dict = {
-        'project': project,
-        'team': team,
+        #'project': project,
+        #'team': team,
         'manager': manager,
         'labels': labels,
         'cases': cases,
@@ -14238,7 +14296,7 @@ def CreateRequirement(request):
         if request.method == 'GET':
             # getting all the info from the messages
             project_id = request.GET.get(u'project_id', '')
-            team_id = request.GET.get(u'team', '').split("|")
+            team_id = request.GET.get(u'team', '')
             title = request.GET.get(u'title', '')
             description = request.GET.get(u'description', '')
             start_date = request.GET.get(u'start_date', '')
@@ -14281,7 +14339,7 @@ def SubmitEditRequirement(request):
             # getting all the info from the messages
             req_id = request.GET.get(u'req_id', '')
             project_id = request.GET.get(u'project_id', '')
-            team_id = request.GET.get(u'team', '').split("|")
+            team_id = request.GET.get(u'team', '')
             title = request.GET.get(u'title', '')
             description = request.GET.get(u'description', '')
             start_date = request.GET.get(u'start_date', '')
@@ -14322,7 +14380,7 @@ def SubmitChildRequirement(request):
         if request.method == 'GET':
             # getting all the info from the messages
             project_id = request.GET.get(u'project_id', '')
-            team_id = request.GET.get(u'team', '').split("|")
+            team_id = request.GET.get(u'team', '')
             title = request.GET.get(u'title', '')
             description = request.GET.get(u'description', '')
             start_date = request.GET.get(u'start_date', '')
@@ -14624,16 +14682,16 @@ def Edit_Requirement(request, project_id, req_id):
         return HttpResponse(output)"""
     # Get the teams for this projects
     Conn = GetConnection()
-    query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
-    team_info = DB.GetData(Conn, query, False)
+    #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
+    #team_info = DB.GetData(Conn, query, False)
     query = "select value from config_values where type='Priority'"
     priority = DB.GetData(Conn, query, False)
-    query = "select id,value from config_values where type='milestone'"
+    query = "select id,value from config_values cv, team_wise_settings tws where cv.type='milestone' and tws.project_id='"+project_id+"' and tws.parameters=cv.id and tws.type='Milestone'"
     milestone_list = DB.GetData(Conn, query, False)
     query = "select label_id,label_name,Label_color from labels order by label_name"
     labels = DB.GetData(Conn, query, False)
     Dict = {
-        'team_info': team_info,
+        #'team_info': team_info,
         'priority_list': priority,
         'milestone_list': milestone_list,
         'labels': labels
@@ -14653,16 +14711,16 @@ def Child_Requirement(request, project_id, req_id):
         return HttpResponse(output)"""
     # Get the teams for this projects
     Conn = GetConnection()
-    query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
-    team_info = DB.GetData(Conn, query, False)
+    #query = "select id,value from config_values where id in(select cast(team_id as int) from project_team_map where project_id='%s')" % project_id
+    #team_info = DB.GetData(Conn, query, False)
     query = "select value from config_values where type='Priority'"
     priority = DB.GetData(Conn, query, False)
-    query = "select id,value from config_values where type='milestone'"
+    query = "select id,value from config_values cv, team_wise_settings tws where cv.type='milestone' and tws.project_id='"+project_id+"' and tws.parameters=cv.id and tws.type='Milestone'"
     milestone_list = DB.GetData(Conn, query, False)
     query = "select label_id,label_name,Label_color from labels order by label_name"
     labels = DB.GetData(Conn, query, False)
     Dict = {
-        'team_info': team_info,
+        #'team_info': team_info,
         'priority_list': priority,
         'milestone_list': milestone_list,
         'labels': labels

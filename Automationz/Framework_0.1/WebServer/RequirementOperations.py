@@ -39,6 +39,7 @@ def CreateParentRequirement(title, description, project_id, team_list, start_dat
                     ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
                     temp_Dict={
                                'project_id':project_id.strip(),
+                               'team_id':team_list,
                                'requirement_id':req_id.strip(),
                                'requirement_title':title.strip(),
                                'requirement_description':description.strip(),
@@ -55,14 +56,14 @@ def CreateParentRequirement(title, description, project_id, team_list, start_dat
                         }
                     result=DB.InsertNewRecordInToTable(Conn,"requirements",**temp_Dict)
                     if result==True:
-                        for each in team_list:
+                        """for each in team_list:
                             team_Dict={
                                        'requirement_id':req_id.strip(),
                                        'team_id':each.strip(),
                             }
                             result=DB.InsertNewRecordInToTable(Conn,"requirement_team_map",**team_Dict)
                             if result==False:
-                                return False
+                                return False"""
                             
                         Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
                         if len(Feature_Id) > 0:
@@ -124,6 +125,7 @@ def EditRequirement(req_id,title, description, project_id, team_list, start_date
         condition = "where requirement_id='%s'" % req_id
         temp_Dict={
                    'project_id':project_id.strip(),
+                   'team_id':team_list,
                    'requirement_id':req_id.strip(),
                    'requirement_title':title.strip(),
                    'requirement_description':description.strip(),
@@ -140,7 +142,7 @@ def EditRequirement(req_id,title, description, project_id, team_list, start_date
             }
         result=DB.UpdateRecordInTable(Conn,"requirements",condition,**temp_Dict)
         if result==True:
-            for each in team_list:
+            """for each in team_list:
                 result=DB.DeleteRecord(Conn, "requirement_team_map", requirement_id=req_id)
                 team_Dict={
                            'requirement_id':req_id.strip(),
@@ -148,7 +150,7 @@ def EditRequirement(req_id,title, description, project_id, team_list, start_date
                 }
                 result=DB.InsertNewRecordInToTable(Conn,"requirement_team_map",**team_Dict)
                 if result==False:
-                    return False
+                    return False"""
                 
             Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
             if len(Feature_Id) > 0:
@@ -241,6 +243,7 @@ def CreateChildRequirement(title, description, project_id, team_list, start_date
                 ending_date=datetime.datetime(int(end_date[0].strip()),int(end_date[1].strip()),int(end_date[2].strip())).date()
                 temp_Dict={
                            'project_id':project_id.strip(),
+                           'team_id':team_list,
                            'requirement_id':req_id.strip(),
                            'requirement_title':title.strip(),
                            'requirement_description':description.strip(),
@@ -257,14 +260,14 @@ def CreateChildRequirement(title, description, project_id, team_list, start_date
                     }
                 result=DB.InsertNewRecordInToTable(Conn,"requirements",**temp_Dict)
                 if result==True:
-                    for each in team_list:
+                    """for each in team_list:
                         team_Dict={
                                    'requirement_id':req_id.strip(),
                                    'team_id':each.strip(),
                         }
                         result=DB.InsertNewRecordInToTable(Conn,"requirement_team_map",**team_Dict)
                         if result==False:
-                            return False
+                            return False"""
                         
                     Feature_Id = DB.GetData(Conn, "select feature_id from product_features where feature_path = '%s'" % feature_path)
                     if len(Feature_Id) > 0:

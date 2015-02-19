@@ -290,6 +290,29 @@ def Verify_Text_Message_By_Class(element, expected_text):
         return "Failed"  
 
 
+def Course_Exists(course):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course, 1)
+        print "Searching for course: %s"%course
+        Elem = sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %course)
+        actual_text = Elem.text
+       
+        if actual_text == course:
+            print "Successfully verified that course exists: %s"%actual_text
+            CommonUtil.ExecLog(sModuleInfo, "Successfully verified that course exists: %s"%actual_text, 1)
+            time.sleep(3)
+            return "PASSED"            
+     
+    except Exception, e:
+        #print "Exception : ", e
+        CommonUtil.ExecLog(sModuleInfo, "Could not find your course: %s"%course, 3)
+        print "Could not find your expected course: %s"%course
+        return "Failed"  
+    
+
+
 def Verify_Text_Message_By_Text(expected_text):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
@@ -380,7 +403,45 @@ def Delete_A_Course(course_name):
         print "No open browser to close"
         return "Failed"
         
+def Create_A_New_Course(course_name, short_name, course_id, cleanup='true'):
+    '''
+    it assumes that you are logged in as Admin
+    This function accepts: 
+    course_name =  name of the course. 
+    cleanup = true if you want to delete old name or false if you want to just keep the name if it already there
+    '''
+
+    Click_Element_By_Name_OR_ID('Home')
     
+    course_exists = Course_Exists(course_name)
+    if (course_exists == "PASSED") and (cleanup=='true'):
+        print "Existing course found and will be deleted"
+        result = Delete_A_Course(course_name)
+        if result == "Failed":
+            print "Unable to delete an existing course"
+            return "Failed"
+    elif (course_exists == "PASSED") and (cleanup!='true'):
+        print "Course already exists and clean up was set not to re-create"
+        return "PASSED"
+    else:
+        print "Course name was not found and will be created"
+            
+    
+    Turn_Editing_On_OR_Off("on")
+    Expand_Menu_By_Name_OR_ID('Site administration')
+    Expand_Menu_By_Name_OR_ID('yui_3_15_0_3_1424235876713_5248')
+    Click_Element_By_Name_OR_ID('Manage courses and categories')
+    Click_Element_By_Name_OR_ID('Miscellaneous')
+    Click_Element_By_Name_OR_ID('Create new course')
+    Set_Text_Field_Value_By_ID('id_fullname',course_name)
+    Set_Text_Field_Value_By_ID('id_shortname',short_name)
+    Set_Text_Field_Value_By_ID('id_idnumber',course_id)
+    
+    Click_By_Parameter_And_Value("value","Save changes")
+    course_name_verify = "%s: 0 enrolled users"%course_name
+    Verify_Text_Message_By_Text(course_name_verify)
+
+    Tear_Down()  
 
 def Turn_Editing_On_OR_Off(on_off):
     '''
@@ -449,6 +510,22 @@ def Turn_Editing_On_OR_Off(on_off):
         return "Failed"
         
     
+def Click_By_Parameter_And_Value(parameter,value):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        CommonUtil.TakeScreenShot("sModuleInfo")
+        CommonUtil.ExecLog(sModuleInfo, "Locating your element...", 1)
+        Elem = sBrowser.find_element_by_xpath("//input[@%s='%s']"%(parameter,value))
+        CommonUtil.ExecLog(sModuleInfo, "Found element and clicking..", 1)
+        Elem.click()
+        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked by %s and %"%(parameter,value), 1)
+        time.sleep(3)
+    except Exception, e:
+        print "Exception : ", e
+        CommonUtil.ExecLog(sModuleInfo, "No open browser to close", 3)
+        print "No open browser to close"
+        return "Failed"
+    
 
 
 def Tear_Down():
@@ -469,4 +546,6 @@ def Tear_Down():
 # BrowserSelection('Firefox')
 # OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
 # Login('admin','R@1ndrops')
-# print sBrowser
+# Expand_Menu_By_Name_OR_ID('Site administration')
+# Create_A_New_Course("AutomationCourse", "AS", "ASID")
+
