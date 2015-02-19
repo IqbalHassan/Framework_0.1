@@ -1884,6 +1884,25 @@ def RunId_TestCases(request, RunId):
     Conn = GetConnection()
     Env_Details_Data = DB.GetData(Conn, query, False)
     Conn.close()
+    dependency=Env_Details_Data[0][5]
+    query="select rundescription from test_run_env where run_id='%s'"%(RunId)
+    selected_dependency=[]
+    Conn=GetConnection()
+    run_desc=DB.GetData(Conn,query,False)
+    Conn.close()
+    for each in run_desc[0][0].split(' '):
+        for eachitem in dependency:
+            if eachitem.split(' : ')[1].split(' - ')[0].lower()==each.lower():
+                selected_dependency.append(eachitem)
+                break
+    final_list=[]
+    for each in Env_Details_Data:
+        temp=[]
+        for eachitem in each:
+            temp.append(eachitem)
+        temp[5]=selected_dependency
+        final_list.append(tuple(temp))
+    Env_Details_Data=final_list
     # Code for the total estimated time for the RUNID
     totalRunIDTime = 0
     query = "select tc_id from test_run where run_id='%s'" % RunId
