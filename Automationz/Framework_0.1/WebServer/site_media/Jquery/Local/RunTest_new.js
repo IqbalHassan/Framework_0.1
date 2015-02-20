@@ -909,6 +909,13 @@ function generate_name(dependency_list,name,type){
                         $('#'+type+'_bit').css({'display':'block'});
                         break;
                     }
+                    else{
+                        $('#'+type+'_bit').empty();
+                        $('#'+type+'_version').empty();
+                        $('#'+type+'_bit').css({'display':'none'});
+                        $('#'+type+'_version').css({'display':'none'});
+                        break;
+                    }
                 }
             }
         }

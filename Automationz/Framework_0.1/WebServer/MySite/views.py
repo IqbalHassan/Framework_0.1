@@ -1900,7 +1900,8 @@ def RunId_TestCases(request, RunId):
         temp=[]
         for eachitem in each:
             temp.append(eachitem)
-        temp[5]=selected_dependency
+        if(len(selected_dependency)>0):
+            temp[5]=selected_dependency
         final_list.append(tuple(temp))
     Env_Details_Data=final_list
     # Code for the total estimated time for the RUNID
@@ -10110,7 +10111,7 @@ def AddManualTestMachine(request):
                             problem = False
                             for each in new_dependency:
                                 Dict = {}
-                                if each[2] == 'Nil':
+                                if each[2] != 'Nil':
                                     Dict.update({'machine_serial': machine_id, 'name': each[
                                                 1], 'bit': each[2], 'version': each[3], 'type': each[0]})
                                 else:
