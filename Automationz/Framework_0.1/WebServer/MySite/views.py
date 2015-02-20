@@ -9118,12 +9118,19 @@ def DataFetchForTestCases(request):
         test_case_id, run_id)
     Conn = GetConnection()
     test_case_status = DB.GetData(Conn, query, False)
+    Conn.close()
     print DataColumn
     print DataCollected
+    query="select file_path,file_name,file_type from tc_attachement where tc_id='%s'"%test_case_id
+    Conn=GetConnection()
+    attachement_list=DB.GetData(Conn,query,False)
+    Conn.close()
+    print attachement_list
     message = {
         'data_column': DataColumn,
         'data_collected': DataCollected,
-        'test_case_status': test_case_status[0][0]
+        'test_case_status': test_case_status[0][0],
+        'attachment':attachement_list
     }
     results = simplejson.dumps(message)
     return HttpResponse(results, mimetype='application/json')

@@ -237,7 +237,7 @@ colors = {
     'in-progress':'#0000ff',
     'skipped':'#cccccc'
 };
-
+var image_list=['jpg','jpeg','gif','tiff','png','bitmap'];
 function DataFetch(){
     var run_id=$('#runid').text().trim();
     var test_case_id=$('#testcaseid').text().trim();
@@ -251,6 +251,7 @@ function DataFetch(){
          console.log(data['data_column']);*/
         var datatable=data['data_collected'];
         var datacolumn=data['data_column'];
+        var attachement_list=data['attachment'];
         var message=table_message(datacolumn,datatable);
         //console.log(message);
         $('#testcasestatus').html(data['test_case_status']);
@@ -281,6 +282,21 @@ function DataFetch(){
         $("#breadcrumb_header").css("border-left", css);
 
         $('#RunIDTestCaseData').html(message);
+        if(attachement_list.length>0){
+            var message='';
+            message+='<table class="two-column-emphasis">';
+            for(var i=0;i<attachement_list.length;i++){
+                if(image_list.indexOf(attachement_list[i][2])!=-1){
+                    message+='<tr><td>'+attachement_list[i][1]+'.'+attachement_list[i][2]+'<img src="'+attachement_list[i][0]+'"/></td></tr>';
+                }
+                else{
+                    message+='<tr><td><a target="_blank" href="'+attachement_list[i][0]+'">'+attachement_list[i][1]+'.'+attachement_list[i][2]+'</a> </td></tr>';
+                }
+            }
+            message+='</table>';
+            $('#attachement_div').empty();
+            $('#attachement_div').html(message);
+        }
         TestDataFetch();
         MakeStatusSelectable();
         InputFailReason();
