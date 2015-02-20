@@ -866,8 +866,8 @@ def main():
             Global.sTestStepExecLogId = "MainDriver"
 
             #Send Summary Email
-            conn=DBUtil.ConnectToDataBase()
-            ToEmailAddress = DBUtil.GetData(conn, "select email_notification from test_run_env where run_id = '%s'" % (TestRunID[0]))
+            oConn=DBUtil.ConnectToDataBase()
+            ToEmailAddress = DBUtil.GetData(oConn, "select email_notification from test_run_env where run_id = '%s'" % (TestRunID[0]))
             TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+TestRunID[0]+"'")
             tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+TestRunID[0]+"'")
             #import EmailNotify
@@ -902,9 +902,9 @@ def main():
                 "'")
             
             
-            conn.close()
+            oConn.close()
             if ToEmailAddress[0]:
-                conn=DBUtil.ConnectToDataBase()
+                #conn=DBUtil.ConnectToDataBase()
                 #email notify
                 try:
                     urllib2.urlopen("http://www.google.com").close()
