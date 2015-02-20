@@ -251,7 +251,7 @@ def get_all_machine(request):
                         temp_detail[0][0],
                         '%a-%b-%d-%H:%M:%S-%Y')
                     diff = now - update_time
-                    if diff.days > 1:
+                    if diff.days >= 1:
                         temp.append('offline')
                     else:
                         temp.append('online')
