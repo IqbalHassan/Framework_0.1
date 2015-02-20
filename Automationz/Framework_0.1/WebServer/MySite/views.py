@@ -10896,8 +10896,8 @@ def TableDataTestCasesOtherPages(request):
                     TableData = []
                     if len(TestIDList) > 0:
                         for eachitem in TestIDList:
-                            query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' and tct.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0" % (
-                                eachitem, project_id, team_id, project_id, team_id)
+                            query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0" % (
+                                eachitem, project_id, team_id)
                             Query=query
                             query=query+ condition
                             Conn = GetConnection()
