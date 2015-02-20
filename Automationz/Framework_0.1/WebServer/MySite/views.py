@@ -9068,23 +9068,31 @@ def DataFetchForTestCases(request):
                     Temp_Data.append("true")
                 else:
                     Temp_Data.append("false")
-
-                query = "select step_continue,estd_time,stepenable,driver,stepfeature from result_test_steps_list where step_id=%d and run_id='%s'" % (
+                
+                query = "select description from result_master_data where id='%s' and field='continue' and value='point' and run_id='%s'" % (
+                    datasetid, run_id)
+                continue_point = DB.GetData(Conn, query, False)
+                if continue_point[0][0] == 'yes':
+                    Temp_Data.append("true")
+                else:
+                    Temp_Data.append("false")
+                
+                query = "select estd_time,stepenable,driver,stepfeature from result_test_steps_list where step_id=%d and run_id='%s'" % (
                     TestStepList[each][0], run_id)
                 StepType = DB.GetData(Conn, query, False)
                 # Temp_Data.append(StepType[0][1])
-                if StepType[0][0]:
-                    Temp_Data.append("true")
-                else:
-                    Temp_Data.append("false")
-                Temp_Data.append(StepType[0][1])
+                Temp_Data.append(StepType[0][0])
                 # Temp_Data.append(StepType[0][3])
-                if StepType[0][2]:
+                if StepType[0][1]:
                     Temp_Data.append("true")
                 else:
                     Temp_Data.append("false")
-                Temp_Data.append(StepType[0][3])
-                Temp_Data.append(StepType[0][4])
+                Temp_Data.append(StepType[0][2])
+                Conn.close()
+                Conn=GetConnection()
+                query="select feature_path from product_features where feature_id=%d"%int(StepType[0][3])
+                feature_name=DB.GetData(Conn,query,False)
+                Temp_Data.append(feature_name[0][0].replace('.','/'))
                 Conn.close()
                 print Temp_Data
                 # Temp_Data.append("Log")

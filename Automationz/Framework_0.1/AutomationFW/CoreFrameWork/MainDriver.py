@@ -315,7 +315,6 @@ def main():
             return False
         #TestCaseLists = list(TestCaseLists[0])
         for TestCaseID in TestCaseLists:
-            testcasecontinue="yes"
             Global.sTestStepExecLogId = "MainDriver"
             StepSeq = 1
             TCID = list(TestCaseID)[0]
@@ -427,7 +426,15 @@ def main():
                     # Beginning of a Test Step
                     print "Step: ", TestStepsList[StepSeq - 1][1]
                     CommonUtil.ExecLog(sModuleInfo, "Step : %s" % TestStepsList[StepSeq - 1][1], 1)
-
+                    testcasecontinue=False
+                    Conn=DBUtil.ConnectToDataBase()
+                    query="select description from master_data where field='continue' and value='point' and id ='%s'"%(TCID+'_s'+str(StepSeq))
+                    test_case_continue=DBUtil.GetData(Conn,query,False)
+                    Conn.close()
+                    if test_case_continue[0][0]=='yes':
+                        testcasecontinue=True
+                    else:
+                        testcasecontinue=False
                     #if DataType == 'Performance':
                     #    PerfQ.put(TestStepsList[StepSeq - 1][1])
                     #Check if the current test step is a Performance Test Step
@@ -614,6 +621,8 @@ def main():
                                                    memory_consumed='%s' % (TestStepMemConsumed)
                                                    )
                         conn.close()
+                        if not testcasecontinue:
+                            break
                     elif sStepResult.upper() == "NOT RUN":
                         #Step has Warning, but continue running next test step for this test case
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Not Run"
@@ -628,10 +637,6 @@ def main():
                                                    memory_consumed='%s' % (TestStepMemConsumed)
                                                    )
                         conn.close()
-                        if testcasecontinue=='yes':
-                            testcasecontinue='false'
-                        else:
-                            break    
                     elif sStepResult.upper() == "FAILED":
                         #Step has a Critial failure, fail the test step and test case. go to next test case
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Failed Failure"
@@ -649,9 +654,7 @@ def main():
                         #Discontinue this test case
                         #break
                         #for continuing the test cases if failed
-                        if testcasecontinue=='yes':
-                            testcasecontinue='false'
-                        else:
+                        if not testcasecontinue:
                             break
                     elif sStepResult.upper() == "BLOCKED":
                         #Step is Blocked, Block the test step and test case. go to next test case
@@ -670,10 +673,7 @@ def main():
                         #Discontinue this test case
                         #break
                         #for continuing the test cases if failed
-                        if testcasecontinue=='yes':
-                            testcasecontinue='false'
-                        else:
-                            break
+                        
                     #End Test Step
                     #increment step counter
                     StepSeq = StepSeq + 1
