@@ -175,7 +175,7 @@ function get_cases(UserText,itemPerPage,PageCurrent){
                     }
                 });
 
-                $("#tc_table tr>td:first-child").each(function(){
+                /*$("#tc_table tr>td:first-child").each(function(){
                     $(this).css({
                             'color': 'blue',
                             'cursor': 'pointer',
@@ -185,7 +185,10 @@ function get_cases(UserText,itemPerPage,PageCurrent){
                         tc_id = $(this).text().trim();
                         window.location = '/Home/ManageTestCases/Edit/' + tc_id ;
                     });
-                });
+                });*/
+                //$("#tc_table").fadeIn(1000);
+                //$("p:contains('Show/Hide Test Cases')").fadeIn(0);
+                implementDropDown("#tc_table");
                 var indx = 0;
                 $('#tc_table tr>td:nth-child(3)').each(function(){
                     var ID = $("#tc_table tr>td:nth-child(1):eq("+indx+")").text().trim();
@@ -206,3 +209,23 @@ function get_cases(UserText,itemPerPage,PageCurrent){
 
         });
 }
+
+function implementDropDown(wheretoplace){
+        $(wheretoplace+" tr td:nth-child(1)").css({'color' : 'blue','cursor' : 'pointer'});
+        $(wheretoplace+" tr td:nth-child(1)").each(function() {
+            var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+            var name=$(this).text().trim();
+            $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+            $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+                var data_list=data['Result'];
+                var column=data['column'];
+                ResultTable('#'+ID+'detail',column,data_list,"");
+                $('#'+ID+'detail tr').each(function(){
+                    $(this).css({'textAlign':'left'});
+                });
+            });
+            $(this).live('click',function(){
+                $('#'+ID+'detail').slideToggle("slow");
+            });
+        });
+    }
