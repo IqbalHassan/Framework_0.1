@@ -17112,7 +17112,58 @@ def test_case_file_upload(request):
 def uploadZip(request):
     print request
     return HttpResponse(request.FILES)
-'''
+
+def clean_run_history(request):
+    return render_to_response('CleanupRunHistory.html',{},context_instance=RequestContext(request))
+
+def get_cleanup_data(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            current_page=request.GET.get(u'current_page','')
+            run_per_page=request.GET.get(u'run_per_page','')
+            #form the condition first
+            condition="limit %d offset %d"%(int(run_per_page), ((int(current_page)-1)*int(run_per_page)))
+            query="select tre.run_id,ter.rundescription,ter.status from test_run_env tre,test_env_results ter,machine_project_map mpm where mpm.machine_serial=tre.id and tre.run_id=ter.run_id and tre.status=ter.status  and mpm.project_id='%s' and team_id=%d order by last_updated_time desc"%(project_id,int(team_id))
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,query,False)
+            Conn.close()
+            query+=(' '+condition.strip())
+            Conn=GetConnection()
+            run_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            Column=['Run Id','Objective','Status']
+            Dict={
+                'count':len(count_query),
+                'data':run_list,
+                'column':Column
+            }
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+
+def cleanup_data(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            table_name=['test_case_results','test_step_results','test_run_env','test_env_results','test_run','result_master_data','result_test_steps_data','result_container_type_data','result_test_case_datasets','result_test_case_tag','result_test_steps','result_test_cases']
+            run_id_list=request.GET.get(u'run_id_list','').split('|')
+            status=[]
+            for each in run_id_list:
+                status_list=[]
+                for eachitem in table_name:
+                    Conn=GetConnection()
+                    result= DB.DeleteRecord(Conn, eachitem,run_id=each)
+                    print result
+                    status_list.append(result)
+                    Conn.close()
+                if len(status_list)==len(table_name):
+                    status.append(True)
+            Dict={
+                'message':True
+            }
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+'''        
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
 

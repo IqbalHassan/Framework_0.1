@@ -1,0 +1,29 @@
+{% extends 'BaseTemplate.html' %}
+{% block title%}Clean Run History{% endblock %}
+{% block content%}
+<script type="text/javascript" src="/site_media/Jquery/Local/CleanuupRunHistory.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
+<article>
+    <div align="left">
+        <h3 style="font-size: 19px;"><a href="/Home/Cleanup/RunHistory/"><b>Cleanup / RunHistory</b></a></h3>
+    </div>
+    <div>
+        <div id="run_history_table">
+
+        </div>
+        <table>
+            <tr>
+                <td width="95%">
+                    <div id="pagination_div">
+
+                    </div>
+                </td>
+                <td align="left">
+                    <input type="button" class="m-btn red" id="delete_selected" value="Delete Selected"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</article>
+{% endblock %}

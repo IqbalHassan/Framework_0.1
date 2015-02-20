@@ -371,6 +371,9 @@ urlpatterns += patterns('',
     url(r'^Home/uploadZip/$',uploadZip),
     url(r'^Home/.*/AutoCompleteObjectiveSearch/$',AutoCompleteObjectiveSearch),
     url(r'^Home/tc_file_upload/$',test_case_file_upload),
+    url(r'^Home/Cleanup/RunHistory/$',clean_run_history),
+    url(r'^Home/.*/get_cleanup_data/$',get_cleanup_data),
+    url(r'^Home/.*/cleanup_data/$',cleanup_data),
 	)
 
 
