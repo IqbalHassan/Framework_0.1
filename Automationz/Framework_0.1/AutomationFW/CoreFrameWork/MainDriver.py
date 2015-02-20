@@ -336,9 +336,9 @@ def main():
                 log_file_path=config.get('sectionOne', 'temp_run_file_path')
             except Exception, e:
                 print "Exception: ",e
-            Global.TCLogFolder=log_file_path+os.sep+(TCID.replace(":",'-'))
+            Global.TCLogFolder=log_file_path+os.sep+(TestRunID[0].replace(':','-')+os.sep+TCID.replace(":",'-'))
             #Global.TCLogFolder = (Global.NetworkLogFolder + os.sep + sTestResultsRunId + os.sep + TCID + "_" + CommonUtil.TimeStamp("utcstring")).replace(":", "-")
-            test_case_folder=log_file_path+os.sep+(TCID.replace(":",'-'))
+            test_case_folder=log_file_path+os.sep+(TestRunID[0].replace(':','-')+os.sep+TCID.replace(":",'-'))
             update_global_config('sectionOne', 'test_case',TCID)
             update_global_config('sectionOne','test_case_folder',test_case_folder)
             log_folder=test_case_folder+os.sep+'Log'

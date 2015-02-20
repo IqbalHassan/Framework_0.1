@@ -22,8 +22,8 @@ def RunProcess(sTesterid):
             if status[0] != "Unassigned":
                 if status[0] == "Submitted":
                     #first Create a temp folder in the samefolder
-                    current_path=os.getcwd()+os.sep+'TempRun'
-                    retVal=FileUtilities.CreateFolder(current_path)
+                    current_path=os.getcwd()+os.sep+'LogFiles'
+                    retVal=FileUtilities.CreateFolder(current_path,forced=False)
                     if retVal:
                         Global.RunIdTempPath=current_path
                         #now save it in the global_config.ini
