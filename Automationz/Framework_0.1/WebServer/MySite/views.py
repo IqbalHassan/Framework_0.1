@@ -725,7 +725,7 @@ def Steps_List(request):
                 itemPerPage, (current_page - 1) * itemPerPage)"""
 
             
-            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.value,pf.feature_path from test_steps_list tsl,config_values cv, product_features pf where tsl.team_id=cv.id::text and cv.type='Team' and project_id='"+project_id+"' and pf.feature_id::text=tsl.stepfeature "
+            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.value from test_steps_list tsl,config_values cv where tsl.team_id=cv.id::text and cv.type='Team' and project_id='"+project_id+"' "
             steps_list=DB.GetData(Conn, query, False)
             count = len(steps_list)
             
@@ -739,14 +739,14 @@ def Steps_List(request):
                 Data.append(temp[0][0])
                 p_steps_list.append(tuple(Data))
                 
-            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(10),reverse=True)
+            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(9),reverse=True)
             
             #pquery = query + condition
             #p_steps_list = DB.GetData(Conn, pquery, False)
             
         
         
-    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Created By','Team','Feature','Test Cases']    
+    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Created By','Team','Test Cases']    
     results = {'Heading':Heading,'steps':p_steps_list, 'count': count}
     json = simplejson.dumps(results)
     Conn.close()
@@ -5332,6 +5332,10 @@ def Auto_Step_Create(request):
     # if request.is_ajax():
     if request.method == "GET":
         step = request.GET.get(u'step', '')
+        project_id = request.GET.get(u'project_id','')
+        team_id = request.GET.get(u'team_id','')
+        user = request.GET.get(u'user','')
+        now = datetime.datetime.now().date()
         if step != '':
             results = DB.GetData(
                 Conn,
@@ -5355,7 +5359,13 @@ def Auto_Step_Create(request):
             expected=step,
             verify_point='false',
             step_continue='false',
-            estd_time='59')
+            estd_time='59',
+            project_id=project_id,
+            team_id=team_id,
+            created_by=user,
+            modified_by=user,
+            created_date=now,
+            modified_date=now)
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')

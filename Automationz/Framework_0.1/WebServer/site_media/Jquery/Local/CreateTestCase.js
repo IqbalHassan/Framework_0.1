@@ -2662,7 +2662,10 @@ function auto_step_create(step){
         url:'Auto_Step_Create/',
         dataType : "json",
         data : {
-            step : step
+            step : step,
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity'),
+            user: $.session.get('fullname')
         },
         success: function( json ) {
             if(json[0]==0){
