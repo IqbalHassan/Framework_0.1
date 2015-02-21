@@ -733,6 +733,8 @@ def Steps_List(request):
             for each in steps_list:
                 query="select count(tc_id) from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='" + each[0] + "'))"
                 temp = DB.GetData(Conn, query, False)
+                #query="select pf.feature_path from test_steps_list tsl, product_features pf where tsl.stepfeature=pf.feature_id::text and tsl.stepname='"+each[0]+"'"
+                #feat = DB.GetData(Conn, query, False)
                 Data=[]
                 for i in each:
                     Data.append(i)
@@ -5336,6 +5338,14 @@ def Auto_Step_Create(request):
         team_id = request.GET.get(u'team_id','')
         user = request.GET.get(u'user','')
         now = datetime.datetime.now().date()
+        feature_path = request.GET.get(u'feature_path','')
+        feature_id = DB.GetData(
+                    Conn,
+                    "select feature_id from product_features where feature_path = '" +
+                    feature_path +
+                    "'",
+                    False)
+        fid = feature_id[0][0]
         if step != '':
             results = DB.GetData(
                 Conn,
@@ -5352,7 +5362,7 @@ def Auto_Step_Create(request):
             driver='WebDriver',
             steptype='manual',
             data_required='false',
-            stepfeature='Common',
+            #stepfeature='Common',
             stepenable='true',
             step_editable='true',
             case_desc=step,
@@ -5365,7 +5375,8 @@ def Auto_Step_Create(request):
             created_by=user,
             modified_by=user,
             created_date=now,
-            modified_date=now)
+            modified_date=now,
+            stepfeature=fid)
 
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')

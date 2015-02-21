@@ -933,7 +933,7 @@ $(document).ready(function() {
                         alertify.error('Estimated time for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
-                    auto_step_create($('#searchbox'+i+'name').val().trim());
+                    auto_step_create($('#searchbox'+i+'name').val().trim(),newFeaturePath);
                     stepNameList.push($('#searchbox'+i+'name').val());
                     stepExpectedList.push($('#searchbox'+i+'expected').val());
                     stepDescriptionList.push($('#searchbox'+i+'info').val());
@@ -2657,7 +2657,7 @@ function AutoCompleteSearchForPrompt(){
 //            .appendTo( ul );
 //    };
 }
-function auto_step_create(step){
+function auto_step_create(step,feature){
     $.ajax({
         url:'Auto_Step_Create/',
         dataType : "json",
@@ -2665,7 +2665,9 @@ function auto_step_create(step){
             step : step,
             project_id: $.session.get('project_id'),
             team_id: $.session.get('default_team_identity'),
-            user: $.session.get('fullname')
+            user: $.session.get('fullname'),
+            feature_path:feature
+            //feature_path = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
         },
         success: function( json ) {
             if(json[0]==0){
