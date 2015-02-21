@@ -7242,6 +7242,7 @@ def TestCase_Results(request):
             page = int(request.GET.get(u'PageCurrent',''))
             sQuery = "select tc_id,tc_name from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='" + \
                 UserData + "')) "
+            #sQuery = "select tc.tc_id,tc.tc_name,ps.section_path from test_cases tc,test_case_tag tct,product_sections ps where tc.tc_id=tct.tc_id and tct.property='section_id' and ps.section_id::text=tct.name and tc.tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='%s')) " %UserData
             TableData = DB.GetData(conn, sQuery, False)
             condition = "limit %d offset %d" % (item, (page - 1) * item)
             
@@ -7249,7 +7250,7 @@ def TestCase_Results(request):
             p_list = DB.GetData(conn,query,False)
             conn.close()
             Check_TestCase(p_list, RefinedData)
-    Heading = ['TestCase_ID', 'TestCase_Name', 'TestCase_Type']
+    Heading = ['TestCase ID', 'TestCase Title','TestCase Type']
     results = {'Heading': Heading, 'TableData': RefinedData,'count':len(TableData)}
     # results={'TableData':TableData}
     json = simplejson.dumps(results)
