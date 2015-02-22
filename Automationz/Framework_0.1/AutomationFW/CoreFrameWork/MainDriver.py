@@ -872,7 +872,7 @@ def main():
             tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+TestRunID[0]+"'")
             #import EmailNotify
             #EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')
-            list = []
+            """list = []
     
             pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % TestRunID[0]
             passed = DB.GetData(oConn, pass_query)
@@ -914,7 +914,7 @@ def main():
                 except urllib2.URLError:
                     print "disconnected"
                     results = ['NOK']
-                """try:
+                try:
                     Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
                     CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
                 except Exception, e:
