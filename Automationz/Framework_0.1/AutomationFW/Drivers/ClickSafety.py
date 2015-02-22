@@ -11,8 +11,7 @@ def start_browser(dependency,step_data):
         print sTestStepReturnStatus
         return sTestStepReturnStatus
     except:
-        sTestStepReturnStatus = "Failed"
-        return
+        return "Failed"
 
 def go_to_a_weblink(dependency,step_data):
     try:
@@ -23,8 +22,7 @@ def go_to_a_weblink(dependency,step_data):
         print sTestStepReturnStatus
         return sTestStepReturnStatus
     except:
-        sTestStepReturnStatus = "Failed"
-        return
+        return "Failed"
 
 def log_in_to_clicksafety(dependency,step_data):
     try:        
@@ -35,8 +33,7 @@ def log_in_to_clicksafety(dependency,step_data):
         print sTestStepReturnStatus
         return sTestStepReturnStatus
     except:
-        sTestStepReturnStatus = "Failed"
-        return
+        return "Failed"
     
 def expand_menu_by_name_or_id(dependency,step_data):
     try:        
@@ -46,9 +43,8 @@ def expand_menu_by_name_or_id(dependency,step_data):
         print sTestStepReturnStatus
         return sTestStepReturnStatus       
     except:
-        sTestStepReturnStatus = "Failed"
-        return
-
+        return "Failed"
+    
 def click_element_by_name_or_id(dependency,step_data):
     try:        
         first_data_set=step_data[0]
@@ -57,8 +53,7 @@ def click_element_by_name_or_id(dependency,step_data):
         print sTestStepReturnStatus
         return sTestStepReturnStatus  
     except:
-        sTestStepReturnStatus = "Failed"
-        return
+        return "Failed"
 
 def course_settings_time_limit(dependency,step_data):
     try:        
@@ -72,9 +67,8 @@ def course_settings_time_limit(dependency,step_data):
         print sTestStepReturnStatus
         return sTestStepReturnStatus  
     except:
-        sTestStepReturnStatus = "Failed"
-        return
-
+        return "Failed"
+    
 def verify_text_message_by_class(dependency,step_data):
     try:        
         first_data_set=step_data[0]
@@ -84,9 +78,8 @@ def verify_text_message_by_class(dependency,step_data):
         print sTestStepReturnStatus
         return sTestStepReturnStatus 
     except:
-        sTestStepReturnStatus = "Failed"
-        return
-
+        return "Failed"
+    
 def turn_editing_on_or_off(dependency,step_data):
     try:        
         first_data_set=step_data[0]
@@ -95,8 +88,7 @@ def turn_editing_on_or_off(dependency,step_data):
         print sTestStepReturnStatus
         return sTestStepReturnStatus 
     except:
-        sTestStepReturnStatus = "Failed"
-        return
+        return "Failed"
 
 def tear_down(dependency,step_data):
     try:        
@@ -104,5 +96,4 @@ def tear_down(dependency,step_data):
         print sTestStepReturnStatus
         return sTestStepReturnStatus
     except:
-        sTestStepReturnStatus = "Failed"
-        return
+        return "Failed"

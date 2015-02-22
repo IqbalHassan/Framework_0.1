@@ -37,7 +37,7 @@ def BrowserSelection(browser):
             CommonUtil.ExecLog(sModuleInfo, "Started Firefox Browser", 1)
             print "Started Firefox Browser"
             return "PASSED"
-        elif "IE" in browser:
+        elif "Ie" in browser:
             sBrowser = webdriver.Ie()
             sBrowser.maximize_window()
             CommonUtil.ExecLog(sModuleInfo, "Started Internet Explorer Browser", 1)
@@ -543,7 +543,7 @@ def Tear_Down():
         return "Failed"
 
 
-# BrowserSelection('Firefox')
+# BrowserSelection('Ie')
 # OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
 # Login('admin','R@1ndrops')
 # Expand_Menu_By_Name_OR_ID('Site administration')
