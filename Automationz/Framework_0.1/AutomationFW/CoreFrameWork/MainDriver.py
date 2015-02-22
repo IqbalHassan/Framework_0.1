@@ -861,15 +861,15 @@ def main():
                 print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete')
                 conn.close()
                 print "Test Set Completed"
-            CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
 
             Global.sTestStepExecLogId = "MainDriver"
 
             #Send Summary Email
             oConn=DBUtil.ConnectToDataBase()
             ToEmailAddress = DBUtil.GetData(oConn, "select email_notification from test_run_env where run_id = '%s'" % (TestRunID[0]))
-            TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+TestRunID[0]+"'")
-            tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+TestRunID[0]+"'")
+            TestObjective = DBUtil.GetData(oConn, "select test_objective from test_run_env where run_id = '"+TestRunID[0]+"'")
+            tester = DBUtil.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+TestRunID[0]+"'")
             #import EmailNotify
             #EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')
             """list = []
@@ -923,8 +923,8 @@ def main():
                 
 
         #Copy the Automation Log to Network Folder
-        if FL.CopyFile(CommonUtil.hdlr.baseFilename, Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
-            CommonUtil.ClearLog()
+        #if FL.CopyFile(CommonUtil.hdlr.baseFilename, Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
+        #    CommonUtil.ClearLog()
 
     #Close DB Connection
     conn.close()
