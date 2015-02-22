@@ -7248,10 +7248,27 @@ def TestCase_Results(request):
             
             query = sQuery + condition
             p_list = DB.GetData(conn,query,False)
-            conn.close()
             Check_TestCase(p_list, RefinedData)
-    Heading = ['TestCase ID', 'TestCase Title','TestCase Type']
-    results = {'Heading': Heading, 'TableData': RefinedData,'count':len(TableData)}
+            
+            Final =  []
+            for each in RefinedData:
+                Data = []
+                for i in each:
+                    Data.append(i)
+                temp = DB.GetData(conn,"select pf.feature_path from test_case_tag tct, product_features pf where property='feature_id' and tc_id='"+each[0]+"' and tct.name=pf.feature_id::text")
+                Data.append(temp[0])
+                temp = DB.GetData(conn,"select ps.section_path from test_case_tag tct, product_sections ps where property='section_id' and tc_id='"+each[0]+"' and tct.name=ps.section_id::text")
+                Data.append(temp[0])
+                temp = DB.GetData(conn,"select name from test_case_tag where property='Status' and tc_id='"+each[0]+"'")
+                Data.append(temp[0])
+                temp = DB.GetData(conn,"select description from master_data where id ~ '"+each[0]+"' and field='estimated' and value='time'")
+                Data.append(ConvertTime(int(temp[0])))
+                Final.append(Data)
+                
+            conn.close()
+            
+    Heading = ['TC-ID', 'Title','Type','Feature','Section','Status','Time']
+    results = {'Heading': Heading, 'TableData': Final,'count':len(TableData)}
     # results={'TableData':TableData}
     json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
@@ -11063,8 +11080,8 @@ def TableDataTestCasesOtherPages(request):
                                 'Title',
                                 'Feature',
                                 'Section',
-                                'Type',
                                 'Status',
+                                'Type',
                                 'Time']
                         except:
                             i[4] = ' - '
@@ -11298,8 +11315,8 @@ def ViewAndOrganizeTestCases(request):
                                 'Title',
                                 'Feature',
                                 'Section',
-                                'Type',
                                 'Status',
+                                'Type',
                                 'Time']
                         except:
                             i[4] = ' - '
