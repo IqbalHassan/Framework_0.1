@@ -190,7 +190,7 @@ function get_cases(UserText,itemPerPage,PageCurrent){
                 //$("p:contains('Show/Hide Test Cases')").fadeIn(0);
                 implementDropDown("#tc_table");
                 var indx = 0;
-                $('#tc_table tr>td:nth-child(3)').each(function(){
+                $('#tc_table tr>td:nth-child(7)').each(function(){
                     var ID = $("#tc_table tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i>');
