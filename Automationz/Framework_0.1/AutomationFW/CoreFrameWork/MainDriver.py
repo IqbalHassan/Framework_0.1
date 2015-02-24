@@ -865,63 +865,65 @@ def main():
 
             Global.sTestStepExecLogId = "MainDriver"
 
-            #Send Summary Email
-            oConn=DBUtil.ConnectToDataBase()
-            ToEmailAddress = DBUtil.GetData(oConn, "select email_notification from test_run_env where run_id = '%s'" % (TestRunID[0]))
-            TestObjective = DBUtil.GetData(oConn, "select test_objective from test_run_env where run_id = '"+TestRunID[0]+"'")
-            tester = DBUtil.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+TestRunID[0]+"'")
-            #import EmailNotify
-            #EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')
-            """list = []
-    
-            pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % TestRunID[0]
-            passed = DB.GetData(oConn, pass_query)
-            list.append(passed[0])
-            fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % TestRunID[0]
-            fail = DB.GetData(oConn, fail_query)
-            list.append(fail[0])
-            blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % TestRunID[0]
-            blocked = DB.GetData(oConn, blocked_query)
-            list.append(blocked[0])
-            progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % TestRunID[0]
-            progress = DB.GetData(oConn, progress_query)
-            list.append(progress[0])
-            submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % TestRunID[0]
-            submitted = DB.GetData(oConn, submitted_query)
-            list.append(submitted[0])
-            skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % TestRunID[0]
-            skipped = DB.GetData(oConn, skipped_query)
-            list.append(skipped[0])
-            total_query = "select count(*) from test_case_results where run_id='%s'" % TestRunID[0]
-            total = DB.GetData(oConn, total_query)
-            list.append(total[0])
-            duration = DB.GetData(
-                oConn,
-                "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '" +
-                TestRunID[0] +
-                "'")
-            
-            
-            oConn.close()
-            if ToEmailAddress[0]:
-                #conn=DBUtil.ConnectToDataBase()
-                #email notify
-                try:
-                    urllib2.urlopen("http://www.google.com").close()
-                    EmailNotify.Complete_Email(ToEmailAddress[0],TestRunID[0],TestObjective[0],status,list,tester,duration,'','')
-                    print "connected"
-                    results = ['OK']
-                except urllib2.URLError:
-                    print "disconnected"
-                    results = ['NOK']
-                try:
-                    Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
-                    CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
-                except Exception, e:
-                    conn.close()
-                    return "pass" """
+            try:
+                #Send Summary Email
+                oConn=DBUtil.ConnectToDataBase()
+                ToEmailAddress = DBUtil.GetData(oConn, "select email_notification from test_run_env where run_id = '%s'" % (TestRunID[0]))
+                TestObjective = DBUtil.GetData(oConn, "select test_objective from test_run_env where run_id = '"+TestRunID[0]+"'")
+                tester = DBUtil.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+TestRunID[0]+"'")
+                #import EmailNotify
+                #EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')
+                 
+                global list
+                pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % TestRunID[0]
+                passed = DBUtil.GetData(oConn, pass_query)
+                list.append(passed[0])
+                fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % TestRunID[0]
+                fail = DBUtil.GetData(oConn, fail_query)
+                list.append(fail[0])
+                blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % TestRunID[0]
+                blocked = DBUtil.GetData(oConn, blocked_query)
+                list.append(blocked[0])
+                progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % TestRunID[0]
+                progress = DBUtil.GetData(oConn, progress_query)
+                list.append(progress[0])
+                submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % TestRunID[0]
+                submitted = DBUtil.GetData(oConn, submitted_query)
+                list.append(submitted[0])
+                skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % TestRunID[0]
+                skipped = DBUtil.GetData(oConn, skipped_query)
+                list.append(skipped[0])
+                total_query = "select count(*) from test_case_results where run_id='%s'" % TestRunID[0]
+                total = DBUtil.GetData(oConn, total_query)
+                list.append(total[0])
+                duration = DBUtil.GetData(
+                    oConn,
+                    "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '" +
+                    TestRunID[0] +
+                    "'")
+                
+                oConn.close()
+                if ToEmailAddress[0]:
+                    #conn=DBUtil.ConnectToDataBase()
+                    #email notify
+                    try:
+                        urllib2.urlopen("http://www.google.com").close()
+                        EmailNotify.Complete_Email(ToEmailAddress[0],TestRunID[0],TestObjective[0],status,list,tester,duration,'','')
+                        print "connected"
+                        results = ['OK']
+                    except urllib2.URLError:
+                        print "disconnected"
+                        results = ['NOK']
+                    """try:
+                        Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
+                        CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
+                    except Exception, e:
+                        conn.close()
+                        return "pass" """
                 
 
+            except Exception, e:
+                return "pass"
         #Copy the Automation Log to Network Folder
         #if FL.CopyFile(CommonUtil.hdlr.baseFilename, Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
         #    CommonUtil.ClearLog()
