@@ -4465,8 +4465,9 @@ def Create_Submit_New_TestCase(request):
             labels = labels.split("|")
             temp_list = []
             for each in Dependency_List:
-                temporary = each.split(":")
-                temp_list.append((temporary[0], temporary[1].split(",")))
+                if each!='':
+                    temporary = each.split(":")
+                    temp_list.append((temporary[0], temporary[1].split(",")))
             Dependency_List = temp_list
 
             Steps_Data_List = TestCase_ParseData(
@@ -4991,8 +4992,9 @@ def EditTestCase(request):
             labels = labels.split("|")
             temp_list = []
             for each in Dependency_List:
-                temporary = each.split(":")
-                temp_list.append((temporary[0], temporary[1].split(",")))
+                if each!='':
+                    temporary = each.split(":")
+                    temp_list.append((temporary[0], temporary[1].split(",")))
             Dependency_List = temp_list
             Steps_Data_List = TestCase_ParseData(
                 temp,
