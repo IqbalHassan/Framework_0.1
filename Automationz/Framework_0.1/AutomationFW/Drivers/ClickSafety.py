@@ -7,6 +7,7 @@ from Web import SeleniumScript
 def start_browser(dependency,step_data):
     try:
         sClientName=dependency['Browser']
+        sClientName = sClientName.lower()
         sTestStepReturnStatus = SeleniumScript.BrowserSelection(sClientName)
         print sTestStepReturnStatus
         return sTestStepReturnStatus

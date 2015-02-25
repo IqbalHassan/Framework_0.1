@@ -25,19 +25,19 @@ def BrowserSelection(browser):
         True
     global sBrowser
     try:
-        if "Chrome" in browser:
+        if "chrome" in browser:
             sBrowser = webdriver.Chrome()
             sBrowser.maximize_window()
             print "Started Chrome Browser"
             CommonUtil.ExecLog(sModuleInfo, "Started Chrome Browser", 1)
             return "PASSED"
-        elif browser == 'Firefox':
+        elif browser == 'firefox':
             sBrowser = webdriver.Firefox()
             sBrowser.maximize_window()
             CommonUtil.ExecLog(sModuleInfo, "Started Firefox Browser", 1)
             print "Started Firefox Browser"
             return "PASSED"
-        elif "Ie" in browser:
+        elif "ie" in browser:
             sBrowser = webdriver.Ie()
             sBrowser.maximize_window()
             CommonUtil.ExecLog(sModuleInfo, "Started Internet Explorer Browser", 1)
@@ -78,15 +78,20 @@ def Login(user_name,password):
         
         
         CommonUtil.TakeScreenShot("sModuleInfo")
-        elem = sBrowser.find_element_by_link_text("Log in")
-        elem.send_keys(Keys.RETURN)
+        #elem = sBrowser.find_element_by_link_text("Log in")
+        #elem.send_keys(Keys.RETURN)
+        Click_Element_By_Name_OR_ID("Log in")
         sBrowser.implicitly_wait(20)
-        elem = sBrowser.find_element_by_id("username")
-        elem.send_keys(user_name)
-        elem = sBrowser.find_element_by_id("password")
-        elem.send_keys(password)
-        elem = sBrowser.find_element_by_id("loginbtn")
-        elem.send_keys(Keys.RETURN)
+        Set_Text_Field_Value_By_ID("username",user_name)
+        Set_Text_Field_Value_By_ID("password",password)
+        Click_Element_By_Name_OR_ID ("loginbtn")
+        
+#         elem = sBrowser.find_element_by_id("page-login-index", user_name)
+#         #elem.send_keys(user_name)
+#         elem = sBrowser.find_element_by_id("password")
+#         elem.send_keys(password)
+#         elem = sBrowser.find_element_by_id("loginbtn")
+#         elem.send_keys(Keys.RETURN)
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Successfully logged in", 1)
         print "Successfully logged in"
@@ -218,12 +223,17 @@ def Set_Text_Field_Value_By_ID(id,value):
             print "Could not find your element by ID: %s"%id
             return "Failed"  
         #Now we simply click it
-        sBrowser.find_element_by_id(id).click()
-        sBrowser.find_element_by_id(id).clear()
-        sBrowser.find_element_by_id(id).send_keys(value)
-        sBrowser.implicitly_wait(20)
         Element.click()
-        time.sleep(5)
+        Element.clear()
+        Element.send_keys(value)
+        Element.click()
+#         sBrowser.find_element_by_id(id).click()
+#         sBrowser.find_element_by_id(id).clear()
+#         sBrowser.find_element_by_id(id).send_keys(value)
+        sBrowser.implicitly_wait(20)
+#         sBrowser.find_element_by_id(id).click()
+#         Element.click()
+        #time.sleep(5)
         print "Successfully set the value of to text with ID: %s"%id
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Successfully set the value of to text with ID: %s"%id, 1)
@@ -370,7 +380,7 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
            
         CommonUtil.ExecLog(sModuleInfo, "Clicking Save Config button",1)
         print "Clicking Save Config button" 
-           
+        time.sleep(3)   
         result = Click_Element_By_Name_OR_ID(submit_id) 
         if result == "Failed":
             print "Failed to click on Save Config button"
@@ -543,8 +553,9 @@ def Tear_Down():
         return "Failed"
 
 
-# BrowserSelection('Ie')
+# BrowserSelection('chrome')
 # OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
+# print sBrowser
 # Login('admin','R@1ndrops')
 # Expand_Menu_By_Name_OR_ID('Site administration')
 # Create_A_New_Course("AutomationCourse", "AS", "ASID")
