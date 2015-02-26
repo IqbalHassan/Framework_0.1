@@ -135,6 +135,28 @@ function populate_mainBody_div(type_tag){
             $('#mainBody').html(message);
         });
     }
+    if(type_tag=='ListProject'){
+        $.get('ListProjects',{},function(data){
+            var project_list=data['project_detail'];
+            var column_list=data['column'];
+            var message='';
+            message+='<table class="two-column-emphasis"><caption><b style="font-size: 150%">Projects</b></caption>';
+            message+='<tr>';
+            for(var i=0;i<column_list.length;i++){
+                message+='<th><b>'+column_list[i]+'</b></th>';
+            }
+            message+='</tr>';
+            for(var i=0;i<project_list.length;i++){
+                message+='<tr>';
+                for(var j=0;j<project_list[i].length;j++){
+                    message+='<td>'+project_list[i][j]+'</td>';
+                }
+                message+='</tr>';
+            }
+            message+='</table>'
+            $('#mainBody').html(message);
+        });
+    }
 }
 function DeleteSearchQueryText(){
     $('#owner_list td .delete').live('click',function(){

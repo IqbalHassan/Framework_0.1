@@ -57,6 +57,7 @@ import TestCaseOperations
 from models import *
 from settings import MEDIA_ROOT, PROJECT_ROOT
 from settings import TIME_ZONE
+from django.http.response import HttpResponse
 
 
 # #
@@ -4464,8 +4465,9 @@ def Create_Submit_New_TestCase(request):
             labels = labels.split("|")
             temp_list = []
             for each in Dependency_List:
-                temporary = each.split(":")
-                temp_list.append((temporary[0], temporary[1].split(",")))
+                if each!='':
+                    temporary = each.split(":")
+                    temp_list.append((temporary[0], temporary[1].split(",")))
             Dependency_List = temp_list
 
             Steps_Data_List = TestCase_ParseData(
@@ -4990,8 +4992,9 @@ def EditTestCase(request):
             labels = labels.split("|")
             temp_list = []
             for each in Dependency_List:
-                temporary = each.split(":")
-                temp_list.append((temporary[0], temporary[1].split(",")))
+                if each!='':
+                    temporary = each.split(":")
+                    temp_list.append((temporary[0], temporary[1].split(",")))
             Dependency_List = temp_list
             Steps_Data_List = TestCase_ParseData(
                 temp,
@@ -13500,8 +13503,12 @@ def SearchEditDev(request):
     return HttpResponse(output)
 
 
-def CreateProject(request):
+def ManageProject(request):
     try:
+        return render_to_response('Project.html',{})
+    except Exception as e:
+        print "Exception:", e
+        """
         print "Create project was called"
         query = "select distinct value from config_values where type='Team'"
         try:
@@ -13552,7 +13559,7 @@ def CreateProject(request):
         return render_to_response('Project.html', Dict)
     except Exception as e:
         print "Exception:", e
-
+        """
 
 def Create_New_Project(request):
     try:
@@ -13749,43 +13756,57 @@ def Small_Project_Detail(request):
                     for eachitem in zip(project_column, each):
                         Dict.update({eachitem[0]: eachitem[1]})
                 temp = Dict['project_owners']
-                first_colon = temp.find(":", 0)
-                second_colon = temp.find(":", first_colon + 1)
-                first_hiphen = temp.find("-", first_colon + 1)
-                testers = temp[first_colon + 1:first_hiphen]
-                testers = testers.split(",")
-                managers = temp[second_colon + 1:]
-                managers = managers.split(",")
+                owner_list=[]
+                for each in temp.split(','):
+                    query="select user_names from permitted_user_list where user_id=%d"%int(each)
+                    Conn=GetConnection()
+                    user_name=DB.GetData(Conn,query)
+                    Conn.close()
+                    if isinstance(user_name,list) and len(user_name)>0:
+                        owner_list.append(user_name[0])
                 del Dict['project_owners']
-                Dict.update({'testers': testers, 'managers': managers})
-                due_in = Dict['project_endingdate'] - \
-                    Dict['project_startingdate']
-                if due_in.days == 0:
-                    due_message = "Today"
-                elif due_in.days < 0:
-                    if due_in.days < -1:
-                        due_message = "Over " + \
-                            str(str(due_in.days)[1:]) + " days"
-                    else:
-                        due_message = "Over " + \
-                            str(str(due_in.days)[1:]) + " day"
+                Dict.update({'project_owners':",".join(owner_list)})
+                print Dict['project_owners']
+                if Dict['project_endingdate'] is None or Dict['project_startingdate'] is None:
+                    if Dict['project_endingdate'] is None:
+                        Dict.update({'project_endingdate': ''})
+                    if Dict['project_startingdate'] is None:
+                        Dict.update({'project_startingdate':''})
+                    due_message="Project Deadline not set"
                 else:
-                    if due_in.days > 1:
-                        due_message = "In " + str(due_in.days) + " days"
+                    due_in = Dict['project_endingdate'] - Dict['project_startingdate']
+                    if due_in.days == 0:
+                        due_message = "Today"
+                    elif due_in.days < 0:
+                        if due_in.days < -1:
+                            due_message = "Over " + \
+                                str(str(due_in.days)[1:]) + " days"
+                        else:
+                            due_message = "Over " + \
+                                str(str(due_in.days)[1:]) + " day"
                     else:
-                        due_message = "In " + str(due_in.days) + " days"
+                        if due_in.days > 1:
+                            due_message = "In " + str(due_in.days) + " days"
+                        else:
+                            due_message = "In " + str(due_in.days) + " days"
+                    Dict.update({
+                        'project_startingdate': str(Dict['project_startingdate']),
+                        'project_endingdate':str(Dict['project_endingdate'])
+                        })
                 query = "select value from config_values where type='Team' and id in (select cast(team_id as int) from project_team_map where project_id='%s')" % (
                     Dict['project_id'].strip())
                 Conn = GetConnection()
                 team_name = DB.GetData(Conn, query)
+                if isinstance(team_name,list):
+                    if len(team_name)==0:
+                        Dict.update({'team_name':['Team Not Set']})
+                    else:
+                        Dict.update({'team_name':team_name})
                 Conn.close()
                 Dict.update({
-                    'project_startingdate': str(Dict['project_startingdate']),
-                    'project_endingdate': str(Dict['project_endingdate']),
                     'project_creationdate': str(Dict['project_creationdate']),
                     'project_modifydate': str(Dict['project_modifydate']),
                     'due_message': due_message,
-                    'team_name': team_name
                 })
         result = simplejson.dumps(Dict)
         return HttpResponse(result, mimetype='application/json')
@@ -13794,30 +13815,26 @@ def Small_Project_Detail(request):
 
 
 def Get_Projects(request):
-    try:
-        if request.is_ajax():
-
-            if request.method == 'GET':
-                try:
-                    name = request.GET.get(u'team_name', '')
-                    if name == "":
-                        query = "select project_name from projects"
-                    else:
-                        query = "select project_name from projects where project_name Ilike'%%%s%%'" % name.strip(
-                        )
-                    Conn = GetConnection()
-                    team_name = []
-                    team_name = DB.GetData(Conn, query)
-                    Conn.close()
-                except Exception as e:
-
-                    print "Exception:", e
-        result = simplejson.dumps(team_name)
-        return HttpResponse(result, mimetype='application/json')
-    except Exception as e:
-        print "Exception:", e
-
-
+    if request.is_ajax():
+        if request.method == 'GET':
+            try:
+                user_id=int(request.GET.get(u'user_id',''))
+                query="select distinct p.project_id,project_name from projects p, project_team_map ptm,team_info ti where p.project_id=ptm.project_id and cast(ti.team_id as text)=ptm.team_id  and ti.user_id='%s' group by p.project_id,ti.team_id"%str(user_id)
+                Conn=GetConnection()
+                member_project=DB.GetData(Conn,query,False)
+                Conn.close()
+                query="select distinct project_id,project_name,string_to_array(project_owners,',') from projects"
+                Conn=GetConnection()
+                owner_projects=DB.GetData(Conn,query,False)
+                Conn.close()
+                for each in owner_projects:
+                    if str(user_id) in each[2]:
+                        member_project.append((each[0],each[1]))
+                memeber_project=list(set(member_project))
+                result=simplejson.dumps(memeber_project)
+                return HttpResponse(result,mimetype='application/json')
+            except Exception as e:
+                print "Exception:", e
 def FileUpload(request, project_id):
     try:
         print request
@@ -17033,7 +17050,35 @@ def ListAllUser(request):
             result = simplejson.dumps(result)
             return HttpResponse(result, mimetype='application/json')
 
-
+def ListProject(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            query="select project_id, project_name,string_to_array(project_owners,','),cast(project_creationdate as text),project_createdby,cast(project_modifydate as text), project_modifiedby from projects"
+            Conn=GetConnection()
+            project_detail=DB.GetData(Conn,query,False)
+            Conn.close()
+            final_list=[]
+            for each in project_detail:
+                temp=[]
+                for eachitem in each:
+                    temp.append(eachitem)
+                owner_list=temp[2]
+                temp_name=[]
+                for eachitem in owner_list:
+                    query="select user_names from permitted_user_list where user_id=%d"%int(eachitem)
+                    Conn=GetConnection()
+                    user_name=DB.GetData(Conn,query)
+                    Conn.close()
+                    if isinstance(user_name,list) and len(user_name)>0:
+                        temp_name.append(user_name[0])
+                del temp[2]
+                temp.insert(2,",".join(temp_name)) 
+                final_list.append(tuple(temp))               
+            column=['Project ID','Project Name','Project Owner','Creation Date','Created By','Modify Date','Modified By']
+            result={'project_detail':final_list,'column':column}
+            result=simplejson.dumps(result)
+            return HttpResponse(result,mimetype='application/json')
+        
 def AssignTesters(request):
     query = "select pul.user_id,user_names,case when user_level='assigned_tester' then 'Tester' end as Designation,default_project,default_team from permitted_user_list pul, default_choice ds, user_info ui where ui.full_name=pul.user_names and cast(ds.user_id as int)=pul.user_id and user_level in ('assigned_tester')"
     Conn = GetConnection()

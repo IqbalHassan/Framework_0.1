@@ -1,23 +1,20 @@
 $(document).ready(function(){
-   GetProjects("");
+   GetProjects();
    ButtonPreparation();
 });
-function GetProjects(team_name){
+function GetProjects(){
     $.get('Get_Projects',{
-        'team_name':team_name.trim()
+        user_id: $.session.get('user_id')
     },function(data){
         var message="";
         message+='<table>';
         if(data.length>0){
             for(var i=0;i<data.length;i++){
-                message+=('<tr><td style="cursor: pointer;" class="projects"><b>'+data[i].trim()+'</b></td></tr>');
+                message+=('<tr><td style="cursor: pointer;" class="projects"><b>'+data[i][1].trim()+'</b></td></tr>');
             }
             message+='</table>';
 
         }
-        /*else{
-            window.location.reload(true);
-        }*/
         $('#projects').html(message);
         PrepareOtherButton();
     });
@@ -45,10 +42,7 @@ function Small_Project_Detail(data){
     message+='<td align="right"><b style="color: #4183c4">Due in:</b></td><td>'+data['due_message']+'</td>';
     message+='</tr>';
     message+='<tr>';
-    message+=('<td align="right"><b style="color: #4183c4">Owners:</b></td><td>'+data['testers'].join(","));
-    if(data['managers'].length>0){
-        message+=(','+data['managers'].join(',')+'</td>');
-    }
+    message+=('<td align="right"><b style="color: #4183c4">Owners:</b></td><td>'+data['project_owners']);
     message+='</tr>';
     message+='<tr>';
     message+=('<td align="right"><b style="color: #4183c4">Assigned Teams:</b></td><td>');
@@ -62,9 +56,9 @@ function Small_Project_Detail(data){
     }
     message+='</td>'
     message+='</tr>';
-    message+='<tr>';
+    /*message+='<tr>';
     message+='<td align="left"><a href="/Home/Project/'+data['project_id'].trim()+'/" style="text-decoration: none;">see details...</a> </td><td>&nbsp;</td>';
-    message+='</tr>';
+    message+='</tr>';*/
     message+='</table>';
     return message;
 }
