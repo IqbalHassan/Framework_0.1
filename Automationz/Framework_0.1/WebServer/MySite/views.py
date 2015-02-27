@@ -15283,6 +15283,7 @@ def assign_settings(request):
         PassMessasge(sModuleInfo, e, 3)
 
 #myConfiguration Shetu don't change#
+
 success_tag = 1
 warning_tag = 2
 error_tag = 3
@@ -15319,19 +15320,37 @@ def unavailable(name, type_tag):
 
 
 def get_all_data_dependency_page(request):
-    sModuleInfo = inspect.stack()[0][3] + \
-        " : " + inspect.getmoduleinfo(__file__).name
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         if request.method == 'GET':
             if request.is_ajax():
                 project_id = request.GET.get(u'project_id', '')
                 team_id = request.GET.get(u'team_id', '')
+                #take out the project name and team name
+                query="select project_name from projects where project_id='%s'"%project_id
+                Conn=GetConnection()
+                project_name=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(project_name,list) and len(project_name)>0:
+                    project_name=project_name[0]
+                else:
+                    project_name=''
+                    
+                query="select value from config_values where type='Team' and id=%d"%int(team_id)
+                Conn=GetConnection()
+                team_name=DB.GetData(Conn,query)
+                Conn.close()
+                if isinstance(team_name,list) and len(team_name)>0:
+                    team_name=team_name[0]
+                else:
+                    team_name=''
                 # dependency_tab
-                query = "select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
-                    project_id.strip(), int(team_id.strip()))
+                query = "select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (project_id.strip(), int(team_id.strip()))
+                #query="select dependency_name,array_agg(distinct name), array_agg( distinct bit_name),array_agg( distinct version)from dependency_name dn,dependency_values dv,dependency d,dependency_management dm where dm.dependency=d.id and dv.id=dn.id and d.id=dn.dependency_id  and project_id='%s' and team_id=%d group by dependency_name, name,bit_name"%(project_id,int(team_id))
                 Conn = GetConnection()
                 dependency_list = DB.GetData(Conn, query, False)
                 Conn.close()
+                
                 query = "select distinct d.id,d.dependency_name as name from dependency d except(select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d) order by name" % (
                     project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
@@ -15358,6 +15377,8 @@ def get_all_data_dependency_page(request):
                 unused_feature_list = DB.GetData(Conn, query, False)
                 Conn.close()
                 result = {
+                    'team_name':team_name,
+                    'project_name':project_name,
                     'dependency_list': dependency_list,
                     'unused_dependency_list': unused_dependency_list,
                     'branch_list': branch_list,

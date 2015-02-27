@@ -5,1091 +5,258 @@ var time_out=1500;
 var name_field_error="Name field can't be empty";
 var dep_value="";
 var dep_name="";
+
 $(document).ready(function(){
+    $('body').css({'font-size':'100%'});
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
     get_all_data(project_id,team_id);
-    DependencyTabButtons(project_id,team_id);
+    $('#create_dependency').on('click',function(){
+        var message='';
+        message+='<table>';
+        message+='<tr><td><b style="font-size: 125%;">Dependency Name</b> </td></tr>';
+        message+='<tr><td><input type="text" class="textbox" id="new_dependency"></td></tr>';
+        message+='</table>';
+        //alertify.alert().close_all();
+        alertify.confirm(message,function(e){
+            if(e){
+                $.get('add_new_dependency',{
+                    dependency_name:$('#new_dependency').val().trim()
+                },function(data){
+                    if(data['message']){
+                        alertify.success(data['log_message']);
+                        get_all_data(project_id,team_id);
+                    }
+                    else{
+                        get_all_data(project_id,team_id);
+                    }
+                });
+            }
+            else{
+                alertify.alert().close_all();
+            }
+        });
 
+    });
+    //DependencyTabButtons(project_id,team_id);
 });
+
 function get_all_data(project_id,team_id){
     $.get('get_all_data_dependency_page',{
         project_id:project_id,
         team_id:team_id
     },function(data){
-        populate_div("dependency_body",data['dependency_list'],project_id,team_id,"dependency");
-        populate_div("unused_dependency",data['unused_dependency_list'],project_id,team_id,"add_dependency");
-        populate_div("branch_body",data['branch_list'],project_id,team_id,'branch');
-        populate_div("unused_branch",data['unused_branch_list'],project_id,team_id,'add_branch');
-        populate_div("feature_body",data['feature_list'],project_id,team_id,'feature');
-        populate_div("unused_feature",data['unused_feature_list'],project_id,team_id,'add_feature');
-    });
-}
-function populate_div(div_name,array_list,project_id,team_id,type){
-    var message="";
-    message+='<tr>';
-    if(type=='dependency'||type=='branch' ||type=='feature'){
-        message+='<td align="center">'+project_id+'<br>'+team_id+'</td>';
-    }
-    else{
-        message+='<td align="center"><b>Global</b></td>';
-    }
-    if(array_list.length>0){
-        message+='<td style="border-left: 2px solid #CCCCCC">';
-        message+='<table id="'+type+'_list" class="one-column-emphasis">';
-        for(var i=0;i<array_list.length;i++){
-            message+='<tr><td align="center" class="'+type+'" value="'+array_list[i][0]+'" style="cursor:pointer;">'+array_list[i][1]+'</td></tr>';
+        $('#name_list').empty();
+        $('#version_list').empty();
+        $('#bread_crumb').empty();
+        $('#control_panel').empty();
+        var dependency_list=data['dependency_list'];
+        console.log(dependency_list);
+        var  message='';
+        message+='<table class="two-column-emphasis">';
+        message+='<caption><b style="font-size: 150%;">Dependency Assigned</b></caption>'
+        for(var i=0;i<dependency_list.length;i++){
+            message+='<tr>';
+            message+='<td data-id="'+dependency_list[i][0]+'" class="dependency" width=90%;>'+dependency_list[i][1]+'</td>';
+            message+='</tr>';
+        }
+        message+='</table> ';
+        $('#dependency_list').html(message);
+        $('.dependency').on('click',function(){
+            $('.global_dependency').removeClass('selected');
+            $('.global_dependency').css({'background-color':'#fff'});
+            $('.dependency').removeClass('selected');
+            $('.dependency').css({'background-color':'#fff'});
+            $(this).addClass('selected');
+            $(this).css({'background-color':'#ccc'});
+            get_dependency_under_name($(this).attr('data-id'),project_id,team_id,$(this).text());
+        });
+        var global_dependency_list=data['unused_dependency_list'];
+        var message='';
+        message+='<table class="two-column-emphasis">';
+        message+='<caption><b style="font-size: 150%;"> Global Dependency</b></caption>';
+        for(var i=0;i<global_dependency_list.length;i++){
+            message+='<tr>';
+            message+='<td data-id="'+global_dependency_list[i][0]+'" class="global_dependency">'+global_dependency_list[i][1]+'</td>';
+            message+='<td class="add_global_dependency"><img src="/site_media/plus1.png" style="cursor: pointer" width="20px" height="20px"/></td>';
+            message+='</tr>';
         }
         message+='</table>';
-        message+='</td>';
-        message+='</tr>';
-    }
-    else{
-        if(type=="add_dependency"|| type=="dependency"){
-            message+='<td style="border-left: 2px solid #CCCCCC" align="center"><b>No Dependency Found</b></td>';
-        }
-        if(type=='branch'||type=='add_branch'){
-            message+='<td style="border-left: 2px solid #CCCCCC" align="center"><b>No Branch Found</b></td>';
-        }
-        if(type=='feature'||type=='add_feature'){
-            message+='<td style="border-left: 2px solid #CCCCCC" align="center"><b>No Feature Found</b></td>';
-        }
-    }
-    $('#'+div_name).html(message);
-    if(type=="dependency"){
-        $('#name_dependency_tab').html("");
-        $('#version_dependency_tab').html("");
-        $('.'+type).on('click',function(){
-            $('.'+type).removeClass('selected');
-            $('.add_dependency').css({'background':'none'});
-            $('.'+type).css({'background':'none'});
-            $(this).css({'background':'#CCCCCC'});
+        $('#global_dependency_list').html(message);
+        $('.global_dependency').on('click',function(){
+            $('.dependency').removeClass('selected');
+            $('.dependency').css({'background-color':'#fff'});
+            $('.global_dependency').removeClass('selected');
+            $('.global_dependency').css({'background-color':'#fff'});
             $(this).addClass('selected');
-            dep_value=$(this).attr('value');
-            dep_name=$(this).text().trim();
-            $.get('get_all_name_under_dependency',{
-                value:dep_value,
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                $('#version_dependency_tab').html("");
-                populate_second_div("name_dependency_tab",data['dependency_list'],data['default_list'],"dependency_name",project_id,team_id);
-            });
+            $(this).css({'background-color':'#ccc'});
         });
-    }
-    if(type=='add_dependency'){
-        $('.'+type).on('click',function(){
-            $('#name_dependency_tab').html("");
-            $('.dependency').css({'background':'none'});
-            $('.'+type).css({'background':'none'});
-            $(this).css({'background':'#CCCCCC'});
-        });
-    }
-    if(type=='add_branch'){
-        $('.'+type).on('click',function(){
-            $('#version_tab').html("");
-            $('.branch').css({'background':'none'});
-            $('.'+type).css({'background':'none'});
-            $(this).css({'background':'#CCCCCC'});
-        });
-    }
-    if(type=='branch'){
-        $('#version_tab').html("");
-        $('.'+type).on('click',function(){
-            $('.'+type).removeClass('selected');
-            $('.add_branch').css({'background':'none'});
-            $('.'+type).css({'background':'none'});
-            $(this).css({'background':'#CCCCCC'});
-            $(this).addClass('selected');
-            dep_value=$(this).attr('value');
-            dep_name=$(this).text().trim();
-            $.get('get_all_version_under_branch',{
-                value:dep_value,
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                $('#version_dependency_tab').html("");
-                populate_second_div("version_tab",data['version_list'],data['default_list'],"version_name",project_id,team_id);
-            });
-        });
-    }
-    if(type=='add_feature'){
-        $('.'+type).on('click',function(){
-            $('#name_feature_tab').html("");
-            $('.feature').css({'background':'none'});
-            $('.'+type).css({'background':'none'});
-            $(this).css({'background':'#CCCCCC'});
-        });
-    }
-    if(type=='feature'){
-        $('#name_feature_tab').html("");
-        $('#version_feature_tab').html("");
-        $('#last_feature_tab').html("");
-        $('.'+type).on('click',function(){
-            $('.'+type).removeClass('selected');
-            $('.add_feature').css({'background':'none'});
-            $('.'+type).css({'background':'none'});
-            $(this).css({'background':'#CCCCCC'});
-            $(this).addClass('selected');
-            dep_value=$(this).attr('value');
-            dep_name=$(this).text().trim();
-            $.get('get_all_first_level_sub_feature',{
-                name:dep_name,
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                $('#version_feature_tab').html("");
-                $('#last_feature_tab').html("");
-                populate_second_div("name_feature_tab",data['version_list'],data['default_list'],"first_level_feature",project_id,team_id);
-            });
-        });
-    }
-    $('.'+type).bind("contextmenu",function(eventy){
-        eventy.preventDefault();
-        $(this).trigger('click');
-        $(".custom-menu-"+type).toggle(100).
-            // In the right position (the mouse)
-            css({
-                top: event.pageY + "px",
-                left: event.pageX + "px"
-            });
-        if( type=="add_dependency" || type=="dependency"||type=="add_branch"||type=='branch'||type=='add_feature'||type=='feature'){
-            dep_name=$(this).text().trim();
-            dep_value=$(this).attr('value');
-        }
-    });
-    $(document).bind("mousedown", function (e) {
-        console.log(!$(e.target).parents(".custom-menu").length > 0);
-        if (!$(e.target).parents(".custom-menu").length > 0)
-            $(".custom-menu").hide(100);
-    });
-
-    allow_binding(type,project_id,team_id);
-
-}
-function populate_second_div(div_name,array_list,default_list,type,project_id,team_id){
-    if(type=='dependency_name'){
-        if(default_list[0]!=null){
-            var default_choices=default_list[0].split(",");
-        }
-        else{
-            var default_choices=[];
-        }
-        var message="<table width=\"100%\" class='one-column-emphasis'>";
-
-        if(array_list.length>0){
-            for(var i=0;i<array_list.length;i++){
-                message+='<tr><td align="left" value="'+array_list[i][0]+'" class="'+type+'" style="cursor:pointer" >'+array_list[i][1]+'</td>';
-                if(default_choices.indexOf(array_list[i][0].toString())>-1){
-                    message+='<td align="right" class="_status" style="cursor: pointer;"><a class="notification-indicator" data-gotokey="n"><span class="mail-status filled"></span></a></td>';
-                }
-                else{
-                    message+='<td align="right" class="_status" style="cursor: pointer;"><a class="notification-indicator" data-gotokey="n"><span class="mail-status unfilled"></span></a></td>';
-                }
-                message+='</tr>';
-            }
-        }
-        else{
-            message+='<td><b>No Name Found</b></td>'
-        }
-        message+="</table>";
-
-        $('#'+div_name).html(message);
-        $('._status').click(function(){
-            var tag="";
-            var message="";
-            message+='<table width="100%">';
-            if($(this).find('span:eq(0)').hasClass('unfilled')){
-                message+='<tr><td>Are you sure to make <b>\''+$(this).prev().text().trim()+'\'</b> default?</td></tr>';
-                tag="make_default"
-            }
-            else{
-                message+='<tr><td>Are you sure to remove <b>\''+$(this).prev().text().trim()+'\'</b> from default?</td></tr>';
-                tag="remove_default"
-            }
-            message+='</table> ';
-            var dependency=$(this).prev().attr('value');
-            var selected="";
-            $('.dependency').each(function(){
-                if($(this).hasClass('selected')){
-                    selected=$(this).attr('value');
-                }
-            });
-            alertify.confirm(message,function(e){
-                if(e){
-                    if(selected!=""){
-                        $.get('make_default_name',{
-                            name:dependency.trim(),
-                            dependency:selected.trim(),
-                            project_id:project_id,
-                            team_id:team_id,
-                            tag:tag
-                        },function(data){
-                            if(data['message']==true){
-                                alertify.success(data['log_message'],time_out);
-                                get_all_data(project_id,team_id);
-                            }
-                            else{
-                                alertify.error(data['log_message'],time_out);
-                            }
-                        });
-                    }
-                }
-                else{
-
-                }
-            });
-        });
-        $('.'+type).on('click',function(){
-            $('.'+type).css({'background':'none'});
-            $(this).css({'background':'#CCCCCC'});
-            dep_name=$(this).text().trim();
-            dep_value=$(this).attr('value');
-            if(type=='dependency_name'){
-                $.get('get_all_version_bit',{
-                    'value':dep_value
-                },function(data){
-                    var version_list=data['version_list'];
-                    populate_third_div("version_dependency_tab",version_list,"version",project_id,team_id);
-                });
-            }
-        });
-        $('.'+type).bind("contextmenu",function(eventy){
-            eventy.preventDefault();
-            $(this).trigger('click');
-            $(".custom-menu-"+type).toggle(100).
-                // In the right position (the mouse)
-                css({
-                    top: event.pageY + "px",
-                    left: event.pageX + "px"
-                });
-            dep_name=$(this).text().trim();
-            dep_value=$(this).attr('value');
-        });
-        $('.custom-menu-'+type+' li').click(function(){
-            $('.custom-menu').hide();
-            switch($(this).attr("data-action")){
-                case "create_name": input_new_version(dep_name,project_id,team_id,dep_value);break;
-                case "rename_name": input_rename_name(dep_name,project_id,team_id,dep_value);break;
-                case "usage_name": alert("usage_name");break;
-            }
-        });
-
-    }
-    if(type=='version_name'){
-        var message="<table width=\"100%\" class='one-column-emphasis'>";
-
-        if(array_list.length>0){
-            for(var i=0;i<array_list.length;i++){
-                message+='<tr><td align="left" value="'+array_list[i][0]+'" class="'+type+'" style="cursor:pointer" >'+array_list[i][0]+'</td>';
-
-                message+='</tr>';
-            }
-        }
-        else{
-            message+='<td><b>No Version Found</b></td>'
-        }
-        message+="</table>";
-
-        $('#'+div_name).html(message);
-    }
-    if(type=='first_level_feature'){
-        var message="<table width=\"100%\" class='one-column-emphasis'>";
-
-        if(array_list.length>0){
-            for(var i=0;i<array_list.length;i++){
-                message+='<tr><td align="left" value="'+array_list[i][0]+'" class="'+type+'" style="cursor:pointer" >'+array_list[i][0]+'</td>';
-                message+='</tr>';
-            }
-        }
-        else{
-            message+='<td><b>No feature Found</b></td>'
-        }
-        message+="</table>";
-
-        $('#'+div_name).html(message);
-
-        $('.'+type).on('click',function(){
-            $('.'+type).css({'background':'none'});
-            $('.'+type).removeClass('selected');
-            $(this).css({'background':'#CCCCCC'});
-            $(this).addClass('selected');
-            dep_value=$(this).attr('value');
-            dep_name=$(this).text().trim();
-            var feature='';
-            $('.feature').each(function(){
-               if($(this).hasClass('selected')){
-                   feature=$(this).text().trim();
-               }
-            });
-            $.get('get_all_first_level_sub_feature',{
-                name:(feature+'.'+dep_name).trim(),
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                $('#version_feature_tab').html("");
-                $('#last_feature_tab').html("");
-                populate_third_feature_tab('version_feature_tab',data['version_list'],data['default_list'],project_id,team_id,'second_level_feature');
-            });
-        });
-        $('.'+type).bind("contextmenu",function(eventy){
-            eventy.preventDefault();
-            $(this).trigger('click');
-            $(".custom-menu-"+type).toggle(100).
-                // In the right position (the mouse)
-                css({
-                    top: event.pageY + "px",
-                    left: event.pageX + "px"
-                });
-            dep_name=$(this).text().trim();
-            dep_value=$(this).attr('value');
-        });
-        $('.custom-menu-'+type+' li').click(function(){
-            $('.custom-menu').hide();
-            switch($(this).attr("data-action")){
-                case "create": create_level_wise_feature(dep_name,project_id,team_id,dep_value,type);break;
-                case "rename": alert('rename_name');break;
-                case "usage": alert("usage_name");break;
-                case "delete":alert("delete");break;
-            }
-        });
-    }
-}
-function create_level_wise_feature(dep_name,project_id,team_id,dep_value,type){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td colspan="2"><b class="Text">Create Sub Feature For \''+dep_name+'\'</b></td></tr>';
-    message+='<tr><td align="right"><b class="Text">Feature Name:</b></td><td align="left"><input class="textbox" placeholder="Enter the feature name" id="feature_name" style="width:100%"/></td></tr>'
-    message+='</table>'
-    alertify.confirm(message,function(e){
-        if(e){
-            var new_feature=$('#feature_name').val().trim();
-            var base_feature='';
-            $('.feature').each(function(){
-                if($(this).hasClass('selected')){
-                    base_feature=$(this).text().trim();
-                }
-            });
-            var value_to_pass=(base_feature+'.'+dep_name+'.'+new_feature).trim();
-            if(type=='second_level_feature'){
-                var first_level_feature=''
-                $('.first_level_feature').each(function(){
-                  if($(this).hasClass('selected')){
-                      first_level_feature=$(this).text().trim();
-                  }
-                });
-                var value_to_pass=(base_feature+'.'+first_level_feature+'.'+dep_name+'.'+new_feature).trim();
-            }
-            if(new_feature!=''){
-                $.get('CreateLevelWiseFeature',{
-                    name:value_to_pass
-                },function(data){
-                    if(data['message']==true){
-                        alertify.success(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
-            }
-            else{
-
-            }
-
-        }
-        else{
-
-        }
-    })
-
-}
-function populate_third_feature_tab(divname,array_list,default_list,project_id,team_id,type){
-    var message="<table width=\"100%\" class='one-column-emphasis'>";
-
-    if(array_list.length>0){
-        for(var i=0;i<array_list.length;i++){
-            message+='<tr><td align="left" value="'+array_list[i][0]+'" class="'+type+'" style="cursor:pointer" >'+array_list[i][0]+'</td>';
-            message+='</tr>';
-        }
-    }
-    else{
-        message+='<td><b>No feature Found</b></td>'
-    }
-    message+="</table>";
-
-    $('#'+divname).html(message);
-    $('.'+type).on('click',function(){
-        $('.'+type).css({'background':'none'});
-        $(this).css({'background':'#CCCCCC'});
-        dep_value=$(this).attr('value');
-        dep_name=$(this).text().trim();
-        var feature='';
-        $('.feature').each(function(){
-            if($(this).hasClass('selected')){
-                feature=$(this).text().trim();
-            }
-        });
-        var first_level_feature='';
-        $('.first_level_feature').each(function(){
-           if($(this).hasClass('selected')){
-               first_level_feature=$(this).text().trim();
-           }
-        });
-        $.get('get_all_first_level_sub_feature',{
-            name:(feature+'.'+first_level_feature+'.'+dep_name).trim(),
-            project_id:project_id,
-            team_id:team_id
-        },function(data){
-            $('#last_feature_tab').html("");
-            populate_fourth_feature_tab('last_feature_tab',data['version_list'],data['default_list'],project_id,team_id,'last_level_feature');
+        $('.add_global_dependency').on('click',function(){
+            var dependency=$(this).parent().find('td:first-child').attr('data-id');
+            link_dependency(dependency,project_id,team_id);
         });
     });
-    $('.'+type).bind("contextmenu",function(eventy){
-        eventy.preventDefault();
-        $(this).trigger('click');
-        $(".custom-menu-"+type).toggle(100).
-            // In the right position (the mouse)
-            css({
-                top: event.pageY + "px",
-                left: event.pageX + "px"
-            });
-        dep_name=$(this).text().trim();
-        dep_value=$(this).attr('value');
-    });
-    $('.custom-menu-'+type+' li').click(function(){
-        $('.custom-menu').hide();
-        switch($(this).attr("data-action")){
-            case "create": create_level_wise_feature(dep_name,project_id,team_id,dep_value,type);break;
-            case "rename": alert('rename_name');break;
-            case "usage": alert("usage_name");break;
-            case "delete":alert("delete");break;
-        }
-    });
 }
-function populate_fourth_feature_tab(divname,array_list,default_list,project_id,team_id,type){
-    var message="<table width=\"100%\" class='one-column-emphasis'>";
-
-    if(array_list.length>0){
-        for(var i=0;i<array_list.length;i++){
-            message+='<tr><td align="left" value="'+array_list[i][0]+'" class="'+type+'" style="cursor:pointer" >'+array_list[i][0]+'</td>';
-            message+='</tr>';
-        }
-    }
-    else{
-        message+='<td><b>No feature Found</b></td>'
-    }
-    message+="</table>";
-
-    $('#'+divname).html(message);
-}
-
-function input_rename_name(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<thead><tr><td colspan="2"><b>Rename</b></td></tr></thead>';
-    message+='<tbody><tr><td align="right"><b>Old Name:</b></td><td align="left"><input type="text" class="textbox" style="width:100%" id="old_name" value="'+dep_name+'"/></td></tr>';
-    message+='<tr><td align="right"><b>New Name:</b></td><td align="left"><input type="text" class="textbox" style="width:100%" id="new_name"/></td></tr></tbody>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            var old_name=$('#old_name').val().trim();
-            var new_name=$('#new_name').val().trim();
-
-            if(old_name!="" && new_name!=""){
-                $.get('rename_name',{
-                    old_name:old_name,
-                    new_name:new_name
-                },function(data){
-                    if(data['message']==true){
-                        alertify.success(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
-            }
-            else{
-                alertify.error(name_field_error,time_out);
-            }
-        }
-        else{
-
-        }
-    });
-}
-function populate_third_div(div_name,version_list,type,project_id,team_id){
-    var message='<table width="100%" class="one-column-emphasis">';
-    if(version_list.length==0){
-        message+='<tr><td>No Version Found</td></tr>'
-    }
-    else{
-        for(var i=0;i<version_list.length;i++){
-            if(version_list[i][1]!=""){
-                message+='<tr><td>'+version_list[i][0]+'</td>';
-                message+='<td><table width="100%">';
-                var temp=version_list[i][1].split(",");
-                for(var j=0;j<temp.length;j++){
-                    message+='<tr><td class="'+type+'">'+temp[j]+'</td></tr>';
-                }
-                message+='</table></td>';
-                message+='</tr>';
-            }
-        }
-    }
-    message+='</table>';
-    $('#'+div_name).html(message);
-}
-function input_new_version(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<thead><tr><td colspan="2"><b>Input New Version</b></td></tr></thead>';
-    message+='<tbody style="margin-top: 2%;"><tr><td align="right"><b>Name:</b></td><td align="left">'+dep_name+'</td></tr>';
-    message+='<tr><td align="right"><b>Bit:</b></td><td align="left"><select id="bit"><option value="32">32 Bit</option><option value="64">64 Bit</option></select></td></tr>';
-    message+='<tr><td align="right"><b>Version:</b></td><td align="left"><input style="width:100%;" id="version" class="textbox"/></td></tr>';
-    message+='</tbody>;'
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            var bit=$('#bit option:selected').val().trim();
-            var version=$('#version').val().trim();
-            if(bit!="" && version !=""){
-                $.get('add_new_version',{
-                    'bit':bit,
-                    'version':version,
-                    'value':dep_value
-                },function(data){
-                    if(data['message']==true){
-                        alertify.success(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
-            }
-            else{
-                alertify.error("Input Field Error",time_out);
-            }
-        }
-        else{
-
-        }
-    });
-}
-function allow_binding(type,project_id,team_id){
-    if(type=="dependency"){
-        $(".custom-menu-dependency li").click(function(){
-            $(".custom-menu").hide();
-            switch($(this).attr("data-action")) {
-                case "create":create_new_name_under_version(dep_name,project_id,team_id,dep_value); break;
-                case "rename":rename_dependency(dep_name,project_id,team_id,dep_value); break;
-                case "usage":alert('usage'); break;
-                case "unlink":unlink_dependency(dep_name,project_id,team_id,dep_value); break;
-            }
-        });
-    }
-    if(type=="add_dependency"){
-        $(".custom-menu-add_dependency li").click(function(e){
-            //(project_id,team_id);
-            $(".custom-menu").hide();
-            switch($(this).attr("data-action")) {
-                case "link": link_dependency(dep_name,project_id,team_id,dep_value);break;
-                case "rename":rename_dependency(dep_name,project_id,team_id,dep_value); break;
-                case "usage":alert('usage'); break;
-                case "delete":alert("delete"); break;
-            }
-            //e.stopPropagation();
-        });
-    }
-    if(type=='branch'){
-        $(".custom-menu-branch li").click(function(){
-            $(".custom-menu").hide();
-            switch($(this).attr("data-action")) {
-                case "create":create_new_version_under_branch(dep_name,project_id,team_id,dep_value);break;
-                case "rename":rename_branch(dep_name,project_id,team_id,dep_value); break;
-                case "usage":alert('usage'); break;
-                case "unlink":unlink_branch(dep_name,project_id,team_id,dep_value); break;
-            }
-        });
-    }
-    if(type=="add_branch"){
-        $(".custom-menu-add_branch li").click(function(e){
-            //(project_id,team_id);
-            $(".custom-menu").hide();
-            switch($(this).attr("data-action")) {
-                case "link": link_branch(dep_name,project_id,team_id,dep_value);break;
-                case "rename":rename_branch(dep_name,project_id,team_id,dep_value); break;
-                case "usage":alert('usage'); break;
-                case "delete":alert("delete"); break;
-            }
-            //e.stopPropagation();
-        });
-    }
-    if(type=='add_feature'){
-        $(".custom-menu-add_feature li").click(function(e){
-            //(project_id,team_id);
-            $(".custom-menu").hide();
-            switch($(this).attr("data-action")) {
-                case "link": link_feature(dep_name,project_id,team_id,dep_value);break;
-                case "rename":rename_feature(dep_name,project_id,team_id,dep_value); break;
-                case "usage":alert('usage'); break;
-                case "delete":alert("delete"); break;
-            }
-            //e.stopPropagation();
-        });
-    }
-    if(type=='feature'){
-        $(".custom-menu-feature li").click(function(){
-            $(".custom-menu").hide();
-            switch($(this).attr("data-action")) {
-                case "create":create_sub_feature(dep_name,project_id,team_id,dep_value);break;
-                case "rename":rename_feature(dep_name,project_id,team_id,dep_value); break;
-                case "usage":alert('usage'); break;
-                case "unlink":unlink_feature(dep_name,project_id,team_id,dep_value); break;
-            }
-        });
-    }
-}
-function create_sub_feature(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td colspan="2"><b class="Text">Create Sub Feature For \''+dep_name+'\'</b></td></tr>';
-    message+='<tr><td align="right"><b class="Text">Feature Name:</b></td><td align="left"><input class="textbox" placeholder="Enter the feature name" id="feature_path" style="width:100%"/></td></tr>'
-    message+='</table>'
-    alertify.confirm(message,function(e){
-        if(e){
-            var feature_path=$('#feature_path').val().trim();
-            $.get('CreateLevelWiseFeature',{
-               'name':(dep_name+'.'+feature_path).trim()
-            },function(data){
-                if(data['message']==true){
-                    alertify.success(data['log_message'],time_out);
-                    get_all_data(project_id,team_id);
-                    window.location.reload();
-                }
-                else{
-                    alertify.error(data['log_message'],time_out);
-                }
-            });
-        }
-        else{
-
+function link_dependency(dependency,project_id,team_id){
+    $.get('link_dependency',{
+        value:dependency,
+        project_id:project_id,
+        team_id:team_id
+    },function(data){
+        if(data['message']){
+            alertify.success(data['log_message']);
+            get_all_data(project_id,team_id);
         }
     })
 }
-function rename_feature(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<thead><tr><td colspan="2"><b>Rename</b></td></tr></thead>';
-    message+='<tbody><tr><td align="right"><b>Old Name:</b></td><td align="left"><input type="text" class="textbox" style="width:100%" id="old_name" value="'+dep_name+'"/></td></tr>';
-    message+='<tr><td align="right"><b>New Name:</b></td><td align="left"><input type="text" class="textbox" style="width:100%" id="new_name"/></td></tr></tbody>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            var old_name=$('#old_name').val().trim();
+function get_dependency_under_name(value,project_id,team_id,value_name){
+    $.get('get_all_name_under_dependency',{
+        'value':value,
+        'project_id':project_id,
+        'team_id':team_id
+    },function(data){
+        var dependency_list=data['dependency_list'];
+        var default_list=data['default_list'];
+        if(dependency_list.length>0){
+            var message='';
+            message+='<table class="two-column-emphasis">';
+            for(var i=0;i<dependency_list.length;i++){
+                message+='<tr>';
+                message+='<td data-id="'+dependency_list[i][0]+'" class="dependency_name">'+dependency_list[i][1]+'</td>';
+                if(default_list.indexOf()!=-1){
+                    message+='<td><a class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status filled"></span></a></td>';
+                }
+                else{
+                    message+='<td><td><a class="notification-indicator tooltipped downwards" data-gotokey="n"><span class="mail-status unfilled"></span></a></td>';
+                }
+                message+='</tr>';
+            }
+            message+='</table>';
+            $('#version_list').empty();
+            $('#name_list').html(message);
+            var message='';
+            message+='<input type="button" id="add_name" class="m-btn green" value="Add Name"/> ';
+            message+='<input type="button" id="rename_dependency" class="m-btn green" value="Rename"/> ';
+            message+='<input type="button" class="m-btn green" value="Usage"/> ';
+            $('#control_panel').html(message);
+            initialize_button(value,project_id,team_id,value_name);
+            $('#bread_crumb').html('<a href="#" class="bread_crumb_element">'+value_name+'</a>');
+            $('.dependency_name').on('click',function(){
+                $('.dependency_name').css({'background-color':"#fff"});
+                $(this).css({'background-color':'#ccc'});
+                get_all_version($(this).attr('data-id'),$(this).text(),value_name);
+            });
+        }
+        else{
+            $('#version_list').empty();
+            $('#name_list').html('<p><b style="font-size: ">No Name Found</b></p>');
+            $('#bread_crumb').html('<a href="#" class="bread_crumb_element">'+value_name+'</a>');
+            var message='';
+            message+='<input type="button" id="add_name" class="m-btn green" value="Add Name"/> ';
+            message+='<input type="button" id="rename_dependency" class="m-btn green" value="Rename"/> ';
+            message+='<input type="button" class="m-btn green" value="Usage"/> ';
+            $('#control_panel').html(message);
+            initialize_button(value,project_id,team_id,value_name);
+
+        }
+    });
+}
+
+function initialize_button(value,project_id,team_id,value_name){
+    $('#add_name').on('click',function(){
+        var message='';
+        message+='<table width="100%;">';
+        message+='<tr><td><b style="">'+value_name+' Name</b></td></tr><tr><td><input id="new_name" style="width: 100%;" class="textbox" type="text" placeholder="Enter the Name"/></td></tr>';
+        message+='</table>';
+        alertify.confirm(message,function(){
             var new_name=$('#new_name').val().trim();
-
-            if(old_name!="" && new_name!=""){
-                $.get('rename_feature',{
-                    old_name:old_name,
-                    new_name:new_name
-                },function(data){
-                    if(data['message']==true){
-                        alertify.success(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                        window.location.reload();
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
+            if(new_name!=''){
+                add_new_name_under_dependency(value,project_id,team_id,value_name,new_name);
             }
             else{
-                alertify.error(name_field_error,time_out);
+                return false;
             }
-        }
-        else{
 
-        }
+        });
     });
-}
-
-function unlink_feature(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td align="center">Are you sure to unlink feature <b>\''+dep_name+'\'</b>?</td></tr>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            $.get('unlink_feature',{
-                value:dep_value,
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                if(data['message']==true){
-                    alertify.success(data['log_message'],time_out);
-                    get_all_data(project_id,team_id);
-                    window.location.reload();
-                }
-                else{
-                    alertify.error(data['log_message'],time_out);
-                }
-            });
-        }
-        else{
-
-        }
-    });
-}
-function link_feature(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td align="center">Are you sure to link feature <b>\''+dep_name+'\'</b>?</td></tr>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            $.get('link_feature',{
-                value:dep_value,
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                if(data['message']==true){
-                    alertify.success(data['log_message'],time_out);
-                    get_all_data(project_id,team_id);
-                    window.location.reload();
-                }
-                else{
-                    alertify.error(data['log_message'],time_out);
-                }
-            });
-        }
-        else{
-
-        }
-
-    });
-}
-function link_branch(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td align="center">Are you sure to link branch <b>\''+dep_name+'\'</b>?</td></tr>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            $.get('link_branch',{
-                value:dep_value,
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                if(data['message']==true){
-                    alertify.success(data['log_message'],time_out);
-                    get_all_data(project_id,team_id);
-                    window.location.reload();
-                }
-                else{
-                    alertify.error(data['log_message'],time_out);
-                }
-            });
-        }
-        else{
-
-        }
-
-    });
-}
-function unlink_branch(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td align="center">Are you sure to unlink branch <b>\''+dep_name+'\'</b>?</td></tr>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            $.get('unlink_branch',{
-                value:dep_value,
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                if(data['message']==true){
-                    alertify.success(data['log_message'],time_out);
-                    get_all_data(project_id,team_id);
-                    window.location.reload();
-                }
-                else{
-                    alertify.error(data['log_message'],time_out);
-                }
-            });
-        }
-        else{
-
-        }
-    });
-}
-function rename_branch(dep_name,project_id,team_id,dep_value){
-
-    var message="Rename Branch: " + dep_name + "";
-
-    var new_name = window.prompt(message, dep_name);
-
-    if (new_name !== null) {
-        new_name = new_name.trim();
-
-        console.log("Rename branch: " + dep_name + " -> " + new_name);
-
-        if (new_name !== "" || dep_name !== "") {
-            $.get('rename_branch',{
-                    old_name:dep_name,
-                    new_name:new_name
-                },function(data){
-                    if(data['message']==true){
-//                        alertify.success(data['log_message'],time_out);
-//                        get_all_data(project_id,team_id);
-                        window.location.reload();
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-            });
-        }
-    }
-}
-function create_new_version_under_branch(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td colspan="2" align="center"><b>Create New Version</b></td></tr>';
-    message+='<tr><td align="right"><b>'+dep_name+' Version:</b></td><td align="left"><input class="textbox" id="new_name" style="width: 100%"/></td></tr>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            var new_name=$('#new_name').val().trim();
-            if(new_name!=""){
-                $.get('add_new_version_branch',{
-                    new_name:new_name.trim(),
-                    new_value:dep_value
-                },function(data){
-                    if(data['message']==true){
-                        alertify.success(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                        window.location.reload();
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
+    $('#rename_dependency').on('click',function(){
+        var message='';
+        message+='<table width="100%;">';
+        message+='<tr><td><b>Old Name:</b></td><td>'+value_name+'</td></tr>';
+        message+='<tr><td><b>New Name:</b></td><td><input id="rename_dep" style="width: 100%;" class="textbox"/></td></tr>'
+        message+='</table>';
+        alertify.confirm(message,function(){
+            var new_dep=$('#rename_dep').val().trim();
+            if(new_dep!=''){
+                rename_dependency(value,project_id,team_id,value_name,new_dep);
             }
             else{
-                alertify.error(name_field_error,time_out);
+                return false;
             }
-
+        });
+    });
+}
+function rename_dependency(value,project_id,team_id,value_name,new_dep){
+    $.get('rename_dependency',{
+        old_name:value_name,
+        new_name:new_dep
+    },function(data){
+        if(data['message']){
+            alertify.success(data['log_message'],time_out);
+            get_all_data(project_id,team_id);
         }
         else{
-
+            alertify.error(data['log_message'],1500);
+            alertify.alert().close_all();
         }
     });
 }
-function unlink_dependency(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td align="center">Are you sure to unlink dependency <b>\''+dep_name+'\'</b>?</td></tr>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            $.get('unlink_dependency',{
-                value:dep_value,
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                if(data['message']==true){
-                    alertify.success(data['log_message'],time_out);
-                    get_all_data(project_id,team_id);
-                    window.location.reload();
+function add_new_name_under_dependency(value,project_id,team_id,value_name,new_name){
+    $.get('add_new_name_dependency',{
+        new_name:new_name,
+        new_value:value
+    },function(data){
+       if(data['message']){
+           alertify.success(data['log_message'],time_out);
+           get_dependency_under_name(value,project_id,team_id,value_name);
+       }
+    });
+}
+function get_all_version(value,text,parent_name){
+    $.get('get_all_version_bit',{
+        value:value
+    },function(data){
+        console.log(data);
+        var version_list=data['version_list'];
+        if(version_list.length>0){
+            var message='';
+            message+='<table class="two-column-emphasis">'
+            for(var i=0;i<version_list.length;i++){
+                message+='<tr>';
+                message+='<td>'+version_list[i][0]+'</td>';
+                var version=version_list[i][1].split(',');
+                message+='<td><table>';
+                for(var j=0;j<version.length;j++){
+                    message+='<tr><td>'+version[j]+'</td></tr>';
                 }
-                else{
-                    alertify.error(data['log_message'],time_out);
-                }
-            });
+
+                message+='</table></td>'
+                message+='</tr>';
+            }
+            message+='</table>';
+            $('#version_list').html(message);
+            $('#bread_crumb').html('<a href="#">'+parent_name+'</a> > <a href="#">'+text+'</a> ');
+            var message='';
+            message+='<input type="button" class="m-btn green" value="Add Version"/> ';
+            message+='<input type="button" class="m-btn green" value="Rename"/> ';
+            message+='<input type="button" class="m-btn green" value="Usage"/> ';
+            $('#control_panel').html(message);
         }
         else{
-
-        }
-    });
-}
-function link_dependency(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td align="center">Are you sure to link dependency <b>\''+dep_name+'\'</b>?</td></tr>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            $.get('link_dependency',{
-                value:dep_value,
-                project_id:project_id,
-                team_id:team_id
-            },function(data){
-                if(data['message']==true){
-                    alertify.success(data['log_message'],time_out);
-                    get_all_data(project_id,team_id);
-                    window.location.reload();
-                }
-                else{
-                    alertify.error(data['log_message'],time_out);
-                }
-            });
-        }
-        else{
-
+            $('#version_list').html('<p style="font-size: 110%;margin-left: 1%;"><b>No Version Present</b></p>');
+            $('#bread_crumb').html('<a href="#">'+parent_name+'</a> > <a href="#">'+text+'</a> ');
+            $('#control_panel').empty();
         }
 
-    });
-}
-function rename_dependency(dep_name,project_id,team_id,dep_value){
-    var message="Rename Dependency: " + dep_name + "";
-
-    var new_name = window.prompt(message, dep_name);
-
-    if (new_name !== null) {
-        new_name = new_name.trim();
-
-        console.log("Rename: " + dep_name + " -> " + new_name);
-
-        if (new_name !== "" || dep_name !== "") {
-            $.get('rename_dependency',{
-                old_name:dep_name,
-                new_name:new_name
-            },function(data){
-                if(data['message']==true){
-//                    alertify.success(data['log_message'],time_out);
-//                    get_all_data(project_id,team_id);
-
-                    window.location.reload();
-                }
-                else{
-                    alertify.error(data['log_message']);
-                }
-            });
-        }
-    }
-}
-function create_new_name_under_version(dep_name,project_id,team_id,dep_value){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr><td colspan="2" align="center"><b>Create New Name</b></td></tr>';
-    message+='<tr><td align="right"><b>'+dep_name+' Name:</b></td><td align="left"><input class="textbox" id="new_name" style="width: 100%"/></td></tr>';
-    message+='</table>';
-    alertify.confirm(message,function(e){
-        if(e){
-            var new_name=$('#new_name').val().trim();
-            if(new_name!=""){
-                $.get('add_new_name_dependency',{
-                    new_name:new_name.trim(),
-                    new_value:dep_value
-                },function(data){
-                    if(data['message']==true){
-                        alertify.success(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                        window.location.reload();
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
-            }
-            else{
-                alertify.error(name_field_error,time_out);
-            }
-
-        }
-        else{
-
-        }
-    });
-}
-
-function DependencyTabButtons(project_id,team_id){
-    $('#create_new_dependency').on('click',function(event){
-        event.preventDefault();
-
-        var message = "New Dependency name";
-        var new_dependency_name = window.prompt(message, "");
-
-        if (new_dependency_name !== null) {
-            new_dependency_name = new_dependency_name.trim();
-
-            if (new_dependency_name !== "") {
-                if(new_dependency_name!=""){
-                    $.get('add_new_dependency',{
-                        dependency_name:new_dependency_name
-                    },function(data){
-                        if(data['message']==true){
-//                            alertify.success(data['log_message'],time_out);
-//                            get_all_data(project_id,team_id);
-                            window.location.reload();
-                        }
-                        else{
-                            alertify.error(data['log_message'],time_out);
-                        }
-                    });
-                }
-                else{
-                    alertify.error(name_field_error,time_out);
-                }
-            }
-        }
-    });
-    $('#create_new_branch').on('click',function(event){
-        event.preventDefault();
-
-        var message = "New Branch name";
-        var new_branch_name = window.prompt(message, "");
-
-        if (new_branch_name !== null) {
-            new_branch_name = new_branch_name.trim();
-
-            if(new_branch_name!==""){
-                $.get('add_new_branch',{
-                    dependency_name:new_branch_name
-                },function(data){
-                    if(data['message']==true){
-//                            alertify.success(data['log_message'],time_out);
-//                            get_all_data(project_id,team_id);
-                        window.location.reload();
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
-            }
-            else{
-                alertify.error(name_field_error,time_out);
-            }
-        }
-    });
-    $('#create_new_feature').on('click',function(event){
-        event.preventDefault();
-
-        var message = "New Feature name";
-        var feature_path = window.prompt(message, "");
-
-        if (feature_path !== null) {
-            feature_path = feature_path.trim();
-
-            if(feature_path!=""){
-                $.get('add_new_feature',{
-                    feature_path:feature_path
-                },function(data){
-                    if(data['message']==true){
-//                        alertify.success(data['log_message'],time_out);
-//                        get_all_data(project_id,team_id);
-                        window.location.reload();
-                    }
-                    else{
-                        alertify.error(data['log_message'],time_out);
-                    }
-                });
-            } else{
-                alertify.error(name_field_error,time_out);
-            }
-        }
-    });
+    })
 }
