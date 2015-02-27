@@ -2869,7 +2869,7 @@ def Run_Test(request):
                 #email notify
                 try:
                     urllib2.urlopen("http://www.google.com").close()
-                    EmailNotify.Send_Email(stEmailIds, runid, TestObjective, '' , '')
+                    EmailNotify.Send_Email(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date, '', '' , '')
                     print "connected"
                     results = ['OK']
                 except urllib2.URLError:
