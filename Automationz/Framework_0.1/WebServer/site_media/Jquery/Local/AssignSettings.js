@@ -21,7 +21,9 @@ $(document).ready(function(){
         alertify.confirm(message,function(e){
             if(e){
                 $.get('add_new_dependency',{
-                    dependency_name:$('#new_dependency').val().trim()
+                    dependency_name:$('#new_dependency').val().trim(),
+                    project_id:project_id,
+                    team_id:team_id
                 },function(data){
                     if(data['message']){
                         alertify.success(data['log_message']);
@@ -80,11 +82,16 @@ function get_all_data(project_id,team_id){
         var message='';
         message+='<table class="two-column-emphasis">';
         message+='<caption><b style="font-size: 150%;"> Global Dependency</b></caption>';
-        for(var i=0;i<global_dependency_list.length;i++){
-            message+='<tr>';
-            message+='<td data-id="'+global_dependency_list[i][0]+'" class="global_dependency">'+global_dependency_list[i][1]+'</td>';
-            message+='<td class="add_global_dependency"><img src="/site_media/plus1.png" style="cursor: pointer" width="20px" height="20px"/></td>';
-            message+='</tr>';
+        if(global_dependency_list.length>0){
+            for(var i=0;i<global_dependency_list.length;i++){
+                message+='<tr>';
+                message+='<td data-id="'+global_dependency_list[i][0]+'" class="global_dependency">'+global_dependency_list[i][1]+'</td>';
+                message+='<td class="add_global_dependency"><img src="/site_media/plus1.png" style="cursor: pointer" width="20px" height="20px"/></td>';
+                message+='</tr>';
+            }
+        }
+        else{
+            message+='<tr><td><b>No Global Dependency</b></td></tr>';
         }
         message+='</table>';
         $('#global_dependency_list').html(message);

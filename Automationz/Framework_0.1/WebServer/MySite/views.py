@@ -15351,14 +15351,14 @@ def get_all_data_dependency_page(request):
                 else:
                     team_name=''
                 # dependency_tab
-                query = "select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (project_id.strip(), int(team_id.strip()))
+                query = "select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and d.project_id=dm.project_id and dm.project_id='%s' and dm.team_id=%d" % (project_id.strip(), int(team_id.strip()))
                 #query="select dependency_name,array_agg(distinct name), array_agg( distinct bit_name),array_agg( distinct version)from dependency_name dn,dependency_values dv,dependency d,dependency_management dm where dm.dependency=d.id and dv.id=dn.id and d.id=dn.dependency_id  and project_id='%s' and team_id=%d group by dependency_name, name,bit_name"%(project_id,int(team_id))
                 Conn = GetConnection()
                 dependency_list = DB.GetData(Conn, query, False)
                 Conn.close()
                 
-                query = "select distinct d.id,d.dependency_name as name from dependency d except(select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d) order by name" % (
-                    project_id.strip(), int(team_id.strip()))
+                query = "select distinct d.id,d.dependency_name as name from dependency d where project_id='%s' except(select distinct d.id,d.dependency_name from dependency d,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d) order by name" % (
+                    project_id.strip(),project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 unused_dependency_list = DB.GetData(Conn, query, False)
                 Conn.close()
@@ -15412,6 +15412,8 @@ def add_new_dependency(request):
             if request.is_ajax():
                 type_tag = "dependency"
                 dependency = request.GET.get(u'dependency_name', '')
+                project_id=request.GET.get(u'project_id','')
+                team_id=int(request.GET.get(u'team_id',''))
                 # check for the occurance
                 query = "select count(*) from dependency where dependency_name='%s'" % dependency.strip(
                 )
@@ -15421,7 +15423,9 @@ def add_new_dependency(request):
                     if len(count) == 1 and count[0] == 0:
                         # form dict to insert
                         Dict = {
-                            'dependency_name': dependency.strip()
+                            'dependency_name': dependency.strip(),
+                            'project_id':project_id.strip(),
+                            'team_id':int(team_id)
                         }
                         Conn = GetConnection()
                         result = DB.InsertNewRecordInToTable(
