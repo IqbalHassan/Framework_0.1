@@ -116,7 +116,7 @@ function get_dependency_under_name(value,project_id,team_id,value_name){
         'team_id':team_id
     },function(data){
         var dependency_list=data['dependency_list'];
-        if(data['default_list'].length>0){
+        if(data['default_list'].length>0 && data['default_list'][0]!=null){
             var default_list=data['default_list'][0].split(',');
         }
         else{
