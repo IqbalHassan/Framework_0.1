@@ -15972,15 +15972,23 @@ def make_default_name(request):
                         if default_choice[0] is None:
                             modified_choice = name.strip()
                         else:
-                            modified_choice = (
-                                default_choice[0] +
-                                "," +
-                                name.strip()).strip()
+                            temp=default_choice[0].split(',')
+                            final=[]
+                            for each in temp:
+                                if each!='':
+                                    final.append(each)
+                            print final
+                            final=list(set(final))
+                            if name not in final:
+                                final.append(name)
+                            final=list(set(final))
+                            modified_choice = ",".join(final)
                         # print modified_choice
                     if tag == 'remove_default':
                         default_choice = default_choice[0].split(",")
                         # print default_choice
                         default_choice.remove(name)
+                        default_choice=list(set(default_choice))
                         modified_choice = (",").join(default_choice)
                         print modified_choice
 
