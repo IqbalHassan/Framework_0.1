@@ -374,6 +374,8 @@ urlpatterns += patterns('',
     url(r'^Home/Cleanup/RunHistory/$',clean_run_history),
     url(r'^Home/.*/get_cleanup_data/$',get_cleanup_data),
     url(r'^Home/.*/cleanup_data/$',cleanup_data),
+    url(r'^Home/.*/delete_version/$',delete_version),
+    url(r'^Home/.*/rename_version/$',rename_version),
 	)
 
 

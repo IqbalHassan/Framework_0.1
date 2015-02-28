@@ -15540,6 +15540,37 @@ def add_new_name_dependency(request):
             PassMessasge(sModuleInfo, PostError, error_tag)
     except Exception as e:
         PassMessasge(sModuleInfo, e, 3)
+def delete_version(request):
+    sModuleInfo = inspect.stack()[0][3] + \
+        " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method == 'GET':
+            if request.is_ajax():
+                type_tag = "Dependency Version"
+                id=request.GET.get(u'dependency','')
+                version=request.GET.get(u'version','')
+                bit=request.GET.get(u'bit','')
+                Conn=GetConnection()
+                result_status=DB.DeleteRecord(Conn,"dependency_values",id=int(id),version=str(version),bit_name=str(bit))
+                Conn.close()
+                if result_status:
+                    message=True
+                    log_message=type_tag+' deleted successfully'
+                else:
+                    message=False
+                    log_message=type_tag+' not deleted successfully'
+                result = {
+                    'message': message,
+                    'log_message': log_message
+                }
+                result = simplejson.dumps(result)
+                return HttpResponse(result, mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo, AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception as e:
+        PassMessasge(sModuleInfo, e, 3)
 
 
 def get_all_name_under_dependency(request):
@@ -15929,6 +15960,67 @@ def rename_name(request):
                                 old_name,
                                 type_tag),
                             error_tag)
+                        message = False
+                        log_message = unavailable(old_name, type_tag)
+                else:
+                    PassMessasge(sModuleInfo, DBError, error_tag)
+                    message = False
+                    log_message = DBError
+                result = {
+                    'message': message,
+                    'log_message': log_message
+                }
+                result = simplejson.dumps(result)
+                return HttpResponse(result, mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo, AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception as e:
+        PassMessasge(sModuleInfo, e, 3)
+
+def rename_version(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method == 'GET':
+            if request.is_ajax():
+                type_tag = "dependency version"
+                bit=request.GET.get(u'bit','')
+                id=int(request.GET.get(u'dependency',''))
+                old_name = request.GET.get(u'old_name', '')
+                new_name = request.GET.get(u'new_name', '')
+                query = "select count(*) from dependency_values where version='%s' and id=%d and bit_name='%s'" %(old_name.strip(),int(id),str(bit))
+                Conn = GetConnection()
+                old_name_count = DB.GetData(Conn, query)
+                Conn.close()
+                query = "select count(*) from dependency_values where version='%s' and id=%d and bit_name='%s'" %(new_name.strip(),int(id),str(bit))
+                Conn = GetConnection()
+                new_name_count = DB.GetData(Conn, query)
+                Conn.close()
+                if isinstance(old_name_count, list):
+                    if len(old_name_count) == 1 and old_name_count[0] > 0:
+                        if len(new_name_count) == 1 and new_name_count[0] == 0:
+                            sWhereQuery = "where version='%s' and id=%d and bit_name='%s'" %(old_name.strip(),int(id),str(bit))
+                            Dict = {
+                                'version': new_name.strip(),
+                            }
+                            Conn = GetConnection()
+                            result = DB.UpdateRecordInTable(Conn,"dependency_values",sWhereQuery,**Dict)
+                            Conn.close()
+                            if result:
+                                PassMessasge(sModuleInfo,update_success(old_name,new_name,type_tag),success_tag)
+                                message = True
+                                log_message = update_success(old_name,new_name,type_tag)
+                            else:
+                                PassMessasge(sModuleInfo,update_fail(old_name,type_tag),error_tag)
+                                message = False
+                                log_message = update_fail(old_name, type_tag)
+                        if len(new_name_count) == 1 and new_name_count[0] > 0:
+                            PassMessasge(sModuleInfo,multiple_instance(new_name,type_tag),error_tag)
+                            message = False
+                            log_message = multiple_instance(new_name, type_tag)
+                    if len(old_name_count) == 1 and old_name_count[0] == 0:
+                        PassMessasge(sModuleInfo,unavailable(old_name,type_tag),error_tag)
                         message = False
                         log_message = unavailable(old_name, type_tag)
                 else:
