@@ -5225,8 +5225,8 @@ def Get_Features(request):
         else:
             levelnumber = feature.count('.') + 1
 
-            query = "select distinct subltree(feature_path,%d,%d) from product_features where feature_path~'*.%s.*' and nlevel(feature_path)>%d" % (
-                int(levelnumber), int(levelnumber + 1), feature, int(levelnumber))
+            query = "select distinct subltree(feature_path,%d,%d) from product_features ps,team_wise_settings tws where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d and feature_path~'*.%s.*' and nlevel(feature_path)>%d" % (
+                int(levelnumber), int(levelnumber + 1), project_id, int(team_id),feature, int(levelnumber))
             #query = "select distinct subltree(feature_path,%d,%d) from team_wise_settings tws,product_features ps where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d and feature_path~'*.%s.*' and nlevel(feature_path)>%d" % (
                 #int(levelnumber), int(levelnumber + 1), project_id, int(team_id), feature, int(levelnumber))
             #query = "select distinct subltree(feature_path,0,1) from product_features"
@@ -15485,8 +15485,10 @@ def add_new_name_dependency(request):
                 type_tag = "Dependency Name"
                 new_name = request.GET.get(u'new_name', '')
                 new_value = request.GET.get(u'new_value', '')
-                query = "select count(*) from dependency_name where name='%s'" % (
-                    new_name.strip())
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                query = "select count(*) from dependency_name where name='%s' and dependency_id=%d" % (
+                    new_name.strip(),int(new_value.strip()))
                 Conn = GetConnection()
                 count = DB.GetData(Conn, query)
                 Conn.close()
