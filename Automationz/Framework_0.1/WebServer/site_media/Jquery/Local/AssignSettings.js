@@ -149,7 +149,9 @@ function get_all_data(project_id,team_id){
         message+='<table class="two-column-emphasis">';
         message+='<caption><b style="font-size: 150%;">Feature Assigned</b></caption>'
         if(feature_list.length>0){
-
+            for(var i=0;i<feature_list.length;i++){
+                message+='<tr><td data-id="'+feature_list[i][0]+'" class="feature">'+feature_list[i][1]+'</td></tr>';
+            }
         }
         else{
             message+=('<tr><td><b>No Feature Found</b></td></tr>')
@@ -164,13 +166,38 @@ function get_all_data(project_id,team_id){
         message+='<caption><b style="font-size: 150%;">Global Feature</b></caption>';
         if(global_feature_list.length>0){
             for(var i=0;i<global_feature_list.length;i++){
-                message+='<tr><td data-id="'+global_feature_list[i][0]+'">'+global_feature_list[i][1]+'</td></tr>';
+                message+='<tr><td data-id="'+global_feature_list[i][0]+'">'+global_feature_list[i][1]+'</td>';
+                message+='<td class="add_global_feature"><img src="/site_media/plus1.png" style="cursor: pointer" width="20px" height="20px"/></td>';
             }
         }else{
             message+='<tr><td><b>No Global Feature</b></td></tr>'
         }
         message+='</table>';
         $('#global_feature_list').html(message);
+        $('.add_global_feature').on('click',function(){
+            var feature_id=$(this).prev().attr('data-id');
+            var feature=$(this).prev().text().trim();
+            var message='Do you want to link feature <b>'+feature+'</b>?';
+            alertify.confirm(message,function(e){
+                if(e){
+                    $.get('link_feature',{
+                        value:feature,
+                        project_id:project_id,
+                        team_id:team_id
+                    },function(data){
+                        if(data['message']){
+                            alertify.success(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }else{
+                            alertify.error(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                    });
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        });
     });
 }
 function link_dependency(dependency,project_id,team_id){

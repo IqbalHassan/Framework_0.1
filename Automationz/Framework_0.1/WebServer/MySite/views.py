@@ -240,7 +240,7 @@ def get_all_machine(request):
                 temp = []
                 for eachitem in each:
                     temp.append(eachitem)
-                query = "select distinct last_updated_time,machine_ip,branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ) from test_run_env tre,machine_dependency_settings mds where tre.id=mds.machine_serial  and tester_id='%s'group by last_updated_time,machine_ip,branch_version order by last_updated_time desc limit 1" % (
+                query = "select distinct last_updated_time,machine_ip,branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),id from test_run_env tre,machine_dependency_settings mds where tre.id=mds.machine_serial  and tester_id='%s' group by id,last_updated_time,machine_ip,branch_version order by id desc limit 1" % (
                     each[0])
                 Conn = GetConnection()
                 temp_detail = DB.GetData(Conn, query, False)
@@ -250,6 +250,7 @@ def get_all_machine(request):
                     for eachitem in temp_detail:
                         for eachitemtemp in eachitem:
                             temp.append(eachitemtemp)
+                    temp.pop()
                     # convert the date time panel
                     update_time = datetime.datetime.strptime(
                         temp_detail[0][0],
@@ -15372,12 +15373,12 @@ def get_all_data_dependency_page(request):
                 Conn = GetConnection()
                 unused_branch_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct feature_id,subltree(feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id=f.project_id and fm.project_id='%s' and fm.team_id=%d" % (
+                query = "select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id=f.project_id and fm.project_id='%s' and fm.team_id=%d" % (
                     project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 feature_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct feature_id,subltree(feature_path,0,1) from product_features where project_id='%s' except (select distinct feature_id,subltree(f.feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d)" % (
+                query = "select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features where project_id='%s' except (select distinct subltree(feature_path,0,1),subltree(f.feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d)" % (
                     project_id.strip(),project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 unused_feature_list = DB.GetData(Conn, query, False)
@@ -16658,7 +16659,7 @@ def link_feature(request):
                 value = request.GET.get(u'value', '')
                 project_id = request.GET.get(u'project_id', '')
                 team_id = request.GET.get(u'team_id', '')
-                query = "select feature_id from product_features where feature_path ~ '%s'" % value
+                query = "select feature_id from product_features where feature_path ~ '%s' and project_id='%s'" % (value,project_id)
                 Conn = GetConnection()
                 feature_id = DB.GetData(Conn, query)
                 Conn.close()
@@ -16667,7 +16668,7 @@ def link_feature(request):
                     'team_id': int(team_id),
                     'feature': int(feature_id[0])
                 }
-                query = "select feature_id from product_features where feature_path ~ '%s.*'" % value
+                query = "select feature_id from product_features where feature_path ~ '%s.*' and project_id='%s'" %(value,project_id)
                 value = feature_id[0]
                 Conn=GetConnection()
                 result = DB.InsertNewRecordInToTable(
