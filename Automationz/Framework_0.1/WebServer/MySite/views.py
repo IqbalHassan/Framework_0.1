@@ -148,7 +148,10 @@ def GetProjectNameForTopBar(request):
                 condition+=("'"+each+"'")
                 if index<len(temp)-1:
                     condition+=','
-            query="select p.project_id, project_name ,array_agg(distinct ptm.team_id ) from projects p,project_team_map ptm,team_info ti where p.project_id=ptm.project_id and cast(ptm.team_id as int) = ti.team_id  and ptm.project_id not in(%s)  and user_id ='%s' group by p.project_id"%(condition,user_id)
+            if len(temp)>0:
+                query="select p.project_id, project_name ,array_agg(distinct ptm.team_id ) from projects p,project_team_map ptm,team_info ti where p.project_id=ptm.project_id and cast(ptm.team_id as int) = ti.team_id  and ptm.project_id not in(%s)  and user_id ='%s' group by p.project_id"%(condition,user_id)
+            else:
+                query="select p.project_id, project_name ,array_agg(distinct ptm.team_id ) from projects p,project_team_map ptm,team_info ti where p.project_id=ptm.project_id and cast(ptm.team_id as int) = ti.team_id and user_id ='%s' group by p.project_id"%(user_id)
             Conn=GetConnection()
             member_team=DB.GetData(Conn,query,False)
             Conn.close()
@@ -15071,7 +15074,10 @@ def ProfileDetail(request):
                 condition+=("'"+each+"'")
                 if index<len(temp)-1:
                     condition+=','
-            query="select p.project_id, project_name ,array_agg(distinct ptm.team_id ) from projects p,project_team_map ptm,team_info ti where p.project_id=ptm.project_id and cast(ptm.team_id as int) = ti.team_id  and ptm.project_id not in(%s)  and user_id ='%s' group by p.project_id"%(condition,user_id)
+            if len(temp)>0:
+                query="select p.project_id, project_name ,array_agg(distinct ptm.team_id ) from projects p,project_team_map ptm,team_info ti where p.project_id=ptm.project_id and cast(ptm.team_id as int) = ti.team_id  and ptm.project_id not in(%s)  and user_id ='%s' group by p.project_id"%(condition,user_id)
+            else:
+                query="select p.project_id, project_name ,array_agg(distinct ptm.team_id ) from projects p,project_team_map ptm,team_info ti where p.project_id=ptm.project_id and cast(ptm.team_id as int) = ti.team_id  and user_id ='%s' group by p.project_id"%(user_id) 
             Conn=GetConnection()
             member_team=DB.GetData(Conn,query,False)
             Conn.close()
@@ -15656,6 +15662,14 @@ def rename_dependency(request):
                                     old_name,
                                     new_name,
                                     type_tag)
+                                #update all the test case so that the test cases has the latest dependency_name
+                                sWhereQuery="where property='%s'"%old_name.strip()
+                                Dict={
+                                      'property':new_name.strip()
+                                }
+                                Conn=GetConnection()
+                                result=DB.UpdateRecordInTable(Conn,'test_case_tag', sWhereQuery,**Dict)
+                                Conn.close()
                             else:
                                 PassMessasge(
                                     sModuleInfo,
@@ -15898,6 +15912,7 @@ def rename_name(request):
                 type_tag = "dependency name"
                 old_name = request.GET.get(u'old_name', '')
                 new_name = request.GET.get(u'new_name', '')
+                main_dependency=request.GET.get(u'main_dependency','')
                 query = "select count(*) from dependency_name where name='%s'" % old_name.strip(
                 )
                 Conn = GetConnection()
@@ -15935,6 +15950,14 @@ def rename_name(request):
                                     old_name,
                                     new_name,
                                     type_tag)
+                                #update the test case for more
+                                sWhereQuery="where property='%s' and name='%s'"%(main_dependency.strip(),old_name.strip())
+                                Dict={
+                                    'name': new_name.strip()
+                                }
+                                Conn=GetConnection()
+                                result=DB.UpdateRecordInTable(Conn,'test_case_tag', sWhereQuery,**Dict)
+                                Conn.close()
                             else:
                                 PassMessasge(
                                     sModuleInfo,

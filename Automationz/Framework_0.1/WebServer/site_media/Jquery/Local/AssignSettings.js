@@ -55,10 +55,15 @@ function get_all_data(project_id,team_id){
         var  message='';
         message+='<table class="two-column-emphasis">';
         message+='<caption><b style="font-size: 150%;">Dependency Assigned</b></caption>'
-        for(var i=0;i<dependency_list.length;i++){
-            message+='<tr>';
-            message+='<td data-id="'+dependency_list[i][0]+'" class="dependency" width=90%;>'+dependency_list[i][1]+'</td>';
-            message+='</tr>';
+        if(dependency_list.length>0){
+            for(var i=0;i<dependency_list.length;i++){
+                message+='<tr>';
+                message+='<td data-id="'+dependency_list[i][0]+'" class="dependency" width=90%;>'+dependency_list[i][1]+'</td>';
+                message+='</tr>';
+            }
+        }
+        else{
+            message+='<tr><td><b>No Dependency Present</b></td></tr>';
         }
         message+='</table> ';
         $('#dependency_list').html(message);
@@ -411,7 +416,7 @@ function initialize_second_level(value,text,parent_name,project_id,team_id){
         message+='<table>';
         message+='<tr><td align="right"><b>'+parent_name+' Name:</b></td><td align="left">'+text+'</td></tr>';
         message+='<tr><td align="right"><b>Bit:</b></td><td align="left"><select id="bit"><option value="32">32 Bit</option><option value="64">64 Bit</option></select></td></tr>';
-        message+='<tr><td align="right"><b>Dependency Name:</b></td><td align="left"><input id="version_name" style="width: 100%;"/></td></tr>';
+        message+='<tr><td align="right"><b>Dependency Name:</b></td><td align="left"><input id="version_name" class="textbox" style="width: 100%;"/></td></tr>';
         message+='</table>';
         alertify.confirm(message,function(e){
             if(e){
@@ -445,7 +450,8 @@ function initialize_second_level(value,text,parent_name,project_id,team_id){
                 if(new_name!=''){
                     $.get('rename_name',{
                         'old_name':text,
-                        'new_name':new_name
+                        'new_name':new_name,
+                        'main_dependency':main_dep_value
                     },function(data){
                         if(data['message']){
                             alertify.success(data['log_message'],time_out);
