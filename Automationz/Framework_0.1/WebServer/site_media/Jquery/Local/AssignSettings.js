@@ -26,10 +26,11 @@ $(document).ready(function(){
                     team_id:team_id
                 },function(data){
                     if(data['message']){
-                        alertify.success(data['log_message']);
+                        alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
                     else{
+                        alertify.error(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
                 });
@@ -40,6 +41,40 @@ $(document).ready(function(){
         });
 
     });
+    $('#create_feature').on('click',function(){
+        var message='';
+        message+='<table>';
+        message+='<tr><td><b style="font-size: 125%;">Feature Name</b> </td></tr>';
+        message+='<tr><td><input type="text" class="textbox" id="new_feature"></td></tr>';
+        message+='</table>';
+        alertify.confirm(message,function(e){
+            if(e){
+                var feature_name=$('#new_feature').val().trim();
+                if(feature_name!=''){
+                    $.get('add_new_feature',{
+                        feature_path: feature_name.trim(),
+                        project_id:project_id,
+                        team_id:team_id
+                    },function(data){
+                        if(data['message']){
+                            alertify.success(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                        else{
+                            alertify.error(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                    });
+                }
+                else{
+                    return false;
+                }
+            }
+            else{
+                alertify.alert().close_all();
+            }
+        });
+    })
     //DependencyTabButtons(project_id,team_id);
 });
 
@@ -107,6 +142,35 @@ function get_all_data(project_id,team_id){
             var dependency=$(this).parent().find('td:first-child').attr('data-id');
             link_dependency(dependency,project_id,team_id);
         });
+
+        console.log(data['feature_list']);
+        var feature_list=data['feature_list'];
+        var message='';
+        message+='<table class="two-column-emphasis">';
+        message+='<caption><b style="font-size: 150%;">Feature Assigned</b></caption>'
+        if(feature_list.length>0){
+
+        }
+        else{
+            message+=('<tr><td><b>No Feature Found</b></td></tr>')
+        }
+        message+='</table>';
+        $('#feature_list').empty();
+        $('#feature_list').html(message);
+        var global_feature_list=data['unused_feature_list'];
+        console.log(global_feature_list);
+        var message='';
+        message+='<table class="two-column-emphasis">';
+        message+='<caption><b style="font-size: 150%;">Global Feature</b></caption>';
+        if(global_feature_list.length>0){
+            for(var i=0;i<global_feature_list.length;i++){
+                message+='<tr><td data-id="'+global_feature_list[i][0]+'">'+global_feature_list[i][1]+'</td></tr>';
+            }
+        }else{
+            message+='<tr><td><b>No Global Feature</b></td></tr>'
+        }
+        message+='</table>';
+        $('#global_feature_list').html(message);
     });
 }
 function link_dependency(dependency,project_id,team_id){

@@ -15372,13 +15372,13 @@ def get_all_data_dependency_page(request):
                 Conn = GetConnection()
                 unused_branch_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d" % (
+                query = "select distinct feature_id,subltree(feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id=f.project_id and fm.project_id='%s' and fm.team_id=%d" % (
                     project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 feature_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features except (select distinct subltree(f.feature_path,0,1),subltree(f.feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d)" % (
-                    project_id.strip(), int(team_id.strip()))
+                query = "select distinct feature_id,subltree(feature_path,0,1) from product_features where project_id='%s' except (select distinct feature_id,subltree(f.feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d)" % (
+                    project_id.strip(),project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 unused_feature_list = DB.GetData(Conn, query, False)
                 Conn.close()
@@ -15415,8 +15415,7 @@ def add_new_dependency(request):
                 project_id=request.GET.get(u'project_id','')
                 team_id=int(request.GET.get(u'team_id',''))
                 # check for the occurance
-                query = "select count(*) from dependency where dependency_name='%s'" % dependency.strip(
-                )
+                query = "select count(*) from dependency where dependency_name='%s' and project_id='%s' and team_id=%d" %(dependency.strip(),project_id.strip(),int(team_id))
                 Conn = GetConnection()
                 count = DB.GetData(Conn, query)
                 if isinstance(count, list):
@@ -16586,16 +16585,19 @@ def add_new_feature(request):
             if request.is_ajax():
                 type_tag = "feature"
                 dependency = request.GET.get(u'feature_path', '').strip().replace(' ','_')
+                project_id=request.GET.get(u'project_id','')
+                team_id=int(request.GET.get(u'team_id',''))
                 # check for the occurance
-                query = "select count(*) from product_features where feature_path='%s'" % dependency.strip(
-                )
+                query = "select count(*) from product_features where feature_path='%s' and project_id='%s' and team_id=%d" %(dependency.strip(),project_id,int(team_id))
                 Conn = GetConnection()
                 count = DB.GetData(Conn, query)
                 if isinstance(count, list):
                     if len(count) == 1 and count[0] == 0:
                         # form dict to insert
                         Dict = {
-                            'feature_path': dependency.strip()
+                            'feature_path': dependency.strip(),
+                            'project_id':project_id.strip(),
+                            'team_id':int(team_id)
                         }
                         Conn = GetConnection()
                         result = DB.InsertNewRecordInToTable(
