@@ -5692,7 +5692,7 @@ def BundleReport_Table(request):
         ReportTable.append(tuple(Data))
 
     Heading = [
-        'Section',
+        'Folder',
         'Passed',
         'Failed',
         'Blocked',
@@ -6157,7 +6157,7 @@ def New_Execution_Report(request):
         cases_list.append(section_cases)
 
     Heading = [
-        'Section',
+        'Folder',
         'Passed',
         'Failed',
         'Blocked',
@@ -6463,7 +6463,7 @@ def BundleReport_Table_Latest(request):
         ReportTable.append(tuple(Data))
 
     Heading = [
-        'Section',
+        'Folder',
         'Passed',
         'Failed',
         'Blocked',
@@ -6697,7 +6697,7 @@ def Bundle_Report(request):
                     # DefectTable.append((eachDefect[0],eachDefect[1],FormattedSectionName))
                     DefectTable.append((eachDefect[0], FormattedSectionName))
 
-    Heading = ['Section', 'Passed', 'Failed', 'Blocked', 'Never run', 'Total']
+    Heading = ['Folder', 'Passed', 'Failed', 'Blocked', 'Never run', 'Total']
     results = {
         'Heading': Heading,
         'ReportTable': ReportTable,
@@ -7274,7 +7274,7 @@ def TestCase_Results(request):
                 
             conn.close()
             
-    Heading = ['TC-ID', 'Title','Type','Feature','Section','Status','Time']
+    Heading = ['TC-ID', 'Title','Type','Feature','Folder','Status','Time']
     results = {'Heading': Heading, 'TableData': Final,'count':len(TableData)}
     # results={'TableData':TableData}
     json = simplejson.dumps(results)
@@ -8737,7 +8737,7 @@ def TestTypeStatus_Report(request):  # minar09
         FinalData.append(tuple(tempsect))"""
 
     Heading = [
-        'Section',
+        'Folder',
         'Priority',
         'Manual',
         'Manual in-progress',
@@ -11019,7 +11019,7 @@ def TableDataTestCasesOtherPages(request):
                     'ID',
                     'Title',
                     'Feature',
-                    'Section',
+                    'Folder',
                     'Type',
                     'Time',
                     '']
@@ -11086,7 +11086,7 @@ def TableDataTestCasesOtherPages(request):
                                 'ID',
                                 'Title',
                                 'Feature',
-                                'Section',
+                                'Folder',
                                 'Status',
                                 'Type',
                                 'Time']
@@ -11254,7 +11254,7 @@ def ViewAndOrganizeTestCases(request):
                     'ID',
                     'Title',
                     'Feature',
-                    'Section',
+                    'Folder',
                     'Type',
                     'Time',
                     '']
@@ -11321,7 +11321,7 @@ def ViewAndOrganizeTestCases(request):
                                 'ID',
                                 'Title',
                                 'Feature',
-                                'Section',
+                                'Folder',
                                 'Status',
                                 'Type',
                                 'Time']
