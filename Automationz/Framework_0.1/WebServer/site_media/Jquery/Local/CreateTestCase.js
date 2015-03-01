@@ -502,11 +502,11 @@ $(document).ready(function() {
                         for(var i=0;i<dependency.length;i++){
                             var name=dependency[i][0];
                             //console.log($('.'+name+" :checked").length);
-                            $('.'+name).attr('checked',false);
+                            $('.'+name.split(' ').join('_')).attr('checked',false);
                             //console.log($('.'+name+" :checked").length);
                             var listings=dependency[i][1];
                             for(var j=0;j<listings.length;j++){
-                                $('.'+name+':checkbox[value="'+listings[j]+'"]').attr('checked',true);
+                                $('.'+name.split(' ').join('_')+':checkbox[value="'+listings[j]+'"]').attr('checked',true);
                             }
                             //console.log($('.'+name+" :checked").length);
                             if($('.'+name).is(':checked')==false){
@@ -787,7 +787,7 @@ $(document).ready(function() {
                 return false;
             }
             for(var i=0;i<dependency_classes.length;i++){
-                if($('#'+dependency_classes[i].name+'-flag').hasClass('unfilled')){
+                if($('#'+dependency_classes[i].name.split(' ').join('_').trim()+'-flag').hasClass('unfilled')){
                     //alert("Platform is not selected correctly");
                     alertify.error(dependency_classes[i].name.trim()+" is not selected correctly","",0);
                     return false;
@@ -879,7 +879,7 @@ $(document).ready(function() {
             var dependency_list=[];
             for(var i=0;i<dependency_classes.length;i++){
                 var temp_list=[];
-                $('.'+dependency_classes[i].name+':checked').each(function(){
+                $('.'+dependency_classes[i].name.split(' ').join('_').trim()+':checked').each(function(){
                    temp_list.push($(this).val());
                 });
                 var temp=(dependency_classes[i].name+':'+temp_list.join(",")).toString();
@@ -1518,7 +1518,7 @@ function populate_parameter_div(array_list,div_name){
     for(var i=0;i<array_list.length;i++){
         var dependency=array_list[i][0];
         var name_list=array_list[i][1].split(",");
-        message+='<form id="tc_'+dependency+'" class="new_tc_form">';
+        message+='<form id="tc_'+dependency.split(' ').join('_').trim()+'" class="new_tc_form">';
         message+='<table>';
         message+='<tr>';
         message+='<td class="tc_form_label_col">'
@@ -1531,15 +1531,15 @@ function populate_parameter_div(array_list,div_name){
         message+='<tr>';
         for(var j=0;j<name_list.length;j++){
             message+='<td width="'+equal_size+'%">';
-            message+='<input class="'+dependency+'" id="'+dependency+'_'+name_list[j]+'" type="checkbox" name="type" value="'+name_list[j]+'" style="width:auto" />';
-            message+='<label for="'+dependency+'_'+name_list[j]+'">'+name_list[j]+'</label>';
+            message+='<input class="'+dependency.split(' ').join('_')+'" id="'+dependency.split(' ').join('_')+'_'+name_list[j]+'" type="checkbox" name="type" value="'+name_list[j]+'" style="width:auto" />';
+            message+='<label for="'+dependency.split(' ').join('_')+'_'+name_list[j]+'">'+name_list[j]+'</label>';
             message+='</td>';
-            dep_name.push(dependency+'_'+name_list[j]);
+            dep_name.push(dependency.split(' ').join('_').trim()+'_'+name_list[j]);
         }
         message+='</tr>';
         message+='</table>';
         message+='</td>';
-        message+='<td><a class="notification-indicator tooltipped downwards" data-gotokey="n"><span id="'+dependency.trim()+'-flag" class="mail-status unfilled"></span></a></td>';
+        message+='<td><a class="notification-indicator tooltipped downwards" data-gotokey="n"><span id="'+dependency.split(' ').join('_').trim()+'-flag" class="mail-status unfilled"></span></a></td>';
         message+='<tr>';
         message+='</table>';
         message+='</form>';
@@ -1552,16 +1552,16 @@ function populate_parameter_div(array_list,div_name){
         var name_list=array_list[i][1].split(",");
         for(var j=0;j<name_list.length;j++){
             if(array_list[i][2].indexOf(name_list[j])>-1){
-                $('#'+dependency+'_'+name_list[j]).attr('checked','checked');
+                $('#'+dependency.split(' ').join('_')+'_'+name_list[j]).attr('checked','checked');
             }
         }
-        if($('.'+dependency).is(':checked')==false){
-            $('#'+dependency+"-flag").removeClass('filled');
-            $('#'+dependency+"-flag").addClass('unfilled');
+        if($('.'+dependency.split(' ').join('_')).is(':checked')==false){
+            $('#'+dependency.split(' ').join('_')+"-flag").removeClass('filled');
+            $('#'+dependency.split(' ').join('_')+"-flag").addClass('unfilled');
         }
         else{
-            $('#'+dependency+"-flag").removeClass('unfilled');
-            $('#'+dependency+"-flag").addClass('filled');
+            $('#'+dependency.split(' ').join('_')+"-flag").removeClass('unfilled');
+            $('#'+dependency.split(' ').join('_')+"-flag").addClass('filled');
         }
     }
     check_required_data(dependency_classes);
@@ -2246,13 +2246,13 @@ function check_required_data(array_list)
                for(var j=0;j<array_list[i].list.length;j++){
 //                   console.log($(array_list[i].list[j]));
                    if($('#'+array_list[i].list[j]).is(':checked')==true){
-                       $('#'+array_list[i].name+"-flag").removeClass('unfilled');
-                       $('#'+array_list[i].name+"-flag").addClass('filled');
+                       $('#'+array_list[i].name.split(' ').join('_')+"-flag").removeClass('unfilled');
+                       $('#'+array_list[i].name.split(' ').join('_')+"-flag").addClass('filled');
                    }
                }
-               if($('.'+array_list[i].name).is(':checked')==false){
-                   $('#'+array_list[i].name+"-flag").removeClass('filled');
-                   $('#'+array_list[i].name+"-flag").addClass('unfilled');
+               if($('.'+array_list[i].name.split(' ').join('_')).is(':checked')==false){
+                   $('#'+array_list[i].name.split(' ').join('_')+"-flag").removeClass('filled');
+                   $('#'+array_list[i].name.split(' ').join('_')+"-flag").addClass('unfilled');
                }
            }
         });
