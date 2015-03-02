@@ -2451,7 +2451,7 @@ def Run_Test(request):
                     machine_data = DB.GetData(Conn, query, False)
                     Conn.close()
                     # modifying the run id description
-                    query = "select dependency_name, array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and project_id='%s' and team_id=%d group by dependency_name" % (
+                    query = "select dependency_name, array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by dependency_name" % (
                         project_id, int(team_id))
                     Conn = GetConnection()
                     dependency_list = DB.GetData(Conn, query, False)
