@@ -6,6 +6,7 @@ import requests
 from poster.streaminghttp import register_openers
 import urllib2
 from poster.encode import multipart_encode
+import traceback, os.path
 sys.path.append("..")
 #adding driver folder to sys.path
 current_file_path=os.path.dirname(os.getcwd())#getting parent folder
@@ -119,7 +120,10 @@ def main():
             print "Unknown test step : ", CurrentStep
             CommonUtil.ExecLog(sModuleInfo, "Unknown test step : %s" % CurrentStep , 2)
         except Exception, e:
-            return CommonUtil.LogFailedException(sModuleInfo, e)
+            top = traceback.extract_stack()[-1]
+            Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+            print Error_Detail
+            return CommonUtil.LogFailedException(sModuleInfo, Error_Detail)
 
         #Put the return value into Queue to send it back to main thread
         q.put(sTestStepReturnStatus)
@@ -336,7 +340,9 @@ def main():
             try:
                 log_file_path=config.get('sectionOne', 'temp_run_file_path')
             except Exception, e:
-                print "Exception: ",e
+                top = traceback.extract_stack()[-1]
+                Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                print Error_Detail
             Global.TCLogFolder=log_file_path+os.sep+(TestRunID[0].replace(':','-')+os.sep+TCID.replace(":",'-'))
             #Global.TCLogFolder = (Global.NetworkLogFolder + os.sep + sTestResultsRunId + os.sep + TCID + "_" + CommonUtil.TimeStamp("utcstring")).replace(":", "-")
             test_case_folder=log_file_path+os.sep+(TestRunID[0].replace(':','-')+os.sep+TCID.replace(":",'-'))
@@ -546,8 +552,10 @@ def main():
                                             print "Thread could not be terminated"
 
                     except Exception, e:
-                        print "Exception occurred in test step : ", e
-                        CommonUtil.ExecLog(sModuleInfo, "Exception occurred in test step : %s" % e, 3)
+                        top = traceback.extract_stack()[-1]
+                        Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                        print Error_Detail
+                        CommonUtil.ExecLog(sModuleInfo, "Exception occurred in test step : %s" % Error_Detail, 3)
                         sStepResult = "Failed"
 
                     #Check if the db connection is alive or timed out
@@ -557,8 +565,10 @@ def main():
                     try:
                         conn.close()
                     except Exception, e:
-                        print "Connection exception:", e
-                        CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % e, 2)
+                        top = traceback.extract_stack()[-1]
+                        Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                        print Error_Detail
+                        CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % Error_Detail, 2)
                     #test Step End time
                     conn=DBUtil.ConnectToDataBase()
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
@@ -787,6 +797,9 @@ def main():
             try:
                 FailReason = CommonUtil.FindTestCaseFailedReason(conn, sTestResultsRunId, TCID)
             except Exception, e:
+                top = traceback.extract_stack()[-1]
+                Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                print Error_Detail
                 print "Unable to find Fail Reason for Test case: ", TCID
                 FailReason = ""
 
@@ -923,6 +936,9 @@ def main():
                 
 
             except Exception, e:
+                top = traceback.extract_stack()[-1]
+                Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                print Error_Detail
                 return "pass"
         #Copy the Automation Log to Network Folder
         #if FL.CopyFile(CommonUtil.hdlr.baseFilename, Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
