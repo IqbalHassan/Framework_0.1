@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-
+import traceback, os.path
 import DataBaseUtilities as DB
 from dependencyCollector import dependency,product_version
 from login_info import username,password,project,team,server,port,database_name,superuser,super_password
@@ -46,70 +46,84 @@ def RunProcess(sTesterid):
                 DB.UpdateRecordInTable(conn, "test_run_env", "where tester_id = '%s' and status = 'Unassigned'" % sTesterid, last_updated_time=last_updated_time)
                 conn.close()
         except Exception, e:
-            print "Exception : ", e
-
+            exc_type, exc_obj, exc_tb = sys.exc_info()        
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+            print Error_Detail
     return True
 
 def Login():
-    print username
-    result=Check_Credentials(username,password,project,team,server,port)
-    if result:
-        tester_id=update_machine(collectAlldependency(project,team,dependency))
-        if tester_id!=False:
-            RunAgain = RunProcess(tester_id)
-            if RunAgain == True:
-                Login()
+    try:
+        print username
+        result=Check_Credentials(username,password,project,team,server,port)
+        if result:
+            tester_id=update_machine(collectAlldependency(project,team,dependency))
+            if tester_id!=False:
+                RunAgain = RunProcess(tester_id)
+                if RunAgain == True:
+                    Login()
+            else:
+                print "machine not generated"
         else:
-            print "machine not generated"
-    else:
-        print "No User Found"
+            print "No User Found"
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
 
 def collectAlldependency(project,team_info,dependency):
-    query="select distinct dependency_name from dependency d ,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=(select id from config_values where value='%s' and type='Team')"%(project,team_info)
-    print query
-    Conn=DB.ConnectToDataBase(database_name, superuser, super_password, server)
-    dependency_list=DB.GetData(Conn, query)
-    Conn.close()
-    print dependency_list
-
-    #Get Local Info object
-    oLocalInfo = CommonUtil.LocalInfo()
-
-    final_dependency=[]
-    for each in dependency_list:
-        temp=""
-        temp_list=[]
-        if each in dependency.keys():
-            if dependency[each]!='':
-                temp=dependency[each]
+    try:
+        query="select distinct dependency_name from dependency d ,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=(select id from config_values where value='%s' and type='Team')"%(project,team_info)
+        print query
+        Conn=DB.ConnectToDataBase(database_name, superuser, super_password, server)
+        dependency_list=DB.GetData(Conn, query)
+        Conn.close()
+        print dependency_list
+    
+        #Get Local Info object
+        oLocalInfo = CommonUtil.LocalInfo()
+    
+        final_dependency=[]
+        for each in dependency_list:
+            temp=""
+            temp_list=[]
+            if each in dependency.keys():
+                if dependency[each]!='':
+                    temp=dependency[each]
+                else:
+                    if each=='Platform':
+                        temp=oLocalInfo.getLocalOS()
+                    if each=='Browser':
+                        temp=oLocalInfo.getInstalledClients()
             else:
                 if each=='Platform':
                     temp=oLocalInfo.getLocalOS()
                 if each=='Browser':
                     temp=oLocalInfo.getInstalledClients()
-        else:
-            if each=='Platform':
-                temp=oLocalInfo.getLocalOS()
-            if each=='Browser':
-                temp=oLocalInfo.getInstalledClients()
-        if temp!='':
-            if each=='Platform':
-                bit=int(temp.split('-')[1].strip()[0:2])
-                version=temp.split('-')[0].split(' ')[1].strip()
-                name=temp.split('-')[0].split(' ')[0].strip()
-                temp_list.append((name,bit,version))
-            if each=='Browser':
-                temp=temp.split(",")
-                for eachitem in temp:
-                    bit=int(eachitem.split(";")[1].strip()[0:2])
-                    version=eachitem.split(";")[0].split("(")[1].split("V")[1].strip()
-                    name=eachitem.split(";")[0].split("(")[0].strip()
+            if temp!='':
+                if each=='Platform':
+                    bit=int(temp.split('-')[1].strip()[0:2])
+                    version=temp.split('-')[0].split(' ')[1].strip()
+                    name=temp.split('-')[0].split(' ')[0].strip()
                     temp_list.append((name,bit,version))
-            if each=='TestCaseType':
-                temp_list.append((temp,0,''))
-            final_dependency.append((each,temp_list))
-    return final_dependency
-
+                if each=='Browser':
+                    temp=temp.split(",")
+                    for eachitem in temp:
+                        bit=int(eachitem.split(";")[1].strip()[0:2])
+                        version=eachitem.split(";")[0].split("(")[1].split("V")[1].strip()
+                        name=eachitem.split(";")[0].split("(")[0].strip()
+                        temp_list.append((name,bit,version))
+                if each=='TestCaseType':
+                    temp_list.append((temp,0,''))
+                final_dependency.append((each,temp_list))
+        return final_dependency
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        
 def update_machine(dependency):
     try:
         #Get Local Info object
@@ -210,26 +224,36 @@ def update_machine(dependency):
                 return testerid
         return False
     except Exception, e:
-        print "Exception:",e
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
     
 def Check_Credentials(username,password,project,team,server,port):
     #get all the person enlisted with this project
-    query="select regexp_split_to_array(project_owners, E',') from projects where project_id='%s'"%project
-    Conn=DB.ConnectToDataBase(database_name, superuser, super_password, server)
-    user_list=DB.GetData(Conn, query)
-    Conn.close()
-    user_list=user_list[0]
-    message=",".join(user_list)
-    print message
-    query="select count(*) from user_info ui, permitted_user_list pul where ui.full_name=pul.user_names and username='%s' and password='%s' and user_level not in ('email','Automation', 'Manual') and user_id in (%s)"%(username,password,message)
-    Conn=DB.ConnectToDataBase(database_name,superuser,super_password,server)
-    count=DB.GetData(Conn,query)
-    Conn.close()
-    print count
-    if len(count)==1 and count[0]==1:
-       return True 
-    else:
-        print "No user found with Name: %s"%username
-        return False
+    try:
+        query="select regexp_split_to_array(project_owners, E',') from projects where project_id='%s'"%project
+        Conn=DB.ConnectToDataBase(database_name, superuser, super_password, server)
+        user_list=DB.GetData(Conn, query)
+        Conn.close()
+        user_list=user_list[0]
+        message=",".join(user_list)
+        print message
+        query="select count(*) from user_info ui, permitted_user_list pul where ui.full_name=pul.user_names and username='%s' and password='%s' and user_level not in ('email','Automation', 'Manual') and user_id in (%s)"%(username,password,message)
+        Conn=DB.ConnectToDataBase(database_name,superuser,super_password,server)
+        count=DB.GetData(Conn,query)
+        Conn.close()
+        print count
+        if len(count)==1 and count[0]==1:
+            return True 
+        else:
+            print "No user found with Name: %s"%username
+            return False
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+           
 if __name__=='__main__':
     Login()

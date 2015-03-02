@@ -120,8 +120,9 @@ def main():
             print "Unknown test step : ", CurrentStep
             CommonUtil.ExecLog(sModuleInfo, "Unknown test step : %s" % CurrentStep , 2)
         except Exception, e:
-            top = traceback.extract_stack()[-1]
-            Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+            exc_type, exc_obj, exc_tb = sys.exc_info()        
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
             print Error_Detail
             return CommonUtil.LogFailedException(sModuleInfo, Error_Detail)
 
@@ -340,8 +341,9 @@ def main():
             try:
                 log_file_path=config.get('sectionOne', 'temp_run_file_path')
             except Exception, e:
-                top = traceback.extract_stack()[-1]
-                Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                exc_type, exc_obj, exc_tb = sys.exc_info()        
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
                 print Error_Detail
             Global.TCLogFolder=log_file_path+os.sep+(TestRunID[0].replace(':','-')+os.sep+TCID.replace(":",'-'))
             #Global.TCLogFolder = (Global.NetworkLogFolder + os.sep + sTestResultsRunId + os.sep + TCID + "_" + CommonUtil.TimeStamp("utcstring")).replace(":", "-")
@@ -552,8 +554,9 @@ def main():
                                             print "Thread could not be terminated"
 
                     except Exception, e:
-                        top = traceback.extract_stack()[-1]
-                        Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                        exc_type, exc_obj, exc_tb = sys.exc_info()        
+                        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
                         print Error_Detail
                         CommonUtil.ExecLog(sModuleInfo, "Exception occurred in test step : %s" % Error_Detail, 3)
                         sStepResult = "Failed"
@@ -565,8 +568,9 @@ def main():
                     try:
                         conn.close()
                     except Exception, e:
-                        top = traceback.extract_stack()[-1]
-                        Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                        exc_type, exc_obj, exc_tb = sys.exc_info()        
+                        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
                         print Error_Detail
                         CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % Error_Detail, 2)
                     #test Step End time
@@ -797,8 +801,9 @@ def main():
             try:
                 FailReason = CommonUtil.FindTestCaseFailedReason(conn, sTestResultsRunId, TCID)
             except Exception, e:
-                top = traceback.extract_stack()[-1]
-                Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                exc_type, exc_obj, exc_tb = sys.exc_info()        
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
                 print Error_Detail
                 print "Unable to find Fail Reason for Test case: ", TCID
                 FailReason = ""
@@ -936,8 +941,9 @@ def main():
                 
 
             except Exception, e:
-                top = traceback.extract_stack()[-1]
-                Error_Detail = ', '.join(["Error Code: "+type(e).__name__, "File: "+ os.path.basename(top[0]), "line: " + str(top[1])])
+                exc_type, exc_obj, exc_tb = sys.exc_info()        
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
                 print Error_Detail
                 return "pass"
         #Copy the Automation Log to Network Folder
