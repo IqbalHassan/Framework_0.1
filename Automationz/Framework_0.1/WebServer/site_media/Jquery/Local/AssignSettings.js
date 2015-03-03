@@ -244,8 +244,8 @@ function get_features(feature_id,project_id,team_id,feature){
         message+='</table>';
         $('#sub_feature_list').html(message);
         $('#second_level_feature_list').html('&nbsp;');
+        $('#third_level_feature_list').html('&nbsp;');
         initialize_feature_tab_button(feature_modified,project_id,team_id,feature);
-
         $(".sub_feature_first_level").on('click',function(){
             $('#feature_control_panel').empty();
             $('.sub_feature_first_level').css({'background-color':'#fff'});
@@ -266,7 +266,7 @@ function get_features(feature_id,project_id,team_id,feature){
                     var second_level_sub_feature=data['version_list'];
                     for(var i=0;i<second_level_sub_feature.length;i++){
                         message+='<tr>';
-                        message+='<td data-id="'+second_level_sub_feature[i][0]+'">'+second_level_sub_feature[i][1].replace(/_/g,' ')+'</td>';
+                        message+='<td data-id="'+parent_name+'.'+second_level_sub_feature[i][0]+'" class="sub_feature_second_level">'+second_level_sub_feature[i][1].replace(/_/g,' ')+'</td>';
                         message+='</tr>';
                     }
                 }
@@ -275,9 +275,61 @@ function get_features(feature_id,project_id,team_id,feature){
                 }
                 message+='</table>';
                 $('#second_level_feature_list').html(message);
+                $('#third_level_feature_list').html('&nbsp;');
                 initialize_second_feature_tab_button(modified_name,project_id,team_id,child_name);
+                $('.sub_feature_second_level').on('click',function(){
+                    $('.sub_feature_second_level').css({'background-color':'#fff'});
+                    $(this).css({'background-color':'#ccc'});
+                    $('.sub_feature_second_level').removeClass('selected');
+                    $(this).addClass('selected');
+                    var parent_name=$(this).attr('data-id');
+                    var child_name=$(this).text().trim().replace(/ /g,'_');
+                    var modified_name=parent_name+'.'+child_name;
+                    $.get('get_all_first_level_sub_feature',{
+                        'name':modified_name,
+                        'project_id':project_id,
+                        'team_id':team_id
+                    },function(data){
+                        var message='';
+                        message+='<table class="two-column-emphasis">';
+                        if(data['version_list'].length>0){
+                            var second_level_sub_feature=data['version_list'];
+                            for(var i=0;i<second_level_sub_feature.length;i++){
+                                message+='<tr>';
+                                message+='<td data-id="'+parent_name+'.'+second_level_sub_feature[i][0]+'" class="sub_feature_third_level">'+second_level_sub_feature[i][1].replace(/_/g,' ')+'</td>';
+                                message+='</tr>';
+                            }
+                        }
+                        else{
+                            message+='<tr><td><b>No Sub Feature Found</b></td></tr>'
+                        }
+                        message+='</table>';
+                        $('#third_level_feature_list').html(message);
+                        $('.sub_feature_third_level').on('click',function(){
+                            $('.sub_feature_third_level').css({'background-color':'#fff'});
+                            $(this).css({'background-color':'#ccc'});
+                            $('.sub_feature_third_level').removeClass('selected');
+                            $(this).addClass('selected');
+                            var parent_name=$(this).attr('data-id');
+                            var child_name=$(this).text().trim().replace(/ /g,'_');
+                            var modified_name=parent_name+'.'+child_name;
+                            initialize_third_feature_tab_button(modified_name,project_id,team_id,child_name);
+                        });
+                    });
+                });
             });
         });
+    });
+}
+function initialize_third_feature_tab_button(feature_id,project_id,team_id,feature){
+    var message='';
+    //message+='<input type="button" id="add_sub_feature" class="m-btn green" value="Add Sub Feature"/> ';
+    message+='<input type="button" id="rename_feature" class="m-btn green" value="Rename Feature"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn red" id="delete_button" value="Delete"/> ';
+    $('#feature_control_panel').html(message);
+    $('#delete_button').on('click',function(){
+        alert(feature_id);
     });
 }
 function initialize_second_feature_tab_button(feature_id,project_id,team_id,feature){
