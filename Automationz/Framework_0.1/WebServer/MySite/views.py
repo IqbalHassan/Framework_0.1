@@ -5217,7 +5217,7 @@ def Get_Features(request):
         project_id = request.GET.get(u'project_id', '')
         team_id = request.GET.get(u'team_id', '')
         if feature == '':
-            query = "select distinct subltree(feature_path,0,1) from team_wise_settings tws,product_features ps where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d" % (
+            query = "select distinct subltree(feature_path,0,1) from team_wise_settings tws,product_features ps where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d and ps.project_id=tws.project_id" % (
                 project_id, int(team_id))
             #query = "select distinct subltree(feature_path,0,1) from product_features"
             results = DB.GetData(Conn, query, False)
@@ -5225,7 +5225,7 @@ def Get_Features(request):
         else:
             levelnumber = feature.count('.') + 1
 
-            query = "select distinct subltree(feature_path,%d,%d) from product_features ps,team_wise_settings tws where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d and feature_path~'*.%s.*' and nlevel(feature_path)>%d" % (
+            query = "select distinct subltree(feature_path,%d,%d) from product_features ps,team_wise_settings tws where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d and feature_path~'*.%s.*' and nlevel(feature_path)>%d and ps.project_id=tws.project_id" % (
                 int(levelnumber), int(levelnumber + 1), project_id, int(team_id),feature, int(levelnumber))
             #query = "select distinct subltree(feature_path,%d,%d) from team_wise_settings tws,product_features ps where ps.feature_id=tws.parameters and tws.type='Feature' and tws.project_id='%s' and tws.team_id=%d and feature_path~'*.%s.*' and nlevel(feature_path)>%d" % (
                 #int(levelnumber), int(levelnumber + 1), project_id, int(team_id), feature, int(levelnumber))
@@ -15373,16 +15373,16 @@ def get_all_data_dependency_page(request):
                 Conn = GetConnection()
                 unused_branch_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id=f.project_id and fm.project_id='%s' and fm.team_id=%d" % (
+                query = "select distinct '',subltree(feature_path,0,1) from product_features f,team_wise_settings tws where f.feature_id=tws.parameters and tws.project_id=f.project_id and tws.project_id='%s' and tws.team_id=%d" % (
                     project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 feature_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct subltree(feature_path,0,1),subltree(feature_path,0,1) from product_features where project_id='%s' except (select distinct subltree(feature_path,0,1),subltree(f.feature_path,0,1) from product_features f,feature_management fm where f.feature_id=fm.feature and fm.project_id='%s' and fm.team_id=%d)" % (
-                    project_id.strip(),project_id.strip(), int(team_id.strip()))
+                query = "select distinct '',subltree(feature_path,0,1) from product_features where project_id='%s'" % (project_id.strip())
                 Conn = GetConnection()
                 unused_feature_list = DB.GetData(Conn, query, False)
                 Conn.close()
+                unused_feature_list=list(set(unused_feature_list)-set(feature_list))
                 result = {
                     'team_name':team_name,
                     'project_name':project_name,
@@ -16590,6 +16590,7 @@ def add_new_feature(request):
                 dependency = request.GET.get(u'feature_path', '').strip().replace(' ','_')
                 project_id=request.GET.get(u'project_id','')
                 team_id=int(request.GET.get(u'team_id',''))
+                feature_type=request.GET.get(u'type','')
                 # check for the occurance
                 query = "select count(*) from product_features where feature_path='%s' and project_id='%s' and team_id=%d" %(dependency.strip(),project_id,int(team_id))
                 Conn = GetConnection()
@@ -16617,6 +16618,14 @@ def add_new_feature(request):
                                 success_tag)
                             message = True
                             log_message = entry_success(dependency, type_tag)
+                            if feature_type=='sub_feature':
+                                query="select feature_id from product_features where feature_path ~'%s' and project_id='%s' and team_id=%d"%(dependency,project_id,int(team_id))
+                                Conn=GetConnection()
+                                feature_id=DB.GetData(Conn,query)
+                                Conn.close()
+                                Conn=GetConnection()
+                                print DB.InsertNewRecordInToTable(Conn,'team_wise_settings',project_id=project_id,team_id=int(team_id),parameters=int(feature_id[0]), type='Feature')
+                                Conn.close() 
                         else:
                             PassMessasge(
                                 sModuleInfo,
@@ -16659,6 +16668,7 @@ def link_feature(request):
             if request.is_ajax():
                 type_tag = "Feature"
                 value = request.GET.get(u'value', '')
+                value=value.replace(' ','_')
                 project_id = request.GET.get(u'project_id', '')
                 team_id = request.GET.get(u'team_id', '')
                 query = "select feature_id from product_features where feature_path ~ '%s' and project_id='%s'" % (value,project_id)
@@ -16879,9 +16889,11 @@ def get_all_first_level_sub_feature(request):
                 print name
                 print project_id
                 print team_id
-                level_count = name[0].count('.') + 1
-                query = "select distinct subltree(feature_path,%d,%d) from product_features where nlevel(feature_path)>%d and feature_path ~'*.%s.*'" % (
-                    int(level_count), int(level_count) + 1, int(level_count), name[0].strip())
+                feature_name=name[0].replace(' ','_')
+                level_count = feature_name.count('.')
+                #query = "select distinct subltree(feature_path,%d,%d) from product_features where nlevel(feature_path)>%d and feature_path ~'*.%s.*'" % (
+                #    int(level_count), int(level_count) + 1, int(level_count), name[0].strip())
+                query="select distinct subltree(feature_path,%d,%d),subltree(feature_path,%d,%d) from product_features ps ,team_wise_settings tws where tws.parameters=ps.feature_id and tws.project_id=ps.project_id and nlevel(feature_path)>%d and feature_path ~'*.%s.*' and tws.team_id=%d and tws.project_id='%s'"%(int(level_count),int(level_count)+1,int(level_count)+1,int(level_count)+2,int(level_count)+1,str(feature_name),int(team_id),project_id.strip())
                 Conn = GetConnection()
                 version_list = DB.GetData(Conn, query, False)
                 Conn.close()
