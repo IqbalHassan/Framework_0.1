@@ -1531,8 +1531,8 @@ function populate_parameter_div(array_list,div_name){
         message+='<tr>';
         for(var j=0;j<name_list.length;j++){
             message+='<td width="'+equal_size+'%">';
-            message+='<input class="'+dependency.split(' ').join('_')+'" id="'+dependency.split(' ').join('_')+'_'+name_list[j]+'" type="checkbox" name="type" value="'+name_list[j]+'" style="width:auto" />';
-            message+='<label for="'+dependency.split(' ').join('_')+'_'+name_list[j]+'">'+name_list[j]+'</label>';
+            message+='<input class="'+dependency.split(' ').join('_')+' cmn-toggle cmn-toggle-yes-no" id="'+dependency.split(' ').join('_')+'_'+name_list[j]+'" type="checkbox" name="type" value="'+name_list[j]+'" style="width:auto" />';
+            message+='<label for="'+dependency.split(' ').join('_')+'_'+name_list[j]+'" data-on="'+name_list[j]+'" data-off="'+name_list[j]+'"></label>';
             message+='</td>';
             dep_name.push(dependency.split(' ').join('_').trim()+'_'+name_list[j]);
         }
