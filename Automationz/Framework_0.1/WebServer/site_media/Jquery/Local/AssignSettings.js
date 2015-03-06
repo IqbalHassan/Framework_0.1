@@ -80,7 +80,35 @@ $(document).ready(function(){
                 alertify.alert().close_all();
             }
         });
-    })
+    });
+    $('#create_driver').on('click',function(){
+        var message='';
+        message+='<table>';
+        message+='<tr><td><b>Driver Name:</b></td><td><input style="width:100%" class="textbox" placeholder="Driver Name" id="new_driver"/> </td></tr>';
+        message+='</table>';
+        alertify.confirm(message,function(e){
+            if(e){
+                var driver_name=$('#new_driver').val().trim();
+                $.get('add_new_driver',{
+                    'name':driver_name,
+                    'project_id':project_id,
+                    'team_id':team_id
+                },function(data){
+                    if(data['message']){
+                        alertify.success(data['log_message'],time_out);
+                        get_all_data(project_id,team_id);
+                    }
+                    else{
+                        alertify.error(data['log_message'],time_out);
+                        get_all_data(project_id,team_id);
+                    }
+                });
+            }
+            else{
+                alertify.alert().close_all();
+            }
+        });
+    });
     //DependencyTabButtons(project_id,team_id);
 });
 
@@ -198,6 +226,60 @@ function get_all_data(project_id,team_id){
                 if(e){
                     $.get('link_feature',{
                         value:feature,
+                        project_id:project_id,
+                        team_id:team_id
+                    },function(data){
+                        if(data['message']){
+                            alertify.success(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }else{
+                            alertify.error(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                    });
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        });
+
+        var driver_list=data['driver_list'];
+        var message='';
+        message+='<table class="two-column-emphasis"><caption><b style="font-size: 150%;">Assigned Driver</b></caption>';
+        if(driver_list.length>0){
+            for(var i=0;i<driver_list.length;i++){
+                message+='<tr><td data-id="'+driver_list[i][0]+'">'+driver_list[i][1]+'</td></tr>';
+            }
+        }
+        else{
+            message+='<tr><td><b>No Driver Available</b></td></tr>'
+        }
+        message+='</table>';
+        $('#driver_list').html(message);
+
+        var global_driver_list=data['unused_driver_list'];
+        var message='';
+        message+='<table class="two-column-emphasis">';
+        message+='<caption><b style="font-size: 150%;">Global Driver</b></caption>';
+        if(global_driver_list.length>0){
+            for(var i=0;i<global_driver_list.length;i++){
+                message+='<tr><td data-id="'+global_driver_list[i][0]+'">'+global_driver_list[i][1]+'</td>';
+                message+='<td class="add_global_driver"><img src="/site_media/plus1.png" style="cursor: pointer" width="20px" height="20px"/></td>';
+            }
+        }else{
+            message+='<tr><td><b>No Global Driver</b></td></tr>'
+        }
+        message+='</table>';
+        $('#global_driver_list').html(message);
+
+        $('.add_global_driver').on('click',function(){
+            var driver_id=$(this).prev().attr('data-id');
+            var driver=$(this).prev().text().trim();
+            var message='Do you want to link Driver <b>'+driver+'</b>?';
+            alertify.confirm(message,function(e){
+                if(e){
+                    $.get('link_driver',{
+                        value:driver,
                         project_id:project_id,
                         team_id:team_id
                     },function(data){

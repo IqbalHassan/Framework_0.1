@@ -15383,6 +15383,15 @@ def get_all_data_dependency_page(request):
                 unused_feature_list = DB.GetData(Conn, query, False)
                 Conn.close()
                 unused_feature_list=list(set(unused_feature_list)-set(feature_list))
+                query="select distinct id,driver_name from drivers d,team_wise_settings tws where tws.project_id=d.project_id and tws.parameters=d.id and tws.type='Driver' and tws.project_id='%s' and tws.team_id=%d"%(project_id.strip(),int(team_id))
+                Conn=GetConnection()
+                driver_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                query="select distinct id,driver_name from drivers d where project_id='%s'"%(project_id.strip())
+                Conn=GetConnection()
+                unused_driver_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                unused_driver_list=list(set(unused_driver_list)-set(driver_list))
                 result = {
                     'team_name':team_name,
                     'project_name':project_name,
@@ -15391,7 +15400,9 @@ def get_all_data_dependency_page(request):
                     'branch_list': branch_list,
                     'unused_branch_list': unused_branch_list,
                     'feature_list': feature_list,
-                    'unused_feature_list': unused_feature_list
+                    'unused_feature_list': unused_feature_list,
+                    'driver_list':driver_list,
+                    'unused_driver_list':unused_driver_list
                 }
                 result = simplejson.dumps(result)
                 return HttpResponse(result, mimetype='application/json')
@@ -16579,6 +16590,73 @@ def link_branch(request):
         PassMessasge(sModuleInfo, e, 3)
 # feature tab code
 
+def add_new_driver(request):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method == 'GET':
+            if request.is_ajax():
+                type_tag = "Driver"
+                dependency = request.GET.get(u'name', '').strip()
+                project_id=request.GET.get(u'project_id','')
+                team_id=int(request.GET.get(u'team_id',''))
+                query = "select count(*) from drivers where driver_name='%s' and project_id='%s' and team_id=%d" %(dependency.strip(),project_id,int(team_id))
+                Conn = GetConnection()
+                count = DB.GetData(Conn, query)
+                if isinstance(count, list):
+                    if len(count) == 1 and count[0] == 0:
+                        # form dict to insert
+                        Dict = {
+                            'driver_name': dependency.strip(),
+                            'project_id':project_id.strip(),
+                            'team_id':int(team_id)
+                        }
+                        Conn = GetConnection()
+                        result = DB.InsertNewRecordInToTable(
+                            Conn,
+                            "drivers",
+                            **Dict)
+                        Conn.close()
+                        if result:
+                            PassMessasge(
+                                sModuleInfo,
+                                entry_success(
+                                    dependency,
+                                    type_tag),
+                                success_tag)
+                            message = True
+                            log_message = entry_success(dependency, type_tag) 
+                        else:
+                            PassMessasge(
+                                sModuleInfo,
+                                entry_fail(
+                                    dependency,
+                                    type_tag),
+                                error_tag)
+                            message = False
+                            log_message = entry_fail(dependency, type_tag)
+                    if len(count) == 1 and count[0] > 0:
+                        PassMessasge(
+                            sModuleInfo,
+                            multiple_instance(
+                                dependency,
+                                type_tag),
+                            error_tag)
+                        message = False
+                        log_message = multiple_instance(dependency, type_tag)
+                else:
+                    PassMessasge(sModuleInfo, DBError, error_tag)
+                result = {
+                    'message': message,
+                    'log_message': log_message
+                }
+                result = simplejson.dumps(result)
+                return HttpResponse(result, mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo, AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception as e:
+        PassMessasge(sModuleInfo, e, 3)
 
 def add_new_feature(request):
     sModuleInfo = inspect.stack()[0][3] + \
@@ -16646,6 +16724,58 @@ def add_new_feature(request):
                         log_message = multiple_instance(dependency, type_tag)
                 else:
                     PassMessasge(sModuleInfo, DBError, error_tag)
+                result = {
+                    'message': message,
+                    'log_message': log_message
+                }
+                result = simplejson.dumps(result)
+                return HttpResponse(result, mimetype='application/json')
+            else:
+                PassMessasge(sModuleInfo, AjaxError, error_tag)
+        else:
+            PassMessasge(sModuleInfo, PostError, error_tag)
+    except Exception as e:
+        PassMessasge(sModuleInfo, e, 3)
+
+def link_driver(request):
+    sModuleInfo = inspect.stack()[0][3] + \
+        " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if request.method == 'GET':
+            if request.is_ajax():
+                type_tag = "Driver"
+                value = request.GET.get(u'value', '')
+                project_id = request.GET.get(u'project_id', '')
+                team_id = request.GET.get(u'team_id', '')
+                query = "select id from drivers where driver_name = '%s' and project_id='%s'" % (value,project_id)
+                Conn = GetConnection()
+                feature_id = DB.GetData(Conn, query)
+                Conn.close()
+                nDict = {
+                         'project_id': project_id,
+                         'team_id': int(team_id),
+                        'parameters': int(feature_id[0]),
+                        'type': "Driver"
+                }
+                value=feature_id[0]
+                Conn=GetConnection()
+                result = DB.InsertNewRecordInToTable(
+                        Conn,
+                        "team_wise_settings",
+                        **nDict)
+                Conn.close()
+                if result:
+                    PassMessasge(
+                        sModuleInfo, "%s %d is linked successfully" %
+                        (type_tag, int(value)), error_tag)
+                    message = True
+                    log_message = "%s is linked successfully" % type_tag
+                else:
+                    PassMessasge(
+                        sModuleInfo, "%s %d is not linked successfully" %
+                        (type_tag, int(value)), error_tag)
+                    message = False
+                    log_message = "%s is not linked successfully" % type_tag
                 result = {
                     'message': message,
                     'log_message': log_message
