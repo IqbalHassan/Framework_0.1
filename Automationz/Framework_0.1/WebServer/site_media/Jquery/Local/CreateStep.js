@@ -904,3 +904,24 @@ function desktop_notify(message){
 
 
 }
+
+
+function implementDropDown(wheretoplace){
+        $(wheretoplace+" tr td:nth-child(1)").css({'color' : 'blue','cursor' : 'pointer'});
+        $(wheretoplace+" tr td:nth-child(1)").each(function() {
+            var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+            var name=$(this).text().trim();
+            $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+            $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+                var data_list=data['Result'];
+                var column=data['column'];
+                ResultTable('#'+ID+'detail',column,data_list,"");
+                $('#'+ID+'detail tr').each(function(){
+                    $(this).css({'textAlign':'left'});
+                });
+            });
+            $(this).live('click',function(){
+                $('#'+ID+'detail').slideToggle("slow");
+            });
+        });
+    }

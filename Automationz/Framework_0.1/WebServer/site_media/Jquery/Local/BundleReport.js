@@ -105,9 +105,9 @@ function tctable(divname,heading,data,ResultName,tooltip){
         message += '</tbody></table>';
         $(divname).html(message);
     }
-    /*else{
+    else{
         $(divname).empty();
-    }*/
+    }
 }
 
 function populate_manual_div(dependency_list,global_version_list,project_id,team_id){
