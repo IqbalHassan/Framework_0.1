@@ -222,7 +222,9 @@
                                             <tr>
                                                 {% if priority_list %}
                                                     {% for x in priority_list%}
-                                                        <td><input type="radio" name="priority" value="{{x.0.1}}">{{x.0}}</td>
+                                                        <td><input id="{{x.0}}" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="priority" value="{{x.0.1}}">
+                                                            <label for="{{x.0}}" data-on="{{x.0}}" data-off="{{x.0}}"></label>
+                                                            </td>
                                                     {% endfor %}
                                                 {% endif %}
                                             </tr>

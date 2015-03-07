@@ -4770,7 +4770,7 @@ input.cmn-toggle-yes-no + label:before, input.cmn-toggle-yes-no + label:after {
   line-height: 32px;
 }
 input.cmn-toggle-yes-no + label:before {
-  background-color: #dddddd;
+  background-color: #dcdcdc;
   content: attr(data-off);
   -webkit-transition: -webkit-transform 0.5s;
   -moz-transition: -moz-transform 0.5s;

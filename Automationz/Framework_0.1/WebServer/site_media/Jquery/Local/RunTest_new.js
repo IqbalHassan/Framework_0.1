@@ -608,8 +608,8 @@ function populate_parameter_div(array_list,div_name,project_id,team_id){
         message+='<tr>';
         for(var j=0;j<array_list[i][1].length;j++){
             message+='<td width="'+equal_size+'%">';
-            message+='<input class="'+dependency+'" id="'+dependency+'_'+array_list[i][1][j]+'" type="radio" name="type" value="'+array_list[i][1][j]+'" style="width:auto" />';
-            message+='<label for="'+dependency+'_'+array_list[i][1][j]+'">'+array_list[i][1][j]+'</label>';
+            message+='<input class="'+dependency+' cmn-toggle cmn-toggle-yes-no" id="'+dependency+'_'+array_list[i][1][j]+'" type="radio" name="type" value="'+array_list[i][1][j]+'" style="width:auto" />';
+            message+='<label for="'+dependency+'_'+array_list[i][1][j]+'" data-on="'+array_list[i][1][j]+'" data-off="'+array_list[i][1][j]+'"></label>';
             message+='</td>';
             dep_name.push(dependency+'_'+array_list[i][1][j]);
         }
