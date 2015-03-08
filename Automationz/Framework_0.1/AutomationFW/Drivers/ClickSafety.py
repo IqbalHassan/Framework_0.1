@@ -30,27 +30,48 @@ def log_in_to_clicksafety(dependency,step_data):
         first_data_set=step_data[0]
         user_name = first_data_set[0][1]
         password = first_data_set[1][1]
-        sTestStepReturnStatus = SeleniumScript.Login(user_name,password)
+        logged_user = first_data_set[2][1]
+        sTestStepReturnStatus = SeleniumScript.Login(user_name,password,logged_user)
         print sTestStepReturnStatus
         return sTestStepReturnStatus
     except:
         return "Failed"
     
-def expand_menu_by_name_or_id(dependency,step_data):
+def expand_menu_by_name(dependency,step_data):
     try:        
         first_data_set=step_data[0]
         menu_name=first_data_set[0][1]
-        sTestStepReturnStatus = SeleniumScript.Expand_Menu_By_Name_OR_ID(menu_name)
+        sTestStepReturnStatus = SeleniumScript.Expand_Menu_By_Name(menu_name)
+        print sTestStepReturnStatus
+        return sTestStepReturnStatus       
+    except:
+        return "Failed"
+
+def expand_menu_by_id(dependency,step_data):
+    try:        
+        first_data_set=step_data[0]
+        menu_id=first_data_set[0][1]
+        sTestStepReturnStatus = SeleniumScript.Expand_Menu_By_ID(menu_id)
         print sTestStepReturnStatus
         return sTestStepReturnStatus       
     except:
         return "Failed"
     
-def click_element_by_name_or_id(dependency,step_data):
+def click_element_by_name(dependency,step_data):
     try:        
         first_data_set=step_data[0]
         element_name=first_data_set[0][1]
-        sTestStepReturnStatus = SeleniumScript.Click_Element_By_Name_OR_ID(element_name)
+        sTestStepReturnStatus = SeleniumScript.Click_Element_By_Name(element_name)
+        print sTestStepReturnStatus
+        return sTestStepReturnStatus  
+    except:
+        return "Failed"
+
+def click_element_by_id(dependency,step_data):
+    try:        
+        first_data_set=step_data[0]
+        element_id=first_data_set[0][1]
+        sTestStepReturnStatus = SeleniumScript.Click_Element_By_ID(element_id)
         print sTestStepReturnStatus
         return sTestStepReturnStatus  
     except:
@@ -88,6 +109,24 @@ def turn_editing_on_or_off(dependency,step_data):
         sTestStepReturnStatus = SeleniumScript.Turn_Editing_On_OR_Off(on_off)
         print sTestStepReturnStatus
         return sTestStepReturnStatus 
+    except:
+        return "Failed"
+
+def go_to_clicksafety_course_settings(dependency,step_data):
+    try:        
+        sTestStepReturnStatus = SeleniumScript.ClickSafety_Course_Settings()
+        print sTestStepReturnStatus
+        return sTestStepReturnStatus 
+    except:
+        return "Failed"
+
+def edit_course_from_course_settings(dependency,step_data):
+    try:        
+        first_data_set=step_data[0]
+        course_name=first_data_set[0][1]
+        sTestStepReturnStatus = SeleniumScript.Edit_Course_From_Course_Settings(course_name)
+        print sTestStepReturnStatus
+        return sTestStepReturnStatus       
     except:
         return "Failed"
 
