@@ -32,7 +32,7 @@ def Repurchase_the_course_when_the_final_exam_is_failed_for_third_time():
         return 'failed'     
     result = SeleniumScript.Edit_Course_From_Course_Settings("csdev-iqbal")
     if result == 'failed':
-       return 'failed'    
+        return 'failed'    
     result = SeleniumScript.Course_Settings_Time_Limit('id_minlimit', '600','id_dailylimit', '500','id_submitbutton')
     if result == 'failed':
         return 'failed'     

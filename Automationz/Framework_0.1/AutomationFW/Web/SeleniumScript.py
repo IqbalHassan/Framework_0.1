@@ -1,5 +1,6 @@
 
 import sys
+import os
 sys.path.append("..")
 
 from selenium import webdriver
@@ -50,9 +51,12 @@ def BrowserSelection(browser):
             return "failed"
         time.sleep(3)
     except Exception, e:
-        print "Exception : ", e
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
         print "Unable to start WebDriver"
-        CommonUtil.ExecLog(sModuleInfo, "Unable to start WebDriver", 3)
+        CommonUtil.ExecLog(sModuleInfo, "Unable to start WebDriver. %s"%Error_Detail, 3)
         return "failed"
 
 def OpenLink(link, page_title):
@@ -67,8 +71,11 @@ def OpenLink(link, page_title):
         time.sleep(3)
         return "passed"
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "failed to open your link: %s" % link, 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "failed to open your link: %s. Error:%s" %(link, Error_Detail), 3)
         print "failed to open your link: %s" % link
         CommonUtil.TakeScreenShot("sModuleInfo")
         return "failed"
@@ -98,8 +105,11 @@ def Login(user_name,password,logged_name):
             return "failed"
             
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to login", 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to login.  %s"%Error_Detail, 3)
         print "Unable to login"
         return "failed"
     
@@ -146,8 +156,11 @@ def Expand_Menu_By_ID(_id):
             print "Unable to expand Menu: %s"%_id
             return "failed"   
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s"%_id, 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.  Error: %s"%(_id, Error_Detail), 3)
         print "Unable to expand Menu: %s"%_id
         return "failed"    
 
@@ -212,8 +225,11 @@ def Expand_Menu_By_Name(_name,parent=False):
             print "Unable to expand Menu: %s"%_name
             return "failed"   
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s"%_name, 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.  Error: %s"%(_name, Error_Detail), 3)
         print "Unable to expand Menu: %s"%_name
         return "failed"    
 
@@ -261,8 +277,11 @@ def Click_Element_By_Name(_name,parent=False):
         return "passed"
 
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s"%_name, 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.   Error: %s"%(_name,Error_Detail), 3)
         print "Unable to expand Menu: %s"%_name
         return "failed"    
  
@@ -291,8 +310,11 @@ def Click_Element_By_ID(_id):
         return "passed"
 
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to click element by ID: %s"%_id, 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to click element by ID: %s.  Error: %s"%(_id,Error_Detail), 3)
         print "Unable to click your element by ID: %s"%_id
         return "failed"    
 
@@ -327,8 +349,11 @@ def Set_Text_Field_Value_By_ID(id,value):
         return "passed"
 
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to set value for your ID: %s"%id, 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to set value for your ID: %s.  Error: %s"%(id, Error_Detail), 3)
         print "Unable to set value for your ID: %s"%id
         return "failed"    
 
@@ -350,8 +375,11 @@ def Click_Element_By_Custome_Field_Value(field,value):
         return "passed"
 
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to click your element by field: %s and value: %s"%(field,value), 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to click your element by field: %s and value: %s.  Error: %s"%(field,value, Error_Detail), 3)
         print "Unable to click your element by field: %s and value: %s"%(field,value)
         return "failed"    
 
@@ -381,8 +409,11 @@ def Verify_Text_Message_By_Class(element, expected_text):
 
      
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Error occur during verification process", 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Error occur during verification process.  Error: %s"%Error_Detail, 3)
         print "Error occur during verification process"
         return "failed"  
 
@@ -403,8 +434,11 @@ def Course_Exists(course):
             return "passed"            
      
     except Exception, e:
-        #print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Could not find your course: %s"%course, 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Could not find your course: %s.  Error: %s"%(course,Error_Detail), 3)
         print "Could not find your expected course: %s"%course
         return "failed"  
     
@@ -427,8 +461,11 @@ def Verify_Text_Message_By_Text(expected_text):
             return "passed"            
      
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Could not find your expected text: %s"%expected_text, 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Could not find your expected text: %s. Error: %s"%(expected_text, Error_Detail), 3)
         print "Could not find your expected text: %s"%expected_text
         return "failed"  
 
@@ -480,8 +517,11 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
         time.sleep(3)
         return "passed"      
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to set value course settings information", 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to set value course settings information.  Error: %s"%Error_Detail, 3)
         print "Unable to set value course settings information"
         return "failed"  
 
@@ -495,8 +535,11 @@ def Delete_A_Course(course_name):
         CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
         return "passed"
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "No open browser to close", 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3)
         print "No open browser to close"
         return "failed"
         
@@ -507,38 +550,45 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup='true'):
     course_name =  name of the course. 
     cleanup = true if you want to delete old name or false if you want to just keep the name if it already there
     '''
+    try:
+        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+        Click_Element_By_Name('Home')
+        
+        course_exists = Course_Exists(course_name)
+        if (course_exists == "passed") and (cleanup=='true'):
+            print "Existing course found and will be deleted"
+            result = Delete_A_Course(course_name)
+            if result == "failed":
+                print "Unable to delete an existing course"
+                return "failed"
+        elif (course_exists == "passed") and (cleanup!='true'):
+            print "Course already exists and clean up was set not to re-create"
+            return "passed"
+        else:
+            print "Course name was not found and will be created"
+                
+        
+        Turn_Editing_On_OR_Off("on")
+        Expand_Menu_By_Name('Site administration')
+        Expand_Menu_By_ID('yui_3_15_0_3_1424235876713_5248')
+        Click_Element_By_Name('Manage courses and categories')
+        Click_Element_By_Name('Miscellaneous')
+        Click_Element_By_Name('Create new course')
+        Set_Text_Field_Value_By_ID('id_fullname',course_name)
+        Set_Text_Field_Value_By_ID('id_shortname',short_name)
+        Set_Text_Field_Value_By_ID('id_idnumber',course_id)
+        
+        Click_By_Parameter_And_Value("value","Save changes")
+        course_name_verify = "%s: 0 enrolled users"%course_name
+        Verify_Text_Message_By_Text(course_name_verify)
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3)
+        return "failed"
 
-    Click_Element_By_Name('Home')
-    
-    course_exists = Course_Exists(course_name)
-    if (course_exists == "passed") and (cleanup=='true'):
-        print "Existing course found and will be deleted"
-        result = Delete_A_Course(course_name)
-        if result == "failed":
-            print "Unable to delete an existing course"
-            return "failed"
-    elif (course_exists == "passed") and (cleanup!='true'):
-        print "Course already exists and clean up was set not to re-create"
-        return "passed"
-    else:
-        print "Course name was not found and will be created"
-            
-    
-    Turn_Editing_On_OR_Off("on")
-    Expand_Menu_By_Name('Site administration')
-    Expand_Menu_By_ID('yui_3_15_0_3_1424235876713_5248')
-    Click_Element_By_Name('Manage courses and categories')
-    Click_Element_By_Name('Miscellaneous')
-    Click_Element_By_Name('Create new course')
-    Set_Text_Field_Value_By_ID('id_fullname',course_name)
-    Set_Text_Field_Value_By_ID('id_shortname',short_name)
-    Set_Text_Field_Value_By_ID('id_idnumber',course_id)
-    
-    Click_By_Parameter_And_Value("value","Save changes")
-    course_name_verify = "%s: 0 enrolled users"%course_name
-    Verify_Text_Message_By_Text(course_name_verify)
-
-    Tear_Down()  
 
 def Turn_Editing_On_OR_Off(on_off):
     '''
@@ -601,8 +651,11 @@ def Turn_Editing_On_OR_Off(on_off):
                 else:
                     return "passed"        
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "We are unable to control the editing option", 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "We are unable to control the editing option.  Error: %s"%Error_Detail, 3)
         print "We are unable to control the editing option"
         return "failed"
         
@@ -619,14 +672,18 @@ def Click_By_Parameter_And_Value(parameter,value):
         time.sleep(3)
         return "passed" 
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "No open browser to close", 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3)
         print "No open browser to close"
         return "failed"
     
 def ClickSafety_Course_Settings():
-
+    
     try:
+        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         result = Expand_Menu_By_Name('Site administration')
         if result == 'failed':
             CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
@@ -657,8 +714,11 @@ def ClickSafety_Course_Settings():
             CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
             return "failed"
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu.  Error: %s"%Error_Detail, 3)
         print "Unable to click course settings for ClickSafety menu"
         return "failed"    
 
@@ -697,8 +757,11 @@ def Edit_Course_From_Course_Settings(course_name):
         return "passed"                              
         
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "Unable to Edit your course: %s"%course_name, 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to Edit your course: %s.  Error: %s"%(course_name,Error_Detail), 3)
         print "Unable to Edit your course: %s"%course_name
         return "failed"    
 
@@ -711,8 +774,11 @@ def Tear_Down():
         CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
         return "passed"
     except Exception, e:
-        print "Exception : ", e
-        CommonUtil.ExecLog(sModuleInfo, "No open browser to close", 3)
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3)
         print "No open browser to close"
         return "failed"
 
