@@ -299,7 +299,10 @@ $(document).ready(function() {
                     /******************Properties tab Data*******************************/
                     //Status
                     if (typeof(data)!='string'){
-                        $("#status").val(data['Status']);
+                        if(data['Status']=="Ready"){
+                            $("#enable_radio").attr('checked','checked');
+                        }
+                        //$("#status").val(data['Status']);
                         /*console.log(status);
                         if(status=="Ready"){
                             $('a[value="Production"]').addClass('selected');
@@ -827,7 +830,13 @@ $(document).ready(function() {
             /******************************END Validation Check here*******************************/
             /*********************************Properties Tab Data ********************************/
             //Select Status
-            var status = $("#status").val();
+            if($("#enable_radio").is(':checked')){
+                var status = "Ready";
+            }
+            else{
+                var status = "Dev";
+            }
+            //var status = $("#enable_radio").val();
             /*if($('a[value="Production"]').hasClass('selected'))
                 status = "Ready";
             if($('a[value="Development"]').hasClass('selected'))

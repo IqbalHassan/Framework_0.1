@@ -1,6 +1,11 @@
 /**
  * Created by minar09 on 4/5/14.
  */
+var itemPerPage=10;
+var PageCurrent=1;
+var project_id = $.session.get('project_id');
+var team_id = $.session.get('default_team_identity');
+
 $(document).ready(function(){
 
 
@@ -407,7 +412,7 @@ function populate_info_div(feature_list,driver_list){
             $.ajax({
                 url:"TestStep_Auto",
                 dataType:"json",
-                data:{term:request.term},
+                data:{term:request.term,project_id: project_id, team_id: team_id},
                 success:function(data){
                     response(data);
                 }
@@ -522,16 +527,28 @@ function populate_info_div(feature_list,driver_list){
 function populate_footer_div(){
     $('#footer_div').append('' +
         '<div>' +
-        '<input type="button" id="delete_button" class="button minibutton danger" value="Delete"/>' +
+        '<input type="button" id="delete_button" class="button minibutton danger" value="Delete"/> &nbsp;&nbsp;&nbsp;' +
         '<input type="button" id="get_cases" class="button minibutton primary" value="Get Test Cases"/>' +
         //'<input type="submit" id="submit_button" class="button minibutton blue" name="submit_button" value="Submit">' +
         '</div>'
     );
     $("#get_cases").click(function(){
         var UserText=$("#step_name").val();
-        console.log(UserText);
-        Env = "PC"
-        $.get("TestCase_Results",{Query: UserText, Env: Env},function(data) {
+        itemPerPage = $("#perpageitem").val();
+        get_cases(UserText,itemPerPage, PageCurrent);
+        $('#perpageitem').on('change',function(){
+            if($(this).val()!=''){
+                itemPerPage=$(this).val();
+                current_page=1;
+                $('#pagination_tab').pagination('destroy');
+                window.location.hash = "#1";
+                get_cases(UserText,itemPerPage, PageCurrent);
+            }
+        });
+
+        /*console.log(UserText);
+        //Env = "PC"
+        $.get("TestCase_Results",{Query: UserText,itemPerPage:itemPerPage,PageCurrent:PageCurrent},function(data) {
 
             if (data['TableData'].length == 0)
             {
@@ -569,7 +586,7 @@ function populate_footer_div(){
                 //$(".Buttons[title='Select User']").fadeOut();
             }
 
-        });
+        });*/
 
     });
     $("#delete_button").click(function(){
@@ -595,6 +612,65 @@ function populate_footer_div(){
         });
     });
 }
+function get_cases(UserText,itemPerPage,PageCurrent){
+    $.get("TestCase_Results",{Query: UserText,itemPerPage:itemPerPage,PageCurrent:PageCurrent},function(data) {
+
+            if (data['TableData'].length == 0)
+            {
+                alertify.log("Sorry There is No Test Cases For Selected Query!","",0);
+                $('#search_result').children().remove();
+                $('#search_result').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+                //$("#DepandencyCheckboxes").children().remove();
+                //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
+            }
+            else
+            {
+                $("#inner").show();
+                ResultTable('#search_result',data['Heading'],data['TableData'],"Test Cases");
+
+                $('#pagination_tab').pagination({
+                    items:data['count'],
+                    itemsOnPage:itemPerPage,
+                    cssStyle: 'dark-theme',
+                    currentPage:PageCurrent,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        //PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
+                        get_cases(UserText,itemPerPage,PageNumber);
+                    }
+                });
+
+                $("#search_result").fadeIn(1000);
+                $("p:contains('Show/Hide Test Cases')").fadeIn(0);
+                implementDropDown("#search_result");
+                // add edit btn
+                var indx = 0;
+                $('#search_result tr>td:nth-child(7)').each(function(){
+                    var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+                    $(this).after('<i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i>');
+                    $(this).after('<i class="fa fa-pencil fa-2x editBtn" id="'+ID+'" style="cursor:pointer"></i>');
+
+                    indx++;
+                });
+
+                $(".editBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id");
+                });
+                $(".templateBtn").click(function (){
+                    window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id");
+                });
+                //VerifyQueryProcess();
+                //$(".Buttons[title='Verify Query']").fadeIn(2000);
+                //$(".Buttons[title='Select User']").fadeOut();
+            }
+
+        });
+
+}
+
 function populate_search_div(){
     $('#search_div').append('' +
         '<div>' +

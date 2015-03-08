@@ -522,7 +522,7 @@ function get_cases(UserText,itemPerPage,PageCurrent){
                 implementDropDown("#search_result");
                 // add edit btn
                 var indx = 0;
-                $('#search_result tr>td:nth-child(3)').each(function(){
+                $('#search_result tr>td:nth-child(7)').each(function(){
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i>');

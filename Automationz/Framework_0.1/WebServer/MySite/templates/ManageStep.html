@@ -2,6 +2,8 @@
 {% block title%} Test Step Management {%endblock%}
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageStep.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 <script>
     $(document).ready(function(){
         $("#create_edit").trigger('click');
@@ -62,8 +64,23 @@
     <div id="delete_error" align="center">
 
     </div>
-    <div id='search_result' align="center">
+    <div id="inner" style="display: none">
+        <div align="right" style="float: right">
+            <select id="perpageitem">
+                <option value="">Select Per Page Item</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div id='search_result' align="center">
 
+        </div>
+        <div id="pagination_tab" align="right"></div>
     </div>
 </div>
 {% endblock %}

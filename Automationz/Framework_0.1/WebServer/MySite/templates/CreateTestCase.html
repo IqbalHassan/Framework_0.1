@@ -63,24 +63,25 @@
                                         <b class="Text">Status:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <select id="status">
+                                        <!--select id="status">
                                             <option value="Dev">Disabled</option>
                                             <option value="Ready">Enabled</option>
                                             <option value="Forced">Manual</option>
-                                        </select>
-                                        <!--table class="status_radio" width="100%">
+                                        </select-->
+                                        <table class="status_radio" width="100%">
                                             <tr>
                                                 <td width="33%">
-                                                    <a id="enable_radio" type="radio" value="Production" class="button">Enabled</a>
+                                                    <input id="enable_radio" class="cmn-toggle cmn-toggle-yes-no" type="checkbox" value="Ready" class="button">
+                                                    <label for="enable_radio" data-on="Enabled" data-off="Disabled"></label>
                                                 </td>
-                                                <td width="33%">
-                                                    <a id="Disable_radio" type="radio" value="Development" class="button" style="width:auto">Disabled</a>
+                                                <!--td width="33%">
+                                                    <input id="Disable_radio" class="cmn-toggle cmn-toggle-yes-no" type="radio" value="Development" class="button" style="width:auto">Disabled
                                                 </td>
                                                 <td width="33%">
                                                     <a id="Manual_radio" type="radio" value="Forced-Manual" class="button" style="width:auto">Manual</a>
-                                                </td>
+                                                </td-->
                                             </tr>
-                                        </table-->
+                                        </table>
                                     </td>
                                 </tr>
                             </table>
