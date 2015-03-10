@@ -589,12 +589,14 @@ $(document).ready(function() {
                             $('#searchbox'+(i+1)+'expected').val(steps_and_data[i][4]);
                             $('#searchbox'+(i+1)+'step_type').text(steps_and_data[i][2]);
                             if(steps_and_data[i][5]=='yes'){
-                                $('#searchbox'+(i+1)+'verify').toggles({on:true});
+                                $('#searchbox'+(i+1)+'verify').attr('checked','checked');
+                                //$('#searchbox'+(i+1)+'verify').toggles({on:true});
                                 //$('#searchbox'+(i+1)+'verify .toggle-on').addClass('active');
                                 //$('#searchbox'+(i+1)+'verify .toggle-off').removeClass('active');
                             }
                             if(steps_and_data[i][10]=='yes'){
-                                $('#searchbox'+(i+1)+'continue').toggles({on:true});
+                                $('#searchbox'+(i+1)+'continue').attr('checked','checked');
+                                //$('#searchbox'+(i+1)+'continue').toggles({on:true});
                             }
                             $('#searchbox'+(i+1)+'descriptionpop').html(steps_and_data[i][6]);
                             $('#searchbox'+(i+1)+'step_desc').find('span:eq(0)').addClass('filled');
@@ -819,9 +821,12 @@ $(document).ready(function() {
             }
             var checked_count=0;
             for(var i=0;i<row_count;i++){
-                if($('#searchbox'+(i+1)+'verify').data('toggles').active===true){
+                if($('#searchbox'+(i+1)+'verify').is(':checked')){
                     checked_count++;
                 }
+                /*if($('#searchbox'+(i+1)+'verify').data('toggles').active===true){
+                    checked_count++;
+                }*/
             }
             if(checked_count<=0){
                 alertify.error("Atleast One step is to be set as Verfication point","",0);
@@ -946,7 +951,19 @@ $(document).ready(function() {
                     stepNameList.push($('#searchbox'+i+'name').val());
                     stepExpectedList.push($('#searchbox'+i+'expected').val());
                     stepDescriptionList.push($('#searchbox'+i+'info').val());
-                    if($('#searchbox'+i+'verify').data('toggles').active){
+                    if($('#searchbox'+i+'verify').is(':checked')){
+                        stepVerificationList.push('yes');
+                    }
+                    else{
+                        stepVerificationList.push('no');
+                    }
+                    if($('#searchbox'+i+'continue').is(':checked')){
+                        stepContinueList.push('yes');
+                    }
+                    else{
+                        stepContinueList.push('no');
+                    }
+                    /*if($('#searchbox'+i+'verify').data('toggles').active){
                         stepVerificationList.push('yes');
                     }
                     else{
@@ -957,7 +974,7 @@ $(document).ready(function() {
                     }
                     else{
                         stepContinueList.push('no');
-                    }
+                    }*/
                     stepTypeList.push($('#searchbox'+i+'name').closest('tr').find('td:nth-child(8)').text());
                     /******************Convert into the seconds*******************/
                     var stringTime=$('#searchbox'+i+'time').val();
@@ -1754,11 +1771,15 @@ function AutoCompleteTestStep(){
                         $('#searchbox'+index+'expected').val(ui.item[6].trim());
                     }
                     if(ui.item[7]){
-                        //$('#searchbox'+index+'verify').attr('checked',true);
-                        $('#searchbox'+index+'verify').toggles({on:true});
+                        $('#searchbox'+index+'verify').attr('checked','checked');
+                        //$('#searchbox'+index+'verify').toggles({on:true});
                     }
                     if(ui.item[8]){
                         $('#searchbox'+index+'time').val(convertToString(ui.item[8]));
+                    }
+                    if(ui.item[9]){
+                        $('#searchbox'+index+'continue').attr('checked','checked');
+                        //$('#searchbox'+index+'continue').toggles({on:true});
                     }
                 }
                 return false;
@@ -1996,8 +2017,12 @@ function GenerateMainRow()
             '</a></td>' +
             '<td><textarea id="searchbox'+step_num+'info" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
             '<td><textarea id="searchbox'+step_num+'expected" class="ui-corner-all  ui-autocomplete-input" style="width: 90%"></textarea></td>' +
-            '<td><div class="toggles toggle-light"  id="searchbox'+ step_num +'verify"  style="width:40%;"></div></td>'+
-            '<td><div class="toggles toggle-light"  id="searchbox'+ step_num +'continue" style="width:40%;"></div></td>'+
+            //'<td><div class="toggles toggle-light"  id="searchbox'+ step_num +'verify"  style="width:40%;"></div></td>'+
+            //'<td><div class="toggles toggle-light"  id="searchbox'+ step_num +'continue" style="width:40%;"></div></td>'+
+            '<td><input id="searchbox'+step_num+'verify" class="cmn-toggle cmn-toggle-yes-no" type="checkbox">'+
+                '<label for="searchbox'+step_num+'verify" data-on="Yes" data-off="No"></label></td>'+
+            '<td><input id="searchbox'+ step_num +'continue" class="cmn-toggle cmn-toggle-yes-no" type="checkbox">'+
+                '<label for="searchbox'+ step_num +'continue" data-on="Yes" data-off="No"></label></td>'+
             '<td><span id="searchbox'+step_num+'step_type"></span></td>' +
             '<td><div class="input-append bootstrap-timepicker">' +
             '<input id="searchbox'+step_num+'time" type="text" class="input-small textbox timepicker">' +
@@ -2029,14 +2054,14 @@ function addMainTableRowFixedPlace(fixedPlace){
     $('#steps_table>tr:eq('+(fixedPlace-1)+')').after(GenerateMainRow());
     $('#searchbox'+fixedPlace+'datapop').after('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
     $('#searchbox'+fixedPlace+'descriptionpop').after('<div id="searchbox'+step_num+'descriptionpop"></div>');
-    $('.toggles').each(function(){
+    /*$('.toggles').each(function(){
         if($(this).attr('id')=="searchbox"+step_num+"verify" && $(this).find('div.toggle-slide').length==0){
             $(this).toggles({});
         }
         if($(this).attr('id')=="searchbox"+step_num+"continue" && $(this).find('div.toggle-slide').length==0){
             $(this).toggles({});
         }
-    });
+    });*/
     AutoCompleteTestStep();
     TimePicker();
 }
@@ -2046,14 +2071,14 @@ function addMainTableRow(divname){
     $('#outer-data').append('<div id="searchbox'+step_num+'datapop">'+GeneratePopUpMetaData()+'</div>');
     $('#step_description_general').append('<div id="searchbox'+step_num+'descriptionpop"></div>');
     $(divname).append(GenerateMainRow());
-    $('.toggles').each(function(){
+    /*$('.toggles').each(function(){
        if($(this).attr('id')=="searchbox"+step_num+"verify" && $(this).find('div.toggle-slide').length==0){
            $(this).toggles({});
        }
         if($(this).attr('id')=="searchbox"+step_num+"continue" && $(this).find('div.toggle-slide').length==0){
             $(this).toggles({});
         }
-    });
+    });*/
     AutoCompleteTestStep();
     TimePicker();
 }
