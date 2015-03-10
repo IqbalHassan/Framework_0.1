@@ -799,7 +799,9 @@ def main():
             request = urllib2.Request(upload_link, datagen, headers)
             #Find Test case failed reason
             try:
+                conn=DBUtil.ConnectToDataBase()
                 FailReason = CommonUtil.FindTestCaseFailedReason(conn, sTestResultsRunId, TCID)
+                conn.close()
             except Exception, e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()        
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]

@@ -7162,10 +7162,12 @@ def Get_Driver(request):
     results = []
     if request.method == "GET":
         driver = request.GET.get(u'driver', '')
+        project_id=request.GET.get(u'project_id','')
+        team_id=int(request.GET.get(u'team_id',''))
         if driver == '':
             results = DB.GetData(
                 Conn,
-                "select  distinct value from config_values where type='driver'",
+                "select  distinct driver_name from drivers d, team_wise_settings tws where tws.parameters=d.id and tws.project_id='%s' and tws.team_id=%d and tws.type='Driver'"%(project_id,int(team_id)),
                 False)
         # if len(results)>0:
             # results.append("*Dev")
