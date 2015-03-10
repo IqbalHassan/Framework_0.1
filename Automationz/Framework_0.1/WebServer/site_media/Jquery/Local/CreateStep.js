@@ -106,7 +106,9 @@ $(document).ready(function(){
         url:'GetDriver/',
         dataType : "json",
         data : {
-            driver : ''
+            driver : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
         },
         success: function( json ) {
             if(json.length > 1)
