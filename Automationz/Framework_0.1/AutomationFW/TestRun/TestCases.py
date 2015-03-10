@@ -15,7 +15,7 @@ from Web import SeleniumScript
 
 def Repurchase_the_course_when_the_final_exam_is_failed_for_third_time():
     #make your test cases by re-using same steps
-    result = SeleniumScript.BrowserSelection('firefox')
+    result = SeleniumScript.BrowserSelection('chrome')
     if result == 'failed':
         return 'failed'
     result = SeleniumScript.OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
@@ -45,7 +45,7 @@ def Repurchase_the_course_when_the_final_exam_is_failed_for_third_time():
     
 def Create_a_new_course(course, cleanup, from_begining):
     #make your test cases by re-using same steps
-    print SeleniumScript.BrowserSelection('Firefox')
+    print SeleniumScript.BrowserSelection('ie')
     print SeleniumScript.OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
     print SeleniumScript.Login('admin','R@1ndrops')
     course_exists = SeleniumScript.Course_Exists(course)
