@@ -258,7 +258,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/Create_Team/$',Create_Team),
     url(r'^Home/.*/GetAllTeam/$',GetAllTeam),
     url(r'^Home/.*/GetTeamInfo/$',GetTeamInfo),
-    url(r'^Home/Team/(?P<team_name>[^/]*)/$',TeamData),
+    url(r'^Home/(?P<project_id>[^/]*)/Team/(?P<team_name>[^/]*)/$',TeamData),
     url(r'^Home/.*/Add_Members/$',Add_Members),
     url(r'^Home/.*/Delete_Members/$',Delete_Members),
     url(r'^Home/.*/Delete_Team/$',Delete_Team),
@@ -378,6 +378,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/rename_version/$',rename_version),
     url(r'^Home/.*/add_new_driver/$',add_new_driver),
     url(r'^Home/.*/link_driver/$',link_driver),
+    url(r'^Home/.*/link_team/$',link_team),
 	)
 
 
