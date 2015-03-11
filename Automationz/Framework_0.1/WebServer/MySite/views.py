@@ -1364,7 +1364,7 @@ def AutoCompleteTestStepSearch(request):
 
         results = DB.GetData(
             Conn,
-            "select stepname,data_required,steptype,description,step_editable,case_desc,expected,verify_point,estd_time from test_steps_list where project_id='"+project_id+"' and team_id='"+team_id+"' and stepname Ilike '%" +
+            "select stepname,data_required,steptype,description,step_editable,case_desc,expected,verify_point,estd_time,step_continue from test_steps_list where project_id='"+project_id+"' and team_id='"+team_id+"' and stepname Ilike '%" +
             value +
             "%'",
             bList=False,
