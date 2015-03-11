@@ -498,7 +498,15 @@ $(document).ready(function() {
                         }
                         //Priority
                         var priority=data['Priority'];
-                        $("#priotiy_select").val(parseInt(priority.substring(1,2)));
+                        $('input[name="priority"]').each(function(){
+                            $(this).prop('checked',false);
+                        });
+                        $('input[name="priority"]').each(function(){
+                            if(priority==$(this).val()){
+                                $(this).prop('checked',true);
+                            }
+                        });
+                        //$("#priotiy_select").val(parseInt(priority.substring(1,2)));
                         /*************** End Properties tab Data*******************************/
                         /****************************Parameters Tab*****************************/
                         var dependency=data['Dependency List'];
@@ -865,7 +873,8 @@ $(document).ready(function() {
 //            console.log(newFeaturePath);
             //Get TC_ID for the test case
             //Select Priority
-            var priority='P'+$('#priotiy_select option:selected').val();
+            //var priority='P'+$('#priotiy_select option:selected').val();
+            var priority = $('input[name="priority"]:checked').val();
 //            console.log(priority);
             //Select Tag
             var tag = new Array();
