@@ -98,11 +98,27 @@
                             </tr>
                             <tr>
                                 <td align="right"><b class="Text">Priority:</b></td>
-                                <td><select id="priority"><option selected value="1">P1(Highest)</option>
+                                <td><!--select id="priority"><option selected value="1">P1(Highest)</option>
                                     <option value="2">P2</option>
                                     <option value="3">P3</option>
                                     <option value="4">P4</option>
-                                </select></td>
+                                </select-->
+                                <table><tr>
+                                            <td>
+                                            <input id="P1" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="priority" value="P1" checked="checked">
+                                            <label for="P1" data-on="P1" data-off="P1"></label>
+                                            </td><td>
+                                            <input id="P2" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="priority" value="P2">
+                                            <label for="P2" data-on="P2" data-off="P2"></label>
+                                            </td><td>
+                                            <input id="P3" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="priority" value="P3">
+                                            <label for="P3" data-on="P3" data-off="P3"></label>
+                                            </td><td>
+                                            <input id="P4" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="priority" value="P4">
+                                            <label for="P4" data-on="P4" data-off="P4"></label>
+                                            </td></tr></table>
+
+                            </td>
                             </tr>
                             <tr>
                                 <td align="right"><b class="Text">Feature:</b></td>

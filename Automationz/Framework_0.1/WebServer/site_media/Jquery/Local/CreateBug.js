@@ -73,7 +73,7 @@ $(document).ready(function(){
     }).on("change", function(e) {
             var user_id=$(this).select2('data')['id'];
             var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
-            $("#tester").append('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+            $("#tester").html('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
                 + '<td class="Text" data-id="'+user_id+'">'
                 + user_name
                 + ":&nbsp"
@@ -84,7 +84,7 @@ $(document).ready(function(){
 
     // Should be used for formatting results, LATER
     function formatUsers(user_details) {
-        var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + user_details.text + '</span></div>';
+        var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span> ' + user_details.text + '</span></div>';
 
         return markup;
     }
@@ -125,11 +125,21 @@ $(document).ready(function(){
         var start_date=$('#start_date').val();
         var end_date=$('#end_date').val();
         var team=team_id;
-        var priority= 'P' + $('#priority').val();
+        //var priority= 'P' + $('#priority').val();
+        var priority=$('input[name="priority"]:checked').val();
         var milestone=$("#milestone").val();
         var title=$('#title').val();
         //var creator = $("#created_by").val();
-        var testers= $("#tester").text();
+        //var testers= $("#tester").text();
+        var testers = "";
+        $("#tester").find('td').each( function()
+        {
+            var temp = $(this).attr('data-id');
+            //TesterQuery = TesterQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
+            if(testers.indexOf(temp)==-1 && temp!=undefined){
+                testers.push(temp);
+            }
+        });
         /*$('.selected').each(function(){
             testers.push($(this).text().trim());
         });*/
@@ -374,14 +384,22 @@ function PopulateBugInfo(bug_id){
             //+ "&nbsp"
         + '</td>');
         $('#status').val(data['Bug_Info'][0][11]);
-        if(data['Bug_Info'][0][5]=='P1')
+        /*if(data['Bug_Info'][0][5]=='P1')
             $('#priority').val('1');
         else if(data['Bug_Info'][0][5]=='P2')
             $('#priority').val('2');
         else if(data['Bug_Info'][0][5]=='P3')
             $('#priority').val('3');
         else if(data['Bug_Info'][0][5]=='P4')
-            $('#priority').val('4');
+            $('#priority').val('4');*/
+        $('input[name="priority"]').each(function(){
+            $(this).prop('checked',false);
+        });
+        $('input[name="priority"]').each(function(){
+            if(data['Bug_Info'][0][5]==$(this).val()){
+                $(this).prop('checked',true);
+            }
+        });
         $('#milestone').val(data['Bug_Info'][0][6]);
         $("#bug_info").show();
         $("#created_by").text(data['Bug_Info'][0][7]);
