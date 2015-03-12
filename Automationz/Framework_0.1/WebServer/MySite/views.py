@@ -1310,6 +1310,9 @@ def AutoCompleteTesterSearch(request):
             all_tag=request.GET.get(u'all','')
             if all_tag=='all':
                 query="select distinct user_names, pul.user_id,'Tester' from permitted_user_list  pul where pul.user_level in('assigned_tester') group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(value)
+            elif all_tag=='edit':
+                team_name=request.GET.get(u'team_name','')
+                query="select  distinct user_names,user_id,case when user_level='assigned_tester' then 'Tester' end from permitted_user_list where user_level in ('assigned_tester') and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='assigned_tester' then 'Tester' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('assigned_tester'))"%(value,project_id.strip(),team_name.strip())
             else:
                 query="select distinct user_names, pul.user_id,'Tester'  from project_team_map ptm, team_info  ti ,permitted_user_list  pul where ti.team_id=cast(ptm.team_id as int)  and pul.user_id=cast(ti.user_id as int) and pul.user_level in('assigned_tester') and ptm.project_id='%s' and ti.team_id=%d group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(project_id,int(team_id),value)
             Conn=GetConnection()
@@ -13177,6 +13180,10 @@ def GetTesterManager(request):
             all_tag=request.GET.get(u'all','')
             if all_tag=='all':
                 query="select distinct user_names, pul.user_id,'Manager' from permitted_user_list  pul where pul.user_level in('manager') group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(value)
+            if all_tag=='edit':
+                project_id=request.GET.get(u'project_id','')
+                team_name=request.GET.get(u'team_name','')
+                query="select  distinct user_names,user_id,case when user_level='manager' then 'Manager' end from permitted_user_list where user_level in ('manager') and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='manager' then 'Manager' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('manager'))"%(value.strip(),project_id.strip(),team_name.strip())
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='user_id')
             Conn.close()
@@ -13377,8 +13384,10 @@ def Add_Members(request):
         if request.method == 'GET':
             member = request.GET.get(u'member', '').split("|")
             team_name = request.GET.get(u'team_name', '').strip()
+            project_id=request.GET.get(u'project_id','')
+            member=list(set(member))
             # check the validity for the team name
-            query = "select id from config_values where type='Team' and value='%s'" % team_name
+            query = "select id from team where project_id='%s' and team_name='%s'" %(project_id.strip(),team_name.strip())
             Conn = GetConnection()
             team_id = DB.GetData(Conn, query)
             if len(team_id) == 0:
@@ -13409,8 +13418,10 @@ def Delete_Members(request):
         if request.method == 'GET':
             member_list = request.GET.get(u'member', '').split("|")
             team_name = request.GET.get(u'team_name', '').strip()
+            project_id=request.GET.get(u'project_id','').strip()
+            member=list(set(member_list))
             # check the validity for the team name
-            query = "select id from config_values where type='Team' and value='%s'" % team_name
+            query = "select id from team where project_id='%s' and team_name='%s'" %(project_id.strip(),team_name.strip())
             Conn = GetConnection()
             team_id = DB.GetData(Conn, query)
             if len(team_id) == 0:
