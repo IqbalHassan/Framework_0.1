@@ -66,6 +66,8 @@ def Delete_Test_Case(Conn, tc_list):
         if DBUtil.IsDBConnectionGood(Conn) == False:
             time.sleep(1)
             Conn = GetConnection()
+        whereQuery = "where tc_id='%s'" % (test_case)
+        mark_run = DBUtil.UpdateRecordInTable(Conn, "test_case_results", whereQuery, status='Deleted')
         test_case_tag_entry = DBUtil.GetData(Conn, test_case_tag_query, False)
         if DBUtil.IsDBConnectionGood(Conn) == False:
             time.sleep(1)
