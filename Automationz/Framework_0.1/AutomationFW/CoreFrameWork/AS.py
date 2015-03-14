@@ -74,7 +74,7 @@ def Login():
 
 def collectAlldependency(project,team_info,dependency):
     try:
-        query="select distinct dependency_name from dependency d ,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=(select id from config_values where value='%s' and type='Team')"%(project,team_info)
+        query="select distinct dependency_name from dependency d ,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=(select id from team where team_name='%s' and project_id='%s')"%(project,team_info,project)
         print query
         Conn=DB.ConnectToDataBase(database_name, superuser, super_password, server)
         dependency_list=DB.GetData(Conn, query)
@@ -208,7 +208,7 @@ def update_machine(dependency):
                     result=DB.InsertNewRecordInToTable(conn,"machine_dependency_settings",**temp_dict)
                     conn.close()
             conn=DB.ConnectToDataBase(database_name, superuser,super_password,server)
-            teamValue=DB.GetData(conn,"select id from config_values where value='%s' and type='Team'"%team)
+            teamValue=DB.GetData(conn,"select id from team where team_name='%s' and project_id='%s'"%(team,project))
             conn.close()
             if isinstance(teamValue,list) and len(teamValue)==1:
                 team_identity=teamValue[0]

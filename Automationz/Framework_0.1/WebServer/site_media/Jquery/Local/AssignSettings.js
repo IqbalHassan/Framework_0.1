@@ -10,6 +10,32 @@ $(document).ready(function(){
     $('body').css({'font-size':'100%'});
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
+    /*var project_text=$('#project_identity option:selected').text().trim();
+    var team_text=$('#default_team_identity option:selected').text().trim();
+    if(project_text=='No Default Project'){
+        var message="<b>Default Project is not set.Proceed to the Account page???</b>";
+        alertify.confirm(message,function(e){
+            if(e){
+                window.location='/Home/User/';
+            }
+            else{
+                alertify.alert().close_all();
+                return false;
+            }
+        });
+    }
+    if(team_text=='No Default Team'){
+        var message="<b>Default Team is not set.Proceed to the Account page???</b>";
+        alertify.confirm(message,function(e){
+            if(e){
+                window.location='/Home/User/';
+            }
+            else{
+                alertify.alert().close_all();
+                return false;
+            }
+        });
+    }*/
     get_all_data(project_id,team_id);
     $('#create_dependency').on('click',function(){
         var message='';
@@ -694,7 +720,8 @@ function initialize_button(value,project_id,team_id,value_name){
 function rename_dependency(value,project_id,team_id,value_name,new_dep){
     $.get('rename_dependency',{
         old_name:value_name,
-        new_name:new_dep
+        new_name:new_dep,
+        project_id:project_id
     },function(data){
         if(data['message']){
             alertify.success(data['log_message'],time_out);

@@ -88,6 +88,24 @@ $(document).ready(function(){
         }
         $('#default_team_identity').append(message);
         $('#default_team_identity').val($.session.get('default_team_identity'));
+
+        var window_location=window.location.pathname;
+        if(window_location!='/Home/User/'){
+            var project_text=$('#project_identity option:selected').text().trim();
+            var team_text=$('#default_team_identity option:selected').text().trim();
+            if (team_text=='No Default Team'){
+                var message='<b>Default team is not selected.Proceed to Account Page?</b>';
+                alertify.confirm(message,function(e){
+                    if(e){
+                        window.location='/Home/User/';
+                    }
+                    else{
+                        alertify.alert().close_all();
+                        return false;
+                    }
+                });
+            }
+        }
     });
     
     // -------------- Mobile navigation ------------------ //
@@ -171,7 +189,6 @@ $(document).ready(function(){
 //	});
 	
 	// -------------- Mobile navigation ------------------ //
-    
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val());
         //load default_team for the project
@@ -195,8 +212,8 @@ $(document).ready(function(){
                 'project_id': $(this).val()
             },function(data){
                 if(data==true){
-                    //window.location.reload(true);
-                    console.log('changed');
+                    window.location.reload(true);
+                    //console.log('changed');
                 }
             });
         }
@@ -210,8 +227,8 @@ $(document).ready(function(){
                 'team_id': $(this).val()
             },function(data){
                 if(data==true){
-                    //window.location.reload(true);
-                    console.log('changed');
+                    window.location.reload(true);
+                    //console.log('changed');
                 }
             });
         }

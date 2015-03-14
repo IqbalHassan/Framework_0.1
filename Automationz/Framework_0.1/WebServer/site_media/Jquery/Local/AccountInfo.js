@@ -27,7 +27,9 @@ $(document).ready(function(){
             'team_id':last_team_id,
             'user_id': $.session.get('user_id')
         },function(data){
-            if(data=='true'){
+            if(data==true){
+                $.session.set('project_id',last_project_id);
+                $.session.set('default_team_identity',last_team_id);
                 window.location.reload(true);
             }
         });

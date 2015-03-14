@@ -174,7 +174,7 @@ function GetAllTeam(){
             alertify.confirm(message,function(e){
                 if(e){
                     $.get('link_team',{'team_name':team_text.trim(),'team_id':team_id,project_id:project_id},function(data){
-                        if(data[message]){
+                        if(data['message']){
                             alertify.success(data['log_message'],1500);
                             GetAllTeam();
                         }

@@ -136,7 +136,7 @@ def GetProjectNameForTopBar(request):
             temp=[]
             temp_final=[]
             for each in final_project_id:   
-                query="select id,value from project_team_map ptm, config_values cv where ptm.team_id=cast(cv.id as text) and ptm.project_id='%s'"%each[0]
+                query="select distinct id,team_name from project_team_map ptm, team t where t.id=cast(ptm.team_id as int) and ptm.project_id='%s'"%each[0]
                 Conn=GetConnection()
                 team_id=DB.GetData(Conn,query,False)
                 temp_final.append((each[0],each[1],team_id))
@@ -159,7 +159,7 @@ def GetProjectNameForTopBar(request):
             for each in member_team:
                 if(len(each[2])>0 and isinstance(each[2],list)):
                     for eachitem in each[2]:
-                        query="select id, value from config_values where id=%d"%int(eachitem)
+                        query="select id, team_name from team where id=%d and project_id='%s'"%(int(eachitem),each[0])
                         Conn=GetConnection()
                         team_list=DB.GetData(Conn,query,False)
                         Conn.close()
@@ -1948,7 +1948,7 @@ def RunId_TestCases(request, RunId):
     Conn = GetConnection()
     project_name = DB.GetData(Conn, query, False)
     Conn.close()
-    query = "select c.id,value from config_values c,test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and  c.id=mpm.team_id and c.type='Team' and tre.run_id='%s'" % RunId
+    query = "select distinct c.id,team_name from team c,test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and c.id=mpm.team_id and c.project_id=mpm.project_id and tre.run_id='%s'" % RunId
     Conn = GetConnection()
     team_name = DB.GetData(Conn, query, False)
     Conn.close()
@@ -5412,7 +5412,7 @@ def Get_Users(request):
     if len(results) > 0:
         message = results[0]
         Dict = {'message': message}
-        query = "select default_project,default_team, cv.value from default_choice dc,config_values cv where dc.user_id='%s' and dc.default_team=cv.id" % results[
+        query = "select default_project,default_team, t.team_name from default_choice dc,team t where dc.user_id='%s' and dc.default_team=t.id" % results[
             0][0]
         testConnection(Conn)
         default_choice = DB.GetData(Conn, query, False)
@@ -15084,7 +15084,7 @@ def ProfileDetail(request):
             temp=[]
             temp_final=[]
             for each in final_project_id:   
-                query="select id,value from project_team_map ptm, config_values cv where ptm.team_id=cast(cv.id as text) and ptm.project_id='%s'"%each[0]
+                query="select id,team_name from project_team_map ptm, team t where ptm.team_id=cast(t.id as text) and ptm.project_id='%s'"%each[0]
                 Conn=GetConnection()
                 team_id=DB.GetData(Conn,query,False)
                 temp_final.append((each[0],each[1],team_id))
@@ -15107,7 +15107,7 @@ def ProfileDetail(request):
             for each in member_team:
                 if(len(each[2])>0 and isinstance(each[2],list)):
                     for eachitem in each[2]:
-                        query="select id, value from config_values where id=%d"%int(eachitem)
+                        query="select id,team_name from team where id=%d and project_id='%s'"%(int(eachitem),each[0])
                         Conn=GetConnection()
                         team_list=DB.GetData(Conn,query,False)
                         Conn.close()
@@ -15664,13 +15664,12 @@ def rename_dependency(request):
                 type_tag = "dependency"
                 old_name = request.GET.get(u'old_name', '')
                 new_name = request.GET.get(u'new_name', '')
-                query = "select count(*) from dependency where dependency_name='%s'" % old_name.strip(
-                )
+                project_id=request.GET.get(u'project_id','')
+                query = "select count(*) from dependency where dependency_name='%s' and project_id='%s'" % (old_name.strip(),project_id.strip())
                 Conn = GetConnection()
                 old_name_count = DB.GetData(Conn, query)
                 Conn.close()
-                query = "select count(*) from dependency where dependency_name='%s'" % new_name.strip(
-                )
+                query = "select count(*) from dependency where dependency_name='%s' and project_id='%s'" %(new_name.strip(),project_id.strip())
                 Conn = GetConnection()
                 new_name_count = DB.GetData(Conn, query)
                 Conn.close()
