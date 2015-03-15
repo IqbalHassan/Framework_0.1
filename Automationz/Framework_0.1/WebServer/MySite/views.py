@@ -13819,8 +13819,7 @@ def Small_Project_Detail(request):
                         'project_startingdate': str(Dict['project_startingdate']),
                         'project_endingdate':str(Dict['project_endingdate'])
                         })
-                query = "select value from config_values where type='Team' and id in (select cast(team_id as int) from project_team_map where project_id='%s')" % (
-                    Dict['project_id'].strip())
+                query = "select team_name from project_team_map ptm,team t where ptm.project_id='%s' and ptm.team_id=cast(t.id as text)" % (Dict['project_id'].strip())
                 Conn = GetConnection()
                 team_name = DB.GetData(Conn, query)
                 if isinstance(team_name,list):
