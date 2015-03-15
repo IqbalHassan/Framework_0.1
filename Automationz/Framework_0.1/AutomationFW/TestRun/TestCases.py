@@ -69,15 +69,8 @@ def delete_a_course():
     print SeleniumScript.BrowserSelection('Firefox')
     print SeleniumScript.OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
     print SeleniumScript.Login('admin','R@1ndrops')
-    print SeleniumScript.Click_Element_By_Name('Turn editing on')    
-    print SeleniumScript.Expand_Menu_By_Name('Site administration')
-    print SeleniumScript.Expand_Menu_By_Name('Courses')
-    print SeleniumScript.Click_Element_By_Name('Manage courses and categories')
-    print SeleniumScript.Click_Element_By_Name('Miscellaneous')
-    print SeleniumScript.Click_Element_By_Name('Auto')
-    print SeleniumScript.Click_Element_By_Name('Delete')
-    
-    print SeleniumScript.Click_Element_By_Name('Continue')
+    print SeleniumScript.Turn_Editing_On_OR_Off('on')
+
     
 
 

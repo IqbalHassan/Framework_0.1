@@ -618,12 +618,17 @@ def Turn_Editing_On_OR_Off(on_off):
         return "failed"
         
     
-def Click_By_Parameter_And_Value(parameter,value):
+def Click_By_Parameter_And_Value(parameter,value, parent=False):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Locating your element...", 1)
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
+        
+        if isinstance(parent, (bool)) == True:
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
+        else:
+            Element = WebDriverWait(parent, WebDriver_Wait).until(lambda driver :parent.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
+
         CommonUtil.ExecLog(sModuleInfo, "Found element and clicking..", 1)
         Element.click()
         #WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.click())
@@ -736,24 +741,34 @@ def Tear_Down():
         print "No open browser to close"
         return "failed"
 
-def delete_a_course(course_name):
+def Delete_A_Course(course_name):
     BrowserSelection('firefox')
     OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
     Login('admin','R@1ndrops', 'Admin User')
     Turn_Editing_On_OR_Off('on')
-    Expand_Menu_By_Name("Site administration")
-    site_admin_parent = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_elements_by_xpath("//*[text()='Site administration']"))
-    Expand_Menu_By_Name("Courses",site_admin_parent)
-    Click_Element_By_Name('Manage courses and categories',site_admin_parent)
+    Expand_Menu_By_Name('Site administration')
+
+    site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_elements_by_xpath("//*[text()='Site administration']"))
+    time.sleep(3)
+    parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(lambda driver : site_admin_element.find_element_by_xpath(".."))
+    grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(lambda driver : parent_site_admin.find_element_by_xpath(".."))
+
+    Expand_Menu_By_Name("Courses",grand_parent_site_admin)
+    time.sleep(3)
+    Click_Element_By_Name('Manage courses and categories',grand_parent_site_admin)
+
     Set_Text_Field_Value_By_ID('coursesearchbox',course_name)
+
     Click_By_Parameter_And_Value("value","Go")
+
     search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@class='course-listing']"))
     course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(lambda driver :search_course_list.find_elements_by_xpath("//*[text()='%s']"%course_name))
     course_element_row = WebDriverWait(course_element, WebDriver_Wait).until(lambda driver : course_element.find_element_by_xpath(".."))
-    Click_By_Parameter_And_Value("alt","Delete")
+
+    Click_By_Parameter_And_Value("alt","Delete",course_element_row)
 
     
     
     print "Debug"
     
-#delete_a_course("auto1")
+#Delete_A_Course("auto1")
