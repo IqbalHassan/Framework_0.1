@@ -77,7 +77,7 @@ def Send_Email(Receiver, Subject, Objective, Tester, StartDate, EndDate, Estimat
     server.close()
     
     
-def Complete_Email(Receiver, Subject, Objective, Status, List, Tester,Duration, Body=None , type=None):
+def Complete_Email(self, Receiver, Subject, Objective, Status, List, Tester,Duration, Body=None , type=None):
     from mailer import Mailer
     from mailer import Message
 

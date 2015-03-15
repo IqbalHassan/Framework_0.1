@@ -5727,7 +5727,7 @@ def New_Execution_Report(request):
 
         #depen = len(new_dependency)
         
-        xtra_qry = " "
+        xtra_qry = " and tcr.status not in ('Deleted') "
         if branch != '' and version == '':
             xtra_qry += " and tre.branch_version ~ '" + branch + "' "
         elif branch != '' and version != '':
@@ -9495,29 +9495,29 @@ def update_runid(run_id, test_case_id):
         tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+run_id+"'")
         #import EmailNotify
         #EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')
-        list = []
+        mlist = []
 
         pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
         passed = DB.GetData(oConn, pass_query)
-        list.append(passed[0])
+        mlist.append(passed[0])
         fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % run_id
         fail = DB.GetData(oConn, fail_query)
-        list.append(fail[0])
+        mlist.append(fail[0])
         blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
         blocked = DB.GetData(oConn, blocked_query)
-        list.append(blocked[0])
+        mlist.append(blocked[0])
         progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
         progress = DB.GetData(oConn, progress_query)
-        list.append(progress[0])
+        mlist.append(progress[0])
         submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
         submitted = DB.GetData(oConn, submitted_query)
-        list.append(submitted[0])
+        mlist.append(submitted[0])
         skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
         skipped = DB.GetData(oConn, skipped_query)
-        list.append(skipped[0])
+        mlist.append(skipped[0])
         total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
         total = DB.GetData(oConn, total_query)
-        list.append(total[0])
+        mlist.append(total[0])
         duration = DB.GetData(
             oConn,
             "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '" +
@@ -9525,7 +9525,7 @@ def update_runid(run_id, test_case_id):
             "'")
         try:
             urllib2.urlopen("http://www.google.com").close()
-            EmailNotify.Complete_Email(allEmailIds[0],run_id,TestObjective[0],status,list,tester,duration,'','')
+            EmailNotify.Complete_Email(allEmailIds[0],run_id,TestObjective[0],status,mlist,tester,duration,'','')
             print "connected"
             results = ['OK']
         except urllib2.URLError:

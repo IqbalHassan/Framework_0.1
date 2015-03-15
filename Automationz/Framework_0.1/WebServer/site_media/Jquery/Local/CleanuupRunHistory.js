@@ -53,7 +53,7 @@ function get_data(project_id,team_id,current_page,run_per_page){
                     message+='<td>'+run_list[i][j]+'</td>';
                 }
             }
-            message+='<td><input type="checkbox" class="run_id" value="'+run_list[i][0]+'"></td>';
+            message+='<td><input type="checkbox" class="run_id Buttons Add" value="'+run_list[i][0]+'"></td>';
             message+='</tr>';
         }
         message+='</table>';
