@@ -1,245 +1,268 @@
 /**
  * Created by lent400 on 5/27/14.
  */
+var project_id= $.session.get('project_id');
 $(document).ready(function(){
+    $('body').css({'font-size':'100%'});
     GetAllTeam();
-    CreateButtonInit();
-    Other();
-});
-function Other(){
-    $('#searchbox').on('input',function(){
-        $.get("GetAllTeam",{term:$(this).val().trim()},function(data){
-            $('#team').html(initTeamName(data));
-            MainButtonPreparation();
-        });
-
-    });
-}
-function MainButtonPreparation(){
-    $('.team').click(function(){
-        var team_name=$(this).attr('id').replace(/_/g,' ').trim();
-        $.get('GetTeamInfo',{'team':team_name.trim()},function(data){
-            //alert(data['message']);
-            if(data['message'].indexOf('No')!=0){
-                $('#msg').slideUp('slow');
-                $('#RunTestResultTable').html(initiateInfoDiv(data['data'],data['teamname']));
-                $('#RunTestResultTable').slideDown('slow');
-            };
-        });
-    });
-    OtherButtonPreparation();
-}
-function OtherButtonPreparation(){
-    $('#createNew').click(function(event){
-        event.preventDefault();
-        $.get('GetTesterManager',{},function(data){
-            $('#type').css({'display':'none'});
-            $('#name').css({'display':'none'});
-            $('#RunTestResultTable').html("");
-            $('#RunTestResultTable').html(initCreateDiv(data));
-            $('#RunTestResultTable').css({'display':'block'});
-            ButtonPreparation();
-        });
-    });
-    $('#edit').click(function(event){
-        event.preventDefault();
-        var team_name=$('#name').text().trim().replace(/ /g,'_').trim();
-        if(team_name!=""){
-            window.location='/Home/Team/'+team_name.trim()+'/';
-        }
-
-    });
-    $('#delete').click(function(event){
-       event.preventDefault();
-        var team_name=$('#name').text();
-        if(team_name!=""){
-            alertify.confirm("Are you sure you want to add the selected to the team '"+team_name.trim()+"'?", function(e) {
-                if (e) {
-                    $.get('Delete_Team',{
-                        'team_name':team_name.trim()
-                    },function(data){
-                        if(data.indexOf('Failed')!=0){
-                            window.location=('/Home/ManageTeam/');
-                        }
-                        else{
-                            window.location.reload(true);
-                        }
-                    });
+    $('#create_team').on('click',function(){
+        $('.team').css({'background-color':'#fff'});
+        $('.team').removeClass('selected');
+        $('#control_panel').css({'display':'none'});
+        $('#main_body').html(team_crate());
+        $("#search_tester").select2({
+            placeholder: "Assigned Testers...",
+            width: 460,
+            quietMillis: 250,
+            ajax: {
+                url: "AutoCompleteTesterSearch/",
+                dataType: "json",
+                queitMillis: 250,
+                data: function(term, page) {
+                    return {
+                        'term': term,
+                        'page': page,
+                        'all':'all'
+                    };
+                },
+                results: function(data, page) {
+                    return {
+                        results: data.items,
+                        more: data.more
+                    }
                 }
-            });
-        }
-    });
-    $('#rename').click(function(event){
-        event.preventDefault();
-        var temp='Team';
-        var name=$('#name').text().trim();
-        $('#inner_div').html(renameDivInit(temp,name));
-        $("#inner_div").dialog({
-            /*buttons : {
-             "OK" : function() {
-             $(this).dialog("close");
-             }
-             },
-             */
-            show : {
-                effect : 'drop',
-                direction : "up"
             },
-            modal : true,
-            width : 400,
-            height : 200,
-            title:"Rename: "+temp.toLocaleUpperCase()
-        });
-        $('#create').click(function(event){
-            event.preventDefault();
-            var new_name=$('#inputText').val().trim();
-            var old_name=name.trim();
-            //alert(temp.toLocaleUpperCase()+new_name);
-            $.get("UpdateTeamName",{type:temp.toLocaleUpperCase(),new_name:new_name.trim(),old_name:old_name.trim()},function(data){
-                if(data.indexOf('Failed')!=0){
-                    window.location=('/Home/ManageTeam/');
-                }
-                else{
-                    window.location.reload(true);
-                }
+            formatResult: formatUsers
+        }).on("change", function(e) {
+                var user_id=$(this).select2('data')['id'];
+                var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+                $("#tester").append('<tr><td><img class="delete DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                    + '<td class="Text" data-id="'+user_id+'">'
+                    + user_name
+                    + ":&nbsp"
+                    + '</td></tr>');
+                $(this).select2('val','');
+                return false;
             });
+
+        function formatUsers(user_details) {
+            var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + ' ' + user_details.text + '</span></div>';
+
+            return markup;
+        }
+        $(".DeleteTester").live('click', function() {
+
+            //$(this).parent().next().remove();
+            //$(this).remove();
+            $(this).parent().parent().remove();
+
         });
-    });
-}
-function initiateInfoDiv(data,teamname){
 
-    $('#type').html('<b class="Text" style="color: #4183c4">Team:</b>');
-    $('#name').html('<b class="Text">'+teamname+'</b> ');
-    $('#infoDiv').slideDown('slow');
-    $('#new_team').slideUp('slow');
-    var message="";
-    message+='<table style="margin-left: 3%;">';
-    for(var i=0;i<data.length;i++){
-        if(data[i][0]=='leader'){
-            var type_tag="Managers";
-        }
-        if(data[i][0]=='tester'){
-            var type_tag="Tester";
-        }
-        message+='<tr>';
-        if(data[i][1].length==0){
-            message+=('<td align="left" colspan="2"><b class="Text" style="color: #4183c4">No'+type_tag+' in this team</b></td>');
-        }
-        else{
-            message+='<td width="25%" align="left" class="Text" style="vertical-align: 0%;color: #4183c4"><b>'+type_tag+':</b></td>';
-            message+='<td style="vertical-align: 0%;"><table width="100%"   style="margin-top: -2%;">';
-            for(var j=0;j<data[i][1].length;j++){
-                message+='<tr><td width="65%"  style="vertical-align:0%" data-id="'+data[i][1][j][0]+'"><b class="Text">'+data[i][1][j][1].trim()+'</b></td>';
-                //message+='<td align="center" width="10%"><i class="fa fa-minus-square fa-fw fa-lg remove" style="cursor: pointer;"></i></td></tr>';
+        $("#search_manager").select2({
+            placeholder: "Assigned Manager...",
+            width: 460,
+            quietMillis: 250,
+            ajax: {
+                url: "GetTesterManager/",
+                dataType: "json",
+                queitMillis: 250,
+                data: function(term, page) {
+                    return {
+                        'term': term,
+                        'page': page,
+                        'all':'all'
+                    };
+                },
+                results: function(data, page) {
+                    return {
+                        results: data.items,
+                        more: data.more
+                    }
+                }
+            },
+            formatResult: formatUsers
+        }).on("change", function(e) {
+                var user_id=$(this).select2('data')['id'];
+                var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+                $("#manager").append('<tr><td><img class="delete DeleteManager" title = "ManagerDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                    + '<td class="Text" data-id="'+user_id+'">'
+                    + user_name
+                    + ":&nbsp"
+                    + '</td></tr>');
+                $(this).select2('val','');
+                return false;
+            });
+        $(".DeleteManager").live('click', function() {
+            $(this).parent().parent().remove();
+        });
+
+        $('#submit_team').on('click',function(){
+            var team_name=$('#team_name').val().trim();
+            var member=[];
+            $('.DeleteManager').each(function(){
+               member.push($(this).parent().next().attr('data-id'));
+            });
+            $('.DeleteTester').each(function(){
+                member.push($(this).parent().next().attr('data-id'));
+            });
+            //alert(member);
+            if(member.length==0 || team_name.trim()==""){
+                alertify.log("Some of the fields are empty","",0);
+                return false;
+            }else{
+                $.get("Create_Team",{'project_id':project_id.trim(),'member':member.join("|"),'team_name':team_name},function(data){
+                    if(data.indexOf('Failed')!=0){
+                        window.location=('/Home/'+project_id+'/Team/'+team_name.trim().replace(/ /g,'_').trim()+'/');
+                    }
+                    else{
+                        window.location.reload(true);
+                    }
+                });
             }
-            message+='</table></td>';
 
-        }
-        message+='</tr>';
-    }
+        });
+});
+    //CreateButtonInit();
+    //Other();
+});
+function team_crate(){
+    var message='';
+    message+='<table class="two-column-emphasis"><caption><b style="font-size: 150%;">Team Details</b></caption>';
+    message+='<tr><td align="right"><b>Team Name:</b></td><td align="left"><input class="textbox" id="team_name" placeholder="Team name here"/> </td><td>&nbsp;</td></tr>';
+    message+='<tr><td align="right" style="vertical-align: 0%"><b>Manager:</b></td><td  style="vertical-align: 0%" align="left"><input type="hidden"  placeholder="Search Managers" id="search_manager"/> </td><td><table id="manager"></table></td></tr>';
+    message+='<tr><td align="right" style="vertical-align: 0%"><b>Tester:</b></td><td  style="vertical-align: 0%" align="left"><input type="hidden" placeholder="Search Testers" id="search_tester"/> </td><td><table id="tester"></table></td></tr>';
+    message+='<tr><td align="right" style="vertical-align: 0%">&nbsp;</td><td  style="vertical-align: 0%" align="left"><input class="m-btn green" value="Submit" id="submit_team" type="button"/> </td><td>&nbsp;</td></tr>';
     message+='</table>';
     return message;
 }
 function GetAllTeam(){
-    $.get("GetAllTeam",{term:''},function(data){
-        $('#team').html(initTeamName(data));
-        MainButtonPreparation();
-    });
-
-};
-function initTeamName(team){
-    var message="";
-    message+='<table width="100%">';
-    message+='<tr style="margin-right: 2%;"><td align="center" style="width: 22%; border-right: 2px solid #ccc;"><b class="Text">Teams</b></td>';
-    message+='<td><table>'
-    for(var i=0;i<team.length;i++){
-        message+='<tr><td>&nbsp;</td><td class="team" style="cursor: pointer;" id="'+team[i][1].replace(/ /g,'_').trim()+'">'+team[i][1].trim()+'</td></tr>'
-    }
-    message+='</table></td></tr>';
-    message+='</table>';
-    return message;
-}
-function CreateButtonInit(){
-  $('#new_team').click(function(event){
-      event.preventDefault();
-      $.get('GetTesterManager',{},function(data){
-          $('#RunTestResultTable').html(initCreateDiv(data));
-          $('#RunTestResultTable').css({'display':'block'});
-          ButtonPreparation();
-      });
-  });
-};
-function ButtonPreparation(){
-    $('#submit_team').click(function(){
-        var member=[];
-        var team_name=$('#team_name').val().trim();
-        $('input[class="manager"]:checked').each(function(){
-            member.push($(this).val().trim());
-        });
-        $('input[class="tester"]:checked').each(function(){
-            member.push($(this).val().trim());
-        });
-        if(member.length==0 || team_name.trim()==""){
-            alertify.log("Some of the fields are empty","",0);
+    $("#main_body").empty();
+    $('#control_panel').empty();
+    $.get('GetAllTeam',{'project_id':project_id},function(data){
+        var team_list=data['all_team'];
+        var global_list=data['global_team'];
+        var message='';
+        message+='<table class="two-column-emphasis"><caption><b>Team Assigned</b></caption>';
+        if(team_list.length>0){
+            for(var i=0;i<team_list.length;i++){
+                message+='<tr><td class="team" data-id="'+team_list[i][0]+'">'+team_list[i][1]+'</td></tr>';
+            }
         }
-        $.get("Create_Team",{'member':member.join("|"),'team_name':team_name},function(data){
-            if(data.indexOf('Failed')!=0){
-                window.location=('/Home/Team/'+team_name.trim().replace(/ /g,'_').trim()+'/');
+        else{
+            message+='<tr><td>No Team Assigned</td></tr>';
+        }
+        message+='</table>';
+        $('#team_list').html(message);
+        var message='';
+        message+='<table class="two-column-emphasis"><caption><b>Team Left</b></caption>';
+        if(global_list.length>0){
+            for(var i=0;i<global_list.length;i++){
+                message+='<tr><td>'+global_list[i][1]+'</td>';
+                message+='<td class="global_team"data-id="'+global_list[i][0]+'"><img src="/site_media/plus1.png" style="cursor: pointer" width="20px" height="20px"/></td></tr>';
+            }
+        }
+        else{
+            message+='<tr><td>No Team Left</td></tr>';
+        }
+        message+='</table>';
+        $('#global_team_list').html(message);
+        $('.global_team').on('click',function(){
+            var team_id=$(this).attr('data-id');
+            var team_text=$(this).prev().text().trim();
+            var project_name=$('#project_identity option:selected').text().trim();
+            var message="Do you want Team <b>'"+team_text+"'</b> to  project <b>'"+project_name+"'</b>??";
+            alertify.confirm(message,function(e){
+                if(e){
+                    $.get('link_team',{'team_name':team_text.trim(),'team_id':team_id,project_id:project_id},function(data){
+                        if(data['message']){
+                            alertify.success(data['log_message'],1500);
+                            GetAllTeam();
+                        }
+                        else{
+                            alertify.error(data['log_message'],1500);
+                            GetAllTeam();
+                        }
+                    });
+                }
+                else{
+                    alertify.alert().close_all();
+                }
+            });
+        });
+        $('.team').on('click',function(){
+            $('.team').css({'background-color':'#fff'});
+            $(this).css({'background-color':'#ccc'});
+            $('.team').removeClass('selected');
+            $(this).addClass('selected');
+            getAlldata(project_id,$(this).text().trim(),$(this).attr('data-id'));
+        });
+    });
+}
+
+function getAlldata(project_id,team_name,team_id){
+    $.get('GetTeamInfo',{'team':team_name.trim(),'team_id':team_id.trim(),'project_id':project_id.trim()},function(data){
+        var message='';
+        var team_name=data['teamname'];
+        var user_list=data['data'];
+        message+='<table class="two-column-emphasis"><caption><b>'+team_name+'</b></caption>';
+        for(var i=0;i<user_list.length;i++){
+            var user_type=user_list[i][0];
+            var users=user_list[i][1];
+            message+='<tr><td style="vertical-align: 0%;"><b>'+user_type+'</b></td>';
+            if(users.length>0){
+                message+='<td><table>';
+                for(var j=0;j<users.length;j++){
+                    message+='<tr><td>'+users[j][1]+'</td></tr>';
+                }
+                message+='</table>';
+                message+='</td>';
             }
             else{
-                window.location.reload(true);
+                message+='<td>No '+user_type+' in this team</td>';
             }
+            message+='</tr>';
+        }
+        message+='</table>';
+        $('#main_body').html(message);
+        var message='';
+        message+='<input type="button" id="rename_button" class="m-btn blue" value="Rename"/> ';
+        message+='<input type="button" id="edit_button" class="m-btn purple" value="Add/Remove"/> ';
+        message+='<input type="button" class="m-btn red" value="Delete"/> ';
+        $('#control_panel').html(message);
+        $('#rename_button').on('click',function(){
+            var team_name=$('.team.selected').text().trim();
+            var message='';
+            message+='<table class="two-column-emphasis"><caption><b>Rename Team</b></caption>';
+            message+='<tr><td><b>Old Name:</b></td><td>'+team_name+'</td></tr>';
+            message+='<tr><td><b>New Name:</b></td><td><input type="text" id="new_team" class="textbox" style="width: 100%;"/> </td></tr>';
+            message+='</table>';
+            alertify.confirm(message,function(){
+                var new_name=$('#new_team').val().trim();
+                if(new_name!=''){
+                    $.get('UpdateTeamName',{'new_name':new_name,'old_name':team_name,project_id:project_id},function(data){
+                        if(data['message']){
+                            alertify.success(data['log_message'],1500);
+                            GetAllTeam();
+                        }else{
+                            alertify.error(data['log_message'],1500);
+                            GetAllTeam();
+                        }
+                    });
+                }
+                else{
+                    alertify.error('Team Name empty',1500);
+                    return false;
+                }
+
+            });
+        });
+
+        $('#edit_button').on('click',function(){
+            var team_name=$('.team.selected').text().trim();
+            window.location='/Home/'+project_id+'/Team/'+team_name.replace(/ /g,'_')+'/';
+        });
+        $('#delete_button').on('click',function(){
+
         });
     });
-}
-function initCreateDiv(data){
-    $('#msg').css({'display':'none'});
-
-    var message="";
-    if(data[0][0]=='assigned_tester'){
-        var tester=data[0][1];
-    }
-    if(data[1][0]=='manager'){
-        var manager=data[1][1];
-    }
-    message+='<table align="center" width="100%"style="margin-top:2%;">';
-    message+='<tr>';
-    message+='<td align="right"><b class="Text">Team Name:</b></td>';
-    message+='<td align="left"><input type="text" class="textbox" placeholder="Team Name Here" id="team_name"/></td>';
-    message+='</tr>';
-    message+='<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
-    message+='<tr>';
-    message+='<td align="right" style="vertical-align: 0%;"><b class="Text">Select Managers:</b></td>';
-    message+='<td align="left">';
-    message+='<table>';
-    for(var i=0;i<manager.length;i++){
-        message+='<tr><td><input type="checkbox" class="manager" value="'+manager[i][0]+'"/>'+manager[i][1]+'</td></tr>';
-    }
-    message+='</table>';
-    message+='</td>';
-    message+='</tr>';
-    message+='<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
-    message+='<tr>';
-    message+='<td align="right" style="vertical-align: 0%;"><b class="Text">Select Tester:</b></td>';
-    message+='<td align="left">';
-    message+='<table>';
-    for(var i=0;i<tester.length;i++){
-        message+='<tr><td><input type="checkbox" class="tester" value="'+tester[i][0]+'"/>'+tester[i][1]+'</td></tr>';
-    }
-    message+='</table>';
-    message+='</td>';
-    message+='</tr>';
-    message+='<tr><td>&nbsp;</td><td align="center"><input class="createnew" value="Create Team" type="button" id="submit_team"/></td></tr>';
-    message+='</table>';
-    return message;
-};
-function renameDivInit(temp,name){
-    var message="";
-    message+='<div align="center">';
-    message+='<table align="center">'+
-        '<tr><td>Old '+temp.toLocaleUpperCase()+' Name:</td><td><span>'+name.trim()+'</span></td></tr>' +
-        '<tr><td>Enter New '+temp.toLocaleUpperCase()+' Name:</td><td><input id="inputText" type="text" class="Text"/></td></tr>' +
-        '<tr><td>&nbsp;</td><td colspan="1" align="right"><input style="margin-right: 0%;" type="button" class="createnew" id="create" value="Rename '+temp.toLocaleUpperCase()+'" /></td></tr></table>';
-    message+='</div>';
-    return message;
 }

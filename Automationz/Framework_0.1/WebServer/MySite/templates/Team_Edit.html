@@ -3,12 +3,14 @@
 {% block title%}Team Edit{% endblock %}
 
 {% block content %}
-<script type="text/javascript" src="/site_media/Jquery/Local/Team_Edit.js"></script>
+<script type="text/javascript">
+    $('body').css({'font-size':'100%'});
+</script>
 <div align="left">
     <h3 style="font-size: 19px;"><a href="/Home/ManageTeam/">Team</a> / <a href="" id="name" style="font-weight: bolder">{{team_name}}</a></h3>
 </div>
 <table align="left" width="100%">
-    <thead>
+   <!-- <thead>
     <tr>
         <td width=40% style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Current Team</td>
         <td width="20%">&nbsp;</td>
@@ -122,6 +124,51 @@
             <input class="button danger" type="button" value="Remove" id="remove"/>
         </td>
     </tr>
-    </tbody>
+    </tbody>-->
+    <tr>
+        <td width="50%" >
+            <table class="two-column-emphasis">
+
+                <caption><b>{{team_name}}</b></caption>
+                <thead>
+                    <tr>
+                        <th colspan="2" align="center">Current Members</th>
+                        <th colspan="2" align="center">Available Members</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in user_list %}
+                        <tr>
+                            <td style="vertical-align: 0%;"><b>{{x.0}}:</b></td>
+                            <td style="border-right: 2px solid #CCCCCC;vertical-align: 0%;">
+                                <table>
+                                    {% if x.1 %}
+                                        {% for y in x.1 %}
+                                            <tr><td>{{y.1}}</td><td><input  class="{{x.0}}" type="checkbox" value="{{y.0}}"/></td></tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr><td colspan="2">No {{x.0}}</td></tr>
+                                    {% endif %}
+                                </table>
+                            </td>
+                            <td style="vertical-align: 0%;">
+                                <input type="hidden" id="{{x.0|lower}}_search"/>
+                            </td>
+                            <td style="vertical-align: 0%;">
+                                <table id="{{x.0|lower}}"></table>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="2"><input id="remove_user" type="button" class="m-btn red" value="Remove User"/> </td>
+                        <td colspan="2"><input id="add_user" type="button" class="m-btn green" value="Add User"/> </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
 </table>
+
+<script type="text/javascript" src="/site_media/Jquery/Local/Team_Edit.js"></script>
+
 {% endblock %}

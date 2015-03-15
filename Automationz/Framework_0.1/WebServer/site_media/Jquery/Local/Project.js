@@ -7,7 +7,7 @@ function GetProjects(){
         user_id: $.session.get('user_id')
     },function(data){
         var message="";
-        message+='<table>';
+        message+='<table class="two-column-emphasis">';
         if(data.length>0){
             for(var i=0;i<data.length;i++){
                 message+=('<tr><td style="cursor: pointer;" class="projects"><b>'+data[i][1].trim()+'</b></td></tr>');
@@ -20,7 +20,12 @@ function GetProjects(){
     });
 }
 function PrepareOtherButton(){
-    $('.projects').click(function(){
+    $('.projects').on('click',function(){
+        $('.projects').css({'background-color':'#fff'});
+        $(this).css({'background-color':'#ccc'});
+
+        $('.projects').removeClass('selected');
+        $(this).addClass('selected');
         $.get("Small_Project_Detail",{
                 'name':$(this).text().trim()
             },function(data){
@@ -46,13 +51,18 @@ function Small_Project_Detail(data){
     message+='</tr>';
     message+='<tr>';
     message+=('<td align="right"><b style="color: #4183c4">Assigned Teams:</b></td><td>');
-    for(var i=0;i<data['team_name'].length;i++){
-        var team_name=data['team_name'][i].trim().replace(/ /g,'_').trim();
-        var location=("/Home/Team/"+team_name+"/");
-        message+=('<a href="'+location +'" style="text-decoration:none">'+data['team_name'][i]+'</a>');
-        if(i!=(data['team_name'].length-1)){
-            message+=" , ";
+    if(data['team_name'].length>0 && data['team_name'][0]!='Team Not Set'){
+        for(var i=0;i<data['team_name'].length;i++){
+            var team_name=data['team_name'][i].trim().replace(/ /g,'_').trim();
+            var location=("/Home/"+data['project_id']+"/Team/"+team_name+"/");
+            message+=('<a href="'+location +'" style="text-decoration:none">'+data['team_name'][i]+'</a>');
+            if(i!=(data['team_name'].length-1)){
+                message+=" , ";
+            }
         }
+    }
+    else{
+        message+='<b>No Team Set</b>';
     }
     message+='</td>'
     message+='</tr>';
