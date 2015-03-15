@@ -504,21 +504,6 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
         return "failed"  
 
 
-def Delete_A_Course(course_name):
-    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name   
-    try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        print "Successfully closed your browser"
-        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
-        return "passed"
-    except Exception, e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()        
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
-        print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3)
-        print "No open browser to close"
-        return "failed"
         
 def Create_A_New_Course(course_name, short_name, course_id, cleanup='true'):
     '''
@@ -751,4 +736,24 @@ def Tear_Down():
         print "No open browser to close"
         return "failed"
 
+def delete_a_course(course_name):
+    BrowserSelection('firefox')
+    OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
+    Login('admin','R@1ndrops', 'Admin User')
+    Turn_Editing_On_OR_Off('on')
+    Expand_Menu_By_Name("Site administration")
+    site_admin_parent = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_elements_by_xpath("//*[text()='Site administration']"))
+    Expand_Menu_By_Name("Courses",site_admin_parent)
+    Click_Element_By_Name('Manage courses and categories',site_admin_parent)
+    Set_Text_Field_Value_By_ID('coursesearchbox',course_name)
+    Click_By_Parameter_And_Value("value","Go")
+    search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@class='course-listing']"))
+    course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(lambda driver :search_course_list.find_elements_by_xpath("//*[text()='%s']"%course_name))
+    course_element_row = WebDriverWait(course_element, WebDriver_Wait).until(lambda driver : course_element.find_element_by_xpath(".."))
+    Click_By_Parameter_And_Value("alt","Delete")
 
+    
+    
+    print "Debug"
+    
+#delete_a_course("auto1")
