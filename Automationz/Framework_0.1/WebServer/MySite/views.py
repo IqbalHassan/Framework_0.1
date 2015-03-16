@@ -1014,7 +1014,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):
             Status = 'Status'
             set_type = 'set'
             tag_type = 'tag'
-            query = "select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
+            query = "select distinct dependency_name from dependency d, dependency_management dm where d.project_id=dm.project_id and d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
                 project_id, int(team_id))
             Conn = GetConnection()
             dependency = DB.GetData(Conn, query)
@@ -13374,7 +13374,6 @@ def TeamData(request, project_id,team_name):
         'team_name': team_name.strip(),
         'user_list':final
     }
-    Conn.close()
     return render_to_response('Team_Edit.html', Dict)
 
 
