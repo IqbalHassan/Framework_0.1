@@ -893,29 +893,30 @@ def main():
                 tester = DBUtil.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+TestRunID[0]+"'")
                 #import EmailNotify
                 #EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')
-                 
-                global list
+                mlist = [] 
+                #global mlist
+                
                 pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % TestRunID[0]
                 passed = DBUtil.GetData(oConn, pass_query)
-                list.append(passed[0])
+                mlist.append(passed)
                 fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % TestRunID[0]
                 fail = DBUtil.GetData(oConn, fail_query)
-                list.append(fail[0])
+                mlist.append(fail)
                 blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % TestRunID[0]
                 blocked = DBUtil.GetData(oConn, blocked_query)
-                list.append(blocked[0])
+                mlist.append(blocked)
                 progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % TestRunID[0]
                 progress = DBUtil.GetData(oConn, progress_query)
-                list.append(progress[0])
+                mlist.append(progress)
                 submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % TestRunID[0]
                 submitted = DBUtil.GetData(oConn, submitted_query)
-                list.append(submitted[0])
+                mlist.append(submitted)
                 skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % TestRunID[0]
                 skipped = DBUtil.GetData(oConn, skipped_query)
-                list.append(skipped[0])
+                mlist.append(skipped)
                 total_query = "select count(*) from test_case_results where run_id='%s'" % TestRunID[0]
                 total = DBUtil.GetData(oConn, total_query)
-                list.append(total[0])
+                mlist.append(total)
                 duration = DBUtil.GetData(
                     oConn,
                     "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '" +
@@ -928,7 +929,7 @@ def main():
                     #email notify
                     try:
                         urllib2.urlopen("http://www.google.com").close()
-                        EmailNotify.Complete_Email(ToEmailAddress[0],TestRunID[0],TestObjective[0],status,list,tester,duration,'','')
+                        EmailNotify.Complete_Email(self,ToEmailAddress[0],TestRunID[0],TestObjective[0],status,mlist,tester,duration,'','')
                         print "connected"
                         results = ['OK']
                     except urllib2.URLError:
