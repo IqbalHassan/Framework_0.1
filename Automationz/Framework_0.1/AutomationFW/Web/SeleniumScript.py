@@ -5,7 +5,6 @@ sys.path.append("..")
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
-import selenium.selenium as Sal
 import time
 import inspect
 from selenium.webdriver.support.ui import WebDriverWait
@@ -15,7 +14,8 @@ from selenium.webdriver.common.keys import Keys
 #Ver1.0
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-from CoreFrameWork import CommonUtil
+#from CoreFrameWork import CommonUtil
+from selenium.webdriver.support import expected_conditions as EC
 
 global WebDriver_Wait 
 WebDriver_Wait = 90
@@ -34,25 +34,25 @@ def BrowserSelection(browser):
             sBrowser.implicitly_wait(WebDriver_Wait)
             sBrowser.maximize_window()
             print "Started Chrome Browser"
-            CommonUtil.ExecLog(sModuleInfo, "Started Chrome Browser", 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Started Chrome Browser", 1)
             return "passed"
         elif browser == 'firefox':
             sBrowser = webdriver.Firefox()
             sBrowser.implicitly_wait(WebDriver_Wait)
             sBrowser.maximize_window()
-            CommonUtil.ExecLog(sModuleInfo, "Started Firefox Browser", 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Started Firefox Browser", 1)
             print "Started Firefox Browser"
             return "passed"
         elif "ie" in browser:
             sBrowser = webdriver.Ie()
             sBrowser.implicitly_wait(WebDriver_Wait)
             sBrowser.maximize_window()
-            CommonUtil.ExecLog(sModuleInfo, "Started Internet Explorer Browser", 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Started Internet Explorer Browser", 1)
             print "Started Internet Explorer Browser"
             return "passed"
         else:
             print "You did not select a valid browser: %s" % browser
-            CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser: %s" % browser, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser: %s" % browser, 3)
             return "failed"
         #time.sleep(3)
     except Exception, e:
@@ -61,7 +61,7 @@ def BrowserSelection(browser):
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
         print "Unable to start WebDriver"
-        CommonUtil.ExecLog(sModuleInfo, "Unable to start WebDriver. %s"%Error_Detail, 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to start WebDriver. %s"%Error_Detail, 3)
         return "failed"
 
 def OpenLink(link, page_title):
@@ -69,9 +69,9 @@ def OpenLink(link, page_title):
     try:
         sBrowser.get(link)
         sBrowser.implicitly_wait(WebDriver_Wait)
-        CommonUtil.ExecLog(sModuleInfo, "Successfully opened your link: %s" % link, 1)
+        #CommonUtil.ExecLog(sModuleInfo, "Successfully opened your link: %s" % link, 1)
         print "Successfully opened your link: " + link
-        CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.TakeScreenShot("sModuleInfo")
         assert page_title in sBrowser.title
         #time.sleep(3)
         return "passed"
@@ -80,28 +80,29 @@ def OpenLink(link, page_title):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "failed to open your link: %s. Error:%s" %(link, Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "failed to open your link: %s. Error:%s" %(link, Error_Detail), 3)
         print "failed to open your link: %s" % link
-        CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.TakeScreenShot("sModuleInfo")
         return "failed"
 
 def Login(user_name,password,logged_name):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.TakeScreenShot("sModuleInfo")
         Click_Element_By_Name("Log in")
         Set_Text_Field_Value_By_ID("username",user_name)
         Set_Text_Field_Value_By_ID("password",password)
         Click_Element_By_ID ("loginbtn")
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Successfully logged in", 1)
-        element_login =  WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_xpath("//*[@title='View profile']"))
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Successfully logged in", 1)
+        #element_login =  WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_xpath("//*[@title='View profile']"))
+        element_login = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[@title='View profile']")))
         if (WebDriverWait(element_login, WebDriver_Wait).until(lambda driver : element_login.text)) == logged_name:
-            CommonUtil.ExecLog(sModuleInfo, "Verified that logged in as: %s"%logged_name, 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Verified that logged in as: %s"%logged_name, 1)
             print "Verified that logged in as: %s"%logged_name
             return "passed"
         else:
-            CommonUtil.ExecLog(sModuleInfo, "Log in failed for user: %s"%logged_name, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Log in failed for user: %s"%logged_name, 3)
             print "Unable to login"
             return "failed"
             
@@ -110,49 +111,52 @@ def Login(user_name,password,logged_name):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to login.  %s"%Error_Detail, 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to login.  %s"%Error_Detail, 3)
         print "Unable to login"
         return "failed"
     
 def Expand_Menu_By_ID(_id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.TakeScreenShot("sModuleInfo")
         #Find all elements containing the name
-        CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%_id, 1)
+        #CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%_id, 1)
         print "Trying to find element by ID: %s"%_id
         try: 
-            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
-            CommonUtil.ExecLog(sModuleInfo, "Found your element by ID: %s"%_id, 1)
+            #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID, _id)))
+            #CommonUtil.ExecLog(sModuleInfo, "Found your element by ID: %s"%_id, 1)
             print "Found your element by ID: %s"%_id
         except:
-            CommonUtil.ExecLog(sModuleInfo, "Could not find your element by ID: %s"%_id, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Could not find your element by ID: %s"%_id, 3)
             print "Could not find your element by ID: %s"%_id
             return "failed"
         #Now we need to find out if it is expanded.  To do this we need to go two level up 
-        parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
-        grand_parent = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath(".."))
+        #parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
+        parent = WebDriverWait(Element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        #grand_parent = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath(".."))
+        grand_parent = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
         expand_status = WebDriverWait(grand_parent, WebDriver_Wait).until(lambda driver : grand_parent.get_attribute("aria-expanded"))
         expand_status = str(expand_status).lower()
         if expand_status == 'true':
-            CommonUtil.ExecLog(sModuleInfo, "%s is already expanded "%_id, 2)
+            #CommonUtil.ExecLog(sModuleInfo, "%s is already expanded "%_id, 2)
             print "%s is already expanded "%_id
             return "passed"
         else:
-            CommonUtil.ExecLog(sModuleInfo, "%s is not expanded. Expanding.. "%_id, 1)
+            #CommonUtil.ExecLog(sModuleInfo, "%s is not expanded. Expanding.. "%_id, 1)
             sBrowser.implicitly_wait(WebDriver_Wait)
             Element.click()  
         #Verify if it was expanded 
         expand_status = WebDriverWait(grand_parent, WebDriver_Wait).until(lambda driver : grand_parent.get_attribute("aria-expanded"))
         expand_status = str(expand_status).lower()
         if (expand_status== "true"):
-            CommonUtil.TakeScreenShot("sModuleInfo")
-            CommonUtil.ExecLog(sModuleInfo, "Successfully to expand menu: %s"%_id, 1)
+            #CommonUtil.TakeScreenShot("sModuleInfo")
+            #CommonUtil.ExecLog(sModuleInfo, "Successfully to expand menu: %s"%_id, 1)
             #time.sleep(3)
             print "Successfully expanded your menu: %s"%_id
             return "passed"
         else:
-            CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s"%_id, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s"%_id, 3)
             print "Unable to expand Menu: %s"%_id
             return "failed"   
     except Exception, e:
@@ -160,7 +164,7 @@ def Expand_Menu_By_ID(_id):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.  Error: %s"%(_id, Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.  Error: %s"%(_id, Error_Detail), 3)
         print "Unable to expand Menu: %s"%_id
         return "failed"    
 
@@ -172,54 +176,47 @@ def Expand_Menu_By_Name(_name,parent=False):
     '''
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.TakeScreenShot("sModuleInfo")
         #Find all elements containing the name
-        CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%_name, 1)
+        #CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%_name, 1)
         print "Trying to find element by name: %s"%_name
         if isinstance(parent, (bool)) == True:
-            #allElements = sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name)
-            allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name))
+            #allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name)) 
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%_name)))
         else:
             #allElements = parent.find_elements_by_xpath("//*[text()='%s']"%_name)
-            allElements = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_elements_by_xpath("//*[text()='%s']"%_name)) 
-        if allElements == []:        
-            CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name: %s"%_name, 3)
-            print "Could not find your element by name: %s"%_name
-            return "failed"
-        #Now find the ones that are being displayed
-        else:
-            if len(allElements) > 1:
-                CommonUtil.ExecLog(sModuleInfo, "Found more than one element and will use the first one.  ** if fails, try providing parent element or use ID ** ", 2)
-                print "Found more than one element and will use the first one.  ** if fails, try providing parent element or use ID ** "
-            for each in allElements:
-                if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.is_displayed())) == True:
-                    Element = each
-                    CommonUtil.ExecLog(sModuleInfo, "Found your element by name: %s.  Using the first element found to click"%_name, 1)
-                    print "Found your element by name: %s.  Using the first element found to click"%_name                   
-                    break
+            Element = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%_name)))
+            #allElements = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_elements_by_xpath("//*[text()='%s']"%_name)) 
+
+
         #Now we need to find out if it is expanded.  To do this we need to go two level up 
-        parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
-        grand_parent = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath(".."))
+        #parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
+        #grand_parent = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath(".."))
+
+        parent = WebDriverWait(Element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        grand_parent = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
         expand_status = WebDriverWait(grand_parent, WebDriver_Wait).until(lambda driver : grand_parent.get_attribute("aria-expanded"))
         expand_status = str(expand_status).lower()
         if expand_status == 'true':
-            CommonUtil.ExecLog(sModuleInfo, "%s is already expanded "%_name, 2)
+            #CommonUtil.ExecLog(sModuleInfo, "%s is already expanded "%_name, 2)
             print "%s is already expanded "%_name
             return "passed"
         else:
-            CommonUtil.ExecLog(sModuleInfo, "%s is not expanded. Expanding.. "%_name, 1)
+            #CommonUtil.ExecLog(sModuleInfo, "%s is not expanded. Expanding.. "%_name, 1)
+            wait = WebDriverWait(sBrowser, 10)
+            Element = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[text()='%s']"%_name)))
             Element.click()
         #Verify if it was expanded 
         expand_status = WebDriverWait(grand_parent, WebDriver_Wait).until(lambda driver : grand_parent.get_attribute("aria-expanded"))
         expand_status = str(expand_status).lower()
         if (expand_status== "true"):
-            CommonUtil.TakeScreenShot("sModuleInfo")
-            CommonUtil.ExecLog(sModuleInfo, "Successfully to expand menu: %s"%_name, 1)
+            #CommonUtil.TakeScreenShot("sModuleInfo")
+            #CommonUtil.ExecLog(sModuleInfo, "Successfully to expand menu: %s"%_name, 1)
             #time.sleep(3)
             print "Successfully expanded your menu: %s"%_name
             return "passed"
         else:
-            CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s"%_name, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s"%_name, 3)
             print "Unable to expand Menu: %s"%_name
             return "failed"   
     except Exception, e:
@@ -227,7 +224,7 @@ def Expand_Menu_By_Name(_name,parent=False):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.  Error: %s"%(_name, Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.  Error: %s"%(_name, Error_Detail), 3)
         print "Unable to expand Menu: %s"%_name
         return "failed"    
 
@@ -241,33 +238,35 @@ def Click_Element_By_Name(_name,parent=False):
     '''
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.TakeScreenShot("sModuleInfo")
         #Find all elements containing the name
-        CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%_name, 1)
+        #CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%_name, 1)
         print "Trying to find element by name: %s"%_name
         if isinstance(parent, (bool)) == True:
-            allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name))
+            #allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name))
+            allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.XPATH, "//*[text()='%s']"%_name)))        
         else:
-            allElements = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_elements_by_xpath("//*[text()='%s']"%_name))
+            #allElements = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_elements_by_xpath("//*[text()='%s']"%_name))
+            allElements = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.XPATH, "//*[text()='%s']"%_name)))
         if allElements == []:        
-            CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name: %s"%_name, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name: %s"%_name, 3)
             print "Could not find your element by name: %s"%_name
             return "failed"
         else:
             if len(allElements) > 1:
-                CommonUtil.ExecLog(sModuleInfo, "Found more than one element and will use the first one.  ** if fails, try providing parent element or try by ID** ", 2)
+                #CommonUtil.ExecLog(sModuleInfo, "Found more than one element and will use the first one.  ** if fails, try providing parent element or try by ID** ", 2)
                 print "Found more than one element and will use the first one.  ** if fails, try providing parent element or try by ID** "
             for each in allElements:
                 if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.is_displayed())) == True:
                     Element = each
-                    CommonUtil.ExecLog(sModuleInfo, "Found your element by name: %s.  Using the first element found to click"%_name, 1)
+                    #CommonUtil.ExecLog(sModuleInfo, "Found your element by name: %s.  Using the first element found to click"%_name, 1)
                     print "Found your element by name: %s.  Using the first element found to click"%_name                   
                     break   
         #Now we simply click it
         Element.click()
         print "Successfully clicked your element by name: %s"%_name
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your element: %s"%_name, 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your element: %s"%_name, 1)
         return "passed"
 
     except Exception, e:
@@ -275,7 +274,7 @@ def Click_Element_By_Name(_name,parent=False):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.   Error: %s"%(_name,Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.   Error: %s"%(_name,Error_Detail), 3)
         print "Unable to expand Menu: %s"%_name
         return "failed"    
  
@@ -285,20 +284,21 @@ def Click_Element_By_ID(_id):
     
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Trying to find element by ID: %s"%_id, 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Trying to find element by ID: %s"%_id, 1)
         print "Trying to find element by ID: %s"%_id
         try:
-            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID, _id)))
         except:
-            CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name or ID: %s"%_id, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name or ID: %s"%_id, 3)
             print "Could not find your element by ID: %s"%_id
             return "failed"
         #Now we simply click it
         Element.click()
         print "Successfully clicked your element by ID: %s"%_id
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your element: %s"%_id, 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your element: %s"%_id, 1)
         return "passed"
 
     except Exception, e:
@@ -306,7 +306,7 @@ def Click_Element_By_ID(_id):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to click element by ID: %s.  Error: %s"%(_id,Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to click element by ID: %s.  Error: %s"%(_id,Error_Detail), 3)
         print "Unable to click your element by ID: %s"%_id
         return "failed"    
 
@@ -314,13 +314,14 @@ def Click_Element_By_ID(_id):
 def Set_Text_Field_Value_By_ID(_id,value):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Trying to find element by id: %s"%_id, 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Trying to find element by id: %s"%_id, 1)
         print "Trying to find element by id: %s"%_id
         try:
-            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID, _id)))
         except:
-            CommonUtil.ExecLog(sModuleInfo, "Could not find your element by ID: %s"%id, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Could not find your element by ID: %s"%id, 3)
             print "Could not find your element by ID: %s"%_id
             return "failed"  
         #Now we simply click it
@@ -329,8 +330,8 @@ def Set_Text_Field_Value_By_ID(_id,value):
         Element.send_keys(value)
         Element.click()
         print "Successfully set the value of to text with ID: %s"%id
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Successfully set the value of to text with ID: %s"%id, 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Successfully set the value of to text with ID: %s"%id, 1)
         return "passed"
 
     except Exception, e:
@@ -338,7 +339,7 @@ def Set_Text_Field_Value_By_ID(_id,value):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to set value for your ID: %s.  Error: %s"%(id, Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to set value for your ID: %s.  Error: %s"%(id, Error_Detail), 3)
         print "Unable to set value for your ID: %s"%id
         return "failed"    
 
@@ -346,15 +347,16 @@ def Click_Element_By_Custome_Field_Value(field,value):
     
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Trying to find element by field: %s and value: %s"%(field,value), 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Trying to find element by field: %s and value: %s"%(field,value), 1)
         print "Trying to find element by field: %s and value: %s"%(field,value)
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_xpath("//input[@%s='%s']"%(field,value)))
+        #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_xpath("//input[@%s='%s']"%(field,value)))
+        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//input[@%s='%s']"%(field,value))))
         #Now we simply click it
         Element.click()
         print "Successfully clicked your element by field: %s and value: %s"%(field,value)
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your element by field: %s and value: %s"%(field,value), 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your element by field: %s and value: %s"%(field,value), 1)
         return "passed"
 
     except Exception, e:
@@ -362,7 +364,7 @@ def Click_Element_By_Custome_Field_Value(field,value):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to click your element by field: %s and value: %s.  Error: %s"%(field,value, Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to click your element by field: %s and value: %s.  Error: %s"%(field,value, Error_Detail), 3)
         print "Unable to click your element by field: %s and value: %s"%(field,value)
         return "failed"    
 
@@ -371,22 +373,23 @@ def Click_Element_By_Custome_Field_Value(field,value):
 def Verify_Text_Message_By_Class(element, expected_text):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Getting text string from the web", 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Getting text string from the web", 1)
         print "Getting text string from the web"
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_class_name("message"))
+        #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_class_name("message"))
+        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME, "message")))
         actual_text = WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)
         if actual_text == expected_text:
             print "Successfully verified your text: %s"%actual_text
-            CommonUtil.ExecLog(sModuleInfo, "Successfully verified your text: %s"%actual_text, 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Successfully verified your text: %s"%actual_text, 1)
             print "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text)
-            CommonUtil.ExecLog(sModuleInfo, "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text), 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text), 1)
             return "passed"            
         else:
             print "failed to verify your expected text: %s"%expected_text
-            CommonUtil.ExecLog(sModuleInfo, "failed to verify your expected text: %s"%expected_text, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "failed to verify your expected text: %s"%expected_text, 3)
             print "Expected text was:'%s' but Actual text was '%s' "%(expected_text,actual_text)
-            CommonUtil.ExecLog(sModuleInfo, "Expected text was:'%s' but Actual text was '%s' "%(expected_text,actual_text), 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Expected text was:'%s' but Actual text was '%s' "%(expected_text,actual_text), 3)
             return "failed"
 
      
@@ -395,7 +398,7 @@ def Verify_Text_Message_By_Class(element, expected_text):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Error occur during verification process.  Error: %s"%Error_Detail, 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Error occur during verification process.  Error: %s"%Error_Detail, 3)
         print "Error occur during verification process"
         return "failed"  
 
@@ -403,21 +406,22 @@ def Verify_Text_Message_By_Class(element, expected_text):
 def Course_Exists(course):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course, 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course, 1)
         print "Searching for course: %s"%course
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %course))
+        #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %course))
+        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %course)))
         actual_text = WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)
         if actual_text == course:
             print "Successfully verified that course exists: %s"%actual_text
-            CommonUtil.ExecLog(sModuleInfo, "Successfully verified that course exists: %s"%actual_text, 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Successfully verified that course exists: %s"%actual_text, 1)
             return "passed"            
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()        
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Could not find your course: %s.  Error: %s"%(course,Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Could not find your course: %s.  Error: %s"%(course,Error_Detail), 3)
         print "Could not find your expected course: %s"%course
         return "failed"  
     
@@ -426,16 +430,17 @@ def Course_Exists(course):
 def Verify_Text_Message_By_Text(expected_text):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Getting text string from the web", 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Getting text string from the web", 1)
         print "Getting text string from the web"
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+        #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %expected_text)))
         actual_text = WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)
         if actual_text == expected_text:
             print "Successfully verified your text: %s"%actual_text
-            CommonUtil.ExecLog(sModuleInfo, "Successfully verified your text: %s"%actual_text, 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Successfully verified your text: %s"%actual_text, 1)
             print "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text)
-            CommonUtil.ExecLog(sModuleInfo, "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text), 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text), 1)
             return "passed"            
      
     except Exception, e:
@@ -443,7 +448,7 @@ def Verify_Text_Message_By_Text(expected_text):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Could not find your expected text: %s. Error: %s"%(expected_text, Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Could not find your expected text: %s. Error: %s"%(expected_text, Error_Detail), 3)
         print "Could not find your expected text: %s"%expected_text
         return "failed"  
 
@@ -451,47 +456,47 @@ def Verify_Text_Message_By_Text(expected_text):
 def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_time_id, daily_time_value,submit_id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Entering completion time in minutes", 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Entering completion time in minutes", 1)
         print "Entering completion time in minutes"
         result = Set_Text_Field_Value_By_ID(completion_time_id,completion_time_value)
         if result == "failed":
             print "failed to entered the completion time value"
-            CommonUtil.ExecLog(sModuleInfo, "failed to entered the completion time value", 3)
-            CommonUtil.TakeScreenShot("sModuleInfo")
+            #CommonUtil.ExecLog(sModuleInfo, "failed to entered the completion time value", 3)
+            #CommonUtil.TakeScreenShot("sModuleInfo")
             return "failed"
         else: 
             print "Successfully entered the completion time value"
-            CommonUtil.ExecLog(sModuleInfo, "Successfully entered the completion time value", 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Successfully entered the completion time value", 1)
 
         #----------------
         print "Entering daily time limit"
-        CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.TakeScreenShot("sModuleInfo")
         result = Set_Text_Field_Value_By_ID(daily_time_id,daily_time_value)
         if result == "failed":
             print "failed to entered the daily time limit"
-            CommonUtil.ExecLog(sModuleInfo, "failed to entered the daily time limit", 3)
-            CommonUtil.TakeScreenShot("sModuleInfo") 
+            #CommonUtil.ExecLog(sModuleInfo, "failed to entered the daily time limit", 3)
+            #CommonUtil.TakeScreenShot("sModuleInfo") 
             return "failed"
         else: 
             print "Successfully entered the daily time limit"
-            CommonUtil.ExecLog(sModuleInfo, "Successfully entered the daily time limit", 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Successfully entered the daily time limit", 1)
 
         #----------------
         #Save Configuration 
            
-        CommonUtil.ExecLog(sModuleInfo, "Clicking Save Config button",1)
+        #CommonUtil.ExecLog(sModuleInfo, "Clicking Save Config button",1)
         print "Clicking Save Config button" 
         Click_Element_By_ID(completion_time_id)
         result = Click_Element_By_ID(submit_id) 
         if result == "failed":
             print "failed to click on Save Config button"
-            CommonUtil.ExecLog(sModuleInfo, "failed to click on Save Config button", 3)
+            #CommonUtil.ExecLog(sModuleInfo, "failed to click on Save Config button", 3)
             return "failed"
         else: 
             print "Successfully clicked Save Config button"
-            CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
-        CommonUtil.TakeScreenShot("sModuleInfo") 
+            #CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo") 
         #time.sleep(3)
         return "passed"      
     except Exception, e:
@@ -499,7 +504,7 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to set value course settings information.  Error: %s"%Error_Detail, 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to set value course settings information.  Error: %s"%Error_Detail, 3)
         print "Unable to set value course settings information"
         return "failed"  
 
@@ -544,7 +549,7 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup='true'):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3)
         return "failed"
 
 
@@ -558,25 +563,26 @@ def Turn_Editing_On_OR_Off(on_off):
     '''
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name   
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.TakeScreenShot("sModuleInfo")
         if on_off == "on":
             print "Checking if Editing is Turned On or Off"
-            CommonUtil.ExecLog(sModuleInfo, "Checking if Editing is Turned On or Off", 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Checking if Editing is Turned On or Off", 1)
             result = Expand_Menu_By_Name('Front page settings')
             if result == "failed":
                 print "Unable to find the menu Front Page settings."
                 return "failed"
             expected_text = 'Turn editing'
             try:
-                Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+                #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+                Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %expected_text)))
             except Exception, e:
                 print "Exception : ", e
                 print "No option was found to turn Editing on or off"
-                CommonUtil.ExecLog(sModuleInfo, "No option was found to turn Editing on or off", 3)
+                #CommonUtil.ExecLog(sModuleInfo, "No option was found to turn Editing on or off", 3)
                 return "failed"
             if (WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)) ==  'Turn editing off':
                 print "Editing is already on"
-                CommonUtil.ExecLog(sModuleInfo, "Editing is already on", 1)
+                #CommonUtil.ExecLog(sModuleInfo, "Editing is already on", 1)
                 return "passed"
             else:
                 print "Turning Editing on"
@@ -587,19 +593,20 @@ def Turn_Editing_On_OR_Off(on_off):
                     return "passed"
         elif on_off == "off":
             print "Checking if Editing is Turned On or Off"
-            CommonUtil.ExecLog(sModuleInfo, "Checking if Editing is Turned On or Off", 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Checking if Editing is Turned On or Off", 1)
             Expand_Menu_By_Name('Front page settings')
             expected_text = 'Turn editing'
             try:
-                Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+                #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+                Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %expected_text)))
             except Exception, e:
                 print "Exception : ", e
                 print "No option was found to turn Editing on or off"
-                CommonUtil.ExecLog(sModuleInfo, "No option was found to turn Editing on or off", 3)
+                #CommonUtil.ExecLog(sModuleInfo, "No option was found to turn Editing on or off", 3)
                 return "failed"
             if ((WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text))) ==  'Turn editing on':
                 print "Editing is already off"
-                CommonUtil.ExecLog(sModuleInfo, "Editing is already off", 1)
+                #CommonUtil.ExecLog(sModuleInfo, "Editing is already off", 1)
                 return "passed"
             else:
                 print "Turning Editing on"
@@ -613,7 +620,7 @@ def Turn_Editing_On_OR_Off(on_off):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "We are unable to control the editing option.  Error: %s"%Error_Detail, 3)
+        #CommonUtil.ExecLog(sModuleInfo, "We are unable to control the editing option.  Error: %s"%Error_Detail, 3)
         print "We are unable to control the editing option"
         return "failed"
         
@@ -621,25 +628,26 @@ def Turn_Editing_On_OR_Off(on_off):
 def Click_By_Parameter_And_Value(parameter,value, parent=False):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Locating your element...", 1)
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Locating your element...", 1)
         
         if isinstance(parent, (bool)) == True:
-            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
+            #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//input[@%s='%s']"%(parameter,value))))
         else:
-            Element = WebDriverWait(parent, WebDriver_Wait).until(lambda driver :parent.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
-
-        CommonUtil.ExecLog(sModuleInfo, "Found element and clicking..", 1)
+            #Element = WebDriverWait(parent, WebDriver_Wait).until(lambda driver :parent.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
+            Element = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//input[@%s='%s']"%(parameter,value))))
+        #CommonUtil.ExecLog(sModuleInfo, "Found element and clicking..", 1)
         Element.click()
         #WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.click())
-        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked by %s and %"%(parameter,value), 1)
+        #CommonUtil.ExecLog(sModuleInfo, "Successfully clicked by %s and %"%(parameter,value), 1)
         return "passed" 
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()        
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3)
+        #CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3)
         print "No open browser to close"
         return "failed"
     
@@ -649,37 +657,42 @@ def ClickSafety_Course_Settings():
         sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         result = Expand_Menu_By_Name('Site administration')
         if result == 'failed':
-            CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
             return "failed"        
         #Since below are all under Site Admin, we should restrict our search within Site admin.
-        admin_tab = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//*[text()='Site administration']"))
-        sibling = WebDriverWait(admin_tab, WebDriver_Wait).until(lambda driver :admin_tab.find_element_by_xpath(".."))
-        parent = WebDriverWait(sibling, WebDriver_Wait).until(lambda driver :sibling.find_element_by_xpath(".."))
+        #admin_tab = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//*[text()='Site administration']"))
+        admin_tab = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
+        #sibling = WebDriverWait(admin_tab, WebDriver_Wait).until(lambda driver :admin_tab.find_element_by_xpath(".."))
+        #parent = WebDriverWait(sibling, WebDriver_Wait).until(lambda driver :sibling.find_element_by_xpath(".."))
+        sibling = WebDriverWait(admin_tab, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        parent = WebDriverWait(sibling, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        
+        
         result = Expand_Menu_By_Name('Plugins',parent)
         if result == 'failed':
-            CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
             return "failed" 
         result = Expand_Menu_By_Name('Local plugins',parent)
         if result == 'failed':
-            CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
             return "failed" 
         result = Expand_Menu_By_Name('ClickSafety',parent)
         if result == 'failed':
-            CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
             return "failed"        
         result = Click_Element_By_Name('Course settings',parent) 
         if result == "passed":
-            CommonUtil.ExecLog(sModuleInfo, "Click course settings for ClickSafety menu", 1)
+            #CommonUtil.ExecLog(sModuleInfo, "Click course settings for ClickSafety menu", 1)
             return "passed"
         else:
-            CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
             return "failed"
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()        
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu.  Error: %s"%Error_Detail, 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu.  Error: %s"%Error_Detail, 3)
         print "Unable to click course settings for ClickSafety menu"
         return "failed"    
 
@@ -688,31 +701,36 @@ def Edit_Course_From_Course_Settings(course_name):
     try:
 
         #First we need to find the main table.  From there we will look for course name
-        CommonUtil.ExecLog(sModuleInfo, "Locating Course Settings table..", 1)
-        table_ = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_id("region-main"))
-        CommonUtil.TakeScreenShot("sModuleInfo")
-        CommonUtil.ExecLog(sModuleInfo, "Locating your course name...", 1)
-        allElements = WebDriverWait(table_, WebDriver_Wait).until(lambda driver :table_.find_elements_by_xpath("//*[text()='%s']"%course_name))
+        #CommonUtil.ExecLog(sModuleInfo, "Locating Course Settings table..", 1)
+        #table_ = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_id("region-main"))
+        table_ = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID, "region-main")))
+        #CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.ExecLog(sModuleInfo, "Locating your course name...", 1)
+        #allElements = WebDriverWait(table_, WebDriver_Wait).until(lambda driver :table_.find_elements_by_xpath("//*[text()='%s']"%course_name))
+        allElements = WebDriverWait(table_, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.XPATH, "//*[text()='%s']"%course_name)))
+        
         if allElements == []:        
-            CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name: %s"%course_name, 3)
+            #CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name: %s"%course_name, 3)
             print "Could not find your course by name: %s"%course_name
             return "failed"
         else:
             if len(allElements) > 1:
-                CommonUtil.ExecLog(sModuleInfo, "Found more than one element and will use the first one.  ** if fails, try to locate the element manually ** ", 2)
+                #CommonUtil.ExecLog(sModuleInfo, "Found more than one element and will use the first one.  ** if fails, try to locate the element manually ** ", 2)
                 print "Found more than one element and will use the first one.  ** if fails, try to locate the element manually ** "
             for each in allElements:
                 if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.is_displayed())) == True:
                     Element = each
-                    CommonUtil.ExecLog(sModuleInfo, "Found your course by name: %s.  Using the first element found to click"%course_name, 1)                  
+                    #CommonUtil.ExecLog(sModuleInfo, "Found your course by name: %s.  Using the first element found to click"%course_name, 1)                  
                     print "Found your course by name: %s.  Using the first element to click"%course_name
                     break
         #We need to go one up so we can locate the row ID.  From there we will be able to find the children element for EDIT
-        parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
-        Edit_Button = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath("//*[@title='Edit']"))
+        #parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
+        parent = WebDriverWait(Element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        #Edit_Button = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath("//*[@title='Edit']"))
+        Edit_Button = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[@title='Edit']")))
         Edit_Button.click()
         print "Successfully clicked Edit button for the course: %s"%course_name
-        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Edit button for the course: %s"%course_name, 1)
+        #CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Edit button for the course: %s"%course_name, 1)
         return "passed"                              
         
     except Exception, e:
@@ -720,24 +738,24 @@ def Edit_Course_From_Course_Settings(course_name):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to Edit your course: %s.  Error: %s"%(course_name,Error_Detail), 3)
+        #CommonUtil.ExecLog(sModuleInfo, "Unable to Edit your course: %s.  Error: %s"%(course_name,Error_Detail), 3)
         print "Unable to Edit your course: %s"%course_name
         return "failed"    
 
 def Tear_Down():
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
-        CommonUtil.TakeScreenShot("sModuleInfo")
+        #CommonUtil.TakeScreenShot("sModuleInfo")
         sBrowser.close()
         print "Successfully closed your browser"
-        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
+        #CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1)
         return "passed"
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()        
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3)
+        #CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3)
         print "No open browser to close"
         return "failed"
 
@@ -749,6 +767,7 @@ def Delete_A_Course(course_name):
     Expand_Menu_By_Name('Site administration')
 
     site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_elements_by_xpath("//*[text()='Site administration']"))
+    
     time.sleep(3)
     parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(lambda driver : site_admin_element.find_element_by_xpath(".."))
     grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(lambda driver : parent_site_admin.find_element_by_xpath(".."))
