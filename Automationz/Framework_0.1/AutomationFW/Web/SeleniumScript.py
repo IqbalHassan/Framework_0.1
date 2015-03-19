@@ -5,7 +5,6 @@ sys.path.append("..")
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
-import selenium.selenium as Sal
 import time
 import inspect
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,6 +15,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from CoreFrameWork import CommonUtil
+from selenium.webdriver.support import expected_conditions as EC
 
 global WebDriver_Wait 
 WebDriver_Wait = 90
@@ -95,7 +95,8 @@ def Login(user_name,password,logged_name):
         Click_Element_By_ID ("loginbtn")
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Successfully logged in", 1)
-        element_login =  WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_xpath("//*[@title='View profile']"))
+        #element_login =  WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_xpath("//*[@title='View profile']"))
+        element_login = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[@title='View profile']")))
         if (WebDriverWait(element_login, WebDriver_Wait).until(lambda driver : element_login.text)) == logged_name:
             CommonUtil.ExecLog(sModuleInfo, "Verified that logged in as: %s"%logged_name, 1)
             print "Verified that logged in as: %s"%logged_name
@@ -122,7 +123,8 @@ def Expand_Menu_By_ID(_id):
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%_id, 1)
         print "Trying to find element by ID: %s"%_id
         try: 
-            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID, _id)))
             CommonUtil.ExecLog(sModuleInfo, "Found your element by ID: %s"%_id, 1)
             print "Found your element by ID: %s"%_id
         except:
@@ -130,8 +132,10 @@ def Expand_Menu_By_ID(_id):
             print "Could not find your element by ID: %s"%_id
             return "failed"
         #Now we need to find out if it is expanded.  To do this we need to go two level up 
-        parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
-        grand_parent = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath(".."))
+        #parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
+        parent = WebDriverWait(Element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        #grand_parent = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath(".."))
+        grand_parent = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
         expand_status = WebDriverWait(grand_parent, WebDriver_Wait).until(lambda driver : grand_parent.get_attribute("aria-expanded"))
         expand_status = str(expand_status).lower()
         if expand_status == 'true':
@@ -177,29 +181,20 @@ def Expand_Menu_By_Name(_name,parent=False):
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%_name, 1)
         print "Trying to find element by name: %s"%_name
         if isinstance(parent, (bool)) == True:
-            #allElements = sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name)
-            allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name))
+            #allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name)) 
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%_name)))
         else:
             #allElements = parent.find_elements_by_xpath("//*[text()='%s']"%_name)
-            allElements = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_elements_by_xpath("//*[text()='%s']"%_name)) 
-        if allElements == []:        
-            CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name: %s"%_name, 3)
-            print "Could not find your element by name: %s"%_name
-            return "failed"
-        #Now find the ones that are being displayed
-        else:
-            if len(allElements) > 1:
-                CommonUtil.ExecLog(sModuleInfo, "Found more than one element and will use the first one.  ** if fails, try providing parent element or use ID ** ", 2)
-                print "Found more than one element and will use the first one.  ** if fails, try providing parent element or use ID ** "
-            for each in allElements:
-                if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.is_displayed())) == True:
-                    Element = each
-                    CommonUtil.ExecLog(sModuleInfo, "Found your element by name: %s.  Using the first element found to click"%_name, 1)
-                    print "Found your element by name: %s.  Using the first element found to click"%_name                   
-                    break
+            Element = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%_name)))
+            #allElements = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_elements_by_xpath("//*[text()='%s']"%_name)) 
+
+
         #Now we need to find out if it is expanded.  To do this we need to go two level up 
-        parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
-        grand_parent = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath(".."))
+        #parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
+        #grand_parent = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath(".."))
+        sBrowser.implicitly_wait(WebDriver_Wait)
+        parent = WebDriverWait(Element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        grand_parent = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
         expand_status = WebDriverWait(grand_parent, WebDriver_Wait).until(lambda driver : grand_parent.get_attribute("aria-expanded"))
         expand_status = str(expand_status).lower()
         if expand_status == 'true':
@@ -208,6 +203,8 @@ def Expand_Menu_By_Name(_name,parent=False):
             return "passed"
         else:
             CommonUtil.ExecLog(sModuleInfo, "%s is not expanded. Expanding.. "%_name, 1)
+            wait = WebDriverWait(sBrowser, 10)
+            Element = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[text()='%s']"%_name)))
             Element.click()
         #Verify if it was expanded 
         expand_status = WebDriverWait(grand_parent, WebDriver_Wait).until(lambda driver : grand_parent.get_attribute("aria-expanded"))
@@ -246,9 +243,11 @@ def Click_Element_By_Name(_name,parent=False):
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by name: %s"%_name, 1)
         print "Trying to find element by name: %s"%_name
         if isinstance(parent, (bool)) == True:
-            allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name))
+            #allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_elements_by_xpath("//*[text()='%s']"%_name))
+            allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.XPATH, "//*[text()='%s']"%_name)))        
         else:
-            allElements = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_elements_by_xpath("//*[text()='%s']"%_name))
+            #allElements = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_elements_by_xpath("//*[text()='%s']"%_name))
+            allElements = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.XPATH, "//*[text()='%s']"%_name)))
         if allElements == []:        
             CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name: %s"%_name, 3)
             print "Could not find your element by name: %s"%_name
@@ -289,7 +288,8 @@ def Click_Element_By_ID(_id):
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by ID: %s"%_id, 1)
         print "Trying to find element by ID: %s"%_id
         try:
-            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID, _id)))
         except:
             CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name or ID: %s"%_id, 3)
             print "Could not find your element by ID: %s"%_id
@@ -318,7 +318,8 @@ def Set_Text_Field_Value_By_ID(_id,value):
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by id: %s"%_id, 1)
         print "Trying to find element by id: %s"%_id
         try:
-            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_id(_id))
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID, _id)))
         except:
             CommonUtil.ExecLog(sModuleInfo, "Could not find your element by ID: %s"%id, 3)
             print "Could not find your element by ID: %s"%_id
@@ -349,7 +350,8 @@ def Click_Element_By_Custome_Field_Value(field,value):
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by field: %s and value: %s"%(field,value), 1)
         print "Trying to find element by field: %s and value: %s"%(field,value)
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_xpath("//input[@%s='%s']"%(field,value)))
+        #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver : sBrowser.find_element_by_xpath("//input[@%s='%s']"%(field,value)))
+        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//input[@%s='%s']"%(field,value))))
         #Now we simply click it
         Element.click()
         print "Successfully clicked your element by field: %s and value: %s"%(field,value)
@@ -374,7 +376,8 @@ def Verify_Text_Message_By_Class(element, expected_text):
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Getting text string from the web", 1)
         print "Getting text string from the web"
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_class_name("message"))
+        #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_class_name("message"))
+        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME, "message")))
         actual_text = WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)
         if actual_text == expected_text:
             print "Successfully verified your text: %s"%actual_text
@@ -406,7 +409,8 @@ def Course_Exists(course):
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course, 1)
         print "Searching for course: %s"%course
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %course))
+        #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %course))
+        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %course)))
         actual_text = WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)
         if actual_text == course:
             print "Successfully verified that course exists: %s"%actual_text
@@ -429,7 +433,8 @@ def Verify_Text_Message_By_Text(expected_text):
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Getting text string from the web", 1)
         print "Getting text string from the web"
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+        #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %expected_text)))
         actual_text = WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)
         if actual_text == expected_text:
             print "Successfully verified your text: %s"%actual_text
@@ -568,7 +573,8 @@ def Turn_Editing_On_OR_Off(on_off):
                 return "failed"
             expected_text = 'Turn editing'
             try:
-                Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+                #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+                Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %expected_text)))
             except Exception, e:
                 print "Exception : ", e
                 print "No option was found to turn Editing on or off"
@@ -577,6 +583,7 @@ def Turn_Editing_On_OR_Off(on_off):
             if (WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)) ==  'Turn editing off':
                 print "Editing is already on"
                 CommonUtil.ExecLog(sModuleInfo, "Editing is already on", 1)
+                time.sleep(5)
                 return "passed"
             else:
                 print "Turning Editing on"
@@ -584,6 +591,7 @@ def Turn_Editing_On_OR_Off(on_off):
                 if result == "failed":
                     return "failed"
                 else:
+                    time.sleep(5)
                     return "passed"
         elif on_off == "off":
             print "Checking if Editing is Turned On or Off"
@@ -591,7 +599,8 @@ def Turn_Editing_On_OR_Off(on_off):
             Expand_Menu_By_Name('Front page settings')
             expected_text = 'Turn editing'
             try:
-                Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+                #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
+                Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %expected_text)))
             except Exception, e:
                 print "Exception : ", e
                 print "No option was found to turn Editing on or off"
@@ -600,6 +609,7 @@ def Turn_Editing_On_OR_Off(on_off):
             if ((WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text))) ==  'Turn editing on':
                 print "Editing is already off"
                 CommonUtil.ExecLog(sModuleInfo, "Editing is already off", 1)
+                time.sleep(5)
                 return "passed"
             else:
                 print "Turning Editing on"
@@ -607,6 +617,7 @@ def Turn_Editing_On_OR_Off(on_off):
                 if result == "failed":
                     return "failed"
                 else:
+                    time.sleep(5)
                     return "passed"        
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()        
@@ -625,10 +636,11 @@ def Click_By_Parameter_And_Value(parameter,value, parent=False):
         CommonUtil.ExecLog(sModuleInfo, "Locating your element...", 1)
         
         if isinstance(parent, (bool)) == True:
-            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
+            #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//input[@%s='%s']"%(parameter,value))))
         else:
-            Element = WebDriverWait(parent, WebDriver_Wait).until(lambda driver :parent.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
-
+            #Element = WebDriverWait(parent, WebDriver_Wait).until(lambda driver :parent.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
+            Element = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//input[@%s='%s']"%(parameter,value))))
         CommonUtil.ExecLog(sModuleInfo, "Found element and clicking..", 1)
         Element.click()
         #WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.click())
@@ -652,9 +664,14 @@ def ClickSafety_Course_Settings():
             CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
             return "failed"        
         #Since below are all under Site Admin, we should restrict our search within Site admin.
-        admin_tab = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//*[text()='Site administration']"))
-        sibling = WebDriverWait(admin_tab, WebDriver_Wait).until(lambda driver :admin_tab.find_element_by_xpath(".."))
-        parent = WebDriverWait(sibling, WebDriver_Wait).until(lambda driver :sibling.find_element_by_xpath(".."))
+        #admin_tab = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//*[text()='Site administration']"))
+        admin_tab = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
+        #sibling = WebDriverWait(admin_tab, WebDriver_Wait).until(lambda driver :admin_tab.find_element_by_xpath(".."))
+        #parent = WebDriverWait(sibling, WebDriver_Wait).until(lambda driver :sibling.find_element_by_xpath(".."))
+        sibling = WebDriverWait(admin_tab, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        parent = WebDriverWait(sibling, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        
+        
         result = Expand_Menu_By_Name('Plugins',parent)
         if result == 'failed':
             CommonUtil.ExecLog(sModuleInfo, "Unable to click course settings for ClickSafety menu", 3)
@@ -689,10 +706,13 @@ def Edit_Course_From_Course_Settings(course_name):
 
         #First we need to find the main table.  From there we will look for course name
         CommonUtil.ExecLog(sModuleInfo, "Locating Course Settings table..", 1)
-        table_ = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_id("region-main"))
+        #table_ = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_id("region-main"))
+        table_ = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID, "region-main")))
         CommonUtil.TakeScreenShot("sModuleInfo")
         CommonUtil.ExecLog(sModuleInfo, "Locating your course name...", 1)
-        allElements = WebDriverWait(table_, WebDriver_Wait).until(lambda driver :table_.find_elements_by_xpath("//*[text()='%s']"%course_name))
+        #allElements = WebDriverWait(table_, WebDriver_Wait).until(lambda driver :table_.find_elements_by_xpath("//*[text()='%s']"%course_name))
+        allElements = WebDriverWait(table_, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.XPATH, "//*[text()='%s']"%course_name)))
+        
         if allElements == []:        
             CommonUtil.ExecLog(sModuleInfo, "Could not find your element by name: %s"%course_name, 3)
             print "Could not find your course by name: %s"%course_name
@@ -708,8 +728,10 @@ def Edit_Course_From_Course_Settings(course_name):
                     print "Found your course by name: %s.  Using the first element to click"%course_name
                     break
         #We need to go one up so we can locate the row ID.  From there we will be able to find the children element for EDIT
-        parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
-        Edit_Button = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath("//*[@title='Edit']"))
+        #parent = WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.find_element_by_xpath(".."))
+        parent = WebDriverWait(Element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        #Edit_Button = WebDriverWait(parent, WebDriver_Wait).until(lambda driver : parent.find_element_by_xpath("//*[@title='Edit']"))
+        Edit_Button = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[@title='Edit']")))
         Edit_Button.click()
         print "Successfully clicked Edit button for the course: %s"%course_name
         CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Edit button for the course: %s"%course_name, 1)
@@ -749,6 +771,7 @@ def Delete_A_Course(course_name):
     Expand_Menu_By_Name('Site administration')
 
     site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_elements_by_xpath("//*[text()='Site administration']"))
+    
     time.sleep(3)
     parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(lambda driver : site_admin_element.find_element_by_xpath(".."))
     grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(lambda driver : parent_site_admin.find_element_by_xpath(".."))

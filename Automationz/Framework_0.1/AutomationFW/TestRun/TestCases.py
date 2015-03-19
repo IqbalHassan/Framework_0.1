@@ -77,6 +77,11 @@ def delete_a_course():
 def Test_Suite():
     #add additional test cases
     print Repurchase_the_course_when_the_final_exam_is_failed_for_third_time()
+#     j = 10
+#     i = 0
+#     while i != j:
+#         print Repurchase_the_course_when_the_final_exam_is_failed_for_third_time()
+#         i = i +1 
     #delete_a_course()  
 
 Test_Suite()
