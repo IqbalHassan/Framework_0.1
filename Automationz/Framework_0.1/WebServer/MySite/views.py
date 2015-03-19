@@ -17336,21 +17336,81 @@ def superAdminFunction(request):
         {},
         context_instance=RequestContext(request))
 
-
+def update_team_project(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            user_id=int(request.GET.get(u'user_id',''))
+            project_list=list(set(request.GET.get(u'project_list','').split("|")))
+            Conn=GetConnection()
+            print DB.DeleteRecord(Conn, "user_project_map",user_id=int(user_id))
+            Conn.close()
+            for each in project_list:
+                project_id=each.split(",")[0].strip()
+                tag=each.split(",")[1]
+                try:
+                    Conn=GetConnection()
+                    if tag=='true':
+                        print DB.InsertNewRecordInToTable(Conn, "user_project_map", user_id=int(user_id), project_id=project_id.strip())
+                    Conn.close()
+                except Exception,e:
+                    print "Exception:",e
+            json = simplejson.dumps({'message':True})
+            return HttpResponse(json, mimetype='application/json')
+        
 def GetProjectOwner(request):
     if request.method == 'GET':
         if request.is_ajax():
+            items_per_page = 10
+            has_next_page = False
+            requested_page = int(request.GET.get(u'page', ''))
             value = request.GET.get(u'term', '')
             print value
             query = "select distinct user_id,user_names,case when user_level='assigned_tester' then 'Tester' when user_level='manager' then 'Manager' end  from permitted_user_list pul, user_info ui where pul.user_names=ui.full_name and user_level not in('email','admin') and user_names iLike '%%%s%%'" % (
                 value.strip())
-            Conn = GetConnection()
-            owner_list = DB.GetData(Conn, query, False)
+            Conn=GetConnection()
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='user_names')
             Conn.close()
-            result = simplejson.dumps(owner_list)
-            return HttpResponse(result, mimetype='application/json')
+            results=[]
+            for each_item in data['rows']:
+                result_dict={}
+                result_dict['id']=each_item[0]
+                result_dict['text']=each_item[1]+' - '+each_item[2]
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
+            return HttpResponse(json, mimetype='application/json')
 
-
+def get_projects(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            user_id=request.GET.get(u'user_id','')
+            query="select p.project_id,p.project_name from user_project_map upm, permitted_user_list pul,projects p where pul.user_id=upm.user_id and upm.project_id=p.project_id and pul.user_id=%d"%(int(user_id))
+            Conn=GetConnection()
+            project_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            print project_list
+            Conn=GetConnection()
+            query="select project_id,project_name from projects"
+            total_project_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            results=[]
+            for each in project_list:
+                temp=[]
+                for eachitem in each:
+                    temp.append(eachitem)
+                temp.append(True)
+                results.append(tuple(temp))
+            for each in list(set(total_project_list)-set(project_list)):
+                temp=[]
+                for eachitem in each:
+                    temp.append(eachitem)
+                temp.append(False)
+                results.append(tuple(temp))
+            project_list=results
+            json = simplejson.dumps({'project_list':sorted(project_list,key=main_key)})
+            return HttpResponse(json, mimetype='application/json')
+def main_key(each):
+    return each[1]        
 def Create_New_User(request):
     if request.method == 'GET':
         if request.is_ajax():
