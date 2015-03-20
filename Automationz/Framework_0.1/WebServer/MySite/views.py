@@ -296,6 +296,23 @@ def CaseRunHistory(request, tc_id):
     return render_to_response('Analysis.html', {})
 
 
+def ViewEditLabel(request, label_id):
+    return render_to_response('ViewEditLabel.html')
+
+def getLabelinfo(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            conn = GetConnection()
+            label_id = request.GET.get(u'label_id','')
+            detail = DB.GetData(conn, "select * from labels where label_id='"+label_id+"'", False)
+            Dict = {
+                    'details': detail
+                    }
+            conn.close()
+    result = simplejson.dumps(Dict)
+    return HttpResponse(result, mimetype='appliaction/json')
+
+
 def make_array(get_list):
     refined_list = []
     for each in get_list:
@@ -13137,6 +13154,39 @@ def CreateLabel(request):
                 LogModule.PassMessasge(
                     sModuleInfo,
                     "Inserted " +
+                    label_id +
+                    " successfully",
+                    1)
+                final = 'success'
+            else:
+                final = 'meh'
+    result = simplejson.dumps(final)
+    Conn.close()
+    return HttpResponse(result, mimetype='application/json')
+
+
+def EditLabel(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            label_id = request.GET.get(u'id', '').strip()
+            label_name = request.GET.get(u'name', '').strip()
+            label_color = request.GET.get(u'color', '').strip()
+            Conn = GetConnection()
+            final = []
+            sModuleInfo = inspect.stack()[0][
+                3] + " : " + inspect.getmoduleinfo(__file__).name
+            Dict = {
+                #'label_id': label_id,
+                'label_name': label_name,
+                'label_color': label_color
+            }
+            testConnection(Conn)
+            result = DB.UpdateRecordInTable(Conn, "labels", " where label_id='"+label_id+"' ",**Dict)
+            #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
+            if result:
+                LogModule.PassMessasge(
+                    sModuleInfo,
+                    "Updated " +
                     label_id +
                     " successfully",
                     1)
