@@ -108,7 +108,7 @@ function populate_mainBody_div(type_tag){
                 user_level:user_level
             },function(data){
                 if(data==true){
-                    window.location='/Home/superAdmin/';
+                    window.location='/Home/superAdminFunction/AssignMembers/';
                 }
             });
         });

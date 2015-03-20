@@ -7,13 +7,10 @@ function GetProjects(){
         user_id: $.session.get('user_id')
     },function(data){
         var message="";
-        message+='<table class="two-column-emphasis">';
         if(data.length>0){
             for(var i=0;i<data.length;i++){
                 message+=('<tr><td style="cursor: pointer;" class="projects"><b>'+data[i][1].trim()+'</b></td></tr>');
             }
-            message+='</table>';
-
         }
         $('#projects').html(message);
         PrepareOtherButton();
@@ -36,12 +33,9 @@ function PrepareOtherButton(){
 }
 function Small_Project_Detail(data){
     var message="";
-    $('#id').html('<b class="Text" style="cursor: pointer;color: #4183c4;">'+data['project_id']+' - </b>');
-    $('#name').html('<b class="Text" style="cursor: pointer;color: #4183c4">'+data['project_name']+'</b>');
-    message+='';
-    message+='<table align="left">';
+    message+='<table align="left" class="two-column-emphasis">';
     message+='<tr>';
-    message+='<td align="right"><b style="color: #4183c4">Description:</b></td><td>'+data['project_description']+'</td>';
+    message+='<td align="right"><b style="color: #4183c4">Description:</b></td><td>'+data['project_description']+'</td><td width="50%;">&nbsp;</td>';
     message+='</tr>';
     message+='<tr>';
     message+='<td align="right"><b style="color: #4183c4">Due in:</b></td><td>'+data['due_message']+'</td>';
@@ -50,25 +44,20 @@ function Small_Project_Detail(data){
     message+=('<td align="right"><b style="color: #4183c4">Owners:</b></td><td>'+data['project_owners']);
     message+='</tr>';
     message+='<tr>';
-    message+=('<td align="right"><b style="color: #4183c4">Assigned Teams:</b></td><td>');
+    message+=('<td align="right" style="vertical-align: 0%;"><b style="color: #4183c4">Assigned Teams:</b></td><td style="vertical-align: 0%;"><table>');
     if(data['team_name'].length>0 && data['team_name'][0]!='Team Not Set'){
         for(var i=0;i<data['team_name'].length;i++){
             var team_name=data['team_name'][i].trim().replace(/ /g,'_').trim();
             var location=("/Home/"+data['project_id']+"/Team/"+team_name+"/");
-            message+=('<a href="'+location +'" style="text-decoration:none">'+data['team_name'][i]+'</a>');
-            if(i!=(data['team_name'].length-1)){
-                message+=" , ";
-            }
+            message+=('<tr><td><a href="'+location +'" style="text-decoration:none">'+data['team_name'][i]+'</a></td></tr>');
         }
     }
     else{
-        message+='<b>No Team Set</b>';
+        message+='<tr><td><b>No Team Set</b></td></tr>';
     }
+    message+='</table>'
     message+='</td>'
     message+='</tr>';
-    /*message+='<tr>';
-    message+='<td align="left"><a href="/Home/Project/'+data['project_id'].trim()+'/" style="text-decoration: none;">see details...</a> </td><td>&nbsp;</td>';
-    message+='</tr>';*/
     message+='</table>';
     return message;
 }
