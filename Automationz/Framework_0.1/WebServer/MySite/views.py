@@ -59,6 +59,7 @@ from settings import MEDIA_ROOT, PROJECT_ROOT
 from settings import TIME_ZONE
 from django.http.response import HttpResponse
 from __builtin__ import True
+from distutils.sysconfig import project_base
 
 
 # #
@@ -15383,13 +15384,12 @@ def get_all_data_dependency_page(request):
                 Conn = GetConnection()
                 unused_dependency_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d" % (
+                query = "select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and b.project_id=bm.project_id and bm.project_id='%s' and bm.team_id=%d" % (
                     project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 branch_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct id,branch_name from branch except (select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d)" % (
-                    project_id.strip(), int(team_id.strip()))
+                query = "select distinct id,branch_name from branch where project_id='%s' except (select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch  and b.project_id=bm.project_id and bm.project_id='%s' and bm.team_id=%d)" % (project_id.strip(),project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 unused_branch_list = DB.GetData(Conn, query, False)
                 Conn.close()
@@ -16246,55 +16246,39 @@ def get_default_settings(request):
 
 
 def add_new_branch(request):
-    sModuleInfo = inspect.stack()[0][3] + \
-        " : " + inspect.getmoduleinfo(__file__).name
+    sModuleInfo = inspect.stack()[0][3] +" : " + inspect.getmoduleinfo(__file__).name
     try:
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = 'Branch'
-                branch_name = request.GET.get(u'dependency_name', '')
+                branch_name = request.GET.get(u'name', '')
+                project_id=request.GET.get(u'project_id','')
+                team_id=int(request.GET.get(u'team_id',''))
                 # check for the occurance
-                query = "select count(*) from branch where branch_name='%s'" % branch_name.strip(
-                )
+                query = "select count(*) from branch where branch_name='%s' and project_id='%s' and team_id=%d" %(branch_name.strip(),project_id.strip(),int(team_id))
                 Conn = GetConnection()
                 count = DB.GetData(Conn, query)
                 if isinstance(count, list):
                     if len(count) == 1 and count[0] == 0:
                         # form dict to insert
                         Dict = {
-                            'branch_name': branch_name.strip()
+                            'branch_name': branch_name.strip(),
+                            'project_id':project_id.strip(),
+                            'team_id':int(team_id)
                         }
                         Conn = GetConnection()
-                        result = DB.InsertNewRecordInToTable(
-                            Conn,
-                            "branch",
-                            **Dict)
+                        result = DB.InsertNewRecordInToTable(Conn,"branch",**Dict)
                         Conn.close()
                         if result:
-                            PassMessasge(
-                                sModuleInfo,
-                                entry_success(
-                                    branch_name,
-                                    type_tag),
-                                success_tag)
+                            PassMessasge(sModuleInfo,entry_success(branch_name,type_tag),success_tag)
                             message = True
                             log_message = entry_success(branch_name, type_tag)
                         else:
-                            PassMessasge(
-                                sModuleInfo,
-                                entry_fail(
-                                    branch_name,
-                                    type_tag),
-                                error_tag)
+                            PassMessasge(sModuleInfo,entry_fail(branch_name,type_tag),error_tag)
                             message = False
                             log_message = entry_fail(branch_name, type_tag)
                     if len(count) == 1 and count[0] > 0:
-                        PassMessasge(
-                            sModuleInfo,
-                            multiple_instance(
-                                branch_name,
-                                type_tag),
-                            error_tag)
+                        PassMessasge(sModuleInfo,multiple_instance(branch_name,type_tag),error_tag)
                         message = False
                         log_message = multiple_instance(branch_name, type_tag)
                 else:
@@ -16326,8 +16310,7 @@ def get_all_version_under_branch(request):
                 print value[0]
                 print project_id
                 print team_id
-                query = "select distinct version_name as name from branch_management bm, versions v where v.id=bm.branch and bm.project_id='%s' and bm.team_id=%d and bm.branch=%d order by name" % (
-                    project_id, int(team_id), int(value[0]))
+                query = "select distinct version_name as name from branch_management bm, versions v where v.id=bm.branch and bm.project_id='%s' and bm.team_id=%d and bm.branch=%d order by name" % (project_id, int(team_id), int(value[0]))
                 Conn = GetConnection()
                 version_list = DB.GetData(Conn, query, False)
                 Conn.close()
@@ -16354,8 +16337,7 @@ def add_new_version_branch(request):
                 type_tag = "Branch Version"
                 new_name = request.GET.get(u'new_name', '')
                 new_value = request.GET.get(u'new_value', '')
-                query = "select count(*) from versions where version_name='%s'" % (
-                    new_name.strip())
+                query = "select count(*) from versions where version_name='%s' and id=%d" % (new_name.strip(),int(new_value))
                 Conn = GetConnection()
                 count = DB.GetData(Conn, query)
                 Conn.close()

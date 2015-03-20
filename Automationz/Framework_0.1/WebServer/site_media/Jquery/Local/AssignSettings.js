@@ -10,32 +10,6 @@ $(document).ready(function(){
     $('body').css({'font-size':'100%'});
     var project_id= $.session.get('project_id');
     var team_id= $.session.get('default_team_identity');
-    /*var project_text=$('#project_identity option:selected').text().trim();
-    var team_text=$('#default_team_identity option:selected').text().trim();
-    if(project_text=='No Default Project'){
-        var message="<b>Default Project is not set.Proceed to the Account page???</b>";
-        alertify.confirm(message,function(e){
-            if(e){
-                window.location='/Home/User/';
-            }
-            else{
-                alertify.alert().close_all();
-                return false;
-            }
-        });
-    }
-    if(team_text=='No Default Team'){
-        var message="<b>Default Team is not set.Proceed to the Account page???</b>";
-        alertify.confirm(message,function(e){
-            if(e){
-                window.location='/Home/User/';
-            }
-            else{
-                alertify.alert().close_all();
-                return false;
-            }
-        });
-    }*/
     get_all_data(project_id,team_id);
     $('#create_dependency').on('click',function(){
         var message='';
@@ -135,6 +109,34 @@ $(document).ready(function(){
             }
         });
     });
+    $('#create_branch').on('click',function(){
+        var message='';
+        message+='<table>';
+        message+='<tr><td><b>Branch Name:</b></td><td><input style="width:100%" class="textbox" placeholder="Branch Name" id="new_branch"/> </td></tr>';
+        message+='</table>';
+        alertify.confirm(message,function(e){
+            if(e){
+                var branch_name=$('#new_branch').val().trim();
+                $.get('add_new_branch',{
+                    'name':branch_name,
+                    'project_id':project_id,
+                    'team_id':team_id
+                },function(data){
+                    if(data['message']){
+                        alertify.success(data['log_message'],time_out);
+                        get_all_data(project_id,team_id);
+                    }
+                    else{
+                        alertify.error(data['log_message'],time_out);
+                        get_all_data(project_id,team_id);
+                    }
+                });
+            }
+            else{
+                alertify.alert().close_all();
+            }
+        });
+    });
     //DependencyTabButtons(project_id,team_id);
 });
 
@@ -147,6 +149,8 @@ function get_all_data(project_id,team_id){
         $('#version_list').empty();
         $('#bread_crumb').empty();
         $('#control_panel').empty();
+        $('#branch_version_list').empty();
+        $('#branch_control_panel').empty();
         var dependency_list=data['dependency_list'];
         console.log(dependency_list);
         var  message='';
@@ -322,9 +326,131 @@ function get_all_data(project_id,team_id){
                 }
             });
         });
+
+        var branch_list=data['branch_list'];
+        var message='';
+        message+='<table class="two-column-emphasis">';
+        message+='<caption><b style="font-size: 150%;">Assigned Branch</b></caption>';
+        if(branch_list.length>0){
+            for(var i=0;i<branch_list.length;i++){
+                message+='<tr><td data-id="'+branch_list[i][0]+'" class="branch">'+branch_list[i][1]+'</td></tr>';
+            }
+        }
+        else{
+            message+='<tr><td><b>No Branch Available</b></td></tr>';
+        }
+        message+='</table>';
+        $('#branch_list').html(message);
+        $('.branch').on('click',function(){
+            $('.branch').removeClass('selected');
+            $(this).addClass('selected');
+            $('.branch').css({'background-color':'#fff'});
+            $(this).css({'background-color':'#ccc'});
+            var branch_id=$(this).attr('data-id');
+            var branch=$(this).text().trim();
+            get_version(branch_id,project_id,team_id,branch);
+        });
+        var global_branch_list=data['unused_branch_list'];
+        var message='';
+        message+='<table class="two-column-emphasis">';
+        message+='<caption><b style="font-size: 150%;">Global Branch</b></caption>';
+        if(global_branch_list.length>0){
+            for(var i=0;i<global_branch_list.length;i++){
+                message+='<tr><td data-id="'+global_branch_list[i][0]+'">'+global_branch_list[i][1]+'</td>';
+                message+='<td class="add_global_branch"><img src="/site_media/plus1.png" style="cursor: pointer" width="20px" height="20px"/></td>';
+            }
+        }else{
+            message+='<tr><td><b>No Global Branch</b></td></tr>'
+        }
+        message+='</table>';
+        $('#global_branch_list').html(message);
+
+        $('.add_global_branch').on('click',function(){
+            var branch_id=$(this).prev().attr('data-id');
+            var branch=$(this).prev().text().trim();
+            var message='Do you want to link Branch <b>'+branch+'</b>?';
+            alertify.confirm(message,function(e){
+                if(e){
+                    $.get('link_branch',{
+                        value:branch_id,
+                        project_id:project_id,
+                        team_id:team_id
+                    },function(data){
+                        if(data['message']){
+                            alertify.success(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }else{
+                            alertify.error(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                    });
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        });
+    });
+}
+function get_version(branch_id,project_id,team_id,branch){
+    $.get('get_all_version_under_branch',{
+        value:branch_id,
+        project_id:project_id,
+        team_id:team_id
+    },function(data){
+        var version_list=data['version_list'];
+
+        var message='';
+        message+='<table class="two-column-emphasis">';
+        if(version_list.length>0){
+            for(var i=0;i<version_list.length;i++){
+                message+='<tr><td>'+version_list[i]+'</td></tr>';
+            }
+        }
+        else{
+            message+='<tr><td><b>No version is found</b></td></tr>';
+        }
+        message+='</table>';
+        $('#branch_version_list').html(message);
+        buttonConfig(branch_id,project_id,team_id,branch);
     });
 }
 
+function buttonConfig(branch_id,project_id,team_id,branch){
+    var message='';
+    message+='<input type="button" id="add_branch_version" class="m-btn green" value="Add Version"/> ';
+    message+='<input type="button" id="rename_branch" class="m-btn green" value="Rename Branch"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    $('#branch_control_panel').html(message);
+
+    $('#add_branch_version').on('click',function(){
+        var message='';
+        message+='<table>';
+        message+='<tr><td><b>Branch Name:</b></td><td>'+branch+'</td></tr>';
+        message+='<tr><td><b>Version:</b></td><td><input style="width: 100%" class="textbox" id="new_version"/></td></tr>';
+        message+='</table>';
+        alertify.confirm(message,function(e){
+            if(e){
+                var version=$('#new_version').val().trim();
+                $.get('add_new_version_branch',{
+                    new_name:version,
+                    new_value:branch_id
+                },function(data){
+                    if(data['message']){
+                        alertify.success(data['log_message'],time_out);
+                        get_all_data(project_id,team_id);
+                    }else{
+                        alertify.error(data['log_message'],time_out);
+                        get_all_data(project_id,team_id);
+                    }
+                });
+            }
+            else{
+                alertify.alert().close_all();
+            }
+        });
+    });
+
+}
 function get_features(feature_id,project_id,team_id,feature){
     if (feature_id==''){
         var feature_modified=feature;
@@ -413,6 +539,7 @@ function get_features(feature_id,project_id,team_id,feature){
                         }
                         message+='</table>';
                         $('#third_level_feature_list').html(message);
+                        initialize_second_feature_tab_button(modified_name,project_id,team_id,child_name);
                         $('.sub_feature_third_level').on('click',function(){
                             $('.sub_feature_third_level').css({'background-color':'#fff'});
                             $(this).css({'background-color':'#ccc'});
