@@ -1,6 +1,11 @@
 /**
  * Created by J on 9/11/14.
  */
+
+var project_id= $.session.get('project_id');
+var team_id= $.session.get('default_team_identity');
+var user = $.session.get('fullname');
+
 $(document).ready(function(){
     $("#new_label").click(function(){
         //$("#label_creation").show();
@@ -29,7 +34,10 @@ $(document).ready(function(){
         if(name!= ""){
             $.get("CreateLabel/",{
                 name:name.trim(),
-                color:color.trim()
+                color:color.trim(),
+                project:project_id,
+                team:team_id,
+                user:$.session.get('fullname')
             },function(data){
                 alertify.success("Label Created!");
                 $("#label_creation").slideUp('slow');

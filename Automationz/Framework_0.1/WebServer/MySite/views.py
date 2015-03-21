@@ -304,7 +304,7 @@ def getLabelinfo(request):
         if request.method == 'GET':
             conn = GetConnection()
             label_id = request.GET.get(u'label_id','')
-            detail = DB.GetData(conn, "select * from labels where label_id='"+label_id+"'", False)
+            detail = DB.GetData(conn, "select label_id,label_name,label_color,project_id,team_id,created_by,modified_by,cast(created_date as text),cast(modified_date as text),private from labels where label_id='"+label_id+"'", False)
             Dict = {
                     'details': detail
                     }
@@ -13130,18 +13130,29 @@ def CreateLabel(request):
         if request.method == 'GET':
             label_name = request.GET.get(u'name', '').strip()
             label_color = request.GET.get(u'color', '').strip()
+            project_id = request.GET.get(u'project','')
+            team_id = request.GET.get(u'team','')
+            user = request.GET.get(u'user','')
             Conn = GetConnection()
+            final = []
+            now = datetime.datetime.now().date()
             query = "select nextval('labelid_seq')"
             label_id = DB.GetData(Conn, query)
             label_id = ('LABEL-' + str(label_id[0]))
             label_id = label_id.strip()
-            final = []
+        
             sModuleInfo = inspect.stack()[0][
                 3] + " : " + inspect.getmoduleinfo(__file__).name
             Dict = {
                 'label_id': label_id,
                 'label_name': label_name,
-                'label_color': label_color
+                'label_color': label_color,
+                'project_id': project_id,
+                'team_id':team_id,
+                'created_by':user,
+                'modified_by':user,
+                'created_date':now,
+                'modified_date':now
             }
             testConnection(Conn)
             result = DB.InsertNewRecordInToTable(Conn, "labels", **Dict)
@@ -13171,14 +13182,22 @@ def EditLabel(request):
             label_id = request.GET.get(u'id', '').strip()
             label_name = request.GET.get(u'name', '').strip()
             label_color = request.GET.get(u'color', '').strip()
+            project_id = request.GET.get(u'project','')
+            team_id = request.GET.get(u'team','')
+            user = request.GET.get(u'user','')
             Conn = GetConnection()
             final = []
+            now = datetime.datetime.now().date()
             sModuleInfo = inspect.stack()[0][
                 3] + " : " + inspect.getmoduleinfo(__file__).name
             Dict = {
                 #'label_id': label_id,
                 'label_name': label_name,
-                'label_color': label_color
+                'label_color': label_color,
+                'project_id': project_id,
+                'team_id':team_id,
+                'modified_by':user,
+                'modified_date':now
             }
             testConnection(Conn)
             result = DB.UpdateRecordInTable(Conn, "labels", " where label_id='"+label_id+"' ",**Dict)
