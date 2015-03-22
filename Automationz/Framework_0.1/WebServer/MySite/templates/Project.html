@@ -4,55 +4,23 @@
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/Project.js"></script>
-<style>
-    #searchbox {
-        width: 94%;
-        padding: 5px;
-        max-width: 95%;
-        outline-color: #000;
-        outline-style: none;
-        box-shadow: 0 6px 6px -6px black;
-        font-size: 1.2em;
-    }
-
-    #searchbox:focus {
-        box-shadow: 0 6px 6px -6px blue;
-    }
-</style>
 <article>
-    <table align="left">
+    <table class="two-column-emphasis">
+        <caption><b style="font-size: 150%;">Manage Project</b></caption>
         <tr>
-            <td width="80%">
-                <div align="left">
-                    <h3 style="font-size: 19px;"><a style="font-weight: bold;margin-right: 150%;">Manage Projects</a></h3>
-                </div>
+            <td>
+                <select id="projects">
+                    <option value="">Select Projects</option>
+                </select>
             </td>
         </tr>
     </table>
-    <table style="width: 100%;">
-        <tbody>
-        <tr>
-            <td style="width: 20%;" style="vertical-align: 0%;">
-                <table width="100%" id="projects" class="two-column-emphasis">
+    <div class="responsive-tabs">
+        <h2>Detail</h2>
+        <div class="tabs-div">
+            <div id="detail_div">
 
-                </table>
-            </td>
-            <td style="width: 80%;margin-left: 2%;">
-                <div class="responsive-tabs">
-                    <h2>Detail</h2>
-                    <div class="tabs-div">
-                        <div id="detail_div">
-                            &nbsp;
-                        </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div id="outer_div">
-        <div id="inner_div">
-
+            </div>
         </div>
     </div>
     <script>
