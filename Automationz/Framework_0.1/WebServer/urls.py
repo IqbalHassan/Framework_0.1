@@ -378,6 +378,9 @@ urlpatterns += patterns('',
     url(r'^Home/.*/add_new_driver/$',add_new_driver),
     url(r'^Home/.*/link_driver/$',link_driver),
     url(r'^Home/.*/link_team/$',link_team),
+    url(r'^Home/ViewEditLabel/(?P<label_id>[^/]*)/$',ViewEditLabel),
+    url(r'^Home/.*/getLabelinfo/$',getLabelinfo),
+    url(r'^Home/.*/EditLabel/$',EditLabel),
 	)
 
 

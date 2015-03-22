@@ -25,7 +25,9 @@
     <div align="left">
         <h3 style="font-size: 19px;float: left"><a style="font-weight: bold;">Manage Labels</a></h3>
     </div>
-    <table width="100%">
+
+    <a class="m-btn purple" type="button" id="new_label" style="cursor: pointer; float:right">New Label</a>
+    <!--table width="100%">
         <tr>
             <td width="80%">
                 <div class="subnav-links left">
@@ -40,10 +42,10 @@
                     <a class="button">Filters</a>
                     <input class="textbox" style="width: 60%" placeholder="Search Bugs">
                 </div>
-            </td-->
+            </td>
             <td width="20%"><a class="m-btn purple" type="button" id="new_label" style="cursor: pointer">New Label</a></td>
         </tr>
-    </table>
+    </table-->
 
     <br><br>
 
@@ -65,7 +67,7 @@
 
         {% if labels %}
             {% for x in labels %}
-            <tr><td><!--span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x.0}}</span--><a href="" class="label" style="background-color: {{x.1}};">{{x.0}}</a></td></tr>
+            <tr><td><!--span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x.0}}</span--><a href="/Home/ViewEditLabel/{{x.2}}" class="label" style="background-color: {{x.1}};">{{x.0}}</a></td></tr>
             {% endfor %}
         {% endif %}
         </tbody>
