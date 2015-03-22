@@ -1313,7 +1313,7 @@ def AutoCompleteTesterSearch(request):
                 query="select distinct user_names, pul.user_id,'Tester' from permitted_user_list  pul,user_project_map upm where upm.user_id=pul.user_id and pul.user_level in('assigned_tester') and project_id='%s' group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(project_id.strip(),value)
             elif all_tag=='edit':
                 team_name=request.GET.get(u'team_name','')
-                query="select  distinct user_names,user_id,case when user_level='assigned_tester' then 'Tester' end from permitted_user_list where user_level in ('assigned_tester') and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='assigned_tester' then 'Tester' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('assigned_tester'))"%(value,project_id.strip(),team_name.strip())
+                query="select distinct user_names, pul.user_id,'Tester' from permitted_user_list  pul,user_project_map upm where upm.user_id=pul.user_id and pul.user_level in('assigned_tester') and project_id='%s' and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='assigned_tester' then 'Tester' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('assigned_tester'))"%(project_id.strip(),value,project_id.strip(),team_name.strip())
             else:
                 query="select distinct user_names, pul.user_id,'Tester'  from project_team_map ptm, team_info  ti ,permitted_user_list  pul where ti.team_id=cast(ptm.team_id as int)  and pul.user_id=cast(ti.user_id as int) and pul.user_level in('assigned_tester') and ptm.project_id='%s' and ti.team_id=%d group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(project_id,int(team_id),value)
             Conn=GetConnection()
@@ -9937,18 +9937,17 @@ def GetOS(request):
             project_id = request.GET.get(u'project_id', '')
             team_id = request.GET.get(u'team_id', '')
             final_list = []
-            query = "select distinct dependency_name,array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by dependency_name" % (
-                project_id, int(team_id))
+            query = "select distinct dependency_name,array_agg(dn.name),d.id from dependency d, dependency_name dn,dependency_management dm where d.id=dn.dependency_id and dn.dependency_id=dm.dependency and d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d group by dependency_name,d.id" % (project_id, int(team_id))
             Conn = GetConnection()
             dependency = DB.GetData(Conn, query, False)
             Conn.close()
             for each in dependency:
                 name = each[0]
                 listing = each[1]
+                dependency_id=each[2]
                 temp = []
                 for eachitem in listing:
-                    query = "select bit_name,array_agg(distinct version) from dependency_name dn,dependency_values dv where dn.id=dv.id and dn.name='%s' group by bit_name" % (
-                        eachitem)
+                    query = "select bit_name,array_agg(distinct version) from dependency d,dependency_name dn,dependency_values dv where d.id=dn.dependency_id and dn.id=dv.id and dn.name='%s' and d.id=%d group by bit_name" % (eachitem,int(dependency_id))
                 #   query="select distinct name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,project_id,int(team_id))
                     Conn = GetConnection()
                     names = DB.GetData(Conn, query, False)
@@ -13196,11 +13195,17 @@ def ManageTeam(request,project_id):
         team_list=DB.GetData(Conn,query,False)
         Conn.close()
         global_team_list=[]
+        
+    query="select project_name from projects where project_id='%s'"%(project_id.strip())
+    Conn=GetConnection()
+    project_name=DB.GetData(Conn,query)
+    Conn.close()
     Dict={
         'owner':owner_tag,
         'team_list':team_list,
         'global_team_list':global_team_list,
-        'project_id':project_id.strip()
+        'project_id':project_id.strip(),
+        'project_name':project_name[0]
     }
     
     return render_to_response('ManageTeam.html',Dict)
@@ -13223,7 +13228,7 @@ def GetTesterManager(request):
             if all_tag=='edit':
                 project_id=request.GET.get(u'project_id','')
                 team_name=request.GET.get(u'team_name','')
-                query="select  distinct user_names,user_id,case when user_level='manager' then 'Manager' end from permitted_user_list where user_level in ('manager') and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='manager' then 'Manager' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('manager'))"%(value.strip(),project_id.strip(),team_name.strip())
+                query="select distinct user_names, pul.user_id,'Manager' from permitted_user_list  pul,user_project_map upm where upm.user_id=pul.user_id and pul.user_level in('manager') and project_id='%s' and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='manager' then 'Manager' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('manager'))"%(project_id.strip(),value.strip(),project_id.strip(),team_name.strip())
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='user_id')
             Conn.close()
@@ -13390,9 +13395,16 @@ def TeamData(request, project_id,team_name):
             if eachitem not in temp and eachitem[2]==each:
                 temp.append(eachitem)
         final.append((each,temp))
+    query="select project_name from projects where project_id='%s'"%(project_id.strip())
+    Conn=GetConnection()
+    project_name=DB.GetData(Conn,query)
+    Conn.close()
     Dict = {
         'team_name': team_name.strip(),
-        'user_list':final
+        'user_list':final,
+        'project_name':project_name[0],
+        'project_id':project_id,
+        'team_name':team_name
     }
     return render_to_response('Team_Edit.html', Dict)
 
@@ -13652,6 +13664,14 @@ def Create_New_Project(request):
                         message = "Failed"
                         Conn = GetConnection()
                     else:
+                        for each in owners.split(','):
+                            Dict={
+                                  'user_id':int(each),
+                                  'project_id':project_id
+                            }
+                            Conn=GetConnection()
+                            print DB.InsertNewRecordInToTable(Conn,"user_project_map",**Dict)
+                            Conn.close()
                         message = "Success"
             result_dict = {
                 'message': message,

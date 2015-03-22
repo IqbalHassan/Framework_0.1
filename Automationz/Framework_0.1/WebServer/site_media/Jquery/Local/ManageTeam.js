@@ -268,7 +268,3 @@ function getAlldata(project_id,team_name,team_id){
     });
 }
 */
-
-$(document).ready(function(){
-    $('body').css({'font-size':'100%;'});
-});

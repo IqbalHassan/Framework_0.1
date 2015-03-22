@@ -3,49 +3,6 @@
 {% block title%}Manage Team{% endblock %}
 
 {% block content %}
-
-<!--<article>
-    <div class="responsive-tabs">
-        <h2>Teams</h2>
-        <div class="tabs-div">
-            <table style="width: 100%;">
-                <thead>
-                <tr>
-                    <td style="text-align: center;" class="Text">&nbsp;</td>
-                    <td style="text-align: center; " class="Text">&nbsp;</td>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td style="width: 22%;vertical-align: 0%;">
-
-                        <div style="margin-top: 5%;">
-                            <div id="team_list">
-
-                            </div>
-                            <div id="global_team_list">
-
-                            </div>
-                            <div style="margin-bottom: 1%">
-                                <input type="button" class="m-btn green" value="Create Team" id="create_team"/>
-                            </div>
-
-                        </div>
-                    </td>
-                    <td style="vertical-align: 0%;padding-left: 2%;">
-                        <div id="main_body">
-
-                        </div>
-                        <div id="control_panel">
-
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</article>-->
 <table width="100%;">
     <tr>
         <td style="width:25%;vertical-align: 0%;">
@@ -64,7 +21,7 @@
                     <caption><b>Global Teams</b></caption>
                     {% if global_team_list %}
                         {% for x in global_team_list %}
-                            <tr><td data-id="{{x.0}}">{{x.1}}</td></tr>
+                            <tr><td>{{x.1}}</td><td data-id="{{x.0}}" class="global_team"><img src="/site_media/plus1.png" style="cursor: pointer" width="20px" height="20px"/></td></tr>
                         {% endfor %}
                     {% else %}
                         <tr><td><b>No Global Team is present</b></td></tr>
@@ -77,6 +34,31 @@
                 </table>
                 <script type="text/javascript">
                     $(document).ready(function(){
+                        var project_id="{{project_id}}";
+                        var project_name="{{project_name}}";
+                        $('.global_team').on('click',function(){
+                            var team_id=$(this).attr('data-id');
+                            var team_text=$(this).prev().text().trim();
+                            var message="Do you want Team <b>'"+team_text+"'</b> to  project <b>'"+project_name+"'</b>??";
+                            alertify.confirm(message,function(e){
+                                if(e){
+                                    $.get('link_team',{'team_name':team_text.trim(),'team_id':team_id,project_id:project_id},function(data){
+                                        if(data['message']){
+                                            alertify.success(data['log_message'],1500);
+                                            window.location.reload(true);
+                                        }
+                                        else{
+                                            alertify.error(data['log_message'],1500);
+                                            window.location.reload(true);
+                                        }
+                                    });
+                                }
+                                else{
+                                    alertify.alert().close_all();
+                                }
+                            });
+                        });
+
                         $('#create_button').on('click',function(){
                             $('.team').css({'background-color':'#fff'});
                             $('#mainbody').empty();
@@ -279,8 +261,6 @@
                             });
                         });
                     });
-
-
                 </script>
             {% else %}
                 <table class="two-column-emphasis">

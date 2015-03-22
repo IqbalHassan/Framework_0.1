@@ -21,11 +21,11 @@ function populate_mainBody_div(type_tag){
     if(type_tag=='Project'){
         message+='<div align="center" style="font-size: 150%;font-weight: bolder">New Project Creation</div>';
         message+='<table style="margin-top: 2%;"><tr><td><b>Project Name:</b></td><td><input class="textbox" id="project_name" placeholder="project name"/> </td><td>&nbsp;</td></tr>';
-        message+='<tr style="vertical-align: 0%;"><td><b>Project Owner:</b></td><td><input class="textbox" id="project_owner" placeholder="project owner"/> </td><td id="owner_list" style="vertical-align: 0%;"></td></tr></table>';
+        message+='<tr style="vertical-align: 0%;"><td><b>Project Owner:</b></td><td><input type="hidden" id="project_owner" /> </td><td id="owner_list" style="vertical-align: 0%;"></td></tr></table>';
         message+='<div align="center"><input class="primary button" type="button" id="create_project" value="Create Project"/> </div>';
         $('#mainBody').html(message);
         DeleteSearchQueryText();
-        $('#project_owner').autocomplete({
+        /*$('#project_owner').autocomplete({
             source:function(request,response){
                 $.ajax({
                     url:"GetProjectOwner",
@@ -49,7 +49,44 @@ function populate_mainBody_div(type_tag){
                 .data( "ui-autocomplete-item", item )
                 .append( "<a><strong>" + item[1] + "</strong> - "+item[2]+"</a>" )
                 .appendTo( ul );
-        };
+        };*/
+        $("#project_owner").select2({
+            placeholder: "Search User....",
+            width: 460,
+            quietMillis: 250,
+            ajax: {
+                url: "GetProjectOwner",
+                dataType: "json",
+                queitMillis: 250,
+                data: function(term, page) {
+                    return {
+                        'term': term,
+                        'page': page
+                    };
+                },
+                results: function(data, page) {
+                    return {
+                        results: data.items,
+                        more: data.more
+                    }
+                }
+            },
+            formatResult: formatTestCasesSearch
+        }).on("change", function(e) {
+                var user_id=$(this).select2('data')['id'];
+                var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+                $('#owner_list').append('<tr><td class="deleteTester"><img title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td><td data-id="'+user_id+'">'+user_name+'</td></tr>');
+                $(this).select2('val','');
+                $('.deleteTester').on('click',function(){
+                    //$('#assigned_projects').empty();
+                    $(this).parent().remove();
+                });
+                return false;
+            });
+        function formatTestCasesSearch(test_case_details) {
+            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+            return markup;
+        }
         $('#create_project').on('click',function(){
             var project_name=$('#project_name').val().trim();
             if(project_name==""){
@@ -57,10 +94,11 @@ function populate_mainBody_div(type_tag){
             }
             var project_owner=[];
             $('#owner_list td').each(function(){
-               if(project_owner.indexOf($(this).find('span:eq(0)').text().trim())==-1){
-                   project_owner.push($(this).find('span:eq(0)').text().trim());
+               if(project_owner.indexOf($(this).attr('data-id'))==-1 && $(this).attr('data-id') != undefined){
+                   project_owner.push($(this).attr('data-id').trim());
                }
             });
+            alert(project_owner);
             $.get('Create_New_Project',{
                 user_name:'Admin',
                 project_name:project_name,
