@@ -17,14 +17,52 @@ $(document).ready(function(){
         $("#header").html(referred_label);
         
         $.get("getLabelinfo/",{
-	        'label_id':referred_label.trim()
+	        'label_id':referred_label.trim(),
+	        'project_id':project_id,
+	        'team_id':team_id
 	    },function(data){
 	    	$("#label_name").val(data['details'][0][1]);
 			$("#label_color").val(data['details'][0][2]);
 			$("#created_by").text(data['details'][0][5]);
 			$("#created_date").text(data['details'][0][7]);
 			$("#modified_by").text(data['details'][0][6]);
-			$("#modified_date").text(data['details'][0][8]);	        
+			$("#modified_date").text(data['details'][0][8]);
+
+			ResultTable(reqs_div,data['reqs_heading'],data['reqs'],'Requirements','Requirements');
+			$('#reqs_div tr>td:first-child').each(function(){
+		        $(this).css({
+		            'color':'blue',
+		            'cursor':'pointer'
+		        });
+		        $(this).click(function(){
+		         var location='/Home/'+$.session.get('project_id')+'/EditRequirement/'+$(this).text().trim()+'/';
+		         window.location=location;
+		         });
+	    	});	        
+
+	    	ResultTable(tasks_div,data['tasks_heading'],data['tasks'],'Tasks','Tasks');
+	    	$('#tasks_div tr>td:first-child').each(function(){
+		        $(this).css({
+		            'color':'blue',
+		            'cursor':'pointer'
+		        });
+		        $(this).click(function(){
+		            var location='/Home/'+$.session.get('project_id')+'/EditTask/'+$(this).text().trim()+'/';
+		            window.location=location;
+		        });
+		    });
+
+		    ResultTable(bugs_div,data['bugs_heading'],data['bugs'],'Bugs','Bugs');
+		    $('#bugs_div tr>td:first-child').each(function(){
+		        $(this).css({
+		            'color':'blue',
+		            'cursor':'pointer'
+		        });
+		        $(this).click(function(){
+		         var location='/Home/EditBug/'+$(this).text().trim()+'/';
+		         window.location=location;
+		         });
+		    });
 	    });
 
 
