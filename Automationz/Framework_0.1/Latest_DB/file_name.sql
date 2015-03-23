@@ -68,9 +68,15 @@ CREATE FUNCTION changedatastructure(oldval text, newval text) RETURNS void
     LANGUAGE sql
     AS $_$
 
+
+
 Update pim_master_data set id = $2 where id = $1 and field in ('Other Street Address','Other City','Other State-Prov-Region','Other Zip-Postal Code','Other Country');
+
 insert into pim_master_data (id, field, value) values ($1, 'Other Address', $2);
+
 Update pim_master_data set field = substr(field,6) where id = $2 and field in ('Other Street Address','Other City','Other State-Prov-Region','Other Zip-Postal Code','Other Country');
+
+
 
 $_$;
 
@@ -84,15 +90,25 @@ ALTER FUNCTION public.changedatastructure(oldval text, newval text) OWNER TO pos
 CREATE FUNCTION truncate_tables(username character varying) RETURNS void
     LANGUAGE plpgsql
     AS $$
+
 DECLARE
+
     statements CURSOR FOR
+
         SELECT tablename FROM pg_tables
+
         WHERE tableowner = username AND schemaname = 'public';
+
 BEGIN
+
     FOR stmt IN statements LOOP
+
         EXECUTE 'TRUNCATE TABLE ' || quote_ident(stmt.tablename) || ' CASCADE;';
+
     END LOOP;
+
 END;
+
 $$;
 
 
@@ -105,20 +121,35 @@ ALTER FUNCTION public.truncate_tables(username character varying) OWNER TO postg
 CREATE FUNCTION update_test_case_tag() RETURNS void
     LANGUAGE plpgsql
     AS $$
+
 DECLARE
+
 	x record;
+
 	project text;
+
 	type text;
+
 	
+
  BEGIN
+
     project:='135';
+
     type:='Team';
+
     FOR x IN select distinct tc_id from test_cases 
+
 	  LOOP
+
 		insert into test_case_tag(tc_id,name,property) values(x.tc_id,project,type);
+
 	  END LOOP;
+
     RETURN;
+
 END
+
 $$;
 
 
@@ -423,6 +454,7 @@ ALTER TABLE public.daily_build_status OWNER TO postgres;
 --
 
 COMMENT ON TABLE daily_build_status IS 'Contains daily build status information.
+
 ';
 
 
@@ -735,6 +767,7 @@ ALTER TABLE public.execution_log OWNER TO postgres;
 --
 
 COMMENT ON TABLE execution_log IS 'Contains detailed information on the execution of tasks.
+
 For Example: Module CloseDTM: DTSGeneral was executed were Desktop Manager window not found ';
 
 
@@ -1888,7 +1921,8 @@ CREATE TABLE test_run_env (
     test_milestone character varying(100),
     branch_version character varying(100),
     start_date date,
-    end_date date
+    end_date date,
+    email_flag boolean
 );
 
 
@@ -2143,6 +2177,7 @@ ALTER TABLE public.test_steps_data OWNER TO postgres;
 --
 
 COMMENT ON TABLE test_steps_data IS 'Contains test step data adn the sequence number
+
 For Example: ';
 
 
@@ -2217,6 +2252,7 @@ COMMENT ON COLUMN test_steps_list.step_id IS 'Database use only.';
 --
 
 COMMENT ON COLUMN test_steps_list.stepname IS 'Name of the Test Stemp
+
 For Example: Open DTS';
 
 
@@ -3341,5 +3377,6 @@ GRANT ALL ON TABLE test_steps_list TO PUBLIC;
 -- PostgreSQL database dump complete
 --
 
-insert into permitted_user_list(user_names,user_level,email) values ('Admin','admin','admin@automationsolutionz.com');
-insert into user_info(username,password,full_name) values('admin','@dm!n','Admin');
+
+insert into permitted_user_list(user_names,user_level,email) values('Admin','admin','admin@automationsolutionz.com');
+insert into user_info(username,full_name,password) values('admin','Admin','@dm!n');
