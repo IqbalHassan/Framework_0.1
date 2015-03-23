@@ -49,7 +49,7 @@ function make_req_clickable(){
             'cursor':'pointer'
         });
         $(this).click(function(){
-         var location='/Home/'+$.session.get('project_id')+'/Requirements/'+$(this).text().trim()+'/';
+         var location='/Home/'+$.session.get('project_id')+'/EditRequirement/'+$(this).text().trim()+'/';
          window.location=location;
          });
     });

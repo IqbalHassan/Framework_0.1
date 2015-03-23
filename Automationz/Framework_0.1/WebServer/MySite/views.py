@@ -304,9 +304,19 @@ def getLabelinfo(request):
         if request.method == 'GET':
             conn = GetConnection()
             label_id = request.GET.get(u'label_id','')
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
             detail = DB.GetData(conn, "select label_id,label_name,label_color,project_id,team_id,created_by,modified_by,cast(created_date as text),cast(modified_date as text),private from labels where label_id='"+label_id+"'", False)
+            reqs = DB.GetData(conn,"select lm.id,r.requirement_title,r.status from label_map lm, requirements r where lm.label_id='"+label_id+"' and type='REQ' and lm.id=r.requirement_id and r.project_id='"+project_id+"' and r.team_id='"+team_id+"'",False)
+            reqs_heading = ['Requirement ID','Requirement Title','Status']
+            tasks = DB.GetData(conn,"select t.tasks_id,t.tasks_title,t.status from label_map lm,tasks t where lm.label_id='"+label_id+"' and type='TASK' and lm.id=t.tasks_id and t.project_id='"+project_id+"' and t.team_id='"+team_id+"'",False)
+            tasks_heading = ['Task ID','Task Title','Status']
             Dict = {
-                    'details': detail
+                    'details': detail,
+                    'reqs':reqs,
+                    'reqs_heading':reqs_heading,
+                    'tasks':tasks,
+                    'tasks_heading':tasks_heading
                     }
             conn.close()
     result = simplejson.dumps(Dict)
@@ -12863,7 +12873,7 @@ def Selected_BugID_Analaysis(request):
         query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 ilike '%s' and btm.id2=tc.tc_id" % UserData
         Bug_Cases = DB.GetData(Conn, query, False)
 
-        query = "select distinct pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester::int=pul.user_id" % UserData
+        query = "select distinct pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester=pul.user_id::text" % UserData
         tester = DB.GetData(Conn, query)
 
         query = "select distinct tc.tc_id, tc.tc_name, tcr.status from test_case_results tcr, test_cases tc where tc.tc_id=tcr.tc_id and tcr.status='Failed' and tc.tc_id not in (select id2 from components_map) order by tc.tc_id"
@@ -12909,11 +12919,11 @@ def LogNewBug(request):
                 labels = labels.split("|")
                 # created_by=request.GET.get(u'created_by','')
 
-                tester = DB.GetData(
+                """tester = DB.GetData(
                     Conn,
                     "select user_id from permitted_user_list where user_names = '" +
                     testers +
-                    "'")
+                    "'")"""
 
                 start_date = start_date.split('-')
                 starting_date = datetime.datetime(int(start_date[0].strip()), int(
@@ -12933,7 +12943,7 @@ def LogNewBug(request):
                     milestone,
                     project_id,
                     user_name,
-                    tester[0],
+                    testers,
                     test_cases,
                     labels,
                     Feature_Path)
@@ -12971,11 +12981,11 @@ def ModifyBug(request):
                 labels = labels.split("|")
                 # created_by=request.GET.get(u'created_by','')
 
-                tester = DB.GetData(
+                """tester = DB.GetData(
                     Conn,
                     "select user_id from permitted_user_list where user_names = '" +
                     testers +
-                    "'")
+                    "'")"""
 
                 start_date = start_date.split('-')
                 starting_date = datetime.datetime(int(start_date[0].strip()), int(
@@ -12996,7 +13006,7 @@ def ModifyBug(request):
                     milestone,
                     project_id,
                     user_name,
-                    tester[0],
+                    testers,
                     test_cases,
                     labels,
                     Feature_Path)
