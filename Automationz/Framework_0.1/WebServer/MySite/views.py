@@ -15486,7 +15486,7 @@ def get_all_data_dependency_page(request):
                 else:
                     project_name=''
                     
-                query="select value from config_values where type='Team' and id=%d"%int(team_id)
+                query="select team_name from team t, project_team_map ptm where ptm.team_id=t.id::text and ptm.project_id=t.project_id and ptm.project_id='%s' and id=%d"%(project_id.strip(),int(team_id))
                 Conn=GetConnection()
                 team_name=DB.GetData(Conn,query)
                 Conn.close()
