@@ -1,4 +1,4 @@
-var project_id= $.session.get('project_id')
+/*var project_id= $.session.get('project_id')
 var team_name=$('#name').text().trim();
 $(document).ready(function(){
     $("#tester_search").select2({
@@ -157,4 +157,4 @@ $(document).ready(function(){
             return false;
         }
     });
-});
+});*/

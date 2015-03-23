@@ -1,6 +1,7 @@
 /**
  * Created by lent400 on 5/27/14.
  */
+/*
 var project_id= $.session.get('project_id');
 $(document).ready(function(){
     $('body').css({'font-size':'100%'});
@@ -266,3 +267,4 @@ function getAlldata(project_id,team_name,team_id){
         });
     });
 }
+*/
