@@ -312,12 +312,16 @@ def getLabelinfo(request):
             reqs_heading = ['Requirement ID','Requirement Title','Status']
             tasks = DB.GetData(conn,"select t.tasks_id,t.tasks_title,t.status from label_map lm,tasks t where lm.label_id='"+label_id+"' and type='TASK' and lm.id=t.tasks_id and t.project_id='"+project_id+"' and t.team_id='"+team_id+"'",False)
             tasks_heading = ['Task ID','Task Title','Status']
+            bugs = DB.GetData(conn,"select b.bug_id,b.bug_title,b.status from label_map lm,bugs b where lm.label_id='"+label_id+"' and type='BUG' and lm.id=b.bug_id and b.project_id='"+project_id+"' and b.team_id='"+team_id+"'",False)
+            bugs_heading = ['Bug ID','Bug Title','Status']
             Dict = {
                     'details': detail,
                     'reqs':reqs,
                     'reqs_heading':reqs_heading,
                     'tasks':tasks,
-                    'tasks_heading':tasks_heading
+                    'tasks_heading':tasks_heading,
+                    'bugs':bugs,
+                    'bugs_heading':bugs_heading
                     }
             conn.close()
     result = simplejson.dumps(Dict)

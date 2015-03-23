@@ -51,6 +51,18 @@ $(document).ready(function(){
 		            window.location=location;
 		        });
 		    });
+
+		    ResultTable(bugs_div,data['bugs_heading'],data['bugs'],'Bugs','Bugs');
+		    $('#bugs_div tr>td:first-child').each(function(){
+		        $(this).css({
+		            'color':'blue',
+		            'cursor':'pointer'
+		        });
+		        $(this).click(function(){
+		         var location='/Home/EditBug/'+$(this).text().trim()+'/';
+		         window.location=location;
+		         });
+		    });
 	    });
 
 
