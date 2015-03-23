@@ -98,7 +98,7 @@ function populate_mainBody_div(type_tag){
                    project_owner.push($(this).attr('data-id').trim());
                }
             });
-            alert(project_owner);
+            //alert(project_owner);
             $.get('Create_New_Project',{
                 user_name:'Admin',
                 project_name:project_name,
