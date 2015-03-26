@@ -1,9 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Super Admin</title>
-</head>
-<body>
+{% extends "AdminBaseTemplate.html" %}
+
+{% block title%} Super Admin {% endblock %}
+
+{% block content %}
+
+<article>
     <div align="center" style="margin-top: 5%;">
         <table width="100%" align="center">
             <tr align="center">
@@ -39,5 +40,7 @@
         </table>
     </div>
 
-</body>
-</html>
+
+</article>
+
+{% endblock %}
