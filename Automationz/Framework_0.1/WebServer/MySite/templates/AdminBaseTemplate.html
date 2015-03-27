@@ -35,9 +35,10 @@
             </div>
 
             <div class="notifications-wrapper">
-<ul class="nav">
+
+    <ul class="nav">
                
-                <li class="dropdown">
+                <!--li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                         <i class="fa fa-tasks fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
@@ -112,14 +113,14 @@
                                     </a>
                                 </li>
                             </ul>
-                </li>
+                </li-->
               
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-user-plus"></i>  <i class="fa fa-caret-down"></i>
+                        <i class="fa fa-user"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="#"><i class="fa fa-user-plus"></i> My Profile</a>
+                        <li><a href="#"><i class="fa fa-user"></i> My Profile</a>
                         </li>
                         <li class="divider"></li>
                         <li><a href="#"><i class="fa fa-sign-out"></i> Logout</a>
@@ -144,25 +145,44 @@
                     </li>
 
                     <li>
-                        <a class="active-menu"  href="index.html"><i class="fa fa-dashboard "></i>Dashboard</a>
+                        <a class="active-menu"  href="/Home/superAdmin"><i class="fa fa-dashboard "></i>Dashboard</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-venus "></i>Project </a>
-                        
+                        <a href="#"><i class="fa fa-tasks"></i>Project <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a href="/Home/superAdminFunction/Project/"><i class="fa fa-plus "></i>Create/Edit</a>
+                            </li>
+                             <li>
+                                <a href="/Home/superAdminFunction/ListProject/"><i class="fa fa-list "></i>List Projects</a>
+                            </li>
+                            
+                        </ul>
                     </li>
                     
                     <li>
-                        <a href="#"><i class="fa fa-bolt "></i>User </a>
-                        
+                        <a href="#"><i class="fa fa-user"></i>User <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a href="/Home/superAdminFunction/AddUser/"><i class="fa fa-plus "></i>Create/Edit</a>
+                            </li>
+                            <li>
+                                <a href="/Home/superAdminFunction/AssignMembers/"><i class="fa fa-link "></i>Link to Projects</a>
+                            </li>
+                             <li>
+                                <a href="/Home/superAdminFunction/ListUser/"><i class="fa fa-list "></i>List Users</a>
+                            </li>
+                            
+                        </ul>
                     </li>
                    
                      
                      <li>
-                        <a href="#"><i class="fa fa-code "></i>Team</a>
+                        <a href="#"><i class="fa fa-users"></i>Team</a>
                     </li>
                    
-                    <li>
-                        <a href="#"><i class="fa fa-sitemap "></i>Multilevel Link <span class="fa arrow"></span></a>
+                    <!--li>
+                        <a href="#"><i class="fa fa-sitemap"></i>Multilevel Link <span class="fa arrow"></span></a>
                          <ul class="nav nav-second-level">
                             <li>
                                 <a href="#"><i class="fa fa-cogs "></i>Second  Link</a>
@@ -184,7 +204,7 @@
 
                             </li>
                         </ul>
-                    </li>
+                    </li-->
                    
                 </ul>
             </div>
