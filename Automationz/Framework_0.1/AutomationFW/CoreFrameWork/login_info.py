@@ -1,11 +1,11 @@
 import sys
 sys.path.append("..")
 
-username='iqbal_hassan'
-password='password'
-project='PROJ-29'
-team='WebAutomation'
-server='135.23.123.206'
+username='riz'
+password='.'
+project='PROJ-16'
+team='Team A'
+server='127.0.0.1'
 port=5432
 
 

@@ -646,6 +646,7 @@ function LoadAllTestCases(divname){
             'color':'blue',
             'cursor' : 'pointer'
         });
+        //$(this).addClass('m-btn');
         $(this).live('click',function(){
             var TestCaseName=$($(this).closest("tr").find("td:first-child")[0]).text().trim();
             var location=$("#fetch_run_id").text().trim();
@@ -658,6 +659,7 @@ function LoadAllTestCases(divname){
             'color':'blue',
             'cursor' : 'pointer'
         });
+        //$(this).addClass('m-btn');
         $(this).live('click',function(){
             var TestCaseName=$($(this).closest("tr").find("td:first-child")[0]).text().trim();
             var location=$("#fetch_run_id").text().trim();
@@ -665,11 +667,11 @@ function LoadAllTestCases(divname){
             window.location='/Home/RunID/'+location+'/TC/'+TestCaseName+'/View/';
         });
     });
-    $('#'+divname+' tr td:nth-child(4)').each(function(){
+    /*$('#'+divname+' tr td:nth-child(4)').each(function(){
         $(this).css({
             'color':'blue'
         });
-    });
+    });*/
     $('#'+divname+' tr td:nth-child(3)').each(function(){
         $(this).css({'textAlign':'left'});
     });
@@ -680,7 +682,7 @@ function LoadAllTestCases(divname){
     //////////////// To change the textbox in fail reason
     $('#'+divname+' tr td:nth-child(7)').each(function(){
         var data=$(this).text().trim();
-        $(this).html('<textarea rows="3" cols="30" readonly="readonly" style="border: none;text-align: left; vertical-align: middle;color: #669;display:inline-block;">'+data+'</textarea>');
+        $(this).html('<textarea rows="3" cols="30" readonly="readonly" style="border: none;text-align: left; vertical-align: middle;color: #669;display:inline-block;background:#fff">'+data+'</textarea>');
     });
     /////////////////////////////////////////////////////
     /*$('#'+divname+' tr td:last-child').each(function(){
