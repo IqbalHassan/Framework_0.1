@@ -1,3 +1,5 @@
 $(document).ready(function(){
-   alert('js');
+   $("#create_project").click(function(){
+   		alert('js');
+   });
 });
