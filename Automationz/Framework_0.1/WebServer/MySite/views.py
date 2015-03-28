@@ -13715,12 +13715,13 @@ def Create_New_Project(request):
                 Conn.close()
                 print tmp_id
                 project_id = ('PROJ-') + str(tmp_id[0])
-                query = "select count(*) from projects where project_name='%s' and project_id='%s'" % (
-                    name.strip(), project_id.strip())
+                query = "select count(*) from projects where project_name='%s'" % (
+                    name.strip())
                 count = []
                 Conn = GetConnection()
                 count = DB.GetData(Conn, query)
                 Conn.close()
+                
                 print count
                 now = datetime.datetime.now().date()
                 current_date = now
@@ -13755,7 +13756,9 @@ def Create_New_Project(request):
                             Conn=GetConnection()
                             print DB.InsertNewRecordInToTable(Conn,"user_project_map",**Dict)
                             Conn.close()
-                        message = "Success"
+                        message = True
+                else:
+                    message=False
             result_dict = {
                 'message': message,
                 'project_id': project_id.strip()
@@ -17439,7 +17442,11 @@ def superAdminFunction(request):
         'superAdminFunction.html',
         {},
         context_instance=RequestContext(request))
-
+def CreateProject(request):
+    return render_to_response(
+        'CreateProject.html',
+        {},
+        context_instance=RequestContext(request))
 def update_team_project(request):
     if request.method=='GET':
         if request.is_ajax():

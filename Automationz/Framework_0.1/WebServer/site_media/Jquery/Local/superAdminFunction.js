@@ -1,6 +1,7 @@
 /**
  * Created by 09 on 12/3/14.
  */
+/*
 $(document).ready(function(){
     $('body').css({'font-size':'100%'});
     var url=window.location.pathname;
@@ -25,31 +26,6 @@ function populate_mainBody_div(type_tag){
         message+='<div align="center"><input class="primary button" type="button" id="create_project" value="Create Project"/> </div>';
         $('#mainBody').html(message);
         DeleteSearchQueryText();
-        /*$('#project_owner').autocomplete({
-            source:function(request,response){
-                $.ajax({
-                    url:"GetProjectOwner",
-                    dataType:"json",
-                    data:{
-                        term:request.term
-                    },
-                    success:function(data){
-                        response(data);
-                    }
-                });
-            },
-            select:function(request,ui){
-                var value=ui.item[0];
-                if(value!=''){
-                    $('#owner_list').append('<tr><td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /><b>'+ui.item[1].trim()+':<span style="display: none;">'+value+'</span>&nbsp;</b></td></tr>');
-                }
-            }
-        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-            return $( "<li></li>" )
-                .data( "ui-autocomplete-item", item )
-                .append( "<a><strong>" + item[1] + "</strong> - "+item[2]+"</a>" )
-                .appendTo( ul );
-        };*/
         $("#project_owner").select2({
             placeholder: "Search User....",
             width: 460,
@@ -104,8 +80,13 @@ function populate_mainBody_div(type_tag){
                 project_name:project_name,
                 project_owner:project_owner.join(',')
             },function(data){
-                if(data['message']=='Success'){
-                    window.location='/Home/superAdmin/';
+                if(data['message']){
+                    alertify.success('Project: '+project_name+' is created successfully',1500);
+                    window.location='/Home/superAdminFunction/ListProject/';
+                }
+                else{
+                    alertify.error('Project: '+project_name+' exists',1500)
+                    return false;
                 }
             })
         });
@@ -190,10 +171,16 @@ function populate_mainBody_div(type_tag){
                 for(var j=0;j<project_list[i].length;j++){
                     message+='<td>'+project_list[i][j]+'</td>';
                 }
+                message+='<td><img class="edit_button"  style="cursor: pointer;" src="/site_media/edit.png" width="20" height="20"/> </td>';
                 message+='</tr>';
             }
             message+='</table>'
             $('#mainBody').html(message);
+            $('.edit_button').on('click',function(){
+                var project_id=$(this).parent().parent().find('td:first-child').text().trim();
+                window.location='/Home/Project/Admin/'+project_id+'/';
+
+            });
         });
     }
     if(type_tag=='AssignMembers'){
@@ -303,4 +290,4 @@ function DeleteSearchQueryText(){
         $(this).remove();
         //PerformSearch(project_id,team_id);
     });
-}
+}*/

@@ -47,7 +47,8 @@ def GetAllDriver():
     query="select distinct driver from test_steps_list"
     Conn=DBUtil.ConnectToDataBase()
     driver_name=DBUtil.GetData(Conn,query)
-    driver_name.remove('Manual')
+    if 'Manual' in driver_name:
+        driver_name.remove('Manual')
     return driver_name
 def collectAlldependency(project,team):
     query="select dependency_name, array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by dependency_name"%(project,int(team))
