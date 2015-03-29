@@ -10,7 +10,7 @@ $(document).ready(function(){
         var password=$('#password').val().trim();
         var confirm_password=$('#confirm_password').val().trim();
         var user_level=$('#user_level option:selected').val().trim();
-        if(user_name=='' || full_name==''||email==''||user_level==''){
+        if(user_name=='' || full_name==''||email==''||user_level==''||password==''||confirm_password==''){
             alertify.error('Check Input Fields',1500)
         }
         if(password!=confirm_password){

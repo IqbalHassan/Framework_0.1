@@ -8,14 +8,20 @@
             {% for x in column %}
                 <td><b>{{x}}</b></td>
             {% endfor %}
+            <td>&nbsp;</td>
         </tr>
     </thead>
     <tbody>
         {% for x in user_list %}
             <tr>
                 {% for y in x %}
-                    <td>{{y}}</td>
+                    {% if forloop.last %}
+                        <td><a href="/Home/superAdminFunction/User/{{y}}/"><img src="/site_media/edit.png" width="20" height="20" style="cursor: pointer"></a></td>
+                    {% else %}
+                        <td>{{y}}</td>
+                    {% endif %}
                 {% endfor %}
+
             </tr>
         {% endfor %}
     </tbody>

@@ -17573,9 +17573,54 @@ def Create_New_User(request):
             result = simplejson.dumps(message)
             return HttpResponse(result, mimetype='application/json')
 
+def Edit_User(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            full_name = request.GET.get(u'full_name', '').strip()
+            user_name = request.GET.get(u'user_name', '').strip()
+            email = request.GET.get(u'email', '').strip()
+            password = request.GET.get(u'password', '').strip()
+            user_level = request.GET.get(u'user_level', '').strip()
+            user_id=int(request.GET.get(u'user_id',''))
+            query = "select count(*) from permitted_user_list where user_id=%d" %int(user_id)
+            Conn = GetConnection()
+            count = DB.GetData(Conn, query)
+            Conn.close()
+            if len(count) == 1 and count[0] == 1:
+                # insert the new user
+                Dict = {
+                    'username': user_name,
+                    'password': password,
+                    'full_name': full_name
+                }
+                query="select user_names from permitted_user_list where user_id=%d"%int(user_id)
+                Conn=GetConnection()
+                full_name_list=DB.GetData(Conn,query)
+                Conn.close()
+                sWhereQuery="where full_name='%s'"%(full_name_list[0].strip())
+                Conn = GetConnection()
+                result = DB.UpdateRecordInTable(Conn, "user_info", sWhereQuery,**Dict)
+                Conn.close()
+                if result:
+                    Dict = {
+                        'user_names': full_name,
+                        'user_level': user_level,
+                        'email': email
+                    }
+                    sWhereQuery="where user_id=%d"%int(user_id)
+                    Conn = GetConnection()
+                    result=DB.UpdateRecordInTable(Conn,"permitted_user_list",sWhereQuery,**Dict)
+                    Conn.close()
+                    if result:
+                        message = True
+                else:
+                    message = False
+            result = simplejson.dumps(message)
+            return HttpResponse(result, mimetype='application/json')
+
 
 def ListAllUser(request):
-    query = "select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
+    query = "select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email,pul.user_id from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
     Conn = GetConnection()
     user_list = DB.GetData(Conn, query, False)
     Conn.close()
@@ -17588,6 +17633,27 @@ def ListAllUser(request):
 
 def AssignMembers(request):
     return render_to_response('AssignMembers.html',{},context_instance=RequestContext(request))
+def EditUser(request,user_id):
+    query="select username,full_name,email,user_level,password from permitted_user_list pul, user_info ui where pul.user_names=ui.full_name and user_id=%d"%int(user_id)
+    Conn=GetConnection()
+    user_id_list=DB.GetData(Conn,query,False)
+    Conn.close()
+    user_id_list=user_id_list[0]
+    user_name=user_id_list[0]
+    full_name=user_id_list[1]
+    email=user_id_list[2]
+    user_level=user_id_list[3]
+    user_pass=user_id_list[4]
+    result={
+        'tag':True,
+        'user_name':user_name,
+        'full_name':full_name,
+        'user_level':user_level,
+        'email':email,
+        'user_pass':user_pass,
+        'user_id':user_id
+    }
+    return render_to_response('AddUser.html',result,context_instance=RequestContext(request))
 
 def ListProject(request):
     query="select project_id, project_name,string_to_array(project_owners,','),cast(project_startingdate as text),cast(project_endingdate as text),cast(project_creationdate as text),project_createdby,cast(project_modifydate as text), project_modifiedby from projects"
