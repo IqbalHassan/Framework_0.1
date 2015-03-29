@@ -17453,6 +17453,9 @@ def EditProject(request):
         {},
         context_instance=RequestContext(request))
 
+def AddUser(request):
+    return render_to_response('AddUser.html',{},context_instance=RequestContext(request))
+
 def update_team_project(request):
     if request.method=='GET':
         if request.is_ajax():
@@ -17572,24 +17575,19 @@ def Create_New_User(request):
 
 
 def ListAllUser(request):
-    if request.method == 'GET':
-        if request.is_ajax():
-            query = "select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
-            Conn = GetConnection()
-            user_list = DB.GetData(Conn, query, False)
-            Conn.close()
-            Column = [
-                'User Name',
-                'Full Name',
-                'Password',
-                'Designation',
-                'Email']
-            result = {
-                'user_list': user_list,
-                'column': Column
-            }
-            result = simplejson.dumps(result)
-            return HttpResponse(result, mimetype='application/json')
+    query = "select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
+    Conn = GetConnection()
+    user_list = DB.GetData(Conn, query, False)
+    Conn.close()
+    Column = ['User Name','Full Name','Password','Designation','Email']
+    result = {
+        'user_list': user_list,
+        'column': Column
+    }
+    return render_to_response('ListUser.html',result,context_instance=RequestContext(request))
+
+def AssignMembers(request):
+    return render_to_response('AssignMembers.html',{},context_instance=RequestContext(request))
 
 def ListProject(request):
     query="select project_id, project_name,string_to_array(project_owners,','),cast(project_startingdate as text),cast(project_endingdate as text),cast(project_creationdate as text),project_createdby,cast(project_modifydate as text), project_modifiedby from projects"

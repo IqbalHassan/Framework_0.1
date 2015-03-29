@@ -1,0 +1,40 @@
+{%extends 'AdminBaseTemplate.html'%}
+{%block pageindicator%}Create New User{%endblock%}
+{%block title%}Create New User{%endblock%}
+{%block content%}
+<table style="margin-top: 2%;">
+    <tr style="margin-bottom: 10%;">
+        <td align="right"><b>Full Name:</b></td>
+        <td><input class="textbox" id="full_name" placeholder="Full Name"/></td>
+    </tr>
+    <tr>
+        <td align="right"><b>User Name:</b></td>
+        <td><input class="textbox" id="user_name" placeholder="User Name"/></td>
+    </tr>
+    <tr>
+        <td align="right"><b>Email:</b></td>
+        <td><input class="textbox" id="email" placeholder="Email Here"/></td>
+    </tr>
+    <tr>
+        <td align="right"><b>Designation:</b></td>
+        <td>
+            <select id="user_level">
+                <option value="" selected>Select User Level</option>
+                <option value="assigned_tester">Tester</option>
+                <option value="manager">Manager</option>
+                <option value="admin">Admin</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><b>Password:</b></td>
+        <td><input class="textbox" id="password" placeholder="Password Here"/></td>
+    </tr>
+    <tr>
+        <td align="right"><b>Confirm Password:</b></td>
+        <td><input class="textbox" id="confirm_password" placeholder="Confirm Password"/></td>
+    </tr>
+</table>
+<div align="center"><input class="primary button" type="button" id="create_user" value="Register User"/> </div>
+<script type="text/javascript" src="/site_media/Jquery/Local/AddUser.js"></script>
+{% endblock %}
