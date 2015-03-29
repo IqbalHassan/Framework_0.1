@@ -13891,6 +13891,9 @@ def Small_Project_Detail(request):
     try:
         if request.is_ajax():
             if request.method == 'GET':
+                reg=re.compile('user_id=(\d+)')
+                user_id=list(set(reg.findall(request.META['HTTP_COOKIE'])))[0]
+                print user_id
                 name = request.GET.get(u'name', '')
                 query = "select * from projects where project_name='%s'" % name.strip()
                 Conn = GetConnection()
@@ -13908,6 +13911,11 @@ def Small_Project_Detail(request):
                         Dict.update({eachitem[0]: eachitem[1]})
                 temp = Dict['project_owners']
                 owner_list=[]
+                if user_id in temp.split(","):
+                    owner_tag=True
+                else:
+                    owner_tag=False
+                Dict.update({'owner_tag':owner_tag})
                 for each in temp.split(','):
                     query="select user_names from permitted_user_list where user_id=%d"%int(each)
                     Conn=GetConnection()

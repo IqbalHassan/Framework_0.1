@@ -54,11 +54,19 @@ function get_all_detail(project_id,project_name,user_id){
         }
         message+='</table>';
         message+='</td><td width="50%;">&nbsp;</td></tr>';
-        message+='<tr><td>&nbsp;</td><td><input type="button" id="team_manage" value="Manage Teams" class="m-btn green"/></td><td width="50%;">&nbsp;</td></tr>'
+        message+='<tr><td>&nbsp;';
+        message+='</td><td>';
+        if(data['owner_tag']){
+            message+='<input type="button" id="edit_project" value="Edit Project" class="m-btn purple"/>';
+        }
+        message+='<input type="button" id="team_manage" value="Manage Teams" class="m-btn green"/></td><td width="50%;">&nbsp;</td></tr>'
         message+='</table>';
         $("#detail_div").html(message);
         $('#team_manage').on('click',function(){
             window.location='/Home/'+project_id+'/ManageTeam/';
+        });
+        $('#edit_project').on('click',function(){
+           window.location='/Home/Project/'+project_id+'/';
         });
     });
 }
