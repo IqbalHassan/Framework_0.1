@@ -17447,6 +17447,12 @@ def CreateProject(request):
         'CreateProject.html',
         {},
         context_instance=RequestContext(request))
+def EditProject(request):
+    return render_to_response(
+        'EditProject.html',
+        {},
+        context_instance=RequestContext(request))
+
 def update_team_project(request):
     if request.method=='GET':
         if request.is_ajax():
@@ -17586,34 +17592,35 @@ def ListAllUser(request):
             return HttpResponse(result, mimetype='application/json')
 
 def ListProject(request):
-    if request.method=='GET':
-        if request.is_ajax():
-            query="select project_id, project_name,string_to_array(project_owners,','),cast(project_creationdate as text),project_createdby,cast(project_modifydate as text), project_modifiedby from projects"
+    query="select project_id, project_name,string_to_array(project_owners,','),cast(project_startingdate as text),cast(project_endingdate as text),cast(project_creationdate as text),project_createdby,cast(project_modifydate as text), project_modifiedby from projects"
+    print query
+    Conn=GetConnection()
+    project_detail=DB.GetData(Conn,query,False)
+    Conn.close()
+    final_list=[]
+    for each in project_detail:
+        temp=[]
+        for eachitem in each:
+            if eachitem==None:
+                temp.append('Not Set')
+            else:    
+                temp.append(eachitem)
+        owner_list=temp[2]
+        temp_name=[]
+        for eachitem in owner_list:
+            query="select user_names from permitted_user_list where user_id=%d"%int(eachitem)
             Conn=GetConnection()
-            project_detail=DB.GetData(Conn,query,False)
+            user_name=DB.GetData(Conn,query)
             Conn.close()
-            final_list=[]
-            for each in project_detail:
-                temp=[]
-                for eachitem in each:
-                    temp.append(eachitem)
-                owner_list=temp[2]
-                temp_name=[]
-                for eachitem in owner_list:
-                    query="select user_names from permitted_user_list where user_id=%d"%int(eachitem)
-                    Conn=GetConnection()
-                    user_name=DB.GetData(Conn,query)
-                    Conn.close()
-                    if isinstance(user_name,list) and len(user_name)>0:
-                        temp_name.append(user_name[0])
-                del temp[2]
-                temp.insert(2,",".join(temp_name)) 
-                final_list.append(tuple(temp))               
-            column=['Project ID','Project Name','Project Owner','Creation Date','Created By','Modify Date','Modified By']
-            result={'project_detail':final_list,'column':column}
-            result=simplejson.dumps(result)
-            return HttpResponse(result,mimetype='application/json')
-        
+            if isinstance(user_name,list) and len(user_name)>0:
+                temp_name.append(user_name[0])
+            del temp[2]
+            temp.insert(2,",".join(temp_name)) 
+        final_list.append(tuple(temp))               
+    print final_list
+    column=['Project ID','Project Name','Project Owner','Starting Date','Ending Date','Creation Date','Created By','Modify Date','Modified By']
+    result={'project_detail':final_list,'column':column}
+    return render_to_response('ListProject.html',result,context_instance=RequestContext(request))
 def AssignTesters(request):
     query = "select pul.user_id,user_names,case when user_level='assigned_tester' then 'Tester' end as Designation,default_project,default_team from permitted_user_list pul, default_choice ds, user_info ui where ui.full_name=pul.user_names and cast(ds.user_id as int)=pul.user_id and user_level in ('assigned_tester')"
     Conn = GetConnection()

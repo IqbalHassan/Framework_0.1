@@ -1,0 +1,24 @@
+{%extends 'AdminBaseTemplate.html'%}
+{%block pageindicator%}All Projects{%endblock%}
+{%block title%}Projects{%endblock%}
+{% block content%}
+<table class="two-column-emphasis">
+    <thead>
+        <tr>
+            {% for x in column %}
+                <td><b>{{x}}</b></td>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in project_detail %}
+            <tr>
+                {% for y in x %}
+                    <td>{{y}}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
