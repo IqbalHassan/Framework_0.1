@@ -13898,17 +13898,14 @@ def Edit_Project(request):
             project_description=request.GET.get(u'description','')
             owner_list=request.GET.get(u'owner_list','')
             admin=request.GET.get(u'user','')
-            query="select count(*) from projects where project_id='%s'"%(project_id)
+            query="select count(*),project_owners from projects where project_id='%s' group by project_owners"%(project_id)
             Conn=GetConnection()
-            project_id_count=DB.GetData(Conn,query)
+            project_id_count=DB.GetData(Conn,query,False)
             Conn.close()
-            if len(project_id_count)==1 and project_id_count[0]==1:
+            if len(project_id_count)==1 and project_id_count[0][0]==1:
                 current_date=datetime.datetime.now().date()
-                print current_date
                 starting_date=datetime.datetime.strptime(starting_date,'%B %d, %Y').date()
-                print starting_date
                 ending_date=datetime.datetime.strptime(ending_date,'%B %d, %Y').date()
-                print ending_date
                 sWhereQuery="where project_id='%s'"%(project_id)
                 Dict={
                     'project_name':project_name,
@@ -13923,7 +13920,19 @@ def Edit_Project(request):
                 result=DB.UpdateRecordInTable(Conn,"projects", sWhereQuery,**Dict)
                 Conn.close()
                 if result:
-                    message=True
+                    message=True    
+                    prev_owner=project_id_count[0][1].split(",")
+                    current_owner=owner_list.split(",")
+                    del_owner=list(set(prev_owner)-set(current_owner))
+                    add_owner=list(set(current_owner)-set(prev_owner))
+                    for each in del_owner:
+                        Conn=GetConnection()
+                        print DB.DeleteRecord(Conn,"user_project_map",user_id=int(each),project_id=project_id)
+                        Conn.close()
+                    for each in add_owner:
+                        Conn=GetConnection()
+                        print DB.InsertNewRecordInToTable(Conn, "user_project_map",user_id=int(each),project_id=project_id)
+                        Conn.close()
                 else:
                     message=False
                 result=simplejson.dumps(message)
