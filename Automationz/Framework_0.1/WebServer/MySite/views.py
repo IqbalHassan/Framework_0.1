@@ -13787,14 +13787,14 @@ def Project_Detail(request, project_id):
             for each in zip(project_column, eachitem):
                 Dict.update({each[0]: each[1]})
         temp = Dict['project_owners']
-        first_colon = temp.find(":", 0)
-        second_colon = temp.find(":", first_colon + 1)
-        first_hiphen = temp.find("-", first_colon + 1)
-        testers = temp[first_colon + 1:first_hiphen]
-        testers = testers.split(",")
-        managers = temp[second_colon + 1:]
-        managers = managers.split(",")
-        del Dict['project_owners']
+        user_names_list=[]
+        for each in temp.split(","):
+            query="select user_id,user_names from permitted_user_list where user_id=%d"%(int(each))
+            Conn=GetConnection()
+            user_names=DB.GetData(Conn,query,False)
+            Conn.close()
+            user_names_list.append(user_names[0])
+        Dict.update({'project_owners':user_names_list})
         # get top 5 comments
         query = "select comment_id,attachment from comments where project_id='%s' order by comment_date desc limit 5" % (
             project_id)
@@ -13845,7 +13845,6 @@ def Project_Detail(request, project_id):
         Dict.update(
             {'team_detail': fullTeamDetail, 'rest_team': restTeamDetail})
         Dict.update({'comment': comment})
-        Dict.update({'testers': testers, 'managers': managers})
         Dict.update({'final_comment': final})
         # time.sleep(1)
         return render_to_response(

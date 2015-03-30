@@ -9,7 +9,7 @@
     </tr>
     <tr>
         <td><b>Starting Date:</b></td>
-        <td><input class="textbox"  {% if project_endingdate == ''%}placeholder="Starting date is not set"{% endif %} id="starting_date"/></td>
+        <td><input class="textbox"  {% if project_startingdate == ''%}placeholder="Starting date is not set"{% endif %} id="starting_date"/></td>
     </tr>
     <tr>
         <td><b>Ending Date:</b></td>
@@ -74,7 +74,7 @@
                 return false;
             });
     function formatTestCasesSearch(test_case_details) {
-        var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        var markup ='<div><i class="fa fa-user-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
         return markup;
     };
     $('.delete').on('click',function(){
@@ -96,7 +96,6 @@
                 owner_list.push(user_id);
             }
         });
-        alert(owner_list.join(","));
         $.get('Edit_Project',{
             'project_id':"{{project_id}}",
             'project_name':project_name,
