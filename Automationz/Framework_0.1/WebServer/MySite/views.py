@@ -4,7 +4,6 @@
 # Create your views here.
 from _ast import BitAnd
 import datetime
-import datetime
 import inspect
 import itertools
 from mimetypes import MimeTypes
@@ -13855,8 +13854,80 @@ def Project_Detail(request, project_id):
             context_instance=RequestContext(request))
     except Exception as e:
         print "Exception:", e
-
-
+def EditProjectAdmin(request,project_id):
+    query="select project_name,project_startingdate,project_endingdate,project_description,project_owners from projects where project_id='%s'"%(project_id)
+    Conn=GetConnection()
+    project_detail=DB.GetData(Conn,query,False)
+    Conn.close()
+    print project_detail
+    project_detail=project_detail[0]
+    owners=list(project_detail).pop()
+    project_name=project_detail[0]
+    project_startingdate=project_detail[1]
+    project_startingdate=datetime.datetime.strftime(project_startingdate,'%B %d, %Y')
+    if project_startingdate is None:
+        project_startingdate=''
+    project_endingdate=project_detail[2]
+    project_endingdate=datetime.datetime.strftime(project_endingdate,'%B %d, %Y')
+    if project_endingdate is None:
+        project_endingdate=''
+    project_description=project_detail[3]
+    owner_name=[]
+    for each in owners.split(','):
+        query="select user_id,user_names from permitted_user_list where user_id=%d"%int(each)
+        Conn=GetConnection()
+        user_name=DB.GetData(Conn,query,False)
+        Conn.close()
+        owner_name.append(user_name[0])
+    result={
+        'project_name':project_name,
+        'project_id':project_id,
+        'project_startingdate':project_startingdate,
+        'project_endingdate':project_endingdate,
+        'project_description':project_description,
+        'project_owners':list(set(owner_name))
+    }
+    return render_to_response('EditProject.html',result,context_instance=RequestContext(request))
+def Edit_Project(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            project_name=request.GET.get(u'project_name','')
+            starting_date=request.GET.get(u'starting_date','')
+            ending_date=request.GET.get(u'ending_date','')
+            project_description=request.GET.get(u'description','')
+            owner_list=request.GET.get(u'owner_list','')
+            admin=request.GET.get(u'user','')
+            query="select count(*) from projects where project_id='%s'"%(project_id)
+            Conn=GetConnection()
+            project_id_count=DB.GetData(Conn,query)
+            Conn.close()
+            if len(project_id_count)==1 and project_id_count[0]==1:
+                current_date=datetime.datetime.now().date()
+                print current_date
+                starting_date=datetime.datetime.strptime(starting_date,'%B %d, %Y').date()
+                print starting_date
+                ending_date=datetime.datetime.strptime(ending_date,'%B %d, %Y').date()
+                print ending_date
+                sWhereQuery="where project_id='%s'"%(project_id)
+                Dict={
+                    'project_name':project_name,
+                    'project_description':project_description,
+                    'project_startingdate':starting_date,
+                    'project_endingdate':ending_date,
+                    'project_modifydate':current_date,
+                    'project_modifiedby':admin,
+                    'project_owners':owner_list
+                }
+                Conn=GetConnection()
+                result=DB.UpdateRecordInTable(Conn,"projects", sWhereQuery,**Dict)
+                Conn.close()
+                if result:
+                    message=True
+                else:
+                    message=False
+                result=simplejson.dumps(message)
+                return HttpResponse(result,mimetype='application/json')
 def GetProjectTeamInfo(team_number):
     try:
         fullTeamDetail = []

@@ -8,6 +8,7 @@
             {% for x in column %}
                 <td><b>{{x}}</b></td>
             {% endfor %}
+            <td>&nbsp;</td>
         </tr>
     </thead>
     <tbody>
@@ -16,7 +17,9 @@
                 {% for y in x %}
                     <td>{{y}}</td>
                 {% endfor %}
+                    <td><a href="/Home/superAdminFunction/Project/{{x.0}}/"><img src="/site_media/edit.png" width="20" height="20" style="cursor: pointer"/></a></td>
             </tr>
+
         {% endfor %}
     </tbody>
 </table>
