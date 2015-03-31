@@ -8,14 +8,12 @@
 <script type="text/javascript" src="/site_media/jquery/tiny_mce/tinymce.min.js"></script>
 <script type="text/javascript">
     tinymce.init({
-        //'selector':'textarea',
+        'selector':'#id_comment',
         plugins: [
             "advlist autolink lists charmap print preview anchor",
             "searchreplace visualblocks code fullscreen",
             "insertdatetime table contextmenu paste"
-        ],
-        'editor_selector':'editor'
-
+        ]
     });
 </script>
 <script type="text/javascript" src="/site_media/Jquery/Local/Project_Detail.js"></script>
@@ -89,19 +87,18 @@
                 </tr>
             </table>
         </div>
-        <!--<h3><b>Comments</b></h3>
+        <h3><b>Comments</b></h3>
         <div class="tabs-div" align="center">
             <table width="100%" class="two-column-emphasis">
                 <tr>
-                    <td width="100%">
+                    <td>
                         {% if final_comment %}
                         <table width="100%" align="left">
                             {% for x in final_comment%}
                             <tr>
                                 <td>
-                                    <b style="font-size: 150%;">{{x.3}}</b> wrote:
-                                    <b>" {{x.0|removetags:""|safe}} "</b>
-                                    at {{x.2}}
+                                    <b style="font-size: 150%;">{{x.1}}</b> wrote:
+                                    " {{x.0|removetags:""|safe}} " at {{x.2}}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -119,7 +116,7 @@
                         <form action="{% url 'MySite.views.FileUpload' project_id %}" method="post" enctype="multipart/form-data">
                             {%csrf_token%}
                             <div style="width:50%;margin-top: 2%">
-                                <table>
+                                <table class="editor">
                                     {{comment}}
                                     <tr><td>&nbsp;</td><td><input type="submit" class="m-btn green" value="Comment"/></td></tr>
                                 </table>
@@ -128,7 +125,7 @@
                     </td>
                 </tr>
             </table>
-        </div>-->
+        </div>
         <!--
         <h3><b>Teams</b></h3>
         <div class="tabs-div" align="left" width="100%">

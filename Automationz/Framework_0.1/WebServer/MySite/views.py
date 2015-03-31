@@ -13819,8 +13819,8 @@ def Project_Detail(request, project_id):
                 temp_comment = DB.GetData(Conn, query, False)
                 Conn.close()
                 # time.sleep(0.5)
-                for each in temp_comment:
-                    for eachitem in each:
+                for eachitemtemp in temp_comment:
+                    for eachitem in eachitemtemp:
                         temp.append(eachitem)
                 temp.append('')
                 temp = tuple(temp)
@@ -14078,7 +14078,6 @@ def Get_Projects(request):
                 print "Exception:", e
 def FileUpload(request, project_id):
     try:
-        print request
         print project_id
         # Get the rank of the person
         query = "select project_owners from projects where project_id='%s'" % (
@@ -14087,41 +14086,14 @@ def FileUpload(request, project_id):
         project_owners = DB.GetData(Conn, query)
         Conn.close()
         temp = project_owners[0]
-        first_colon = temp.find(":", 0)
-        second_colon = temp.find(":", first_colon + 1)
-        first_hiphen = temp.find("-", first_colon + 1)
-        testers = temp[first_colon + 1:first_hiphen]
-        testers = testers.split(",")
-        managers = temp[second_colon + 1:]
-        managers = managers.split(",")
-        owners = []
-        for each in testers:
-            if each not in owners:
-                owners.append(each)
-        for each in managers:
-            if each not in owners:
-                owners.append(each)
-        query = "select distinct name,rank from team_info where cast(team_id as text) in(select team_id from project_team_map where project_id='%s')" % project_id
-        Conn = GetConnection()
-        rest_rank = DB.GetData(Conn, query, False)
-        Conn.close()
-        members = []
-        for each in rest_rank:
-            if each[0] not in owners:
-                members.append(each[0])
+        owners=temp.split(',')
+        user_id=request.POST['commenter_id']
         user_name = request.POST['commented_by']
         rank = ""
-        if user_name in owners:
+        if user_id in owners:
             rank = "Owner"
-        if user_name in members:
-            rank = "Member"
-        query = "select project_createdby from projects where project_id='%s'" % project_id
-        Conn = GetConnection()
-        created_by = DB.GetData(Conn, query)
-        Conn.close()
-        if user_name in created_by:
-            rank = "Creator"
-        # form file name
+        else:
+            rank='Member'
         if rank != "":
             now = datetime.datetime.now().date()
             dateFolder = os.path.join(MEDIA_ROOT, str(now.year))
@@ -14262,8 +14234,8 @@ def commentView(request, project_id):
                 temp_comment = DB.GetData(Conn, query, False)
                 Conn.close()
                 temp = []
-                for each in temp_comment:
-                    for eachitem in each:
+                for eachitemtemp in temp_comment:
+                    for eachitem in eachitemtemp:
                         temp.append(eachitem)
                 temp.append('')
                 temp = tuple(temp)
