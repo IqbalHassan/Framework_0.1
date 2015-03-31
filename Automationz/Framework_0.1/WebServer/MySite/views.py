@@ -13970,9 +13970,7 @@ def Small_Project_Detail(request):
     try:
         if request.is_ajax():
             if request.method == 'GET':
-                reg=re.compile('user_id=(\d+)')
-                user_id=list(set(reg.findall(request.META['HTTP_COOKIE'])))[0]
-                print user_id
+                user_id=request.GET.get(u'user_id','')
                 name = request.GET.get(u'name', '')
                 query = "select * from projects where project_name='%s'" % name.strip()
                 Conn = GetConnection()
@@ -17515,8 +17513,7 @@ def specific_dependency_settings(request):
                     return HttpResponse(result, mimetype='application/json')
     except Exception as e:
         PassMessasge(sModuleInfo, e, 3)
-
-
+        
 def admin_page(request):
     return render_to_response(
         'superAdmin.html',

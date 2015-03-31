@@ -27,7 +27,8 @@ function GetProjects(){
 
 function get_all_detail(project_id,project_name,user_id){
     $.get("Small_Project_Detail",{
-        'name':project_name
+        'name':project_name,
+        'user_id':user_id
     },function(data){
         var project_name=data['project_name'];
         var project_description=data['project_description'];
