@@ -13247,51 +13247,57 @@ def ManageRequirement(request):
 
 
 def ManageTeam(request,project_id):
-    reg=re.compile('user_id=(\d+)')
-    user_id=list(set(reg.findall(request.META['HTTP_COOKIE'])))[0]
-    print user_id
-    #check if the owner of this project
-    query="select project_owners from projects where project_id='%s'"%(project_id.strip())
-    Conn=GetConnection()
-    project_owners=DB.GetData(Conn,query)
-    Conn.close()
-    if user_id in project_owners[0].split(","):
-        owner_tag=True
-    else:
-        owner_tag=False
-    if owner_tag:
-        #get all the assigned team
-        query="select t.id,t.team_name  from project_team_map ptm,projects p,team t where p.project_id=ptm.project_id and ptm.project_id='%s' and t.id=cast(ptm.team_id as int)"%(project_id.strip())
-        Conn=GetConnection()
-        team_list=DB.GetData(Conn,query,False)
-        Conn.close()
-        #get the global team
-        query="select id,team_name from team where project_id='%s'"%(project_id)
-        Conn=GetConnection()
-        global_team_list=DB.GetData(Conn,query,False)
-        Conn.close()
-        global_team_list=list(set(global_team_list)-set(team_list))
-    else:
-        query="select id,team_name from project_team_map ptm, team_info ti, team t where ptm.team_id=cast(ti.team_id as text) and t.id=ti.team_id and ptm.team_id=cast(t.id as text) and ti.user_id='%s' and ptm.project_id='%s'"%(user_id.strip(),project_id)
-        Conn=GetConnection()
-        team_list=DB.GetData(Conn,query,False)
-        Conn.close()
-        global_team_list=[]
-        
-    query="select project_name from projects where project_id='%s'"%(project_id.strip())
-    Conn=GetConnection()
-    project_name=DB.GetData(Conn,query)
-    Conn.close()
     Dict={
-        'owner':owner_tag,
-        'team_list':team_list,
-        'global_team_list':global_team_list,
-        'project_id':project_id.strip(),
-        'project_name':project_name[0]
+        'project_id':project_id
     }
-    
     return render_to_response('ManageTeam.html',Dict)
 
+def GetAllTeam(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            user_id=request.GET.get(u'user_id','')
+            project_id=request.GET.get(u'project_id','')
+            #check if the owner of this project
+            query="select project_owners from projects where project_id='%s'"%(project_id.strip())
+            Conn=GetConnection()
+            project_owners=DB.GetData(Conn,query)
+            Conn.close()
+            if user_id in project_owners[0].split(","):
+                owner_tag=True
+            else:
+                owner_tag=False
+            if owner_tag:
+                #get all the assigned team
+                query="select t.id,t.team_name  from project_team_map ptm,projects p,team t where p.project_id=ptm.project_id and ptm.project_id='%s' and t.id=cast(ptm.team_id as int)"%(project_id.strip())
+                Conn=GetConnection()
+                team_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                #get the global team
+                query="select id,team_name from team where project_id='%s'"%(project_id)
+                Conn=GetConnection()
+                global_team_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                global_team_list=list(set(global_team_list)-set(team_list))
+            else:
+                query="select id,team_name from project_team_map ptm, team_info ti, team t where ptm.team_id=cast(ti.team_id as text) and t.id=ti.team_id and ptm.team_id=cast(t.id as text) and ti.user_id='%s' and ptm.project_id='%s'"%(user_id.strip(),project_id)
+                Conn=GetConnection()
+                team_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                global_team_list=[]
+                
+            query="select project_name from projects where project_id='%s'"%(project_id.strip())
+            Conn=GetConnection()
+            project_name=DB.GetData(Conn,query)
+            Conn.close()
+            Dict={
+                'owner':owner_tag,
+                'team_list':team_list,
+                'global_team_list':global_team_list,
+                'project_id':project_id.strip(),
+                'project_name':project_name[0]
+            }
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
 
 def GetTesterManager(request):
     if request.is_ajax():

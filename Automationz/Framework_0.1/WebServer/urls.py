@@ -381,6 +381,7 @@ urlpatterns += patterns('',
     url(r'^Home/ViewEditLabel/(?P<label_id>[^/]*)/$',ViewEditLabel),
     url(r'^Home/.*/getLabelinfo/$',getLabelinfo),
     url(r'^Home/.*/EditLabel/$',EditLabel),
+    url(r'^Home/.*/GetAllTeam/$',GetAllTeam),
 	)
 
 
