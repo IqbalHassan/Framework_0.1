@@ -3,8 +3,8 @@ sys.path.append("..")
 
 username='riz'
 password='.'
-project='PROJ-16'
-team='Team A'
+project='PROJ-29'
+team='WebAutomation'
 server='127.0.0.1'
 port=5432
 

@@ -788,7 +788,7 @@ def main():
             #Delete the folder
             FL.DeleteFolder(config.get('sectionOne','test_case_folder'))
             #upload will go here.
-            upload_link='http://localhost:8000/Home/UploadZip'
+            """upload_link='http://localhost:8000/Home/UploadZip'
             register_openers()
             datagen, headers = multipart_encode({
                 'categoryID' : 1,
@@ -797,7 +797,7 @@ def main():
                 'name'       : sTestResultsRunId,
                 'file1'      : open(config.get('sectionOne','test_case_folder') + ".zip")
             })
-            request = urllib2.Request(upload_link, datagen, headers)
+            request = urllib2.Request(upload_link, datagen, headers)"""
             #Find Test case failed reason
             try:
                 conn=DBUtil.ConnectToDataBase()
@@ -879,7 +879,7 @@ def main():
                 conn.close()
                 #Update test_run_env schedule table with status so that this Test Set will not be run again
                 conn=DBUtil.ConnectToDataBase()
-                print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete')
+                print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete',email_flag=True)
                 conn.close()
                 print "Test Set Completed"
             #CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
