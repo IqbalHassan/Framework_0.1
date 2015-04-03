@@ -1,16 +1,9 @@
 import time
-Enviroment='Production'
-Enviroment='Development'
-
+import Global
 user='postgres'
 password_user='password'
 db_name='postgres'
-
-if Enviroment=='Production':
-    server='135.23.123.206'
-
-if Enviroment=='Development':
-    server='127.0.0.1'
+server=Global.get_ip()
 
 import DataBaseUtilities as DB
 import EmailNotify

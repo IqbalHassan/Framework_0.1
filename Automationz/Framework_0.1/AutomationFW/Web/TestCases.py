@@ -52,9 +52,14 @@ def Test_Case_Delete_A_Course_Test_Case(course_name):
     print Delete_A_Course(course_name)
     
 
-
+def Create_New_Test_Case(course_name,short_name,course_id,cleanup=False):
+    print BrowserSelection('Firefox')
+    print OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
+    print Login('admin','R@1ndrops', 'Admin User')   
+    print Create_A_New_Course(course_name, short_name, course_id,cleanup)
+    
 def Test_Suite():
-    Test_Case_Delete_A_Course_Test_Case("auto1")
-
+    #Test_Case_Delete_A_Course_Test_Case("auto1")
+    Create_New_Test_Case("Computer Graphics","CSE-409","409")
 
 Test_Suite()

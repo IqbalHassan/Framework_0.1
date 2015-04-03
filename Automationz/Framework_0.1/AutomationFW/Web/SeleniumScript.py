@@ -635,7 +635,7 @@ def Delete_A_Course(course_name):
         CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3,local_run)
         return "failed"
 
-def Create_A_New_Course(course_name, short_name, course_id, cleanup='true'):
+def Create_A_New_Course(course_name, short_name, course_id, cleanup=True):
     '''
     it assumes that you are logged in as Admin
     Editing is on
@@ -643,6 +643,7 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup='true'):
     course_name =  name of the course. 
     cleanup = true if you want to delete old name or false if you want to just keep the name if it already there
     '''
+    """
     try:
         sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
         Click_Element_By_Name('Home')
@@ -670,6 +671,81 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup='true'):
         Click_By_Parameter_And_Value("value","Save changes")
         course_name_verify = "%s: 0 enrolled users"%course_name
         Verify_Text_Message_By_Text(course_name_verify)
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3,local_run)
+        return "failed"
+    
+    """
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        Expand_Menu_By_Name('Site administration')
+        time.sleep(3)
+        CommonUtil.ExecLog(sModuleInfo, "Find site admin top level element", 1, local_run)
+        site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
+        parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))        
+        CommonUtil.ExecLog(sModuleInfo, "Expand Courses from site admin menu", 1, local_run)
+        Expand_Menu_By_Name("Courses",grand_parent_site_admin)
+        CommonUtil.ExecLog(sModuleInfo, "Manage courses and categories", 1, local_run)
+        Click_Element_By_Name('Manage courses and categories',grand_parent_site_admin)
+        CommonUtil.ExecLog(sModuleInfo, "Search for course: %s"%course_name, 1,local_run)        
+        Set_Text_Field_Value_By_ID('coursesearchbox',course_name)
+        Click_By_Parameter_And_Value("value","Go")
+        time.sleep(5)
+        CommonUtil.ExecLog(sModuleInfo, "Waiting for search result page to show up", 1, local_run)          
+        search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-listing')))
+        CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course_name, 1,local_run)  
+        try:
+            course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
+            CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 3,local_run)
+            if isinstance(cleanup, bool) and cleanup:
+                CommonUtil.ExecLog(sModuleInfo, "Deleting your course: %s"%course_name, 1,local_run)
+                course_element_row = WebDriverWait(course_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+                Click_By_Parameter_And_Value("alt","Delete",course_element_row)
+                time.sleep(5)
+                Click_By_Parameter_And_Value ("value","Continue")
+                CommonUtil.ExecLog(sModuleInfo, "Successfully deleted your course: %s"%course_name, 1,local_run)
+                CommonUtil.ExecLog(sModuleInfo, "Verifying if course is deleted completely", 1, local_run)
+                delete_result =  Verify_Text_Message_By_Text('%s has been completely deleted'%short_name)
+                if delete_result == "passed":
+                    CommonUtil.ExecLog(sModuleInfo, "Completely deleted your course: %s"%course_name, 1,local_run)
+                else:
+                    CommonUtil.ExecLog(sModuleInfo, "Could not verify if course was deleted completely", 3, local_run)
+                    return "failed"
+            else:
+                CommonUtil.ExecLog(sModuleInfo, "Found the course but no delete is requested", 1,local_run)
+                return "failed"
+        except:
+            CommonUtil.ExecLog(sModuleInfo, "Unable to find your course.", 1, local_run)
+        print "Create you course now"
+        CommonUtil.ExecLog(sModuleInfo, "Clicking Manage Course and Categories", 1, local_run)
+        Click_By_Parameter_And_Value("class","tree_item leaf active_tree_node")
+        CommonUtil.ExecLog(sModuleInfo, "Clicking Miscellaneous", 1, local_run)
+        miscellaneous_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME,'ml')))
+        Click_Element_By_Name('Miscellaneous',miscellaneous_admin_element)
+        CommonUtil.ExecLog(sModuleInfo, "Clicking New Course Button", 1, local_run)
+        course_parent_element=WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME,'course-listing-actions')))
+        Click_Element_By_Name("Create new course", course_parent_element)
+        CommonUtil.ExecLog(sModuleInfo, "Entering Course Full Name", 1, local_run)
+        Set_Text_Field_Value_By_ID('id_fullname',course_name)
+        CommonUtil.ExecLog(sModuleInfo, "Entering Course Short Name", 1, local_run)
+        Set_Text_Field_Value_By_ID('id_shortname',short_name)
+        CommonUtil.ExecLog(sModuleInfo, "Entering Course ID", 1, local_run)
+        Set_Text_Field_Value_By_ID('id_idnumber',course_id)        
+        CommonUtil.ExecLog(sModuleInfo, "Clicking Save Changes Button", 1, local_run)
+        submit_button=WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID,'id_submitbutton')))
+        submit_button.click()
+        #checking if its' created successfully
+        create_result =  WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME,'homelink')))
+        if create_result.text == short_name:
+            CommonUtil.ExecLog(sModuleInfo, "Successfully created your course: %s"%course_name, 1,local_run)
+            return "passed"
+        else:
+            CommonUtil.ExecLog(sModuleInfo, "Could not verify if course was created successfully", 3, local_run)
+            return "failed"
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()        
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
