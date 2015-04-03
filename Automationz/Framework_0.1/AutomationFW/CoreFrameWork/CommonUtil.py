@@ -29,64 +29,75 @@ elif os.name == 'posix':
     import plistlib
     from appscript import *
     
-def ExecLog(sModuleInfo, sDetails, iLogLevel=1, sStatus="",):
+def ExecLog(sModuleInfo, sDetails, iLogLevel=1, local_run=False, sStatus=""):
     """
     1- info
     2 - warning
     3 - error
     """
-    if Global.sTestStepExecLogId=='':
-        #global_config.ini file get is dynamically
-        file_path=os.getcwd()+os.sep+'global_config.ini'
-        config=ConfigParser.ConfigParser()
-        config.read(file_path)
-        log_id=config.get('sectionOne','sTestStepExecLogId')
-    else:
-        log_id=Global.sTestStepExecLogId
-    
-    config=ConfigParser.ConfigParser()
-    file_path=os.getcwd()+os.sep+'global_config.ini' 
-    config.read(file_path)
     try:
-        FWLogFile = config.get('sectionOne','log_folder')+os.sep+'temp.log'
-    except NoOptionError,e:
-        FWLogFile=config.get('sectionOne','temp_run_file_path')+os.sep+'execlog.log'
-    
-    logger = logging.getLogger(__name__)
-    if os.name == 'posix':
-        try:
-            hdlr = logging.FileHandler(FWLogFile)
-        except:
-            pass
-    elif os.name == 'nt':
-        hdlr = logging.FileHandler(FWLogFile)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    hdlr.setFormatter(formatter)
-    logger.addHandler(hdlr)
-    logger.setLevel(logging.DEBUG)
-    
-    conn = DB.ConnectToDataBase()
-    sDetails = to_unicode(sDetails)
-    if iLogLevel == 1:
-        logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=log_id, modulename=sModuleInfo, details=sDetails, status="Passed", loglevel=iLogLevel)
-
-    elif iLogLevel == 2:
-        logger.warning(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=log_id, modulename=sModuleInfo, details=sDetails, status="Warning", loglevel=iLogLevel)
-
-    elif iLogLevel == 3:
-        logger.error(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-        DB.InsertNewRecordInToTable(conn, 'execution_log', logid=log_id, modulename=sModuleInfo, details=sDetails, status="Error", loglevel=iLogLevel)
-
-    elif iLogLevel == 4:
-        logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
-
-    else:
-        print "unknown log level"
-    
-    logger.removeHandler(hdlr)
-    conn.close()
+        if local_run == False:
+            print sModuleInfo, ":", sDetails
+            if Global.sTestStepExecLogId=='':
+                #global_config.ini file get is dynamically
+                file_path=os.getcwd()+os.sep+'global_config.ini'
+                config=ConfigParser.ConfigParser()
+                config.read(file_path)
+                log_id=config.get('sectionOne','sTestStepExecLogId')
+            else:
+                log_id=Global.sTestStepExecLogId
+            
+            config=ConfigParser.ConfigParser()
+            file_path=os.getcwd()+os.sep+'global_config.ini' 
+            config.read(file_path)
+            try:
+                FWLogFile = config.get('sectionOne','log_folder')+os.sep+'temp.log'
+            except NoOptionError,e:
+                FWLogFile=config.get('sectionOne','temp_run_file_path')+os.sep+'execlog.log'
+            
+            logger = logging.getLogger(__name__)
+            if os.name == 'posix':
+                try:
+                    hdlr = logging.FileHandler(FWLogFile)
+                except:
+                    pass
+            elif os.name == 'nt':
+                hdlr = logging.FileHandler(FWLogFile)
+            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+            hdlr.setFormatter(formatter)
+            logger.addHandler(hdlr)
+            logger.setLevel(logging.DEBUG)
+            
+            conn = DB.ConnectToDataBase()
+            sDetails = to_unicode(sDetails)
+            if iLogLevel == 1:
+                logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
+                DB.InsertNewRecordInToTable(conn, 'execution_log', logid=log_id, modulename=sModuleInfo, details=sDetails, status="Passed", loglevel=iLogLevel)
+        
+            elif iLogLevel == 2:
+                logger.warning(sModuleInfo + ' - ' + sDetails + '' + sStatus)
+                DB.InsertNewRecordInToTable(conn, 'execution_log', logid=log_id, modulename=sModuleInfo, details=sDetails, status="Warning", loglevel=iLogLevel)
+        
+            elif iLogLevel == 3:
+                logger.error(sModuleInfo + ' - ' + sDetails + '' + sStatus)
+                DB.InsertNewRecordInToTable(conn, 'execution_log', logid=log_id, modulename=sModuleInfo, details=sDetails, status="Error", loglevel=iLogLevel)
+        
+            elif iLogLevel == 4:
+                logger.info(sModuleInfo + ' - ' + sDetails + '' + sStatus)
+        
+            else:
+                print "unknown log level"
+            
+            logger.removeHandler(hdlr)
+            conn.close()
+        else:
+            print sModuleInfo, ":", sDetails
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        
 
 def ClearLog():
     try:
@@ -887,37 +898,38 @@ def InstallUninstallBuild(installLocation):
         print "Exception %s" % e
         return 0
 
-def TakeScreenShot(ImageName):
+def TakeScreenShot(ImageName,local_run=False):
     """
     Takes screenshot and saves it as jpg file
     name is the name of the file to be saved appended with timestamp
     #TakeScreenShot("TestStepName")
     """
     try:
-        config=ConfigParser.ConfigParser()
-        config.read(os.getcwd()+os.sep+'global_config.ini')
-        image_folder=config.get('sectionOne','screen_capture_folder')
-        #ImageFolder = Global.TCLogFolder + os.sep + "Screenshots"
-        ImageFolder=image_folder
-        if os.name == 'posix':
-            ImageFolder = FileUtil.ConvertWinPathToMac(ImageFolder)
-            path = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".png"
-
-            newpath = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".jpg"
-            path = path.replace(" ", "_")
-            newpath = newpath.replace(" ", "_")
-            os.system("screencapture \"" + path + "\"")
-            #reduce size of image
-            os.system("sips -s format jpeg -s formatOptions 30 " + path + " -o " + newpath)
-            os.system("rm " + path)
-        elif os.name == 'nt':
-            path = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".jpg"
-            img = ImageGrab.grab()
-            basewidth = 1200
-            wpercent = (basewidth/float(img.size[0]))
-            hsize = int((float(img.size[1])*float(wpercent)))
-            img = img.resize((basewidth,hsize), Image.ANTIALIAS)
-            img.save(path, 'JPEG')
+        if local_run == False:
+            config=ConfigParser.ConfigParser()
+            config.read(os.getcwd()+os.sep+'global_config.ini')
+            image_folder=config.get('sectionOne','screen_capture_folder')
+            #ImageFolder = Global.TCLogFolder + os.sep + "Screenshots"
+            ImageFolder=image_folder
+            if os.name == 'posix':
+                ImageFolder = FileUtil.ConvertWinPathToMac(ImageFolder)
+                path = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".png"
+    
+                newpath = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".jpg"
+                path = path.replace(" ", "_")
+                newpath = newpath.replace(" ", "_")
+                os.system("screencapture \"" + path + "\"")
+                #reduce size of image
+                os.system("sips -s format jpeg -s formatOptions 30 " + path + " -o " + newpath)
+                os.system("rm " + path)
+            elif os.name == 'nt':
+                path = ImageFolder + os.sep + TimeStamp("utc") + "_" + ImageName + ".jpg"
+                img = ImageGrab.grab()
+                basewidth = 1200
+                wpercent = (basewidth/float(img.size[0]))
+                hsize = int((float(img.size[1])*float(wpercent)))
+                img = img.resize((basewidth,hsize), Image.ANTIALIAS)
+                img.save(path, 'JPEG')
     except Exception, e:
         print "Exception : ", e
 
