@@ -9,7 +9,6 @@ import time
 import inspect
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 #Ver1.0
 from selenium.webdriver.common.by import By
@@ -18,7 +17,7 @@ from CoreFrameWork import CommonUtil
 from selenium.webdriver.support import expected_conditions as EC
 
 global WebDriver_Wait 
-WebDriver_Wait = 90
+WebDriver_Wait = 60
 
 def BrowserSelection(browser):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -34,7 +33,7 @@ def BrowserSelection(browser):
             sBrowser.implicitly_wait(WebDriver_Wait)
             sBrowser.maximize_window()
             print "Started Chrome Browser"
-            CommonUtil.ExecLog(sModuleInfo, "Started Chrome Browser", 1)
+            CommonUtil..ExecLog(sModuleInfo, "Started Chrome Browser", 1)
             return "passed"
         elif browser == 'firefox':
             sBrowser = webdriver.Firefox()
@@ -442,6 +441,8 @@ def Verify_Text_Message_By_Text(expected_text):
             print "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text)
             CommonUtil.ExecLog(sModuleInfo, "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text), 1)
             return "passed"            
+        else:
+            return "failed"
      
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()        
@@ -510,47 +511,6 @@ def Course_Settings_Time_Limit(completion_time_id, completion_time_value,daily_t
 
 
         
-def Create_A_New_Course(course_name, short_name, course_id, cleanup='true'):
-    '''
-    it assumes that you are logged in as Admin
-    This function accepts: 
-    course_name =  name of the course. 
-    cleanup = true if you want to delete old name or false if you want to just keep the name if it already there
-    '''
-    try:
-        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-        Click_Element_By_Name('Home')
-        course_exists = Course_Exists(course_name)
-        if (course_exists == "passed") and (cleanup=='true'):
-            print "Existing course found and will be deleted"
-            result = Delete_A_Course(course_name)
-            if result == "failed":
-                print "Unable to delete an existing course"
-                return "failed"
-        elif (course_exists == "passed") and (cleanup!='true'):
-            print "Course already exists and clean up was set not to re-create"
-            return "passed"
-        else:
-            print "Course name was not found and will be created"
-        Turn_Editing_On_OR_Off("on")
-        Expand_Menu_By_Name('Site administration')
-        Expand_Menu_By_ID('yui_3_15_0_3_1424235876713_5248')
-        Click_Element_By_Name('Manage courses and categories')
-        Click_Element_By_Name('Miscellaneous')
-        Click_Element_By_Name('Create new course')
-        Set_Text_Field_Value_By_ID('id_fullname',course_name)
-        Set_Text_Field_Value_By_ID('id_shortname',short_name)
-        Set_Text_Field_Value_By_ID('id_idnumber',course_id)
-        Click_By_Parameter_And_Value("value","Save changes")
-        course_name_verify = "%s: 0 enrolled users"%course_name
-        Verify_Text_Message_By_Text(course_name_verify)
-    except Exception, e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()        
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
-        print Error_Detail
-        CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3)
-        return "failed"
 
 
 def Turn_Editing_On_OR_Off(on_off):
@@ -637,10 +597,10 @@ def Click_By_Parameter_And_Value(parameter,value, parent=False):
         
         if isinstance(parent, (bool)) == True:
             #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
-            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//input[@%s='%s']"%(parameter,value))))
+            Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[@%s='%s']"%(parameter,value))))
         else:
             #Element = WebDriverWait(parent, WebDriver_Wait).until(lambda driver :parent.find_element_by_xpath("//input[@%s='%s']"%(parameter,value)))
-            Element = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//input[@%s='%s']"%(parameter,value))))
+            Element = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[@%s='%s']"%(parameter,value))))
         CommonUtil.ExecLog(sModuleInfo, "Found element and clicking..", 1)
         Element.click()
         #WebDriverWait(Element, WebDriver_Wait).until(lambda driver : Element.click())
@@ -764,34 +724,97 @@ def Tear_Down():
         return "failed"
 
 def Delete_A_Course(course_name):
-    BrowserSelection('firefox')
-    OpenLink('http://csdev-iqbal.jbldev.com/moodle/','csdev-iqbal')
-    Login('admin','R@1ndrops', 'Admin User')
-    Turn_Editing_On_OR_Off('on')
-    Expand_Menu_By_Name('Site administration')
-
-    site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_elements_by_xpath("//*[text()='Site administration']"))
+    try:
+        Expand_Menu_By_Name('Site administration')
+        time.sleep(3)
+        CommonUtil.ExecLog(sModuleInfo, "Find site admin top level element", 1)
+        site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
+        parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))        
+        CommonUtil.ExecLog(sModuleInfo, "Expand Courses from site admin menu", 1)
+        Expand_Menu_By_Name("Courses",grand_parent_site_admin)
+        CommonUtil.ExecLog(sModuleInfo, "Manage courses and categories", 1)
+        Click_Element_By_Name('Manage courses and categories',grand_parent_site_admin)
+        CommonUtil.ExecLog(sModuleInfo, "Search for course: %s"%course_name, 1)        
+        Set_Text_Field_Value_By_ID('coursesearchbox',course_name)
+        Click_By_Parameter_And_Value("value","Go")
+        time.sleep(3)
+        CommonUtil.ExecLog(sModuleInfo, "Waiting for search result page to show up", 1)          
+        search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-listing')))
+        CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course_name, 1)  
+        try:
+            course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
+            CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 1)
+        except:
+            CommonUtil.ExecLog(sModuleInfo, "Unable to find your course.  Make sure course exists", 3)"
+            return "failed"
+        CommonUtil.ExecLog(sModuleInfo, "Deleting your course: %s"%course_name, 1)
+        course_element_row = WebDriverWait(course_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        Click_By_Parameter_And_Value("alt","Delete",course_element_row)
+        time.sleep(5)
+        Click_By_Parameter_And_Value ("value","Continue")
+        CommonUtil.ExecLog(sModuleInfo, "Successfully deleted your course: %s"%course_name, 1)
+        CommonUtil.ExecLog(sModuleInfo, "Verifying if course is deleted completely", 1)
+        delete_result =  Verify_Text_Message_By_Text('%s has been completely deleted'%course_name)
+        if delete_result == "passed":
+            CommonUtil.ExecLog(sModuleInfo, "Completely deleted your course: %s"%course_name, 1)
+            return "passed"
+        else:
+            CommonUtil.ExecLog(sModuleInfo, "Could not verify if course was deleted completely", 3)
+            return "failed"
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3)
+        return "failed"
     
-    time.sleep(3)
-    parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(lambda driver : site_admin_element.find_element_by_xpath(".."))
-    grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(lambda driver : parent_site_admin.find_element_by_xpath(".."))
+    
 
-    Expand_Menu_By_Name("Courses",grand_parent_site_admin)
-    time.sleep(3)
-    Click_Element_By_Name('Manage courses and categories',grand_parent_site_admin)
-
-    Set_Text_Field_Value_By_ID('coursesearchbox',course_name)
-
-    Click_By_Parameter_And_Value("value","Go")
-
-    search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath("//input[@class='course-listing']"))
-    course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(lambda driver :search_course_list.find_elements_by_xpath("//*[text()='%s']"%course_name))
-    course_element_row = WebDriverWait(course_element, WebDriver_Wait).until(lambda driver : course_element.find_element_by_xpath(".."))
-
-    Click_By_Parameter_And_Value("alt","Delete",course_element_row)
-
+def Create_A_New_Course(course_name, short_name, course_id, cleanup='true'):
+    '''
+    it assumes that you are logged in as Admin
+    Editing is on
+    This function accepts: 
+    course_name =  name of the course. 
+    cleanup = true if you want to delete old name or false if you want to just keep the name if it already there
+    '''
+    try:
+        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+        Click_Element_By_Name('Home')
+        course_exists = Course_Exists(course_name)
+        if (course_exists == "passed") and (cleanup=='true'):
+            print "Existing course found and will be deleted"
+            result = Delete_A_Course(course_name)
+            if result == "failed":
+                print "Unable to delete an existing course"
+                return "failed"
+        elif (course_exists == "passed") and (cleanup!='true'):
+            print "Course already exists and clean up was set not to re-create"
+            return "passed"
+        else:
+            print "Course name was not found and will be created"
+        Turn_Editing_On_OR_Off("on")
+        Expand_Menu_By_Name('Site administration')
+        Expand_Menu_By_ID('yui_3_15_0_3_1424235876713_5248')
+        Click_Element_By_Name('Manage courses and categories')
+        Click_Element_By_Name('Miscellaneous')
+        Click_Element_By_Name('Create new course')
+        Set_Text_Field_Value_By_ID('id_fullname',course_name)
+        Set_Text_Field_Value_By_ID('id_shortname',short_name)
+        Set_Text_Field_Value_By_ID('id_idnumber',course_id)
+        Click_By_Parameter_And_Value("value","Save changes")
+        course_name_verify = "%s: 0 enrolled users"%course_name
+        Verify_Text_Message_By_Text(course_name_verify)
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        print Error_Detail
+        CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3)
+        return "failed"
     
     
-    print "Debug"
-    
-#Delete_A_Course("auto1")
+
+

@@ -130,6 +130,16 @@ def edit_course_from_course_settings(dependency,step_data):
     except:
         return "Failed"
 
+def delete_a_course(dependency,step_data):
+    try:        
+        first_data_set=step_data[0]
+        course_name=first_data_set[0][1]
+        sTestStepReturnStatus = SeleniumScript.Delete_A_Course(course_name)
+        print sTestStepReturnStatus
+        return sTestStepReturnStatus       
+    except:
+        return "Failed"
+
 def tear_down(dependency,step_data):
     try:        
         sTestStepReturnStatus = SeleniumScript.Tear_Down()
