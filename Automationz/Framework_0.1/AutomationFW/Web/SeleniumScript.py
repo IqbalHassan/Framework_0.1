@@ -642,41 +642,6 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup=True):
     course_name =  name of the course. 
     cleanup = true if you want to delete old name or false if you want to just keep the name if it already there
     '''
-    """
-    try:
-        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-        Click_Element_By_Name('Home')
-        course_exists = Course_Exists(course_name)
-        if (course_exists == "passed") and (cleanup=='true'):
-            print "Existing course found and will be deleted"
-            result = Delete_A_Course(course_name)
-            if result == "failed":
-                print "Unable to delete an existing course"
-                return "failed"
-        elif (course_exists == "passed") and (cleanup!='true'):
-            print "Course already exists and clean up was set not to re-create"
-            return "passed"
-        else:
-            print "Course name was not found and will be created"
-        Turn_Editing_On_OR_Off("on")
-        Expand_Menu_By_Name('Site administration')
-        Expand_Menu_By_ID('yui_3_15_0_3_1424235876713_5248')
-        Click_Element_By_Name('Manage courses and categories')
-        Click_Element_By_Name('Miscellaneous')
-        Click_Element_By_Name('Create new course')
-        Set_Text_Field_Value_By_ID('id_fullname',course_name)
-        Set_Text_Field_Value_By_ID('id_shortname',short_name)
-        Set_Text_Field_Value_By_ID('id_idnumber',course_id)
-        Click_By_Parameter_And_Value("value","Save changes")
-        course_name_verify = "%s: 0 enrolled users"%course_name
-        Verify_Text_Message_By_Text(course_name_verify)
-    except Exception, e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()        
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
-        CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3,local_run)
-        return "failed"
-    """
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         Expand_Menu_By_Name('Site administration')
