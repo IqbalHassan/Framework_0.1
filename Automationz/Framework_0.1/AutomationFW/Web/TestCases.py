@@ -60,6 +60,6 @@ def Create_New_Test_Case(course_name,short_name,course_id,cleanup=False):
     
 def Test_Suite():
     #Test_Case_Delete_A_Course_Test_Case("auto1")
-    Create_New_Test_Case("Computer Graphics","CSE-409","409")
+    Create_New_Test_Case("auto1","auto1","auto1","true")
 
 Test_Suite()

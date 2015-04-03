@@ -636,7 +636,7 @@ def Delete_A_Course(course_name):
         CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3,local_run)
         return "failed"
 
-def Create_A_New_Course(course_name, short_name, course_id, cleanup=True):
+def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
     '''
     it assumes that you are logged in as Admin
     Editing is on
@@ -666,7 +666,7 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup=True):
         try:
             course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
             CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 2,local_run)
-            if isinstance(cleanup, bool) and cleanup:
+            if cleanup == "true":
                 CommonUtil.ExecLog(sModuleInfo, "Deleting your course: %s"%course_name, 1,local_run)
                 course_element_row = WebDriverWait(course_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
                 Click_By_Parameter_And_Value("alt","Delete",course_element_row)
@@ -687,7 +687,8 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup=True):
             CommonUtil.ExecLog(sModuleInfo, "Unable to find your course.", 1, local_run)
         print "Create you course now"
         CommonUtil.ExecLog(sModuleInfo, "Clicking Manage Course and Categories", 1, local_run)
-        Click_By_Parameter_And_Value("class","tree_item leaf active_tree_node")
+        #Click_By_Parameter_And_Value("class","tree_item leaf active_tree_node")
+        Click_Element_By_Name('Manage courses and categories')
         CommonUtil.ExecLog(sModuleInfo, "Clicking Miscellaneous", 1, local_run)
         miscellaneous_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME,'ml')))
         Click_Element_By_Name('Miscellaneous',miscellaneous_admin_element)

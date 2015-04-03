@@ -163,12 +163,8 @@ def create_a_new_course(dependency,step_data):
         full_name=first_data_set[0][1]
         short_name=first_data_set[1][1]
         course_id=first_data_set[2][1]
-        cleanup_tag=first_data_set[3][1]
-        if cleanup_tag=='true':
-            Cleanup=True
-        else:    
-            Cleanup=False
-        sTestStepReturnStatus = SeleniumScript.Create_A_New_Course(full_name, short_name, course_id, Cleanup)
+        cleanup =first_data_set[3][1]
+        sTestStepReturnStatus = SeleniumScript.Create_A_New_Course(full_name, short_name, course_id, cleanup)
         print sTestStepReturnStatus
         return sTestStepReturnStatus    
     except:
