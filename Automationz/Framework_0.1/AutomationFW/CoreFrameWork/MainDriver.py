@@ -885,7 +885,7 @@ def main():
             #CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
 
             Global.sTestStepExecLogId = "MainDriver"
-
+            """
             try:
                 #Send Summary Email
                 oConn=DBUtil.ConnectToDataBase()
@@ -936,24 +936,13 @@ def main():
                     except urllib2.URLError:
                         print "disconnected"
                         results = ['NOK']
-                    """try:
-                        Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
-                        CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
-                    except Exception, e:
-                        conn.close()
-                        return "pass" """
-                
-
             except Exception, e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()        
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
                 print Error_Detail
                 return "pass"
-        #Copy the Automation Log to Network Folder
-        #if FL.CopyFile(CommonUtil.hdlr.baseFilename, Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
-        #    CommonUtil.ClearLog()
-
+            """
     #Close DB Connection
     conn.close()
     return "pass"
