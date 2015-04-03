@@ -677,6 +677,16 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
                 delete_result =  Verify_Text_Message_By_Text('%s has been completely deleted'%short_name)
                 if delete_result == "passed":
                     CommonUtil.ExecLog(sModuleInfo, "Completely deleted your course: %s"%course_name, 1,local_run)
+                    CommonUtil.ExecLog(sModuleInfo, "expanding Site admin > Courses", 1, local_run)
+                    Expand_Menu_By_Name('Site administration')
+                    time.sleep(3)
+                    CommonUtil.ExecLog(sModuleInfo, "Find site admin top level element", 1, local_run)
+                    site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
+                    parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+                    grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))        
+                    CommonUtil.ExecLog(sModuleInfo, "Expand Courses from site admin menu", 1, local_run)
+                    Expand_Menu_By_Name("Courses",grand_parent_site_admin)
+        
                 else:
                     CommonUtil.ExecLog(sModuleInfo, "Could not verify if course was deleted completely", 3, local_run)
                     return "failed"
@@ -686,6 +696,8 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
         except:
             CommonUtil.ExecLog(sModuleInfo, "Unable to find your course.", 1, local_run)
         print "Create you course now"
+        
+
         CommonUtil.ExecLog(sModuleInfo, "Clicking Manage Course and Categories", 1, local_run)
         #Click_By_Parameter_And_Value("class","tree_item leaf active_tree_node")
         Click_Element_By_Name('Manage courses and categories')
