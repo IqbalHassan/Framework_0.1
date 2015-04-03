@@ -427,7 +427,6 @@ def Turn_Editing_On_OR_Off(on_off):
                 return "failed"
             expected_text = 'Turn editing'
             try:
-                #Element = WebDriverWait(sBrowser, WebDriver_Wait).until(lambda driver :sBrowser.find_element_by_xpath ("//*[contains(text(),'%s')]" %expected_text))
                 Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %expected_text)))
             except Exception, e:
                 CommonUtil.ExecLog(sModuleInfo, "No option was found to turn Editing on or off", 3, local_run)
@@ -677,7 +676,6 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup=True):
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3,local_run)
         return "failed"
-    
     """
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
@@ -752,7 +750,50 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup=True):
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3,local_run)
         return "failed"
-    
-    
+        
+
+
+def Verify_User_Level_Settings(user_level):    
+    '''
+    it assumes user is logged in
+    checks to see if turn editing on/off option is there
+    for admin, it expects it and for students, it does not
+
+    '''
+    try:
+        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+        #Admin verification
+        if user_level == "admin":
+            CommonUtil.ExecLog(sModuleInfo, "Expanding Front Page Settings", 1, local_run)
+            result = Expand_Menu_By_Name('Front page settings')
+            CommonUtil.ExecLog(sModuleInfo, "Checking if Editing option is present", 1, local_run)
+            if result == "failed":
+                CommonUtil.ExecLog(sModuleInfo, "Unable to find the menu Front Page settings.", 1, local_run)
+                CommonUtil.ExecLog(sModuleInfo, "No option was found to Turn Editing on/off.  USer is not admin", 3, local_run)
+                return "failed"
+            expected_text = 'Turn editing'
+            try:
+                Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %expected_text)))
+                CommonUtil.ExecLog(sModuleInfo, "Found Editing option.  User has admin rights", 1, local_run)
+                return "passed"
+            except Exception, e:
+                CommonUtil.ExecLog(sModuleInfo, "No option was found to Turn Editing on/off.  USer is not admin", 3, local_run)
+                return "failed"
+        #Student verification
+        elif user_level == "student":
+            CommonUtil.ExecLog(sModuleInfo, "Expanding Front Page Settings", 1, local_run)
+            result = Expand_Menu_By_Name('Front page settings')
+            if result == "failed":
+                CommonUtil.ExecLog(sModuleInfo, "No option for Front Page Settings.  User is student", 1, local_run)
+                return "Passed"
+            else:
+                CommonUtil.ExecLog(sModuleInfo, "Students should not have Front Page Settings", 3, local_run)
+                return "failed"
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        CommonUtil.ExecLog(sModuleInfo, "Unable confirm type of user.  Error: %s"%Error_Detail, 3,local_run)
+        return "failed"
 
 

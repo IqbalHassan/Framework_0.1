@@ -140,6 +140,16 @@ def delete_a_course(dependency,step_data):
     except:
         return "Failed"
 
+def verify_user_level_settings(dependency,step_data):
+    try:        
+        first_data_set=step_data[0]
+        user_type =first_data_set[0][1]
+        sTestStepReturnStatus = SeleniumScript.Verify_User_Level_Settings(user_type)
+        print sTestStepReturnStatus
+        return sTestStepReturnStatus 
+    except:
+        return "Failed"
+
 def tear_down(dependency,step_data):
     try:        
         sTestStepReturnStatus = SeleniumScript.Tear_Down()
