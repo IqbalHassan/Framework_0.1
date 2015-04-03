@@ -1,0 +1,75 @@
+{%extends 'AdminBaseTemplate.html'%}
+{%block pageindicator%}{%if tag%}Edit User{%else%}Create New User{% endif%}{%endblock%}
+{%block title%}{%if tag%}Edit User{%else%}Create New User{% endif%}{%endblock%}
+{%block content%}
+<table style="margin-top: 2%;">
+    <tr style="margin-bottom: 10%;">
+        <td align="right"><b>Full Name:</b></td>
+        <td><input class="textbox" id="full_name" placeholder="Full Name"{% if tag%} value="{{full_name}}"{%endif%}/></td>
+    </tr>
+    <tr>
+        <td align="right"><b>User Name:</b></td>
+        <td><input class="textbox" id="user_name" placeholder="User Name" {% if tag%} value="{{user_name}}"{%endif%}/></td>
+    </tr>
+    <tr>
+        <td align="right"><b>Email:</b></td>
+        <td><input class="textbox" id="email" placeholder="Email Here" {% if tag%} value="{{email}}"{%endif%}/></td>
+    </tr>
+    <tr>
+        <td align="right"><b>Designation:</b></td>
+        <td>
+            <select id="user_level">
+                <option value="" selected>Select User Level</option>
+                <option value="assigned_tester">Tester</option>
+                <option value="manager">Manager</option>
+                <option value="admin">Admin</option>
+            </select>
+        </td>
+        {% if tag %}
+            <script type="text/javascript">
+                $('#user_level').val("{{user_level}}");
+            </script>
+        {% endif %}
+    </tr>
+    <tr>
+        <td align="right"><b>Password:</b></td>
+        <td><input class="textbox" id="password" placeholder="Password Here"{% if tag %} value="{{user_pass}}"{%endif%}/></td>
+    </tr>
+    {% if not tag %}
+    <tr>
+        <td align="right"><b>Confirm Password:</b></td>
+        <td><input class="textbox" id="confirm_password" placeholder="Confirm Password"/></td>
+    </tr>
+    {% endif %}
+
+</table>
+<div align="center"><input class="primary button" type="button" id="create_user" {% if tag %} value="Edit User"{% else %}value="Register User"{%endif%}/> </div>
+{% if tag %}
+<script type="text/javascript">
+    $('#create_user').on('click',function(){
+        var user_name=$('#user_name').val().trim();
+        var full_name=$('#full_name').val().trim();
+        var email=$('#email').val().trim();
+        var password=$('#password').val().trim();
+        var user_level=$('#user_level option:selected').val().trim();
+        if(user_name=='' || full_name==''||email==''||user_level==''||password==''){
+            alertify.error('Check Input Fields',1500)
+        }
+        $.get('Edit_User',{
+            user_name:user_name.trim(),
+            email:email.trim(),
+            password:password.trim(),
+            full_name:full_name.trim(),
+            user_level:user_level,
+            user_id:"{{user_id}}"
+        },function(data){
+            if(data==true){
+                window.location='/Home/superAdminFunction/User/'+"{{user_id}}"+'/';
+            }
+        });
+    });
+</script>
+{% else %}
+<script type="text/javascript" src="/site_media/Jquery/Local/AddUser.js"></script>
+{% endif %}
+{% endblock %}

@@ -137,7 +137,7 @@ $(document).ready(function(){
             var temp = $(this).attr('data-id');
             //TesterQuery = TesterQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
             if(testers.indexOf(temp)==-1 && temp!=undefined){
-                testers.push(temp);
+                testers = temp;
             }
         });
         /*$('.selected').each(function(){

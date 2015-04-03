@@ -3,133 +3,15 @@
 {% block title%}Team Edit{% endblock %}
 
 {% block content %}
-<script type="text/javascript">
-    $('body').css({'font-size':'100%'});
-</script>
 <div align="left">
-    <h3 style="font-size: 19px;"><a href="/Home/ManageTeam/">Team</a> / <a href="" id="name" style="font-weight: bolder">{{team_name}}</a></h3>
+    <h3 style="font-size: 19px;"><a href="/Home/{{project_id}}/ManageTeam/">{{project_name}}</a> / <a href="" id="name" style="font-weight: bolder">{{team_name}}</a></h3>
 </div>
 <table align="left" width="100%">
-   <!-- <thead>
-    <tr>
-        <td width=40% style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Current Team</td>
-        <td width="20%">&nbsp;</td>
-        <td width=40% style="text-align: center; border-bottom: 4px solid #ccc;" class="Text">Select To Add</td>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td width="40%">
-            <table width="100%" style="border-bottom: 1px dashed #cecece;">
-                <tr>
-                    {% if leader%}
-                    <td width="10%" style="vertical-align: 0%;" align="right"><b class="Text">Managers:</b></td>
-                    <td>
-                        <table width="100%">
-                            {%for x in leader%}
-                            <tr>
-                                <td width="40%" style="vertical-align: 0%;"><b>{{x.1}}</b></td>
-                                <td width="60%" align="left"><input class="remove_manager" type="checkbox" value="{{x.0}}"/></td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                    </td>
-                    {%else%}
-                    <td>&nbsp;</td>
-                    <td align="center"><b class="Text">No Manager in the Team</b></td>
-                    {%endif%}
-                </tr>
-            </table>
-        </td>
-        <td width="20%">
-            &nbsp;
-        </td>
-        <td width="40%">
-            <table width="100%" style="border-bottom: 1px dashed #cecece;">
-                <tr>
-                    {% if rest_leader %}
-                    <td width="10%" style="vertical-align: 0%;" align="right"><b class="Text">Managers:</b></td>
-                    <td>
-                        <table width="100%">
-                            {%for x in rest_leader%}
-                                <tr>
-                                    <td width="40%" style="vertical-align: 0%;"><b>{{x.1}}</b></td>
-                                    <td width="60%" align="left"><input class="add_manager" type="checkbox" value="{{x.0}}"/></td>
-                                </tr>
-                            {% endfor %}
-
-                        </table>
-                    </td>
-                    {%else%}
-                    <td>&nbsp;</td>
-                    <td align="center"><b class="Text">No Managers Available</b></td>
-                    {%endif%}
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr style="vertical-align: 0%;">
-        <td width="40%">
-            <table width="100%" style="border-bottom: 1px dashed #cecece;">
-                <tr>
-                    {% if  tester%}
-                    <td width="10%" style="vertical-align: 0%;" align="right"><b class="Text">Testers:</b></td>
-                    <td>
-                        <table width="100%">
-                            {%for x in tester%}
-                            <tr>
-                                <td width="40%" style="vertical-align: 0%;"><b>{{x.1}}</b></td>
-                                <td width="60%" align="left"><input class="remove_tester" type="checkbox" value="{{x.0}}" style="margin-left: 5%;"/></td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                    </td>
-                    {% else %}
-                    <td>&nbsp</td>
-                    <td align="center"><b class="Text">No Tester in this Team</b></td>
-                    {% endif %}
-                </tr>
-            </table>
-        </td>
-        <td widht="20%">
-            &nbsp;
-        </td>
-        <td width="40%">
-            <table width="100%" style="border-bottom: 1px dashed #cecece;">
-                <tr>
-                    {% if rest_tester %}
-                    <td width="10%" style="vertical-align: 0%;" align="right"><b class="Text">Testers:</b></td>
-                    <td>
-                        <table width="100%">
-                            {%for x in rest_tester%}
-                            <tr>
-                                <td width="40%" style="vertical-align: 0%;"><b>{{x.1}}</b></td>
-                                <td width="60%" align="left"><input class="add_tester" type="checkbox" value="{{x.0}}" style="margin-left: 5%;"/></td>
-                            </tr>
-                            {% endfor %}
-
-                        </table>
-                    </td>
-                    {% else %}
-                    <td>&nbsp;</td>
-                    <td align="center"><b class="Text">No Testers Available</b></td>
-                    {% endif %}
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td align="center" colspan="3">
-            <input class="button primary" type="button" value="Add" id="add"/>
-            <input class="button danger" type="button" value="Remove" id="remove"/>
-        </td>
-    </tr>
-    </tbody>-->
-    <tr>
+   <tr>
         <td width="50%" >
             <table class="two-column-emphasis">
 
-                <caption><b>{{team_name}}</b></caption>
+                <caption><b style="font-size: 150%;">{{team_name}}</b></caption>
                 <thead>
                     <tr>
                         <th colspan="2" align="center">Current Members</th>
@@ -169,6 +51,171 @@
     </tr>
 </table>
 
+<script type="text/javascript">
+    var project_id="{{project_id}}";
+    var team_name="{{team_name}}";
+    $(document).ready(function(){
+        $('body').css({'font-size':'100%'});
+        $("#tester_search").select2({
+            placeholder: "Available Testers...",
+            width: 460,
+            quietMillis: 250,
+            ajax: {
+                url: "AutoCompleteTesterSearch/",
+                dataType: "json",
+                queitMillis: 250,
+                data: function(term, page) {
+                    return {
+                        'term': term,
+                        'page': page,
+                        'all':'edit',
+                        'team_name':team_name,
+                        'project_id':project_id
+                    };
+                },
+                results: function(data, page) {
+                    return {
+                        results: data.items,
+                        more: data.more
+                    }
+                }
+            },
+            formatResult: formatUsers
+        }).on("change", function(e) {
+                    var user_id=$(this).select2('data')['id'];
+                    var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+                    $("#tester").append('<tr><td><img class="delete DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                            + '<td class="Text" data-id="'+user_id+'">'
+                            + user_name
+                            + ":&nbsp"
+                            + '</td></tr>');
+                    $(this).select2('val','');
+                    return false;
+                });
+
+        function formatUsers(user_details) {
+            var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + ' ' + user_details.text + '</span></div>';
+
+            return markup;
+        }
+        $(".DeleteTester").live('click', function() {
+
+            //$(this).parent().next().remove();
+            //$(this).remove();
+            $(this).parent().parent().remove();
+
+        });
+
+        $("#manager_search").select2({
+            placeholder: "Available Manager...",
+            width: 460,
+            quietMillis: 250,
+            ajax: {
+                url: "GetTesterManager/",
+                dataType: "json",
+                queitMillis: 250,
+                data: function(term, page) {
+                    return {
+                        'term': term,
+                        'page': page,
+                        'all':'edit',
+                        'team_name':team_name.trim(),
+                        'project_id':project_id.trim()
+                    };
+                },
+                results: function(data, page) {
+                    return {
+                        results: data.items,
+                        more: data.more
+                    }
+                }
+            },
+            formatResult: formatUsers
+        }).on("change", function(e) {
+                    var user_id=$(this).select2('data')['id'];
+                    var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+                    $("#manager").append('<tr><td><img class="delete DeleteManager" title = "ManagerDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+                            + '<td class="Text" data-id="'+user_id+'">'
+                            + user_name
+                            + ":&nbsp"
+                            + '</td></tr>');
+                    $(this).select2('val','');
+                    return false;
+                });
+        $(".DeleteManager").live('click', function() {
+            $(this).parent().parent().remove();
+        });
+
+        $('#remove_user').on('click',function(){
+            var user_list=[];
+
+            $('.Manager:checked').each(function(){
+                user_list.push($(this).val().trim());
+            });
+
+            $('.Tester:checked').each(function(){
+                user_list.push($(this).val().trim());
+            });
+            if(user_list.length>0){
+                alertify.confirm("Are you sure you want to remove the selected from the team '"+team_name.trim()+"'?", function(e) {
+                    if (e) {
+                        $.get('Delete_Members',{
+                            'member':user_list.join("|"),
+                            'team_name':team_name.trim(),
+                            'project_id':project_id
+                        },function(data){
+                            if(data.indexOf('Failed')!=0){
+                                window.location=('/Home/'+project_id+'/Team/'+team_name.trim().replace(/ /g,'_').trim()+'/');
+                            }
+                            else{
+                                window.location.reload(true);
+                            }
+                        });
+                    }
+                });
+            }
+            else{
+                alertify.error("None is selected","",0);
+                return false;
+            }
+        });
+
+        $('#add_user').on('click',function(){
+            var member=[];
+            $('.DeleteManager').each(function(){
+                member.push($(this).parent().next().attr('data-id'));
+            });
+
+            $('.DeleteTester').each(function(){
+                member.push($(this).parent().next().attr('data-id'));
+            });
+            if(member.length!=0){
+                alertify.confirm("Are you sure you want to add the selected to the team '"+team_name.trim()+"'?", function(e) {
+                    if (e) {
+                        $.get('Add_Members',{
+                            'member':member.join("|"),
+                            'team_name':team_name.trim(),
+                            'project_id':project_id
+                        },function(data){
+                            if(data.indexOf('Failed')!=0){
+                                window.location=('/Home/'+project_id.trim()+'/Team/'+team_name.trim().replace(/ /g,'_').trim()+'/');
+                            }
+                            else{
+                                window.location.reload(true);
+                            }
+                        });
+                    }
+                });
+            }
+            else{
+                alertify.error("None is selected","",0);
+                return false;
+            }
+        });
+    });
+
+
+</script>
 <script type="text/javascript" src="/site_media/Jquery/Local/Team_Edit.js"></script>
 
 {% endblock %}

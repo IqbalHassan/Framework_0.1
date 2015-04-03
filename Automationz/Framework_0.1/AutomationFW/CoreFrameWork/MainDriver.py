@@ -47,7 +47,8 @@ def GetAllDriver():
     query="select distinct driver from test_steps_list"
     Conn=DBUtil.ConnectToDataBase()
     driver_name=DBUtil.GetData(Conn,query)
-    driver_name.remove('Manual')
+    if 'Manual' in driver_name:
+        driver_name.remove('Manual')
     return driver_name
 def collectAlldependency(project,team):
     query="select dependency_name, array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by dependency_name"%(project,int(team))
@@ -787,7 +788,7 @@ def main():
             #Delete the folder
             FL.DeleteFolder(config.get('sectionOne','test_case_folder'))
             #upload will go here.
-            upload_link='http://localhost:8000/Home/UploadZip'
+            """upload_link='http://localhost:8000/Home/UploadZip'
             register_openers()
             datagen, headers = multipart_encode({
                 'categoryID' : 1,
@@ -796,7 +797,7 @@ def main():
                 'name'       : sTestResultsRunId,
                 'file1'      : open(config.get('sectionOne','test_case_folder') + ".zip")
             })
-            request = urllib2.Request(upload_link, datagen, headers)
+            request = urllib2.Request(upload_link, datagen, headers)"""
             #Find Test case failed reason
             try:
                 conn=DBUtil.ConnectToDataBase()
@@ -878,13 +879,13 @@ def main():
                 conn.close()
                 #Update test_run_env schedule table with status so that this Test Set will not be run again
                 conn=DBUtil.ConnectToDataBase()
-                print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete')
+                print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete',email_flag=True)
                 conn.close()
                 print "Test Set Completed"
             #CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
 
             Global.sTestStepExecLogId = "MainDriver"
-
+            """
             try:
                 #Send Summary Email
                 oConn=DBUtil.ConnectToDataBase()
@@ -935,24 +936,13 @@ def main():
                     except urllib2.URLError:
                         print "disconnected"
                         results = ['NOK']
-                    """try:
-                        Summary = DBUtil.GetData(conn, "select * from test_env_results where run_id = '%s'" % (TestRunID[0]), False)
-                        CommonUtil.SendEmail(ToEmailAddress[0][0], TestRunID[0], Summary)
-                    except Exception, e:
-                        conn.close()
-                        return "pass" """
-                
-
             except Exception, e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()        
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
                 print Error_Detail
                 return "pass"
-        #Copy the Automation Log to Network Folder
-        #if FL.CopyFile(CommonUtil.hdlr.baseFilename, Global.NetworkLogFolder + os.sep + TestRunID[0].replace(':', '-')) == True:
-        #    CommonUtil.ClearLog()
-
+            """
     #Close DB Connection
     conn.close()
     return "pass"

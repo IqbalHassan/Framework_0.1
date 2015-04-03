@@ -1,116 +1,73 @@
 $(document).ready(function(){
-   GetProjects();
-   ButtonPreparation();
+    $('body').css({'font-size':'100%'});
+    GetProjects();
 });
+
+
 function GetProjects(){
     $.get('Get_Projects',{
         user_id: $.session.get('user_id')
     },function(data){
         var message="";
-        message+='<table class="two-column-emphasis">';
+        message+='<option value="">Select Projects</option>';
         if(data.length>0){
             for(var i=0;i<data.length;i++){
-                message+=('<tr><td style="cursor: pointer;" class="projects"><b>'+data[i][1].trim()+'</b></td></tr>');
+                message+='<option value="'+data[i][0]+'">'+data[i][1]+'</option>';
             }
-            message+='</table>';
-
         }
         $('#projects').html(message);
-        PrepareOtherButton();
-    });
-}
-function PrepareOtherButton(){
-    $('.projects').on('click',function(){
-        $('.projects').css({'background-color':'#fff'});
-        $(this).css({'background-color':'#ccc'});
 
-        $('.projects').removeClass('selected');
-        $(this).addClass('selected');
-        $.get("Small_Project_Detail",{
-                'name':$(this).text().trim()
-            },function(data){
-            console.log(data);
-            $('#detail_div').html(Small_Project_Detail(data));
+        $('#projects').on('change',function(){
+            var project_id=$(this).val().trim();
+            var project_name=$('#projects option:selected').text().trim();
+            get_all_detail(project_id,project_name,$.session.get('user_id'));
         });
     });
 }
-function Small_Project_Detail(data){
-    var message="";
-    $('#id').html('<b class="Text" style="cursor: pointer;color: #4183c4;">'+data['project_id']+' - </b>');
-    $('#name').html('<b class="Text" style="cursor: pointer;color: #4183c4">'+data['project_name']+'</b>');
-    message+='';
-    message+='<table align="left">';
-    message+='<tr>';
-    message+='<td align="right"><b style="color: #4183c4">Description:</b></td><td>'+data['project_description']+'</td>';
-    message+='</tr>';
-    message+='<tr>';
-    message+='<td align="right"><b style="color: #4183c4">Due in:</b></td><td>'+data['due_message']+'</td>';
-    message+='</tr>';
-    message+='<tr>';
-    message+=('<td align="right"><b style="color: #4183c4">Owners:</b></td><td>'+data['project_owners']);
-    message+='</tr>';
-    message+='<tr>';
-    message+=('<td align="right"><b style="color: #4183c4">Assigned Teams:</b></td><td>');
-    if(data['team_name'].length>0 && data['team_name'][0]!='Team Not Set'){
-        for(var i=0;i<data['team_name'].length;i++){
-            var team_name=data['team_name'][i].trim().replace(/ /g,'_').trim();
-            var location=("/Home/"+data['project_id']+"/Team/"+team_name+"/");
-            message+=('<a href="'+location +'" style="text-decoration:none">'+data['team_name'][i]+'</a>');
-            if(i!=(data['team_name'].length-1)){
-                message+=" , ";
-            }
+
+function get_all_detail(project_id,project_name,user_id){
+    $.get("Small_Project_Detail",{
+        'name':project_name,
+        'user_id':user_id
+    },function(data){
+        var project_name=data['project_name'];
+        var project_description=data['project_description'];
+        var project_due=data['due_message'];
+        var project_owners=data['project_owners'];
+        var teams=data['team_name'];
+        var message='';
+        message+='<table class="two-column-emphasis" width="50%;">';
+        message+='<tr><td align="right" style="vertical-align: 0%;"><b>Project Name:</b></td><td align="left">'+project_name+'</td><td width="50%;">&nbsp;</td></tr>';
+        message+='<tr><td align="right" style="vertical-align: 0%;"><b>Description:</b></td><td align="left">';
+        if(project_description!=''){
+            message+=project_description;
         }
-    }
-    else{
-        message+='<b>No Team Set</b>';
-    }
-    message+='</td>'
-    message+='</tr>';
-    /*message+='<tr>';
-    message+='<td align="left"><a href="/Home/Project/'+data['project_id'].trim()+'/" style="text-decoration: none;">see details...</a> </td><td>&nbsp;</td>';
-    message+='</tr>';*/
-    message+='</table>';
-    return message;
-}
-function ButtonPreparation(){
-    $('#start_date').datepicker({ dateFormat: "yy-mm-dd" });
-    $('#end_date').datepicker({ dateFormat: "yy-mm-dd" });
-    $('#create_project').click(function(){
-        var project_name=$('#project_name').val().trim();
-        var project_desc=$('#project_desc').val().trim();
-        var start_date=$('#start_date').val().trim();
-        var end_date=$('#end_date').val().trim();
-        var team=[];
-        $('input[name="team"]:checked').each(function(){
-            team.push($(this).val().trim());
+        else{
+            message+='Project Description not set';
+        }
+        message+='</td><td width="50%;">&nbsp;</td></tr>';
+        message+='<tr><td align="right" style="vertical-align: 0%;"><b>Due In:</b></td><td align="left">'+project_due+'</td><td width="50%;">&nbsp;</td></tr>';
+        message+='<tr><td align="right" style="vertical-align: 0%;"><b>Project Owners:</b></td><td align="left">'+project_owners+'</td><td width="50%;">&nbsp;</td></tr>';
+        message+='<tr><td align="right" style="vertical-align: 0%;"><b>Teams:</b></td><td align="left">';
+        message+='<table>';
+        for(var i=0;i<teams.length;i++){
+            message+='<tr><td>'+teams[i]+'</td></tr>';
+        }
+        message+='</table>';
+        message+='</td><td width="50%;">&nbsp;</td></tr>';
+        message+='<tr><td>&nbsp;';
+        message+='</td><td>';
+        if(data['owner_tag']){
+            message+='<input type="button" id="edit_project" value="Edit Project" class="m-btn purple"/>';
+        }
+        message+='<input type="button" id="team_manage" value="Manage Teams" class="m-btn green"/></td><td width="50%;">&nbsp;</td></tr>'
+        message+='</table>';
+        $("#detail_div").html(message);
+        $('#team_manage').on('click',function(){
+            window.location='/Home/'+project_id+'/ManageTeam/';
         });
-        var managers=[];
-        var testers=[];
-        $('input[name="owner"]:checked').each(function(){
-            if($(this).attr('data-id')=='assigned_tester'){
-                testers.push($(this).val().trim());
-            }
-            if($(this).attr('data-id')=='manager'){
-                managers.push($(this).val().trim());
-            }
-        });
-        var owners=('assigned_tester:'+testers.join(',')+('-')+('managers:')+managers.join(','));
-        $.get("Create_New_Project",{
-            'name':project_name.trim(),
-            'description':project_desc.trim(),
-            'start_date':start_date.trim(),
-            'end_date':end_date.trim(),
-            'team':team.join('|').trim(),
-            'owners':owners.trim(),
-            'user_name':$('#user_name').text().trim()
-        },function(data){
-            if(data['message'].indexOf('Failed')!=0){
-                window.location=("/Home/Project/"+data['project_id']+"/");
-            }
-            else{
-                window.location.reload(true);
-            }
+        $('#edit_project').on('click',function(){
+           window.location='/Home/Project/'+project_id+'/';
         });
     });
-
 }

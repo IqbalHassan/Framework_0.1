@@ -1,8 +1,8 @@
 import sys
 sys.path.append("..")
 
-username='iqbal_hassan'
-password='password'
+username='riz'
+password='.'
 project='PROJ-29'
 team='WebAutomation'
 server='135.23.123.206'

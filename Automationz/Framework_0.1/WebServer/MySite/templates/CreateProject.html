@@ -1,0 +1,19 @@
+{%extends 'AdminBaseTemplate.html'%}
+{%block pageindicator%}Create New Project{%endblock%}
+{%block title%}Create New Project{%endblock%}
+{%block content%}
+<table style="margin-top: 2%;">
+    <tr>
+        <td><b>Project Name:</b></td>
+        <td><input class="textbox" id="project_name" placeholder="project name"/> </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr style="vertical-align: 0%;">
+        <td><b>Project Owner:</b></td>
+        <td><input type="hidden" id="project_owner" style="width: 100%;"/></td>
+        <td id="owner_list" style="vertical-align: 0%;"></td>
+    </tr>
+</table>
+<div align="center"><input class="primary button" type="button" id="create_project" value="Create Project"/> </div>
+<script type="text/javascript" src="/site_media/Jquery/Local/CreateProject.js"></script>
+{%endblock%}

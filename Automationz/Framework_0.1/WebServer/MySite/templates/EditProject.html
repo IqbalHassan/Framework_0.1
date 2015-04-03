@@ -1,0 +1,119 @@
+{%extends 'AdminBaseTemplate.html'%}
+{%block pageindicator%}Edit Project{%endblock%}
+{%block title%}Edit Project{%endblock%}
+{% block content%}
+<table class="two-column-emphasis">
+    <tr>
+        <td><b>Name:</b></td>
+        <td><input class="textbox" value="{{project_name}}" id="project_name"/></td>
+    </tr>
+    <tr>
+        <td><b>Starting Date:</b></td>
+        <td><input class="textbox"  {% if project_startingdate == ''%}placeholder="Starting date is not set"{% endif %} id="starting_date"/></td>
+    </tr>
+    <tr>
+        <td><b>Ending Date:</b></td>
+        <td><input class="textbox" {% if project_endingdate == ''%}placeholder="Ending date is not set"{% endif %} id="ending_date"/></td>
+    </tr>
+    <tr>
+        <td style="vertical-align: 0%;"><b>Description:</b></td>
+        <td><textarea id="project_description" rows="3" cols="47" {% if project_description == ''%}placeholder="No Description is set"{% endif %}>{{project_description}}</textarea></td>
+    </tr>
+
+    <tr>
+        <td><b>Owners:</b></td>
+        <td><input  type="hidden" id="project_owners"/></td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+            <table id="owner_list">
+                {% for x in project_owners%}
+                    <tr><td data-id="{{x.0}}"><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/>{{x.1}}</td></tr>
+                {% endfor %}
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td><input  type="button" class="m-btn green" id="edit_button" value="Edit"/></td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+    $('#project_owners').select2({placeholder: "Search User....",
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "GetProjectOwner",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'tag':'edit'
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        formatResult: formatTestCasesSearch
+    }).on("change", function(e) {
+                var user_id=$(this).select2('data')['id'];
+                var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+                $('#owner_list').append('<tr><td data-id="'+user_id+'"><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/>'+user_name+'</td></tr>');
+                $('.delete').on('click',function(){
+                    $(this).parent().parent().remove();
+                });
+                $(this).select2('val','');
+                return false;
+            });
+    function formatTestCasesSearch(test_case_details) {
+        var markup ='<div><i class="fa fa-user-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+        return markup;
+    };
+    $('.delete').on('click',function(){
+        $(this).parent().parent().remove();
+    });
+    $('#starting_date').datepicker({dateFormat:"MM d, yy"});
+    $('#ending_date').datepicker({dateFormat:"MM d, yy"});
+    $('#starting_date').datepicker('setDate', new Date("{{project_startingdate}}"));
+    $('#ending_date').datepicker('setDate', new Date("{{project_endingdate}}"));
+    $('#edit_button').on('click',function(){
+        var project_name=$('#project_name').val();
+        var starting_date=$('#starting_date').val();
+        var ending_date=$('#ending_date').val();
+        var project_description=$('#project_description').val();
+        var owner_list=[];
+        $('#owner_list tr').each(function(){
+            var user_id=$(this).find('td:first-child').attr('data-id');
+            if(owner_list.indexOf(user_id)==-1){
+                owner_list.push(user_id);
+            }
+        });
+        $.get('Edit_Project',{
+            'project_id':"{{project_id}}",
+            'project_name':project_name,
+            'starting_date':starting_date,
+            'ending_date':ending_date,
+            'description':project_description,
+            'owner_list':owner_list.join(","),
+            'user': $.session.get('fullname')
+        },function(data){
+            if(data){
+                alertify.success('Project Updated Successfully',1500);
+                window.location.reload(true);
+            }
+            else{
+                alertify.error("Project not updated",1500);
+                window.location.reload(false);
+            }
+        });
+    });
+</script>
+{% endblock %}

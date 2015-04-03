@@ -8,13 +8,12 @@
 <script type="text/javascript" src="/site_media/jquery/tiny_mce/tinymce.min.js"></script>
 <script type="text/javascript">
     tinymce.init({
-        'selector':'textarea',
+        'selector':'#id_comment',
         plugins: [
             "advlist autolink lists charmap print preview anchor",
             "searchreplace visualblocks code fullscreen",
             "insertdatetime table contextmenu paste"
         ]
-
     });
 </script>
 <script type="text/javascript" src="/site_media/Jquery/Local/Project_Detail.js"></script>
@@ -23,143 +22,83 @@
         <tr>
             <td width="80%">
                 <div align="left">
-                    <h3 style="font-size: 19px;"><a href="/Home/ManageProject/" style="font-weight: bold;">Projects</a> / <a href="#" style="font-weight: bold;"><span id="project_id">{{project_id}}</span> - {{project_name}}</a></h3>
+                    <h3 style="font-size: 19px;"><a href="/Home/ManageProject/" style="font-weight: bold;">Projects</a> / <a href="#" style="font-weight: bold;"><span id="project_id">{{project_name}}</a></h3>
                 </div>
             </td>
-            <!--<td width="20%"><a href="" class="createnew" style="text-align: center;width: 75%;" id="new_team">Create New Team</a></td>-->
         </tr>
     </table>
     <div class="responsive-tabs" align="left">
         <h3><b>Details</b></h3>
         <div class="tabs-div" align="center">
-            <table width="100%">
+            <table width="100%" class="two-column-emphasis">
                 <tr>
-                    <td  width="50%" style="border-right: 2px solid #ccc;border-bottom: 2px solid #ccc">
-                        <table width="100%" align="left">
-                            <tr>
-                                <td align="right"><b class="Text" style="color: #4183c4">Project ID:</b></td>
-                                <td align="left">{{project_id}}</td>
-                            </tr>
-                            <tr>
-                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Project Name:</b></td>
-                                <td align="left">{{project_name}}</td>
-                            </tr>
-                            <tr>
-                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Description:</b></td>
-                                <td align="left">{{project_description}}</td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td width="50%" style="border-bottom: 2px solid #ccc">
-                        <table width="100%" align="right">
-                            <tr>
-                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Project Creator:</b></td>
-                                <td align="left">{{project_createdby}}</td>
-                            </tr>
-                            <tr>
-                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Creation Date:</b></td>
-                                <td align="left">{{project_creationdate}}</td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                            </tr>
+                    <td><b>Name:</b></td>
+                    <td><input class="textbox" value="{{project_name}}" id="project_name"/></td>
+                </tr>
+                <tr>
+                    <td><b>Starting Date:</b></td>
+                    <td><input class="textbox"  {% if project_startingdate == ''%}placeholder="Starting date is not set"{% endif %} id="starting_date"/></td>
+                </tr>
+                <tr>
+                    <td><b>Ending Date:</b></td>
+                    <td><input class="textbox" {% if project_endingdate == ''%}placeholder="Ending date is not set"{% endif %} id="ending_date"/></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: 0%;"><b>Description:</b></td>
+                    <td><textarea id="project_description" rows="3" cols="65" {% if project_description == ''%}placeholder="No Description is set"{% endif %}>{{project_description}}</textarea></td>
+                </tr>
+
+                <tr>
+                    <td><b>Owners:</b></td>
+                    <td><input  type="hidden" id="project_owners"/></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>
+                        <table id="owner_list">
+                            {% for x in project_owners %}
+                                <tr><td data-id="{{x.0}}"><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/>{{x.1}}</td></tr>
+                            {% endfor %}
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td  width="50%" style="border-right: 2px solid #ccc;border-bottom: 2px solid #ccc">
-                        <table width="100%" align="left">
-                            <tr>
-                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Starting Date:</b></td>
-                                <td align="left">{{project_startingdate}}</td>
-                            </tr>
+                    <td><b>Created By:</b></td>
+                    <td>{{project_createdby}}</td>
+                </tr>
 
-                            <tr>
-                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Ending Date:</b></td>
-                                <td align="left">{{project_endingdate}}</td>
-                            </tr>
-                            <tr>
-                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Project Owners:</b></td>
-                                <td align="left">
-                                    {% for x in testers%}
-                                        {% if forloop.last %}
-                                            {{x}}
-                                        {% else %}
-                                            {{x}} ,
-                                        {% endif  %}
-                                    {% endfor %}
-                                    {% if managers %}
-                                        ,
-                                        {% for x in managers %}
-                                            {% if forloop.last %}
-                                                {{x}}
-                                            {% else %}
-                                                {{x}} ,
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                            </tr>
+                <tr>
+                    <td><b>Creation Date:</b></td>
+                    <td>{{project_creationdate}}</td>
+                </tr>
+                <tr>
+                    <td><b>Last Edited By:</b></td>
+                    <td>{{project_modifiedby}}</td>
+                </tr>
 
-                        </table>
-                    </td>
-                    <td width="50%" style="border-bottom: 2px solid #ccc">
-                        <table width="100%" align="right">
-                            <tr>
-                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Last Modified By:</b></td>
-                                <td align="left">{{project_modifiedby}}</td>
-                            </tr>
-                            <tr>
-                                <td align="right" width="50%"><b class="Text" style="color: #4183c4">Last Modification Date:</b></td>
-                                <td align="left">{{project_modifydate}}</td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                            </tr>
-                        </table>
-                    </td>
+                <tr>
+                    <td><b>Last Edited On:</b></td>
+                    <td>{{project_modifydate}}</td>
+                </tr>
+
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><input  type="button" class="m-btn green" id="edit_button" value="Edit"/></td>
                 </tr>
             </table>
         </div>
         <h3><b>Comments</b></h3>
         <div class="tabs-div" align="center">
-            <table width="100%">
+            <table width="100%" class="two-column-emphasis">
                 <tr>
-                    <td width="100%">
+                    <td>
                         {% if final_comment %}
                         <table width="100%" align="left">
                             {% for x in final_comment%}
                             <tr>
                                 <td>
-                                    <table>
-                                        <tr><td colspan="2"><b style="color: #4183c4">{{x.1}}</b></td></tr>
-                                        <tr><td><b>{{x.3}}</b></td><td>{{x.2}}</td></tr>
-                                        <tr><td colspan="2">{{x.0|removetags:""|safe}}</td></tr>
-                                        {% if x.4 %}
-                                            <tr><td><a media="all" target="_blank" href="{{x.5}}">Show Attachment</a> </td><td>&nbsp;</td></tr>
-                                        {% else %}
-                                            <tr><td>&nbsp;</td></tr>
-                                        {% endif %}
-
-                                    </table>
+                                    <b style="font-size: 150%;">{{x.1}}</b> wrote:
+                                    " {{x.0|removetags:""|safe}} " at {{x.2}}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -177,17 +116,17 @@
                         <form action="{% url 'MySite.views.FileUpload' project_id %}" method="post" enctype="multipart/form-data">
                             {%csrf_token%}
                             <div style="width:50%;margin-top: 2%">
-                                <table>
+                                <table class="editor">
                                     {{comment}}
                                     <tr><td>&nbsp;</td><td><input type="submit" class="m-btn green" value="Comment"/></td></tr>
                                 </table>
                             </div>
                         </form>
-
                     </td>
                 </tr>
             </table>
         </div>
+        <!--
         <h3><b>Teams</b></h3>
         <div class="tabs-div" align="left" width="100%">
             <table width="100%">
@@ -321,8 +260,85 @@
                 </tbody>
 
             </table>
-        </div>
+        </div>-->
     </div>
+    <script type="text/javascript">
+        $('#project_owners').select2({placeholder: "Search User....",
+            width: 460,
+            quietMillis: 250,
+            ajax: {
+                url: "GetProjectOwner",
+                dataType: "json",
+                queitMillis: 250,
+                data: function(term, page) {
+                    return {
+                        'term': term,
+                        'page': page,
+                        'tag':'edit'
+                    };
+                },
+                results: function(data, page) {
+                    return {
+                        results: data.items,
+                        more: data.more
+                    }
+                }
+            },
+            formatResult: formatTestCasesSearch
+        }).on("change", function(e) {
+                    var user_id=$(this).select2('data')['id'];
+                    var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+                    $('#owner_list').append('<tr><td data-id="'+user_id+'"><img class="delete" title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/>'+user_name+'</td></tr>');
+                    $('.delete').on('click',function(){
+                        $(this).parent().parent().remove();
+                    });
+                    $(this).select2('val','');
+                    return false;
+                });
+        function formatTestCasesSearch(test_case_details) {
+            var markup ='<div><i class="fa fa-user"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+            return markup;
+        };
+        $('.delete').on('click',function(){
+            $(this).parent().parent().remove();
+        });
+        $('#starting_date').datepicker({dateFormat:"MM d, yy"});
+        $('#ending_date').datepicker({dateFormat:"MM d, yy"});
+        $('#starting_date').datepicker('setDate', new Date("{{project_startingdate}}"));
+        $('#ending_date').datepicker('setDate', new Date("{{project_endingdate}}"));
+        $('#edit_button').on('click',function(){
+            var project_name=$('#project_name').val();
+            var starting_date=$('#starting_date').val();
+            var ending_date=$('#ending_date').val();
+            var project_description=$('#project_description').val();
+            var owner_list=[];
+            $('#owner_list tr').each(function(){
+                var user_id=$(this).find('td:first-child').attr('data-id');
+                if(owner_list.indexOf(user_id)==-1){
+                    owner_list.push(user_id);
+                }
+            });
+            $.get('Edit_Project',{
+                'project_id':"{{project_id}}",
+                'project_name':project_name,
+                'starting_date':starting_date,
+                'ending_date':ending_date,
+                'description':project_description,
+                'owner_list':owner_list.join(","),
+                'user': $.session.get('fullname')
+            },function(data){
+                if(data){
+                    alertify.success('Project Updated Successfully',1500);
+                    window.location.reload(true);
+                }
+                else{
+                    alertify.error("Project not updated",1500);
+                    window.location.reload(false);
+                }
+            });
+        });
+    </script>
+
     <script>
         var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
     </script>

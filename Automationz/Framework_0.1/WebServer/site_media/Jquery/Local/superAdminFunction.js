@@ -1,7 +1,9 @@
 /**
  * Created by 09 on 12/3/14.
  */
+/*
 $(document).ready(function(){
+    $('body').css({'font-size':'100%'});
     var url=window.location.pathname;
     url=url.split("/");
     for(var i=0;i<url.length;i++){
@@ -20,35 +22,47 @@ function populate_mainBody_div(type_tag){
     if(type_tag=='Project'){
         message+='<div align="center" style="font-size: 150%;font-weight: bolder">New Project Creation</div>';
         message+='<table style="margin-top: 2%;"><tr><td><b>Project Name:</b></td><td><input class="textbox" id="project_name" placeholder="project name"/> </td><td>&nbsp;</td></tr>';
-        message+='<tr style="vertical-align: 0%;"><td><b>Project Owner:</b></td><td><input class="textbox" id="project_owner" placeholder="project owner"/> </td><td id="owner_list" style="vertical-align: 0%;"></td></tr></table>';
+        message+='<tr style="vertical-align: 0%;"><td><b>Project Owner:</b></td><td><input type="hidden" id="project_owner" /> </td><td id="owner_list" style="vertical-align: 0%;"></td></tr></table>';
         message+='<div align="center"><input class="primary button" type="button" id="create_project" value="Create Project"/> </div>';
         $('#mainBody').html(message);
         DeleteSearchQueryText();
-        $('#project_owner').autocomplete({
-            source:function(request,response){
-                $.ajax({
-                    url:"GetProjectOwner",
-                    dataType:"json",
-                    data:{
-                        term:request.term
-                    },
-                    success:function(data){
-                        response(data);
+        $("#project_owner").select2({
+            placeholder: "Search User....",
+            width: 460,
+            quietMillis: 250,
+            ajax: {
+                url: "GetProjectOwner",
+                dataType: "json",
+                queitMillis: 250,
+                data: function(term, page) {
+                    return {
+                        'term': term,
+                        'page': page
+                    };
+                },
+                results: function(data, page) {
+                    return {
+                        results: data.items,
+                        more: data.more
                     }
-                });
-            },
-            select:function(request,ui){
-                var value=ui.item[0];
-                if(value!=''){
-                    $('#owner_list').append('<tr><td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /><b>'+ui.item[1].trim()+':<span style="display: none;">'+value+'</span>&nbsp;</b></td></tr>');
                 }
-            }
-        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-            return $( "<li></li>" )
-                .data( "ui-autocomplete-item", item )
-                .append( "<a><strong>" + item[1] + "</strong> - "+item[2]+"</a>" )
-                .appendTo( ul );
-        };
+            },
+            formatResult: formatTestCasesSearch
+        }).on("change", function(e) {
+                var user_id=$(this).select2('data')['id'];
+                var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+                $('#owner_list').append('<tr><td class="deleteTester"><img title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td><td data-id="'+user_id+'">'+user_name+'</td></tr>');
+                $(this).select2('val','');
+                $('.deleteTester').on('click',function(){
+                    //$('#assigned_projects').empty();
+                    $(this).parent().remove();
+                });
+                return false;
+            });
+        function formatTestCasesSearch(test_case_details) {
+            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+            return markup;
+        }
         $('#create_project').on('click',function(){
             var project_name=$('#project_name').val().trim();
             if(project_name==""){
@@ -56,17 +70,23 @@ function populate_mainBody_div(type_tag){
             }
             var project_owner=[];
             $('#owner_list td').each(function(){
-               if(project_owner.indexOf($(this).find('span:eq(0)').text().trim())==-1){
-                   project_owner.push($(this).find('span:eq(0)').text().trim());
+               if(project_owner.indexOf($(this).attr('data-id'))==-1 && $(this).attr('data-id') != undefined){
+                   project_owner.push($(this).attr('data-id').trim());
                }
             });
+            //alert(project_owner);
             $.get('Create_New_Project',{
                 user_name:'Admin',
                 project_name:project_name,
                 project_owner:project_owner.join(',')
             },function(data){
-                if(data['message']=='Success'){
-                    window.location='/Home/superAdmin/';
+                if(data['message']){
+                    alertify.success('Project: '+project_name+' is created successfully',1500);
+                    window.location='/Home/superAdminFunction/ListProject/';
+                }
+                else{
+                    alertify.error('Project: '+project_name+' exists',1500)
+                    return false;
                 }
             })
         });
@@ -107,7 +127,7 @@ function populate_mainBody_div(type_tag){
                 user_level:user_level
             },function(data){
                 if(data==true){
-                    window.location='/Home/superAdmin/';
+                    window.location='/Home/superAdminFunction/AssignMembers/';
                 }
             });
         });
@@ -151,12 +171,118 @@ function populate_mainBody_div(type_tag){
                 for(var j=0;j<project_list[i].length;j++){
                     message+='<td>'+project_list[i][j]+'</td>';
                 }
+                message+='<td><img class="edit_button"  style="cursor: pointer;" src="/site_media/edit.png" width="20" height="20"/> </td>';
                 message+='</tr>';
             }
             message+='</table>'
             $('#mainBody').html(message);
+            $('.edit_button').on('click',function(){
+                var project_id=$(this).parent().parent().find('td:first-child').text().trim();
+                window.location='/Home/Project/Admin/'+project_id+'/';
+
+            });
         });
     }
+    if(type_tag=='AssignMembers'){
+        var message='';
+        message+='<table class="two-column-emphasis"><caption><b>Assign Members To Project</b></caption>';
+        message+='<tr><td align="left" style="vertical-align: 0%;"><input type="hidden" id="user_name_suggestion"/><table id="tester"></table></td><td><table width="100%" id="assigned_projects"></table></td><td width="30%">&nbsp;</td></tr>';
+        message+='</table>';
+        $('#mainBody').html(message);
+        $("#user_name_suggestion").select2({
+            placeholder: "Search User....",
+            width: 460,
+            quietMillis: 250,
+            ajax: {
+                url: "GetProjectOwner",
+                dataType: "json",
+                queitMillis: 250,
+                data: function(term, page) {
+                    return {
+                        'term': term,
+                        'page': page
+                    };
+                },
+                results: function(data, page) {
+                    return {
+                        results: data.items,
+                        more: data.more
+                    }
+                }
+            },
+            formatResult: formatTestCasesSearch
+        }).on("change", function(e) {
+            var user_id=$(this).select2('data')['id'];
+            var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
+            $('#tester').html('<tr><td class="deleteTester"><img title = "Delete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td><td data-id="'+user_id+'">'+user_name+'</td></tr>');
+            $(this).select2('val','');
+            $('.deleteTester').on('click',function(){
+                $('#assigned_projects').empty();
+                $(this).parent().remove();
+            });
+            get_projects(user_id,user_name);
+            return false;
+        });
+        function formatTestCasesSearch(test_case_details) {
+            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+            return markup;
+        }
+    }
+}
+
+function get_projects(user_id,user_name){
+    $.get('get_projects',{'user_id':user_id},function(data){
+        var message='';
+        message+='<caption><b>'+user_name+'\'s Projects</b></caption>'
+        var project_list=data['project_list'];
+        if(project_list.length>0){
+            for(var i=0;i<project_list.length;i++){
+                message+='<tr><td>'+project_list[i][1]+'</td><td><input id="'+project_list[i][0]+'" class="cmn-toggle cmn-toggle-yes-no" type="checkbox" value="'+project_list[i][0]+'" style="width:auto" /><label for="'+project_list[i][0]+'"data-on="Yes" data-off="No"></label></td></tr>';
+            }
+        }
+        else{
+            message+='<tr><td><b>No Project is linked</b></td></tr>';
+        }
+        message+='<tr><td>&nbsp;</td><td><input type="button" class="m-btn green" value="save" id="save_projects"/></td></tr>';
+        $('#assigned_projects').empty();
+        $('#assigned_projects').html(message);
+        if(project_list.length>0){
+            for(var i=0;i<project_list.length;i++){
+                if(project_list[i][2]){
+                    $('#'+project_list[i][0]).attr('checked','checked');
+                }
+            }
+        }
+        $('#save_projects').on('click',function(){
+            var project_list=[];
+            $('#assigned_projects tr').each(function(){
+                if($(this).find('td:nth-child(2)').find('input:eq(0)').attr('type')=='checkbox'){
+                    var element=$(this).find('td:nth-child(2)').find('input:eq(0)');
+                    var project_id=element.val();
+                    if(element.attr('checked')!=undefined && element.attr('checked')!=false){
+                        if(element.attr('checked')=='checked'){
+                            var check=true;
+                        }
+                        else{
+                            var check=false;
+                        }
+                    }
+                    else{
+                        var check=false;
+                    }
+                    project_list.push([project_id,check]);
+                }
+            });
+            $.get('update_team_project',{user_id:user_id,project_list:project_list.join("|")},function(data){
+                if(data['message']){
+                    window.location.reload(true);
+                }
+                else{
+                    window.location.reload(false);
+                }
+            });
+        });
+    });
 }
 function DeleteSearchQueryText(){
     $('#owner_list td .delete').live('click',function(){
@@ -164,4 +290,4 @@ function DeleteSearchQueryText(){
         $(this).remove();
         //PerformSearch(project_id,team_id);
     });
-}
+}*/

@@ -4,7 +4,6 @@
 # Create your views here.
 from _ast import BitAnd
 import datetime
-import datetime
 import inspect
 import itertools
 from mimetypes import MimeTypes
@@ -59,6 +58,7 @@ from settings import MEDIA_ROOT, PROJECT_ROOT
 from settings import TIME_ZONE
 from django.http.response import HttpResponse
 from __builtin__ import True
+from distutils.sysconfig import project_base
 
 
 # #
@@ -294,6 +294,37 @@ def edit_machine(request, machine_id):
 
 def CaseRunHistory(request, tc_id):
     return render_to_response('Analysis.html', {})
+
+
+def ViewEditLabel(request, label_id):
+    return render_to_response('ViewEditLabel.html')
+
+def getLabelinfo(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            conn = GetConnection()
+            label_id = request.GET.get(u'label_id','')
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
+            detail = DB.GetData(conn, "select label_id,label_name,label_color,project_id,team_id,created_by,modified_by,cast(created_date as text),cast(modified_date as text),private from labels where label_id='"+label_id+"'", False)
+            reqs = DB.GetData(conn,"select lm.id,r.requirement_title,r.status from label_map lm, requirements r where lm.label_id='"+label_id+"' and type='REQ' and lm.id=r.requirement_id and r.project_id='"+project_id+"' and r.team_id='"+team_id+"'",False)
+            reqs_heading = ['Requirement ID','Requirement Title','Status']
+            tasks = DB.GetData(conn,"select t.tasks_id,t.tasks_title,t.status from label_map lm,tasks t where lm.label_id='"+label_id+"' and type='TASK' and lm.id=t.tasks_id and t.project_id='"+project_id+"' and t.team_id='"+team_id+"'",False)
+            tasks_heading = ['Task ID','Task Title','Status']
+            bugs = DB.GetData(conn,"select b.bug_id,b.bug_title,b.status from label_map lm,bugs b where lm.label_id='"+label_id+"' and type='BUG' and lm.id=b.bug_id and b.project_id='"+project_id+"' and b.team_id='"+team_id+"'",False)
+            bugs_heading = ['Bug ID','Bug Title','Status']
+            Dict = {
+                    'details': detail,
+                    'reqs':reqs,
+                    'reqs_heading':reqs_heading,
+                    'tasks':tasks,
+                    'tasks_heading':tasks_heading,
+                    'bugs':bugs,
+                    'bugs_heading':bugs_heading
+                    }
+            conn.close()
+    result = simplejson.dumps(Dict)
+    return HttpResponse(result, mimetype='appliaction/json')
 
 
 def make_array(get_list):
@@ -1309,10 +1340,10 @@ def AutoCompleteTesterSearch(request):
             team_id=request.GET.get(u'team_id','')
             all_tag=request.GET.get(u'all','')
             if all_tag=='all':
-                query="select distinct user_names, pul.user_id,'Tester' from permitted_user_list  pul where pul.user_level in('assigned_tester') group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(value)
+                query="select distinct user_names, pul.user_id,'Tester' from permitted_user_list  pul,user_project_map upm where upm.user_id=pul.user_id and pul.user_level in('assigned_tester') and project_id='%s' group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(project_id.strip(),value)
             elif all_tag=='edit':
                 team_name=request.GET.get(u'team_name','')
-                query="select  distinct user_names,user_id,case when user_level='assigned_tester' then 'Tester' end from permitted_user_list where user_level in ('assigned_tester') and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='assigned_tester' then 'Tester' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('assigned_tester'))"%(value,project_id.strip(),team_name.strip())
+                query="select distinct user_names, pul.user_id,'Tester' from permitted_user_list  pul,user_project_map upm where upm.user_id=pul.user_id and pul.user_level in('assigned_tester') and project_id='%s' and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='assigned_tester' then 'Tester' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('assigned_tester'))"%(project_id.strip(),value,project_id.strip(),team_name.strip())
             else:
                 query="select distinct user_names, pul.user_id,'Tester'  from project_team_map ptm, team_info  ti ,permitted_user_list  pul where ti.team_id=cast(ptm.team_id as int)  and pul.user_id=cast(ti.user_id as int) and pul.user_level in('assigned_tester') and ptm.project_id='%s' and ti.team_id=%d group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(project_id,int(team_id),value)
             Conn=GetConnection()
@@ -9936,18 +9967,17 @@ def GetOS(request):
             project_id = request.GET.get(u'project_id', '')
             team_id = request.GET.get(u'team_id', '')
             final_list = []
-            query = "select distinct dependency_name,array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by dependency_name" % (
-                project_id, int(team_id))
+            query = "select distinct dependency_name,array_agg(dn.name),d.id from dependency d, dependency_name dn,dependency_management dm where d.id=dn.dependency_id and dn.dependency_id=dm.dependency and d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d group by dependency_name,d.id" % (project_id, int(team_id))
             Conn = GetConnection()
             dependency = DB.GetData(Conn, query, False)
             Conn.close()
             for each in dependency:
                 name = each[0]
                 listing = each[1]
+                dependency_id=each[2]
                 temp = []
                 for eachitem in listing:
-                    query = "select bit_name,array_agg(distinct version) from dependency_name dn,dependency_values dv where dn.id=dv.id and dn.name='%s' group by bit_name" % (
-                        eachitem)
+                    query = "select bit_name,array_agg(distinct version) from dependency d,dependency_name dn,dependency_values dv where d.id=dn.dependency_id and dn.id=dv.id and dn.name='%s' and d.id=%d group by bit_name" % (eachitem,int(dependency_id))
                 #   query="select distinct name from dependency d, dependency_name dn,dependency_values dv,dependency_management dm where dm.dependency=d.id and d.id =dn.dependency_id and dv.id=dn.id and d.dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name,dn.name,dv.bit_name"%(each,project_id,int(team_id))
                     Conn = GetConnection()
                     names = DB.GetData(Conn, query, False)
@@ -12846,7 +12876,7 @@ def Selected_BugID_Analaysis(request):
         query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 ilike '%s' and btm.id2=tc.tc_id" % UserData
         Bug_Cases = DB.GetData(Conn, query, False)
 
-        query = "select distinct pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester::int=pul.user_id" % UserData
+        query = "select distinct pul.user_names from bugs b,permitted_user_list pul where bug_id = '%s' and b.tester=pul.user_id::text" % UserData
         tester = DB.GetData(Conn, query)
 
         query = "select distinct tc.tc_id, tc.tc_name, tcr.status from test_case_results tcr, test_cases tc where tc.tc_id=tcr.tc_id and tcr.status='Failed' and tc.tc_id not in (select id2 from components_map) order by tc.tc_id"
@@ -12892,11 +12922,11 @@ def LogNewBug(request):
                 labels = labels.split("|")
                 # created_by=request.GET.get(u'created_by','')
 
-                tester = DB.GetData(
+                """tester = DB.GetData(
                     Conn,
                     "select user_id from permitted_user_list where user_names = '" +
                     testers +
-                    "'")
+                    "'")"""
 
                 start_date = start_date.split('-')
                 starting_date = datetime.datetime(int(start_date[0].strip()), int(
@@ -12916,7 +12946,7 @@ def LogNewBug(request):
                     milestone,
                     project_id,
                     user_name,
-                    tester[0],
+                    testers,
                     test_cases,
                     labels,
                     Feature_Path)
@@ -12954,11 +12984,11 @@ def ModifyBug(request):
                 labels = labels.split("|")
                 # created_by=request.GET.get(u'created_by','')
 
-                tester = DB.GetData(
+                """tester = DB.GetData(
                     Conn,
                     "select user_id from permitted_user_list where user_names = '" +
                     testers +
-                    "'")
+                    "'")"""
 
                 start_date = start_date.split('-')
                 starting_date = datetime.datetime(int(start_date[0].strip()), int(
@@ -12979,7 +13009,7 @@ def ModifyBug(request):
                     milestone,
                     project_id,
                     user_name,
-                    tester[0],
+                    testers,
                     test_cases,
                     labels,
                     Feature_Path)
@@ -13113,18 +13143,29 @@ def CreateLabel(request):
         if request.method == 'GET':
             label_name = request.GET.get(u'name', '').strip()
             label_color = request.GET.get(u'color', '').strip()
+            project_id = request.GET.get(u'project','')
+            team_id = request.GET.get(u'team','')
+            user = request.GET.get(u'user','')
             Conn = GetConnection()
+            final = []
+            now = datetime.datetime.now().date()
             query = "select nextval('labelid_seq')"
             label_id = DB.GetData(Conn, query)
             label_id = ('LABEL-' + str(label_id[0]))
             label_id = label_id.strip()
-            final = []
+        
             sModuleInfo = inspect.stack()[0][
                 3] + " : " + inspect.getmoduleinfo(__file__).name
             Dict = {
                 'label_id': label_id,
                 'label_name': label_name,
-                'label_color': label_color
+                'label_color': label_color,
+                'project_id': project_id,
+                'team_id':team_id,
+                'created_by':user,
+                'modified_by':user,
+                'created_date':now,
+                'modified_date':now
             }
             testConnection(Conn)
             result = DB.InsertNewRecordInToTable(Conn, "labels", **Dict)
@@ -13137,6 +13178,47 @@ def CreateLabel(request):
                 LogModule.PassMessasge(
                     sModuleInfo,
                     "Inserted " +
+                    label_id +
+                    " successfully",
+                    1)
+                final = 'success'
+            else:
+                final = 'meh'
+    result = simplejson.dumps(final)
+    Conn.close()
+    return HttpResponse(result, mimetype='application/json')
+
+
+def EditLabel(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            label_id = request.GET.get(u'id', '').strip()
+            label_name = request.GET.get(u'name', '').strip()
+            label_color = request.GET.get(u'color', '').strip()
+            project_id = request.GET.get(u'project','')
+            team_id = request.GET.get(u'team','')
+            user = request.GET.get(u'user','')
+            Conn = GetConnection()
+            final = []
+            now = datetime.datetime.now().date()
+            sModuleInfo = inspect.stack()[0][
+                3] + " : " + inspect.getmoduleinfo(__file__).name
+            Dict = {
+                #'label_id': label_id,
+                'label_name': label_name,
+                'label_color': label_color,
+                'project_id': project_id,
+                'team_id':team_id,
+                'modified_by':user,
+                'modified_date':now
+            }
+            testConnection(Conn)
+            result = DB.UpdateRecordInTable(Conn, "labels", " where label_id='"+label_id+"' ",**Dict)
+            #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
+            if result:
+                LogModule.PassMessasge(
+                    sModuleInfo,
+                    "Updated " +
                     label_id +
                     " successfully",
                     1)
@@ -13164,9 +13246,58 @@ def ManageRequirement(request):
     return render_to_response('ManageRequirement.html', {})
 
 
-def ManageTeam(request):
-    return render_to_response('ManageTeam.html', {})
+def ManageTeam(request,project_id):
+    Dict={
+        'project_id':project_id
+    }
+    return render_to_response('ManageTeam.html',Dict)
 
+def GetAllTeam(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            user_id=request.GET.get(u'user_id','')
+            project_id=request.GET.get(u'project_id','')
+            #check if the owner of this project
+            query="select project_owners from projects where project_id='%s'"%(project_id.strip())
+            Conn=GetConnection()
+            project_owners=DB.GetData(Conn,query)
+            Conn.close()
+            if user_id in project_owners[0].split(","):
+                owner_tag=True
+            else:
+                owner_tag=False
+            if owner_tag:
+                #get all the assigned team
+                query="select t.id,t.team_name  from project_team_map ptm,projects p,team t where p.project_id=ptm.project_id and ptm.project_id='%s' and t.id=cast(ptm.team_id as int)"%(project_id.strip())
+                Conn=GetConnection()
+                team_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                #get the global team
+                query="select id,team_name from team where project_id='%s'"%(project_id)
+                Conn=GetConnection()
+                global_team_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                global_team_list=list(set(global_team_list)-set(team_list))
+            else:
+                query="select id,team_name from project_team_map ptm, team_info ti, team t where ptm.team_id=cast(ti.team_id as text) and t.id=ti.team_id and ptm.team_id=cast(t.id as text) and ti.user_id='%s' and ptm.project_id='%s'"%(user_id.strip(),project_id)
+                Conn=GetConnection()
+                team_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                global_team_list=[]
+                
+            query="select project_name from projects where project_id='%s'"%(project_id.strip())
+            Conn=GetConnection()
+            project_name=DB.GetData(Conn,query)
+            Conn.close()
+            Dict={
+                'owner':owner_tag,
+                'team_list':team_list,
+                'global_team_list':global_team_list,
+                'project_id':project_id.strip(),
+                'project_name':project_name[0]
+            }
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
 
 def GetTesterManager(request):
     if request.is_ajax():
@@ -13178,12 +13309,14 @@ def GetTesterManager(request):
             requested_page = int(request.GET.get(u'page', ''))
             value = request.GET.get(u'term', '')
             all_tag=request.GET.get(u'all','')
+            
+            project_id=request.GET.get('project_id','')
             if all_tag=='all':
-                query="select distinct user_names, pul.user_id,'Manager' from permitted_user_list  pul where pul.user_level in('manager') group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(value)
+                query="select distinct user_names, pul.user_id,'Manager' from permitted_user_list  pul,user_project_map upm where upm.user_id=pul.user_id and pul.user_level in('manager') and project_id='%s' group by pul.user_id having count(case when user_names ilike'%%%s%%' then 1 end)>0"%(project_id.strip(),value)
             if all_tag=='edit':
                 project_id=request.GET.get(u'project_id','')
                 team_name=request.GET.get(u'team_name','')
-                query="select  distinct user_names,user_id,case when user_level='manager' then 'Manager' end from permitted_user_list where user_level in ('manager') and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='manager' then 'Manager' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('manager'))"%(value.strip(),project_id.strip(),team_name.strip())
+                query="select distinct user_names, pul.user_id,'Manager' from permitted_user_list  pul,user_project_map upm where upm.user_id=pul.user_id and pul.user_level in('manager') and project_id='%s' and user_names ilike '%%%s%%' except (select distinct user_names,pul.user_id,case when user_level='manager' then 'Manager' end from permitted_user_list pul, team_info ti ,project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.team_id=cast(ti.team_id as text) and ti.team_id=(select distinct id from team where project_id='%s' and team_name='%s') and user_level in ('manager'))"%(project_id.strip(),value.strip(),project_id.strip(),team_name.strip())
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='user_id')
             Conn.close()
@@ -13239,26 +13372,6 @@ def Create_Team(request):
     result = simplejson.dumps(message)
     Conn.close()
     return HttpResponse(result, mimetype='application/json')
-
-
-def GetAllTeam(request):
-    if request.is_ajax():
-        if request.method == 'GET':
-            project_id=request.GET.get(u'project_id','')
-            query = "select distinct id,team_name from team t,project_team_map ptm where ptm.team_id=cast(t.id as text) and ptm.project_id='%s'"%(project_id)
-            Conn = GetConnection()
-            all_team = DB.GetData(Conn, query, False)
-            Conn.close()
-            query = "select distinct id,team_name from team where project_id='%s'" %(project_id)
-            Conn=GetConnection()
-            global_team=DB.GetData(Conn,query,False)
-            Conn.close()
-            global_team=list(set(global_team)-set(all_team))
-            Dict={'all_team':all_team,'global_team':global_team}
-            result = simplejson.dumps(Dict)
-            Conn.close()
-            return HttpResponse(result, mimetype='application/json')
-
 
 def GetTeamInfo(request):
     if request.is_ajax():
@@ -13370,9 +13483,16 @@ def TeamData(request, project_id,team_name):
             if eachitem not in temp and eachitem[2]==each:
                 temp.append(eachitem)
         final.append((each,temp))
+    query="select project_name from projects where project_id='%s'"%(project_id.strip())
+    Conn=GetConnection()
+    project_name=DB.GetData(Conn,query)
+    Conn.close()
     Dict = {
         'team_name': team_name.strip(),
-        'user_list':final
+        'user_list':final,
+        'project_name':project_name[0],
+        'project_id':project_id,
+        'team_name':team_name
     }
     return render_to_response('Team_Edit.html', Dict)
 
@@ -13600,12 +13720,13 @@ def Create_New_Project(request):
                 Conn.close()
                 print tmp_id
                 project_id = ('PROJ-') + str(tmp_id[0])
-                query = "select count(*) from projects where project_name='%s' and project_id='%s'" % (
-                    name.strip(), project_id.strip())
+                query = "select count(*) from projects where project_name='%s'" % (
+                    name.strip())
                 count = []
                 Conn = GetConnection()
                 count = DB.GetData(Conn, query)
                 Conn.close()
+                
                 print count
                 now = datetime.datetime.now().date()
                 current_date = now
@@ -13632,7 +13753,17 @@ def Create_New_Project(request):
                         message = "Failed"
                         Conn = GetConnection()
                     else:
-                        message = "Success"
+                        for each in owners.split(','):
+                            Dict={
+                                  'user_id':int(each),
+                                  'project_id':project_id
+                            }
+                            Conn=GetConnection()
+                            print DB.InsertNewRecordInToTable(Conn,"user_project_map",**Dict)
+                            Conn.close()
+                        message = True
+                else:
+                    message=False
             result_dict = {
                 'message': message,
                 'project_id': project_id.strip()
@@ -13662,14 +13793,14 @@ def Project_Detail(request, project_id):
             for each in zip(project_column, eachitem):
                 Dict.update({each[0]: each[1]})
         temp = Dict['project_owners']
-        first_colon = temp.find(":", 0)
-        second_colon = temp.find(":", first_colon + 1)
-        first_hiphen = temp.find("-", first_colon + 1)
-        testers = temp[first_colon + 1:first_hiphen]
-        testers = testers.split(",")
-        managers = temp[second_colon + 1:]
-        managers = managers.split(",")
-        del Dict['project_owners']
+        user_names_list=[]
+        for each in temp.split(","):
+            query="select user_id,user_names from permitted_user_list where user_id=%d"%(int(each))
+            Conn=GetConnection()
+            user_names=DB.GetData(Conn,query,False)
+            Conn.close()
+            user_names_list.append(user_names[0])
+        Dict.update({'project_owners':user_names_list})
         # get top 5 comments
         query = "select comment_id,attachment from comments where project_id='%s' order by comment_date desc limit 5" % (
             project_id)
@@ -13688,8 +13819,8 @@ def Project_Detail(request, project_id):
                 temp_comment = DB.GetData(Conn, query, False)
                 Conn.close()
                 # time.sleep(0.5)
-                for each in temp_comment:
-                    for eachitem in each:
+                for eachitemtemp in temp_comment:
+                    for eachitem in eachitemtemp:
                         temp.append(eachitem)
                 temp.append('')
                 temp = tuple(temp)
@@ -13720,7 +13851,6 @@ def Project_Detail(request, project_id):
         Dict.update(
             {'team_detail': fullTeamDetail, 'rest_team': restTeamDetail})
         Dict.update({'comment': comment})
-        Dict.update({'testers': testers, 'managers': managers})
         Dict.update({'final_comment': final})
         # time.sleep(1)
         return render_to_response(
@@ -13729,8 +13859,89 @@ def Project_Detail(request, project_id):
             context_instance=RequestContext(request))
     except Exception as e:
         print "Exception:", e
-
-
+def EditProjectAdmin(request,project_id):
+    query="select project_name,project_startingdate,project_endingdate,project_description,project_owners from projects where project_id='%s'"%(project_id)
+    Conn=GetConnection()
+    project_detail=DB.GetData(Conn,query,False)
+    Conn.close()
+    print project_detail
+    project_detail=project_detail[0]
+    owners=list(project_detail).pop()
+    project_name=project_detail[0]
+    project_startingdate=project_detail[1]
+    project_startingdate=datetime.datetime.strftime(project_startingdate,'%B %d, %Y')
+    if project_startingdate is None:
+        project_startingdate=''
+    project_endingdate=project_detail[2]
+    project_endingdate=datetime.datetime.strftime(project_endingdate,'%B %d, %Y')
+    if project_endingdate is None:
+        project_endingdate=''
+    project_description=project_detail[3]
+    owner_name=[]
+    for each in owners.split(','):
+        query="select user_id,user_names from permitted_user_list where user_id=%d"%int(each)
+        Conn=GetConnection()
+        user_name=DB.GetData(Conn,query,False)
+        Conn.close()
+        owner_name.append(user_name[0])
+    result={
+        'project_name':project_name,
+        'project_id':project_id,
+        'project_startingdate':project_startingdate,
+        'project_endingdate':project_endingdate,
+        'project_description':project_description,
+        'project_owners':list(set(owner_name))
+    }
+    return render_to_response('EditProject.html',result,context_instance=RequestContext(request))
+def Edit_Project(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            project_name=request.GET.get(u'project_name','')
+            starting_date=request.GET.get(u'starting_date','')
+            ending_date=request.GET.get(u'ending_date','')
+            project_description=request.GET.get(u'description','')
+            owner_list=request.GET.get(u'owner_list','')
+            admin=request.GET.get(u'user','')
+            query="select count(*),project_owners from projects where project_id='%s' group by project_owners"%(project_id)
+            Conn=GetConnection()
+            project_id_count=DB.GetData(Conn,query,False)
+            Conn.close()
+            if len(project_id_count)==1 and project_id_count[0][0]==1:
+                current_date=datetime.datetime.now().date()
+                starting_date=datetime.datetime.strptime(starting_date,'%B %d, %Y').date()
+                ending_date=datetime.datetime.strptime(ending_date,'%B %d, %Y').date()
+                sWhereQuery="where project_id='%s'"%(project_id)
+                Dict={
+                    'project_name':project_name,
+                    'project_description':project_description,
+                    'project_startingdate':starting_date,
+                    'project_endingdate':ending_date,
+                    'project_modifydate':current_date,
+                    'project_modifiedby':admin,
+                    'project_owners':owner_list
+                }
+                Conn=GetConnection()
+                result=DB.UpdateRecordInTable(Conn,"projects", sWhereQuery,**Dict)
+                Conn.close()
+                if result:
+                    message=True    
+                    prev_owner=project_id_count[0][1].split(",")
+                    current_owner=owner_list.split(",")
+                    del_owner=list(set(prev_owner)-set(current_owner))
+                    add_owner=list(set(current_owner)-set(prev_owner))
+                    for each in del_owner:
+                        Conn=GetConnection()
+                        print DB.DeleteRecord(Conn,"user_project_map",user_id=int(each),project_id=project_id)
+                        Conn.close()
+                    for each in add_owner:
+                        Conn=GetConnection()
+                        print DB.InsertNewRecordInToTable(Conn, "user_project_map",user_id=int(each),project_id=project_id)
+                        Conn.close()
+                else:
+                    message=False
+                result=simplejson.dumps(message)
+                return HttpResponse(result,mimetype='application/json')
 def GetProjectTeamInfo(team_number):
     try:
         fullTeamDetail = []
@@ -13765,6 +13976,7 @@ def Small_Project_Detail(request):
     try:
         if request.is_ajax():
             if request.method == 'GET':
+                user_id=request.GET.get(u'user_id','')
                 name = request.GET.get(u'name', '')
                 query = "select * from projects where project_name='%s'" % name.strip()
                 Conn = GetConnection()
@@ -13782,6 +13994,11 @@ def Small_Project_Detail(request):
                         Dict.update({eachitem[0]: eachitem[1]})
                 temp = Dict['project_owners']
                 owner_list=[]
+                if user_id in temp.split(","):
+                    owner_tag=True
+                else:
+                    owner_tag=False
+                Dict.update({'owner_tag':owner_tag})
                 for each in temp.split(','):
                     query="select user_names from permitted_user_list where user_id=%d"%int(each)
                     Conn=GetConnection()
@@ -13861,7 +14078,6 @@ def Get_Projects(request):
                 print "Exception:", e
 def FileUpload(request, project_id):
     try:
-        print request
         print project_id
         # Get the rank of the person
         query = "select project_owners from projects where project_id='%s'" % (
@@ -13870,41 +14086,14 @@ def FileUpload(request, project_id):
         project_owners = DB.GetData(Conn, query)
         Conn.close()
         temp = project_owners[0]
-        first_colon = temp.find(":", 0)
-        second_colon = temp.find(":", first_colon + 1)
-        first_hiphen = temp.find("-", first_colon + 1)
-        testers = temp[first_colon + 1:first_hiphen]
-        testers = testers.split(",")
-        managers = temp[second_colon + 1:]
-        managers = managers.split(",")
-        owners = []
-        for each in testers:
-            if each not in owners:
-                owners.append(each)
-        for each in managers:
-            if each not in owners:
-                owners.append(each)
-        query = "select distinct name,rank from team_info where cast(team_id as text) in(select team_id from project_team_map where project_id='%s')" % project_id
-        Conn = GetConnection()
-        rest_rank = DB.GetData(Conn, query, False)
-        Conn.close()
-        members = []
-        for each in rest_rank:
-            if each[0] not in owners:
-                members.append(each[0])
+        owners=temp.split(',')
+        user_id=request.POST['commenter_id']
         user_name = request.POST['commented_by']
         rank = ""
-        if user_name in owners:
+        if user_id in owners:
             rank = "Owner"
-        if user_name in members:
-            rank = "Member"
-        query = "select project_createdby from projects where project_id='%s'" % project_id
-        Conn = GetConnection()
-        created_by = DB.GetData(Conn, query)
-        Conn.close()
-        if user_name in created_by:
-            rank = "Creator"
-        # form file name
+        else:
+            rank='Member'
         if rank != "":
             now = datetime.datetime.now().date()
             dateFolder = os.path.join(MEDIA_ROOT, str(now.year))
@@ -14045,8 +14234,8 @@ def commentView(request, project_id):
                 temp_comment = DB.GetData(Conn, query, False)
                 Conn.close()
                 temp = []
-                for each in temp_comment:
-                    for eachitem in each:
+                for eachitemtemp in temp_comment:
+                    for eachitem in eachitemtemp:
                         temp.append(eachitem)
                 temp.append('')
                 temp = tuple(temp)
@@ -15363,7 +15552,7 @@ def get_all_data_dependency_page(request):
                 else:
                     project_name=''
                     
-                query="select value from config_values where type='Team' and id=%d"%int(team_id)
+                query="select team_name from team t, project_team_map ptm where ptm.team_id=t.id::text and ptm.project_id=t.project_id and ptm.project_id='%s' and id=%d"%(project_id.strip(),int(team_id))
                 Conn=GetConnection()
                 team_name=DB.GetData(Conn,query)
                 Conn.close()
@@ -15383,13 +15572,12 @@ def get_all_data_dependency_page(request):
                 Conn = GetConnection()
                 unused_dependency_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d" % (
+                query = "select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and b.project_id=bm.project_id and bm.project_id='%s' and bm.team_id=%d" % (
                     project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 branch_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct id,branch_name from branch except (select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='%s' and bm.team_id=%d)" % (
-                    project_id.strip(), int(team_id.strip()))
+                query = "select distinct id,branch_name from branch where project_id='%s' except (select distinct b.id,b.branch_name from branch b,branch_management bm where b.id=bm.branch  and b.project_id=bm.project_id and bm.project_id='%s' and bm.team_id=%d)" % (project_id.strip(),project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 unused_branch_list = DB.GetData(Conn, query, False)
                 Conn.close()
@@ -16246,55 +16434,39 @@ def get_default_settings(request):
 
 
 def add_new_branch(request):
-    sModuleInfo = inspect.stack()[0][3] + \
-        " : " + inspect.getmoduleinfo(__file__).name
+    sModuleInfo = inspect.stack()[0][3] +" : " + inspect.getmoduleinfo(__file__).name
     try:
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = 'Branch'
-                branch_name = request.GET.get(u'dependency_name', '')
+                branch_name = request.GET.get(u'name', '')
+                project_id=request.GET.get(u'project_id','')
+                team_id=int(request.GET.get(u'team_id',''))
                 # check for the occurance
-                query = "select count(*) from branch where branch_name='%s'" % branch_name.strip(
-                )
+                query = "select count(*) from branch where branch_name='%s' and project_id='%s' and team_id=%d" %(branch_name.strip(),project_id.strip(),int(team_id))
                 Conn = GetConnection()
                 count = DB.GetData(Conn, query)
                 if isinstance(count, list):
                     if len(count) == 1 and count[0] == 0:
                         # form dict to insert
                         Dict = {
-                            'branch_name': branch_name.strip()
+                            'branch_name': branch_name.strip(),
+                            'project_id':project_id.strip(),
+                            'team_id':int(team_id)
                         }
                         Conn = GetConnection()
-                        result = DB.InsertNewRecordInToTable(
-                            Conn,
-                            "branch",
-                            **Dict)
+                        result = DB.InsertNewRecordInToTable(Conn,"branch",**Dict)
                         Conn.close()
                         if result:
-                            PassMessasge(
-                                sModuleInfo,
-                                entry_success(
-                                    branch_name,
-                                    type_tag),
-                                success_tag)
+                            PassMessasge(sModuleInfo,entry_success(branch_name,type_tag),success_tag)
                             message = True
                             log_message = entry_success(branch_name, type_tag)
                         else:
-                            PassMessasge(
-                                sModuleInfo,
-                                entry_fail(
-                                    branch_name,
-                                    type_tag),
-                                error_tag)
+                            PassMessasge(sModuleInfo,entry_fail(branch_name,type_tag),error_tag)
                             message = False
                             log_message = entry_fail(branch_name, type_tag)
                     if len(count) == 1 and count[0] > 0:
-                        PassMessasge(
-                            sModuleInfo,
-                            multiple_instance(
-                                branch_name,
-                                type_tag),
-                            error_tag)
+                        PassMessasge(sModuleInfo,multiple_instance(branch_name,type_tag),error_tag)
                         message = False
                         log_message = multiple_instance(branch_name, type_tag)
                 else:
@@ -16326,8 +16498,7 @@ def get_all_version_under_branch(request):
                 print value[0]
                 print project_id
                 print team_id
-                query = "select distinct version_name as name from branch_management bm, versions v where v.id=bm.branch and bm.project_id='%s' and bm.team_id=%d and bm.branch=%d order by name" % (
-                    project_id, int(team_id), int(value[0]))
+                query = "select distinct version_name as name from branch_management bm, versions v where v.id=bm.branch and bm.project_id='%s' and bm.team_id=%d and bm.branch=%d order by name" % (project_id, int(team_id), int(value[0]))
                 Conn = GetConnection()
                 version_list = DB.GetData(Conn, query, False)
                 Conn.close()
@@ -16354,8 +16525,7 @@ def add_new_version_branch(request):
                 type_tag = "Branch Version"
                 new_name = request.GET.get(u'new_name', '')
                 new_value = request.GET.get(u'new_value', '')
-                query = "select count(*) from versions where version_name='%s'" % (
-                    new_name.strip())
+                query = "select count(*) from versions where version_name='%s' and id=%d" % (new_name.strip(),int(new_value))
                 Conn = GetConnection()
                 count = DB.GetData(Conn, query)
                 Conn.close()
@@ -17321,8 +17491,7 @@ def specific_dependency_settings(request):
                     return HttpResponse(result, mimetype='application/json')
     except Exception as e:
         PassMessasge(sModuleInfo, e, 3)
-
-
+        
 def admin_page(request):
     return render_to_response(
         'superAdmin.html',
@@ -17335,22 +17504,95 @@ def superAdminFunction(request):
         'superAdminFunction.html',
         {},
         context_instance=RequestContext(request))
+def CreateProject(request):
+    return render_to_response(
+        'CreateProject.html',
+        {},
+        context_instance=RequestContext(request))
+def EditProject(request):
+    return render_to_response(
+        'EditProject.html',
+        {},
+        context_instance=RequestContext(request))
 
+def AddUser(request):
+    return render_to_response('AddUser.html',{},context_instance=RequestContext(request))
 
+def update_team_project(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            user_id=int(request.GET.get(u'user_id',''))
+            project_list=list(set(request.GET.get(u'project_list','').split("|")))
+            Conn=GetConnection()
+            print DB.DeleteRecord(Conn, "user_project_map",user_id=int(user_id))
+            Conn.close()
+            for each in project_list:
+                project_id=each.split(",")[0].strip()
+                tag=each.split(",")[1]
+                try:
+                    Conn=GetConnection()
+                    if tag=='true':
+                        print DB.InsertNewRecordInToTable(Conn, "user_project_map", user_id=int(user_id), project_id=project_id.strip())
+                    Conn.close()
+                except Exception,e:
+                    print "Exception:",e
+            json = simplejson.dumps({'message':True})
+            return HttpResponse(json, mimetype='application/json')
+        
 def GetProjectOwner(request):
     if request.method == 'GET':
         if request.is_ajax():
+            items_per_page = 10
+            has_next_page = False
+            requested_page = int(request.GET.get(u'page', ''))
             value = request.GET.get(u'term', '')
             print value
             query = "select distinct user_id,user_names,case when user_level='assigned_tester' then 'Tester' when user_level='manager' then 'Manager' end  from permitted_user_list pul, user_info ui where pul.user_names=ui.full_name and user_level not in('email','admin') and user_names iLike '%%%s%%'" % (
                 value.strip())
-            Conn = GetConnection()
-            owner_list = DB.GetData(Conn, query, False)
+            Conn=GetConnection()
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='user_names')
             Conn.close()
-            result = simplejson.dumps(owner_list)
-            return HttpResponse(result, mimetype='application/json')
+            results=[]
+            for each_item in data['rows']:
+                result_dict={}
+                result_dict['id']=each_item[0]
+                result_dict['text']=each_item[1]+' - '+each_item[2]
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
+            return HttpResponse(json, mimetype='application/json')
 
-
+def get_projects(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            user_id=request.GET.get(u'user_id','')
+            query="select p.project_id,p.project_name from user_project_map upm, permitted_user_list pul,projects p where pul.user_id=upm.user_id and upm.project_id=p.project_id and pul.user_id=%d"%(int(user_id))
+            Conn=GetConnection()
+            project_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            print project_list
+            Conn=GetConnection()
+            query="select project_id,project_name from projects"
+            total_project_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            results=[]
+            for each in project_list:
+                temp=[]
+                for eachitem in each:
+                    temp.append(eachitem)
+                temp.append(True)
+                results.append(tuple(temp))
+            for each in list(set(total_project_list)-set(project_list)):
+                temp=[]
+                for eachitem in each:
+                    temp.append(eachitem)
+                temp.append(False)
+                results.append(tuple(temp))
+            project_list=results
+            json = simplejson.dumps({'project_list':sorted(project_list,key=main_key)})
+            return HttpResponse(json, mimetype='application/json')
+def main_key(each):
+    return each[1]        
 def Create_New_User(request):
     if request.method == 'GET':
         if request.is_ajax():
@@ -17393,56 +17635,118 @@ def Create_New_User(request):
             result = simplejson.dumps(message)
             return HttpResponse(result, mimetype='application/json')
 
-
-def ListAllUser(request):
+def Edit_User(request):
     if request.method == 'GET':
         if request.is_ajax():
-            query = "select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
+            full_name = request.GET.get(u'full_name', '').strip()
+            user_name = request.GET.get(u'user_name', '').strip()
+            email = request.GET.get(u'email', '').strip()
+            password = request.GET.get(u'password', '').strip()
+            user_level = request.GET.get(u'user_level', '').strip()
+            user_id=int(request.GET.get(u'user_id',''))
+            query = "select count(*) from permitted_user_list where user_id=%d" %int(user_id)
             Conn = GetConnection()
-            user_list = DB.GetData(Conn, query, False)
+            count = DB.GetData(Conn, query)
             Conn.close()
-            Column = [
-                'User Name',
-                'Full Name',
-                'Password',
-                'Designation',
-                'Email']
-            result = {
-                'user_list': user_list,
-                'column': Column
-            }
-            result = simplejson.dumps(result)
+            if len(count) == 1 and count[0] == 1:
+                # insert the new user
+                Dict = {
+                    'username': user_name,
+                    'password': password,
+                    'full_name': full_name
+                }
+                query="select user_names from permitted_user_list where user_id=%d"%int(user_id)
+                Conn=GetConnection()
+                full_name_list=DB.GetData(Conn,query)
+                Conn.close()
+                sWhereQuery="where full_name='%s'"%(full_name_list[0].strip())
+                Conn = GetConnection()
+                result = DB.UpdateRecordInTable(Conn, "user_info", sWhereQuery,**Dict)
+                Conn.close()
+                if result:
+                    Dict = {
+                        'user_names': full_name,
+                        'user_level': user_level,
+                        'email': email
+                    }
+                    sWhereQuery="where user_id=%d"%int(user_id)
+                    Conn = GetConnection()
+                    result=DB.UpdateRecordInTable(Conn,"permitted_user_list",sWhereQuery,**Dict)
+                    Conn.close()
+                    if result:
+                        message = True
+                else:
+                    message = False
+            result = simplejson.dumps(message)
             return HttpResponse(result, mimetype='application/json')
 
+
+def ListAllUser(request):
+    query = "select username,full_name,password,case when user_level='assigned_tester' then 'Tester' when user_level='admin' then 'Admin' when user_level='manager' then 'Manager' end,email,pul.user_id from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names  and user_level not in('email') order by user_level,username"
+    Conn = GetConnection()
+    user_list = DB.GetData(Conn, query, False)
+    Conn.close()
+    Column = ['User Name','Full Name','Password','Designation','Email']
+    result = {
+        'user_list': user_list,
+        'column': Column
+    }
+    return render_to_response('ListUser.html',result,context_instance=RequestContext(request))
+
+def AssignMembers(request):
+    return render_to_response('AssignMembers.html',{},context_instance=RequestContext(request))
+def EditUser(request,user_id):
+    query="select username,full_name,email,user_level,password from permitted_user_list pul, user_info ui where pul.user_names=ui.full_name and user_id=%d"%int(user_id)
+    Conn=GetConnection()
+    user_id_list=DB.GetData(Conn,query,False)
+    Conn.close()
+    user_id_list=user_id_list[0]
+    user_name=user_id_list[0]
+    full_name=user_id_list[1]
+    email=user_id_list[2]
+    user_level=user_id_list[3]
+    user_pass=user_id_list[4]
+    result={
+        'tag':True,
+        'user_name':user_name,
+        'full_name':full_name,
+        'user_level':user_level,
+        'email':email,
+        'user_pass':user_pass,
+        'user_id':user_id
+    }
+    return render_to_response('AddUser.html',result,context_instance=RequestContext(request))
+
 def ListProject(request):
-    if request.method=='GET':
-        if request.is_ajax():
-            query="select project_id, project_name,string_to_array(project_owners,','),cast(project_creationdate as text),project_createdby,cast(project_modifydate as text), project_modifiedby from projects"
+    query="select project_id, project_name,string_to_array(project_owners,','),cast(project_startingdate as text),cast(project_endingdate as text),cast(project_creationdate as text),project_createdby,cast(project_modifydate as text), project_modifiedby from projects"
+    print query
+    Conn=GetConnection()
+    project_detail=DB.GetData(Conn,query,False)
+    Conn.close()
+    final_list=[]
+    for each in project_detail:
+        temp=[]
+        for eachitem in each:
+            if eachitem==None:
+                temp.append('Not Set')
+            else:    
+                temp.append(eachitem)
+        owner_list=temp[2]
+        temp_name=[]
+        for eachitem in owner_list:
+            query="select user_names from permitted_user_list where user_id=%d"%int(eachitem)
             Conn=GetConnection()
-            project_detail=DB.GetData(Conn,query,False)
+            user_name=DB.GetData(Conn,query)
             Conn.close()
-            final_list=[]
-            for each in project_detail:
-                temp=[]
-                for eachitem in each:
-                    temp.append(eachitem)
-                owner_list=temp[2]
-                temp_name=[]
-                for eachitem in owner_list:
-                    query="select user_names from permitted_user_list where user_id=%d"%int(eachitem)
-                    Conn=GetConnection()
-                    user_name=DB.GetData(Conn,query)
-                    Conn.close()
-                    if isinstance(user_name,list) and len(user_name)>0:
-                        temp_name.append(user_name[0])
-                del temp[2]
-                temp.insert(2,",".join(temp_name)) 
-                final_list.append(tuple(temp))               
-            column=['Project ID','Project Name','Project Owner','Creation Date','Created By','Modify Date','Modified By']
-            result={'project_detail':final_list,'column':column}
-            result=simplejson.dumps(result)
-            return HttpResponse(result,mimetype='application/json')
-        
+            if isinstance(user_name,list) and len(user_name)>0:
+                temp_name.append(user_name[0])
+            del temp[2]
+            temp.insert(2,",".join(temp_name)) 
+        final_list.append(tuple(temp))               
+    print final_list
+    column=['Project ID','Project Name','Project Owner','Starting Date','Ending Date','Creation Date','Created By','Modify Date','Modified By']
+    result={'project_detail':final_list,'column':column}
+    return render_to_response('ListProject.html',result,context_instance=RequestContext(request))
 def AssignTesters(request):
     query = "select pul.user_id,user_names,case when user_level='assigned_tester' then 'Tester' end as Designation,default_project,default_team from permitted_user_list pul, default_choice ds, user_info ui where ui.full_name=pul.user_names and cast(ds.user_id as int)=pul.user_id and user_level in ('assigned_tester')"
     Conn = GetConnection()
