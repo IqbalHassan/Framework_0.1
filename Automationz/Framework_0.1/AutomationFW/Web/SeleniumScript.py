@@ -620,6 +620,7 @@ def Delete_A_Course(course_name):
         Click_By_Parameter_And_Value ("value","Continue")
         CommonUtil.ExecLog(sModuleInfo, "Successfully deleted your course: %s"%course_name, 1,local_run)
         CommonUtil.ExecLog(sModuleInfo, "Verifying if course is deleted completely", 1, local_run)
+        time.sleep(7)
         delete_result =  Verify_Text_Message_By_Text('%s has been completely deleted'%course_name)
         if delete_result == "passed":
             CommonUtil.ExecLog(sModuleInfo, "Completely deleted your course: %s"%course_name, 1,local_run)
@@ -663,7 +664,7 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup=True):
         CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course_name, 1,local_run)  
         try:
             course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
-            CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 3,local_run)
+            CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 2,local_run)
             if isinstance(cleanup, bool) and cleanup:
                 CommonUtil.ExecLog(sModuleInfo, "Deleting your course: %s"%course_name, 1,local_run)
                 course_element_row = WebDriverWait(course_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
