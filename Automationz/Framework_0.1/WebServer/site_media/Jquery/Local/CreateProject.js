@@ -64,7 +64,7 @@ $(document).ready(function(){
                 alertify.error('Project: '+project_name+' exists',1500)
                 return false;
             }
-        })
+        });
     });
 });
 

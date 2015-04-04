@@ -13653,59 +13653,7 @@ def ManageProject(request):
         return render_to_response('Project.html',{})
     except Exception as e:
         print "Exception:", e
-        """
-        print "Create project was called"
-        query = "select distinct value from config_values where type='Team'"
-        try:
-            team_name = []
-            Conn = GetConnection()
-            team_name = DB.GetData(Conn, query)
-            print team_name
-            Conn.close()
-        except Exception as e:
-            print "Exception:", e
-
-        final = []
-        count = 0
-        temp = []
-        for x in team_name:
-            temp.append(x)
-            count += 1
-            if count > 5:
-                final.append(temp)
-                temp = []
-                count = 0
-        final.append(temp)
-        team_name = final
-        query = "select distinct user_names,user_level from permitted_user_list where user_level in ('manager','assigned_tester')"
-        try:
-            owners = []
-            Conn = GetConnection()
-            owners = DB.GetData(Conn, query, False)
-            print owners
-            Conn.close()
-
-        except Exception as e:
-            print "Exception:", e
-
-        final = []
-        count = 0
-        temp = []
-        for x in owners:
-            temp.append(x)
-            count += 1
-            if count > 5:
-                final.append(temp)
-                temp = []
-                count = 0
-        final.append(temp)
-        owners = final
-        Dict = {'teams': team_name, 'owners': owners}
-        return render_to_response('Project.html', Dict)
-    except Exception as e:
-        print "Exception:", e
-        """
-
+        
 def Create_New_Project(request):
     try:
         if request.is_ajax():
@@ -13859,6 +13807,7 @@ def Project_Detail(request, project_id):
             context_instance=RequestContext(request))
     except Exception as e:
         print "Exception:", e
+
 def EditProjectAdmin(request,project_id):
     query="select project_name,project_startingdate,project_endingdate,project_description,project_owners from projects where project_id='%s'"%(project_id)
     Conn=GetConnection()
@@ -13869,13 +13818,16 @@ def EditProjectAdmin(request,project_id):
     owners=list(project_detail).pop()
     project_name=project_detail[0]
     project_startingdate=project_detail[1]
-    project_startingdate=datetime.datetime.strftime(project_startingdate,'%B %d, %Y')
     if project_startingdate is None:
         project_startingdate=''
+    else:
+        project_startingdate=datetime.datetime.strftime(project_startingdate,'%B %d, %Y')
     project_endingdate=project_detail[2]
-    project_endingdate=datetime.datetime.strftime(project_endingdate,'%B %d, %Y')
     if project_endingdate is None:
         project_endingdate=''
+    else:
+        project_endingdate=datetime.datetime.strftime(project_endingdate,'%B %d, %Y')
+    
     project_description=project_detail[3]
     owner_name=[]
     for each in owners.split(','):
@@ -13909,18 +13861,22 @@ def Edit_Project(request):
             Conn.close()
             if len(project_id_count)==1 and project_id_count[0][0]==1:
                 current_date=datetime.datetime.now().date()
-                starting_date=datetime.datetime.strptime(starting_date,'%B %d, %Y').date()
-                ending_date=datetime.datetime.strptime(ending_date,'%B %d, %Y').date()
+                if(starting_date!=''):
+                    starting_date=datetime.datetime.strptime(starting_date,'%B %d, %Y').date()
+                if(ending_date!=''):
+                    ending_date=datetime.datetime.strptime(ending_date,'%B %d, %Y').date()
                 sWhereQuery="where project_id='%s'"%(project_id)
                 Dict={
                     'project_name':project_name,
-                    'project_description':project_description,
-                    'project_startingdate':starting_date,
-                    'project_endingdate':ending_date,
                     'project_modifydate':current_date,
                     'project_modifiedby':admin,
-                    'project_owners':owner_list
+                    'project_owners':owner_list,
+                    'project_description':project_description
                 }
+                if(starting_date!=''):
+                    Dict.update({'project_startingdate':starting_date})
+                if(ending_date!=''):
+                    Dict.update({'project_endingdate':ending_date})
                 Conn=GetConnection()
                 result=DB.UpdateRecordInTable(Conn,"projects", sWhereQuery,**Dict)
                 Conn.close()

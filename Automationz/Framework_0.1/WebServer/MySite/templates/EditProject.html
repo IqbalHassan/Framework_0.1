@@ -82,8 +82,12 @@
     });
     $('#starting_date').datepicker({dateFormat:"MM d, yy"});
     $('#ending_date').datepicker({dateFormat:"MM d, yy"});
-    $('#starting_date').datepicker('setDate', new Date("{{project_startingdate}}"));
-    $('#ending_date').datepicker('setDate', new Date("{{project_endingdate}}"));
+    if("{{project_startingdate}}"!=''){
+        $('#starting_date').datepicker('setDate', new Date("{{project_startingdate}}"));
+    }
+    if("{{project_endingdate}}"!=''){
+        $('#ending_date').datepicker('setDate', new Date("{{project_endingdate}}"));
+    }
     $('#edit_button').on('click',function(){
         var project_name=$('#project_name').val();
         var starting_date=$('#starting_date').val();
@@ -96,6 +100,14 @@
                 owner_list.push(user_id);
             }
         });
+        if(project_name==''){
+            alertify.error('Project Name is empty',1500);
+            return false;
+        }
+        if(owner_list.length==0){
+            alertify.error('No Owner is selected',1500);
+            return false;
+        }
         $.get('Edit_Project',{
             'project_id':"{{project_id}}",
             'project_name':project_name,
