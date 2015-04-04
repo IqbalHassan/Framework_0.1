@@ -12115,11 +12115,9 @@ def GetSetTag(request):
             final = []
             for each in list_value:
                 # form query
-                query = "select distinct cv.value from config_values cv, team_wise_settings tws where cv.type='%s' and cv.id = tws.parameters and tws.type='Set' and cv.value iLike'%%%s%%'" % (
-                    each.strip(), value.strip())
+                query = "select distinct cv.value from config_values cv, team_wise_settings tws where cv.type='%s' and cv.id = tws.parameters and tws.type='Set' and cv.value iLike'%%%s%%' and tws.project_id='%s' and tws.team_id=%d" % (each.strip(), value.strip(),project_id.strip(),int(team_id.strip()))
                 if value == "":
-                    query = "select distinct cv.value from config_values cv, team_wise_settings tws where cv.type='%s' and cv.id = tws.parameters and tws.type='Set'" % (
-                        each.strip())
+                    query = "select distinct cv.value from config_values cv, team_wise_settings tws where cv.type='%s' and cv.id = tws.parameters and tws.type='Set' and tws.project_id='%s' and tws.team_id=%d" % (each.strip(),project_id.strip(),int(team_id.strip()))
                 if DB.IsDBConnectionGood(conn) == False:
                     time.sleep(1)
                     conn = GetConnection()
