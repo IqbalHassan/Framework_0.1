@@ -65,7 +65,7 @@ var do_on_load = function do_on_load () {
 									createNode(node.text + ".");
 								}
 							}
-						},
+						},/*
 						"Rename" : {
 							"separator_before": false,
 							"separator_after": false,
@@ -74,7 +74,7 @@ var do_on_load = function do_on_load () {
 							"action": function(obj) {
 								renameNode(node, node.id);
 							}
-						},
+						},*/
 						"Delete" : {
 							"separator_before": false,
 							"separator_after": false,
