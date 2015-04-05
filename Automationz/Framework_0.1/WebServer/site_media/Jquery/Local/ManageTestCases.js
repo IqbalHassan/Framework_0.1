@@ -65,7 +65,7 @@ var do_on_load = function do_on_load () {
 									createNode(node.text + ".");
 								}
 							}
-						},/*
+						},
 						"Rename" : {
 							"separator_before": false,
 							"separator_after": false,
@@ -74,7 +74,7 @@ var do_on_load = function do_on_load () {
 							"action": function(obj) {
 								renameNode(node, node.id);
 							}
-						},*/
+						},
 						"Delete" : {
 							"separator_before": false,
 							"separator_after": false,
@@ -188,7 +188,6 @@ var do_on_load = function do_on_load () {
 		} catch (TypeError) {
 			text = node.text;
 		}
-		
 		alertify.prompt("New name of the section:", function(e, str) {
 			if (e) {		
 				$.get("/Home/ManageTestCases/setData/renameSection/", { 'section_id': node.id, 'section_path': section_path, 'new_text': str }, function(data, status) {

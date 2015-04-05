@@ -12018,7 +12018,45 @@ def rename_section(request):
         temp[-1] = new_text
         temp = '.'.join(temp)
         new_section_path = temp.replace(' ', '_')
-
+        if section_path=='':
+            query="select section_path from product_sections where section_id=%d"%(int(section_id))
+            Conn=GetConnection()
+            section_path_text=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(section_path_text,list) and len(section_path_text)==1:
+                section_path=section_path_text[0]
+                old_section_text=section_path
+        query="select count(*) from product_sections where section_path ~'%s'"%new_section_path
+        Conn=GetConnection()
+        count=DB.GetData(Conn,query)
+        Conn.close()
+        
+        if isinstance(count,list) and count[0]==0:
+            #take out all the child here.
+            query="select section_path from product_sections where section_path ~ '%s.*' except (select section_path from product_sections where section_path ~ '%s')"%(section_path,section_path)
+            Conn=GetConnection()
+            child_sections=DB.GetData(Conn,query)
+            Conn.close()
+            #print child_sections
+            #updating the base
+            sWhereQuery="where section_path ~ '%s'"%section_path
+            Conn=GetConnection()
+            print DB.UpdateRecordInTable(Conn, "product_sections", sWhereQuery,section_path=new_section_path)
+            Conn.close()
+            sWhereQuery="where name='%s' and property='Section'"%(old_section_text.strip())
+            Conn=GetConnection()
+            print DB.UpdateRecordInTable(Conn,"test_case_tag", sWhereQuery,name=new_text)
+            Conn.close()
+            for each in child_sections:
+                sWhereQuery="where section_path ~ '%s'"%each.strip()
+                temp_path=(each.replace(old_section_text,new_text)).replace(' ','_')
+                #print each,'---->',temp_path
+                Conn=GetConnection()
+                print DB.UpdateRecordInTable(Conn,"product_sections",sWhereQuery,section_path=temp_path)
+            return HttpResponse(1)
+        else:
+            return HttpResponse(0)
+        """
         try:
             query = '''
             UPDATE product_sections SET section_path=%s WHERE section_id=%s
@@ -12042,7 +12080,7 @@ def rename_section(request):
             Conn.close()
 
         return HttpResponse(1)
-
+        """
 
 def delete_section(request):
     if request.method == 'GET' and request.is_ajax():
