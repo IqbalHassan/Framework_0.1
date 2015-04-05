@@ -82,6 +82,19 @@ try:
 except ImportError as e:
     install(type="pip", module_name="requests")
     
+# Check and install six
+try:
+    import six
+except ImportError as e:
+    install(type="pip", module_name="six")
+
+# Check and install pillow
+try:
+    import Pillow
+except ImportError as e:
+    install(type="pip", module_name="Pillow")
+
+
 
 
 # Check and install poster
@@ -94,10 +107,32 @@ except ImportError as e:
 try:
     import psycopg2
 except ImportError as e:
-    psycopg2_pip_uri = "pip install git+https://github.com/nwcell/psycopg2-windows.git@win64-py27#egg=psycopg2"
-    install(cmd=psycopg2_pip_uri)
+    psycopg2_easy_install = "easy_install http://www.stickpeople.com/projects/python/win-psycopg/2.6.0/psycopg2-2.6.0.win32-py2.7-pg9.4.1-release.exe"
+    install(cmd=psycopg2_easy_install)
+
+# Check and install win32api
+try:
+    import win32api
+except ImportError as e:
+    win32api_easy_install = "easy_install http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win32-py2.7.exe/download"
+    install(cmd=win32api_easy_install)
 
 
+# Check and install dateutil.relativedelta 
+try:
+    from dateutil.relativedelta import relativedelta
+except ImportError as e:
+    relativedelta_easy_install = "easy_install https://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz"
+    install(cmd=relativedelta_easy_install)
+
+
+#pill
+#http://effbot.org/downloads/PIL-1.1.7.win32-py2.7.exe
+try:
+    from PIL import ImageGrab
+except ImportError as e:
+    PIL_easy_install = "easy_install http://effbot.org/downloads/PIL-1.1.7.win32-py2.7.exe"
+    install(cmd=PIL_easy_install)
 # Extract the zip file containing the server
 # https://docs.python.org/2/library/zipfile.html
 """with ZipFile(server_zip_file, "r") as zf:
