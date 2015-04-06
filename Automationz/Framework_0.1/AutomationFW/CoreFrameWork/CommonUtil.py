@@ -904,6 +904,10 @@ def TakeScreenShot(ImageName,local_run=False):
     name is the name of the file to be saved appended with timestamp
     #TakeScreenShot("TestStepName")
     """
+    #file Name don't contain \/?*"<>|
+    chars_to_remove=["?","*","\"","<",">","|","\\","\/",":"]
+    ImageName=(ImageName.translate(None,''.join(chars_to_remove))).replace(" ","_").strip()
+    print ImageName
     try:
         if local_run == False:
             config=ConfigParser.ConfigParser()
