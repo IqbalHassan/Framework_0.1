@@ -40,7 +40,8 @@ def git_log(last_log=-3):
         print e
         return e
 
-pull_latest_git()
+#pull_latest_git()
+#git_log()
 
 
 

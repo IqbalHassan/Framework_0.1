@@ -42,7 +42,7 @@ def Send_Email(Receiver, Subject, Objective, Tester, StartDate, EndDate, Estimat
     #link = "<a href='135.23.123.67:8080/Home/RunID/'" + Subject + ">" +Subject + "</a>"
     #message.Html = message.Html + Body + "<br/>" + "<br/>"
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = Subject + " - Test Deployment"
+    msg['Subject'] = "Test Deployed - " + Subject
     msg['From'] = "automation.solutionz@gmail.com"
     msg['To'] = ToAddr
     
@@ -148,7 +148,7 @@ def Complete_Email(Receiver, Subject, Objective, Status, List, Tester,Duration, 
                      charset="utf-8")
 
    
-    message.Subject = Subject + " - Test Deployment"
+    message.Subject = "Run Completed - " + Subject
     message.Html = """<div id=":1ox" class="ii gt m146ced87dfe81da1 adP adO">
         <div id=":1np" class="a3s" style="overflow: hidden;">
         <div>
