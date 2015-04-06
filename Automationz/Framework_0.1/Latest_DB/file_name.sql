@@ -1,4 +1,4 @@
---
+﻿--
 -- PostgreSQL database dump
 --
 
@@ -1134,7 +1134,7 @@ ALTER TABLE public.project_team_map OWNER TO postgres;
 --
 
 CREATE SEQUENCE projectid_seq
-    START WITH 16
+    START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
@@ -1421,7 +1421,7 @@ ALTER SEQUENCE task_sections_task_path_id_seq OWNED BY task_sections.task_path_i
 --
 
 CREATE SEQUENCE taskid_seq
-    START WITH 42
+    START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
@@ -1678,7 +1678,7 @@ COMMENT ON COLUMN test_case_datasets.data_type IS 'Default';
 --
 
 CREATE SEQUENCE testresults_id_seq
-    START WITH 821
+    START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
@@ -1989,7 +1989,7 @@ COMMENT ON COLUMN test_run_env.email_notification IS 'E-mail Notification';
 --
 
 CREATE SEQUENCE teststepresults_id_seq
-    START WITH 2697
+    START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
@@ -2106,7 +2106,7 @@ COMMENT ON COLUMN test_step_results.testcaseresulttindex IS 'Test Case Results I
 --
 
 CREATE SEQUENCE teststepstemp_teststepsequence_seq
-    START WITH 10
+    START WITH 1
     INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
@@ -2275,7 +2275,7 @@ COMMENT ON COLUMN test_steps_list.steptype IS 'Test Step Type (DTS, Client, Comm
 --
 
 CREATE SEQUENCE testcase_testcaseid_seq
-    START WITH 136
+    START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE

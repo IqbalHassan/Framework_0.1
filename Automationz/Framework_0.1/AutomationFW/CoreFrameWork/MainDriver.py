@@ -783,7 +783,7 @@ def main():
                     lines_seen.add(line)
             outfile.close()
             FL.DeleteFile(current_log_file)
-            FL.RenameFile(config.get('sectionOne','log_folder'), 'temp.log',TCID+'.log')
+            #FL.RenameFile(config.get('sectionOne','log_folder'), 'temp.log',TCID+'.log')
             TCLogFile = CommonUtil.ZipFolder(config.get('sectionOne','test_case_folder'),config.get('sectionOne','test_case_folder') + ".zip")
             #Delete the folder
             FL.DeleteFolder(config.get('sectionOne','test_case_folder'))
