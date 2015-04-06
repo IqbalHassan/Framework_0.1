@@ -762,7 +762,7 @@ def Steps_List(request):
                 itemPerPage, (current_page - 1) * itemPerPage)"""
 
             
-            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.value from test_steps_list tsl,config_values cv where tsl.team_id=cv.id::text and cv.type='Team' and project_id='"+project_id+"' "
+            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.team_name from test_steps_list tsl,team cv where tsl.team_id=cv.id::text and cv.project_id='"+project_id+"' and tsl.project_id='"+project_id+"' "
             steps_list=DB.GetData(Conn, query, False)
             count = len(steps_list)
             
