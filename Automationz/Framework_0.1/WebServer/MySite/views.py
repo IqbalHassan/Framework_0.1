@@ -10917,11 +10917,14 @@ def TableDataTestCasesOtherPages(request):
                 team_id = request.GET.get(u'team_id', '')
                 test_case_per_page=request.GET.get(u'test_case_per_page','')
                 test_case_page_current=request.GET.get(u'test_case_page_current')
+                paginate_command=request.GET.get(u'paginate_tag','')
                 #form condition
                 offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
                 limit=int(test_case_per_page)
                 
                 condition=" offset %d limit %d"%(offset,limit)
+                if paginate_command=='true':
+                    condition=''
                 if UserData!='':
                     QueryText = []
                     for eachitem in UserText:
@@ -11017,6 +11020,30 @@ def TableDataTestCasesOtherPages(request):
                 Conn = GetConnection()
                 TableData = DB.GetData(Conn, query, False)
                 Conn.close()
+                #find if they had the set tag in them then reorder
+                found=False
+                for each in QueryText:
+                    query="select count(*) from config_values where type='set' and value='%s'"%each.strip()
+                    Conn=GetConnection()
+                    count=DB.GetData(Conn,query)
+                    if isinstance(count,list) and count[0]>0 and len(count)==1:
+                        found=True
+                        set_name=each
+                        Conn.close()
+                        break
+                    else:
+                        continue    
+                    Conn.close()
+                if found:
+                    query="select distinct tc.tc_id,tc.tc_name,index from test_cases tc,test_set_order tso where tso.tc_id=tc.tc_id and set_id=(select id from config_values where type='set' and value='%s') order by index "%(set_name.strip())
+                    Conn=GetConnection()
+                    test_case_ordering=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    test_temp=[]
+                    for each in test_case_ordering:
+                        if(each[0],each[1]) in TableData:
+                            test_temp.append((each[0],each[1]))
+                    TableData=test_temp        
                 Conn=GetConnection()
                 count_query=DB.GetData(Conn,Query,False)
                 Conn.close()
@@ -11142,7 +11169,31 @@ def TableDataTestCasesOtherPages(request):
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
         
-        
+def ReorderSet(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get('project_id','')
+            team_id=request.GET.get('team_id','')
+            set_name=request.GET.get(u'set_name','')
+            test_case_id=request.GET.get(u'test_case_id','').split("|")
+            query="select id from config_values cv , team_wise_settings tws where cv.id=tws.parameters and cv.type=lower(tws.type) and cv.type='set' and cv.value='%s' and project_id='%s' and team_id=%d"%(set_name,project_id,int(team_id))
+            Conn=GetConnection()
+            set_id=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(set_id,list) and len(set_id)==1:
+                set_id=set_id[0]
+            Conn=GetConnection()
+            print DB.DeleteRecord(Conn,"test_set_order",set_id=set_id)
+            Conn.close()    
+            for count,each in enumerate(test_case_id):
+                Dict={'tc_id':each,'index':count+1,'set_id':int(set_id)}
+                Conn=GetConnection()
+                print DB.InsertNewRecordInToTable(Conn,"test_set_order",**Dict)
+                Conn.close()
+            message=True
+            result=simplejson.dumps(message)
+            return HttpResponse(result,mimetype='application/json')    
+
 def ViewAndOrganizeTestCases(request):
     Conn = GetConnection()
     test_status_request = request.GET.get(u'test_status_request', '')
@@ -12172,7 +12223,8 @@ def GetSetTag(request):
 
 def SetTagEdit(request, type, name):
     return render_to_response('TestSetTagEdit.html', {})
-
+def SetTagOrder(request,type,name):    
+    return render_to_response('TestSetOrder.html', {})
 
 def createNewSetTag(request):
     if request.is_ajax():
@@ -12267,30 +12319,47 @@ def AddTestCasesSetTag(request):
                 name.strip(), type_tag.strip())
             Conn = GetConnection()
             available_count = DB.GetData(Conn, available_query)
+            Conn.close()
             if available_count[0] > 0:
                 added_list = []
                 for each in test_case_list:
                     # form directory
-                    query = "select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'" % (
-                        each.strip(), name.strip(), type_tag.strip())
-                    if DB.IsDBConnectionGood(Conn) == False:
-                        time.sleep(1)
-                        Conn = GetConnection()
+                    query = "select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'" % (each.strip(), name.strip(), type_tag.strip())
+                    Conn = GetConnection()
                     count = DB.GetData(Conn, query)
+                    Conn.close()
                     if count[0] == 0:
-                        result = DB.InsertNewRecordInToTable(
-                            Conn,
-                            "test_case_tag",
-                            tc_id=each.strip(),
-                            name=name.strip(),
-                            property=type_tag.strip())
+                        Conn=GetConnection()
+                        result = DB.InsertNewRecordInToTable(Conn,"test_case_tag",tc_id=each.strip(),name=name.strip(),property=type_tag.strip())
+                        Conn.close()
                         if result:
                             added_list.append(each)
                     else:
                         added_list.append(each)
+                
                 if len(added_list) > 0:
                     message = "%s added to Test %s:%s" % (
                         ",".join(added_list), type_tag.strip(), name.strip())
+                    query="select id from config_values where value='%s'"%name.strip()
+                    Conn=GetConnection()
+                    set_id=DB.GetData(Conn,query)
+                    Conn.close()
+                    if isinstance(set_id,list) and len(set_id):
+                        set_id=set_id[0]
+                    query="select tc_id from test_set_order where set_id=%d order by index"%(set_id)
+                    Conn=GetConnection()
+                    available_test_case_list=DB.GetData(Conn,query)
+                    Conn.close()
+                    for each in added_list:
+                        available_test_case_list.append(each)
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"test_set_order",set_id=set_id)
+                    Conn.close()    
+                    for count,each in enumerate(available_test_case_list):
+                        Dict={'tc_id':each,'index':count+1,'set_id':int(set_id)}
+                        Conn=GetConnection()
+                        print DB.InsertNewRecordInToTable(Conn,"test_set_order",**Dict)
+                        Conn.close()
                 else:
                     message = "No Test Cases added to Test %s: %s" % (
                         type_tag.strip(), name.strip())
@@ -12315,32 +12384,48 @@ def DeleteTestCasesSetTag(request):
                 type_tag = 'set'
             if type_tag == 'TAG':
                 type_tag = 'tag'
-            available_query = "select count(*) from config_values where value='%s' and type='%s'" % (
-                name.strip(), type_tag.strip())
+            available_query = "select count(*) from config_values where value='%s' and type='%s'" % (name.strip(), type_tag.strip())
             Conn = GetConnection()
             available_count = DB.GetData(Conn, available_query)
+            Conn.close()
             if available_count[0] > 0:
                 added_list = []
                 for each in test_case_list:
                     # form directory
-                    query = "select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'" % (
-                        each.strip(), name.strip(), type_tag.strip())
-                    if DB.IsDBConnectionGood(Conn) == False:
-                        time.sleep(1)
-                        Conn = GetConnection()
+                    query = "select count(*) from test_case_tag where tc_id='%s' and name='%s' and property='%s'" % (each.strip(), name.strip(), type_tag.strip())
+                    Conn = GetConnection()
                     count = DB.GetData(Conn, query)
+                    Conn.close()
                     if count[0] > 0:
-                        result = DB.DeleteRecord(
-                            Conn,
-                            "test_case_tag",
-                            tc_id=each.strip(),
-                            name=name.strip(),
-                            property=type_tag.strip())
+                        Conn=GetConnection()
+                        result = DB.DeleteRecord(Conn,"test_case_tag",tc_id=each.strip(),name=name.strip(),property=type_tag.strip())
+                        Conn.close()
                         if result:
                             added_list.append(each)
                 if len(added_list) > 0:
-                    message = "%s deleted from Test %s:%s" % (
-                        ",".join(added_list), type_tag.strip(), name.strip())
+                    message = "%s deleted from Test %s:%s" % (",".join(added_list), type_tag.strip(), name.strip())
+                    query="select id from config_values where value='%s'"%name.strip()
+                    Conn=GetConnection()
+                    set_id=DB.GetData(Conn,query)
+                    Conn.close()
+                    if isinstance(set_id,list) and len(set_id):
+                        set_id=set_id[0]
+                    for each in added_list:
+                        Conn=GetConnection()
+                        print DB.DeleteRecord(Conn,"test_set_order",set_id=set_id, tc_id=each)
+                        Conn.close()
+                    query="select tc_id from test_set_order where set_id=%d order by index"%(set_id)                    
+                    Conn=GetConnection()
+                    available_test_case_list=DB.GetData(Conn,query)
+                    Conn.close()
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"test_set_order",set_id=set_id)
+                    Conn.close()    
+                    for count,each in enumerate(available_test_case_list):
+                        Dict={'tc_id':each,'index':count+1,'set_id':int(set_id)}
+                        Conn=GetConnection()
+                        print DB.InsertNewRecordInToTable(Conn,"test_set_order",**Dict)
+                        Conn.close()
                 else:
                     message = "No Test Cases deleted from Test %s: %s" % (
                         type_tag.strip(), name.strip())

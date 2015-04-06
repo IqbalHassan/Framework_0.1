@@ -6,13 +6,11 @@ $(document).ready(function(){
     var team_id= $.session.get('default_team_identity');
     var test_case_per_page=5;
     var test_case_page_current=1;
-
     $.get('GetSetTag',{term:"",project_id:project_id,team_id:team_id},function(data){
         $('#set_tag').html(formTable(data));
         ClickButton(project_id,team_id,test_case_per_page,test_case_page_current);
     });
     GetTestSet(project_id,team_id);
-
     $("#createnewset").click(function(event){
         var temp=$(this).attr('data-id').trim();
         event.preventDefault();
@@ -146,6 +144,11 @@ function configureLinks(temp,name,project_id,team_id){
         var location='/Home/ManageSetTag/'+temp+'/'+name+'/';
         window.location=location;
     });
+    $('#order').click(function(event){
+        event.preventDefault();
+        var location='/Home/ManageSetTag/'+temp+'/'+name+'/EditOrder/';
+        window.location=location;
+    });
     $('#delete').click(function(event){
         event.preventDefault();
         alertify.confirm("Are you sure you want to delete the test "+temp.toLocaleUpperCase().trim()+" named "+name.trim()+"?", function(e) {
@@ -163,11 +166,11 @@ function configureLinks(temp,name,project_id,team_id){
 function ClickButton(project_id,team_id,test_case_per_page,test_case_page_current){
     $('.element').click(function(){
         $('.element').css({'background-color':'#ffffff'});
-        $(this).css({'background-color':'#E7F4F9'});
+        $(this).css({'background-color':'#ccc'});
         var name=$(this).text().trim();
         $('#msg').css({'display':'none'});
-        configureLinks($(this).closest('table').attr('data-id').trim(),name,project_id,team_id);
-        $('#type').html('<p style="color: #4183c4;font-weight: bold; text-align:left;" class="Text">'+$(this).closest('table').attr('data-id').trim().toUpperCase()+' - </p>');
+        configureLinks($(this).attr('data-id').trim(),name,project_id,team_id);
+        $('#type').html('<p style="color: #4183c4;font-weight: bold; text-align:left;" class="Text">'+$(this).attr('data-id').trim().toUpperCase()+' - </p>');
         $('#name').html('<p style="font-weight: bold; text-align: left;margin-left: -10%" class="Text">'+name+'<span id="time"></span></p>');
         name+=':';
         $('#infoDiv').css({'display':'block'});
@@ -273,18 +276,12 @@ function implementDropDown(wheretoplace){
 }
 function formTable(data){
     var message="";
-    message+='<table style="width: 100%;border-collapse: separate;border-spacing: 1.5em 3em;">';
+    message+='<table style="width: 100%;" class="two-column-emphasis">';
     for(var i=0;i<data.length;i++){
-        //message+='<tr><td colspan="2"><a class="m-btn purple" data-id="'+data[i][0]+'" id="createnew'+data[i][0]+'">Create '+data[i][0]+'</a></td></tr>';
         if(data[i][1].length>0){
-            message+='<td>';
-            message+='<table data-id="'+data[i][0]+'">'
             for(var j=0;j<data[i][1].length;j++){
-                message+='<tr><td class="element back" style="cursor:pointer;width:100%;">'+data[i][1][j]+'</td></tr>';
+                message+='<tr><td class="element back" data-id="'+data[i][0]+'" style="cursor:pointer;width:100%;">'+data[i][1][j]+'</td></tr>';
             }
-            message+='</table>';
-            message+='</td>'
-            message+='</tr>';
         }
     }
     message+='</table>';

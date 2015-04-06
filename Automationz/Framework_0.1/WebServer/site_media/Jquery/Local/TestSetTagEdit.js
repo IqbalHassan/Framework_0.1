@@ -1,6 +1,3 @@
-
-
-
 $(document).ready(function(){
     var pathname=window.location.pathname;
     var type=pathname.split('/')[3].trim();
@@ -33,7 +30,7 @@ function Buttons(type,name){
         }
         else{
             $.get('AddTestCasesSetTag',{type:type.toLocaleUpperCase().trim(),name:name.trim(),list:list.join('|')},function(data){
-                alertify.success(data,"",3);
+                alertify.success(data,1500);
                 var location='/Home/ManageSetTag/'+type+'/'+name+'/';
                 window.location=location;
             });
@@ -71,7 +68,23 @@ function GetExisting(name,project_id,team_id,test_case_per_page,test_case_page_c
     name=name.trim();
     $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:false,project_id:project_id,team_id:team_id,test_case_per_page:test_case_per_page,test_case_page_current:test_case_page_current,total_time:true},function(data){
         if(data['TableData'].length!=0){
-            ResultTable("#existing",data['Heading'],data['TableData'],'Test Cases');
+            //ResultTable("#existing",data['Heading'],data['TableData'],'Test Cases');
+            var message='';
+            message+='<table id="existing_test_cases" class="two-column-emphasis">';
+            message+='<tr>';
+            for(var i=0;i<data['Heading'].length;i++){
+                message+='<th><b>'+data['Heading'][i]+'</b></th>';
+            }
+            message+='</tr>'
+            for(var i=0;i<data['TableData'].length;i++){
+                message+='<tr>';
+                for(var j=0;j<data['TableData'][i].length;j++){
+                    message+='<td>'+data['TableData'][i][j]+'</td>';
+                }
+                message+='</tr>';
+            }
+            message+='</table>';
+            $('#existing').html(message);
             $('#pagination').pagination({
                     items:data['Count'],
                     itemsOnPage:test_case_per_page,

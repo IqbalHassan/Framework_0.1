@@ -134,6 +134,7 @@ urlpatterns += patterns('',
     url(r'^Home/ManageSetTag/$',TestSetTagHome),
     url(r'^Home/.*/GetSetTag/$',GetSetTag),
     url(r'^Home/ManageSetTag/(?P<type>[^/]*)/(?P<name>[^/]*)/$',SetTagEdit),
+    url(r'^Home/ManageSetTag/(?P<type>[^/]*)/(?P<name>[^/]*)/EditOrder/$',SetTagOrder),
     url(r'^Home/.*/createNewSetTag/$',createNewSetTag),
     url(r'^Home/.*/DeleteSetTag/$',DeleteSetTag),
     url(r'^Home/.*/AddTestCasesSetTag/$',AddTestCasesSetTag),
@@ -381,6 +382,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/getLabelinfo/$',getLabelinfo),
     url(r'^Home/.*/EditLabel/$',EditLabel),
     url(r'^Home/.*/GetAllTeam/$',GetAllTeam),
+    url(r'^Home/.*/ReorderSet/$',ReorderSet),
 	)
 
 

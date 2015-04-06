@@ -1,0 +1,136 @@
+{% extends 'BaseTemplate.html' %}
+{% block title%}Set Reorder {% endblock %}
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
+<div id="existing">
+
+</div>
+<table width="100%;">
+    <tr><td style="vertical-align: 0%;"><input id="save_button" value="Save" class="m-btn green" type="button"/></td></tr>
+</table>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var pathname=window.location.pathname;
+        var type=pathname.split('/')[3].trim();
+        var name=pathname.split('/')[4].trim();
+        var str="%20";
+        var re=new RegExp(str,'g');
+        name=name.replace(re,' ');
+        var project_id= $.session.get('project_id');
+        var team_id= $.session.get('default_team_identity');
+        var test_case_per_page=5;
+        var test_case_page_current=1;
+        GetExisting(name,project_id,team_id,test_case_per_page,test_case_page_current);
+        $('#save_button').on('click',function(){
+            var test_case_id=[];
+            $('.tc_id').each(function(){
+                var test_case=$(this).text().trim();
+                test_case_id.push(test_case);
+            });
+            $.get('ReorderSet',{'test_case_id':test_case_id.join("|"),project_id:project_id,team_id:team_id,set_name:name},function(data){
+                if(data){
+                    alertify.success(name+' is reordered successfully',1500);
+                    window.location.reload(true);
+                }else{
+                    alertify.error(name+' is not reordered successfully',1500);
+                    window.location.reload(false);
+                }
+
+            });
+        });
+    });
+    function GetExisting(name,project_id,team_id,test_case_per_page,test_case_page_current){
+        var set_name=name;
+        name=name+':';
+        name=name.trim();
+        $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:false,project_id:project_id,team_id:team_id,test_case_per_page:test_case_per_page,test_case_page_current:test_case_page_current,total_time:true,paginate_tag:true},function(data){
+            if(data['TableData'].length!=0){
+                //ResultTable("#existing",data['Heading'],data['TableData'],'Test Cases');
+                var message='';
+                message+='<table id="existing_test_cases" class="two-column-emphasis">';
+                message+='<caption><b style="font-size: 150%;">'+set_name.trim()+'</b></caption>';
+                message+='<tr>';
+                for(var i=0;i<data['Heading'].length;i++){
+                    message+='<th><b>'+data['Heading'][i]+'</b></th>';
+                }
+                message+='</tr>'
+                for(var i=0;i<data['TableData'].length;i++){
+                    message+='<tr>';
+                    for(var j=0;j<data['TableData'][i].length;j++){
+                        if(j==0){
+                            message+='<td class="tc_id">'+data['TableData'][i][j]+'</td>';
+                        }
+                        else{
+                            message+='<td>'+data['TableData'][i][j]+'</td>';
+                        }
+
+                    }
+                    message+='</tr>';
+                }
+                message+='</table>';
+                $('#existing').html(message);
+
+                var fixHelperModified = function(e, tr) {
+                            var $originals = tr.children();
+                            var $helper = tr.clone();
+                            $helper.children().each(function(index) {
+                                $(this).width($originals.eq(index).width())
+                            });
+                            return $helper;
+                        },
+                        updateIndex = function(e, ui) {
+                            $('td.index', ui.item.parent()).each(function (i) {
+                                $(this).html(i + 1);
+                            });
+                        };
+
+                $("#existing_test_cases tbody").sortable({
+                    helper: fixHelperModified,
+                    stop: updateIndex
+                }).disableSelection();
+
+                /*$('#pagination').pagination({
+                    items:data['Count'],
+                    itemsOnPage:test_case_per_page,
+                    cssStyle: 'dark-theme',
+                    currentPage:test_case_page_current,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        GetExisting(name,project_id,team_id,test_case_per_page,PageNumber);
+                    }
+                });*/
+                implementDropDown("#existing");
+                $('#existing').css({'display':'block'});
+            }
+            else{
+                $('#existing').html('<p style="font-weight: bold; text-align: center;" class="Text">There is no test cases</p>');
+                $('#existing').css({'display':'block'});
+                //$('#pagination').pagination('destroy');
+            }
+        });
+    }
+    function implementDropDown(wheretoplace){
+        $(wheretoplace+" tr td:nth-child(2)").css({'color' : 'blue','cursor' : 'pointer'});
+        $(wheretoplace+" tr td:nth-child(2)").each(function() {
+            var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+            var name=$(this).text().trim();
+            $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+            $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+                var data_list=data['Result'];
+                var column=data['column'];
+                ResultTable(wheretoplace+ ' #'+ID+'detail',column,data_list,"");
+                $(wheretoplace+' #'+ID+'detail tr').each(function(){
+                    $(this).css({'textAlign':'left'});
+                });
+            });
+            $(this).live('click',function(){
+                $(wheretoplace+' #'+ID+'detail').slideToggle("slow");
+            });
+        });
+    }
+
+</script>
+{% endblock %}
