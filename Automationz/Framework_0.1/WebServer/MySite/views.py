@@ -2832,6 +2832,29 @@ def Run_Test(request):
                     TestCasesIDs = DB.GetData(Conn, query)
                     Conn.close()
                     print TestCasesIDs
+                    found=False
+                    for each in QueryText:
+                        query="select count(*) from config_values where type='set' and value='%s'"%each.strip()
+                        Conn=GetConnection()
+                        count=DB.GetData(Conn,query)
+                        if isinstance(count,list) and count[0]>0 and len(count)==1:
+                            found=True
+                            set_name=each
+                            Conn.close()
+                            break
+                        else:
+                            continue    
+                        Conn.close()
+                    if found:
+                        query="select distinct tc_id,index from test_set_order where set_id=(select id from config_values where type='set' and value='%s') order by index "%(set_name.strip())
+                        Conn=GetConnection()
+                        test_case_ordering=DB.GetData(Conn,query,False)
+                        Conn.close()
+                        test_temp=[]
+                        for each in test_case_ordering:
+                            if each[0] in TestCasesIDs:
+                                test_temp.append(each[0])
+                        TestCasesIDs=test_temp        
                 if is_rerun == "rerun":
                     Conn = GetConnection()
                     RegisterReRunPermanentInfo(
