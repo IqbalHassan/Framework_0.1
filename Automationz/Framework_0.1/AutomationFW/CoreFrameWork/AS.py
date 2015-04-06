@@ -74,7 +74,15 @@ def Login():
 
 def collectAlldependency(project,team_info,dependency):
     try:
-        query="select distinct dependency_name from dependency d ,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=(select id from team where team_name='%s' and project_id='%s')"%(project,team_info,project)
+        query="select distinct project_id from projects where project_name='%s'"%project
+        Conn=DB.ConnectToDataBase(database_name,superuser,super_password,server)
+        project_id=DB.GetData(Conn,query)
+        Conn.close()
+        if isinstance(project_id,list) and len(project_id)==1:
+            project_id=project_id[0]
+        else:
+            project_id=''
+        query="select distinct dependency_name from dependency d ,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=(select id from team where team_name='%s' and project_id='%s')"%(project_id,team_info,project_id)
         print query
         Conn=DB.ConnectToDataBase(database_name, superuser, super_password, server)
         dependency_list=DB.GetData(Conn, query)
@@ -207,14 +215,22 @@ def update_machine(dependency):
                     conn=DB.ConnectToDataBase(database_name,superuser,super_password,server)
                     result=DB.InsertNewRecordInToTable(conn,"machine_dependency_settings",**temp_dict)
                     conn.close()
+            query="select project_id from projects where project_name='%s'"%project
+            Conn=DB.ConnectToDataBase(database_name,superuser,super_password,server)
+            project_id=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(project_id,list) and len(project_id):
+                project_id=project_id[0]
+            else:
+                project_id=''
             conn=DB.ConnectToDataBase(database_name, superuser,super_password,server)
-            teamValue=DB.GetData(conn,"select id from team where team_name='%s' and project_id='%s'"%(team,project))
+            teamValue=DB.GetData(conn,"select id from team where team_name='%s' and project_id='%s'"%(team,project_id))
             conn.close()
             if isinstance(teamValue,list) and len(teamValue)==1:
                 team_identity=teamValue[0]
             temp_dict={
                 'machine_serial':machine_id,
-                'project_id':project,
+                'project_id':project_id,
                 'team_id':team_identity
             }
             conn=DB.ConnectToDataBase(database_name, superuser,super_password,server)
@@ -232,11 +248,11 @@ def update_machine(dependency):
 def Check_Credentials(username,password,project,team,server,port):
     #get all the person enlisted with this project
     try:
-        query="select regexp_split_to_array(project_owners, E',') from projects where project_id='%s'"%project
+        query="select distinct user_id::text from user_project_map upm, projects p where upm.project_id=p.project_id and p.project_name='%s'"%(project.strip())
         Conn=DB.ConnectToDataBase(database_name, superuser, super_password, server)
         user_list=DB.GetData(Conn, query)
         Conn.close()
-        user_list=user_list[0]
+        #user_list=user_list[0]
         message=",".join(user_list)
         print message
         query="select count(*) from user_info ui, permitted_user_list pul where ui.full_name=pul.user_names and username='%s' and password='%s' and user_level not in ('email','Automation', 'Manual') and user_id in (%s)"%(username,password,message)
