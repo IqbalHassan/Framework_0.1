@@ -70,10 +70,12 @@ $(document).ready(function(){
         });
         event.stopPropagation();
     });
-    $('#passAll').live('click',function(event){
+    $('#passAll').on('click',function(){
         var time_ended=ConvertTime(new Date());
         var run_id=$('#runid').text().trim();
         var test_case_id=$('#testcaseid').text().trim();
+        var test_cases=[]
+        test_cases.push(test_case_id);
         var step_name=[];
         $('#data_table tr td:nth-child(2)').each(function(){
             var step=$(this).text().trim();
@@ -108,7 +110,6 @@ $(document).ready(function(){
                 window.location="/Home/RunID/"+run_id+"/TC/"+test_case_id+"/Execute/";
             }
         });
-        event.stopPropagation();
     });
 
     related_items();

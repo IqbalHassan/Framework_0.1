@@ -116,7 +116,7 @@ function GetAllData(current_page,itemPerPage,UserText){
                     var list=[];
                     $('.auto_pass:checked').each(function(){
                         if($(this).parent().prev().prev().prev().prev().prev().prev().prev().text().trim()!='Passed'){
-                            list.push($(this).val());
+                            list.push($(this).attr('id'));
                         }
                     });
                     $.get('AutoTestCasePass',{
@@ -184,9 +184,18 @@ function makeTable(data,col){
         		once = false;
         		continue;
         	}
-    		message+='<td>'+data[i][j]+'</td>';
+            if(data[i][j]=='View'){
+                message+='<td style="vertical-align: 0%;"><input type="button" class="m-btn purple" value="'+data[i][j]+'"/> </td>'
+            }
+            else if( data[i][j]=='Execute'){
+                message+='<td style="vertical-align: 0%;"><input type="button" class="m-btn blue" value="'+data[i][j]+'"/> </td>'
+            }
+            else{
+                message+='<td style="vertical-align: 0%;">'+data[i][j]+'</td>';
+            }
         }
-        message+='<td><input type="checkbox" class="auto_pass" value="'+data[i][0]+'"></td>';
+        //message+='<td><input type="checkbox" class="auto_pass" value="'+data[i][0]+'"></td>';
+        message+='<td><input id="'+data[i][0]+'" class="cmn-toggle cmn-toggle-yes-no auto_pass" type="checkbox"><label for="'+data[i][0]+'"data-on="Auto Pass" data-off="No"></label></td>';
         message+='</tr>';
     }
     message+='</table>';

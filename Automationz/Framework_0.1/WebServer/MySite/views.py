@@ -2474,7 +2474,7 @@ def Run_Test(request):
                     stEmailIds = Meta_info[0][0]
                     stEmailIds = ",".join(list(set(stEmailIds.split(","))))
                     Testers = Meta_info[0][1]
-                    TestObjective = (previous_run + ' -ReRun')
+                    TestObjective = Meta_info[0][2].strip()
                     TestMileStone = Meta_info[0][3]
                     Branch_Version = Meta_info[0][4]
                     project_id = Meta_info[0][5]
@@ -9532,7 +9532,7 @@ def Make_List(
     return Refined_List
 
 
-def update_runid(run_id, test_case_id):
+def update_runid(run_id, test_case_id=False):
     oConn = GetConnection()
     squery = "select distinct status from test_case_results where run_id='%s'" % run_id
     run_id_status = DB.GetData(oConn, squery)
@@ -9548,11 +9548,13 @@ def update_runid(run_id, test_case_id):
             count += 1
     Dict = {}
     Dict1 = {}
+    email_dict={}
     if progress == 0 and submit_count == 0 and count == len(run_id_status):
         status = 'Complete'
         endtime = DB.GetData(oConn, "select current_timestamp", False)
         Dict.update({'testendtime': str(endtime[0][0])})
-        allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'")
+        email_dict.update({'email_flag':True})
+        """allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'")
         TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
         tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+run_id+"'")
         #import EmailNotify
@@ -9593,7 +9595,7 @@ def update_runid(run_id, test_case_id):
         except urllib2.URLError:
             print "disconnected"
             results = ['NOK']
-
+        """    
 
     elif progress > 0 or submit_count > 0:
         status = 'In-Progress'
@@ -9608,6 +9610,7 @@ def update_runid(run_id, test_case_id):
     sWhereQuery = "where run_id='%s'" % run_id
     Dict1.update({'status': status})
     print DB.UpdateRecordInTable(oConn, "test_run_env", sWhereQuery, **Dict1)
+    print DB.UpdateRecordInTable(oConn, "test_run_env", sWhereQuery, **email_dict)
     print DB.UpdateRecordInTable(oConn, "test_env_results", sWhereQuery, **Dict)
     print DB.UpdateRecordInTable(oConn, "test_env_results", sWhereQuery, **Dict1)
     #########################Add a new entry in the TestRunEnv Table##########
@@ -9670,46 +9673,6 @@ def update_runid(run_id, test_case_id):
             Conn = GetConnection()
             print DB.InsertNewRecordInToTable(Conn, 'machine_project_map', **Dict)
             Conn.close()
-    """if status == 'Complete':
-        run_id = str(run_id)
-        allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'", False)
-        TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
-        Tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+run_id+"'")
-        list = []
-        pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
-        passed = DB.GetData(oConn, pass_query)
-        list.append(passed[0])
-        fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % run_id
-        fail = DB.GetData(oConn, fail_query)
-        list.append(fail[0])
-        blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
-        blocked = DB.GetData(oConn, blocked_query)
-        list.append(blocked[0])
-        progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
-        progress = DB.GetData(oConn, progress_query)
-        list.append(progress[0])
-        submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
-        submitted = DB.GetData(oConn, submitted_query)
-        list.append(submitted[0])
-        skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
-        skipped = DB.GetData(oConn, skipped_query)
-        list.append(skipped[0])
-        total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
-        total = DB.GetData(oConn, total_query)
-        list.append(total[0])
-        duration = DB.GetData(oConn, "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '"+run_id+"'")
-
-        EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
-        """
-    """try:
-            urllib2.urlopen("http://www.google.com").close()
-            #import EmailNotify
-            EmailNotify.Complete_Email(allEmailIds[0],run_id,str(TestObjective[0]),status,list,Tester,duration,'','')
-            print "connected"
-        except urllib2.URLError:
-            print "disconnected"
-        """
-
 
 def Send_Report(request):
     if request.is_ajax():
@@ -17469,6 +17432,7 @@ def AutoTestCasePass(request):
                     Dict.update({'failreason': ''})
                     print DB.UpdateRecordInTable(Conn, "test_case_results", sWhereQuery, **Dict)
                     Conn.close()
+                update_runid(run_id)
                 message = True
                 result = simplejson.dumps(message)
                 return HttpResponse(result, mimetype='application/json')
