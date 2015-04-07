@@ -1999,7 +1999,8 @@ def RunId_TestCases(request, RunId):
             Conn = GetConnection()
             name = DB.GetData(Conn, query)
             Conn.close()
-            email_receiver.append(name[0])
+            if len(name)>0 and isinstance(name, list):
+                email_receiver.append(name[0])  
     print email_receiver
     email_name = ",".join(email_receiver)
     temp = []
