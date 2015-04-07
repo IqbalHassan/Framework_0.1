@@ -76,10 +76,7 @@ except ImportError:
 '''
 Global variables
 '''
-path_to_uploaded_files = os.path.join(
-    os.getcwd(),
-    'site_media',
-    'file_uploads')
+path_to_uploaded_files = os.path.join(MEDIA_ROOT,'file_uploads')
 
 
 # import DjangoConstants
@@ -15302,8 +15299,8 @@ def ProfileDetail(request):
     if request.is_ajax():
         if request.method=='GET':
             user_id=request.GET.get(u'user_id')
-            query = "select distinct user_id,full_name,user_level,username from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'" % user_id
-            user_column = ["UserID", "FullName", "Designation", "Username"]
+            query = "select distinct user_id,full_name,user_level,username,email,password from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'" % user_id
+            user_column = ["UserID", "FullName", "Designation", "Username","Email","Password"]
             Conn = GetConnection()
             result = DB.GetData(Conn, query, False)
             Conn.close()
@@ -15437,8 +15434,8 @@ def GetProfileInfo(request, user_id, success):
 def updateAccountInfo(request):
     if request.is_ajax():
         if request.method == 'GET':
-            full_name = request.GET.get(u'full_name', '')
-            user_name = request.GET.get(u'user_name', '')
+            email = request.GET.get(u'email', '')
+            password=request.GET.get(u'password','')
             project_id = request.GET.get(u'project_id', '')
             team_id = request.GET.get(u'team_id', '')
             user_id = request.GET.get(u'user_id', '')
@@ -15451,11 +15448,11 @@ def updateAccountInfo(request):
                     old_name=old_name[0]
                 
                 sWhereQuery="where user_id=%d"%int(user_id)
-                temp_dict={'user_names':full_name}
+                temp_dict={'email':email}
                 Conn=GetConnection()
                 result=DB.UpdateRecordInTable(Conn,"permitted_user_list", sWhereQuery, **temp_dict)
                 Conn.close()
-                temp_dict={'username':user_name,'full_name':full_name}
+                temp_dict={'password':password}
                 Conn=GetConnection()
                 sWhereQuery="where full_name='%s'"%old_name.strip()
                 result=DB.UpdateRecordInTable(Conn,"user_info",sWhereQuery,**temp_dict)

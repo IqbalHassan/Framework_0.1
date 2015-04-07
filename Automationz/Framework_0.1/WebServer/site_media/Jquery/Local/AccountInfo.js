@@ -9,20 +9,17 @@ var team_id="";
 var projects=[]
 $(document).ready(function(){
     //get all the other information
-    user_name=$('#username').val().trim();
-    full_name=$('#user_full_name').val().trim();
-    var old_full_name=full_name;
     project_id=$('#selected_project_id  option:selected').val();
     team_id=$('#selected_team_id option:selected').val();
     get_all_info($.session.get('user_id'))
     $('#update').click(function(){
-        var last_user_name=$('#username').val().trim();
-        var last_full_name=$('#user_full_name').val().trim();
+        var email=$('#email').val();
+        var password=$('#password').val();
         var last_project_id=$('#selected_project_id option:selected').val();
         var last_team_id=$('#selected_team_id option:selected').val();
         $.get('UpdateAccountInfo/',{
-            'user_name':last_user_name,
-            'full_name':last_full_name,
+            'email':email.trim(),
+            'password':password.trim(),
             'project_id':last_project_id,
             'team_id':last_team_id,
             'user_id': $.session.get('user_id')
@@ -84,6 +81,8 @@ function get_all_info(user_id){
         $('#user_full_name').val(data['FullName']);
         $('#designation').val(data['Designation']);
         $('#username').val(data['Username']);
+        $('#email').val(data['Email']);
+        $('#password').val(data['Password']);
         $('#image_username').val(data['Username']);
         $('#image_user_id').val(data['UserID']);
         var message='';
