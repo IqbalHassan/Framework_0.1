@@ -15299,7 +15299,7 @@ def ProfileDetail(request):
     if request.is_ajax():
         if request.method=='GET':
             user_id=request.GET.get(u'user_id')
-            query = "select distinct user_id,full_name,user_level,username,email,password from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'" % user_id
+            query = "select distinct user_id,full_name,case when user_level='assigned_tester' then 'Tester' when user_level='manager' then 'Manager'end,username,email,password from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'" % user_id
             user_column = ["UserID", "FullName", "Designation", "Username","Email","Password"]
             Conn = GetConnection()
             result = DB.GetData(Conn, query, False)
