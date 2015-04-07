@@ -9554,6 +9554,8 @@ def update_runid(run_id, test_case_id=False):
         endtime = DB.GetData(oConn, "select current_timestamp", False)
         Dict.update({'testendtime': str(endtime[0][0])})
         email_dict.update({'email_flag':True})
+        sWhereQuery = "where run_id='%s'" % run_id    
+        print DB.UpdateRecordInTable(oConn, "test_run_env", sWhereQuery, **email_dict)
         """allEmailIds = DB.GetData(oConn, "select email_notification from test_run_env where run_id = '"+run_id+"'")
         TestObjective = DB.GetData(oConn, "select test_objective from test_run_env where run_id = '"+run_id+"'")
         tester = DB.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+run_id+"'")
@@ -9610,7 +9612,6 @@ def update_runid(run_id, test_case_id=False):
     sWhereQuery = "where run_id='%s'" % run_id
     Dict1.update({'status': status})
     print DB.UpdateRecordInTable(oConn, "test_run_env", sWhereQuery, **Dict1)
-    print DB.UpdateRecordInTable(oConn, "test_run_env", sWhereQuery, **email_dict)
     print DB.UpdateRecordInTable(oConn, "test_env_results", sWhereQuery, **Dict)
     print DB.UpdateRecordInTable(oConn, "test_env_results", sWhereQuery, **Dict1)
     #########################Add a new entry in the TestRunEnv Table##########
@@ -9737,12 +9738,6 @@ def Send_Report(request):
                 "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '" +
                 run_id +
                 "'")
-
-            """EmailNotify.Complete_Email(
-                stEmailIds, run_id, str(
-                    TestObjective[0]), status[0], list, Tester, duration, '', '')
-            results = ['OK']"""
-
             try:
                 urllib2.urlopen("http://www.google.com").close()
                 #import EmailNotify

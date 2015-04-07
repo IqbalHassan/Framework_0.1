@@ -19,7 +19,7 @@ def Send_Email(Receiver, Subject, Objective, Tester, StartDate, EndDate, Estimat
                      charset="utf-8")
 
    
-    message.Subject = Subject + " - Test Deployment"
+    message.Subject = Objective + " - Test Deployment"
     message.Html = """<div id=":1ox" class="ii gt m146ced87dfe81da1 adP adO">
         <div id=":1np" class="a3s" style="overflow: hidden;">
         <div>
@@ -42,7 +42,7 @@ def Send_Email(Receiver, Subject, Objective, Tester, StartDate, EndDate, Estimat
     #link = "<a href='135.23.123.67:8080/Home/RunID/'" + Subject + ">" +Subject + "</a>"
     #message.Html = message.Html + Body + "<br/>" + "<br/>"
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = "Test Deployed - " + Subject
+    msg['Subject'] = "Test Deployed - " + Objective
     msg['From'] = "automation.solutionz@gmail.com"
     msg['To'] = ToAddr
     
@@ -148,7 +148,7 @@ def Complete_Email(Receiver, Subject, Objective, Status, List, Tester,Duration, 
                      charset="utf-8")
 
    
-    message.Subject = "Run Completed - " + Subject
+    message.Subject = Objective+ " - "+Status
     message.Html = """<div id=":1ox" class="ii gt m146ced87dfe81da1 adP adO">
         <div id=":1np" class="a3s" style="overflow: hidden;">
         <div>
@@ -222,7 +222,7 @@ def Complete_Email(Receiver, Subject, Objective, Status, List, Tester,Duration, 
       "Why, oh why"
       ])"""
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = Subject + " - Test Deployment"
+    msg['Subject'] = Objective+ ' - '+Status
     msg['From'] = "automation.solutionz@gmail.com"
     msg['To'] = ToAddr
     
@@ -372,7 +372,8 @@ def Pending_Email(Receiver, Subject, Objective, Status, List, Tester,Duration, B
                      charset="utf-8")
 
    
-    message.Subject = Subject + " - Test Deployment"
+    #message.Subject = Subject + " - Test Deployment"
+    message.Subject = Objective + " - " +Status
     message.Html = """<div id=":1ox" class="ii gt m146ced87dfe81da1 adP adO">
         <div id=":1np" class="a3s" style="overflow: hidden;">
         <div>
@@ -446,7 +447,7 @@ def Pending_Email(Receiver, Subject, Objective, Status, List, Tester,Duration, B
       "Why, oh why"
       ])"""
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = Subject + " - Test Deployment"
+    msg['Subject'] = Objective+' - '+Status
     msg['From'] = "automation.solutionz@gmail.com"
     msg['To'] = ToAddr
     
