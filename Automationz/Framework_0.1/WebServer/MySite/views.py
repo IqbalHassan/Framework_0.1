@@ -12798,7 +12798,8 @@ def Bugs_List(request):
 
         #now = datetime.datetime.now().date()
         #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
-        query = "select distinct bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id and b.project_id='"+project+"' and b.bug_id='"+team+"' order by b.bug_id desc"
+        #query = "select distinct bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.bug_milestone::int=mi.id and b.project_id='"+project+"' and b.bug_id='"+team+"' order by b.bug_id desc"
+        query = "select distinct bug_id,bug_title,bug_description,cast(bug_startingdate as text),cast(bug_endingdate as text),mi.name,b.status from bugs b, milestone_info mi where b.project_id='"+project+"' and b.team_id='"+team+"' and mi.id::text=b.bug_milestone order by b.bug_id desc"
         bugs = DB.GetData(Conn, query, False)
 
         query = "select blm.bug_id,l.label_id,l.label_name,l.label_color from labels l, label_map blm where l.label_id=blm.label_id"
