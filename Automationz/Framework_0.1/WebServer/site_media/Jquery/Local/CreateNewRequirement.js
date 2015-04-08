@@ -89,6 +89,7 @@ $(document).ready(function(){
             team.push($(this).val());
         });*/
         //var priority="";
+        //var priority=$('input[name="priority"]:checked').val();
         var priority=$('input[name="priority"]:checked').val();
         var milestone=$('#milestone option:selected').val();
         var title=$('#title').val();
