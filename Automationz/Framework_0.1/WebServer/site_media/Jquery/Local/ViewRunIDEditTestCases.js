@@ -662,6 +662,7 @@ function related_items(){
         var required_Id=$('.requirementid').val().trim();
 
         $.get("Update_RelatedItems/",{
+            run_id:$('#runid').text().trim(),
             TC_Id:testcaseid,
             Associated_Bugs_List:defect_Id,
             Manual_TC_Id:test_case_Id,

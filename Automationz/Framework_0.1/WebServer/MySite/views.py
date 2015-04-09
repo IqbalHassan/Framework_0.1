@@ -9067,6 +9067,7 @@ def RunIDTestCases(request, Run_Id, TC_Id):
 
 def Update_RelatedItems(request):
     if request.is_ajax() and request.method == 'GET':
+        run_id = request.GET.get(u'run_id','')
         TC_Id = request.GET.get(u'TC_Id', '')
         Associated_Bugs_List = request.GET.get(
             u'Associated_Bugs_List',
@@ -9082,10 +9083,23 @@ def Update_RelatedItems(request):
             'test_case_tag',
             tc_id=TC_Id,
             property='JiraId')
+        delete = DB.DeleteRecord(
+            conn,
+            'result_test_case_tag',
+            run_id=run_id,
+            tc_id=TC_Id,
+            property='JiraId')
         for i in Associated_Bugs_List:
             update = DB.InsertNewRecordInToTable(
                 conn,
                 'test_case_tag',
+                tc_id=TC_Id,
+                name=i,
+                property='JiraId')
+            update = DB.InsertNewRecordInToTable(
+                conn,
+                'result_test_case_tag',
+                run_id=run_id,
                 tc_id=TC_Id,
                 name=i,
                 property='JiraId')
@@ -9095,10 +9109,23 @@ def Update_RelatedItems(request):
             'test_case_tag',
             tc_id=TC_Id,
             property='MKS')
+        delete = DB.DeleteRecord(
+            conn,
+            'result_test_case_tag',
+            run_id=run_id,
+            tc_id=TC_Id,
+            property='MKS')
         for i in Manual_TC_Id:
             update = DB.InsertNewRecordInToTable(
                 conn,
                 'test_case_tag',
+                tc_id=TC_Id,
+                name=i,
+                property='MKS')
+            update = DB.InsertNewRecordInToTable(
+                conn,
+                'result_test_case_tag',
+                run_id=run_id,
                 tc_id=TC_Id,
                 name=i,
                 property='MKS')
@@ -9108,10 +9135,23 @@ def Update_RelatedItems(request):
             'test_case_tag',
             tc_id=TC_Id,
             property='PRDId')
+        delete = DB.DeleteRecord(
+            conn,
+            'result_test_case_tag',
+            run_id=run_id,
+            tc_id=TC_Id,
+            property='PRDId')
         for i in Requirement_ID_List:
             update = DB.InsertNewRecordInToTable(
                 conn,
                 'test_case_tag',
+                tc_id=TC_Id,
+                name=i,
+                property='PRDId')
+            update = DB.InsertNewRecordInToTable(
+                conn,
+                'result_test_case_tag',
+                run_id=run_id,
                 tc_id=TC_Id,
                 name=i,
                 property='PRDId')
