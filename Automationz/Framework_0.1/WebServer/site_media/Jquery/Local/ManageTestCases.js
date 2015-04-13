@@ -113,7 +113,7 @@ var do_on_load = function do_on_load () {
 			if (status === 'success') {
 				var query_string = data;
 				loadTable(query_string,test_case_per_page,test_case_page_current);
-                /*$("#pageitem").show();
+                $("#pageitem").show();
                 test_case_per_page = $("#perpageitem").val();
                 $('#perpageitem').on('change',function(){
                     if($(this).val()!=''){
@@ -123,7 +123,7 @@ var do_on_load = function do_on_load () {
                         window.location.hash = "#1";
                         loadTable(query_string,test_case_per_page,test_case_page_current);
                     }
-                });*/
+                });
 			} else {
 				alertify.error("Could not eastablish connection to the server.");
 				$("#pageitem").hide();
