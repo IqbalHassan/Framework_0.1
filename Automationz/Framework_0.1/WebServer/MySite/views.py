@@ -18324,12 +18324,12 @@ def enlist_schedule(request):
                     if isinstance(count,list) and len(count)>0 and count[0]>0:
                         schedule_id=count[0]
                         detail_dict={
-                            'schedule_id':schedule_id,
+                            'schedule':schedule_id,
                             'run_test_query':RunTestQuery,
                             'dependency':dependency_query,
                             'machine':machineQuery,
-                            'Testers':TesterIds,
-                            'Email':EmailIds,
+                            'Testers':",".join(TesterIds),
+                            'Email':",".join(EmailIds),
                             'testobjective':TestObjective,
                             'milestone':TestMileStone,
                             'project_id':project_id,
@@ -18338,7 +18338,9 @@ def enlist_schedule(request):
                             'run_day':day_reg.strip(),
                         }
                         Conn=GetConnection()
-                        if(DB.InsertNewRecordInToTable(Conn,"schedule",**detail_dict)):
+                        result=DB.InsertNewRecordInToTable(Conn,"schedule",**detail_dict)
+                        Conn.close()
+                        if result:
                             Dict.update({'Result':True})
                         else:
                             Dict.update({'Result':False})

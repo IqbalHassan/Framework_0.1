@@ -34,6 +34,7 @@
             project_id:project_id,
             user_id:user_id
         },function(data){
+            $('#mainbody').empty();
             var message='';
             message+='<table class="two-column-emphasis"><caption><b>Schedule Run</b></caption>';
             if(data['schedule_list'].length>0){
