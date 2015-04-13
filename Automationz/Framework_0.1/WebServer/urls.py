@@ -387,6 +387,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/get_all_schedule_run/$',get_all_schedule_run),
     url(r'^Home/.*/AutoSetSearch/$',AutoSetSearch),
     url(r'^Home/.*/enlist_schedule/$',enlist_schedule),
+    url(r'^Home/.*/get_all_schedule_detail/$',get_all_schedule_detail),
     )
 
 
