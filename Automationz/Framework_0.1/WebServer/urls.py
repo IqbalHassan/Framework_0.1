@@ -383,6 +383,10 @@ urlpatterns += patterns('',
     url(r'^Home/.*/EditLabel/$',EditLabel),
     url(r'^Home/.*/GetAllTeam/$',GetAllTeam),
     url(r'^Home/.*/ReorderSet/$',ReorderSet),
-	)
+	url(r'^Home/(?P<project_id>[^/]*)/ScheduleRun/$',ScheduleRunHome),
+    url(r'^Home/.*/get_all_schedule_run/$',get_all_schedule_run),
+    url(r'^Home/.*/AutoSetSearch/$',AutoSetSearch),
+    url(r'^Home/.*/enlist_schedule/$',enlist_schedule),
+    )
 
 

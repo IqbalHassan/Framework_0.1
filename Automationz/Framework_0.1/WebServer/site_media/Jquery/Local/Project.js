@@ -60,7 +60,7 @@ function get_all_detail(project_id,project_name,user_id){
         if(data['owner_tag']){
             message+='<input type="button" id="edit_project" value="Edit Project" class="m-btn purple"/>';
         }
-        message+='<input type="button" id="team_manage" value="Manage Teams" class="m-btn green"/></td><td width="50%;">&nbsp;</td></tr>'
+        message+='<input type="button" id="team_manage" value="Manage Teams" class="m-btn green"/><input type="button" id="schedule_run" value="Schedule Run" class="m-btn blue"/></td><td width="50%;">&nbsp;</td></tr>';
         message+='</table>';
         $("#detail_div").html(message);
         $('#team_manage').on('click',function(){
@@ -68,6 +68,9 @@ function get_all_detail(project_id,project_name,user_id){
         });
         $('#edit_project').on('click',function(){
            window.location='/Home/Project/'+project_id+'/';
+        });
+        $('#schedule_run').on('click',function(){
+            window.location='/Home/'+project_id+'/ScheduleRun/';
         });
     });
 }

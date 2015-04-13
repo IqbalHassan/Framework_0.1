@@ -2939,8 +2939,6 @@ def Run_Test(request):
                 except urllib2.URLError:
                     print "disconnected"
                     results = ['NOK']
-                
-                
                 results = {'Result': result, 'runid': runid}
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
@@ -18185,3 +18183,130 @@ def truncate_all_tables(request):
         return HttpResponse(status = 500)
     
     return HttpResponse('Truncated all tables succesfully')
+
+
+def ScheduleRunHome(request,project_id):
+    return render_to_response('Schedule_Run.html',{'project_id':project_id},context_instance=RequestContext(request))
+
+def get_all_schedule_run(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            user_id=request.GET.get(u'user_id','')
+            #find the nature of access level.
+            owner_tag=test_owner(project_id, user_id)
+            if owner_tag:
+                query="select id, schedule_name from schedule_run where project_id='%s'"%project_id
+                Conn=GetConnection()
+                schedule_list=DB.GetData(Conn,query,False)
+                Conn.close()
+            Dict={'owner_tag':owner_tag,'schedule_list':schedule_list}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+        
+def test_owner(project_id,user_id):
+    query="select project_owners from projects where project_id='%s'"%project_id
+    Conn=GetConnection()
+    user_id_list=DB.GetData(Conn,query)
+    Conn.close()
+    if isinstance(user_id_list,list) and len(user_id_list)>0:
+        user_id_list=user_id_list[0]
+        if str(user_id) in user_id_list.split(","):
+            return True
+        else:
+            return False
+    else:
+        return False
+    
+def AutoSetSearch(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            results = []
+            items_per_page = 10
+            has_next_page = False
+            requested_page = int(request.GET.get(u'page', ''))
+            project_id=request.GET.get(u'project_id','')
+            user_id=request.GET.get(u'user_id','')
+            query="select cv.id,value,tws.type,tws.team_id from config_values cv, team_wise_settings tws where cv.id=tws.parameters and cv.type=lower(tws.type) and cv.type='set' and project_id='%s'"%(project_id)
+            Conn=GetConnection()
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='value')
+            Conn.close()
+            for each_user in data['rows']:
+                result_dict = {}
+                result_dict['id'] = each_user[0]
+                result_dict['text'] = '%s - %s' % (each_user[1], each_user[2])
+                result_dict['team']=each_user[3]
+                results.append(result_dict)
+            has_next_page = data['has_next']
+            #json = simplejson.dumps(results)
+            json = simplejson.dumps({'items': results, 'more': has_next_page})
+            return HttpResponse(json, mimetype='application/json')
+        
+def enlist_schedule(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            schedule_name=request.GET.get(u'schedule_name','')
+            RunTestQuery=request.GET.get(u'RunTestQuery','')
+            machineQuery=request.GET.get(u'machineQuery','')
+            machineQuery=machineQuery.replace(u'\xa0', u'').strip()
+            dependency_query=request.GET.get(u'dependency_Query','')
+            EmailIds = request.GET.get('EmailIds', '').split("|")
+            TesterIds = request.GET.get('TesterIds', '').split("|")
+            TestObjective = request.GET.get('TestObjective', '')
+            TestObjective = str(TestObjective.replace(u'\xa0', u''))
+            TestMileStone = request.GET.get('TestMileStone', '')
+            TestMileStone = str(TestMileStone.replace(u'\xa0',u'').split(":")[0])
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            time_reg = request.GET.get(u'time', '')
+            day_reg = request.GET.get(u'day', '')
+            Dict={}
+            #first is there any schedule name like this
+            query="select count(*) from schedule_run where schedule_name='%s' and project_id='%s' and team_id=%d"%(schedule_name.strip(),project_id.strip(),int(team_id.strip()))
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(count,list) and len(count)>0 and count[0]==0:
+                schedule_dict={
+                    'schedule_name':schedule_name.strip(),
+                    'project_id':project_id.strip(),
+                    'team_id':int(team_id.strip())
+                }
+                Conn=GetConnection()
+                result=DB.InsertNewRecordInToTable(Conn,"schedule_run",**schedule_dict)
+                Conn.close()
+                if result:
+                    query="select id from schedule_run where schedule_name='%s' and project_id='%s' and team_id=%d"%(schedule_name.strip(),project_id.strip(),int(team_id.strip()))
+                    Conn=GetConnection()
+                    count=DB.GetData(Conn,query)
+                    Conn.close()
+                    if isinstance(count,list) and len(count)>0 and count[0]>0:
+                        schedule_id=count[0]
+                        detail_dict={
+                            'schedule_id':schedule_id,
+                            'run_test_query':RunTestQuery,
+                            'dependency':dependency_query,
+                            'machine':machineQuery,
+                            'Testers':TesterIds,
+                            'Email':EmailIds,
+                            'testobjective':TestObjective,
+                            'milestone':TestMileStone,
+                            'project_id':project_id,
+                            'team_id':int(team_id.strip()),
+                            'run_time':time_reg.strip(),
+                            'run_day':day_reg.strip(),
+                        }
+                        Conn=GetConnection()
+                        if(DB.InsertNewRecordInToTable(Conn,"schedule",**detail_dict)):
+                            Dict.update({'Result':True})
+                        else:
+                            Dict.update({'Result':False})
+                    else:
+                        Dict.update({'Result':False})
+                else:
+                    Dict.update({'Result':False})
+            else:
+                Dict.update({'Result':False})
+            
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
