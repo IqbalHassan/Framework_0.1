@@ -18238,9 +18238,12 @@ def get_all_schedule_run(request):
             owner_tag=test_owner(project_id, user_id)
             if owner_tag:
                 query="select id, schedule_name from schedule_run where project_id='%s'"%project_id
-                Conn=GetConnection()
-                schedule_list=DB.GetData(Conn,query,False)
-                Conn.close()
+                
+            else:
+                query="select distinct id, schedule_name from schedule_run sr, project_team_map ptm,team_info ti where sr.project_id=ptm.project_id and sr.team_id=cast(ptm.team_id as int) and ti.team_id=cast(ptm.team_id as int) and user_id='%s' and ptm.project_id='%s'"%(user_id.strip(),project_id.strip())
+            Conn=GetConnection()
+            schedule_list=DB.GetData(Conn,query,False)
+            Conn.close()    
             Dict={'owner_tag':owner_tag,'schedule_list':schedule_list}
             result=simplejson.dumps(Dict)
             return HttpResponse(result,mimetype='application/json')
@@ -18419,5 +18422,21 @@ def get_all_schedule_detail(request):
                 for each in zip(col,temp):
                     Dict.update({each[0]:each[1]})
                 print Dict
+                Dict.update({'owner':test_owner(project_id, user_id)})
             result=simplejson.dumps(Dict)
             return HttpResponse(result,mimetype='application/json')
+def delete_schedule_run(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            user_id=request.GET.get(u'user_id','')
+            schedule_id=request.GET.get(u'schedule_id','')
+            Conn=GetConnection()
+            print DB.DeleteRecord(Conn,"schedule",schedule=int(schedule_id))
+            Conn.close()
+            Conn=GetConnection()
+            print DB.DeleteRecord(Conn,"schedule_run",id=int(schedule_id))
+            Conn.close()
+            Dict={'message':True,'log_message':'Schedule run deleted successfully'}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')        

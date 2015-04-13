@@ -83,8 +83,32 @@
             message+='<tr><td width="50%;" align="right"><b>Project Name: </b></td><td width="50%;" align="left">'+data['Project Name']+'</td></tr>';
             message+='<tr><td width="50%;" align="right"><b>Team Name: </b></td><td width="50%;" align="left">'+data['Team Name']+'</td></tr>';
             message+='<tr><td width="50%;" align="right"><b>Scheduled Time: </b></td><td width="50%;" align="left">'+data['Run Time']+' on '+data['Run Day']+'</td></tr>';
+            if(data['owner']){
+                message+='<tr><td colspan="2"><input type="button" id="edit_button" class="m-btn blue" value="Edit"/> <input type="button" class="m-btn red"  id="delete_button" value="Delete"/> </td></tr>';
+            }
             message+='</table> ';
             $('#mainbody').html(message);
+            $('#delete_button').on('click',function(){
+                var message='Do you really want to delete <b>"'+data['Schedule Name']+'?"</b>';
+                alertify.confirm(message,function(e){
+                    if(e){
+                        $.get('delete_schedule_run',{
+                            project_id:project_id,
+                            user_id:user_id,
+                            schedule_id:schedule_id
+                        },function(data){
+                            if(data['message']){
+                                alertify.success(data['log_message'],1500);
+                                getAllSchedule(project_id,user_id);
+                            }
+                        });
+                    }
+                    else{
+                        alertify.alert().close_all();
+                        return false;
+                    }
+                });
+            });
         });
     }
     function initialize_button_div(project_id,user_id){
