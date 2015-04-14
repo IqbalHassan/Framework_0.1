@@ -1,0 +1,177 @@
+import time
+import Global
+import requests
+import socket
+user='postgres'
+password_user='password'
+db_name='postgres'
+server=Global.get_ip()
+port=Global.get_port()
+import DataBaseUtilities as DB
+import EmailNotify
+import urllib2
+import threading
+def main():
+    email_thread = threading.Thread(name='email_service', target=send,args=(60,))
+    email_thread.start()
+    schedule_run_thread=threading.Thread(name='scheduled_run_service',target=schedule_run,args=(60,))
+    schedule_run_thread.start()
+def schedule_run(timediff):
+    print threading.current_thread().getName()+' starting'
+    while(1):
+        query="select distinct schedule,run_time,run_day from schedule"
+        Conn=DB.ConnectToDataBase(db_name,user,password_user,server)
+        schedule_list=DB.GetData(Conn,query,False)
+        print schedule_list
+        Conn.close()
+        for each in schedule_list:
+            run_tag=False
+            if each[2]=='All':
+                current_time=time.strftime("%H:%M")
+                
+                if each[1].strip()==current_time:
+                    run_tag=True
+            else:
+                current_time=time.strftime("%H:%M/%a")
+                if each[1].strip()+'/'+each[2].strip()==current_time:
+                    run_tag=True
+            if run_tag:
+                query="select schedule,run_test_query,dependency,machine,testers,email,milestone,testObjective,project_id,team_id from schedule where schedule=%d"%int(each[0])
+                Conn=DB.ConnectToDataBase(db_name,user, password_user, server)
+                run_detail=DB.GetData(Conn,query,False)
+                print run_detail
+                Conn.close()
+                run_query=run_detail[0][1]+run_detail[0][2]
+                machine_query=run_detail[0][3]
+                tester_id=run_detail[0][4].split(",")
+                tester_id="|".join(tester_id)
+                email_id=run_detail[0][5].split(",")
+                email_id="|".join(tester_id)
+                milestone=run_detail[0][6]
+                testobjective=run_detail[0][7]
+                project_id=run_detail[0][8]
+                team_id=run_detail[0][9]
+                start_date=''
+                end_date=''
+                url='http://'+server+":"+str(port)+'/Home/RunTest/Run_Test'
+                kwarg_list={
+                    'RunTestQuery': run_query+machine_query,
+                    'TesterIds':tester_id,
+                    'EmailIds':email_id,
+                    'TestObjective':testobjective,
+                    'TestMileStone':milestone,
+                    'project_id':project_id,
+                    'team_id':team_id,
+                    #'start_date':start_date,
+                    #'end_date':end_date
+                }
+                r=requests.get(url,params=kwarg_list)
+                print r.url
+                """message='/Home/RunTest/Run_Test?'
+                for each in kwarg_list.keys():
+                    message+=(str(each)+'='+str(kwarg_list[each])+'&')
+                
+                message=message[0:len(message)-1]    
+                message=message.replace(' ','+')
+                message=message.replace(':','%3A') 
+                s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                try:
+                    #    /Home/RunTest/Run_Test?TestObjective=Second+run&TestMileStone=Sprint+8_April_08-April_22&RunTestQuery=Automated+Regression+Test%3AFirefox%3A+PC%3A+Hi%3A+rizdesktop%3A&EmailIds=3&team_id=1&TesterIds=3&project_id=PROJ-16
+                    #GET /Home/RunTest/Run_Test?RunTestQuery=Automated+Regression+Test%3A%C2%A0Chrome%3A+Mac%3A+Hi%3A+riz%3A%C2%A0&TesterIds=2&EmailIds=2%7C3&TestObjective=all+test+cases&TestMileStone=Sprint12%3A%C2%A0&project_id=PROJ-16&team_id=1&start_date=2015-04-14&end_date=2015-04-15 HTTP/1.1
+                    s.connect((server,int(port)))
+                    s.sendto( "GET %s HTTP/1.1\r\n"%message, (server, int(port)) )
+                except socket.error,msg:
+                    print msg
+                """
+                print "running all now"
+        time.sleep(timediff)
+        print "waiting for scheduled run.."
+def send(timediff):
+    print threading.current_thread().getName()+' starting\n'
+    while(1):
+        Conn=DB.ConnectToDataBase(db_name,user,password_user,server)
+        query="select run_id,email_notification,email_flag from test_run_env where email_flag=true"
+        pending_item=DB.GetData(Conn,query,False)
+        Conn.close()
+        #print pending_item
+        for each in pending_item:
+            result=Send_Report(each[0], each[1])
+            if result:
+                Conn=DB.ConnectToDataBase(db_name,user,password_user,server)
+                sWhereQuery="where run_id='%s'"%(each[0])
+                print DB.UpdateRecordInTable(Conn,'test_run_env',sWhereQuery,email_flag=False)
+        time.sleep(timediff)
+        print "waiting...."
+        
+def Send_Report(run_id,stEmailIds):
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)
+    status = DB.GetData(Conn,"select status from test_run_env where run_id = '" +run_id +"'")
+    Conn.close()
+    
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    TestObjective = DB.GetData(Conn,"select test_objective from test_run_env where run_id = '" +run_id +"'")
+    Conn.close()
+    
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    Tester = DB.GetData(Conn,"select assigned_tester from test_run_env where run_id = '" +run_id +"'")
+    Conn.close()
+    
+    list = []
+    
+    pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % run_id
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    passed = DB.GetData(Conn, pass_query)
+    Conn.close()
+    list.append(passed[0])
+    
+    fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % run_id
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    fail = DB.GetData(Conn, fail_query)
+    Conn.close()
+    list.append(fail[0])
+    
+    blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % run_id
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    blocked = DB.GetData(Conn, blocked_query)
+    Conn.close()
+    list.append(blocked[0])
+    
+    progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % run_id
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    progress = DB.GetData(Conn, progress_query)
+    Conn.close()
+    list.append(progress[0])
+    
+    submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % run_id
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    submitted = DB.GetData(Conn, submitted_query)
+    Conn.close()
+    list.append(submitted[0])
+    
+    skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % run_id
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    skipped = DB.GetData(Conn, skipped_query)
+    Conn.close()
+    list.append(skipped[0])
+    
+    total_query = "select count(*) from test_case_results where run_id='%s'" % run_id
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    total = DB.GetData(Conn, total_query)
+    Conn.close()
+    list.append(total[0])
+    
+    Conn=DB.ConnectToDataBase(db_name,user,password_user,server)    
+    duration = DB.GetData(Conn,"select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '" + run_id +"'")
+    Conn.close()
+    
+    try:
+        urllib2.urlopen("http://www.google.com").close()
+        #import EmailNotify
+        EmailNotify.Pending_Email(stEmailIds,run_id,str(TestObjective[0]),status[0],list,Tester,duration,'','')
+        print "connected"
+        return True
+    except urllib2.URLError:
+        print "disconnected"
+        return False
+if __name__=='__main__':
+    main()

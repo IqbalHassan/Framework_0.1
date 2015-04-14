@@ -2457,7 +2457,7 @@ def Run_Test(request):
     sModuleInfo = inspect.stack()[0][3] + \
         " : " + inspect.getmoduleinfo(__file__).name
     try:
-        if request.is_ajax():
+        if request.is_ajax() or not request.is_ajax():
             if request.method == 'GET':
                 is_rerun = request.GET.get(u'ReRun', '')
                 previous_run = request.GET.get('RunID', '')
@@ -2522,14 +2522,18 @@ def Run_Test(request):
                     team_id = request.GET.get(u'team_id', '')
                     start_date = request.GET.get(u'start_date', '')
                     end_date = request.GET.get(u'end_date', '')
-
-                    start_date = start_date.split('-')
-                    starting_date = datetime.datetime(int(start_date[0].strip()), int(
-                        start_date[1].strip()), int(start_date[2].strip())).date()
-                    end_date = end_date.split('-')
-                    ending_date = datetime.datetime(int(end_date[0].strip()), int(
-                        end_date[1].strip()), int(end_date[2].strip())).date()
-
+                    if start_date!='':
+                        start_date = start_date.split('-')
+                        starting_date = datetime.datetime(int(start_date[0].strip()), int(
+                            start_date[1].strip()), int(start_date[2].strip())).date()
+                    else:
+                        starting_date=''
+                    if end_date!='':
+                        end_date = end_date.split('-')
+                        ending_date = datetime.datetime(int(end_date[0].strip()), int(
+                            end_date[1].strip()), int(end_date[2].strip())).date()
+                    else:
+                        ending_date=''
                     Emails = []
                     for eachitem in EmailIds:
                         query="select email from permitted_user_list where user_id=%d"%int(eachitem)
@@ -2903,6 +2907,10 @@ def Run_Test(request):
                     'start_date': starting_date,
                     'end_date': ending_date
                 }
+                if starting_date=='':
+                    Dict.pop('start_date',None)
+                if ending_date=='':
+                    Dict.pop('end_date',None)
                 Conn = GetConnection()
                 sWhereQuery = "where tester_id='%s' and status='Unassigned'" % (
                     TesterId)

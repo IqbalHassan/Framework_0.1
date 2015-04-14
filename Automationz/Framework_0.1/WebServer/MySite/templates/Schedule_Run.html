@@ -162,7 +162,8 @@
                         $('#time_picker').datetimepicker({
                             datepicker:false,
                             format:'H:i',
-                            closeOnTimeSelect:true
+                            closeOnTimeSelect:true,
+                            step:1
                         });
                         var message='<div><img class="delete DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 20px; height: 20px"/><b>'+set_name+':</b></div>';
                         $('#run_query').html(message);

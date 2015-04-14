@@ -134,6 +134,12 @@
             $(this).parent().remove();
             PerformSearch(1,project_id,team_id);
         });
+        $('#time_picker').datetimepicker({
+            datepicker:false,
+            format:'H:i',
+            closeOnTimeSelect:true,
+            step:1
+        });
         $("#test_set_to_run").select2({
             placeholder: "One set can be run only. Create Set if not available..",
             width: 460,
@@ -166,7 +172,8 @@
                     $('#time_picker').datetimepicker({
                         datepicker:false,
                         format:'H:i',
-                        closeOnTimeSelect:true
+                        closeOnTimeSelect:true,
+                        step:1
                     });
                     var message='<div><img class="deleteQuery" title = "TesterDelete" src="/site_media/delete4.png" style="width: 20px; height: 20px"/><b>'+set_name+':</b></div>';
                     $('#run_query').html(message);
