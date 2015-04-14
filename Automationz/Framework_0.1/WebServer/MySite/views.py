@@ -18473,32 +18473,39 @@ def Edit_Schedule_Page(request,project_id,schedule_id):
                             temp_id=[]
                             temp_id.append(each)
                             temp_dict.update({eachitem[0]:temp_id})
-        temp.append(temp_dict)
+        tempo=[]
+        for each in temp_dict.keys():
+            temp_d=[]
+            for eachitem in temp_dict[each]:
+                temp_d.append(str(eachitem.strip()))
+            tempo.append((str(each.strip()),temp_d))
+        temp.append(tempo)
         temp.append(team_id)
         temp.append(listing[0][4].split(":")[0].strip())
         temp_tester=[]
         for each in listing[0][5].split(":"):
-            query="select user_names from permitted_user_list where user_id=%d"%int(each)
+            query="select user_id,user_names from permitted_user_list where user_id=%d"%int(each)
             Conn=GetConnection()
-            user_=DB.GetData(Conn,query)
+            user_=DB.GetData(Conn,query,False)
             Conn.close()
             if isinstance(user_,list) and len(user_)>0:
                 temp_tester.append(user_[0])
                 temp.append(temp_tester)
                 temp_tester=[]
                 for each in listing[0][6].split(":"):
-                    query="select user_names from permitted_user_list where user_id=%d"%int(each)
+                    query="select user_id,user_names from permitted_user_list where user_id=%d"%int(each)
                     Conn=GetConnection()
-                    user_=DB.GetData(Conn,query)
+                    user_=DB.GetData(Conn,query,False)
                     Conn.close()
                     if isinstance(user_,list) and len(user_)>0:
                         temp_tester.append(user_[0])
                 temp.append(temp_tester)
+                print temp_tester
         temp.append(listing[0][7])  
         temp.append(listing[0][8])
         temp.append(listing[0][9])
         temp.append(listing[0][10])
-        temp.append({'Sat':u'Saturday','Sun':u'Sunday','Mon':u'Monday','Tue':u'Tuesday','Wed':u'Wednesday','Thu':u'Thursday','All':u'Everyday'}[listing[0][11]])    
+        temp.append(listing[0][11])    
         temp.append(listing[0][12])
         print temp
         for each in zip(col,temp):

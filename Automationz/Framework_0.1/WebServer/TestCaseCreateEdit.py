@@ -274,16 +274,17 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     test_case_tag_column = ['tc_id', 'name', 'property']
     for each in test_case_tag_collected_data:
         test_case_tag_dict = {}
-        for eachitem in zip(test_case_tag_column, each):
-            test_case_tag_dict.update({eachitem[0]:eachitem[1]})
-        if DBUtil.IsDBConnectionGood(Conn) == False:
-            time.sleep(1)
-            Conn = GetConnection()
-        result = DBUtil.DeleteRecord(Conn, "test_case_tag", **test_case_tag_dict)
-        if result == True:
-            LogMessage(sModuleInfo, "Deleting Unnecessary %s tuple from test case tag for test case %s" % (str(test_case_tag_dict), TC_Id), 1)
-        else:
-            LogMessage(sModuleInfo, result, 3)
+        if each[2]!='set':
+            for eachitem in zip(test_case_tag_column, each):
+                test_case_tag_dict.update({eachitem[0]:eachitem[1]})
+            if DBUtil.IsDBConnectionGood(Conn) == False:
+                time.sleep(1)
+                Conn = GetConnection()
+            result = DBUtil.DeleteRecord(Conn, "test_case_tag", **test_case_tag_dict)
+            if result == True:
+                LogMessage(sModuleInfo, "Deleting Unnecessary %s tuple from test case tag for test case %s" % (str(test_case_tag_dict), TC_Id), 1)
+            else:
+                LogMessage(sModuleInfo, result, 3)
     return "Pass"
 def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name

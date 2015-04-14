@@ -133,12 +133,12 @@ function SubmitRun(project_id,team_id){
         var temp=[]
         var message="";
         for(var i=0;i<dependency_classes.length;i++){
-            if($('.'+dependency_classes[i].name+':checked').length>0){
-                if(temp.indexOf($('.'+dependency_classes[i].name+':checked').val().trim())>-1){
+            if($('.'+dependency_classes[i].name.split(' ').join('_')+':checked').length>0){
+                if(temp.indexOf($('.'+dependency_classes[i].name.split(' ').join('_')+':checked').val().trim())>-1){
                     continue;
                 }
                 else{
-                    temp.push($('.'+dependency_classes[i].name+':checked').val().trim());
+                    temp.push($('.'+dependency_classes[i].name.split(' ').join('_')+':checked').val().trim());
                 }
             }
             else{
@@ -608,10 +608,10 @@ function populate_parameter_div(array_list,div_name,project_id,team_id){
         message+='<tr>';
         for(var j=0;j<array_list[i][1].length;j++){
             message+='<td width="'+equal_size+'%">';
-            message+='<input class="'+dependency+' cmn-toggle cmn-toggle-yes-no" id="'+dependency+'_'+array_list[i][1][j]+'" type="radio" name="type" value="'+array_list[i][1][j]+'" style="width:auto" />';
-            message+='<label for="'+dependency+'_'+array_list[i][1][j]+'" data-on="'+array_list[i][1][j]+'" data-off="'+array_list[i][1][j]+'"></label>';
+            message+='<input class="'+dependency.split(" ").join("_")+' cmn-toggle cmn-toggle-yes-no" id="'+dependency.split(" ").join("_")+'_'+array_list[i][1][j]+'" type="radio" name="type" value="'+array_list[i][1][j]+'" style="width:auto" />';
+            message+='<label for="'+dependency.split(" ").join("_")+'_'+array_list[i][1][j]+'" data-on="'+array_list[i][1][j]+'" data-off="'+array_list[i][1][j]+'"></label>';
             message+='</td>';
-            dep_name.push(dependency+'_'+array_list[i][1][j]);
+            dep_name.push(dependency.split(" ").join("_")+'_'+array_list[i][1][j]);
         }
         message+='</tr>';
         message+='</table>';
@@ -634,7 +634,7 @@ function populate_parameter_div(array_list,div_name,project_id,team_id){
 function parseValue(dependency_classes){
     var message="";
     for(var i=0;i<dependency_classes.length;i++){
-        $('.'+dependency_classes[i].name+':checked').each(function(){
+        $('.'+dependency_classes[i].name.split(' ').join('_')+':checked').each(function(){
            message+=($(this).val().trim()+': ');
         });
     }
