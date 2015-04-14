@@ -387,9 +387,10 @@ urlpatterns += patterns('',
     url(r'^Home/.*/get_all_schedule_run/$',get_all_schedule_run),
     url(r'^Home/.*/AutoSetSearch/$',AutoSetSearch),
     url(r'^Home/.*/enlist_schedule/$',enlist_schedule),
+    url(r'^Home/.*/edit_schedule/$',edit_schedule),
     url(r'^Home/.*/get_all_schedule_detail/$',get_all_schedule_detail),
     url(r'^Home/.*/delete_schedule_run/$',delete_schedule_run),
-    url(r'^Home/(?P<project_id>[^/]*)/ScheduleRun/(?P<schedule_id>[^/]*)/$',Edit_Schedule_Page),
+    url(r'^Home/(?P<project_id>[^/]*)/ScheduleRun/(?P<schedule_id>[^/]*)/$',Edit_Schedule_Page,name="schedule_view"),
     )
 
 

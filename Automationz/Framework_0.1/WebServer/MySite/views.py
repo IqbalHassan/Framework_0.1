@@ -18483,7 +18483,7 @@ def Edit_Schedule_Page(request,project_id,schedule_id):
         temp.append(team_id)
         temp.append(listing[0][4].split(":")[0].strip())
         temp_tester=[]
-        for each in listing[0][5].split(":"):
+        for each in listing[0][5].split(","):
             query="select user_id,user_names from permitted_user_list where user_id=%d"%int(each)
             Conn=GetConnection()
             user_=DB.GetData(Conn,query,False)
@@ -18492,7 +18492,7 @@ def Edit_Schedule_Page(request,project_id,schedule_id):
                 temp_tester.append(user_[0])
                 temp.append(temp_tester)
                 temp_tester=[]
-                for each in listing[0][6].split(":"):
+                for each in listing[0][6].split(","):
                     query="select user_id,user_names from permitted_user_list where user_id=%d"%int(each)
                     Conn=GetConnection()
                     user_=DB.GetData(Conn,query,False)
@@ -18511,5 +18511,70 @@ def Edit_Schedule_Page(request,project_id,schedule_id):
         for each in zip(col,temp):
             Dict.update({each[0]:each[1]})
             print Dict
-            Dict.update({'project_id':project_id})    
+            Dict.update({'project_id':project_id,'schedule_id':int(schedule_id)})    
     return render_to_response('Edit_Schedule_Run.html',Dict,context_instance=RequestContext(request))
+def edit_schedule(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            schedule_id=request.GET.get(u'schedule_id','')
+            schedule_name=request.GET.get(u'schedule_name','')
+            RunTestQuery=request.GET.get(u'RunTestQuery','')
+            machineQuery=request.GET.get(u'machineQuery','')
+            machineQuery=machineQuery.replace(u'\xa0', u'').strip()
+            dependency_query=request.GET.get(u'dependency_Query','')
+            EmailIds = request.GET.get('EmailIds', '').split("|")
+            TesterIds = request.GET.get('TesterIds', '').split("|")
+            TestObjective = request.GET.get('TestObjective', '')
+            TestObjective = str(TestObjective.replace(u'\xa0', u''))
+            TestMileStone = request.GET.get('TestMileStone', '')
+            TestMileStone = str(TestMileStone.replace(u'\xa0',u'').split(":")[0])
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            time_reg = request.GET.get(u'time', '')
+            day_reg = request.GET.get(u'day', '')
+            Dict={}
+            #first is there any schedule name like this
+            """query="select count(*) from schedule_run where schedule_name='%s' and project_id='%s' and team_id=%d"%(schedule_name.strip(),project_id.strip(),int(team_id.strip()))
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(count,list) and len(count)>0 and count[0]==0:
+            """
+            schedule_dict={
+                'schedule_name':schedule_name.strip(),
+                'project_id':project_id.strip(),
+                'team_id':int(team_id.strip())
+            }
+            sWhereQuery="where id=%d"%int(schedule_id)
+            Conn=GetConnection()
+            result=DB.UpdateRecordInTable(Conn,"schedule_run",sWhereQuery,**schedule_dict)
+            Conn.close()
+            if result:
+                detail_dict={
+                    'run_test_query':RunTestQuery,
+                    'dependency':dependency_query,
+                    'machine':machineQuery,
+                    'Testers':",".join(TesterIds),
+                    'Email':",".join(EmailIds),
+                    'testobjective':TestObjective,
+                    'milestone':TestMileStone,
+                    'project_id':project_id,
+                    'team_id':int(team_id.strip()),
+                    'run_time':time_reg.strip(),
+                    'run_day':day_reg.strip(),
+                }
+                sWhereQuery="where schedule=%d"%int(schedule_id)
+                Conn=GetConnection()
+                result=DB.UpdateRecordInTable(Conn,"schedule",sWhereQuery,**detail_dict)
+                Conn.close()
+                if result:
+                    Dict.update({'Result':True})
+                    #return HttpResponseRedirect(reverse('schedule_view',kwargs={'project_id': project_id,'schedule_id':int(schedule_id)}))
+                else:
+                    Dict.update({'Result':False})
+            else:
+                Dict.update({'Result':False})
+        else:
+            Dict.update({'Result':False})    
+        result=simplejson.dumps(Dict)
+        return HttpResponse(result,mimetype='application/json')

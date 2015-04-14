@@ -5,6 +5,9 @@
 <script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
 <link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 <link href="/site_media/Jquery/time_picker/jquery.datetimepicker.css" rel="stylesheet"/>
+<table class="two-column-emphasis">
+    <tr><td><a href="/Home/{{project_id}}/ScheduleRun/">Schedule Run/</a></td></tr>
+</table>
 <table class="two-column-emphasis" width="100%;">
     <caption><b style="font-size: 150%;">Edit Schedule</b></caption>
     <tr>
@@ -17,7 +20,7 @@
     </tr>
     <tr>
         <td width="35%;" align="right">&nbsp;</td>
-        <td id="run_query"><div><img class="delete DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 20px; height: 20px"/><b>{{Query}}:</b></div></td>
+        <td id="run_query"><div><img class="deleteQuery" title = "TesterDelete" src="/site_media/delete4.png" style="width: 20px; height: 20px"/><b>{{Query}}:</b></div></td>
     </tr>
     <tr>
         <td colspan="2"><div id="RunTestResultTable"></div></td>
@@ -122,10 +125,15 @@
     var dependency_classes=[];
     var test_cases=false;
     var first_dependency_set=true;
+    var schedule_id="{{schedule_id}}";
     var selected_dependency="{{Dependency}}";
     selected_dependency=selected_dependency.replace(/&#39;/g,'');
     selected_dependency=selected_dependency.substring(1,selected_dependency.length-1).split(", (");
     $(document).ready(function(){
+        $('.deleteQuery').on('click',function(){
+            $(this).parent().remove();
+            PerformSearch(1,project_id,team_id);
+        });
         $("#test_set_to_run").select2({
             placeholder: "One set can be run only. Create Set if not available..",
             width: 460,
@@ -160,11 +168,12 @@
                         format:'H:i',
                         closeOnTimeSelect:true
                     });
-                    var message='<div><img class="delete DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 20px; height: 20px"/><b>'+set_name+':</b></div>';
+                    var message='<div><img class="deleteQuery" title = "TesterDelete" src="/site_media/delete4.png" style="width: 20px; height: 20px"/><b>'+set_name+':</b></div>';
                     $('#run_query').html(message);
                     $(this).select2('val','');
-                    $('.delete').on('click',function(){
+                    $('.deleteQuery').on('click',function(){
                         $(this).parent().remove();
+                        PerformSearch(1,project_id,team_id);
                     });
                     $('#table_to_show').css({'display':'block'});
                     PerformSearch(1,project_id,team_id);
@@ -177,9 +186,138 @@
 
             return markup;
         }
+        Submit_button(project_id,team_id,schedule_id);
         AutoSuggestions(project_id,team_id);
         PerformSearch(1,project_id,team_id);
     });
+    function Submit_button(project_id,team_id,schedule_id){
+        $('#run_test').on('click',function(){
+            var schedule_name=$('#schedule_name').val();
+            if(schedule_name==''){
+                alertify.error('No Schedule Name is given',1500);
+                return false;
+            }
+            if(schedule_name.length>50){
+                alertify.error('Schedule name must be within 50 characters',1500);
+                return false;
+            }
+            var UserText="";
+            if(test_cases){
+                $('#run_query div').each(function(){
+                    UserText+=$(this).text().trim();
+                });
+                console.log(UserText);
+            }
+            else{
+                alertify.error('No Test cases selected',1500);
+                return false;
+            }
+
+            var temp=[]
+            var message="";
+            for(var i=0;i<dependency_classes.length;i++){
+                if($('.'+dependency_classes[i].name.split(' ').join('_')+':checked').length>0){
+                    if(temp.indexOf($('.'+dependency_classes[i].name.split(' ').join('_')+':checked').val().trim())>-1){
+                        continue;
+                    }
+                    else{
+                        temp.push($('.'+dependency_classes[i].name.split(' ').join('_')+':checked').val().trim());
+                    }
+                }
+                else{
+                    alertify.error('No '+dependency_classes[i].name.split(' ').join('_')+' is selected',1500);
+                    return false;
+                }
+            }
+            for(var i=0;i<temp.length;i++){
+                message+=(temp[i].trim()+': ');
+            }
+            var time=$('#time_picker').val();
+            if(time==''){
+                alertify.error('No Time of the Day is given',1500);
+                return false;
+            }
+            var day=$('#specific_day').val();
+            if(day==''){
+                alertify.error('No Day is given',1500);
+                return false;
+            }
+            var TesterQuery=[];
+            $("#tester").find('td').each( function()
+            {
+                var temp = $(this).attr('data-id');
+                //TesterQuery = TesterQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
+                if(TesterQuery.indexOf(temp)==-1 && temp!=undefined){
+                    TesterQuery.push(temp);
+                }
+            });
+            if(TesterQuery.length==0){
+                alertify.log("Testers is to be selected from suggestion","",0);
+                return false;
+            }
+            var EmailQuery=[];
+            $("#email").find('td').each( function()
+            {
+                var temp = $(this).attr('data-id');
+                //EmailQuery = EmailQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "");
+                if(EmailQuery.indexOf(temp)==-1 && temp!=undefined){
+                    EmailQuery.push(temp);
+                }
+            });
+            if(EmailQuery.length==0){
+                alertify.log("Email Receipient is to be selected from suggestion","",0);
+                return false;
+            }
+            var TestObjective=$('#objective').text().trim();
+            if(TestObjective==""){
+                alertify.log("Test Objective is empty","",0);
+                return false;
+            }
+            var milestoneQuery="";
+            $("#milestone").each( function()
+            {
+                milestoneQuery = $(this).find("td").text();
+                milestoneQuery = milestoneQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+            });
+            if(milestoneQuery.length==0){
+                alertify.log("Milestone is to be selected from suggestion","",0);
+                return false;
+            }
+            var machineQuery="";
+            $("#machine").each( function()
+            {
+                machineQuery = $(this).find("td").text();
+                machineQuery = machineQuery.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+            });
+            if(machineQuery.length==0){
+                alertify.log("Machine is to be selected from suggestion","",0);
+                return false;
+            }
+            var RunTestQuery=UserText;
+            $.get("edit_schedule",{
+                schedule_id:schedule_id,
+                schedule_name:schedule_name,
+                RunTestQuery : RunTestQuery,
+                dependency_Query:message,
+                machineQuery:machineQuery,
+                TesterIds:TesterQuery.join('|'),
+                EmailIds:EmailQuery.join('|'),
+                TestObjective:TestObjective,
+                TestMileStone:milestoneQuery,
+                project_id:project_id,
+                team_id:team_id,
+                time:time,
+                day:day
+            },function(data){
+                if(data['Result']){
+                    window.location='/Home/'+project_id+'/ScheduleRun/'+schedule_id+'/';
+                }
+                else{
+                    MsgBox("Test Run Response",	"Your Test Run Request Has Been Submitted, Here is the result :"+ data['Result']);
+                }
+            });
+        });
+    }
     function AutoSuggestions(project_id,team_id){
         $("#assigned_tester").select2({
             placeholder: "Assigned Testers...",
@@ -440,9 +578,9 @@
                 $("#RunTestResultTable").fadeIn(1000);
                 test_cases=false;
                 /*$('#time_panel').html("");
-                 $('#time_panel').css({'display':'none'});
-                 $('#parameter_div').empty();*/
-                $('#pagination_div').pagination('destroy');
+                 $('#time_panel').css({'display':'none'});*/
+                 $('#parameter_div').empty();
+                 $('#pagination_div').pagination('destroy');
             }
             else
             {
@@ -481,6 +619,7 @@
             project_id:project_id,
             team_id:team_id
         },function(data){
+            dependency_classes=[];
             populate_parameter_div(data,"parameter_div",project_id,team_id);
         });
     }
