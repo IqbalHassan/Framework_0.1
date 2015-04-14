@@ -1,0 +1,185 @@
+{% extends 'BaseTemplate.html' %}
+{% block title %}Edit Schedule{% endblock %}
+{% block content %}
+<script type="text/javascript" src="/site_media/Jquery/time_picker/jquery.datetimepicker.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
+<link href="/site_media/Jquery/time_picker/jquery.datetimepicker.css" rel="stylesheet"/>
+<table class="two-column-emphasis" width="100%;">
+    <caption><b style="font-size: 150%;">Edit Schedule</b></caption>
+    <tr>
+        <td width="35%;" align="right"><b>Schedule Name:</b></td>
+        <td><input class="textbox" value="{{Schedule}}" id="schedule_name"/></td>
+    </tr>
+    <tr>
+        <td width="35%;" align="right"><b>Schedule Name:</b></td>
+        <td><input type="hidden" id="test_to_run"/></td>
+    </tr>
+    <tr>
+        <td width="35%;" align="right">&nbsp;</td>
+        <td id="run_query"><div><img class="delete DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 20px; height: 20px"/><b>{{Query}}:</b></div></td>
+    </tr>
+    <tr>
+        <td colspan="2"><div id="RunTestResultTable"></div></td>
+    </tr>
+    <tr>
+        <td colspan="2"><div id="pagination_div"></div></td>
+    </tr>
+    <tr>
+        <td width="35%;" align="right">Dependency</td>
+        <td ><div id="parameter_div"></div></td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+    var project_id="{{project_id}}";
+    var team_id="{{TeamID}}";
+    var user_id= $.session.get('user_id');
+    var test_case_per_page=5;
+    var dependency_classes=[];
+    var test_cases=false;
+    $(document).ready(function(){
+        PerformSearch(1,project_id,team_id);
+    });
+    function PerformSearch(pageNumber,project_id,team_id,predicate) {
+        var UserText='';
+        $('#run_query div').each(function(){
+            UserText+=$(this).text().trim();
+        });
+        if(predicate!=undefined){
+            UserText=UserText+predicate;
+        }
+        $.get("TableDataTestCasesOtherPages",{
+            Query: UserText,
+            test_status_request:true,
+            project_id:project_id,
+            team_id:team_id,
+            total_time:'true',
+            test_case_per_page:test_case_per_page,
+            test_case_page_current:pageNumber
+        },function(data) {
+            if (data['TableData'].length == 0)
+            {
+                $('#RunTestResultTable').html("");
+                $('#RunTestResultTable').html("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+                $("#RunTestResultTable").fadeIn(1000);
+                test_cases=false;
+                /*$('#time_panel').html("");
+                 $('#time_panel').css({'display':'none'});
+                 $('#parameter_div').empty();*/
+                $('#pagination_div').pagination('destroy');
+            }
+            else
+            {
+                /*$('#time_panel').html('<b class="Text">Time Needed: '+data['time']+'</b> ');
+                 $('#time_panel').css({'display':'block'});
+                 */
+                ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
+                $('#RunTestResultTable').find('p:eq(0)').html(data['Count']+' Test Cases');
+                $('#pagination_div').css({'display':'block'});
+                $('#pagination_div').pagination({
+                    items:data['Count'],
+                    itemsOnPage:test_case_per_page,
+                    cssStyle: 'dark-theme',
+                    currentPage:pageNumber,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        PerformSearch(PageNumber,project_id,team_id);
+                    }
+                });
+                //$("#RunTestResultTable .one-column-emphasis").addClass('two-column-emphasis');
+                //$("#RunTestResultTable .one-column-emphasis").removeClass('one-column-emphasis');
+                $("#RunTestResultTable").fadeIn(1000);
+                test_cases=true;
+                implementDropDown("#RunTestResultTable");
+                if(predicate==undefined){
+                    get_dependency(project_id,team_id,UserText);
+                }
+            }
+        });
+    }
+    function get_dependency(project_id,team_id,UserText){
+        $.get('specific_dependency_settings',{
+            Query: UserText,
+            project_id:project_id,
+            team_id:team_id
+        },function(data){
+            populate_parameter_div(data,"parameter_div",project_id,team_id);
+        });
+    }
+
+    function implementDropDown(wheretoplace){
+        $(wheretoplace+" tr td:nth-child(2)").css({'color' : 'blue','cursor' : 'pointer'});
+        $(wheretoplace+" tr td:nth-child(2)").each(function() {
+            var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+            var name=$(this).text().trim();
+            $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+            $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+                var data_list=data['Result'];
+                var column=data['column'];
+                ResultTable('#'+ID+'detail',column,data_list,"");
+                $('#'+ID+'detail tr').each(function(){
+                    $(this).css({'textAlign':'left'});
+                });
+            });
+            $(this).live('click',function(){
+                $('#'+ID+'detail').slideToggle("slow");
+            });
+        });
+    }
+    function populate_parameter_div(array_list,div_name,project_id,team_id){
+        var message="";
+        for(var i=0;i<array_list.length;i++){
+            var dependency=array_list[i][0];
+            message+='<form id="tc_'+dependency+'" class="new_tc_form">';
+            message+='<table class="two-column-emphasis">';
+            message+='<tr>';
+            message+='<td class="tc_form_label_col" width="22%;">'
+            message+='<b class="Text">'+dependency+':</b>';
+            message+='</td>';
+            message+='<td class="tc_form_input_col">';
+            //message+='<table width="100%">';
+            var equal_size=(100/array_list[i][1].length);
+            var dep_name=[];
+            //message+='<tr>';
+            for(var j=0;j<array_list[i][1].length;j++){
+                //message+='<td>';
+                message+='<div style="float: left;">';
+                message+='<input class="'+dependency+' cmn-toggle cmn-toggle-yes-no" id="'+dependency+'_'+array_list[i][1][j]+'" type="radio" name="type" value="'+array_list[i][1][j]+'" style="width:auto;;" />';
+                message+='<label for="'+dependency+'_'+array_list[i][1][j]+'" data-on="'+array_list[i][1][j]+'" data-off="'+array_list[i][1][j]+'" style="margin-right:2%"></label>&nbsp;';
+                //message+='</td>';
+                message+='</div>';
+                dep_name.push(dependency+'_'+array_list[i][1][j]);
+            }
+            //message+='</tr>';
+            //message+='</table>';
+            message+='</td>';
+            message+='<tr>';
+            message+='</table>';
+            message+='</form>';
+            var temp={'name':dependency,'list':dep_name};
+            dependency_classes.push(temp);
+        }
+        $('#'+div_name).html(message);
+        for(var i=0;i<dependency_classes.length;i++){
+            for(var j=0;j<dependency_classes[i].list.length;j++){
+                $('#'+dependency_classes[i].list[j]).on('click',function(){
+                    PerformSearch(1,project_id,team_id,parseValue(dependency_classes));
+                });
+            }
+        }
+    }
+
+    function parseValue(dependency_classes){
+        var message="";
+        for(var i=0;i<dependency_classes.length;i++){
+            $('.'+dependency_classes[i].name+':checked').each(function(){
+                message+=($(this).val().trim()+': ');
+            });
+        }
+        return message;
+    }
+</script>
+{% endblock %}

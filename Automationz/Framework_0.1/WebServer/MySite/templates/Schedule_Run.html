@@ -88,6 +88,9 @@
             }
             message+='</table> ';
             $('#mainbody').html(message);
+            $('#edit_button').on('click',function(){
+               window.location='/Home/'+project_id+'/ScheduleRun/'+schedule_id+'/';
+            });
             $('#delete_button').on('click',function(){
                 var message='Do you really want to delete <b>"'+data['Schedule Name']+'?"</b>';
                 alertify.confirm(message,function(e){

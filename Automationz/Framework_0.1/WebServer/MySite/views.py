@@ -18439,4 +18439,70 @@ def delete_schedule_run(request):
             Conn.close()
             Dict={'message':True,'log_message':'Schedule run deleted successfully'}
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')        
+            return HttpResponse(result,mimetype='application/json')      
+        
+def Edit_Schedule_Page(request,project_id,schedule_id):
+    Dict={}
+    col=['Schedule','Query','Dependency','TeamID','Machine','Testers','Email','Milestone','Project','Team','Time','Day','TestObjective']
+    query="select schedule_name,run_test_query,dependency,s.team_id,machine,testers,email,milestone,(select project_name from projects where project_id=sr.project_id),(select team_name from team t where t.id=sr.team_id and project_id=sr.project_id),run_time,run_day,testobjective from schedule s, schedule_run sr where s.schedule=sr.id and sr.project_id=s.project_id and sr.team_id=s.team_id and s.project_id='%s' and s.schedule=%d"%(project_id,int(schedule_id))
+    Conn=GetConnection()
+    listing=DB.GetData(Conn,query,False)
+    Conn.close()
+    temp=[]
+    if isinstance(listing,list) and len(listing)>0:
+        temp.append(listing[0][0])
+        run_test_query=listing[0][1]
+        temp.append(run_test_query.split(":")[0].strip())
+        dependency=listing[0][2].split(": ")
+        #get all the dependnecy
+        
+        team_id=int(listing[0][3])
+        query="select dependency_name, array_agg(distinct dn.name) from dependency d, dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name"%(project_id.strip(),int(team_id))
+        Conn=GetConnection()
+        dependency_list=DB.GetData(Conn,query,False)
+        Conn.close()
+        print dependency_list
+        temp_dict={}
+        for each in dependency:
+            if each!='':
+                for eachitem in dependency_list:
+                    if each in eachitem[1]:
+                        if temp_dict.has_key(eachitem[0]):
+                            temp_dict[eachitem[0]].append(each)
+                        else:
+                            temp_id=[]
+                            temp_id.append(each)
+                            temp_dict.update({eachitem[0]:temp_id})
+        temp.append(temp_dict)
+        temp.append(team_id)
+        temp.append(listing[0][4].split(":")[0].strip())
+        temp_tester=[]
+        for each in listing[0][5].split(":"):
+            query="select user_names from permitted_user_list where user_id=%d"%int(each)
+            Conn=GetConnection()
+            user_=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(user_,list) and len(user_)>0:
+                temp_tester.append(user_[0])
+                temp.append(temp_tester)
+                temp_tester=[]
+                for each in listing[0][6].split(":"):
+                    query="select user_names from permitted_user_list where user_id=%d"%int(each)
+                    Conn=GetConnection()
+                    user_=DB.GetData(Conn,query)
+                    Conn.close()
+                    if isinstance(user_,list) and len(user_)>0:
+                        temp_tester.append(user_[0])
+                temp.append(temp_tester)
+        temp.append(listing[0][7])  
+        temp.append(listing[0][8])
+        temp.append(listing[0][9])
+        temp.append(listing[0][10])
+        temp.append({'Sat':u'Saturday','Sun':u'Sunday','Mon':u'Monday','Tue':u'Tuesday','Wed':u'Wednesday','Thu':u'Thursday','All':u'Everyday'}[listing[0][11]])    
+        temp.append(listing[0][12])
+        print temp
+        for each in zip(col,temp):
+            Dict.update({each[0]:each[1]})
+            print Dict
+            Dict.update({'project_id':project_id})    
+    return render_to_response('Edit_Schedule_Run.html',Dict,context_instance=RequestContext(request))
