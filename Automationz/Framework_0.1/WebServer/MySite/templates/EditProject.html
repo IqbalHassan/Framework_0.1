@@ -51,7 +51,7 @@
             <table class="two-column-emphasis">
             <tr>
                 <td><b>Server:</b></td>
-                <td><input class="textbox" value="" id="server_name"/></td>
+                <td><input class="textbox" value="" id="server"/></td>
             </tr>
             <tr>
                 <td><b>Hyperlink:</b></td>
@@ -69,13 +69,13 @@
                 <td><b>Application:</b></td>
                 <td><!--input class="textbox" value="" id="application"/-->
                     <table><tr>
-                                            <td>
-                                            <input id="github" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="application" value="github">
-                                            <label for="github" data-on="Github" data-off="Github"></label>
-                                            </td><td>
-                                            <input id="jira" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="application" value="jira">
-                                            <label for="jira" data-on="JIRA" data-off="JIRA"></label>
-                                            </td></tr></table>
+                                <td>
+                                <input id="github" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="application" value="github">
+                                <label for="github" data-on="Github" data-off="Github"></label>
+                                </td><td>
+                                <input id="jira" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="application" value="jira">
+                                <label for="jira" data-on="JIRA" data-off="JIRA"></label>
+                                </td></tr></table>
                 </td>
             </tr>
         </table>
@@ -163,7 +163,12 @@
             'ending_date':ending_date,
             'description':project_description,
             'owner_list':owner_list.join(","),
-            'user': $.session.get('fullname')
+            'user': $.session.get('fullname'),
+            'server':$("#server").val(),
+            'hyperlink':$("#hyperlink").val(),
+            'username':$("#username").val(),
+            'password':$("#password").val(),
+            'application':$('input[name="application"]:checked').val()
         },function(data){
             if(data){
                 alertify.success('Project Updated Successfully',1500);

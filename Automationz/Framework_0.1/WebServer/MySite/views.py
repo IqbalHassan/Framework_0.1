@@ -13835,6 +13835,11 @@ def Create_New_Project(request):
                         Conn,
                         "projects",
                         **Dict)
+                    rDict={'project_id':project_id}
+                    rrrrr = DB.InsertNewRecordInToTable(
+                        Conn,
+                        "related_items",
+                        **rDict)
                     Conn.close()
                     if not result:
                         message = "Failed"
@@ -13951,6 +13956,7 @@ def EditProjectAdmin(request,project_id):
     query="select project_name,project_startingdate,project_endingdate,project_description,project_owners from projects where project_id='%s'"%(project_id)
     Conn=GetConnection()
     project_detail=DB.GetData(Conn,query,False)
+    related_items=DB.GetData(Conn,"select * from related_items where project_id='"+project_id+"' ",False)
     Conn.close()
     print project_detail
     project_detail=project_detail[0]
@@ -13981,7 +13987,8 @@ def EditProjectAdmin(request,project_id):
         'project_startingdate':project_startingdate,
         'project_endingdate':project_endingdate,
         'project_description':project_description,
-        'project_owners':list(set(owner_name))
+        'project_owners':list(set(owner_name)),
+        'related_items':related_items
     }
     return render_to_response('EditProject.html',result,context_instance=RequestContext(request))
 def Edit_Project(request):
@@ -13994,6 +14001,11 @@ def Edit_Project(request):
             project_description=request.GET.get(u'description','')
             owner_list=request.GET.get(u'owner_list','')
             admin=request.GET.get(u'user','')
+            server=request.GET.get(u'server','')
+            hyperlink=request.GET.get(u'hyperlink','')
+            username=request.GET.get(u'username','')
+            password=request.GET.get(u'password','')
+            application=request.GET.get(u'application','')
             query="select count(*),project_owners from projects where project_id='%s' group by project_owners"%(project_id)
             Conn=GetConnection()
             project_id_count=DB.GetData(Conn,query,False)
@@ -14012,12 +14024,20 @@ def Edit_Project(request):
                     'project_owners':owner_list,
                     'project_description':project_description
                 }
+                rdict={
+                    'server_name':server,
+                    'hyperlink':hyperlink,
+                    'username':username,
+                    'password':password,
+                    'application':application
+                    }
                 if(starting_date!=''):
                     Dict.update({'project_startingdate':starting_date})
                 if(ending_date!=''):
                     Dict.update({'project_endingdate':ending_date})
                 Conn=GetConnection()
                 result=DB.UpdateRecordInTable(Conn,"projects", sWhereQuery,**Dict)
+                rrrrr=DB.UpdateRecordInTable(Conn,"related_items", sWhereQuery,**rdict)
                 Conn.close()
                 if result:
                     message=True    
