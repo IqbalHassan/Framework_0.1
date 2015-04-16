@@ -34,11 +34,12 @@
             project_id:project_id,
             user_id:user_id
         },function(data){
+            $('#mainbody').empty();
             var message='';
             message+='<table class="two-column-emphasis"><caption><b>Schedule Run</b></caption>';
             if(data['schedule_list'].length>0){
                 for(var i=0;i<data['schedule_list'].length;i++){
-                    message+='<tr><td data-id="'+data['schedule_list'][i][0]+'">'+data['schedule_list'][i][1]+'</td></tr>';
+                    message+='<tr><td class="schedule_run" style="cursor:pointer" data-id="'+data['schedule_list'][i][0]+'">'+data['schedule_list'][i][1]+'</td></tr>';
                 }
             }
             else{
@@ -49,7 +50,68 @@
             }
             message+='</table>';
             $('#schedule_run_div').html(message);
+            $('.schedule_run').on('click',function(){
+                $('.schedule_run').css({'background-color':'#fff'});
+                $(this).css({'background-color':'#ccc'});
+                var schedule_id=$(this).attr('data-id');
+                get_all_detail(project_id,user_id,schedule_id);
+            });
             initialize_button_div(project_id,user_id);
+        });
+    }
+    function get_all_detail(project_id,user_id,schedule_id){
+        $.get('get_all_schedule_detail',{
+            project_id:project_id,
+            user_id:user_id,
+            schedule_id:schedule_id
+        },function(data){
+            var message='';
+            message+='<table class="two-column-emphasis" align="center"><caption><b>Schedule Run Detail</b></caption>';
+            message+='<tr><td width="50%;" align="right"><b>Schedule Name: </b></td><td width="50%;" align="left">'+data['Schedule Name']+'</td></tr>';
+            message+='<tr><td width="50%;" align="right"><b>Query: </b></td><td width="50%;" align="left">'+data['Query']+'</td></tr>';
+            message+='<tr><td width="50%;" align="right"><b>Dependency: </b></td><td width="50%;" align="left">';
+            message+='<table>';
+            for(var property_name in data['Dependency']){
+                message+='<tr><td>'+property_name+': </td><td>'+data['Dependency'][property_name].join(",")+'</td></tr>';
+            }
+            message+='</table>';
+            message+='</td></tr>';
+            message+='<tr><td width="50%;" align="right"><b>Machine: </b></td><td width="50%;" align="left">'+data['Machine']+'</td></tr>';
+            message+='<tr><td width="50%;" align="right"><b>Test Objective: </b></td><td width="50%;" align="left">'+data['TestObjective']+'</td></tr>';
+            message+='<tr><td width="50%;" align="right"><b>Testers: </b></td><td width="50%;" align="left">'+data['Testers'].join(",")+'</td></tr>';
+            message+='<tr><td width="50%;" align="right"><b>Email: </b></td><td width="50%;" align="left">'+data['Email'].join(",")+'</td></tr>';
+            message+='<tr><td width="50%;" align="right"><b>Project Name: </b></td><td width="50%;" align="left">'+data['Project Name']+'</td></tr>';
+            message+='<tr><td width="50%;" align="right"><b>Team Name: </b></td><td width="50%;" align="left">'+data['Team Name']+'</td></tr>';
+            message+='<tr><td width="50%;" align="right"><b>Scheduled Time: </b></td><td width="50%;" align="left">'+data['Run Time']+' on '+data['Run Day']+'</td></tr>';
+            if(data['owner']){
+                message+='<tr><td colspan="2"><input type="button" id="edit_button" class="m-btn blue" value="Edit"/> <input type="button" class="m-btn red"  id="delete_button" value="Delete"/> </td></tr>';
+            }
+            message+='</table> ';
+            $('#mainbody').html(message);
+            $('#edit_button').on('click',function(){
+               window.location='/Home/'+project_id+'/ScheduleRun/'+schedule_id+'/';
+            });
+            $('#delete_button').on('click',function(){
+                var message='Do you really want to delete <b>"'+data['Schedule Name']+'?"</b>';
+                alertify.confirm(message,function(e){
+                    if(e){
+                        $.get('delete_schedule_run',{
+                            project_id:project_id,
+                            user_id:user_id,
+                            schedule_id:schedule_id
+                        },function(data){
+                            if(data['message']){
+                                alertify.success(data['log_message'],1500);
+                                getAllSchedule(project_id,user_id);
+                            }
+                        });
+                    }
+                    else{
+                        alertify.alert().close_all();
+                        return false;
+                    }
+                });
+            });
         });
     }
     function initialize_button_div(project_id,user_id){
@@ -100,7 +162,8 @@
                         $('#time_picker').datetimepicker({
                             datepicker:false,
                             format:'H:i',
-                            closeOnTimeSelect:true
+                            closeOnTimeSelect:true,
+                            step:1
                         });
                         var message='<div><img class="delete DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 20px; height: 20px"/><b>'+set_name+':</b></div>';
                         $('#run_query').html(message);
@@ -148,16 +211,16 @@
             var temp=[]
             var message="";
             for(var i=0;i<dependency_classes.length;i++){
-                if($('.'+dependency_classes[i].name+':checked').length>0){
-                    if(temp.indexOf($('.'+dependency_classes[i].name+':checked').val().trim())>-1){
+                if($('.'+dependency_classes[i].name.split(' ').join('_')+':checked').length>0){
+                    if(temp.indexOf($('.'+dependency_classes[i].name.split(' ').join('_')+':checked').val().trim())>-1){
                         continue;
                     }
                     else{
-                        temp.push($('.'+dependency_classes[i].name+':checked').val().trim());
+                        temp.push($('.'+dependency_classes[i].name.split(' ').join('_')+':checked').val().trim());
                     }
                 }
                 else{
-                    alertify.error('No '+dependency_classes[i].name+' is selected',1500);
+                    alertify.error('No '+dependency_classes[i].name.split(' ').join('_')+' is selected',1500);
                     return false;
                 }
             }
@@ -414,11 +477,11 @@
             for(var j=0;j<array_list[i][1].length;j++){
                 //message+='<td>';
                 message+='<div style="float: left;">';
-                message+='<input class="'+dependency+' cmn-toggle cmn-toggle-yes-no" id="'+dependency+'_'+array_list[i][1][j]+'" type="radio" name="type" value="'+array_list[i][1][j]+'" style="width:auto;;" />';
-                message+='<label for="'+dependency+'_'+array_list[i][1][j]+'" data-on="'+array_list[i][1][j]+'" data-off="'+array_list[i][1][j]+'" style="margin-right:2%"></label>&nbsp;';
+                message+='<input class="'+dependency.split(' ').join('_')+' cmn-toggle cmn-toggle-yes-no" id="'+dependency.split(' ').join('_')+'_'+array_list[i][1][j]+'" type="radio" name="type" value="'+array_list[i][1][j]+'" style="width:auto;;" />';
+                message+='<label for="'+dependency.split(' ').join('_')+'_'+array_list[i][1][j]+'" data-on="'+array_list[i][1][j]+'" data-off="'+array_list[i][1][j]+'" style="margin-right:2%"></label>&nbsp;';
                 //message+='</td>';
                 message+='</div>';
-                dep_name.push(dependency+'_'+array_list[i][1][j]);
+                dep_name.push(dependency.split(' ').join('_')+'_'+array_list[i][1][j]);
             }
             //message+='</tr>';
             //message+='</table>';
@@ -442,7 +505,7 @@
     function parseValue(dependency_classes){
         var message="";
         for(var i=0;i<dependency_classes.length;i++){
-            $('.'+dependency_classes[i].name+':checked').each(function(){
+            $('.'+dependency_classes[i].name.split(' ').join('_')+':checked').each(function(){
                 message+=($(this).val().trim()+': ');
             });
         }

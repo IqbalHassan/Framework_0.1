@@ -2457,7 +2457,7 @@ def Run_Test(request):
     sModuleInfo = inspect.stack()[0][3] + \
         " : " + inspect.getmoduleinfo(__file__).name
     try:
-        if request.is_ajax():
+        if request.is_ajax() or not request.is_ajax():
             if request.method == 'GET':
                 is_rerun = request.GET.get(u'ReRun', '')
                 previous_run = request.GET.get('RunID', '')
@@ -2522,14 +2522,18 @@ def Run_Test(request):
                     team_id = request.GET.get(u'team_id', '')
                     start_date = request.GET.get(u'start_date', '')
                     end_date = request.GET.get(u'end_date', '')
-
-                    start_date = start_date.split('-')
-                    starting_date = datetime.datetime(int(start_date[0].strip()), int(
-                        start_date[1].strip()), int(start_date[2].strip())).date()
-                    end_date = end_date.split('-')
-                    ending_date = datetime.datetime(int(end_date[0].strip()), int(
-                        end_date[1].strip()), int(end_date[2].strip())).date()
-
+                    if start_date!='':
+                        start_date = start_date.split('-')
+                        starting_date = datetime.datetime(int(start_date[0].strip()), int(
+                            start_date[1].strip()), int(start_date[2].strip())).date()
+                    else:
+                        starting_date=''
+                    if end_date!='':
+                        end_date = end_date.split('-')
+                        ending_date = datetime.datetime(int(end_date[0].strip()), int(
+                            end_date[1].strip()), int(end_date[2].strip())).date()
+                    else:
+                        ending_date=''
                     Emails = []
                     for eachitem in EmailIds:
                         query="select email from permitted_user_list where user_id=%d"%int(eachitem)
@@ -2903,6 +2907,10 @@ def Run_Test(request):
                     'start_date': starting_date,
                     'end_date': ending_date
                 }
+                if starting_date=='':
+                    Dict.pop('start_date',None)
+                if ending_date=='':
+                    Dict.pop('end_date',None)
                 Conn = GetConnection()
                 sWhereQuery = "where tester_id='%s' and status='Unassigned'" % (
                     TesterId)
@@ -18258,9 +18266,12 @@ def get_all_schedule_run(request):
             owner_tag=test_owner(project_id, user_id)
             if owner_tag:
                 query="select id, schedule_name from schedule_run where project_id='%s'"%project_id
-                Conn=GetConnection()
-                schedule_list=DB.GetData(Conn,query,False)
-                Conn.close()
+                
+            else:
+                query="select distinct id, schedule_name from schedule_run sr, project_team_map ptm,team_info ti where sr.project_id=ptm.project_id and sr.team_id=cast(ptm.team_id as int) and ti.team_id=cast(ptm.team_id as int) and user_id='%s' and ptm.project_id='%s'"%(user_id.strip(),project_id.strip())
+            Conn=GetConnection()
+            schedule_list=DB.GetData(Conn,query,False)
+            Conn.close()    
             Dict={'owner_tag':owner_tag,'schedule_list':schedule_list}
             result=simplejson.dumps(Dict)
             return HttpResponse(result,mimetype='application/json')
@@ -18344,12 +18355,12 @@ def enlist_schedule(request):
                     if isinstance(count,list) and len(count)>0 and count[0]>0:
                         schedule_id=count[0]
                         detail_dict={
-                            'schedule_id':schedule_id,
+                            'schedule':schedule_id,
                             'run_test_query':RunTestQuery,
                             'dependency':dependency_query,
                             'machine':machineQuery,
-                            'Testers':TesterIds,
-                            'Email':EmailIds,
+                            'Testers':",".join(TesterIds),
+                            'Email':",".join(EmailIds),
                             'testobjective':TestObjective,
                             'milestone':TestMileStone,
                             'project_id':project_id,
@@ -18358,7 +18369,9 @@ def enlist_schedule(request):
                             'run_day':day_reg.strip(),
                         }
                         Conn=GetConnection()
-                        if(DB.InsertNewRecordInToTable(Conn,"schedule",**detail_dict)):
+                        result=DB.InsertNewRecordInToTable(Conn,"schedule",**detail_dict)
+                        Conn.close()
+                        if result:
                             Dict.update({'Result':True})
                         else:
                             Dict.update({'Result':False})
@@ -18371,3 +18384,225 @@ def enlist_schedule(request):
             
             result=simplejson.dumps(Dict)
             return HttpResponse(result,mimetype='application/json')
+def get_all_schedule_detail(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            user_id=request.GET.get(u'user_id','')
+            schedule_id=request.GET.get(u'schedule_id','')
+            Dict={}
+            col=['Schedule Name','Query','Dependency','Machine','Testers','Email','Milestone','Project Name','Team Name','Run Time','Run Day','TestObjective']
+            query="select schedule_name,run_test_query,dependency,s.team_id,machine,testers,email,milestone,(select project_name from projects where project_id=sr.project_id),(select team_name from team t where t.id=sr.team_id and project_id=sr.project_id),run_time,run_day,testobjective from schedule s, schedule_run sr where s.schedule=sr.id and sr.project_id=s.project_id and sr.team_id=s.team_id and s.project_id='%s' and s.schedule=%d"%(project_id,int(schedule_id))
+            Conn=GetConnection()
+            listing=DB.GetData(Conn,query,False)
+            Conn.close()
+            temp=[]
+            if isinstance(listing,list) and len(listing)>0:
+                temp.append(listing[0][0])
+                run_test_query=listing[0][1]
+                temp.append(run_test_query.split(":")[0].strip())
+                dependency=listing[0][2].split(": ")
+                #get all the dependnecy
+                team_id=int(listing[0][3])
+                query="select dependency_name, array_agg(distinct dn.name) from dependency d, dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name"%(project_id.strip(),int(team_id))
+                Conn=GetConnection()
+                dependency_list=DB.GetData(Conn,query,False)
+                Conn.close()
+                print dependency_list
+                temp_dict={}
+                for each in dependency:
+                    if each!='':
+                        for eachitem in dependency_list:
+                            if each in eachitem[1]:
+                                if temp_dict.has_key(eachitem[0]):
+                                    temp_dict[eachitem[0]].append(each)
+                                else:
+                                    temp_id=[]
+                                    temp_id.append(each)
+                                    temp_dict.update({eachitem[0]:temp_id})
+                temp.append(temp_dict)
+                temp.append(listing[0][4].split(":")[0].strip())
+                temp_tester=[]
+                for each in listing[0][5].split(":"):
+                    query="select user_names from permitted_user_list where user_id=%d"%int(each)
+                    Conn=GetConnection()
+                    user_=DB.GetData(Conn,query)
+                    Conn.close()
+                    if isinstance(user_,list) and len(user_)>0:
+                        temp_tester.append(user_[0])
+                temp.append(temp_tester)
+                temp_tester=[]
+                for each in listing[0][6].split(":"):
+                    query="select user_names from permitted_user_list where user_id=%d"%int(each)
+                    Conn=GetConnection()
+                    user_=DB.GetData(Conn,query)
+                    Conn.close()
+                    if isinstance(user_,list) and len(user_)>0:
+                        temp_tester.append(user_[0])
+                temp.append(temp_tester)
+                temp.append(listing[0][7])
+                temp.append(listing[0][8])
+                temp.append(listing[0][9])
+                temp.append(listing[0][10])
+                temp.append({'Sat':u'Saturday','Sun':u'Sunday','Mon':u'Monday','Tue':u'Tuesday','Wed':u'Wednesday','Thu':u'Thursday','All':u'Everyday'}[listing[0][11]])
+                temp.append(listing[0][12])
+                print temp
+                for each in zip(col,temp):
+                    Dict.update({each[0]:each[1]})
+                print Dict
+                Dict.update({'owner':test_owner(project_id, user_id)})
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+def delete_schedule_run(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            user_id=request.GET.get(u'user_id','')
+            schedule_id=request.GET.get(u'schedule_id','')
+            Conn=GetConnection()
+            print DB.DeleteRecord(Conn,"schedule",schedule=int(schedule_id))
+            Conn.close()
+            Conn=GetConnection()
+            print DB.DeleteRecord(Conn,"schedule_run",id=int(schedule_id))
+            Conn.close()
+            Dict={'message':True,'log_message':'Schedule run deleted successfully'}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')      
+        
+def Edit_Schedule_Page(request,project_id,schedule_id):
+    Dict={}
+    col=['Schedule','Query','Dependency','TeamID','Machine','Testers','Email','Milestone','Project','Team','Time','Day','TestObjective']
+    query="select schedule_name,run_test_query,dependency,s.team_id,machine,testers,email,milestone,(select project_name from projects where project_id=sr.project_id),(select team_name from team t where t.id=sr.team_id and project_id=sr.project_id),run_time,run_day,testobjective from schedule s, schedule_run sr where s.schedule=sr.id and sr.project_id=s.project_id and sr.team_id=s.team_id and s.project_id='%s' and s.schedule=%d"%(project_id,int(schedule_id))
+    Conn=GetConnection()
+    listing=DB.GetData(Conn,query,False)
+    Conn.close()
+    temp=[]
+    if isinstance(listing,list) and len(listing)>0:
+        temp.append(listing[0][0])
+        run_test_query=listing[0][1]
+        temp.append(run_test_query.split(":")[0].strip())
+        dependency=listing[0][2].split(": ")
+        #get all the dependnecy
+        
+        team_id=int(listing[0][3])
+        query="select dependency_name, array_agg(distinct dn.name) from dependency d, dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by d.dependency_name"%(project_id.strip(),int(team_id))
+        Conn=GetConnection()
+        dependency_list=DB.GetData(Conn,query,False)
+        Conn.close()
+        print dependency_list
+        temp_dict={}
+        for each in dependency:
+            if each!='':
+                for eachitem in dependency_list:
+                    if each in eachitem[1]:
+                        if temp_dict.has_key(eachitem[0]):
+                            temp_dict[eachitem[0]].append(each)
+                        else:
+                            temp_id=[]
+                            temp_id.append(each)
+                            temp_dict.update({eachitem[0]:temp_id})
+        tempo=[]
+        for each in temp_dict.keys():
+            temp_d=[]
+            for eachitem in temp_dict[each]:
+                temp_d.append(str(eachitem.strip()))
+            tempo.append((str(each.strip()),temp_d))
+        temp.append(tempo)
+        temp.append(team_id)
+        temp.append(listing[0][4].split(":")[0].strip())
+        temp_tester=[]
+        for each in listing[0][5].split(","):
+            query="select user_id,user_names from permitted_user_list where user_id=%d"%int(each)
+            Conn=GetConnection()
+            user_=DB.GetData(Conn,query,False)
+            Conn.close()
+            if isinstance(user_,list) and len(user_)>0:
+                temp_tester.append(user_[0])
+                temp.append(temp_tester)
+                temp_tester=[]
+                for each in listing[0][6].split(","):
+                    query="select user_id,user_names from permitted_user_list where user_id=%d"%int(each)
+                    Conn=GetConnection()
+                    user_=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    if isinstance(user_,list) and len(user_)>0:
+                        temp_tester.append(user_[0])
+                temp.append(temp_tester)
+                print temp_tester
+        temp.append(listing[0][7])  
+        temp.append(listing[0][8])
+        temp.append(listing[0][9])
+        temp.append(listing[0][10])
+        temp.append(listing[0][11])    
+        temp.append(listing[0][12])
+        print temp
+        for each in zip(col,temp):
+            Dict.update({each[0]:each[1]})
+            print Dict
+            Dict.update({'project_id':project_id,'schedule_id':int(schedule_id)})    
+    return render_to_response('Edit_Schedule_Run.html',Dict,context_instance=RequestContext(request))
+def edit_schedule(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            schedule_id=request.GET.get(u'schedule_id','')
+            schedule_name=request.GET.get(u'schedule_name','')
+            RunTestQuery=request.GET.get(u'RunTestQuery','')
+            machineQuery=request.GET.get(u'machineQuery','')
+            machineQuery=machineQuery.replace(u'\xa0', u'').strip()
+            dependency_query=request.GET.get(u'dependency_Query','')
+            EmailIds = request.GET.get('EmailIds', '').split("|")
+            TesterIds = request.GET.get('TesterIds', '').split("|")
+            TestObjective = request.GET.get('TestObjective', '')
+            TestObjective = str(TestObjective.replace(u'\xa0', u''))
+            TestMileStone = request.GET.get('TestMileStone', '')
+            TestMileStone = str(TestMileStone.replace(u'\xa0',u'').split(":")[0])
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            time_reg = request.GET.get(u'time', '')
+            day_reg = request.GET.get(u'day', '')
+            Dict={}
+            #first is there any schedule name like this
+            """query="select count(*) from schedule_run where schedule_name='%s' and project_id='%s' and team_id=%d"%(schedule_name.strip(),project_id.strip(),int(team_id.strip()))
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(count,list) and len(count)>0 and count[0]==0:
+            """
+            schedule_dict={
+                'schedule_name':schedule_name.strip(),
+                'project_id':project_id.strip(),
+                'team_id':int(team_id.strip())
+            }
+            sWhereQuery="where id=%d"%int(schedule_id)
+            Conn=GetConnection()
+            result=DB.UpdateRecordInTable(Conn,"schedule_run",sWhereQuery,**schedule_dict)
+            Conn.close()
+            if result:
+                detail_dict={
+                    'run_test_query':RunTestQuery,
+                    'dependency':dependency_query,
+                    'machine':machineQuery,
+                    'Testers':",".join(TesterIds),
+                    'Email':",".join(EmailIds),
+                    'testobjective':TestObjective,
+                    'milestone':TestMileStone,
+                    'project_id':project_id,
+                    'team_id':int(team_id.strip()),
+                    'run_time':time_reg.strip(),
+                    'run_day':day_reg.strip(),
+                }
+                sWhereQuery="where schedule=%d"%int(schedule_id)
+                Conn=GetConnection()
+                result=DB.UpdateRecordInTable(Conn,"schedule",sWhereQuery,**detail_dict)
+                Conn.close()
+                if result:
+                    Dict.update({'Result':True})
+                    #return HttpResponseRedirect(reverse('schedule_view',kwargs={'project_id': project_id,'schedule_id':int(schedule_id)}))
+                else:
+                    Dict.update({'Result':False})
+            else:
+                Dict.update({'Result':False})
+        else:
+            Dict.update({'Result':False})    
+        result=simplejson.dumps(Dict)
+        return HttpResponse(result,mimetype='application/json')

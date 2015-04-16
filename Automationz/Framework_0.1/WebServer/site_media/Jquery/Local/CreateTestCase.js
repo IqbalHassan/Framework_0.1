@@ -520,13 +520,13 @@ $(document).ready(function() {
                                 $('.'+name.split(' ').join('_')+':checkbox[value="'+listings[j]+'"]').attr('checked',true);
                             }
                             //console.log($('.'+name+" :checked").length);
-                            if($('.'+name).is(':checked')==false){
-                                $('#'+name+"-flag").removeClass('filled');
-                                $('#'+name+"-flag").addClass('unfilled');
+                            if($('.'+name.split(' ').join('_')).is(':checked')==false){
+                                $('#'+name.split(' ').join('_')+"-flag").removeClass('filled');
+                                $('#'+name.split(' ').join('_')+"-flag").addClass('unfilled');
                             }
                             else{
-                                $('#'+name+"-flag").removeClass('unfilled');
-                                $('#'+name+"-flag").addClass('filled');
+                                $('#'+name.split(' ').join('_')+"-flag").removeClass('unfilled');
+                                $('#'+name.split(' ').join('_')+"-flag").addClass('filled');
                             }
 
                         }
