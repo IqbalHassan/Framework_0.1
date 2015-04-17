@@ -51,29 +51,29 @@
             <table class="two-column-emphasis">
             <tr>
                 <td><b>Server:</b></td>
-                <td><input class="textbox" value="" id="server"/></td>
+                <td><input class="textbox" value="{{server}}" id="server"/></td>
             </tr>
             <tr>
                 <td><b>Hyperlink:</b></td>
-                <td><input class="textbox" type="url" value="" id="hyperlink"/></td>
+                <td><input class="textbox" type="url" value="{{hyperlink}}" id="hyperlink"/></td>
             </tr>
             <tr>
                 <td><b>Username:</b></td>
-                <td><input class="textbox" value="" id="username"/></td>
+                <td><input class="textbox" value="{{username}}" id="username"/></td>
             </tr>
             <tr>
                 <td><b>Password:</b></td>
-                <td><input class="textbox" type="password" value="" id="password"/></td>
+                <td><input class="textbox" type="password" value="{{password}}" id="password"/></td>
             </tr>
             <tr>
                 <td><b>Application:</b></td>
                 <td><!--input class="textbox" value="" id="application"/-->
                     <table><tr>
                                 <td>
-                                <input id="github" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="application" value="github">
+                                <input id="github" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="application" value="github" {% if application == "github"%}checked="checked"{% endif %}>
                                 <label for="github" data-on="Github" data-off="Github"></label>
                                 </td><td>
-                                <input id="jira" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="application" value="jira">
+                                <input id="jira" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="application" value="jira" {% if application == "jira"%}checked="checked"{% endif %}>
                                 <label for="jira" data-on="JIRA" data-off="JIRA"></label>
                                 </td></tr></table>
                 </td>

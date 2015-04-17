@@ -13989,15 +13989,29 @@ def EditProjectAdmin(request,project_id):
         user_name=DB.GetData(Conn,query,False)
         Conn.close()
         owner_name.append(user_name[0])
-    result={
-        'project_name':project_name,
-        'project_id':project_id,
-        'project_startingdate':project_startingdate,
-        'project_endingdate':project_endingdate,
-        'project_description':project_description,
-        'project_owners':list(set(owner_name)),
-        'related_items':related_items
-    }
+    if related_items:
+        result={
+            'project_name':project_name,
+            'project_id':project_id,
+            'project_startingdate':project_startingdate,
+            'project_endingdate':project_endingdate,
+            'project_description':project_description,
+            'project_owners':list(set(owner_name)),
+            'server':related_items[0][1],
+            'hyperlink':related_items[0][2],
+            'username':related_items[0][3],
+            'password':related_items[0][4],
+            'application':related_items[0][5]
+        }
+    else:
+        result={
+            'project_name':project_name,
+            'project_id':project_id,
+            'project_startingdate':project_startingdate,
+            'project_endingdate':project_endingdate,
+            'project_description':project_description,
+            'project_owners':list(set(owner_name))
+        }
     return render_to_response('EditProject.html',result,context_instance=RequestContext(request))
 def Edit_Project(request):
     if request.method=='GET':
