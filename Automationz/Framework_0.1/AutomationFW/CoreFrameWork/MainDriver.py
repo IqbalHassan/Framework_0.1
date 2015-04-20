@@ -689,6 +689,50 @@ def main():
                         #Discontinue this test case
                         #break
                         #for continuing the test cases if failed
+                    elif sStepResult.upper() == "CANCELLED":
+                        print TestStepsList[StepSeq - 1][1] + ": Test Step Cancelled"
+                        CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Cancelled" % TestStepsList[StepSeq - 1][1], 3)
+                        #deleting all the run status and loggging
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"result_master_data",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"result_test_steps_data",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"result_container_type_data",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"result_test_case_datasets",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"result_test_case_tag",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"result_test_steps",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"result_test_steps_list",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"test_step_results",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"test_case_results",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"test_env_results",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"test_run",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"test_run_env",run_id=TestRunID[0])
+                        conn.close()
+                        conn=DBUtil.ConnectToDataBase()
+                        print DBUtil.DeleteRecord(conn,"result_test_cases",run_id=TestRunID[0])
+                        conn.close()
+                        return "pass"
                         
                     #End Test Step
                     #increment step counter

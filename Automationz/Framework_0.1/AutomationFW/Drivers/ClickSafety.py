@@ -2,8 +2,8 @@
 import sys
 sys.path.append("..")
 from Web import SeleniumScript
-
-
+def cancel_step_test(dependency,step_data):
+    return "cancelled"
 def start_browser(dependency,step_data):
     try:
         sClientName=dependency['Browser']

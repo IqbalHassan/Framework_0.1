@@ -2886,7 +2886,7 @@ def Run_Test(request):
                     AddReRunInfo(runid, previous_run)
                 else:
                     Conn = GetConnection()
-                    RegisterPermanentInfo(Conn, runid, TestCasesIDs)
+                    RegisterPermanentInfo(runid, TestCasesIDs)
                     Conn.close()
                     for eachitem in TestCasesIDs:
                         Dict = {'run_id': runid, 'tc_id': str(eachitem)}
@@ -3127,7 +3127,7 @@ def RegisterReRunPermanentInfo(Conn, run_id, previous_run, TestCasesIDs):
                 CleanRun(run_id)
 
 
-def RegisterPermanentInfo(Conn, run_id, TestCasesIDs):
+def RegisterPermanentInfo(run_id, TestCasesIDs):
     print run_id
     # ##Enter the test Case Name in the result test_case table
     # get the test case name
