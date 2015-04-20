@@ -63,8 +63,11 @@ def schedule_run(timediff):
                     'project_id':project_id,
                     'team_id':team_id,
                 }
-                r=requests.get(url,params=kwarg_list)
-                print r.url
+                try:
+                    r=requests.get(url,params=kwarg_list)
+                    print r.url
+                except:
+                    print "exception handled"
         time.sleep(timediff)
         print "waiting for scheduled run.."
 def send(timediff):

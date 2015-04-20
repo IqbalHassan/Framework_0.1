@@ -2751,6 +2751,15 @@ def Run_Test(request):
                             'team_id': team_id
                         }
                         print DB.InsertNewRecordInToTable(Conn, "machine_project_map", **Dict)
+                if Machine_Status[0][0] == 'Automation' and is_rerun != "rerun":
+                    Conn=GetConnection()
+                    count=DB.GetData(Conn,"select count(*) from test_run_env tre,machine_project_map mpm where tre.id=mpm.machine_serial and tester_id='%s' and project_id='%s' and team_id=%d and status='Unassigned'"%(TesterId.strip(),project_id.strip(),int(team_id)))
+                    Conn.close()
+                    if isinstance(count,list) and count[0]==0:
+                        results={'result':False}
+                        json = simplejson.dumps(results)
+                        return HttpResponse(json, mimetype='application/json')
+                    
                 TestIDList = []
                 for eachitem in QueryText:
                     if is_rerun == "rerun":
@@ -3126,28 +3135,38 @@ def RegisterPermanentInfo(Conn, run_id, TestCasesIDs):
     # test_cases=DB.GetData(Conn, query)
     test_cases = TestCasesIDs
     test_case_column_query = "select column_name from information_schema.columns where table_name='test_cases'"
+    Conn=GetConnection()
     test_case_column = DB.GetData(Conn, test_case_column_query)
+    Conn.close()
     ##########################################Result_Test_Case################
     for each in test_cases:
         test_case = each
         test_case_query = "select * from test_cases where tc_id='%s'" % test_case
         Dict = {}
         Dict.update({'run_id': run_id})
+        Conn=GetConnection()
         test_case_column_data = DB.GetData(Conn, test_case_query, False)
+        Conn.close()
         # ##populate Dict for the test_cases
         for each in test_case_column_data:
             for eachitem in zip(each, test_case_column):
                 Dict.update({eachitem[1]: eachitem[0]})
         print Dict
+        Conn=GetConnection()
         result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
+        Conn.close()
         if not result:
             CleanRun(run_id)
         ##########################################Result_Test_Steps_List#######
         test_step_column_query = "select column_name from information_schema.columns where table_name='test_steps_list'"
+        Conn=GetConnection()
         test_step_column = DB.GetData(Conn, test_step_column_query)
+        Conn.close()
         test_step_query = "select * from test_steps_list where step_id in (select step_id from test_steps where tc_id='" + \
             test_case + "')"
+        Conn=GetConnection()
         test_step_list_data = DB.GetData(Conn, test_step_query, False)
+        Conn.close()
         # #form the dictionary
         for each in test_step_list_data:
             step_list_dict = {}
@@ -3156,12 +3175,16 @@ def RegisterPermanentInfo(Conn, run_id, TestCasesIDs):
                 step_list_dict.update({eachitem[0]: eachitem[1]})
             available_query = "select count(*) from result_test_steps_list where run_id='%s' and step_id='%d'" % (
                 step_list_dict['run_id'], step_list_dict['step_id'])
+            Conn=GetConnection()
             available_count = DB.GetData(Conn, available_query)
+            Conn.close()
             if available_count[0] == 0:
+                Conn=GetConnection()
                 result = DB.InsertNewRecordInToTable(
                     Conn,
                     "result_test_steps_list",
                     **step_list_dict)
+                Conn.close()
             elif available_count[0] > 0:
                 condition = "exists"
                 if condition == "exists":
@@ -3172,108 +3195,144 @@ def RegisterPermanentInfo(Conn, run_id, TestCasesIDs):
                 CleanRun(run_id)
         ##########################################Result_Test_Steps############
         test_steps_query = "select column_name from information_schema.columns where table_name='test_steps'"
+        Conn=GetConnection()
         test_steps = DB.GetData(Conn, test_steps_query)
+        Conn.close()
         test_steps_data_query = "select * from test_steps where tc_id='%s'" % test_case
+        Conn=GetConnection()
         test_steps_data = DB.GetData(Conn, test_steps_data_query, False)
+        Conn.close()
         for each in test_steps_data:
             steps_dict = {}
             steps_dict.update({'run_id': run_id})
             for eachitem in zip(test_steps, each):
                 steps_dict.update({eachitem[0]: eachitem[1]})
+            Conn=GetConnection()
             result = DB.InsertNewRecordInToTable(
                 Conn,
                 "result_test_steps",
                 **steps_dict)
+            Conn.close()
             if not result:
                 CleanRun(run_id)
         ##########################################Result_Master_Data###########
         master_data_column_query = "select column_name from information_schema.columns where table_name='master_data'"
+        Conn=GetConnection()
         master_data_column = DB.GetData(Conn, master_data_column_query)
+        Conn.close()
         master_data_query = "select * from master_data where id Ilike '%s%%'" % test_case
+        Conn=GetConnection()
         master_data = DB.GetData(Conn, master_data_query, False)
+        Conn.close()
         for each in master_data:
             master_data_dict = {}
             master_data_dict.update({'run_id': run_id})
             for eachitem in zip(master_data_column, each):
                 master_data_dict.update({eachitem[0]: eachitem[1]})
+            Conn=GetConnection()
             result = DB.InsertNewRecordInToTable(
                 Conn,
                 "result_master_data",
                 **master_data_dict)
+            Conn.close()
             if not result:
                 CleanRun(run_id)
         ##########################################Result_Test_Case_DataSets####
         test_case_datasets_column_query = "select column_name from information_schema.columns where table_name='test_case_datasets'"
+        Conn=GetConnection()
         test_case_dataset_column = DB.GetData(
             Conn,
             test_case_datasets_column_query)
+        Conn.close()
         test_case_dataset_query = "select * from test_case_datasets where tc_id='%s'" % test_case
+        Conn=GetConnection()
         test_case_dataset = DB.GetData(Conn, test_case_dataset_query, False)
+        Conn.close()
         for each in test_case_dataset:
             dataset_dict = {}
             dataset_dict.update({'run_id': run_id})
             for eachitem in zip(test_case_dataset_column, each):
                 dataset_dict.update({eachitem[0]: eachitem[1]})
+            Conn=GetConnection()
             result = DB.InsertNewRecordInToTable(
                 Conn,
                 "result_test_case_datasets",
                 **dataset_dict)
+            Conn.close()
             if not result:
                 CleanRun(run_id)
         ##########################################Result_Test_Case_DataSets####
         test_case_tag_column_query = "select column_name from information_schema.columns where table_name='test_case_tag'"
+        Conn=GetConnection()
         test_case_tag_column = DB.GetData(Conn, test_case_tag_column_query)
+        Conn.close()
         test_case_tag_query = "select * from test_case_tag where tc_id='%s'" % test_case
+        Conn=GetConnection()
         test_case_tag = DB.GetData(Conn, test_case_tag_query, False)
+        Conn.close()
         for each in test_case_tag:
             tag_dict = {}
             tag_dict.update({'run_id': run_id})
             for eachitem in zip(test_case_tag_column, each):
                 tag_dict.update({eachitem[0]: eachitem[1]})
+            Conn=GetConnection()
             result = DB.InsertNewRecordInToTable(
                 Conn,
                 "result_test_case_tag",
                 **tag_dict)
+            Conn.close()
             if not result:
                 CleanRun(run_id)
         ##########################################Result_Test_Steps_Data#######
         test_steps_data_column_query = "select column_name from information_schema.columns where table_name='test_steps_data'"
+        Conn=GetConnection()
         test_steps_data_column = DB.GetData(Conn, test_steps_data_column_query)
+        Conn.close()
         test_case_dataset_entry_query = "select tsd.id,tsd.tcdatasetid,tsd.testdatasetid,tsd.teststepseq from test_case_datasets tcd,test_steps_data tsd where tcd.tcdatasetid=tsd.tcdatasetid and tcd.tc_id='%s'" % test_case
+        Conn=GetConnection()
         test_case_dataset_entry = DB.GetData(
             Conn,
             test_case_dataset_entry_query,
             False)
+        Conn.close()
         for each in test_case_dataset_entry:
             step_data_dict = {}
             step_data_dict.update({'run_id': run_id})
             for eachitem in zip(test_steps_data_column, each):
                 step_data_dict.update({eachitem[0]: eachitem[1]})
+            Conn=GetConnection()
             result = DB.InsertNewRecordInToTable(
                 Conn,
                 "result_test_steps_data",
                 **step_data_dict)
+            Conn.close()
             if not result:
                 CleanRun(run_id)
         ##########################################Result_Container_type_data###
         container_type_data_column_query = "select column_name from information_schema.columns where table_name='container_type_data'"
+        Conn=GetConnection()
         container_type_data_column = DB.GetData(
             Conn,
             container_type_data_column_query)
+        Conn.close()
         container_type_data_query = "select ctd.id,ctd.dataid,ctd.curname,ctd.newname,ctd.items_count from test_case_datasets tcd,test_steps_data tsd,container_type_data ctd where tcd.tcdatasetid=tsd.tcdatasetid and ctd.dataid=tsd.testdatasetid and tcd.tc_id='%s'" % test_case
+        Conn=GetConnection()
         container_type_data = DB.GetData(
             Conn,
             container_type_data_query,
             False)
+        Conn.close()
         for each in container_type_data:
             ctd_dict = {}
             ctd_dict.update({'run_id': run_id})
             for eachitem in zip(container_type_data_column, each):
                 ctd_dict.update({eachitem[0]: eachitem[1]})
+            Conn=GetConnection()
             result = DB.InsertNewRecordInToTable(
                 Conn,
                 "result_container_type_data",
                 **ctd_dict)
+            Conn.close()
             if not result:
                 CleanRun(run_id)
 
