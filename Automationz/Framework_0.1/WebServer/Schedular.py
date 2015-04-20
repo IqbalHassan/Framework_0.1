@@ -62,28 +62,9 @@ def schedule_run(timediff):
                     'TestMileStone':milestone,
                     'project_id':project_id,
                     'team_id':team_id,
-                    #'start_date':start_date,
-                    #'end_date':end_date
                 }
                 r=requests.get(url,params=kwarg_list)
                 print r.url
-                """message='/Home/RunTest/Run_Test?'
-                for each in kwarg_list.keys():
-                    message+=(str(each)+'='+str(kwarg_list[each])+'&')
-                
-                message=message[0:len(message)-1]    
-                message=message.replace(' ','+')
-                message=message.replace(':','%3A') 
-                s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                try:
-                    #    /Home/RunTest/Run_Test?TestObjective=Second+run&TestMileStone=Sprint+8_April_08-April_22&RunTestQuery=Automated+Regression+Test%3AFirefox%3A+PC%3A+Hi%3A+rizdesktop%3A&EmailIds=3&team_id=1&TesterIds=3&project_id=PROJ-16
-                    #GET /Home/RunTest/Run_Test?RunTestQuery=Automated+Regression+Test%3A%C2%A0Chrome%3A+Mac%3A+Hi%3A+riz%3A%C2%A0&TesterIds=2&EmailIds=2%7C3&TestObjective=all+test+cases&TestMileStone=Sprint12%3A%C2%A0&project_id=PROJ-16&team_id=1&start_date=2015-04-14&end_date=2015-04-15 HTTP/1.1
-                    s.connect((server,int(port)))
-                    s.sendto( "GET %s HTTP/1.1\r\n"%message, (server, int(port)) )
-                except socket.error,msg:
-                    print msg
-                """
-                print "running all now"
         time.sleep(timediff)
         print "waiting for scheduled run.."
 def send(timediff):

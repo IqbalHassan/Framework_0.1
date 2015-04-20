@@ -18440,7 +18440,7 @@ def get_all_schedule_detail(request):
                 temp.append(temp_dict)
                 temp.append(listing[0][4].split(":")[0].strip())
                 temp_tester=[]
-                for each in listing[0][5].split(":"):
+                for each in listing[0][5].split(","):
                     query="select user_names from permitted_user_list where user_id=%d"%int(each)
                     Conn=GetConnection()
                     user_=DB.GetData(Conn,query)
@@ -18449,7 +18449,7 @@ def get_all_schedule_detail(request):
                         temp_tester.append(user_[0])
                 temp.append(temp_tester)
                 temp_tester=[]
-                for each in listing[0][6].split(":"):
+                for each in listing[0][6].split(","):
                     query="select user_names from permitted_user_list where user_id=%d"%int(each)
                     Conn=GetConnection()
                     user_=DB.GetData(Conn,query)
