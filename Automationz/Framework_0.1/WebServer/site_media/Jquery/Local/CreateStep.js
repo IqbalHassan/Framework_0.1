@@ -48,6 +48,7 @@ $(document).ready(function(){
     $('input[name="step_team"]').val(team_id);
 
     description_fill();
+    always_run();
     verification_radio();
     Continue_radio();
     TimePicker();
@@ -484,7 +485,12 @@ function PopulateStepInfo(value){
 
             
             $("#automata").val(row[14]);
-
+            if(row[19]==true){
+                $("#yes_always").trigger('click');
+            }
+            else if(row[19]==false){
+                $("#no_always").trigger('click');
+            }
         }
     });
 }
@@ -623,6 +629,31 @@ function description_fill(){
         $("#step_expect").val(desc);
     });
 };
+function always_run(){
+    $("#yes_always").on('click',function(){
+        $(this).addClass("selected");
+        $("#no_always").removeClass("selected");
+        var value = $("#yes_always").attr('value');
+        $("#always_run").attr('value',value);
+    });
+    $("#no_always").live('click',function(){
+        $(this).addClass("selected");
+        $("#yes_always").removeClass("selected");
+        var value = $("#no_always").attr('value');
+        $("#always_run").attr('value',value);
+    });
+
+    if($("#yes_always").hasClass("selected"))
+    {
+        var value = $("#always_run").attr('value');
+        $("#always_run").attr('value',value);
+    }
+    else if($("#no_always").hasClass("selected"))
+    {
+        var value = $("#no_always").attr('value');
+        $("#no_always").attr('value',value);
+    }
+}
 function verification_radio(){
     $("#true_radio").live('click',function(){
         $(this).addClass("selected");
@@ -819,6 +850,7 @@ function submit_step(){
         var step_expect = $("#step_expect").val().trim();
         var verify_radio = $("#verify_radio").val().trim();
         var continue_radio = $("#continue_radio").val().trim();
+        var always_run=$('#always_run').val().trim();
         var step_time = $("#step_time").val().trim();
         var automata = $("#automata").val().trim();
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
@@ -835,6 +867,7 @@ function submit_step(){
             'step_expect' : step_expect,
             'verify_radio' : verify_radio,
             'continue_radio' : continue_radio,
+            'always_run':always_run,
             'step_time' : step_time,
             'automata' : automata,
             'user' : user,

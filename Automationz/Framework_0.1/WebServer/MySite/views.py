@@ -7417,7 +7417,7 @@ def Populate_info_div(request):
     conn = GetConnection()
     if request.method == 'GET':
         value = request.GET.get(u'term', '')
-        sQuery = "SELECT step_id,stepname,description,driver,steptype,data_required,stepfeature,stepenable,step_editable,case_desc,expected,verify_point,step_continue,estd_time,automatable,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from test_steps_list where stepname='" + value + "'"
+        sQuery = "SELECT step_id,stepname,description,driver,steptype,data_required,stepfeature,stepenable,step_editable,case_desc,expected,verify_point,step_continue,estd_time,automatable,created_by,modified_by,cast(created_date as text),cast(modified_date as text),always_run from test_steps_list where stepname='" + value + "'"
     results = DB.GetData(conn, sQuery, False)
     """temp = DB.GetData(conn, "SELECT pf.feature_path from test_steps_list tsl,product_features pf where tsl.stepfeature=pf.feature_id::text and stepname='" + value + "'", False)
     if temp is not None:
@@ -7866,6 +7866,7 @@ def CreateEditStep(request):
             step_expect = request.GET.get(u'step_expect','').strip()
             verify_radio = request.GET.get(u'verify_radio','').strip()
             continue_radio = request.GET.get(u'continue_radio','').strip()
+            always_run=request.GET.get(u'always_run','').strip()
             step_time = request.GET.get(u'step_time','').strip()
             automata = request.GET.get(u'automata','').strip()
             user = request.GET.get(u'user','').strip()
@@ -7935,6 +7936,7 @@ def CreateEditStep(request):
                         expected=step_expect,
                         verify_point=verify_radio,
                         step_continue=continue_radio,
+                        always_run=always_run,
                         estd_time=step_time,
                         automatable=automata,
                         modified_by=user,
@@ -7984,6 +7986,7 @@ def CreateEditStep(request):
                         expected=step_expect,
                         verify_point=verify_radio,
                         step_continue=continue_radio,
+                        always_run=always_run,
                         estd_time=step_time,
                         automatable=automata,
                         created_by=user,
