@@ -15,7 +15,11 @@ def get_ip(print_env=False):
         if print_env:
             print "Running on Production Environment..."
         return "135.23.123.206"
-
+def get_port():
+    if Environment=="Test":
+        return 8000
+    if Environment=="Production":
+        return 8080
 def set_debug():
     if Environment == "Test":
         debug_value = True
