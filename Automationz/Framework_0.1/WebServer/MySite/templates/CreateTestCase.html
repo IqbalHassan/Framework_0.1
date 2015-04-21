@@ -218,7 +218,7 @@
                     </div>
                 </div>
                 <div>
-                    <div style="margin: 30px" align="center">
+                    <div id="related_edit" style="margin: 30px" align="center">
                         <form id="tc_assoc" class="new_tc_form">
                             <table>
                                 <tr>
@@ -242,6 +242,7 @@
                                     <td class="tc_form_input_col">
                                         <input class="ui-corner-all ui-autocomplete-input textbox m-wrap m-ctrl-large" id="id_txtbox" type="text"
                                                name="searchboxname" autocomplete="off" placeholder="Test Case ID(s)">
+                                    </td>
                                 </tr>
                             </table>
                         </form>
@@ -255,9 +256,49 @@
                                     <td class="tc_form_input_col">
                                         <input class="ui-corner-all ui-autocomplete-input textbox m-wrap m-ctrl-large" id="reqid_txtbox" type="text"
                                                name="searchboxname" autocomplete="off" placeholder="Requirement ID(s)">
+                                    </td>
                                 </tr>
                             </table>
                         </form>
+
+                    </div>
+
+                    <div id="related_linked" style="margin: 30px; display:none" align="center">
+                        <form id="tc_assoc" class="new_tc_form">
+                            <table>
+                                <tr>
+                                    <td class="tc_form_label_col">
+                                        <b class="Text">Defect ID(s):</b>
+                                    </td>
+                                    <td class="tc_form_input_col" id="defectid">
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                        <br/>
+                        <form id="tc_id" class="new_tc_form">
+                            <table>
+                                <tr>
+                                    <td class="tc_form_label_col">
+                                        <b class="Text">Test Case ID(s):</b>
+                                    </td>
+                                    <td class="tc_form_input_col" id="tcid"></td>
+                                </tr>
+                            </table>
+                        </form>
+                        <br/>
+                        <form id="req_id" class="new_tc_form">
+                            <table>
+                                <tr>
+                                    <td class="tc_form_label_col">
+                                        <b class="Text">Requirement ID(s):</b>
+                                    </td>
+                                    <td class="tc_form_input_col" id="reqid"></td>
+                                </tr>
+                            </table>
+                        </form>
+
+                        <a id="edit" class="button minibutton" style="float: right">Edit</a>
 
                     </div>
                 </div>
