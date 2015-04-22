@@ -2,6 +2,7 @@ import time
 import Global
 import requests
 import socket
+from datetime import datetime, timedelta
 user='postgres'
 password_user='password'
 db_name='postgres'
@@ -26,13 +27,13 @@ def schedule_run(timediff):
         Conn.close()
         for each in schedule_list:
             run_tag=False
-            if each[2]=='All':
-                current_time=time.strftime("%H:%M")
-                
+            current_time_date=datetime.now()            
+            if each[2] in ['All','Fiv','Ten','Thi','One']:
+                current_time=current_time_date.strftime("%H:%M")
                 if each[1].strip()==current_time:
                     run_tag=True
             else:
-                current_time=time.strftime("%H:%M/%a")
+                current_time=current_time_date.strftime("%H:%M/%a")
                 if each[1].strip()+'/'+each[2].strip()==current_time:
                     run_tag=True
             if run_tag:
@@ -63,11 +64,24 @@ def schedule_run(timediff):
                     'project_id':project_id,
                     'team_id':team_id,
                 }
+                if each[2]=='Fiv':
+                    difference=5
+                if each[2]=='Ten':
+                    difference=10
+                if each[2]=='Thi':
+                    difference=30
+                if each[2]=='One':
+                    difference=60
+                next_time_string=(datetime.strptime(each[1], "%H:%M")+timedelta(minutes=int(difference))).strftime("%H:%M")
+                sWhereQuery="where schedule=%d"%int(each[0])
+                Conn=DB.ConnectToDataBase(db_name, user, password_user, server)
+                print DB.UpdateRecordInTable(Conn, "schedule", sWhereQuery,run_time=next_time_string.strip())
+                Conn.close()
                 try:
                     r=requests.get(url,params=kwarg_list)
                     print r.url
                 except:
-                    print "exception handled"
+                    print "exception handled"   
         time.sleep(timediff)
         print "waiting for scheduled run.."
 def send(timediff):

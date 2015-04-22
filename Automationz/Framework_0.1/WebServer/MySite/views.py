@@ -59,6 +59,7 @@ from settings import TIME_ZONE
 from django.http.response import HttpResponse
 from __builtin__ import True
 from distutils.sysconfig import project_base
+from datetime import timedelta
 
 
 # #
@@ -18446,7 +18447,15 @@ def enlist_schedule(request):
                         if day_reg.strip() not in ['Fiv','Ten','Thi','One']:
                             detail_dict.update({'run_time':time_reg.strip()})
                         else:
-                            current_time=time.strftime('%H:%M')
+                            if day_reg=='Fiv':
+                                difference=5
+                            if day_reg=='Ten':
+                                difference=10
+                            if day_reg=='Thi':
+                                difference=30
+                            if day_reg=='One':
+                                difference=60
+                            current_time=(datetime.datetime.now()+timedelta(minutes=int(difference))).strftime('%H:%M')
                             detail_dict.update({'run_time':current_time.strip()})
                         Conn=GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"schedule",**detail_dict)
@@ -18673,9 +18682,16 @@ def edit_schedule(request):
                 if day_reg.strip() not in ['Fiv','Ten','Thi','One']:
                     detail_dict.update({'run_time':time_reg.strip()})
                 else:
-                    current_time=time.strftime('%H:%M')
-                    detail_dict.update({'run_time':current_time.strip()})
-                        
+                    if day_reg=='Fiv':
+                        difference=5
+                    if day_reg=='Ten':
+                        difference=10
+                    if day_reg=='Thi':
+                        difference=30
+                    if day_reg=='One':
+                        difference=60
+                    current_time=(datetime.datetime.now()+timedelta(minutes=int(difference))).strftime('%H:%M')
+                    detail_dict.update({'run_time':current_time.strip()})    
                 sWhereQuery="where schedule=%d"%int(schedule_id)
                 Conn=GetConnection()
                 result=DB.UpdateRecordInTable(Conn,"schedule",sWhereQuery,**detail_dict)
