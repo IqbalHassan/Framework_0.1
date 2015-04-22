@@ -539,11 +539,25 @@ $(document).ready(function() {
                         var get_team_id=data['team_id'];
                         //AssociatedBug
                         $('#defectid_txtbox').val(assoc_bugs);
+                        $('#defectid').html(assoc_bugs);
+                        
                         //Manual Test Case Id
                         $('#id_txtbox').val(tc_id);
+                        $('#tcid').html(tc_id);
                         $('#file_upload_tc').val(data['TC_Id']);
                         //Requirement Id
                         $('#reqid_txtbox').val(req_id);
+                        $('#reqid').html(req_id);
+
+                        $("#related_edit").hide();
+                        $("#related_linked").show();
+
+                        $("#edit").click(function(){
+                            $("#related_linked").hide();
+                            $("#related_edit").show();
+                        });
+
+
                         $('#project_identity').val(get_project_id);
                         $('#default_team_identity').val(get_team_id);
                         if(data['attachement'].length>0){
