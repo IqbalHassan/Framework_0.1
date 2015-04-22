@@ -18441,9 +18441,13 @@ def enlist_schedule(request):
                             'milestone':TestMileStone,
                             'project_id':project_id,
                             'team_id':int(team_id.strip()),
-                            'run_time':time_reg.strip(),
                             'run_day':day_reg.strip(),
                         }
+                        if day_reg.strip() not in ['Fiv','Ten','Thi','One']:
+                            detail_dict.update({'run_time':time_reg.strip()})
+                        else:
+                            current_time=time.strftime('%H:%M')
+                            detail_dict.update({'run_time':current_time.strip()})
                         Conn=GetConnection()
                         result=DB.InsertNewRecordInToTable(Conn,"schedule",**detail_dict)
                         Conn.close()
@@ -18520,7 +18524,7 @@ def get_all_schedule_detail(request):
                 temp.append(listing[0][8])
                 temp.append(listing[0][9])
                 temp.append(listing[0][10])
-                temp.append({'Sat':u'Saturday','Sun':u'Sunday','Mon':u'Monday','Tue':u'Tuesday','Wed':u'Wednesday','Thu':u'Thursday','All':u'Everyday'}[listing[0][11]])
+                temp.append({'Sat':u'Saturday','Sun':u'Sunday','Mon':u'Monday','Tue':u'Tuesday','Wed':u'Wednesday','Thu':u'Thursday','All':u'Everyday','Fiv':u'Every Five Minutes','Ten':u'Every Ten Minutes','Thi':u'Every Thirty Minutes','One':u'Every One Hour'}[listing[0][11]])
                 temp.append(listing[0][12])
                 print temp
                 for each in zip(col,temp):
@@ -18664,9 +18668,14 @@ def edit_schedule(request):
                     'milestone':TestMileStone,
                     'project_id':project_id,
                     'team_id':int(team_id.strip()),
-                    'run_time':time_reg.strip(),
                     'run_day':day_reg.strip(),
                 }
+                if day_reg.strip() not in ['Fiv','Ten','Thi','One']:
+                    detail_dict.update({'run_time':time_reg.strip()})
+                else:
+                    current_time=time.strftime('%H:%M')
+                    detail_dict.update({'run_time':current_time.strip()})
+                        
                 sWhereQuery="where schedule=%d"%int(schedule_id)
                 Conn=GetConnection()
                 result=DB.UpdateRecordInTable(Conn,"schedule",sWhereQuery,**detail_dict)

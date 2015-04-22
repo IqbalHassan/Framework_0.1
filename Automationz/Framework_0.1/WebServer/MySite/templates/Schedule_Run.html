@@ -82,7 +82,12 @@
             message+='<tr><td width="50%;" align="right"><b>Email: </b></td><td width="50%;" align="left">'+data['Email'].join(",")+'</td></tr>';
             message+='<tr><td width="50%;" align="right"><b>Project Name: </b></td><td width="50%;" align="left">'+data['Project Name']+'</td></tr>';
             message+='<tr><td width="50%;" align="right"><b>Team Name: </b></td><td width="50%;" align="left">'+data['Team Name']+'</td></tr>';
-            message+='<tr><td width="50%;" align="right"><b>Scheduled Time: </b></td><td width="50%;" align="left">'+data['Run Time']+' on '+data['Run Day']+'</td></tr>';
+            if(['Every Five Minutes','Every Ten Minutes','Every Thirty Minutes','Every One Hour'].indexOf(data['Run Day'])==-1){
+                message+='<tr><td width="50%;" align="right"><b>Scheduled Time: </b></td><td width="50%;" align="left">'+data['Run Time']+' on '+data['Run Day']+'</td></tr>';
+            }
+            else{
+                message+='<tr><td width="50%;" align="right"><b>Scheduled Time: </b></td><td width="50%;" align="left">'+data['Run Day']+'</td></tr>';
+            }
             if(data['owner']){
                 message+='<tr><td colspan="2"><input type="button" id="edit_button" class="m-btn blue" value="Edit"/> <input type="button" class="m-btn red"  id="delete_button" value="Delete"/> </td></tr>';
             }
@@ -165,6 +170,11 @@
                             closeOnTimeSelect:true,
                             step:1
                         });
+                        $('#specific_day').on('change',function(){
+                            if(['Fiv','Ten','Thi','One'].indexOf($(this).val())!=-1){
+                                $('#time_picker').val("");
+                            }
+                        });
                         var message='<div><img class="delete DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 20px; height: 20px"/><b>'+set_name+':</b></div>';
                         $('#run_query').html(message);
                         $(this).select2('val','');
@@ -228,14 +238,16 @@
                 message+=(temp[i].trim()+': ');
             }
             var time=$('#time_picker').val();
-            if(time==''){
-                alertify.error('No Time of the Day is given',1500);
-                return false;
-            }
             var day=$('#specific_day').val();
             if(day==''){
                 alertify.error('No Day is given',1500);
                 return false;
+            }
+            if(['Fiv','Ten','Thi','One'].indexOf(day)==-1){
+                if(time==''){
+                    alertify.error('No Time of the Day is given',1500);
+                    return false;
+                }
             }
             var TesterQuery=[];
             $("#tester").find('td').each( function()
@@ -343,6 +355,10 @@
         message+='<option value="Thu">Thursday</option>';
         message+='<option value="Fri">Friday</option>';
         message+='<option value="All">Everyday</option>';
+        message+='<option value="Fiv">Every Five Minutes</option>';
+        message+='<option value="Ten">Every Ten Minutes</option>';
+        message+='<option value="Thi">Every Thirty Minutes</option>';
+        message+='<option value="One">Every One Hour</option>';
         message+='</select></td>';
         message+='</tr>';
         message+='<tr>'

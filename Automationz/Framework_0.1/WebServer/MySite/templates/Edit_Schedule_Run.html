@@ -47,10 +47,22 @@
                 <option value="Thu">Thursday</option>
                 <option value="Fri">Friday</option>
                 <option value="All">Everyday</option>
+                <option value="Fiv">Every Five Minutes</option>
+                <option value="Ten">Every Ten Minutes</option>
+                <option value="Thi">Every Thirty Minutes</option>
+                <option value="One">Every One Hour</option>
             </select>
         </td>
         <script type="text/javascript">
             $('#specific_day').val("{{Day}}");
+            if(['Fiv','Ten','Thi','One'].indexOf("{{Day}}")!=-1){
+                $('#time_picker').val("");
+            }
+            $('#specific_day').on('change',function(){
+                if(['Fiv','Ten','Thi','One'].indexOf($(this).val())!=-1){
+                    $('#time_picker').val("");
+                }
+            });
         </script>
     </tr>
     <tr>
@@ -240,14 +252,16 @@
                 message+=(temp[i].trim()+': ');
             }
             var time=$('#time_picker').val();
-            if(time==''){
-                alertify.error('No Time of the Day is given',1500);
-                return false;
-            }
             var day=$('#specific_day').val();
             if(day==''){
                 alertify.error('No Day is given',1500);
                 return false;
+            }
+            if(['Fiv','Ten','Thi','One'].indexOf(day)==-1){
+                if(time==''){
+                    alertify.error('No Time of the Day is given',1500);
+                    return false;
+                }
             }
             var TesterQuery=[];
             $("#tester").find('td').each( function()
