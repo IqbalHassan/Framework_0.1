@@ -496,6 +496,16 @@ $(document).ready(function() {
 
                             dataId += featureArray[index] + '.'
                         }
+                        //TC_Type
+                        var tc_type=data['TC_Type'];
+                        $('input[name="type_tc"]').each(function(){
+                            $(this).prop('checked',false);
+                        });
+                        $('input[name="type_tc"]').each(function(){
+                            if(tc_type==$(this).val()){
+                                $(this).prop('checked',true);
+                            }
+                        });
                         //Priority
                         var priority=data['Priority'];
                         $('input[name="priority"]').each(function(){
@@ -785,6 +795,7 @@ $(document).ready(function() {
 
         $('#submit').live('click',function(e){
             /*****************************Validation Check Here***********************************/
+            var Tc_Type = $('input[name="type_tc"]:checked').val();
 
             if ($("#test_case_search_box").select2("val") === "" || $("#test_case_search_box").select2("val") === []) {
                 e.preventDefault();
@@ -802,7 +813,10 @@ $(document).ready(function() {
 
                 return false;
             }
-
+            if(Tc_Type==undefined){
+                alertify.error("Test Case Type is not selected","",0);
+                return false;
+            }
             if($('#section-flag').hasClass('unfilled')){
                 //alert("Section Path is not defined Correctly");
                 alertify.error("Section Path is not defined Correctly","",0);
@@ -1292,7 +1306,7 @@ $(document).ready(function() {
                             TC_Creator:$.session.get('fullname').trim(),
                             Associated_Bugs_List:defectId,
                             Requirement_ID_List:required_Id,
-                            //TC_Type:typeList.join("|"),
+                            TC_Type:Tc_Type.trim(),
                             Tag_List:tag.join("|"),
                             //Dependency_List:browserList.join("|"),
                             Dependency_List:dependency_list.join("|"),
@@ -1332,7 +1346,7 @@ $(document).ready(function() {
                                 Associated_Bugs_List:defectId,
                                 Requirement_ID_List:required_Id,
                                 Status:status,
-                                //TC_Type:typeList.join("|"),
+                                TC_Type:Tc_Type.trim(),
                                 Tag_List:tag.join("|"),
                                 //Dependency_List:browserList.join("|"),
                                 Dependency_List:dependency_list.join("|"),

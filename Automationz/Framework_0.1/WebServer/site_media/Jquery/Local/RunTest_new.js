@@ -9,7 +9,7 @@ var machinePerPage=10;
 var machinePageCurrent=1;
 var test_case_per_page=5;
 var test_case_page_current=1;
-var colors={
+var colors_list={
     'online':'#00ff00',
     'offline':'#ff0000'
 }
@@ -60,10 +60,10 @@ function getAllmachine(machinePerPage,machinePageCurrent,project_id,team_id){
             message+='<tr>';
             var status=data['machine'][i][data['machine'][i].length-1];
             if(status=='online'){
-                var color=colors['online'];
+                var color=colors_list['online'];
             }
             else{
-                var color=colors['offline'];
+                var color=colors_list['offline'];
             }
             for(var j=0;j<data['machine'][i].length;j++){
                 if(data['machine'][i][j] instanceof Array){

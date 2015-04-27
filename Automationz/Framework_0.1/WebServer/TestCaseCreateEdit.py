@@ -834,13 +834,13 @@ def Update_Test_Case_Datasets(Conn, dataset_id, tc_id):
     else:
         LogMessage(sModuleInfo, "Test Case DataSet Found for test case %s.No Need to add datasets" % tc_id, 1)
     return "Pass"
-def Update_TestCaseDetails(Conn, New_TC_Id, TC_Name, TC_Creator):
+def Update_TestCaseDetails(Conn, New_TC_Id, TC_Name, TC_Creator,TC_Type):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     # Form the Dictionary to add test case information
     Dict = {
               'tc_id':New_TC_Id,
               'tc_name':TC_Name,
-              'tc_type':'Auto',
+              'tc_type':TC_Type,
               'tc_localization':'Yes',
               'tc_modifiedby':TC_Creator,
               'tc_modifydate':datetime.date.today()
@@ -899,7 +899,7 @@ def Get_PIM_Data_By_Id(conn, Data_Id):
 
     return Data_List
 
-def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path, Feature_Path):
+def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_Data_List, Section_Path, Feature_Path,TC_Type):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
 
     if TC_Name == '':
@@ -919,6 +919,11 @@ def TestCase_DataValidation(TC_Name, Priority, Tag_List, Dependency_List, Steps_
     if Feature_Path == '':
         print "Error. Test Feature cannot be empty"
         err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Feature", 3)
+        return err_msg    
+    
+    if TC_Type == '':
+        print "Error. Test Case Type cannot be empty"
+        err_msg = LogMessage(sModuleInfo, "TEST CASE CREATION Failed:Invalid test case Type", 3)
         return err_msg    
     
     if not isinstance(Tag_List, list):
@@ -1411,13 +1416,13 @@ def Insert_TestCaseDataSet(conn, TC_DataSet_Id, TC_Id):
         err_msg = LogMessage(sModuleInfo, "Failed to Enter test case dataset %s: %s" % (TC_Id, TC_DataSet_Id), 3)
         return err_msg
 
-def Insert_TestCaseName(Conn, TC_Id, TC_Name, TC_Creator):
+def Insert_TestCaseName(Conn, TC_Id, TC_Name, TC_Creator,TC_Type):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     # Form the Dictionary to add test case information
     Dict = {
               'tc_id':TC_Id,
               'tc_name':TC_Name,
-              'tc_type':'Auto',
+              'tc_type':TC_Type,
               'tc_localization':'Yes',
               'tc_createdby':TC_Creator,
               'tc_creationdate':datetime.date.today(),
