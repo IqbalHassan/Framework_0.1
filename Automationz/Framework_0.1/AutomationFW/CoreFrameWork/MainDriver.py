@@ -263,26 +263,27 @@ def main():
                 AutomationList.append(temp)
         AutomationListWithType=[]
         for each in AutomationList:
-            """if Rerun==False:
-                query="select tsl.steptype from test_cases tc,test_steps_list tsl,test_steps ts where tc.tc_id=ts.tc_id and tsl.step_id=ts.step_id and tc.tc_id='%s' order by ts.teststepsequence"%each[0]
-            else:
-                query="select tsl.steptype from result_test_cases tc,result_test_steps_list tsl,result_test_steps ts where tsl.run_id=ts.run_id and tc.tc_id=ts.tc_id and tc.run_id=ts.run_id and tsl.step_id=ts.step_id and tc.tc_id='%s' and tc.run_id='%s' order by ts.teststepsequence"%(each[0],referred_run_id)
-            """
-            query="select tsl.steptype from result_test_cases tc,result_test_steps_list tsl,result_test_steps ts where tsl.run_id=ts.run_id and tc.tc_id=ts.tc_id and tc.run_id=ts.run_id and tsl.step_id=ts.step_id and tc.tc_id='%s' and tc.run_id='%s' order by ts.teststepsequence"%(each[0],TestRunID[0])
             conn=DBUtil.ConnectToDataBase()
-            status_list=DBUtil.GetData(conn,query)
+            query="select tc_type from result_test_cases where tc_id='%s' and run_id='%s'"%(each[0].strip(),TestRunID[0].strip())
+            type_list=DBUtil.GetData(conn,query)
             conn.close()
-            for eachstatus in status_list:
-                if eachstatus=='manual':
-                    test_case_type='manual'
-                    break
-                else:
-                    test_case_type='automation'
-            temp=[]
-            temp.append(each[0])
-            temp.append(test_case_type)
-            temp=tuple(temp)
-            AutomationListWithType.append(temp)
+            if isinstance(type_list, list) and len(type_list)>0:
+                if 'Manu' not in type_list and 'Forc' not in type_list:
+                    query="select tsl.steptype from result_test_cases tc,result_test_steps_list tsl,result_test_steps ts where tsl.run_id=ts.run_id and tc.tc_id=ts.tc_id and tc.run_id=ts.run_id and tsl.step_id=ts.step_id and tc.tc_id='%s' and tc.run_id='%s' order by ts.teststepsequence"%(each[0],TestRunID[0])
+                    conn=DBUtil.ConnectToDataBase()
+                    status_list=DBUtil.GetData(conn,query)
+                    conn.close()
+                    for eachstatus in status_list:
+                        if eachstatus=='manual':
+                            test_case_type='manual'
+                            break
+                        else:
+                            test_case_type='automation'
+                    temp=[]
+                    temp.append(each[0])
+                    temp.append(test_case_type)
+                    temp=tuple(temp)
+                    AutomationListWithType.append(temp)
         Automation=[]
         automation_count=0
         manual_count=0
@@ -312,6 +313,7 @@ def main():
         conn.close()
         TestCaseLists=[]
         TestCaseLists=Automation
+        print TestCaseLists
         if len(TestCaseLists) > 0:
             print "Running Test cases from list : ", TestCaseLists[0:len(TestCaseLists)]
             CommonUtil.ExecLog(sModuleInfo, "Running Test cases from list : %s" % TestCaseLists[0:len(TestCaseLists)], 1)

@@ -62,7 +62,15 @@
                             message+='<td class="tc_id">'+data['TableData'][i][j]+'</td>';
                         }
                         else{
-                            message+='<td>'+data['TableData'][i][j]+'</td>';
+                            if(data['TableData'][i][j]=='Dev'){
+                                message+='<td style="background-color: #aaaaaa;color: #fff">'+data['TableData'][i][j]+'</td>';
+                            }
+                            else if(data['TableData'][i][j]=='Ready'){
+                                message+='<td style="background-color: #65bd10;color:#fff">'+data['TableData'][i][j]+'</td>';
+                            }
+                            else{
+                                message+='<td>'+data['TableData'][i][j]+'</td>';
+                            }
                         }
 
                     }
