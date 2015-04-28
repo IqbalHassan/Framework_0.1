@@ -10637,6 +10637,17 @@ def Get_MileStone_ID(request):
     return HttpResponse(json, mimetype='application/json')
 
 
+def Get_Related_Url(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            project = request.GET.get(u'project_id', '')
+            query = "select hyperlink from related_items where project_id='"+project+"'"
+            related_items = DB.GetData(Conn, query)
+    json = simplejson.dumps(related_items)
+    return HttpResponse(json, mimetype='application/json')
+
+
 def Get_MileStone_By_ID(request):
     if request.is_ajax():
         if request.method == 'GET':
