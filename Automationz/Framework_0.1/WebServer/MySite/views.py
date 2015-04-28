@@ -4553,7 +4553,7 @@ def Create_Submit_New_TestCase(request):
             #Manual_TC_Id = request.GET.get(u'Manual_TC_Id', '').split(',')
             TC_Name = request.GET.get(u'TC_Name', '')
             TC_Creator = request.GET.get(u'TC_Creator', '')
-            #TC_Type = request.GET.get(u'TC_Type', '').split('|')
+            TC_Type = request.GET.get(u'TC_Type', '')
             Tag_List = request.GET.get(u'Tag_List', '').split('|')
             Dependency_List = request.GET.get(
                 u'Dependency_List',
@@ -4618,7 +4618,7 @@ def Create_Submit_New_TestCase(request):
             Dependency_List,
             Steps_Data_List,
             Section_Path,
-            Feature_Path)
+            Feature_Path,TC_Type)
         if test_case_validation_result != "Pass":
             return returnResult(test_case_validation_result)
 
@@ -4646,7 +4646,7 @@ def Create_Submit_New_TestCase(request):
                 Conn,
                 TC_Id,
                 TC_Name,
-                TC_Creator)
+                TC_Creator,TC_Type)
             if test_cases_result != 'Pass':
                 # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
                 error = "Returns from TestCaseCreateEdit Module by Failing to enter test case id %s" % TC_Id
@@ -4810,13 +4810,13 @@ def ViewTestCase(TC_Id):
             Conn = GetConnection()
             test_case_details = DB.GetData(
                 Conn,
-                "select tc_name,tc_createdby from test_cases where tc_id = '%s'" %
+                "select tc_name,tc_createdby,tc_type from test_cases where tc_id = '%s'" %
                 TC_Id,
                 False)
             Conn.close()
             TC_Name = test_case_details[0][0]
             TC_Creator = test_case_details[0][1]
-
+            TC_Type=test_case_details[0][2]
             # Test Case dataset details
             Conn = GetConnection()
             test_case_dataset_details = DB.GetData(
@@ -5052,7 +5052,8 @@ def ViewTestCase(TC_Id):
                 'project_id': TC_Project,
                 'team_id': TC_Team,
                 'Labels': Labels,
-                'attachement':attachement_list
+                'attachement':attachement_list,
+                'TC_Type':TC_Type.strip()
             }
 
             json = simplejson.dumps(results)
@@ -5086,7 +5087,7 @@ def EditTestCase(request):
             #Manual_TC_Id = request.GET.get(u'Manual_TC_Id', '')
             TC_Name = request.GET.get(u'TC_Name', '')
             TC_Creator = request.GET.get(u'TC_Creator', '')
-            #TC_Type = request.GET.get(u'TC_Type', '')
+            TC_Type = request.GET.get(u'TC_Type', '')
             Tag_List = request.GET.get(u'Tag_List', '').split('|')
             Dependency_List = request.GET.get(
                 u'Dependency_List',
@@ -5148,7 +5149,7 @@ def EditTestCase(request):
             Dependency_List,
             Steps_Data_List,
             Section_Path,
-            Feature_Path)
+            Feature_Path,TC_Type)
         if test_case_validation_result != "Pass":
             return returnResult(test_case_validation_result)
 
@@ -5172,7 +5173,7 @@ def EditTestCase(request):
                 Conn,
                 New_TC_Id,
                 TC_Name,
-                TC_Creator)
+                TC_Creator,TC_Type)
             if test_cases_update_result != "Pass":
                 err_msg = "Test Case Detail is not updated successfully for test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
@@ -7438,6 +7439,7 @@ def Check_TestCase(TableData, RefinedData):
         data = []
         data.append(each[0])
         data.append(each[1])
+        data.append(each[2])
         for item in test_type:
             sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + each[
                 0] + "') and steptype='" + item + "'"
@@ -11084,7 +11086,7 @@ def TableDataTestCasesOtherPages(request):
                     TableData = []
                     if len(TestIDList) > 0:
                         for eachitem in TestIDList:
-                            query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0" % (
+                            query = "select distinct tct.tc_id,tc.tc_name,case when tc_type='Auto' then 'Automatic' when tc_type='Manu' then 'Manual' when tc_type='Forc' then 'Forced-Manual' end from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name,tc.tc_type HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0" % (
                                 eachitem, project_id, team_id)
                             Query=query
                             query=query+ condition
@@ -11109,40 +11111,43 @@ def TableDataTestCasesOtherPages(request):
                             " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
                         Query = Query + \
                             " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
-                        query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + \
+                        query = "select distinct tct.tc_id,tc.tc_name,case when tc_type='Auto' then 'Automatic' when tc_type='Manu' then 'Manual' when tc_type='Forc' then 'Forced-Manual' end from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name,tc.tc_type " + \
                             Query
                         Query=query    
                         query=query+ condition
                 else:
-                    Query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id, tc.tc_name having count(case when property='Project' and name='%s' then 1 end )>0 and count(case when property='Team' and name='%s' then 1 end)>0"%(project_id,team_id)
+                    Query="select distinct tct.tc_id,tc.tc_name,case when tc_type='Auto' then 'Automatic' when tc_type='Manu' then 'Manual' when tc_type='Forc' then 'Forced-Manual' end from test_case_tag tct, test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id, tc.tc_name,tc.tc_type having count(case when property='Project' and name='%s' then 1 end )>0 and count(case when property='Team' and name='%s' then 1 end)>0"%(project_id,team_id)
                     query=Query+condition
+                
                 Conn = GetConnection()
                 TableData = DB.GetData(Conn, query, False)
                 Conn.close()
-                #find if they had the set tag in them then reorder
-                found=False
-                for each in QueryText:
-                    query="select count(*) from config_values where type='set' and value='%s'"%each.strip()
-                    Conn=GetConnection()
-                    count=DB.GetData(Conn,query)
-                    if isinstance(count,list) and count[0]>0 and len(count)==1:
-                        found=True
-                        set_name=each
+                if UserData!='':
+                    #find if they had the set tag in them then reorder
+                    found=False
+                    for each in QueryText:
+                        query="select count(*) from config_values where type='set' and value='%s'"%each.strip()
+                        Conn=GetConnection()
+                        count=DB.GetData(Conn,query)
+                        if isinstance(count,list) and count[0]>0 and len(count)==1:
+                            found=True
+                            set_name=each
+                            Conn.close()
+                            break
+                        else:
+                            continue    
                         Conn.close()
-                        break
-                    else:
-                        continue    
-                    Conn.close()
-                if found:
-                    query="select distinct tc.tc_id,tc.tc_name,index from test_cases tc,test_set_order tso where tso.tc_id=tc.tc_id and set_id=(select id from config_values where type='set' and value='%s') order by index "%(set_name.strip())
-                    Conn=GetConnection()
-                    test_case_ordering=DB.GetData(Conn,query,False)
-                    Conn.close()
-                    test_temp=[]
-                    for each in test_case_ordering:
-                        if(each[0],each[1]) in TableData:
-                            test_temp.append((each[0],each[1]))
-                    TableData=test_temp        
+                    if found:
+                        query="select distinct tc.tc_id,tc.tc_name,case when tc_type='Auto' then 'Automatic' when tc_type='Manu' then 'Manual' when tc_type='Forc' then 'Forced-Manual' end,index from test_cases tc,test_set_order tso where tso.tc_id=tc.tc_id and set_id=(select id from config_values where type='set' and value='%s') order by index "%(set_name.strip())
+                        Conn=GetConnection()
+                        test_case_ordering=DB.GetData(Conn,query,False)
+                        Conn.close()
+                        test_temp=[]
+                        for each in test_case_ordering:
+                            if(each[0],each[1],each[2]) in TableData:
+                                test_temp.append((each[0],each[1],each[2]))
+                        TableData=test_temp        
+                    
                 Conn=GetConnection()
                 count_query=DB.GetData(Conn,Query,False)
                 Conn.close()
@@ -11186,6 +11191,7 @@ def TableDataTestCasesOtherPages(request):
                     'Title',
                     'Feature',
                     'Folder',
+                    'Forced Type',
                     'Type',
                     'Time',
                     '']
@@ -11254,6 +11260,7 @@ def TableDataTestCasesOtherPages(request):
                                 'Feature',
                                 'Folder',
                                 'Status',
+                                'Forced Type',
                                 'Type',
                                 'Time']
                         except:
