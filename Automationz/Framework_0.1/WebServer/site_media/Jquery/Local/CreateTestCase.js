@@ -561,6 +561,20 @@ $(document).ready(function() {
 
                         $("#related_edit").hide();
                         $("#related_linked").show();
+                        $('#defectid').each(function(){
+
+                            $(this).css({
+                                'color':'blue',
+                                'cursor':'pointer'
+                            });
+                            $(this).click(function(){
+                                $.get("GetRelatedUrl",{project_id : $.session.get('project_id').trim()},function(data)
+                                {
+                                    var location= 'http://'+data+'/'+$(this).text().trim();
+                                    window.open(location, '_blank');
+                                });
+                            });
+                        });
 
                         $("#edit").click(function(){
                             $("#related_linked").hide();
