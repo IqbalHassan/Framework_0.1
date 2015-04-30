@@ -243,12 +243,14 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
             Tag_List.append((eachitem,name))
     
     # Add Associated Bugs
+    Associated_Bugs_List = Associated_Bugs_List.split(",")
     for eachBugId in Associated_Bugs_List:
-        Tag_List.append(('%s' % eachBugId, 'JiraId'))
+        Tag_List.append(('%s' % eachBugId.strip(), 'JiraId'))
 
     # Add Associated Requirements
+    Requirement_ID_List = Requirement_ID_List.split(",")
     for eachReqId in Requirement_ID_List:
-        Tag_List.append(('%s' % eachReqId, 'PRDId'))
+        Tag_List.append(('%s' % eachReqId.strip(), 'PRDId'))
     test_case_tag_query = "select tc_id,name,property from test_case_tag where tc_id='%s'" % TC_Id
     if DBUtil.IsDBConnectionGood(Conn) == False:
         time.sleep(1)
@@ -1102,14 +1104,17 @@ def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
         tag_listing=list(eachDependency[1])
         for eachitem in tag_listing:
             Tag_List.append((eachitem,name))
-    # Add Associated Bugs
+    
+        # Add Associated Bugs
+    Associated_Bugs_List = Associated_Bugs_List.split(",")
     for eachBugId in Associated_Bugs_List:
-        Tag_List.append(('%s' % eachBugId, 'JiraId'))
+        Tag_List.append(('%s' % eachBugId.strip(), 'JiraId'))
 
     # Add Associated Requirements
+    Requirement_ID_List = Requirement_ID_List.split(",")
     for eachReqId in Requirement_ID_List:
-        Tag_List.append(('%s' % eachReqId, 'PRDId'))
-
+        Tag_List.append(('%s' % eachReqId.strip(), 'PRDId'))
+        
     for eachTag in Tag_List:
         if DBUtil.IsDBConnectionGood(conn) == False:
             time.sleep(1)
