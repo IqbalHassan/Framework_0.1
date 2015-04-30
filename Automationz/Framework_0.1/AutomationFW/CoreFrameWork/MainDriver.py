@@ -493,6 +493,12 @@ def main():
                         steps_data=[]
                     print "steps data for #%d: "%StepSeq,steps_data
                     CommonUtil.ExecLog(sModuleInfo,"steps data for #%d: %s"%(StepSeq,str(steps_data)),1)
+                    #get the estimateed time for the steps
+                    step_time_query="select description from result_master_data where field='estimated' and value='time' and run_id='%s' and id='%s'"%(TestRunID[0].strip(),(TCID+'_s'+str(StepSeq)).strip())
+                    conn=DBUtil.ConnectToDataBase()
+                    step_time=DBUtil.GetData(conn,step_time_query)
+                    conn.close()
+                    step_time=step_time[0]    
                     try:
                         #while True:
                             #If threading is enabled
@@ -505,14 +511,15 @@ def main():
                                 #import pdb
                                 #pdb.set_trace()
                                 module_name=importlib.import_module(TestStepsList[StepSeq-1][3])
+                                step_name=TestStepsList[StepSeq-1][1]
+                                step_name=step_name.lower().replace(' ','_')
+                                functionTocall=getattr(module_name, step_name)    
+                                simple_queue=Queue.Queue() 
                                 if Global.ThreadingEnabled:
-                                    stepThread = threading.Thread(target=module_name.ExecuteTestSteps, args=(conn, TestStepsList[StepSeq - 1][1], TCID, sClientName, TestStepsList[StepSeq - 1][2], EachDataSet[0], q,TestRunID[0]))
+                                    stepThread = threading.Thread(target=functionTocall, args=(dependency_list_final,steps_data,simple_queue))
                                 else:
                                     #from Drivers import Futureshop
-                                    step_name=TestStepsList[StepSeq-1][1]
-                                    step_name=step_name.lower().replace(' ','_')
-                                    functionTocall=getattr(module_name, step_name)
-                                    sStepResult = functionTocall(dependency_list_final,steps_data)
+                                    sStepResult = functionTocall(dependency_list_final,steps_data,simple_queue)
                                     if sStepResult in passed_tag_list:
                                         sStepResult='PASSED'
                                     if sStepResult in failed_tag_list:
@@ -534,16 +541,17 @@ def main():
                                 print "Starting Test Step Thread.."
                                 stepThread.start()
                                 #Wait for the Thread to finish or until timeout
-                                print "Waiting for Test Step Thread to finish..for (seconds) :", Global.DefaultTestStepTimeout
-                                stepThread.join(Global.DefaultTestStepTimeout)
-                                #Get the return value from the ExecuteTestStep fn via Queue
+                                print "Waiting for Test Step Thread to finish..for (seconds) :", step_time #Global.DefaultTestStepTimeout
+                                stepThread.join(float(step_time)) #Global.DefaultTestStepTimeout
                                 try:
-                                    sStepResult = q.get(True, 5)
+                                    sStepResult=simple_queue.get_nowait()
+                                    #Get the return value from the ExecuteTestStep fn via Queue
+                                    q.put(sStepResult)
                                     print "Test Step Thread Ended.."
                                 except Queue.Empty:
-                                    print "Test Step did not return after default timeout (secs) : ", Global.DefaultTestStepTimeout
+                                    print "Test Step did not return after default timeout (secs) : ", step_time#Global.DefaultTestStepTimeout
                                     sStepResult = "Failed"
-
+                                    q.put(sStepResult)
                                     #Clean up
                                     if stepThread.isAlive():
                                         print "thread still alive"
