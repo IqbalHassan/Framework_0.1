@@ -98,7 +98,7 @@ function GetExisting(name,project_id,team_id,test_case_per_page,test_case_page_c
                     }
                 });
             implementDropDown("#existing");
-            $('#existing tr>td:nth-child(8)').each(function(){
+            $('#existing tr>td:nth-child(7)').each(function(){
                 var id=$(this).closest('tr').find('td:first-child').text().trim();
                 $(this).after('<div><input id="'+id+'" type="checkbox" class="Buttons remove"/></div>');
             });
@@ -261,7 +261,7 @@ function PerformSearch(project_id,team_id,test_case_per_page,test_case_page_curr
                 $("#RunTestResultTable").fadeIn(1000);
                 //$("p:contains('Show/Hide Test Cases')").fadeIn(0);
                 implementDropDown("#RunTestResultTable");
-                $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
+                $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
                     var id=$(this).closest('tr').find('td:first-child').text().trim();
                     $(this).after('<div><input id="'+id+'" type="checkbox" class="Buttons add"/></div>');
                 });

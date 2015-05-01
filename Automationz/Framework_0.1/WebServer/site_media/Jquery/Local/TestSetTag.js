@@ -193,7 +193,7 @@ function ClickButton(project_id,team_id,test_case_per_page,test_case_page_curren
 
                 implementDropDown("#RunTestResultTable");
                 var indx = 0;
-                $('#RunTestResultTable tr>td:nth-child(8)').each(function(){
+                $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
                     var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-pencil fa-2x editBtn" id="'+ID+'"></i></span>');

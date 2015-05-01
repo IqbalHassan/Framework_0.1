@@ -106,7 +106,7 @@ function PerformSearch(test_case_per_page,test_case_page_current) {
                 implementDropDown("#RunTestResultTable");
                 // add edit btn
                 var indx = 0;
-                $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
+                $('#RunTestResultTable tr>td:nth-child(6)').each(function(){
                     var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<img class="templateBtn buttonPic" id="'+ID+'" src="/site_media/copy.png" height="25" width="25" />');

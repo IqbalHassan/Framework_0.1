@@ -760,7 +760,7 @@ def Steps_List(request):
                 itemPerPage, (current_page - 1) * itemPerPage)"""
 
             
-            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,created_by,cv.team_name from test_steps_list tsl,team cv where tsl.team_id=cv.id::text and cv.project_id='"+project_id+"' and tsl.project_id='"+project_id+"' "
+            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,always_run,created_by,cv.team_name from test_steps_list tsl,team cv where tsl.team_id=cv.id::text and cv.project_id='"+project_id+"' and tsl.project_id='"+project_id+"' "
             steps_list=DB.GetData(Conn, query, False)
             count = len(steps_list)
             
@@ -783,7 +783,7 @@ def Steps_List(request):
             
         
         
-    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Created By','Team','Test Cases']    
+    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Always Run','Created By','Team','Test Cases']    
     results = {'Heading':Heading,'steps':p_steps_list, 'count': count}
     json = simplejson.dumps(results)
     Conn.close()
@@ -7429,52 +7429,38 @@ def TestSteps_Results(request):
 
 
 def Check_TestCase(TableData, RefinedData):
-    conn = GetConnection()
     test_type = [u'automated', u'manual', u'performance']
     type_selector = []
-    query = "select tc_id from test_case_tag where name like '%Status%' and property='Forced'"
-    forced = DB.GetData(conn, query, False)
     for each in TableData:
         type_selector = []
         data = []
         data.append(each[0])
         data.append(each[1])
-        data.append(each[2])
         for item in test_type:
-            sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + each[
-                0] + "') and steptype='" + item + "'"
+            sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + each[0] + "') and steptype='" + item + "'"
+            conn = GetConnection()
             result = DB.GetData(conn, sQuery, False)
+            conn.close()
             type_selector.append(result[0])
-        # a = type_selector[0]
+        conn=GetConnection()
+        query="select tc_type from test_cases where tc_id='%s'"%(each[0].strip())
+        tc_type=DB.GetData(conn,query)[0]
+        conn.close()
         b = type_selector[1]
         c = type_selector[2]
-        if b[0] > 0 and c[0] == 0:
-            data.append(test_type[1])
-            each = tuple(data)
-            RefinedData.append(each)
-        elif c[0] > 0 and b[0] == 0:
-            # print "performance"
-            data.append(test_type[2])
-            each = tuple(data)
-            RefinedData.append(each)
-        elif b[0] > 0 and c[0] > 0:
-            data.append(test_type[1])
-            each = tuple(data)
-            RefinedData.append(each)
+        if tc_type=='Forc':
+            data.append(test_type[1]) 
         else:
-            # print "automated"
-            man = 0
-            for f in forced:
-                if f[0] == each[0]:
-                    man = 1
-            if man == 1:
+            if b[0]>0:
                 data.append(test_type[1])
             else:
-                data.append(test_type[0])
-            each = tuple(data)
-            RefinedData.append(each)
-
-
+                if c[0]>0:
+                    data.append(test_type[2])
+                else:
+                    data.append(test_type[0])
+        each = tuple(data)
+        RefinedData.append(each)
+        
 def Populate_info_div(request):
     conn = GetConnection()
     if request.method == 'GET':
@@ -11086,7 +11072,7 @@ def TableDataTestCasesOtherPages(request):
                     TableData = []
                     if len(TestIDList) > 0:
                         for eachitem in TestIDList:
-                            query = "select distinct tct.tc_id,tc.tc_name,case when tc_type='Auto' then 'Automatic' when tc_type='Manu' then 'Manual' when tc_type='Forc' then 'Forced-Manual' end from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name,tc.tc_type HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0" % (
+                            query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id and tct.tc_id='%s' group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0" % (
                                 eachitem, project_id, team_id)
                             Query=query
                             query=query+ condition
@@ -11111,12 +11097,12 @@ def TableDataTestCasesOtherPages(request):
                             " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
                         Query = Query + \
                             " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
-                        query = "select distinct tct.tc_id,tc.tc_name,case when tc_type='Auto' then 'Automatic' when tc_type='Manu' then 'Manual' when tc_type='Forc' then 'Forced-Manual' end from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name,tc.tc_type " + \
+                        query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + \
                             Query
                         Query=query    
                         query=query+ condition
                 else:
-                    Query="select distinct tct.tc_id,tc.tc_name,case when tc_type='Auto' then 'Automatic' when tc_type='Manu' then 'Manual' when tc_type='Forc' then 'Forced-Manual' end from test_case_tag tct, test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id, tc.tc_name,tc.tc_type having count(case when property='Project' and name='%s' then 1 end )>0 and count(case when property='Team' and name='%s' then 1 end)>0"%(project_id,team_id)
+                    Query="select distinct tct.tc_id,tc.tc_name from test_case_tag tct, test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id, tc.tc_name having count(case when property='Project' and name='%s' then 1 end )>0 and count(case when property='Team' and name='%s' then 1 end)>0"%(project_id,team_id)
                     query=Query+condition
                 
                 Conn = GetConnection()
@@ -11138,14 +11124,14 @@ def TableDataTestCasesOtherPages(request):
                             continue    
                         Conn.close()
                     if found:
-                        query="select distinct tc.tc_id,tc.tc_name,case when tc_type='Auto' then 'Automatic' when tc_type='Manu' then 'Manual' when tc_type='Forc' then 'Forced-Manual' end,index from test_cases tc,test_set_order tso where tso.tc_id=tc.tc_id and set_id=(select id from config_values where type='set' and value='%s') order by index "%(set_name.strip())
+                        query="select distinct tc.tc_id,tc.tc_name,index from test_cases tc,test_set_order tso where tso.tc_id=tc.tc_id and set_id=(select id from config_values where type='set' and value='%s') order by index "%(set_name.strip())
                         Conn=GetConnection()
                         test_case_ordering=DB.GetData(Conn,query,False)
                         Conn.close()
                         test_temp=[]
                         for each in test_case_ordering:
-                            if(each[0],each[1],each[2]) in TableData:
-                                test_temp.append((each[0],each[1],each[2]))
+                            if(each[0],each[1]) in TableData:
+                                test_temp.append((each[0],each[1]))
                         TableData=test_temp        
                     
                 Conn=GetConnection()
@@ -11191,7 +11177,6 @@ def TableDataTestCasesOtherPages(request):
                     'Title',
                     'Feature',
                     'Folder',
-                    'Forced Type',
                     'Type',
                     'Time',
                     '']
@@ -11260,7 +11245,6 @@ def TableDataTestCasesOtherPages(request):
                                 'Feature',
                                 'Folder',
                                 'Status',
-                                'Forced Type',
                                 'Type',
                                 'Time']
                         except:
