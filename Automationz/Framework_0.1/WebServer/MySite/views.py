@@ -9050,13 +9050,13 @@ def New_TestTypeStatus_Report(request):  # minar09
             Table.append(tuple(data))
 
     # Table = zip(sections,priority)
-    Check_TestCase(testCases, RefinedData)
+    #Check_TestCase(testCases, RefinedData)
     # manual
-    for each in RefinedData:
+    for each in testCases:
         Data = []
         Data.append(each[0])
         Data.append(each[1])
-        if each[2] == 'manual':
+        if Check_TestCase(each[0]) == 'Manual':
             this = True
             for x in progress:
                 if x[0] == each[0]:
@@ -9089,7 +9089,7 @@ def New_TestTypeStatus_Report(request):  # minar09
                 for p4 in p4Priority:
                     if each[0] == p4[0]:
                         manIPP4Tab.append(tuple(Data))
-        elif each[2] == 'automated':
+        elif Check_TestCase(each[0]) == 'Automated':
             this = True
             for x in progress:
                 if x[0] == each[0]:
@@ -9122,7 +9122,7 @@ def New_TestTypeStatus_Report(request):  # minar09
                 for p4 in p4Priority:
                     if each[0] == p4[0]:
                         autoIPP4Tab.append(tuple(Data))
-        elif each[2] == 'performance':
+        elif Check_TestCase(each[0]) == 'Performance':
             this = True
             for x in progress:
                 if x[0] == each[0]:

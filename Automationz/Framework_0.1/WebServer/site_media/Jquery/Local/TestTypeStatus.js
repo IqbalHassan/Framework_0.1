@@ -160,6 +160,9 @@ $(document).ready(function(){
                 $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n-3) td:nth-child(1)").each(function(){
                     $(this).html("");
                 });
+                $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n) td:nth-child(1)").each(function(){
+                    $(this).html("");
+                });
 
                 $("#TestTypeStatusTable .two-column-emphasis tr:nth-child(5n+1) td:first-child").each(function(){
                     var t = $(this);
