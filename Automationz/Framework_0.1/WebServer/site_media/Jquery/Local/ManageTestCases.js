@@ -108,10 +108,10 @@ var do_on_load = function do_on_load () {
 	.on("changed.jstree", function(e, data) {
 		var selected_sections = JSON.stringify(data.selected);
 		$(this).jstree(true).open_node(data.selected);
-		
+		var data_selected=data.selected.toString();
 		$.get('/Home/ManageTestCases/getData/', { 'selected_section_ids': selected_sections }, function(data, status) {
 			if (status === 'success') {
-				var query_string = data;
+				var query_string = data_selected;
 				loadTable(query_string,test_case_per_page,test_case_page_current);
                 $("#pageitem").show();
                 test_case_per_page = $("#perpageitem").val();

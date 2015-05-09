@@ -7428,39 +7428,31 @@ def TestSteps_Results(request):
     return HttpResponse(json, mimetype='application/json')
 
 
-def Check_TestCase(TableData, RefinedData):
+def Check_TestCase(test_case):
     test_type = [u'automated', u'manual', u'performance']
     type_selector = []
-    for each in TableData:
-        type_selector = []
-        data = []
-        data.append(each[0])
-        data.append(each[1])
-        for item in test_type:
-            sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + each[0] + "') and steptype='" + item + "'"
-            conn = GetConnection()
-            result = DB.GetData(conn, sQuery, False)
-            conn.close()
-            type_selector.append(result[0])
-        conn=GetConnection()
-        query="select tc_type from test_cases where tc_id='%s'"%(each[0].strip())
-        tc_type=DB.GetData(conn,query)[0]
+    for item in test_type:
+        sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + test_case + "') and steptype='" + item + "'"
+        conn = GetConnection()
+        result = DB.GetData(conn, sQuery, False)
         conn.close()
-        b = type_selector[1]
-        c = type_selector[2]
-        if tc_type=='Forc':
-            data.append(test_type[1]) 
+        type_selector.append(result[0])
+    conn=GetConnection()
+    query="select tc_type from test_cases where tc_id='%s'"%(test_case.strip())
+    tc_type=DB.GetData(conn,query)[0]
+    conn.close()
+    b = type_selector[1]
+    c = type_selector[2]
+    if tc_type=='Forc':
+        return "Manual" 
+    else:
+        if b[0]>0:
+            return "Manual"
         else:
-            if b[0]>0:
-                data.append(test_type[1])
+            if c[0]>0:
+                return "Performance"
             else:
-                if c[0]>0:
-                    data.append(test_type[2])
-                else:
-                    data.append(test_type[0])
-        each = tuple(data)
-        RefinedData.append(each)
-        
+                return "Automated"
 def Populate_info_div(request):
     conn = GetConnection()
     if request.method == 'GET':
@@ -11618,119 +11610,45 @@ def TableDataTestCasesOtherPages(request):
                 Conn=GetConnection()
                 count_query=DB.GetData(Conn,Query,False)
                 Conn.close()
-                RefinedDataTemp = []
-                Check_TestCase(TableData, RefinedDataTemp)
-                RefinedData = list(RefinedDataTemp)
-                dataWithTime = []
                 if total_time == "true":
                     time_collected = get_all_time(count_query)
-                for each in RefinedData:
-                    query = "select count(*) from test_steps where tc_id='%s'" % each[
-                        0].strip()
-                    Conn = GetConnection()
-                    stepNumber = DB.GetData(Conn, query)
-                    Conn.close()
-                    test_case_time = 0
-                    for count in range(0, int(stepNumber[0])):
-                        temp_id = each[0] + '_s' + str(count + 1)
-                        step_time_query = "select description from master_data where id='%s' and field='estimated' and value='time'" % temp_id.strip(
-                        )
-                        Conn = GetConnection()
-                        step_time = DB.GetData(Conn, step_time_query)
-                        Conn.close()
-                        if len(step_time) == 0:
-                            stepTime = 0
-                        else:
-                            stepTime = step_time[0]
-                        test_case_time += int(stepTime)
-                        #if total_time == "true":
-                        #    time_collected += int(stepTime)
-                    temp = []
-                    for eachitem in each:
-                        temp.append(eachitem)
-                    temp.append(ConvertTime(test_case_time))
-                    dataWithTime.append(temp)
-                RefinedData = dataWithTime
-                for each in RefinedData:
-                    print each
-                Heading = [
-                    'ID',
-                    'Title',
-                    'Feature',
-                    'Folder',
-                    'Type',
-                    'Time',
-                    '']
-                for i in dataWithTime:
-                    x = i[1]
-                    print x
-                    try:
-                        query = "SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'" % (
-                            'section_id', i[0])
-                        Conn = GetConnection()
-                        data = DB.GetData(Conn, query, False, False)
-                        Conn.close()
-                        section_id = int(data[0][0])
-                        print "Section id is: %s" % section_id
-                    except:
-                        print "unable to get section id"
-                    try:
-                        query = '''
-                        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
-                        ''' % ('feature_id', i[0])
-                        Conn = GetConnection()
-                        data = DB.GetData(Conn, query, False, False)
-                        Conn.close()
-                        feature_id = int(data[0][0])
-                        print "Feature id is: %s" % feature_id
-                    except:
-                        print "unable to get feature id"
-                    try:
-                        query = '''
-                        SELECT section_path FROM product_sections WHERE section_id=%d
-                        ''' % section_id
-                        Conn = GetConnection()
-                        data = DB.GetData(Conn, query, False, False)
-                        Conn.close()
-                        section_path = '/'.join(data[0]
-                                                [0].replace('_', ' ').split('.'))
-                        i.insert(2, section_path)
-                        print "full path of section is: %s" % section_path
-                    except:
-                        print "unable to get full path of section"
-                    try:
-                        query = '''
-                        SELECT feature_path FROM product_features WHERE feature_id=%d
-                        ''' % feature_id
-                        Conn = GetConnection()
-                        data = DB.GetData(Conn, query, False, False)
-                        Conn.close()
-                        feature_path = '/'.join(data[0]
-                                                [0].replace('_', ' ').split('.'))
-                        i.insert(2, feature_path)
-                        print "full path of feature is: %s" % feature_path
-                    except:
-                        print "unable to get full path of feature"
+                final_list=[]
+                #type_time=0
+                #time_time=0
+                #section_time=0
+                #feature_time=0
+                #status_time=0
+                for each in TableData:
+                    #one=datetime.datetime.now()
+                    type_case=Check_TestCase(each[0])
+                    #two=datetime.datetime.now()
+                    #type_time+=float((two-one).total_seconds())
+                    time=get_test_case_time(each[0])
+                    #three=datetime.datetime.now()
+                    #time_time+=float((three-two).total_seconds())
+                    section=get_section(each[0])
+                    #four=datetime.datetime.now()
+                    #section_time+=float((four-three).total_seconds())
+                    feature=get_feature(each[0])
+                    #five=datetime.datetime.now()
+                    #feature_time+=float((five-four).total_seconds())
                     if test_status_request:
-                        try:
-                            query = '''
-                            SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
-                            ''' % ('Status', i[0])
-                            Conn = GetConnection()
-                            data = DB.GetData(Conn, query, False, True)
-                            Conn.close()
-                            i.insert(4, data[0][0])
-                            Heading = [
-                                'ID',
-                                'Title',
-                                'Feature',
-                                'Folder',
-                                'Status',
-                                'Type',
-                                'Time']
-                        except:
-                            i[4] = ' - '
-                results = {'Heading': Heading, 'TableData': RefinedData,'Count':len(count_query)}
+                        status=get_status(each[0])
+                        #six=datetime.datetime.now()
+                        #status_time+=float((six-five).total_seconds())
+                        final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                    else:
+                        final_list.append((each[0],each[1],feature,section,type_case,time))    
+                #print type_time,type_time/float(len(TableData))    
+                #print time_time,time_time/float(len(TableData))    
+                #print section_time,section_time/float(len(TableData))    
+                #print feature_time,feature_time/float(len(TableData))    
+                #if test_status_request:
+                #    print status_time,status_time/float(len(TableData))    
+                Heading = ['ID','Title','Feature','Folder','Type','Time']
+                if test_status_request:
+                    Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+                results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
                 if total_time == "true":
                     results.update({'time': ConvertTime(time_collected)})
             else:
@@ -11739,7 +11657,36 @@ def TableDataTestCasesOtherPages(request):
                     results.update({'time': ""})
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
-        
+def get_status(test_case):
+    query = '''
+    SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
+    ''' % ('Status',test_case)
+    Conn = GetConnection()
+    data = DB.GetData(Conn, query, False, True)
+    Conn.close()
+    return data[0][0]                        
+def get_test_case_time(test_case):
+    query="select sum(description::int) from master_data where id Ilike '%s%%' and field='estimated' and value='time'"%test_case.strip()
+    Conn = GetConnection()
+    stepNumber = DB.GetData(Conn, query)
+    Conn.close()
+    return ConvertTime(stepNumber[0])
+def get_section(test_case):
+    query="select section_path from product_sections where section_id=(select cast(name as int) from test_case_tag where property='%s' and tc_id='%s')"%('section_id',test_case)
+    Conn = GetConnection()
+    data = DB.GetData(Conn, query, False, False)
+    Conn.close()
+    section_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
+    return section_path    
+def get_feature(test_case):
+    query="select feature_path from product_features where feature_id=(select cast(name as int) from test_case_tag where property='%s' and tc_id='%s')"%('feature_id',test_case)
+    Conn = GetConnection()
+    data = DB.GetData(Conn, query, False, False)
+    Conn.close()
+    feature_path = '/'.join(data[0][0].replace('_', ' ').split('.'))
+    return feature_path    
+
+                                
 def ReorderSet(request):
     if request.method=='GET':
         if request.is_ajax():
@@ -11773,7 +11720,7 @@ def ViewAndOrganizeTestCases(request):
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
             if UserData != '':
-                UserText = UserData.split(":")
+                UserText = UserData.split(",")
                 project_id = request.GET.get(u'project_id', '')
                 team_id = request.GET.get(u'team_id', '')
                 test_case_per_page=request.GET.get(u'test_case_per_page','')
@@ -11785,8 +11732,7 @@ def ViewAndOrganizeTestCases(request):
                 condition=" offset %d limit %d"%(offset,limit)
                 QueryText = []
                 for eachitem in UserText:
-                    if len(eachitem) != 0 and len(
-                            eachitem) != 1 and eachitem.strip() not in QueryText:
+                    if len(eachitem) != 0 and eachitem.strip() not in QueryText:
                         QueryText.append(eachitem.strip())
                 print QueryText
                 Section_Tag = 'Section'
@@ -11877,119 +11823,46 @@ def ViewAndOrganizeTestCases(request):
                 Conn=GetConnection()
                 count_query=DB.GetData(Conn,Query,False)
                 Conn.close()
-                RefinedDataTemp = []
-                Check_TestCase(TableData, RefinedDataTemp)
-                RefinedData = list(RefinedDataTemp)
-                dataWithTime = []
                 if total_time == "true":
                     time_collected = get_all_time(count_query)
-                for each in RefinedData:
-                    query = "select count(*) from test_steps where tc_id='%s'" % each[
-                        0].strip()
-                    Conn = GetConnection()
-                    stepNumber = DB.GetData(Conn, query)
-                    Conn.close()
-                    test_case_time = 0
-                    for count in range(0, int(stepNumber[0])):
-                        temp_id = each[0] + '_s' + str(count + 1)
-                        step_time_query = "select description from master_data where id='%s' and field='estimated' and value='time'" % temp_id.strip(
-                        )
-                        Conn = GetConnection()
-                        step_time = DB.GetData(Conn, step_time_query)
-                        Conn.close()
-                        if len(step_time) == 0:
-                            stepTime = 0
-                        else:
-                            stepTime = step_time[0]
-                        test_case_time += int(stepTime)
-                        #if total_time == "true":
-                        #    time_collected += int(stepTime)
-                    temp = []
-                    for eachitem in each:
-                        temp.append(eachitem)
-                    temp.append(ConvertTime(test_case_time))
-                    dataWithTime.append(temp)
-                RefinedData = dataWithTime
-                for each in RefinedData:
-                    print each
-                Heading = [
-                    'ID',
-                    'Title',
-                    'Feature',
-                    'Folder',
-                    'Type',
-                    'Time',
-                    '']
-                for i in dataWithTime:
-                    x = i[1]
-                    print x
-                    try:
-                        query = "SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'" % (
-                            'section_id', i[0])
-                        Conn = GetConnection()
-                        data = DB.GetData(Conn, query, False, False)
-                        Conn.close()
-                        section_id = int(data[0][0])
-                        print "Section id is: %s" % section_id
-                    except:
-                        print "unable to get section id"
-                    try:
-                        query = '''
-                        SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
-                        ''' % ('feature_id', i[0])
-                        Conn = GetConnection()
-                        data = DB.GetData(Conn, query, False, False)
-                        Conn.close()
-                        feature_id = int(data[0][0])
-                        print "Feature id is: %s" % feature_id
-                    except:
-                        print "unable to get feature id"
-                    try:
-                        query = '''
-                        SELECT section_path FROM product_sections WHERE section_id=%d
-                        ''' % section_id
-                        Conn = GetConnection()
-                        data = DB.GetData(Conn, query, False, False)
-                        Conn.close()
-                        section_path = '/'.join(data[0]
-                                                [0].replace('_', ' ').split('.'))
-                        i.insert(2, section_path)
-                        print "full path of section is: %s" % section_path
-                    except:
-                        print "unable to get full path of section"
-                    try:
-                        query = '''
-                        SELECT feature_path FROM product_features WHERE feature_id=%d
-                        ''' % feature_id
-                        Conn = GetConnection()
-                        data = DB.GetData(Conn, query, False, False)
-                        Conn.close()
-                        feature_path = '/'.join(data[0]
-                                                [0].replace('_', ' ').split('.'))
-                        i.insert(2, feature_path)
-                        print "full path of feature is: %s" % feature_path
-                    except:
-                        print "unable to get full path of feature"
+                final_list=[]
+                #type_time=0
+                #time_time=0
+                #section_time=0
+                #feature_time=0
+                #status_time=0
+                for each in TableData:
+                    #one=datetime.datetime.now()
+                    type_case=Check_TestCase(each[0])
+                    #two=datetime.datetime.now()
+                    #type_time+=float((two-one).total_seconds())
+                    time=get_test_case_time(each[0])
+                    #three=datetime.datetime.now()
+                    #time_time+=float((three-two).total_seconds())
+                    section=get_section(each[0])
+                    #four=datetime.datetime.now()
+                    #section_time+=float((four-three).total_seconds())
+                    feature=get_feature(each[0])
+                    #five=datetime.datetime.now()
+                    #feature_time+=float((five-four).total_seconds())
                     if test_status_request:
-                        try:
-                            query = '''
-                            SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
-                            ''' % ('Status', i[0])
-                            Conn = GetConnection()
-                            data = DB.GetData(Conn, query, False, True)
-                            Conn.close()
-                            i.insert(4, data[0][0])
-                            Heading = [
-                                'ID',
-                                'Title',
-                                'Feature',
-                                'Folder',
-                                'Status',
-                                'Type',
-                                'Time']
-                        except:
-                            i[4] = ' - '
-                results = {'Heading': Heading, 'TableData': RefinedData,'Count':len(count_query)}
+                        status=get_status(each[0])
+                        #six=datetime.datetime.now()
+                        #status_time+=float((six-five).total_seconds())
+                        final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                    else:
+                        final_list.append((each[0],each[1],feature,section,type_case,time))    
+                #print type_time,type_time/float(len(TableData))    
+                #print time_time,time_time/float(len(TableData))    
+                #print section_time,section_time/float(len(TableData))    
+                #print feature_time,feature_time/float(len(TableData))    
+                #if test_status_request:
+                #    print status_time,status_time/float(len(TableData))
+                #print "------------------------------------"    
+                Heading = ['ID','Title','Feature','Folder','Type','Time']
+                if test_status_request:
+                    Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+                results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
                 if total_time == "true":
                     results.update({'time': ConvertTime(time_collected)})
             else:
