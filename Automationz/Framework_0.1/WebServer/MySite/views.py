@@ -11132,17 +11132,38 @@ def TableDataTestCasesOtherPages(request):
                 if total_time == "true":
                     time_collected = get_all_time(count_query)
                 final_list=[]
+                #type_time=0
+                #time_time=0
+                #section_time=0
+                #feature_time=0
+                #status_time=0
                 for each in TableData:
+                    #one=datetime.datetime.now()
                     type_case=Check_TestCase(each[0])
+                    #two=datetime.datetime.now()
+                    #type_time+=float((two-one).total_seconds())
                     time=get_test_case_time(each[0])
+                    #three=datetime.datetime.now()
+                    #time_time+=float((three-two).total_seconds())
                     section=get_section(each[0])
+                    #four=datetime.datetime.now()
+                    #section_time+=float((four-three).total_seconds())
                     feature=get_feature(each[0])
+                    #five=datetime.datetime.now()
+                    #feature_time+=float((five-four).total_seconds())
                     if test_status_request:
                         status=get_status(each[0])
+                        #six=datetime.datetime.now()
+                        #status_time+=float((six-five).total_seconds())
                         final_list.append((each[0],each[1],feature,section,status,type_case,time))
                     else:
                         final_list.append((each[0],each[1],feature,section,type_case,time))    
-                    
+                #print type_time,type_time/float(len(TableData))    
+                #print time_time,time_time/float(len(TableData))    
+                #print section_time,section_time/float(len(TableData))    
+                #print feature_time,feature_time/float(len(TableData))    
+                #if test_status_request:
+                #    print status_time,status_time/float(len(TableData))    
                 Heading = ['ID','Title','Feature','Folder','Type','Time']
                 if test_status_request:
                     Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
@@ -11323,19 +11344,40 @@ def ViewAndOrganizeTestCases(request):
                 Conn.close()
                 if total_time == "true":
                     time_collected = get_all_time(count_query)
-                
                 final_list=[]
+                #type_time=0
+                #time_time=0
+                #section_time=0
+                #feature_time=0
+                #status_time=0
                 for each in TableData:
+                    #one=datetime.datetime.now()
                     type_case=Check_TestCase(each[0])
+                    #two=datetime.datetime.now()
+                    #type_time+=float((two-one).total_seconds())
                     time=get_test_case_time(each[0])
+                    #three=datetime.datetime.now()
+                    #time_time+=float((three-two).total_seconds())
                     section=get_section(each[0])
+                    #four=datetime.datetime.now()
+                    #section_time+=float((four-three).total_seconds())
                     feature=get_feature(each[0])
+                    #five=datetime.datetime.now()
+                    #feature_time+=float((five-four).total_seconds())
                     if test_status_request:
                         status=get_status(each[0])
+                        #six=datetime.datetime.now()
+                        #status_time+=float((six-five).total_seconds())
                         final_list.append((each[0],each[1],feature,section,status,type_case,time))
                     else:
                         final_list.append((each[0],each[1],feature,section,type_case,time))    
-                    
+                #print type_time,type_time/float(len(TableData))    
+                #print time_time,time_time/float(len(TableData))    
+                #print section_time,section_time/float(len(TableData))    
+                #print feature_time,feature_time/float(len(TableData))    
+                #if test_status_request:
+                #    print status_time,status_time/float(len(TableData))
+                #print "------------------------------------"    
                 Heading = ['ID','Title','Feature','Folder','Type','Time']
                 if test_status_request:
                     Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
