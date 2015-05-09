@@ -213,7 +213,7 @@ urlpatterns += patterns('',
     # Test Type Status Page                                #minar09
     url(r'^Home/TestTypeStatus/$', TestTypeStatus),
     url(r'^Home/TestTypeStatus/get?$', TestTypeStatus),
-    url(r'^Home/.*/TestTypeStatus_Report/$', TestTypeStatus_Report),
+    url(r'^Home/.*/TestTypeStatus_Report/$', New_TestTypeStatus_Report),
     
     # Bundle Report Page                                #minar09
     url(r'^Home/BundleReport/$', BundleReport),
