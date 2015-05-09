@@ -32,7 +32,8 @@ $(document).ready(function(){
                 '<br/>' +
                 '<hr/>' );*/
 
-            $.get("TestTypeStatus_Report",{choice : choice},function(data)
+            $.get("TestTypeStatus_Report",{choice : choice, project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')},function(data)
             {
                 ResultTable(TestTypeStatusTable,data['Heading'],data['TableData'],"Test Type Status Report");
 

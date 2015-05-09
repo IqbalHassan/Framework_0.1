@@ -8925,6 +8925,487 @@ def Append_array(TableData, P1, P2, P3, P4, Total, RefinedData):  # minar09
             x = x + 1
 
 
+
+def New_TestTypeStatus_Report(request):  # minar09
+    Conn = GetConnection()
+    sections = []
+    priority = ["P1", "P2", "P3", "P4", "Total"]
+    testCases = []
+    totalCases = []
+    TableData = []
+    manCount = []
+    manP1Count = []
+    manP2Count = []
+    manP3Count = []
+    manP4Count = []
+    manIPCount = []
+    manIPP1Count = []
+    manIPP2Count = []
+    manIPP3Count = []
+    manIPP4Count = []
+    autoCount = []
+    autoP1Count = []
+    autoP2Count = []
+    autoP3Count = []
+    autoP4Count = []
+    autoIPCount = []
+    autoIPP1Count = []
+    autoIPP2Count = []
+    autoIPP3Count = []
+    autoIPP4Count = []
+    perCount = []
+    perP1Count = []
+    perP2Count = []
+    perP3Count = []
+    perP4Count = []
+    perIPCount = []
+    perIPP1Count = []
+    perIPP2Count = []
+    perIPP3Count = []
+    perIPP4Count = []
+    Table = []
+    Table1 = []
+    Table2 = []
+    Table3 = []
+    Table4 = []
+    Table5 = []
+    Table6 = []
+    manTab = []
+    manP1Tab = []
+    manP2Tab = []
+    manP3Tab = []
+    manP4Tab = []
+    manIPTab = []
+    manIPP1Tab = []
+    manIPP2Tab = []
+    manIPP3Tab = []
+    manIPP4Tab = []
+    autoTab = []
+    autoP1Tab = []
+    autoP2Tab = []
+    autoP3Tab = []
+    autoP4Tab = []
+    autoIPTab = []
+    autoIPP1Tab = []
+    autoIPP2Tab = []
+    autoIPP3Tab = []
+    autoIPP4Tab = []
+    perTab = []
+    perP1Tab = []
+    perP2Tab = []
+    perP3Tab = []
+    perP4Tab = []
+    perIPTab = []
+    perIPP1Tab = []
+    perIPP2Tab = []
+    perIPP3Tab = []
+    perIPP4Tab = []
+    RefinedData = []
+    totalP1Count = []
+    totalP2Count = []
+    totalP3Count = []
+    totalP4Count = []
+    totalCount = []
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'choice', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            if " " in UserData:
+                UserData = UserData.replace(' ', '_')
+            if UserData == "All":
+                sectionQuery = "select ps.section_path from product_sections ps, test_case_tag tct where ps.section_id::text = tct.name and tct.property='section_id' and tct.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and tct.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by ps.section_path order by ps.section_path"
+                testCasesQuery = "select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by test_case_tag.tc_id, product_sections.section_path"
+                totalCaseQuery = "select count(test_case_tag.tc_id) from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by product_sections.section_path order by product_sections.section_path"
+            else:
+                sectionQuery = "select product_sections.section_path from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '" + \
+                    UserData + ".*' and test_case_tag.property='section_id' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by product_sections.section_path order by product_sections.section_path"
+                testCasesQuery = "select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and product_sections.section_path ~ '" + \
+                    UserData + ".*' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by test_case_tag.tc_id, product_sections.section_path"
+                totalCaseQuery = "select count(test_case_tag.tc_id) from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '" + \
+                    UserData + ".*' and test_case_tag.property='section_id' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by product_sections.section_path order by product_sections.section_path"
+        sections = DB.GetData(Conn, sectionQuery, False)
+        totalCases = DB.GetData(Conn, totalCaseQuery, False)
+        testCases = DB.GetData(Conn, testCasesQuery, False)
+        progress = DB.GetData(
+            Conn,
+            "select tc_id from test_case_tag where name='Dev' and property='Status' and tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"')",
+            False)
+        p1Priority = DB.GetData(
+            Conn,
+            "select tc_id from test_case_tag where property='Priority' and name='P1' and tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"')",
+            False)
+        p2Priority = DB.GetData(
+            Conn,
+            "select tc_id from test_case_tag where property='Priority' and name='P2' and tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"')",
+            False)
+        p3Priority = DB.GetData(
+            Conn,
+            "select tc_id from test_case_tag where property='Priority' and name='P3' and tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"')",
+            False)
+        p4Priority = DB.GetData(
+            Conn,
+            "select tc_id from test_case_tag where property='Priority' and name='P4' and tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"')",
+            False)
+
+    # sections.append('Summary Global')
+    for each in sections:
+        for y in priority:
+            data = []
+            data.append(each[0].replace(".", "-"))
+            data.append(y)
+            Table.append(tuple(data))
+
+    # Table = zip(sections,priority)
+    Check_TestCase(testCases, RefinedData)
+    # manual
+    for each in RefinedData:
+        Data = []
+        Data.append(each[0])
+        Data.append(each[1])
+        if each[2] == 'manual':
+            this = True
+            for x in progress:
+                if x[0] == each[0]:
+                    this = False
+            if this:
+                manTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0] == p1[0]:
+                        manP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0] == p2[0]:
+                        manP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0] == p3[0]:
+                        manP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0] == p4[0]:
+                        manP4Tab.append(tuple(Data))
+            elif this == False:
+                manIPTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0] == p1[0]:
+                        manIPP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0] == p2[0]:
+                        manIPP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0] == p3[0]:
+                        manIPP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0] == p4[0]:
+                        manIPP4Tab.append(tuple(Data))
+        elif each[2] == 'automated':
+            this = True
+            for x in progress:
+                if x[0] == each[0]:
+                    this = False
+            if this:
+                autoTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0] == p1[0]:
+                        autoP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0] == p2[0]:
+                        autoP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0] == p3[0]:
+                        autoP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0] == p4[0]:
+                        autoP4Tab.append(tuple(Data))
+            elif this == False:
+                autoIPTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0] == p1[0]:
+                        autoIPP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0] == p2[0]:
+                        autoIPP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0] == p3[0]:
+                        autoIPP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0] == p4[0]:
+                        autoIPP4Tab.append(tuple(Data))
+        elif each[2] == 'performance':
+            this = True
+            for x in progress:
+                if x[0] == each[0]:
+                    this = False
+            if this:
+                perTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0] == p1[0]:
+                        perP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0] == p2[0]:
+                        perP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0] == p3[0]:
+                        perP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0] == p4[0]:
+                        perP4Tab.append(tuple(Data))
+            elif this == False:
+                perIPTab.append(tuple(Data))
+                for p1 in p1Priority:
+                    if each[0] == p1[0]:
+                        perIPP1Tab.append(tuple(Data))
+                for p2 in p2Priority:
+                    if each[0] == p2[0]:
+                        perIPP2Tab.append(tuple(Data))
+                for p3 in p3Priority:
+                    if each[0] == p3[0]:
+                        perIPP3Tab.append(tuple(Data))
+                for p4 in p4Priority:
+                    if each[0] == p4[0]:
+                        perIPP4Tab.append(tuple(Data))
+
+    Count_Per_Section(manTab, sections, manCount)
+    Count_Per_Section(manP1Tab, sections, manP1Count)
+    Count_Per_Section(manP2Tab, sections, manP2Count)
+    Count_Per_Section(manP3Tab, sections, manP3Count)
+    Count_Per_Section(manP4Tab, sections, manP4Count)
+    Count_Per_Section(manIPTab, sections, manIPCount)
+    Count_Per_Section(manIPP1Tab, sections, manIPP1Count)
+    Count_Per_Section(manIPP2Tab, sections, manIPP2Count)
+    Count_Per_Section(manIPP3Tab, sections, manIPP3Count)
+    Count_Per_Section(manIPP4Tab, sections, manIPP4Count)
+    Count_Per_Section(autoTab, sections, autoCount)
+    Count_Per_Section(autoP1Tab, sections, autoP1Count)
+    Count_Per_Section(autoP2Tab, sections, autoP2Count)
+    Count_Per_Section(autoP3Tab, sections, autoP3Count)
+    Count_Per_Section(autoP4Tab, sections, autoP4Count)
+    Count_Per_Section(autoIPTab, sections, autoIPCount)
+    Count_Per_Section(autoIPP1Tab, sections, autoIPP1Count)
+    Count_Per_Section(autoIPP2Tab, sections, autoIPP2Count)
+    Count_Per_Section(autoIPP3Tab, sections, autoIPP3Count)
+    Count_Per_Section(autoIPP4Tab, sections, autoIPP4Count)
+    Count_Per_Section(perTab, sections, perCount)
+    Count_Per_Section(perP1Tab, sections, perP1Count)
+    Count_Per_Section(perP2Tab, sections, perP2Count)
+    Count_Per_Section(perP3Tab, sections, perP3Count)
+    Count_Per_Section(perP4Tab, sections, perP4Count)
+    Count_Per_Section(perIPTab, sections, perIPCount)
+    Count_Per_Section(perIPP1Tab, sections, perIPP1Count)
+    Count_Per_Section(perIPP2Tab, sections, perIPP2Count)
+    Count_Per_Section(perIPP3Tab, sections, perIPP3Count)
+    Count_Per_Section(perIPP4Tab, sections, perIPP4Count)
+    Append_array(
+        Table,
+        manP1Count,
+        manP2Count,
+        manP3Count,
+        manP4Count,
+        manCount,
+        Table1)
+    Append_array(
+        Table1,
+        manIPP1Count,
+        manIPP2Count,
+        manIPP3Count,
+        manIPP4Count,
+        manIPCount,
+        Table2)
+    Append_array(
+        Table2,
+        autoP1Count,
+        autoP2Count,
+        autoP3Count,
+        autoP4Count,
+        autoCount,
+        Table3)
+    Append_array(
+        Table3,
+        autoIPP1Count,
+        autoIPP2Count,
+        autoIPP3Count,
+        autoIPP4Count,
+        autoIPCount,
+        Table4)
+    Append_array(
+        Table4,
+        perP1Count,
+        perP2Count,
+        perP3Count,
+        perP4Count,
+        perCount,
+        Table5)
+    Append_array(
+        Table5,
+        perIPP1Count,
+        perIPP2Count,
+        perIPP3Count,
+        perIPP4Count,
+        perIPCount,
+        Table6)
+    # Append_array(Table4,totalCases,TableData)
+    x = 1
+    a = 0
+    b = 0
+    c = 0
+    d = 0
+    e = 0
+    for each in Table6:
+        data = []
+        for y in each:
+            data.append(y)
+        if x == 1:
+            count = manP1Count[a] + manIPP1Count[a] + autoP1Count[a] + \
+                autoIPP1Count[a] + perP1Count[a] + perIPP1Count[a]
+            a = a + 1
+            data.append(count)
+            totalP1Count.append(count)
+        elif x == 2:
+            count = manP2Count[b] + manIPP2Count[b] + autoP2Count[b] + \
+                autoIPP2Count[b] + perP2Count[b] + perIPP2Count[b]
+            b = b + 1
+            data.append(count)
+            totalP2Count.append(count)
+        elif x == 3:
+            count = manP3Count[c] + manIPP3Count[c] + autoP3Count[c] + \
+                autoIPP3Count[c] + perP3Count[c] + perIPP3Count[c]
+            c = c + 1
+            data.append(count)
+            totalP3Count.append(count)
+        elif x == 4:
+            count = manP4Count[d] + manIPP4Count[d] + autoP4Count[d] + \
+                autoIPP4Count[d] + perP4Count[d] + perIPP4Count[d]
+            d = d + 1
+            data.append(count)
+            totalP4Count.append(count)
+        elif x == 5:
+            count = manCount[e] + manIPCount[e] + autoCount[e] + \
+                autoIPCount[e] + perCount[e] + perIPCount[e]
+            e = e + 1
+            data.append(count)
+            totalCount.append(count)
+        TableData.append(tuple(data))
+        if x == 5:
+            x = 1
+        elif x < 5:
+            x = x + 1
+
+    temp = []
+    temp.append("Summary")
+    temp.append("P1")
+    manP1Sum = count_Sum(manP1Count)
+    temp.append(manP1Sum)
+    manIPP1Sum = count_Sum(manIPP1Count)
+    temp.append(manIPP1Sum)
+    autoP1Sum = count_Sum(autoP1Count)
+    temp.append(autoP1Sum)
+    autoIPP1Sum = count_Sum(autoIPP1Count)
+    temp.append(autoIPP1Sum)
+    perP1Sum = count_Sum(perP1Count)
+    temp.append(perP1Sum)
+    perIPP1Sum = count_Sum(perIPP1Count)
+    temp.append(perIPP1Sum)
+    totalP1Sum = count_Sum(totalP1Count)
+    temp.append(totalP1Sum)
+    TableData.append(tuple(temp))
+
+    temp = []
+    temp.append("Summary")
+    temp.append("P2")
+    manP2Sum = count_Sum(manP2Count)
+    temp.append(manP2Sum)
+    manIPP2Sum = count_Sum(manIPP2Count)
+    temp.append(manIPP2Sum)
+    autoP2Sum = count_Sum(autoP2Count)
+    temp.append(autoP2Sum)
+    autoIPP2Sum = count_Sum(autoIPP2Count)
+    temp.append(autoIPP2Sum)
+    perP2Sum = count_Sum(perP2Count)
+    temp.append(perP2Sum)
+    perIPP2Sum = count_Sum(perIPP2Count)
+    temp.append(perIPP2Sum)
+    totalP2Sum = count_Sum(totalP2Count)
+    temp.append(totalP2Sum)
+    TableData.append(tuple(temp))
+
+    temp = []
+    temp.append("Summary")
+    temp.append("P3")
+    manP3Sum = count_Sum(manP3Count)
+    temp.append(manP3Sum)
+    manIPP3Sum = count_Sum(manIPP3Count)
+    temp.append(manIPP3Sum)
+    autoP3Sum = count_Sum(autoP3Count)
+    temp.append(autoP3Sum)
+    autoIPP3Sum = count_Sum(autoIPP3Count)
+    temp.append(autoIPP3Sum)
+    perP3Sum = count_Sum(perP3Count)
+    temp.append(perP3Sum)
+    perIPP3Sum = count_Sum(perIPP3Count)
+    temp.append(perIPP3Sum)
+    totalP3Sum = count_Sum(totalP3Count)
+    temp.append(totalP3Sum)
+    TableData.append(tuple(temp))
+
+    temp = []
+    temp.append("Summary")
+    temp.append("P4")
+    manP4Sum = count_Sum(manP4Count)
+    temp.append(manP4Sum)
+    manIPP4Sum = count_Sum(manIPP4Count)
+    temp.append(manIPP4Sum)
+    autoP4Sum = count_Sum(autoP4Count)
+    temp.append(autoP4Sum)
+    autoIPP4Sum = count_Sum(autoIPP4Count)
+    temp.append(autoIPP4Sum)
+    perP4Sum = count_Sum(perP4Count)
+    temp.append(perP4Sum)
+    perIPP4Sum = count_Sum(perIPP4Count)
+    temp.append(perIPP4Sum)
+    totalP4Sum = count_Sum(totalP4Count)
+    temp.append(totalP4Sum)
+    TableData.append(tuple(temp))
+
+    temp = []
+    temp.append("Summary")
+    temp.append("Total")
+    manSum = count_Sum(manCount)
+    temp.append(manSum)
+    manIPSum = count_Sum(manIPCount)
+    temp.append(manIPSum)
+    autoSum = count_Sum(autoCount)
+    temp.append(autoSum)
+    autoIPSum = count_Sum(autoIPCount)
+    temp.append(autoIPSum)
+    perSum = count_Sum(perCount)
+    temp.append(perSum)
+    perIPSum = count_Sum(perIPCount)
+    temp.append(perIPSum)
+    totalSum = count_Sum(totalCount)
+    temp.append(totalSum)
+    TableData.append(tuple(temp))
+
+
+
+    Heading = [
+        'Folder',
+        'Priority',
+        'Manual',
+        'Manual in-progress',
+        'Automated',
+        'Automated in-progress',
+        'Performance',
+        'Performance in-progress',
+        'Total']
+    results = {
+        'Heading': Heading,
+        'TableData': TableData,
+        'Summary': tuple(temp)}
+    # results = {'Heading':Heading, 'TableData':RefinedData}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, mimetype='application/json')
+
+
+
 def TestStepAutoComplete(request):
     Conn = GetConnection()
     results = []
