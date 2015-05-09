@@ -1844,17 +1844,15 @@ def GetRunIDStatus(RunId):
 
 
 def Modify(AllTestCases1):
-    AllTestCases = []
-    AllTestCases2 = []
-    Check_TestCase(AllTestCases1, AllTestCases2)
-    for each in zip(AllTestCases1, AllTestCases2):
-        temp = []
-        for eachitem in each[0]:
+    final=[]
+    for each in AllTestCases1:
+        temp=[]
+        status=Check_TestCase(each[0])
+        for eachitem in each:
             temp.append(eachitem)
-        temp.insert(2, each[1][2])
-        temp = tuple(temp)
-        AllTestCases.append(temp)
-    return AllTestCases
+        temp.insert(2,status)
+        final.append(tuple(temp))
+    return final
 
 
 def ConvertTime(total_time):
@@ -1956,13 +1954,12 @@ def RunId_TestCases(request, RunId):
     Conn.close()
     for each in test_case_list:
         # Get the step_count
-        query = "select count(*) from result_test_steps where tc_id='%s' and run_id='%s'" % (
-            each, RunId)
+        query = "select sum(description::int) from result_master_data where field='estimated' and value='time' and id ilike '%s%%' and run_id='%s'" %(each, RunId)
         Conn = GetConnection()
         step_count = DB.GetData(Conn, query)
         Conn.close()
-        count = step_count[0]
-        count = int(count)
+        count = int(step_count[0])
+        """count = int(count)
         for eachstep in range(1, count + 1):
             temp_id = each + '_s' + str(eachstep)
             query = "select description from result_master_data where field='estimated' and value='time' and id='%s' and run_id='%s'" % (
@@ -1970,7 +1967,8 @@ def RunId_TestCases(request, RunId):
             Conn = GetConnection()
             step_time = DB.GetData(Conn, query)
             Conn.close()
-            totalRunIDTime += int(step_time[0])
+            """
+        totalRunIDTime += int(count)
     formatTime = ConvertTime(totalRunIDTime)
     ################################################
     query = "select p.project_id||' - '||p.project_name from projects p, test_run_env tre,machine_project_map mpm where mpm.machine_serial=tre.id and p.project_id=mpm.project_id and tre.run_id='%s'" % RunId
