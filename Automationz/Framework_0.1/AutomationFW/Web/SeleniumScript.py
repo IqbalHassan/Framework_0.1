@@ -3,7 +3,6 @@
 import sys
 import os
 sys.path.append("..")
-
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import time
@@ -51,6 +50,15 @@ def BrowserSelection(browser):
             sBrowser.maximize_window()
             CommonUtil.ExecLog(sModuleInfo, "Started Internet Explorer Browser", 1, local_run)
             return "passed"
+        
+        elif "safari" in browser:
+            os.environ["SELENIUM_SERVER_JAR"] = os.sys.prefix + os.sep + "Scripts" + os.sep + "selenium-server-standalone-2.45.0.jar"
+            sBrowser = webdriver.Safari()
+            sBrowser.implicitly_wait(WebDriver_Wait)
+            sBrowser.maximize_window()
+            CommonUtil.ExecLog(sModuleInfo, "Started Safari Browser", 1, local_run)
+            return "passed"
+    
         else:
             CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser: %s" % browser, 3,local_run)
             return "failed"
@@ -775,5 +783,9 @@ def Verify_User_Level_Settings(user_level):
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         CommonUtil.ExecLog(sModuleInfo, "Unable confirm type of user.  Error: %s"%Error_Detail, 3,local_run)
         return "failed"
+
+
+
+
 
 
