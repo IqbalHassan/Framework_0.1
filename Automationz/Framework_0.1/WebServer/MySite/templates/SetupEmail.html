@@ -1,0 +1,31 @@
+{%extends 'BaseTemplate.html'%}
+{% block title %}Setup Email{%endblock%}
+{% block content%}
+<script type="text/javascript">
+    var project_id="{{project_id}}";
+    $(document).ready(function(){
+       $('body').css({'font-size':'100%;'});
+    });
+</script>
+<script type="text/javascript" src="/site_media/Jquery/Local/SetupEmail.js"></script>
+<table width="100%;">
+    <caption><b style="font-size: 150%;">Team wise Email Settings</b></caption>
+    <tr>
+        <td style="width:25%;vertical-align: 0%;">
+            <table  class="two-column-emphasis">
+                <caption><b>Teams</b></caption>
+                {% if team_list %}
+                    {% for x in team_list %}
+                        <tr><td class="team" data-id="{{x.0}}">{{x.1}}</td></tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td><b>No Team is Found</b></td></tr>
+                {% endif %}
+            </table>
+        </td>
+        <td style="vertical-align: 0%;">
+            <div id="mainbody">&nbsp;</div>
+        </td>
+    </tr>
+</table>
+{% endblock %}
