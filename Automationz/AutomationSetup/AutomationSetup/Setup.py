@@ -30,7 +30,7 @@ def Installer_With_Pip():
     try:
         install(type="pip", module_name="urllib3")
     except:
-        print "unable to install/update urllib3"     
+        print "unable to install/update %s"%module_name  
     
     
     # Check and install django
@@ -38,7 +38,7 @@ def Installer_With_Pip():
     try:
         install(type="pip", module_name="django", module_version=django_version)
     except:
-        print "unable to install/update django" 
+        print "unable to install/update %s"%module_name  
     
 
     
@@ -47,49 +47,49 @@ def Installer_With_Pip():
     try:
         install(type="pip", module_name="django-celery")
     except:
-        print "unable to install/update django-celery" 
+        print "unable to install/update %s"%module_name  
     
     # Check and install selenium
     try:
         install(type="pip", module_name="selenium")
     except:
-        print "unable to install/update selenium"
+        print "unable to install/update %s"%module_name  
     
     # Check and install psutil
     try:
         install(type="pip", module_name="psutil")
     except:
-        print "unable to install/update psutil"
+        print "unable to install/update %s"%module_name  
     
     # Check and install wmi
     try:
         install(type="pip", module_name="wmi")
     except:
-        print "unable to install/update wmi"
+        print "unable to install/update %s"%module_name  
     
     # Check and install requests
     try:
         install(type="pip", module_name="requests")
     except:
-        print "unable to install/update requests"
+        print "unable to install/update %s"%module_name  
         
     # Check and install six
     try:
         install(type="pip", module_name="six")
     except:
-        print "unable to install/update six"
+        print "unable to install/update %s"%module_name  
     
     # Check and install pillow
     try:
         install(type="pip", module_name="Pillow")
     except:
-        print "unable to install/update Pillow"
+        print "unable to install/update %s"%module_name  
     
     # Check and install poster
     try:
         install(type="pip", module_name="poster")
     except:
-        print "unable to install/update poster"
+        print "unable to install/update %s"%module_name  
 
 
 def Installer_With_Exe():
@@ -177,14 +177,7 @@ def Chrom_Driver_Download():
 def selenium_Server_StandAlone_Driver_Download():
     import urllib3
     http = urllib3.PoolManager()
-    try:
-        print "Getting latest version of stand alone driver from google api"
-        r = http.request('GET', 'http://chromedriver.storage.googleapis.com/LATEST_RELEASE')
-        latest_version =  r.data
-    except:
-        print "Unable to get the latest version."
-        return
-    download_link = ('http://selenium-release.storage.googleapis.com/%s/selenium-server-standalone-%s.0.jar'%(latest_version,latest_version))
+    download_link = ('http://selenium-release.storage.googleapis.com/2.45/selenium-server-standalone-2.45.0.jar')
     print "Downloading latest selenium_Server_StandAlone for Safari Browser: %s" %download_link
     path = r'C:\Python27\Scripts\selenium-server-standalone-2.45.0.jar'
     
@@ -218,4 +211,6 @@ def main():
     Installer_With_Pip()
     Installer_With_Exe()
     Selenium_Driver_Files()
+
+
 main()
