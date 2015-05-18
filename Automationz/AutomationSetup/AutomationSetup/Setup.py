@@ -218,8 +218,7 @@ def unzip(zipFilePath, destDir):
     zfile.close()
     
 def main():
-    print True
+    Installer_With_Pip()
+    Installer_With_Exe()
     Selenium_Driver_Files()
-
-    #Installer_With_Pip()
 main()
