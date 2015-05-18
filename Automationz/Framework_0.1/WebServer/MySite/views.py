@@ -5873,10 +5873,10 @@ def New_Execution_Report(request):
                 if each[1] != '':
                     xtra_qry += " and mds.type='" + \
                     each[0] + "' and mds.name='" + each[1] + "' "
-                if each[2] != '':
-                    xtra_qry += " and mds.bit=" + each[2] + " "
-                    if each[3] != '':
-                        xtra_qry += " and mds.version='" + each[3] + "' "
+                    if each[2] != '':
+                        xtra_qry += " and mds.bit=" + each[2] + " "
+                        if each[3] != '':
+                            xtra_qry += " and mds.version='" + each[3] + "' "
             else:
                 if each[1] != '':
                     xtra_qry += " and mds.machine_serial in (select machine_serial from machine_dependency_settings where type = '" + each[0] + "' and name = '" + each[1] + "' "
@@ -5891,6 +5891,14 @@ def New_Execution_Report(request):
         for each in new_dependency:
             if each[1] != '' and each[0] != '':
                 sec_xtra += " and tc_id in (select tc_id from test_case_tag where property='"+each[0]+"' and name='"+each[1]+"')"
+                
+                
+    
+        slct_xtra = " "
+        for each in new_dependency:
+            if each[1] != '' and each[0] != '':
+                slct_xtra += " and tcr.tc_id in (select tc_id from test_case_tag where property='"+each[0]+"' and name='"+each[1]+"')"
+        
         
         """
     
@@ -5987,7 +5995,7 @@ def New_Execution_Report(request):
             latestq += " union all "
             latestq += "(select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" + project_id + "' and mpm.team_id=" + team_id + " " + xtra_qry + " and tcr.status in ('Submitted', 'In-Progress') order by tcr.teststarttime desc)"
             """
-            latestq = "select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime,tre.id from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" + project_id + "' and mpm.team_id=" + team_id + " " + xtra_qry + " and tre.status not in ('Cancelled') order by tre.id desc"
+            latestq = "select distinct tcr.tc_id,tcr.status,tre.run_id,tcr.teststarttime,tre.id from test_run_env tre,machine_dependency_settings mds, test_case_results tcr, machine_project_map mpm where tcr.run_id=tre.run_id and tre.id=mds.machine_serial and mds.machine_serial=mpm.machine_serial and mpm.project_id='" + project_id + "' and mpm.team_id=" + team_id + " " + xtra_qry + " and tre.status not in ('Cancelled') "+slct_xtra+" order by tre.id desc"
             latest_cases = DB.GetData(Conn, latestq, False)
             # selected_cases_q = "select distinct tcr.tc_id from test_case_results tcr,test_run_env tre, test_case_tag tct, product_sections ps where tcr.run_id = tre.run_id and tre.machine_os like '"+i[0]+"%' and tre.product_version='"+i[1]+"' and tcr.tc_id = tct.tc_id and tct.property = 'section_id' and tct.name::int = ps.section_id and ps.section_path = '"+s[0]+"' and tcr.status = 'Passed'"
             passed_cases = DB.GetData(
@@ -6000,6 +6008,8 @@ def New_Execution_Report(request):
                 team_id +
                 " " +
                 xtra_qry +
+                " " +
+                slct_xtra +
                 " ",
                 False)
             pass_count = len(passed_cases)
@@ -6034,6 +6044,8 @@ def New_Execution_Report(request):
                 team_id +
                 " " +
                 xtra_qry +
+                " " +
+                slct_xtra +
                 " ",
                 False)
             fail_count = len(failed_cases)
@@ -6067,6 +6079,8 @@ def New_Execution_Report(request):
                 team_id +
                 " " +
                 xtra_qry +
+                " " +
+                slct_xtra +
                 " ",
                 False)
             block_count = len(blocked_cases)
@@ -6100,6 +6114,8 @@ def New_Execution_Report(request):
                 team_id +
                 " " +
                 xtra_qry +
+                " " +
+                slct_xtra +
                 " ",
                 False)
             submitted_count = len(submitted_cases)
@@ -6133,6 +6149,8 @@ def New_Execution_Report(request):
                 team_id +
                 " " +
                 xtra_qry +
+                " " +
+                slct_xtra +
                 " ",
                 False)
             inprogress_count = len(inprogress_cases)
@@ -6166,6 +6184,8 @@ def New_Execution_Report(request):
                 team_id +
                 " " +
                 xtra_qry +
+                " " +
+                slct_xtra +
                 " ",
                 False)
             skipped_count = len(skipped_cases)
