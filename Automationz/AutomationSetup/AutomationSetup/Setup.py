@@ -21,7 +21,7 @@ def install(type = "", module_name = "", module_version = None, cmd = ""):
             command = "%s==%s" % (command, module_version)
     else:
         command = cmd
-    
+    print "installing: %s " %command
     subprocess.call(command, shell=True)
 
 def Installer_With_Pip():
