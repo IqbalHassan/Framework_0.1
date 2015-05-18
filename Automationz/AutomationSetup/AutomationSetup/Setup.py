@@ -65,31 +65,31 @@ def Installer_With_Pip():
     try:
         install(type="pip", module_name="wmi")
     except:
-        print "unable to install/update psutil"
+        print "unable to install/update wmi"
     
     # Check and install requests
     try:
         install(type="pip", module_name="requests")
     except:
-        print "unable to install/update psutil"
+        print "unable to install/update requests"
         
     # Check and install six
     try:
         install(type="pip", module_name="six")
     except:
-        print "unable to install/update psutil"
+        print "unable to install/update six"
     
     # Check and install pillow
     try:
         install(type="pip", module_name="Pillow")
     except:
-        print "unable to install/update psutil"
+        print "unable to install/update Pillow"
     
     # Check and install poster
     try:
         install(type="pip", module_name="poster")
     except:
-        print "unable to install/update psutil"
+        print "unable to install/update poster"
 
 
 def Installer_With_Exe():
