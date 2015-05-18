@@ -39,11 +39,8 @@ def Installer_With_Pip():
         install(type="pip", module_name="django", module_version=django_version)
     except:
         print "unable to install/update django" 
-    # Check and install urllib3
-    try:
-        install(type="pip", module_name="urllib3")
-    except:
-        print "unable to install/update urllib3"     
+    
+
     
     # Check and install django-celery
     
