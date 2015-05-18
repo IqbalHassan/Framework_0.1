@@ -18,6 +18,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 global WebDriver_Wait 
 WebDriver_Wait = 60
+global WebDriver_Wait_Short
+WebDriver_Wait_Short = 10
 
 #if local_run is True, no logging will be recorded to the web server.  Only local print will be displayed
 #local_run = True
@@ -342,8 +344,8 @@ def Course_Exists(course):
     try:
         CommonUtil.TakeScreenShot(sModuleInfo, local_run)
         CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course, 1,local_run)
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %course)))
-        actual_text = WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)
+        Element = WebDriverWait(sBrowser, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %course)))
+        actual_text = WebDriverWait(Element, WebDriver_Wait_Short).until(lambda driver :Element.text)
         if actual_text == course:
             CommonUtil.ExecLog(sModuleInfo, "Successfully verified that course exists: %s"%actual_text, 1,local_run)
             return "passed"            
@@ -617,7 +619,7 @@ def Delete_A_Course(course_name):
         search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-listing')))
         CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course_name, 1,local_run)  
         try:
-            course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
+            course_element = WebDriverWait(search_course_list, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
             CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 1,local_run)
         except:
             CommonUtil.ExecLog(sModuleInfo, "Unable to find your course.  Make sure course exists", 3, local_run)
@@ -657,9 +659,7 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
         Expand_Menu_By_Name('Site administration')
         time.sleep(3)
         CommonUtil.ExecLog(sModuleInfo, "Find site admin top level element", 1, local_run)
-        site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
-        parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
-        grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))        
+        grand_parent_site_admin = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID,'settingsnav')))    
         CommonUtil.ExecLog(sModuleInfo, "Expand Courses from site admin menu", 1, local_run)
         Expand_Menu_By_Name("Courses",grand_parent_site_admin)
         CommonUtil.ExecLog(sModuleInfo, "Manage courses and categories", 1, local_run)
@@ -669,10 +669,10 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
         Click_By_Parameter_And_Value("value","Go")
         time.sleep(5)
         CommonUtil.ExecLog(sModuleInfo, "Waiting for search result page to show up", 1, local_run)          
-        search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-listing')))
+        search_course_list = WebDriverWait(sBrowser, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-listing')))
         CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course_name, 1,local_run)  
         try:
-            course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
+            course_element = WebDriverWait(search_course_list, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
             CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 2,local_run)
             if cleanup == "true":
                 CommonUtil.ExecLog(sModuleInfo, "Deleting your course: %s"%course_name, 1,local_run)
@@ -683,18 +683,9 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
                 CommonUtil.ExecLog(sModuleInfo, "Successfully deleted your course: %s"%course_name, 1,local_run)
                 CommonUtil.ExecLog(sModuleInfo, "Verifying if course is deleted completely", 1, local_run)
                 delete_result =  Verify_Text_Message_By_Text('%s has been completely deleted'%short_name)
+                Click_By_Parameter_And_Value ("value","Continue")
                 if delete_result == "passed":
                     CommonUtil.ExecLog(sModuleInfo, "Completely deleted your course: %s"%course_name, 1,local_run)
-                    CommonUtil.ExecLog(sModuleInfo, "expanding Site admin > Courses", 1, local_run)
-                    Expand_Menu_By_Name('Site administration')
-                    time.sleep(3)
-                    CommonUtil.ExecLog(sModuleInfo, "Find site admin top level element", 1, local_run)
-                    site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
-                    parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
-                    grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))        
-                    CommonUtil.ExecLog(sModuleInfo, "Expand Courses from site admin menu", 1, local_run)
-                    Expand_Menu_By_Name("Courses",grand_parent_site_admin)
-        
                 else:
                     CommonUtil.ExecLog(sModuleInfo, "Could not verify if course was deleted completely", 3, local_run)
                     return "failed"
@@ -704,8 +695,6 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
         except:
             CommonUtil.ExecLog(sModuleInfo, "Unable to find your course.", 1, local_run)
         print "Create you course now"
-        
-
         CommonUtil.ExecLog(sModuleInfo, "Clicking Manage Course and Categories", 1, local_run)
         #Click_By_Parameter_And_Value("class","tree_item leaf active_tree_node")
         Click_Element_By_Name('Manage courses and categories')
