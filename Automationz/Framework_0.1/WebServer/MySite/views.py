@@ -16135,7 +16135,7 @@ def get_all_data_dependency_page(request):
                 Conn = GetConnection()
                 unused_branch_list = DB.GetData(Conn, query, False)
                 Conn.close()
-                query = "select distinct '',subltree(feature_path,0,1) from product_features f,team_wise_settings tws where f.feature_id=tws.parameters and tws.project_id=f.project_id and tws.project_id='%s' and tws.team_id=%d" % (
+                query = "select distinct '',subltree(feature_path,0,1) from product_features f,team_wise_settings tws where f.feature_id=tws.parameters and tws.project_id=f.project_id and tws.project_id='%s' and tws.team_id=%d and tws.type='Feature'" % (
                     project_id.strip(), int(team_id.strip()))
                 Conn = GetConnection()
                 feature_list = DB.GetData(Conn, query, False)
