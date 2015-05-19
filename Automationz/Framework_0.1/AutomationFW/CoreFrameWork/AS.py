@@ -109,6 +109,9 @@ def collectAlldependency(project,team_info,dependency):
                     temp=oLocalInfo.getLocalOS()
                 if each=='Browser':
                     temp=oLocalInfo.getInstalledClients()
+                if each=='OS':
+                    import platform
+                    temp=platform.platform()
             if temp!='':
                 if each=='Platform':
                     bit=int(temp.split('-')[1].strip()[0:2])
@@ -124,7 +127,21 @@ def collectAlldependency(project,team_info,dependency):
                         temp_list.append((name,bit,version))
                 if each=='TestCaseType':
                     temp_list.append((temp,0,''))
+                if each=='OS':
+                    if temp.index('Windows')==0:
+                        name='PC'
+                        version=platform.platform()[platform.platform().index('Windows')+len('Windows')+1:platform.platform().index('Windows')+len('Windows')+2]
+                        if 'PROGRAMFILES(x86)' in os.environ:
+                            bit=64
+                        else:
+                            bit=32
+                    else:
+                        name='MAC'
+                        version='0'
+                        bit=''
+                    temp_list.append((name,bit,version))
                 final_dependency.append((each,temp_list))
+                
         return final_dependency
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()        
