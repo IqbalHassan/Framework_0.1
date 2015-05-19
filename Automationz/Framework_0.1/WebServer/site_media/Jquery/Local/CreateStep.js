@@ -651,7 +651,7 @@ function always_run(){
     else if($("#no_always").hasClass("selected"))
     {
         var value = $("#no_always").attr('value');
-        $("#no_always").attr('value',value);
+        $("#always_run").attr('value',value);
     }
 }
 function verification_radio(){
