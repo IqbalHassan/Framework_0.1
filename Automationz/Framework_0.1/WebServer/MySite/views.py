@@ -19081,3 +19081,91 @@ def edit_schedule(request):
             Dict.update({'Result':False})    
         result=simplejson.dumps(Dict)
         return HttpResponse(result,mimetype='application/json')
+def SetupEmailHome(request,project_id):
+    query="select id,team_name from team t,project_team_map ptm where t.project_id=ptm.project_id and t.id=ptm.team_id::int and ptm.project_id='%s'"%project_id
+    Conn=GetConnection()
+    team_id_list=DB.GetData(Conn,query,False)
+    Conn.close()
+    Dict={'team_list':team_id_list,'project_id':project_id}
+    return render_to_response('SetupEmail.html',Dict,context_instance=RequestContext(request))
+
+def updatemailingdetails(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            email=request.GET.get(u'from_address','')
+            port=int(request.GET.get(u'port',''))
+            smtp=request.GET.get(u'smtp_address','')
+            username=request.GET.get(u'username','')
+            password=request.GET.get(u'password','')
+            ttls=request.GET.get(u'ttls','')
+            if ttls=='true':
+                ttls=True
+            else:
+                ttls=False
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            user_id=request.GET.get(u'user_id','')
+            query="select count(*) from email_config where project_id='%s' and team_id=%d"%(project_id,int(team_id))
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(count,list):
+                current_time=datetime.datetime.now().date()
+                if count[0]==0 and len(count)>0:
+                    Dict={
+                        'project_id':project_id.strip(),
+                        'team_id':int(team_id),
+                        'created_by':user_id.strip(),
+                        'created_date':current_time,
+                        'modified_by':user_id.strip(),
+                        'modified_date':current_time,
+                        'from_address':email.strip(),
+                        'username':username.strip(),
+                        'password':password.strip(),
+                        'smtp':smtp.strip(),
+                        'ttls':ttls,
+                        'port':int(port)
+                    }
+                    Conn=GetConnection()
+                    result=DB.InsertNewRecordInToTable(Conn,"email_config",**Dict)
+                    Conn.close()
+                    message=True
+                    log_message='Email is configured successfully'
+                if len(count)>0 and count[0]>0:
+                    sWhereQuery="where project_id='%s' and team_id=%d"%(project_id,int(team_id))
+                    Dict={
+                        'modified_by':user_id.strip(),
+                        'modified_date':current_time,
+                        'from_address':email.strip(),
+                        'username':username.strip(),
+                        'password':password.strip(),
+                        'smtp':smtp.strip(),
+                        'ttls':ttls,
+                        'port':int(port)
+                    }
+                    Conn=GetConnection()
+                    result=DB.UpdateRecordInTable(Conn,"email_config",sWhereQuery,**Dict)
+                    Conn.close()
+                    message=True
+                    log_message='Email is configured successfully'
+            else:
+                message=False
+                log_message="Database query error"
+            Dict={'message':message,'log_message':log_message}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+def getemaildetails(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            query="select from_address,smtp,username,password,port,ttls from email_config where project_id='%s' and team_id=%d"%(project_id,int(team_id))
+            col=['From','SMTP','USERNAME','PASSWORD','PORT','TTLS']
+            Conn=GetConnection()
+            alldata=DB.GetData(Conn,query,False)[0]
+            Conn.close()
+            Dict={}
+            for each in zip(col,alldata):
+                Dict.update({each[0]:each[1]})
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')

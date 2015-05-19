@@ -56,11 +56,11 @@ function get_all_detail(project_id,project_name,user_id){
         message+='</table>';
         message+='</td><td width="50%;">&nbsp;</td></tr>';
         message+='<tr><td>&nbsp;';
-        message+='</td><td>';
+        message+='</td><td colspan="2">';
         if(data['owner_tag']){
-            message+='<input type="button" id="edit_project" value="Edit Project" class="m-btn purple"/>';
+            message+='<input type="button" id="edit_project" value="Edit Project" class="m-btn purple"/><input type="button" id="setup_email" value="Setup Email" class="m-btn yellow"/>';
         }
-        message+='<input type="button" id="team_manage" value="Manage Teams" class="m-btn green"/><input type="button" id="schedule_run" value="Schedule Run" class="m-btn blue"/></td><td width="50%;">&nbsp;</td></tr>';
+        message+='<input type="button" id="team_manage" value="Manage Teams" class="m-btn green"/><input type="button" id="schedule_run" value="Schedule Run" class="m-btn blue"/></td></tr>';
         message+='</table>';
         $("#detail_div").html(message);
         $('#team_manage').on('click',function(){
@@ -71,6 +71,9 @@ function get_all_detail(project_id,project_name,user_id){
         });
         $('#schedule_run').on('click',function(){
             window.location='/Home/'+project_id+'/ScheduleRun/';
+        });
+        $('#setup_email').on('click',function(){
+            window.location='/Home/'+project_id+'/SetupEmail/';
         });
     });
 }

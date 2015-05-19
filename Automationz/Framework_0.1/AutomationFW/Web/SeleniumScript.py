@@ -3,7 +3,6 @@
 import sys
 import os
 sys.path.append("..")
-
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import time
@@ -18,7 +17,9 @@ from CoreFrameWork import CommonUtil
 from selenium.webdriver.support import expected_conditions as EC
 
 global WebDriver_Wait 
-WebDriver_Wait = 60
+WebDriver_Wait = 20
+global WebDriver_Wait_Short
+WebDriver_Wait_Short = 10
 
 #if local_run is True, no logging will be recorded to the web server.  Only local print will be displayed
 #local_run = True
@@ -51,6 +52,15 @@ def BrowserSelection(browser):
             sBrowser.maximize_window()
             CommonUtil.ExecLog(sModuleInfo, "Started Internet Explorer Browser", 1, local_run)
             return "passed"
+        
+        elif "safari" in browser:
+            os.environ["SELENIUM_SERVER_JAR"] = os.sys.prefix + os.sep + "Scripts" + os.sep + "selenium-server-standalone-2.45.0.jar"
+            sBrowser = webdriver.Safari()
+            sBrowser.implicitly_wait(WebDriver_Wait)
+            sBrowser.maximize_window()
+            CommonUtil.ExecLog(sModuleInfo, "Started Safari Browser", 1, local_run)
+            return "passed"
+    
         else:
             CommonUtil.ExecLog(sModuleInfo, "You did not select a valid browser: %s" % browser, 3,local_run)
             return "failed"
@@ -62,14 +72,15 @@ def BrowserSelection(browser):
         CommonUtil.ExecLog(sModuleInfo, "Unable to start WebDriver. %s"%Error_Detail, 3,local_run)
         return "failed"
 
-def OpenLink(link, page_title):
+def OpenLink(link, page_title=False):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         sBrowser.get(link)
         sBrowser.implicitly_wait(WebDriver_Wait)
         CommonUtil.ExecLog(sModuleInfo, "Successfully opened your link: %s" % link, 1,local_run)
         CommonUtil.TakeScreenShot(sModuleInfo, local_run)
-        assert page_title in sBrowser.title
+        if page_title != False:
+            assert page_title in sBrowser.title
         #time.sleep(3)
         return "passed"
     except Exception, e:
@@ -148,7 +159,6 @@ def Expand_Menu_By_ID(_id):
         CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.  Error: %s"%(_id, Error_Detail), 3,local_run)
         return "failed"    
 
-    
 def Expand_Menu_By_Name(_name,parent=False):
     '''
     Use this only if you are confident that there wont be any duplicate item with same name
@@ -239,7 +249,6 @@ def Click_Element_By_Name(_name,parent=False):
         CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.   Error: %s"%(_name,Error_Detail), 3,local_run)
         return "failed"    
  
-
 def Click_Element_By_ID(_id):    
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
@@ -261,7 +270,6 @@ def Click_Element_By_ID(_id):
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         CommonUtil.ExecLog(sModuleInfo, "Unable to click element by ID: %s.  Error: %s"%(_id,Error_Detail), 3,local_run)
         return "failed"    
-
 
 def Set_Text_Field_Value_By_ID(_id,value):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
@@ -327,23 +335,6 @@ def Verify_Text_Message_By_Class(element, expected_text):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         CommonUtil.ExecLog(sModuleInfo, "Error occur during verification process.  Error: %s"%Error_Detail, 3,local_run)
-        return "failed"  
-
-def Course_Exists(course):
-    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    try:
-        CommonUtil.TakeScreenShot(sModuleInfo, local_run)
-        CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course, 1,local_run)
-        Element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %course)))
-        actual_text = WebDriverWait(Element, WebDriver_Wait).until(lambda driver :Element.text)
-        if actual_text == course:
-            CommonUtil.ExecLog(sModuleInfo, "Successfully verified that course exists: %s"%actual_text, 1,local_run)
-            return "passed"            
-    except Exception, e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()        
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
-        CommonUtil.ExecLog(sModuleInfo, "Could not find your course: %s.  Error: %s"%(course,Error_Detail), 3,local_run)
         return "failed"  
 
 def Verify_Text_Message_By_Text(expected_text):
@@ -475,8 +466,7 @@ def Turn_Editing_On_OR_Off(on_off):
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         CommonUtil.ExecLog(sModuleInfo, "We are unable to control the editing option.  Error: %s"%Error_Detail, 3,local_run)
         return "failed"
-        
-    
+            
 def Click_By_Parameter_And_Value(parameter,value, parent=False):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
@@ -574,67 +564,22 @@ def Edit_Course_From_Course_Settings(course_name):
         CommonUtil.ExecLog(sModuleInfo, "Unable to Edit your course: %s.  Error: %s"%(course_name,Error_Detail), 3,local_run)
         return "failed"    
 
-def Tear_Down():
+def Course_Exists(course):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         CommonUtil.TakeScreenShot(sModuleInfo, local_run)
-        sBrowser.close()
-        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1, local_run)
-        return "passed"
+        CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course, 1,local_run)
+        Element = WebDriverWait(sBrowser, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(),'%s')]" %course)))
+        actual_text = WebDriverWait(Element, WebDriver_Wait_Short).until(lambda driver :Element.text)
+        if actual_text == course:
+            CommonUtil.ExecLog(sModuleInfo, "Successfully verified that course exists: %s"%actual_text, 1,local_run)
+            return "passed"            
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()        
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
-        CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3,local_run)
-        return "failed"
-
-def Delete_A_Course(course_name):
-    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
-    try:
-        Expand_Menu_By_Name('Site administration')
-        time.sleep(3)
-        CommonUtil.ExecLog(sModuleInfo, "Find site admin top level element", 1, local_run)
-        site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
-        parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
-        grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))        
-        CommonUtil.ExecLog(sModuleInfo, "Expand Courses from site admin menu", 1, local_run)
-        Expand_Menu_By_Name("Courses",grand_parent_site_admin)
-        CommonUtil.ExecLog(sModuleInfo, "Manage courses and categories", 1, local_run)
-        Click_Element_By_Name('Manage courses and categories',grand_parent_site_admin)
-        CommonUtil.ExecLog(sModuleInfo, "Search for course: %s"%course_name, 1,local_run)        
-        Set_Text_Field_Value_By_ID('coursesearchbox',course_name)
-        Click_By_Parameter_And_Value("value","Go")
-        time.sleep(5)
-        CommonUtil.ExecLog(sModuleInfo, "Waiting for search result page to show up", 1, local_run)          
-        search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-listing')))
-        CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course_name, 1,local_run)  
-        try:
-            course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
-            CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 1,local_run)
-        except:
-            CommonUtil.ExecLog(sModuleInfo, "Unable to find your course.  Make sure course exists", 3, local_run)
-            return "failed"
-        CommonUtil.ExecLog(sModuleInfo, "Deleting your course: %s"%course_name, 1,local_run)
-        course_element_row = WebDriverWait(course_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
-        Click_By_Parameter_And_Value("alt","Delete",course_element_row)
-        time.sleep(5)
-        Click_By_Parameter_And_Value ("value","Continue")
-        CommonUtil.ExecLog(sModuleInfo, "Successfully deleted your course: %s"%course_name, 1,local_run)
-        CommonUtil.ExecLog(sModuleInfo, "Verifying if course is deleted completely", 1, local_run)
-        time.sleep(7)
-        delete_result =  Verify_Text_Message_By_Text('%s has been completely deleted'%course_name)
-        if delete_result == "passed":
-            CommonUtil.ExecLog(sModuleInfo, "Completely deleted your course: %s"%course_name, 1,local_run)
-            return "passed"
-        else:
-            CommonUtil.ExecLog(sModuleInfo, "Could not verify if course was deleted completely", 3, local_run)
-            return "failed"
-    except Exception, e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()        
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
-        CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3,local_run)
-        return "failed"
+        CommonUtil.ExecLog(sModuleInfo, "Could not find your course: %s.  Error: %s"%(course,Error_Detail), 3,local_run)
+        return "failed"  
 
 def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
     '''
@@ -649,22 +594,20 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
         Expand_Menu_By_Name('Site administration')
         time.sleep(3)
         CommonUtil.ExecLog(sModuleInfo, "Find site admin top level element", 1, local_run)
-        site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
-        parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
-        grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))        
+        administration_section = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID,'settingsnav')))    
         CommonUtil.ExecLog(sModuleInfo, "Expand Courses from site admin menu", 1, local_run)
-        Expand_Menu_By_Name("Courses",grand_parent_site_admin)
+        Expand_Menu_By_Name("Courses",administration_section)
         CommonUtil.ExecLog(sModuleInfo, "Manage courses and categories", 1, local_run)
-        Click_Element_By_Name('Manage courses and categories',grand_parent_site_admin)
+        Click_Element_By_Name('Manage courses and categories',administration_section)
         CommonUtil.ExecLog(sModuleInfo, "Search for course: %s"%course_name, 1,local_run)        
         Set_Text_Field_Value_By_ID('coursesearchbox',course_name)
         Click_By_Parameter_And_Value("value","Go")
         time.sleep(5)
         CommonUtil.ExecLog(sModuleInfo, "Waiting for search result page to show up", 1, local_run)          
-        search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-listing')))
+        search_course_list = WebDriverWait(sBrowser, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-listing')))
         CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course_name, 1,local_run)  
         try:
-            course_element = WebDriverWait(search_course_list, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
+            course_element = WebDriverWait(search_course_list, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
             CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 2,local_run)
             if cleanup == "true":
                 CommonUtil.ExecLog(sModuleInfo, "Deleting your course: %s"%course_name, 1,local_run)
@@ -675,18 +618,9 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
                 CommonUtil.ExecLog(sModuleInfo, "Successfully deleted your course: %s"%course_name, 1,local_run)
                 CommonUtil.ExecLog(sModuleInfo, "Verifying if course is deleted completely", 1, local_run)
                 delete_result =  Verify_Text_Message_By_Text('%s has been completely deleted'%short_name)
+                Click_By_Parameter_And_Value ("value","Continue")
                 if delete_result == "passed":
                     CommonUtil.ExecLog(sModuleInfo, "Completely deleted your course: %s"%course_name, 1,local_run)
-                    CommonUtil.ExecLog(sModuleInfo, "expanding Site admin > Courses", 1, local_run)
-                    Expand_Menu_By_Name('Site administration')
-                    time.sleep(3)
-                    CommonUtil.ExecLog(sModuleInfo, "Find site admin top level element", 1, local_run)
-                    site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
-                    parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
-                    grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))        
-                    CommonUtil.ExecLog(sModuleInfo, "Expand Courses from site admin menu", 1, local_run)
-                    Expand_Menu_By_Name("Courses",grand_parent_site_admin)
-        
                 else:
                     CommonUtil.ExecLog(sModuleInfo, "Could not verify if course was deleted completely", 3, local_run)
                     return "failed"
@@ -696,8 +630,6 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
         except:
             CommonUtil.ExecLog(sModuleInfo, "Unable to find your course.", 1, local_run)
         print "Create you course now"
-        
-
         CommonUtil.ExecLog(sModuleInfo, "Clicking Manage Course and Categories", 1, local_run)
         #Click_By_Parameter_And_Value("class","tree_item leaf active_tree_node")
         Click_Element_By_Name('Manage courses and categories')
@@ -729,9 +661,7 @@ def Create_A_New_Course(course_name, short_name, course_id, cleanup="true"):
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
         CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3,local_run)
-        return "failed"
-        
-
+        return "failed"    
 
 def Verify_User_Level_Settings(user_level):    
     '''
@@ -776,4 +706,179 @@ def Verify_User_Level_Settings(user_level):
         CommonUtil.ExecLog(sModuleInfo, "Unable confirm type of user.  Error: %s"%Error_Detail, 3,local_run)
         return "failed"
 
+def Delete_A_Course(course_name):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        Expand_Menu_By_Name('Site administration')
+        time.sleep(3)
+        CommonUtil.ExecLog(sModuleInfo, "Find site admin top level element", 1, local_run)
+        site_admin_element = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Site administration']")))
+        parent_site_admin = WebDriverWait(site_admin_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        grand_parent_site_admin = WebDriverWait(parent_site_admin, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))        
+        CommonUtil.ExecLog(sModuleInfo, "Expand Courses from site admin menu", 1, local_run)
+        Expand_Menu_By_Name("Courses",grand_parent_site_admin)
+        CommonUtil.ExecLog(sModuleInfo, "Manage courses and categories", 1, local_run)
+        Click_Element_By_Name('Manage courses and categories',grand_parent_site_admin)
+        CommonUtil.ExecLog(sModuleInfo, "Search for course: %s"%course_name, 1,local_run)        
+        Set_Text_Field_Value_By_ID('coursesearchbox',course_name)
+        Click_By_Parameter_And_Value("value","Go")
+        time.sleep(5)
+        CommonUtil.ExecLog(sModuleInfo, "Waiting for search result page to show up", 1, local_run)          
+        search_course_list = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-listing')))
+        CommonUtil.ExecLog(sModuleInfo, "Searching for course: %s"%course_name, 1,local_run)  
+        try:
+            course_element = WebDriverWait(search_course_list, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%course_name)))    
+            CommonUtil.ExecLog(sModuleInfo, "Found your course: %s"%course_name, 1,local_run)
+        except:
+            CommonUtil.ExecLog(sModuleInfo, "Unable to find your course.  Make sure course exists", 3, local_run)
+            return "failed"
+        CommonUtil.ExecLog(sModuleInfo, "Deleting your course: %s"%course_name, 1,local_run)
+        course_element_row = WebDriverWait(course_element, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+        Click_By_Parameter_And_Value("alt","Delete",course_element_row)
+        time.sleep(5)
+        Click_By_Parameter_And_Value ("value","Continue")
+        CommonUtil.ExecLog(sModuleInfo, "Successfully deleted your course: %s"%course_name, 1,local_run)
+        CommonUtil.ExecLog(sModuleInfo, "Verifying if course is deleted completely", 1, local_run)
+        time.sleep(7)
+        delete_result =  Verify_Text_Message_By_Text('%s has been completely deleted'%course_name)
+        if delete_result == "passed":
+            CommonUtil.ExecLog(sModuleInfo, "Completely deleted your course: %s"%course_name, 1,local_run)
+            return "passed"
+        else:
+            CommonUtil.ExecLog(sModuleInfo, "Could not verify if course was deleted completely", 3, local_run)
+            return "failed"
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        CommonUtil.ExecLog(sModuleInfo, "Unable to create course.  Error: %s"%Error_Detail, 3,local_run)
+        return "failed"
 
+
+def Tear_Down():
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        CommonUtil.TakeScreenShot(sModuleInfo, local_run)
+        sBrowser.close()
+        CommonUtil.ExecLog(sModuleInfo, "Successfully clicked Save Config button", 1, local_run)
+        return "passed"
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        CommonUtil.ExecLog(sModuleInfo, "No open browser to close.  Error: %s"%Error_Detail, 3,local_run)
+        return "failed"
+
+def Student_Exists(first_name, email_add):
+    '''
+    This function assumes you are logged in as Admin and Editing is on
+    '''
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    
+    try:
+        CommonUtil.TakeScreenShot(sModuleInfo, local_run)
+        CommonUtil.ExecLog(sModuleInfo, "Searching for Student: %s"%first_name, 1,local_run)
+        user_list_page = 'http://csdev-iqbal.jbldev.com/moodle/admin/user.php'
+        OpenLink (user_list_page)
+        try:
+            #clear any previous filters
+            CommonUtil.ExecLog(sModuleInfo, "If filter exists, removing them", 1,local_run)      
+            Click_By_Parameter_And_Value("value","Remove all filters")
+            CommonUtil.ExecLog(sModuleInfo, "Filters found and removed all", 1,local_run)  
+        except:
+            CommonUtil.ExecLog(sModuleInfo, "No filters were found", 1,local_run)  
+        
+        CommonUtil.ExecLog(sModuleInfo, "Search for student by first name:  %s"%first_name, 1,local_run)        
+        Set_Text_Field_Value_By_ID('id_realname',first_name)
+        Click_By_Parameter_And_Value("value","Add filter")
+        time.sleep(5)
+        search_users_list = WebDriverWait(sBrowser, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.ID, 'users')))
+        CommonUtil.ExecLog(sModuleInfo, "Searching for user by email address: %s"%email_add, 1,local_run)  
+        try:
+            user_by_email = WebDriverWait(search_users_list, WebDriver_Wait_Short).until(EC.presence_of_element_located((By.XPATH, "//*[text()='%s']"%email_add)))    
+            CommonUtil.ExecLog(sModuleInfo, "Found user by email address: %s"%email_add, 1,local_run)
+            user_row  = WebDriverWait(user_by_email, WebDriver_Wait).until(EC.presence_of_element_located((By.XPATH, "..")))
+            return user_row
+        except:
+            CommonUtil.ExecLog(sModuleInfo, "Could not find user by email address: %s"%email_add, 1,local_run)            
+            return "failed"
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        CommonUtil.ExecLog(sModuleInfo, "Could not find user by email: %s.  Error: %s"%(email_add,Error_Detail), 3,local_run)
+        return "failed"  
+
+def Delete_A_Student(first_name, email_add):
+    '''
+    This function assumes you are logged in as Admin and Editing is on
+    ''' 
+    try:
+        sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name   
+        student_search = Student_Exists(first_name, email_add)
+        if isinstance(student_search,str) == True:
+            CommonUtil.ExecLog(sModuleInfo, "Could not find user by email address: %s"%email_add, 1,local_run) 
+            return "passed"
+        else:
+            Click_By_Parameter_And_Value("alt","Delete",student_search)
+            time.sleep(5)
+            Click_By_Parameter_And_Value ("value","Continue")
+            CommonUtil.ExecLog(sModuleInfo, "Verifying if user is deleted: %s"%email_add, 1,local_run)
+            verify_delete = Student_Exists(first_name, email_add)
+            if isinstance(verify_delete,str) == True:
+                CommonUtil.ExecLog(sModuleInfo, "User was successfully deleted: %s"%email_add, 1,local_run)
+                return "passed"
+            else:
+                CommonUtil.ExecLog(sModuleInfo, "User was not deleted: %s"%email_add, 3,local_run)
+                return "failed"
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        CommonUtil.ExecLog(sModuleInfo, "Unable to find out if student was deleted or not.  Error: %s"%Error_Detail, 3,local_run)
+        return "failed"    
+    
+def Create_A_New_Student(user_name, first_name, last_name, email_add, new_password,city, cleanup):
+    '''
+    This function assumes you are logged in as Admin and Editing is turned on
+    cleanup = "true" will always delete the user first
+    '''
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        if cleanup == "true":
+            cleanup_result = Delete_A_Student(first_name, email_add)
+            if cleanup_result == "failed":
+                CommonUtil.ExecLog(sModuleInfo, "Unable to delete the existing user", 3, local_run)  
+                return "failed"
+        else:
+            check_if_exits = Student_Exists(first_name, email_add)
+            if isinstance(check_if_exits,str) == False:
+                return "passed"
+        main_section = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_element_located((By.ID,"region-main"))) 
+        CommonUtil.ExecLog(sModuleInfo, "Clicking add new user button", 1, local_run)  
+        Click_Element_By_Name('Add a new user',main_section)
+        time.sleep(5)
+        CommonUtil.ExecLog(sModuleInfo, "Filling out the new student form", 1, local_run)  
+        Set_Text_Field_Value_By_ID('id_username',user_name)   
+        Set_Text_Field_Value_By_ID('id_firstname',first_name)   
+        Set_Text_Field_Value_By_ID('id_lastname',last_name)   
+        Set_Text_Field_Value_By_ID('id_email',email_add)   
+        Set_Text_Field_Value_By_ID('id_newpassword',new_password)   
+        Set_Text_Field_Value_By_ID('id_city',city)   
+        CommonUtil.ExecLog(sModuleInfo, "Submitting the new user form", 1, local_run) 
+        time.sleep(3) 
+        Click_By_Parameter_And_Value ("value","Create user")
+        CommonUtil.ExecLog(sModuleInfo, "Verifying by searching the user to make sure it was created successfully", 1, local_run) 
+        verify_new_user = Student_Exists(first_name, email_add)
+        if isinstance(verify_new_user,str) == True:
+            CommonUtil.ExecLog(sModuleInfo, "Student was not created properly", 3, local_run)  
+            return "failed"
+        else:
+            CommonUtil.ExecLog(sModuleInfo, "Verified student was created successfully", 1, local_run)  
+            return "passed"
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()        
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        CommonUtil.ExecLog(sModuleInfo, "Unable to create student.  Error: %s"%Error_Detail, 3,local_run)
+        return "failed"    

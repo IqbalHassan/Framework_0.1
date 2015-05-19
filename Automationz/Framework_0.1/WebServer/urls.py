@@ -384,6 +384,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/GetAllTeam/$',GetAllTeam),
     url(r'^Home/.*/ReorderSet/$',ReorderSet),
 	url(r'^Home/(?P<project_id>[^/]*)/ScheduleRun/$',ScheduleRunHome),
+    url(r'^Home/(?P<project_id>[^/]*)/SetupEmail/$',SetupEmailHome),
     url(r'^Home/.*/get_all_schedule_run/$',get_all_schedule_run),
     url(r'^Home/.*/AutoSetSearch/$',AutoSetSearch),
     url(r'^Home/.*/enlist_schedule/$',enlist_schedule),
@@ -392,6 +393,8 @@ urlpatterns += patterns('',
     url(r'^Home/.*/delete_schedule_run/$',delete_schedule_run),
     url(r'^Home/(?P<project_id>[^/]*)/ScheduleRun/(?P<schedule_id>[^/]*)/$',Edit_Schedule_Page,name="schedule_view"),
     url(r'^Home/.*/GetRelatedUrl/$', Get_Related_Url),
+    url(r'^Home/.*/updatemailingdetails/$',updatemailingdetails),
+    url(r'^Home/.*/getemaildetails/$',getemaildetails),
     )
 
 

@@ -1,0 +1,32 @@
+python 2.7.9.4 32 bit (pre requisite)
+path variable to add: C:\Python27;C:\Python27\Scripts;
+
+For AS.py:
+
+With pip:
+
+django
+selenium
+psutil
+django-celery
+wmi
+requests
+poster
+
+
+Without pip:
+
+pscopg2
+pywin32
+dateutil
+six
+PIL
+
+
+
+For WebServer:
+
+with pip:
+
+django-env
+
