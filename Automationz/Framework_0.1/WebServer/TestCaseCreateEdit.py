@@ -1105,15 +1105,17 @@ def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
         for eachitem in tag_listing:
             Tag_List.append((eachitem,name))
     
-        # Add Associated Bugs
-    Associated_Bugs_List = Associated_Bugs_List.split(",")
-    for eachBugId in Associated_Bugs_List:
-        Tag_List.append(('%s' % eachBugId.strip(), 'JiraId'))
+    # Add Associated Bugs
+    if Associated_Bugs_List[0]!='':
+        Associated_Bugs_List = Associated_Bugs_List[0].split(",")
+        for eachBugId in Associated_Bugs_List:
+            Tag_List.append(('%s' % eachBugId.strip(), 'JiraId'))
 
     # Add Associated Requirements
-    Requirement_ID_List = Requirement_ID_List.split(",")
-    for eachReqId in Requirement_ID_List:
-        Tag_List.append(('%s' % eachReqId.strip(), 'PRDId'))
+    if Requirement_ID_List[0]!='':
+        Requirement_ID_List = Requirement_ID_List[0].split(",")
+        for eachReqId in Requirement_ID_List:
+            Tag_List.append(('%s' % eachReqId.strip(), 'PRDId'))
         
     for eachTag in Tag_List:
         if DBUtil.IsDBConnectionGood(conn) == False:
@@ -1426,7 +1428,7 @@ def Insert_TestCaseName(Conn, TC_Id, TC_Name, TC_Creator,TC_Type):
     # Form the Dictionary to add test case information
     Dict = {
               'tc_id':TC_Id,
-              'tc_name':TC_Name,
+              'tc_name':TC_Name.strip(),
               'tc_type':TC_Type,
               'tc_localization':'Yes',
               'tc_createdby':TC_Creator,
