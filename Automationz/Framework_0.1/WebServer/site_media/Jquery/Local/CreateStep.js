@@ -48,9 +48,9 @@ $(document).ready(function(){
     $('input[name="step_team"]').val(team_id);
 
     description_fill();
-    always_run();
     verification_radio();
     Continue_radio();
+    always_run();
     TimePicker();
     
 
@@ -645,7 +645,7 @@ function always_run(){
 
     if($("#yes_always").hasClass("selected"))
     {
-        var value = $("#always_run").attr('value');
+        var value = $("#yes_always").attr('value');
         $("#always_run").attr('value',value);
     }
     else if($("#no_always").hasClass("selected"))
@@ -850,7 +850,7 @@ function submit_step(){
         var step_expect = $("#step_expect").val().trim();
         var verify_radio = $("#verify_radio").val().trim();
         var continue_radio = $("#continue_radio").val().trim();
-        var always_run=$('#always_run').val().trim();
+        var always_run=$("#always_run").val().trim();
         var step_time = $("#step_time").val().trim();
         var automata = $("#automata").val().trim();
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
