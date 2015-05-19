@@ -177,15 +177,7 @@ def verify_user_level_settings(dependency,step_data,temp_q):
         temp_q.put("Failed")
         return "Failed"
 
-def tear_down(dependency,step_data,temp_q):
-    try:        
-        sTestStepReturnStatus = SeleniumScript.Tear_Down()
-        print sTestStepReturnStatus
-        temp_q.put(sTestStepReturnStatus)
-        return sTestStepReturnStatus
-    except:
-        temp_q.put("Failed")
-        return "Failed"
+
 def create_a_new_course(dependency,step_data,temp_q):
     try:
         first_data_set=step_data[0]
@@ -197,6 +189,48 @@ def create_a_new_course(dependency,step_data,temp_q):
         print sTestStepReturnStatus
         temp_q.put(sTestStepReturnStatus)
         return sTestStepReturnStatus    
+    except:
+        temp_q.put("Failed")
+        return "Failed"
+
+def create_a_new_student(dependency,step_data,temp_q):
+    try:
+        first_data_set=step_data[0]
+        user_name=first_data_set[0][1]
+        first_name=first_data_set[1][1]
+        last_name=first_data_set[2][1]
+        email_add =first_data_set[3][1]
+        new_password = first_data_set[4][1]
+        city = first_data_set[5][1]
+        cleanup = first_data_set[6][1]
+        sTestStepReturnStatus = SeleniumScript.Create_A_New_Student(user_name, first_name, last_name, email_add, new_password,city, cleanup)
+        print sTestStepReturnStatus
+        temp_q.put(sTestStepReturnStatus)
+        return sTestStepReturnStatus    
+    except:
+        temp_q.put("Failed")
+        return "Failed"
+
+def delete_a_student(dependency,step_data,temp_q):
+    try:
+        first_data_set=step_data[0]
+        first_name=first_data_set[0][1]
+        email_add=first_data_set[1][1]
+        sTestStepReturnStatus = SeleniumScript.Delete_A_Student(first_name,email_add)
+        print sTestStepReturnStatus
+        temp_q.put(sTestStepReturnStatus)
+        return sTestStepReturnStatus    
+    except:
+        temp_q.put("Failed")
+        return "Failed"
+
+
+def tear_down(dependency,step_data,temp_q):
+    try:        
+        sTestStepReturnStatus = SeleniumScript.Tear_Down()
+        print sTestStepReturnStatus
+        temp_q.put(sTestStepReturnStatus)
+        return sTestStepReturnStatus
     except:
         temp_q.put("Failed")
         return "Failed"
