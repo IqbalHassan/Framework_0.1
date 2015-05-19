@@ -12776,9 +12776,6 @@ def AddTestCasesSetTag(request):
                         Conn.close()
                         if result:
                             added_list.append(each)
-                    else:
-                        added_list.append(each)
-                
                 if len(added_list) > 0:
                     message = "%s added to Test %s:%s" % (
                         ",".join(added_list), type_tag.strip(), name.strip())

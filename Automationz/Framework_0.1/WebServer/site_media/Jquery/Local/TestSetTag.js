@@ -163,6 +163,84 @@ function configureLinks(temp,name,project_id,team_id){
         });
     });
 }
+var colors = {
+    'pass' : '#65bd10',
+    'fail' : '#fd0006',
+    'block' : '#ff9e00',
+    'submitted' : '#808080',
+    'in-progress':'#0000ff',
+    'skipped':'#cccccc',
+    'dev': '#aaaaaa',
+    'ready': '#65bd10'
+};
+
+function PerformSearch(name,project_id,team_id,test_case_per_page,test_case_page_current){
+    $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:true,total_time:true,project_id:project_id,team_id:team_id,test_case_per_page:test_case_per_page,test_case_page_current:test_case_page_current},function(data){
+        if(data['TableData'].length!=0){
+            //ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
+            var message='';
+            message+='<table class="two-column-emphasis">';
+            message+='<tr>';
+            for(var i=0;i<data['Heading'].length;i++){
+                message+='<th>'+data['Heading'][i]+'</th>';
+            }
+            message+='</tr>';
+            for(var i=0;i<data['TableData'].length;i++){
+                message+='<tr>';
+                for(var j=0;j<data['TableData'][i].length;j++){
+                switch(data['TableData'][i][j]){
+                    case 'Dev':
+                        message += '<td style="background-color: ' + colors['dev'] + '; color: #fff;">' + data['TableData'][i][j] + '</font></td>';
+                        continue;
+                    case 'Ready':
+                        message += '<td style="background-color: ' + colors['ready'] + '; color: #fff;">' + data['TableData'][i][j] + '</font></td>';
+                        continue;
+                    }
+                    message+='<td>'+data['TableData'][i][j]+'</td>';
+                }
+                message+='</tr>';
+            }
+            message+='</table> ';
+            $('#RunTestResultTable').html(message);
+            $('#pagination_div').pagination({
+                items:data['Count'],
+                itemsOnPage:test_case_per_page,
+                cssStyle: 'dark-theme',
+                currentPage:test_case_page_current,
+                displayedPages:2,
+                edges:2,
+                hrefTextPrefix:'#',
+                onPageClick:function(PageNumber){
+                    PerformSearch(name,project_id,team_id,test_case_per_page,PageNumber);
+                }
+            });
+            $('#time').html('<b> - '+data['time']+'</b>')
+
+            implementDropDown("#RunTestResultTable");
+            var indx = 0;
+            $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
+                var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+                $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-pencil fa-2x editBtn" id="'+ID+'"></i></span>');
+                $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-copy fa-2x templateBtn" id="'+ID+'"></i></span>');
+
+
+                indx++;
+            });
+
+            $(".editBtn").click(function (){
+                window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id");
+            });
+            $(".templateBtn").click(function (){
+                window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id");
+            });
+        }
+        else{
+            $('#RunTestResultTable').html('<p style="font-weight: bold; text-align: center;" class="Text">There is no test cases</p>');
+            $('#pagination_div').pagination('destroy');
+        }
+    });
+}
 function ClickButton(project_id,team_id,test_case_per_page,test_case_page_current){
     $('.element').click(function(){
         $('.element').css({'background-color':'#ffffff'});
@@ -174,47 +252,7 @@ function ClickButton(project_id,team_id,test_case_per_page,test_case_page_curren
         $('#name').html('<p style="font-weight: bold; text-align: left;margin-left: -10%" class="Text">'+name+'<span id="time"></span></p>');
         name+=':';
         $('#infoDiv').css({'display':'block'});
-        $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:true,total_time:true,project_id:project_id,team_id:team_id,test_case_per_page:test_case_per_page,test_case_page_current:test_case_page_current},function(data){
-            if(data['TableData'].length!=0){
-                ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
-                $('#pagination_div').pagination({
-                    items:data['Count'],
-                    itemsOnPage:test_case_per_page,
-                    cssStyle: 'dark-theme',
-                    currentPage:test_case_page_current,
-                    displayedPages:2,
-                    edges:2,
-                    hrefTextPrefix:'#',
-                    onPageClick:function(PageNumber){
-                        PerformSearch(project_id,team_id,test_case_per_page,PageNumber);
-                    }
-                });
-                $('#time').html('<b> - '+data['time']+'</b>')
-
-                implementDropDown("#RunTestResultTable");
-                var indx = 0;
-                $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
-                    var ID = $("#RunTestResultTable tr>td:nth-child(1):eq("+indx+")").text().trim();
-
-                    $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-pencil fa-2x editBtn" id="'+ID+'"></i></span>');
-                    $(this).after('<span class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-copy fa-2x templateBtn" id="'+ID+'"></i></span>');
-
-
-                    indx++;
-                });
-
-                $(".editBtn").click(function (){
-                    window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id");
-                });
-                $(".templateBtn").click(function (){
-                    window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id");
-                });
-            }
-            else{
-                $('#RunTestResultTable').html('<p style="font-weight: bold; text-align: center;" class="Text">There is no test cases</p>');
-                $('#pagination_div').pagination('destroy');
-            }
-        });
+        PerformSearch(name.trim(),project_id,team_id,test_case_per_page,test_case_page_current);
     });
     $('.new').click(function(event){
         var temp=$(this).attr('data-id').trim();
