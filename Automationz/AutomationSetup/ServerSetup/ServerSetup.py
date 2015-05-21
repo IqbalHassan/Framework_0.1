@@ -26,6 +26,22 @@ def install(type = "", module_name = "", module_version = None, cmd = ""):
 
 def Installer_With_Pip():
 
+
+    # Check and install jira
+     
+    try:
+        install(type="pip", module_name="jira")
+    except:
+        print "unable to install/update %s"%module_name  
+
+
+    # Check and install gitpython
+     
+    try:
+        install(type="pip", module_name="gitpython")
+    except:
+        print "unable to install/update %s"%module_name  
+
     # Check and install pygooglechart
      
     try:
@@ -241,9 +257,9 @@ def unzip(zipFilePath, destDir):
     zfile.close()
     
 def main():
-    #Installer_With_Pip()
+    Installer_With_Pip()
     Installer_With_Exe()
-    #Selenium_Driver_Files()
+    Selenium_Driver_Files()
 
 
 main()
