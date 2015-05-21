@@ -2844,8 +2844,8 @@ def Run_Test(request):
                     Conn.close()
                     print Result
                 
-                first_slot=TestCasesIDs[:2]
-                second_slot=TestCasesIDs[2:]
+                first_slot=TestCasesIDs[:1]
+                second_slot=TestCasesIDs[1:]
                 #now first save the first slot and progress
                 if is_rerun == "rerun":
                     RegisterReRunPermanentInfo(runid,previous_run,first_slot)
