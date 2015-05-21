@@ -25,6 +25,21 @@ def install(type = "", module_name = "", module_version = None, cmd = ""):
     subprocess.call(command, shell=True)
 
 def Installer_With_Pip():
+
+    # Check and install pygooglechart
+     
+    try:
+        install(type="pip", module_name="pygooglechart")
+    except:
+        print "unable to install/update %s"%module_name  
+  
+    # Check and install mailer
+     
+    try:
+        install(type="pip", module_name="Mailer")
+    except:
+        print "unable to install/update %s"%module_name  
+
     
     # Check and install urllib3
     try:
@@ -32,7 +47,8 @@ def Installer_With_Pip():
     except:
         print "unable to install/update %s"%module_name  
     
-    
+
+            
     # Check and install django
     django_version = "1.5"
     try:
@@ -93,6 +109,22 @@ def Installer_With_Pip():
 
 
 def Installer_With_Exe():
+    
+    # Check and install git
+    try:
+        import git
+    except ImportError as e:
+        try:
+            print "trying to download and install git"
+            git_easy_install = "python -m easy_install https://pypi.python.org/packages/source/g/gitapi/gitapi-1.1.0a2.tar.gz#md5=ea45d1173bd4837041bc7ac32c570fcb"
+            
+            install(cmd=git_easy_install)
+        except:
+            print "unable to install/update git"    
+
+    
+    
+    
     # Check and install psycopg2
     try:
         import psycopg2
@@ -209,9 +241,9 @@ def unzip(zipFilePath, destDir):
     zfile.close()
     
 def main():
-    Installer_With_Pip()
+    #Installer_With_Pip()
     Installer_With_Exe()
-    Selenium_Driver_Files()
+    #Selenium_Driver_Files()
 
 
 main()
