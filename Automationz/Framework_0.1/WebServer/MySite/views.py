@@ -2593,45 +2593,21 @@ def Run_Test(request):
                         Conn.close()
                     else:
                         Conn = GetConnection()
-                        DB.UpdateRecordInTable(
-                            Conn,
-                            "test_run_env",
-                            "where tester_id = '%s' and status = 'In-Progress'" %
-                            TesterId,
-                            status="Cancelled")
+                        DB.UpdateRecordInTable(Conn,"test_run_env","where tester_id = '%s' and status = 'In-Progress'" %TesterId,status="Cancelled")
                         Conn.close()
                         Conn = GetConnection()
-                        DB.UpdateRecordInTable(
-                            Conn,
-                            "test_env_results",
-                            "where tester_id = '%s' and status = 'In-Progress'" %
-                            TesterId,
-                            status="Cancelled")
+                        DB.UpdateRecordInTable(Conn,"test_env_results","where tester_id = '%s' and status = 'In-Progress'" %TesterId,status="Cancelled")
                         Conn.close()
                         Conn = GetConnection()
-                        DB.UpdateRecordInTable(
-                            Conn,
-                            "test_run_env",
-                            "where tester_id = '%s' and status = 'Submitted'" %
-                            TesterId,
-                            status="Cancelled")
+                        DB.UpdateRecordInTable(Conn,"test_run_env","where tester_id = '%s' and status = 'Submitted'" %TesterId,status="Cancelled")
                         Conn.close()
                         Conn = GetConnection()
-                        DB.UpdateRecordInTable(
-                            Conn,
-                            "test_env_results",
-                            "where tester_id = '%s' and status = 'Submitted'" %
-                            TesterId,
-                            status="Cancelled")
+                        DB.UpdateRecordInTable(Conn,"test_env_results","where tester_id = '%s' and status = 'Submitted'" %TesterId,status="Cancelled")
                         Conn.close()
 
                         status = 'Unassigned'
                         Conn = GetConnection()
-                        result = DB.DeleteRecord(
-                            Conn,
-                            "test_run_env",
-                            tester_id=TesterId,
-                            status=status)
+                        result = DB.DeleteRecord(Conn,"test_run_env",tester_id=TesterId,status=status)
                         updated_time = TimeStamp("string")
                         Dict = {
                             'tester_id': TesterId.strip(),
@@ -2640,14 +2616,10 @@ def Run_Test(request):
                             'machine_ip': machine_ip,
                             'branch_version': Branch_Version.strip()}
                         Conn = GetConnection()
-                        tes2 = DB.InsertNewRecordInToTable(
-                            Conn,
-                            "test_run_env",
-                            **Dict)
+                        tes2 = DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
                         Conn.close()
                         if(tes2):
-                            query = "select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1" % (
-                                TesterId.strip())
+                            query = "select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1" % (TesterId.strip())
                             Conn = GetConnection()
                             temp_id = DB.GetData(Conn, query)
                             if isinstance(temp_id, list):
@@ -2657,10 +2629,7 @@ def Run_Test(request):
                                     Dict.update({'machine_serial': machine_id, 'name': each[
                                                 1], 'type': each[0], 'bit': each[2], 'version': each[3]})
                                     Conn = GetConnection()
-                                    result = DB.InsertNewRecordInToTable(
-                                        Conn,
-                                        "machine_dependency_settings",
-                                        **Dict)
+                                    result = DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
                                     Conn.close()
                             Conn = GetConnection()
                             Dict = {
@@ -2669,47 +2638,22 @@ def Run_Test(request):
                                 'team_id': team_id
                             }
                             print DB.InsertNewRecordInToTable(Conn, "machine_project_map", **Dict)
-                if Machine_Status[0][
-                        0] == 'Automation' and is_rerun == "rerun":
+                if Machine_Status[0][0] == 'Automation' and is_rerun == "rerun":
                     Conn = GetConnection()
-                    DB.UpdateRecordInTable(
-                        Conn,
-                        "test_run_env",
-                        "where tester_id = '%s' and status = 'In-Progress'" %
-                        TesterId,
-                        status="Cancelled")
+                    DB.UpdateRecordInTable(Conn,"test_run_env","where tester_id = '%s' and status = 'In-Progress'" %TesterId,status="Cancelled")
                     Conn.close()
                     Conn = GetConnection()
-                    DB.UpdateRecordInTable(
-                        Conn,
-                        "test_env_results",
-                        "where tester_id = '%s' and status = 'In-Progress'" %
-                        TesterId,
-                        status="Cancelled")
+                    DB.UpdateRecordInTable(Conn,"test_env_results","where tester_id = '%s' and status = 'In-Progress'" %TesterId,status="Cancelled")
                     Conn.close()
                     Conn = GetConnection()
-                    DB.UpdateRecordInTable(
-                        Conn,
-                        "test_run_env",
-                        "where tester_id = '%s' and status = 'Submitted'" %
-                        TesterId,
-                        status="Cancelled")
+                    DB.UpdateRecordInTable(Conn,"test_run_env","where tester_id = '%s' and status = 'Submitted'" %TesterId,status="Cancelled")
                     Conn.close()
                     Conn = GetConnection()
-                    DB.UpdateRecordInTable(
-                        Conn,
-                        "test_env_results",
-                        "where tester_id = '%s' and status = 'Submitted'" %
-                        TesterId,
-                        status="Cancelled")
+                    DB.UpdateRecordInTable(Conn,"test_env_results","where tester_id = '%s' and status = 'Submitted'" %TesterId,status="Cancelled")
                     Conn.close()
                     status = 'Unassigned'
                     Conn = GetConnection()
-                    result = DB.DeleteRecord(
-                        Conn,
-                        "test_run_env",
-                        tester_id=TesterId,
-                        status=status)
+                    result = DB.DeleteRecord(Conn,"test_run_env",tester_id=TesterId,status=status)
                     updated_time = TimeStamp("string")
                     Dict = {
                         'tester_id': TesterId.strip(),
@@ -2718,14 +2662,10 @@ def Run_Test(request):
                         'machine_ip': machine_ip,
                         'branch_version': Branch_Version.strip()}
                     Conn = GetConnection()
-                    tes2 = DB.InsertNewRecordInToTable(
-                        Conn,
-                        "test_run_env",
-                        **Dict)
+                    tes2 = DB.InsertNewRecordInToTable(Conn,"test_run_env",**Dict)
                     Conn.close()
                     if(tes2):
-                        query = "select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1" % (
-                            TesterId.strip())
+                        query = "select id from test_run_env where tester_id='%s' and status='Unassigned' limit 1" % (TesterId.strip())
                         Conn = GetConnection()
                         temp_id = DB.GetData(Conn, query)
                         if isinstance(temp_id, list):
@@ -2738,10 +2678,7 @@ def Run_Test(request):
                                              'bit': each[2],
                                              'version': each[3]})
                                 Conn = GetConnection()
-                                result = DB.InsertNewRecordInToTable(
-                                    Conn,
-                                    "machine_dependency_settings",
-                                    **Dict)
+                                result = DB.InsertNewRecordInToTable(Conn,"machine_dependency_settings",**Dict)
                                 Conn.close()
                         Conn = GetConnection()
                         Dict = {
@@ -2864,39 +2801,63 @@ def Run_Test(request):
                         for each in test_case_ordering:
                             if each[0] in TestCasesIDs:
                                 test_temp.append(each[0])
-                        TestCasesIDs=test_temp        
+                        TestCasesIDs=test_temp
+                if is_rerun=='rerun':        
+                    test_case_column_query = "select column_name from information_schema.columns where table_name='result_test_cases'"
+                else:
+                    test_case_column_query = "select column_name from information_schema.columns where table_name='test_cases'"
+                Conn=GetConnection()
+                test_case_column = DB.GetData(Conn, test_case_column_query)
+                Conn.close()
+                for each in TestCasesIDs:
+                    test_case = each
+                    if is_rerun=='rerun':
+                        test_case_query = "select * from result_test_cases where tc_id='%s' and run_id='%s'" % (test_case, previous_run)
+                        test_case_tag_query = "select name from result_test_case_tag where tc_id='%s' and run_id='%s' and property='Status'" % (test_case, previous_run)
+                    else:
+                        test_case_query = "select * from test_cases where tc_id='%s'" % test_case
+                        test_case_tag_query="select name from test_case_tag where tc_id='%s' and property='Status'"%test_case        
+                    Dict = {}
+                    Conn=GetConnection()
+                    test_case_column_data = DB.GetData(Conn, test_case_query, False)
+                    Conn.close()
+                    Conn=GetConnection()
+                    test_case_status=DB.GetData(Conn,test_case_tag_query)
+                    Conn.close()
+                    ###populate Dict for the test_cases
+                    for each in test_case_column_data:
+                        for eachitem in zip(each, test_case_column):
+                            Dict.update({eachitem[1]: eachitem[0]})
+                    Dict.update({'run_id': runid})
+                    print Dict
+                    Conn=GetConnection()
+                    result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
+                    Conn.close()
+                    Dict={'tc_id':test_case,'run_id':runid,'name':test_case_status[0],'property':'Status'}
+                    Conn=GetConnection()
+                    result = DB.InsertNewRecordInToTable(Conn, "result_test_case_tag", **Dict)
+                    Conn.close()    
+                for eachitem in TestCasesIDs:
+                    Dict = {'run_id': runid, 'tc_id': str(eachitem)}
+                    Conn = GetConnection()
+                    Result = DB.InsertNewRecordInToTable(Conn,"test_run",**Dict)
+                    Conn.close()
+                    print Result
+                
+                first_slot=TestCasesIDs[:2]
+                second_slot=TestCasesIDs[2:]
+                #now first save the first slot and progress
                 if is_rerun == "rerun":
                     Conn = GetConnection()
-                    RegisterReRunPermanentInfo(
-                        Conn,
-                        runid,
-                        previous_run,
-                        TestCasesIDs)
+                    RegisterReRunPermanentInfo(Conn,runid,previous_run,first_slot)
                     Conn.close()
-                    for eachitem in TestCasesIDs:
-                        Dict = {'run_id': runid, 'tc_id': str(eachitem)}
-                        Conn = GetConnection()
-                        Result = DB.InsertNewRecordInToTable(
-                            Conn,
-                            "test_run",
-                            **Dict)
-                        Conn.close()
-                        print Result
-                    AddReRunInfo(runid, previous_run)
+                    AddReRunInfo(runid, previous_run,first_slot)
                 else:
                     Conn = GetConnection()
-                    RegisterPermanentInfo(runid, TestCasesIDs)
+                    RegisterPermanentInfo(runid, first_slot)
                     Conn.close()
-                    for eachitem in TestCasesIDs:
-                        Dict = {'run_id': runid, 'tc_id': str(eachitem)}
-                        Conn = GetConnection()
-                        Result = DB.InsertNewRecordInToTable(
-                            Conn,
-                            "test_run",
-                            **Dict)
-                        Conn.close()
-                        print Result
-                    AddInfo(runid)
+                    AddInfo(runid,first_slot)
+                    
                 run_description = ""
                 for each in QueryText:
                     run_description += (each + " ")
@@ -2946,6 +2907,15 @@ def Run_Test(request):
                     **Dict)
                 Conn.close()
                 
+                if is_rerun == "rerun":
+                    if len(second_slot)>0:
+                        RegisterReRunPermanentInfo(Conn,runid,previous_run,second_slot)
+                        AddReRunInfo(runid, previous_run,second_slot)
+                else:
+                    if len(second_slot)>0:
+                        RegisterPermanentInfo(runid, second_slot)
+                    AddInfo(runid,second_slot)
+                
                 #email notify
                 try:
                     urllib2.urlopen("http://www.google.com").close()
@@ -2967,23 +2937,23 @@ def RegisterReRunPermanentInfo(Conn, run_id, previous_run, TestCasesIDs):
     # query="select tc_id from test_run where run_id='%s'"%run_id.strip()
     # est_cases=DB.GetData(Conn, query)
     test_cases = TestCasesIDs
-    test_case_column_query = "select column_name from information_schema.columns where table_name='result_test_cases'"
-    test_case_column = DB.GetData(Conn, test_case_column_query)
+    #test_case_column_query = "select column_name from information_schema.columns where table_name='result_test_cases'"
+    #test_case_column = DB.GetData(Conn, test_case_column_query)
     for each in test_cases:
         test_case = each
-        test_case_query = "select * from result_test_cases where tc_id='%s' and run_id='%s'" % (
-            test_case, previous_run)
-        Dict = {}
-        test_case_column_data = DB.GetData(Conn, test_case_query, False)
+        #test_case_query = "select * from result_test_cases where tc_id='%s' and run_id='%s'" % (
+        #    test_case, previous_run)
+        #Dict = {}
+        #test_case_column_data = DB.GetData(Conn, test_case_query, False)
         # ##populate Dict for the test_cases
-        for each in test_case_column_data:
-            for eachitem in zip(each, test_case_column):
-                Dict.update({eachitem[1]: eachitem[0]})
-        Dict.update({'run_id': run_id})
-        print Dict
-        result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
-        if not result:
-            CleanRun(run_id)
+        #for each in test_case_column_data:
+        #    for eachitem in zip(each, test_case_column):
+        #        Dict.update({eachitem[1]: eachitem[0]})
+        #Dict.update({'run_id': run_id})
+        #print Dict
+        #result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
+        #if not result:
+        #    CleanRun(run_id)
         ##########################################Result_Test_Steps_List#######
         test_step_column_query = "select column_name from information_schema.columns where table_name='result_test_steps_list'"
         test_step_column = DB.GetData(Conn, test_step_column_query)
@@ -3133,29 +3103,29 @@ def RegisterPermanentInfo(run_id, TestCasesIDs):
     # query="select tc_id from test_run where run_id='%s'"%run_id.strip()
     # test_cases=DB.GetData(Conn, query)
     test_cases = TestCasesIDs
-    test_case_column_query = "select column_name from information_schema.columns where table_name='test_cases'"
-    Conn=GetConnection()
-    test_case_column = DB.GetData(Conn, test_case_column_query)
-    Conn.close()
+    #test_case_column_query = "select column_name from information_schema.columns where table_name='test_cases'"
+    #Conn=GetConnection()
+    #test_case_column = DB.GetData(Conn, test_case_column_query)
+    #Conn.close()
     ##########################################Result_Test_Case################
     for each in test_cases:
         test_case = each
-        test_case_query = "select * from test_cases where tc_id='%s'" % test_case
-        Dict = {}
-        Dict.update({'run_id': run_id})
-        Conn=GetConnection()
-        test_case_column_data = DB.GetData(Conn, test_case_query, False)
-        Conn.close()
+        #test_case_query = "select * from test_cases where tc_id='%s'" % test_case
+        #Dict = {}
+        #Dict.update({'run_id': run_id})
+        #Conn=GetConnection()
+        #test_case_column_data = DB.GetData(Conn, test_case_query, False)
+        #Conn.close()
         # ##populate Dict for the test_cases
-        for each in test_case_column_data:
-            for eachitem in zip(each, test_case_column):
-                Dict.update({eachitem[1]: eachitem[0]})
-        print Dict
-        Conn=GetConnection()
-        result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
-        Conn.close()
-        if not result:
-            CleanRun(run_id)
+        #for each in test_case_column_data:
+        #    for eachitem in zip(each, test_case_column):
+        #        Dict.update({eachitem[1]: eachitem[0]})
+        #print Dict
+        #Conn=GetConnection()
+        #result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
+        #Conn.close()
+        #if not result:
+        #    CleanRun(run_id)
         ##########################################Result_Test_Steps_List#######
         test_step_column_query = "select column_name from information_schema.columns where table_name='test_steps_list'"
         Conn=GetConnection()
@@ -3340,11 +3310,11 @@ def CleanRun(runid):
     print runid
 
 
-def AddReRunInfo(run_id, previous_run):
-    conn = GetConnection()
-    query = "select tc_id from test_run where run_id='" + run_id + "'"
-    TestCaseList = DB.GetData(conn, query)
-    conn.close()
+def AddReRunInfo(run_id, previous_run,TestCaseList):
+    #conn = GetConnection()
+    #query = "select tc_id from test_run where run_id='" + run_id + "'"
+    #TestCaseList = DB.GetData(conn, query)
+    #conn.close()
     for eachcase in TestCaseList:
         print eachcase
         conn = GetConnection()
@@ -3378,11 +3348,11 @@ def AddReRunInfo(run_id, previous_run):
             conn.close()
 
 
-def AddInfo(run_id):
-    conn = GetConnection()
-    query = "select tc_id from test_run where run_id='" + run_id + "'"
-    TestCaseList = DB.GetData(conn, query)
-    conn.close()
+def AddInfo(run_id,TestCaseList):
+    #conn = GetConnection()
+    #query = "select tc_id from test_run where run_id='" + run_id + "'"
+    #TestCaseList = DB.GetData(conn, query)
+    #conn.close()
     for eachcase in TestCaseList:
         print eachcase
         conn = GetConnection()
