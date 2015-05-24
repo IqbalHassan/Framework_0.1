@@ -4739,7 +4739,10 @@ def Create_Submit_New_TestCase(request):
             Requirement_ID_List,
             Project_id,
             Team_id)
-
+        whereQuery="where tc_id='%s'"%(TC_Id)
+        Conn=GetConnection()
+        print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
+        Conn.close()
         if test_case_steps_result == "Pass":
             msg = "==========================================================================================================="
             TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
@@ -5196,6 +5199,10 @@ def EditTestCase(request):
                 Requirement_ID_List,
                 Project_Id,
                 Team_Id)
+            whereQuery="where tc_id='%s'"%(TC_Id)
+            Conn=GetConnection()
+            print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
+            Conn.close()
             if test_case_tag_result != "Pass":
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
