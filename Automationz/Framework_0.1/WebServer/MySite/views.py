@@ -2932,26 +2932,9 @@ def Run_Test(request):
 
 
 def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
-    # query="select tc_id from test_run where run_id='%s'"%run_id.strip()
-    # est_cases=DB.GetData(Conn, query)
     test_cases = TestCasesIDs
-    #test_case_column_query = "select column_name from information_schema.columns where table_name='result_test_cases'"
-    #test_case_column = DB.GetData(Conn, test_case_column_query)
     for each in test_cases:
         test_case = each
-        #test_case_query = "select * from result_test_cases where tc_id='%s' and run_id='%s'" % (
-        #    test_case, previous_run)
-        #Dict = {}
-        #test_case_column_data = DB.GetData(Conn, test_case_query, False)
-        # ##populate Dict for the test_cases
-        #for each in test_case_column_data:
-        #    for eachitem in zip(each, test_case_column):
-        #        Dict.update({eachitem[1]: eachitem[0]})
-        #Dict.update({'run_id': run_id})
-        #print Dict
-        #result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
-        #if not result:
-        #    CleanRun(run_id)
         ##########################################Result_Test_Steps_List#######
         test_step_column_query = "select column_name from information_schema.columns where table_name='result_test_steps_list'"
         Conn=GetConnection()
@@ -3101,34 +3084,9 @@ def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
 
 def RegisterPermanentInfo(run_id, TestCasesIDs):
     print run_id
-    # ##Enter the test Case Name in the result test_case table
-    # get the test case name
-    # query="select tc_id from test_run where run_id='%s'"%run_id.strip()
-    # test_cases=DB.GetData(Conn, query)
     test_cases = TestCasesIDs
-    #test_case_column_query = "select column_name from information_schema.columns where table_name='test_cases'"
-    #Conn=GetConnection()
-    #test_case_column = DB.GetData(Conn, test_case_column_query)
-    #Conn.close()
-    ##########################################Result_Test_Case################
     for each in test_cases:
         test_case = each
-        #test_case_query = "select * from test_cases where tc_id='%s'" % test_case
-        #Dict = {}
-        #Dict.update({'run_id': run_id})
-        #Conn=GetConnection()
-        #test_case_column_data = DB.GetData(Conn, test_case_query, False)
-        #Conn.close()
-        # ##populate Dict for the test_cases
-        #for each in test_case_column_data:
-        #    for eachitem in zip(each, test_case_column):
-        #        Dict.update({eachitem[1]: eachitem[0]})
-        #print Dict
-        #Conn=GetConnection()
-        #result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
-        #Conn.close()
-        #if not result:
-        #    CleanRun(run_id)
         ##########################################Result_Test_Steps_List#######
         test_step_column_query = "select column_name from information_schema.columns where table_name='test_steps_list'"
         Conn=GetConnection()
@@ -3314,10 +3272,6 @@ def CleanRun(runid):
 
 
 def AddReRunInfo(run_id, previous_run,TestCaseList):
-    #conn = GetConnection()
-    #query = "select tc_id from test_run where run_id='" + run_id + "'"
-    #TestCaseList = DB.GetData(conn, query)
-    #conn.close()
     for eachcase in TestCaseList:
         print eachcase
         conn = GetConnection()
@@ -3352,10 +3306,6 @@ def AddReRunInfo(run_id, previous_run,TestCaseList):
 
 
 def AddInfo(run_id,TestCaseList):
-    #conn = GetConnection()
-    #query = "select tc_id from test_run where run_id='" + run_id + "'"
-    #TestCaseList = DB.GetData(conn, query)
-    #conn.close()
     for eachcase in TestCaseList:
         print eachcase
         conn = GetConnection()
@@ -4739,7 +4689,10 @@ def Create_Submit_New_TestCase(request):
             Requirement_ID_List,
             Project_id,
             Team_id)
-
+        whereQuery="where tc_id='%s'"%(TC_Id)
+        Conn=GetConnection()
+        print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
+        Conn.close()
         if test_case_steps_result == "Pass":
             msg = "==========================================================================================================="
             TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
@@ -5196,6 +5149,10 @@ def EditTestCase(request):
                 Requirement_ID_List,
                 Project_Id,
                 Team_Id)
+            whereQuery="where tc_id='%s'"%(TC_Id)
+            Conn=GetConnection()
+            print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
+            Conn.close()
             if test_case_tag_result != "Pass":
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
@@ -11591,7 +11548,7 @@ def TableDataTestCasesOtherPages(request):
                 #status_time=0
                 for each in TableData:
                     #one=datetime.datetime.now()
-                    type_case=Check_TestCase(each[0])
+                    type_case=get_test_case_type(each[0])
                     #two=datetime.datetime.now()
                     #type_time+=float((two-one).total_seconds())
                     time=get_test_case_time(each[0])
@@ -11628,6 +11585,12 @@ def TableDataTestCasesOtherPages(request):
                     results.update({'time': ""})
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
+def get_test_case_type(test_case):
+    query="select test_case_type from test_cases where tc_id='%s'"%test_case
+    Conn = GetConnection()
+    data = DB.GetData(Conn, query, False, True)
+    Conn.close()
+    return data[0][0]
 def get_status(test_case):
     query = '''
     SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
@@ -11804,7 +11767,7 @@ def ViewAndOrganizeTestCases(request):
                 #status_time=0
                 for each in TableData:
                     #one=datetime.datetime.now()
-                    type_case=Check_TestCase(each[0])
+                    type_case=get_test_case_type(each[0])
                     #two=datetime.datetime.now()
                     #type_time+=float((two-one).total_seconds())
                     time=get_test_case_time(each[0])

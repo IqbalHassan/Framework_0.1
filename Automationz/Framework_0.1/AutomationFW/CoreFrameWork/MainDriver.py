@@ -236,7 +236,8 @@ def main():
         #This step will remain here for now, just to make sure test case is added in the previous one
         #Find all test cases added in the test_run table for the current run id
         conn=DBUtil.ConnectToDataBase()
-        TestCaseLists = DBUtil.GetData(conn, "Select TC_ID From test_run Where run_id = '%s'" % TestRunID[0], False)
+        query="select distinct tc.tc_id,test_case_type from result_test_cases tc, test_run tr where tr.run_id=tc.run_id and tr.tc_id=tc.tc_id and tc.run_id='%s'"%TestRunID[0].strip()
+        TestCaseLists = DBUtil.GetData(conn, query,False) #"Select TC_ID From test_run Where run_id = '%s'" % TestRunID[0], False)
         conn.close()
         #HYBRID RUN IMPLEMENTED HERE
         AutomationList=[]
@@ -244,67 +245,22 @@ def main():
         for each in TestCaseLists:
             print each
             test_case_id=each[0]
-            #check if its forced or not
-            """if Rerun==False:
-                query="select property from test_case_tag where tc_id='%s' and name='Status'"%test_case_id
-            else:
-                query="select property from result_test_case_tag where tc_id='%s' and name='Status' and run_id='%s'"%(test_case_id,referred_run_id)
-            """
-            query="select name from result_test_case_tag where tc_id='%s' and property='Status' and run_id='%s'"%(test_case_id,TestRunID[0])
+            query="select tc_type from result_test_cases where tc_id='%s' and run_id='%s'"%(test_case_id,TestRunID[0])
             conn=DBUtil.ConnectToDataBase()
             forced=DBUtil.GetData(conn,query)
             conn.close()
-            if forced[0]=='Forced':
-                continue
+            if forced[0]=='Forc':
+                AutomationList.append((test_case_id,'Manual'))
             else:
-                temp=[]
-                temp.append(test_case_id)
-                temp=tuple(temp)
-                AutomationList.append(temp)
-        AutomationListWithType=[]
-        for each in AutomationList:
-            conn=DBUtil.ConnectToDataBase()
-            query="select tc_type from result_test_cases where tc_id='%s' and run_id='%s'"%(each[0].strip(),TestRunID[0].strip())
-            type_list=DBUtil.GetData(conn,query)
-            conn.close()
-            if isinstance(type_list, list) and len(type_list)>0:
-                if 'Manu' not in type_list and 'Forc' not in type_list:
-                    query="select tsl.steptype from result_test_cases tc,result_test_steps_list tsl,result_test_steps ts where tsl.run_id=ts.run_id and tc.tc_id=ts.tc_id and tc.run_id=ts.run_id and tsl.step_id=ts.step_id and tc.tc_id='%s' and tc.run_id='%s' order by ts.teststepsequence"%(each[0],TestRunID[0])
-                    conn=DBUtil.ConnectToDataBase()
-                    status_list=DBUtil.GetData(conn,query)
-                    conn.close()
-                    for eachstatus in status_list:
-                        if eachstatus=='manual':
-                            test_case_type='manual'
-                            break
-                        else:
-                            test_case_type='automation'
-                    temp=[]
-                    temp.append(each[0])
-                    temp.append(test_case_type)
-                    temp=tuple(temp)
-                    AutomationListWithType.append(temp)
-        Automation=[]
-        automation_count=0
-        manual_count=0
-        for each in AutomationListWithType:
-            if each[1]=='automation':
-                automation_count+=1
-                temp=[]
-                temp.append(each[0])
-                temp=tuple(temp)
-                Automation.append(temp)
+                AutomationList.append(each)
+        print AutomationList
+        if len(filter(lambda x: x[1]=='Manual',AutomationList))>0:
+            if (len(filter(lambda x:x[1]=='Automated',AutomationList)))>0 or (len(filter(lambda x:x[1]=='Performance',AutomationList)))>0:
+                run_type='Hybrid'
             else:
-                manual_count+=1
-                continue
-        if len(TestCaseLists)>0:
-            forced_count=len(TestCaseLists)-(automation_count+manual_count)
-            if automation_count>0 and automation_count==len(TestCaseLists)and (forced_count==0 and manual_count==0):
-                run_type="Automation"
-            elif (forced_count>0 or manual_count>0) and automation_count>0:
-                run_type="Hybrid"
-            else:
-                run_type="Manual"
+                run_type='Manual'
+        else:
+            run_type='Automation'
         Dict={}
         Dict.update({'run_type':run_type})
         sWhereQuery="where run_id='%s'" %TestRunID[0]
@@ -312,7 +268,7 @@ def main():
         print DBUtil.UpdateRecordInTable(conn,"test_run_env",sWhereQuery,**Dict)
         conn.close()
         TestCaseLists=[]
-        TestCaseLists=Automation
+        TestCaseLists=filter(lambda  x:x[1]=='Automated',AutomationList)
         print TestCaseLists
         if len(TestCaseLists) > 0:
             print "Running Test cases from list : ", TestCaseLists[0:len(TestCaseLists)]
