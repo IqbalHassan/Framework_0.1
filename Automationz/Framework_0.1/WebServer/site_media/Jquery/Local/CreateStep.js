@@ -348,7 +348,7 @@ function PopulateStepInfo(value){
             if(row[7]==true){
                 $("#step_enable").val(1);
             }
-            if(row[5]==null && (row[8]== false||row[8]==null)){
+            /*if(row[5]==null && (row[8]== false||row[8]==null)){
                 $("#step_data").val(2);
             }
             if(row[5]==false && (row[8]== false||row[8]==null)){
@@ -359,7 +359,7 @@ function PopulateStepInfo(value){
             }
             if(row[5]==true && row[8]==true){
                 $("#step_data").val(3);
-            }
+            }*/
             if(row[4]=="manual"){
                 $("#step_type").val(2);
             }
@@ -842,7 +842,7 @@ function submit_step(){
         
         var step_name = $("#step_name").select2("data")["text"].substr(start, length - 1);
         var step_desc = $("#step_desc").val().trim();
-        var step_data = $("#step_data").val().trim();
+        //var step_data = $("#step_data").val().trim();
         var step_type = $("#step_type").val().trim();
         var step_driver = $("#step_driver").val().trim();
         var step_enable = $("#step_enable").val().trim();
@@ -859,7 +859,7 @@ function submit_step(){
             'step_name' : step_name,
             'step_desc' : step_desc,
             'step_feature' : newFeaturePath,
-            'step_data' : step_data,
+            //'step_data' : step_data,
             'step_type' : step_type,
             'step_driver' : step_driver,
             'step_enable' : step_enable,
