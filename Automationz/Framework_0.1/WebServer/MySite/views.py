@@ -2932,26 +2932,9 @@ def Run_Test(request):
 
 
 def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
-    # query="select tc_id from test_run where run_id='%s'"%run_id.strip()
-    # est_cases=DB.GetData(Conn, query)
     test_cases = TestCasesIDs
-    #test_case_column_query = "select column_name from information_schema.columns where table_name='result_test_cases'"
-    #test_case_column = DB.GetData(Conn, test_case_column_query)
     for each in test_cases:
         test_case = each
-        #test_case_query = "select * from result_test_cases where tc_id='%s' and run_id='%s'" % (
-        #    test_case, previous_run)
-        #Dict = {}
-        #test_case_column_data = DB.GetData(Conn, test_case_query, False)
-        # ##populate Dict for the test_cases
-        #for each in test_case_column_data:
-        #    for eachitem in zip(each, test_case_column):
-        #        Dict.update({eachitem[1]: eachitem[0]})
-        #Dict.update({'run_id': run_id})
-        #print Dict
-        #result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
-        #if not result:
-        #    CleanRun(run_id)
         ##########################################Result_Test_Steps_List#######
         test_step_column_query = "select column_name from information_schema.columns where table_name='result_test_steps_list'"
         Conn=GetConnection()
@@ -3101,34 +3084,9 @@ def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
 
 def RegisterPermanentInfo(run_id, TestCasesIDs):
     print run_id
-    # ##Enter the test Case Name in the result test_case table
-    # get the test case name
-    # query="select tc_id from test_run where run_id='%s'"%run_id.strip()
-    # test_cases=DB.GetData(Conn, query)
     test_cases = TestCasesIDs
-    #test_case_column_query = "select column_name from information_schema.columns where table_name='test_cases'"
-    #Conn=GetConnection()
-    #test_case_column = DB.GetData(Conn, test_case_column_query)
-    #Conn.close()
-    ##########################################Result_Test_Case################
     for each in test_cases:
         test_case = each
-        #test_case_query = "select * from test_cases where tc_id='%s'" % test_case
-        #Dict = {}
-        #Dict.update({'run_id': run_id})
-        #Conn=GetConnection()
-        #test_case_column_data = DB.GetData(Conn, test_case_query, False)
-        #Conn.close()
-        # ##populate Dict for the test_cases
-        #for each in test_case_column_data:
-        #    for eachitem in zip(each, test_case_column):
-        #        Dict.update({eachitem[1]: eachitem[0]})
-        #print Dict
-        #Conn=GetConnection()
-        #result = DB.InsertNewRecordInToTable(Conn, "result_test_cases", **Dict)
-        #Conn.close()
-        #if not result:
-        #    CleanRun(run_id)
         ##########################################Result_Test_Steps_List#######
         test_step_column_query = "select column_name from information_schema.columns where table_name='test_steps_list'"
         Conn=GetConnection()
@@ -3314,10 +3272,6 @@ def CleanRun(runid):
 
 
 def AddReRunInfo(run_id, previous_run,TestCaseList):
-    #conn = GetConnection()
-    #query = "select tc_id from test_run where run_id='" + run_id + "'"
-    #TestCaseList = DB.GetData(conn, query)
-    #conn.close()
     for eachcase in TestCaseList:
         print eachcase
         conn = GetConnection()
@@ -3352,10 +3306,6 @@ def AddReRunInfo(run_id, previous_run,TestCaseList):
 
 
 def AddInfo(run_id,TestCaseList):
-    #conn = GetConnection()
-    #query = "select tc_id from test_run where run_id='" + run_id + "'"
-    #TestCaseList = DB.GetData(conn, query)
-    #conn.close()
     for eachcase in TestCaseList:
         print eachcase
         conn = GetConnection()
