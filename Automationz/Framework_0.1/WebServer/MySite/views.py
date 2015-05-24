@@ -11598,7 +11598,7 @@ def TableDataTestCasesOtherPages(request):
                 #status_time=0
                 for each in TableData:
                     #one=datetime.datetime.now()
-                    type_case=Check_TestCase(each[0])
+                    type_case=get_test_case_type(each[0])
                     #two=datetime.datetime.now()
                     #type_time+=float((two-one).total_seconds())
                     time=get_test_case_time(each[0])
@@ -11635,6 +11635,12 @@ def TableDataTestCasesOtherPages(request):
                     results.update({'time': ""})
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
+def get_test_case_type(test_case):
+    query="select test_case_type from test_cases where tc_id='%s'"%test_case
+    Conn = GetConnection()
+    data = DB.GetData(Conn, query, False, True)
+    Conn.close()
+    return data[0][0]
 def get_status(test_case):
     query = '''
     SELECT name FROM test_case_tag WHERE property='%s' AND tc_id='%s'
@@ -11811,7 +11817,7 @@ def ViewAndOrganizeTestCases(request):
                 #status_time=0
                 for each in TableData:
                     #one=datetime.datetime.now()
-                    type_case=Check_TestCase(each[0])
+                    type_case=get_test_case_type(each[0])
                     #two=datetime.datetime.now()
                     #type_time+=float((two-one).total_seconds())
                     time=get_test_case_time(each[0])
