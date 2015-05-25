@@ -244,6 +244,10 @@ def get_all_machine(request):
                 Conn = GetConnection()
                 temp_detail = DB.GetData(Conn, query, False)
                 Conn.close()
+                query="select count(*) from test_run_env where tester_id='%s' and status='Unassigned'"%each[0]
+                Conn=GetConnection()
+                available=DB.GetData(Conn,query)
+                Conn.close()
                 temp_null = ['', '', '', []]
                 if len(temp_detail) > 0:
                     for eachitem in temp_detail:
@@ -258,7 +262,10 @@ def get_all_machine(request):
                     if diff.days >= 1:
                         temp.append('offline')
                     else:
-                        temp.append('online')
+                        if available[0]>0:
+                            temp.append('online')
+                        else:
+                            temp.append('offline')
                 else:
                     for eachitem in temp_null:
                         temp.append(eachitem)
@@ -1165,11 +1172,21 @@ def AutoCompleteUsersSearch(request):
             value = request.GET.get(u'term', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            query="select distinct tre.tester_id,pul.user_level from test_run_env tre, machine_project_map mpm ,permitted_user_list pul where tre.id=mpm.machine_serial and tre.tester_id=pul.user_names and user_level in('Manual', 'Automation') and project_id='%s' and team_id=%d and tre.tester_id iLike '%%%s%%' and tre.status='Unassigned'"%(project_id,int(team_id),value)
+            query="select distinct tre.tester_id,pul.user_level,last_updated_time from test_run_env tre, machine_project_map mpm ,permitted_user_list pul where tre.id=mpm.machine_serial and tre.tester_id=pul.user_names and user_level in('Manual', 'Automation') and project_id='%s' and team_id=%d and tre.tester_id iLike '%%%s%%' and tre.status='Unassigned'"%(project_id,int(team_id),value)
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='tester_id')
             Conn.close()
+            now=datetime.datetime.now()
+            final_list=[]
             for each_user in data['rows']:
+                update_time = datetime.datetime.strptime(each_user[2],'%a-%b-%d-%H:%M:%S-%Y')
+                diff = now - update_time
+                if diff.days >= 1:
+                    #final_list.append(each_user)
+                    continue
+                else:
+                    final_list.append(each_user)
+            for each_user in final_list:
                 result_dict = {}
                 result_dict['id'] = each_user[0]
                 result_dict['text'] = '%s - %s' % (each_user[0], each_user[1])
