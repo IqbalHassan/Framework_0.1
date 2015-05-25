@@ -4693,6 +4693,9 @@ def Create_Submit_New_TestCase(request):
         Conn=GetConnection()
         print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
         Conn.close()
+        Conn=GetConnection()
+        print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_time=Check_TestCaseTime(TC_Id))
+        Conn.close()
         if test_case_steps_result == "Pass":
             msg = "==========================================================================================================="
             TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
@@ -5152,6 +5155,9 @@ def EditTestCase(request):
             whereQuery="where tc_id='%s'"%(TC_Id)
             Conn=GetConnection()
             print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
+            Conn.close()
+            Conn=GetConnection()
+            print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_time=Check_TestCaseTime(TC_Id))
             Conn.close()
             if test_case_tag_result != "Pass":
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
@@ -11598,8 +11604,14 @@ def get_status(test_case):
     Conn = GetConnection()
     data = DB.GetData(Conn, query, False, True)
     Conn.close()
-    return data[0][0]                        
+    return data[0][0]
 def get_test_case_time(test_case):
+    query="select test_case_time from test_cases where tc_id='%s'"%test_case.strip()
+    Conn = GetConnection()
+    stepNumber = DB.GetData(Conn, query)
+    Conn.close()
+    return stepNumber[0]
+def Check_TestCaseTime(test_case):
     query="select sum(description::int) from master_data where id Ilike '%s%%' and field='estimated' and value='time'"%test_case.strip()
     Conn = GetConnection()
     stepNumber = DB.GetData(Conn, query)
