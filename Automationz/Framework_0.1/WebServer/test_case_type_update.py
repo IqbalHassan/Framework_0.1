@@ -31,6 +31,33 @@ def Check_TestCase(test_case):
                 return "Performance"
             else:
                 return "Automated"
+def Check_TestCaseTime(test_case):
+    query="select sum(description::int) from master_data where id Ilike '%s%%' and field='estimated' and value='time'"%test_case.strip()
+    Conn = DB.ConnectToDataBase(db_name,user,password_user,server)
+    stepNumber = DB.GetData(Conn, query)
+    Conn.close()
+    return ConvertTime(stepNumber[0])
+
+def ConvertTime(total_time):
+    seconds = total_time % 60
+    minuates = total_time / 60
+    minuate = minuates % 60
+    hour = minuates / 60
+    if seconds < 10:
+        seconds = ('0' + str(seconds))
+    else:
+        seconds = str(seconds)
+    if minuate < 10:
+        minuate = ('0' + str(minuate))
+    else:
+        minuate = str(minuate)
+    if hour < 10:
+        hour = ('0' + str(hour))
+    else:
+        hour = str(hour)
+    timeformat = hour + ':' + minuate + ':' + seconds
+    timeformat = timeformat.strip()
+    return timeformat
 
 def main():
     Conn=DB.ConnectToDataBase(db_name,user,password_user,server)
@@ -42,6 +69,9 @@ def main():
         whereQuery="where tc_id='%s'"%(test_case)
         Conn=DB.ConnectToDataBase(db_name,user,password_user,server)
         print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(test_case))
+        Conn.close()
+        Conn=DB.ConnectToDataBase(db_name,user,password_user,server)
+        print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_time=Check_TestCaseTime(test_case))
         Conn.close()
 if __name__=="__main__":
     main()

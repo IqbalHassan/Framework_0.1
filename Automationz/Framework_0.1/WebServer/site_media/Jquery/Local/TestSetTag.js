@@ -178,7 +178,15 @@ function PerformSearch(name,project_id,team_id,test_case_per_page,test_case_page
     $.get('TableDataTestCasesOtherPages',{Query:name.trim(),test_status_request:true,total_time:true,project_id:project_id,team_id:team_id,test_case_per_page:test_case_per_page,test_case_page_current:test_case_page_current},function(data){
         if(data['TableData'].length!=0){
             //ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
+            var tooltip='Test Case Number';
             var message='';
+            message+="<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + data['Count'];
+            if(data['Count']>1){
+                message+=" Test Cases</p>";
+            }
+            else{
+                message+=' Test Case</p>';
+            }
             message+='<table class="two-column-emphasis">';
             message+='<tr>';
             for(var i=0;i<data['Heading'].length;i++){

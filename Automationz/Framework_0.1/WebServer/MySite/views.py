@@ -244,6 +244,10 @@ def get_all_machine(request):
                 Conn = GetConnection()
                 temp_detail = DB.GetData(Conn, query, False)
                 Conn.close()
+                query="select count(*) from test_run_env where tester_id='%s' and status='Unassigned'"%each[0]
+                Conn=GetConnection()
+                available=DB.GetData(Conn,query)
+                Conn.close()
                 temp_null = ['', '', '', []]
                 if len(temp_detail) > 0:
                     for eachitem in temp_detail:
@@ -258,7 +262,10 @@ def get_all_machine(request):
                     if diff.days >= 1:
                         temp.append('offline')
                     else:
-                        temp.append('online')
+                        if available[0]>0:
+                            temp.append('online')
+                        else:
+                            temp.append('offline')
                 else:
                     for eachitem in temp_null:
                         temp.append(eachitem)
@@ -1165,11 +1172,21 @@ def AutoCompleteUsersSearch(request):
             value = request.GET.get(u'term', '')
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            query="select distinct tre.tester_id,pul.user_level from test_run_env tre, machine_project_map mpm ,permitted_user_list pul where tre.id=mpm.machine_serial and tre.tester_id=pul.user_names and user_level in('Manual', 'Automation') and project_id='%s' and team_id=%d and tre.tester_id iLike '%%%s%%' and tre.status='Unassigned'"%(project_id,int(team_id),value)
+            query="select distinct tre.tester_id,pul.user_level,last_updated_time from test_run_env tre, machine_project_map mpm ,permitted_user_list pul where tre.id=mpm.machine_serial and tre.tester_id=pul.user_names and user_level in('Manual', 'Automation') and project_id='%s' and team_id=%d and tre.tester_id iLike '%%%s%%' and tre.status='Unassigned'"%(project_id,int(team_id),value)
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='tester_id')
             Conn.close()
+            now=datetime.datetime.now()
+            final_list=[]
             for each_user in data['rows']:
+                update_time = datetime.datetime.strptime(each_user[2],'%a-%b-%d-%H:%M:%S-%Y')
+                diff = now - update_time
+                if diff.days >= 1:
+                    #final_list.append(each_user)
+                    continue
+                else:
+                    final_list.append(each_user)
+            for each_user in final_list:
                 result_dict = {}
                 result_dict['id'] = each_user[0]
                 result_dict['text'] = '%s - %s' % (each_user[0], each_user[1])
@@ -2837,23 +2854,26 @@ def Run_Test(request):
                     Conn=GetConnection()
                     result = DB.InsertNewRecordInToTable(Conn, "result_test_case_tag", **Dict)
                     Conn.close()    
+                count=1
                 for eachitem in TestCasesIDs:
-                    Dict = {'run_id': runid, 'tc_id': str(eachitem)}
+                    Dict = {'run_id': runid, 'tc_id': str(eachitem),'test_order':count}
                     Conn = GetConnection()
                     Result = DB.InsertNewRecordInToTable(Conn,"test_run",**Dict)
                     Conn.close()
                     print Result
-                
-                first_slot=TestCasesIDs[:1]
-                second_slot=TestCasesIDs[1:]
+                    count+=1
+                temp_list=[]
+                for test_case in TestCasesIDs:
+                    if(get_test_case_type(test_case)=='Automated' or get_test_case_type(test_case)=='Performance'):
+                        temp_list.append(test_case)
+                first_slot=temp_list[:1]
+                second_slot=temp_list[1:]+list(set(TestCasesIDs)-set(temp_list))
                 #now first save the first slot and progress
                 if is_rerun == "rerun":
                     RegisterReRunPermanentInfo(runid,previous_run,first_slot)
                     AddReRunInfo(runid, previous_run,first_slot)
                 else:
-                    Conn = GetConnection()
                     RegisterPermanentInfo(runid, first_slot)
-                    Conn.close()
                     AddInfo(runid,first_slot)
                     
                 run_description = ""
@@ -2912,7 +2932,7 @@ def Run_Test(request):
                 else:
                     if len(second_slot)>0:
                         RegisterPermanentInfo(runid, second_slot)
-                    AddInfo(runid,second_slot)
+                        AddInfo(runid,second_slot)
                 
                 #email notify
                 try:
@@ -4693,6 +4713,9 @@ def Create_Submit_New_TestCase(request):
         Conn=GetConnection()
         print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
         Conn.close()
+        Conn=GetConnection()
+        print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_time=Check_TestCaseTime(TC_Id))
+        Conn.close()
         if test_case_steps_result == "Pass":
             msg = "==========================================================================================================="
             TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
@@ -4734,13 +4757,14 @@ def ViewTestCase(TC_Id):
             Conn = GetConnection()
             test_case_details = DB.GetData(
                 Conn,
-                "select tc_name,tc_createdby,tc_type from test_cases where tc_id = '%s'" %
+                "select tc_name,tc_createdby,tc_type,test_case_time from test_cases where tc_id = '%s'" %
                 TC_Id,
                 False)
             Conn.close()
             TC_Name = test_case_details[0][0]
             TC_Creator = test_case_details[0][1]
             TC_Type=test_case_details[0][2]
+            TC_Time=test_case_details[0][3]
             # Test Case dataset details
             Conn = GetConnection()
             test_case_dataset_details = DB.GetData(
@@ -4963,6 +4987,7 @@ def ViewTestCase(TC_Id):
                 'TC_Id': TC_Id,
                 'TC_Name': TC_Name,
                 'TC_Creator': TC_Creator,
+                'TC_Time':TC_Time,
                 'Tags List': Tag_List,
                 'Priority': Priority,
                 'Dependency List': Dependency_List,
@@ -5152,6 +5177,9 @@ def EditTestCase(request):
             whereQuery="where tc_id='%s'"%(TC_Id)
             Conn=GetConnection()
             print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
+            Conn.close()
+            Conn=GetConnection()
+            print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_time=Check_TestCaseTime(TC_Id))
             Conn.close()
             if test_case_tag_result != "Pass":
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
@@ -5464,14 +5492,19 @@ def Get_Users(request):
         testConnection(Conn)
         default_choice = DB.GetData(Conn, query, False)
         if isinstance(default_choice, list) and len(default_choice) == 1:
+            Conn=GetConnection()
+            project_name=DB.GetData(Conn,"select project_name from projects where project_id='%s'"%default_choice[0][0],False)
+            Conn.close()
             Dict.update({
                 'project_id': default_choice[0][0],
+                'project_name':project_name[0][0],
                 'team_id': default_choice[0][1],
                 'team_name': default_choice[0][2]
             })
         else:
             Dict.update({
                 'project_id': "",
+                'project_name':"",
                 'team_id': "",
                 'team_name': ""
             })
@@ -11601,8 +11634,14 @@ def get_status(test_case):
     Conn = GetConnection()
     data = DB.GetData(Conn, query, False, True)
     Conn.close()
-    return data[0][0]                        
+    return data[0][0]
 def get_test_case_time(test_case):
+    query="select test_case_time from test_cases where tc_id='%s'"%test_case.strip()
+    Conn = GetConnection()
+    stepNumber = DB.GetData(Conn, query)
+    Conn.close()
+    return stepNumber[0]
+def Check_TestCaseTime(test_case):
     query="select sum(description::int) from master_data where id Ilike '%s%%' and field='estimated' and value='time'"%test_case.strip()
     Conn = GetConnection()
     stepNumber = DB.GetData(Conn, query)
@@ -12153,13 +12192,13 @@ def GetData(run_id, index, capacity, userText=""):
     # form the query
     query = ""
     query += "select * from ("
-    query += "(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id " % run_id
+    query += "(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc,test_run tr  where tr.run_id=tcr.run_id and tr.run_id=rtc.run_id and tr.tc_id=tcr.tc_id and tr.tc_id=rtc.tc_id and tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id " % run_id
     if userText != "":
         query += "and "
         query += userText
-    query += " ORDER BY tcr.id) "
+    query += " ORDER BY tr.test_order,tcr.id) "
     query += "union all "
-    query += "(select rtc.tc_id,tc_name,'Pending','','','' from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id" % run_id
+    query += "(select rtc.tc_id,tc_name,'Pending','','','' from test_case_results tcr, result_test_cases rtc,test_run tr  where tr.run_id=tcr.run_id and tr.run_id=rtc.run_id and tr.tc_id=tcr.tc_id and tr.tc_id=rtc.tc_id and tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id" % run_id
     if userText != "":
         query += " and "
         query += userText
