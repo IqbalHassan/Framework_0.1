@@ -2854,15 +2854,20 @@ def Run_Test(request):
                     Conn=GetConnection()
                     result = DB.InsertNewRecordInToTable(Conn, "result_test_case_tag", **Dict)
                     Conn.close()    
+                count=1
                 for eachitem in TestCasesIDs:
-                    Dict = {'run_id': runid, 'tc_id': str(eachitem)}
+                    Dict = {'run_id': runid, 'tc_id': str(eachitem),'test_order':count}
                     Conn = GetConnection()
                     Result = DB.InsertNewRecordInToTable(Conn,"test_run",**Dict)
                     Conn.close()
                     print Result
-                
-                first_slot=TestCasesIDs[:1]
-                second_slot=TestCasesIDs[1:]
+                    count+=1
+                temp_list=[]
+                for test_case in TestCasesIDs:
+                    if(get_test_case_type(test_case)=='Automated' or get_test_case_type(test_case)=='Performance'):
+                        temp_list.append(test_case)
+                first_slot=temp_list[:1]
+                second_slot=temp_list[1:]+list(set(TestCasesIDs)-set(temp_list))
                 #now first save the first slot and progress
                 if is_rerun == "rerun":
                     RegisterReRunPermanentInfo(runid,previous_run,first_slot)
@@ -12186,13 +12191,13 @@ def GetData(run_id, index, capacity, userText=""):
     # form the query
     query = ""
     query += "select * from ("
-    query += "(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id " % run_id
+    query += "(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc,test_run tr  where tr.run_id=tcr.run_id and tr.run_id=rtc.run_id and tr.tc_id=tcr.tc_id and tr.tc_id=rtc.tc_id and tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id " % run_id
     if userText != "":
         query += "and "
         query += userText
-    query += " ORDER BY tcr.id) "
+    query += " ORDER BY tr.test_order,tcr.id) "
     query += "union all "
-    query += "(select rtc.tc_id,tc_name,'Pending','','','' from test_case_results tcr, result_test_cases rtc  where tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id" % run_id
+    query += "(select rtc.tc_id,tc_name,'Pending','','','' from test_case_results tcr, result_test_cases rtc,test_run tr  where tr.run_id=tcr.run_id and tr.run_id=rtc.run_id and tr.tc_id=tcr.tc_id and tr.tc_id=rtc.tc_id and tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id" % run_id
     if userText != "":
         query += " and "
         query += userText

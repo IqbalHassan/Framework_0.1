@@ -236,7 +236,7 @@ def main():
         #This step will remain here for now, just to make sure test case is added in the previous one
         #Find all test cases added in the test_run table for the current run id
         conn=DBUtil.ConnectToDataBase()
-        query="select distinct tc.tc_id,test_case_type from result_test_cases tc, test_run tr where tr.run_id=tc.run_id and tr.tc_id=tc.tc_id and tc.run_id='%s'"%TestRunID[0].strip()
+        query="select distinct tc.tc_id,test_case_type,test_order from result_test_cases tc, test_run tr where tr.run_id=tc.run_id and tr.tc_id=tc.tc_id and tc.run_id='%s' order by tr.test_order"%TestRunID[0].strip()
         TestCaseLists = DBUtil.GetData(conn, query,False) #"Select TC_ID From test_run Where run_id = '%s'" % TestRunID[0], False)
         conn.close()
         #HYBRID RUN IMPLEMENTED HERE
@@ -252,7 +252,7 @@ def main():
             if forced[0]=='Forc':
                 AutomationList.append((test_case_id,'Manual'))
             else:
-                AutomationList.append(each)
+                AutomationList.append((each[0],each[1]))
         print AutomationList
         if len(filter(lambda x: x[1]=='Manual',AutomationList))>0:
             if (len(filter(lambda x:x[1]=='Automated',AutomationList)))>0 or (len(filter(lambda x:x[1]=='Performance',AutomationList)))>0:
