@@ -145,7 +145,7 @@ function get_steps(project_id,team_id){
 
 
 function get_cases(UserText,itemPerPage,PageCurrent){
-    $.get("TestCase_Results",{Query: UserText,itemPerPage:itemPerPage,PageCurrent:PageCurrent},function(data) {
+    $.get("TestCase_Results",{Query: UserText,itemPerPage:itemPerPage,PageCurrent:PageCurrent,project_id:project_id,team_id:team_id},function(data) {
 
             if (data['TableData'].length == 0)
             {

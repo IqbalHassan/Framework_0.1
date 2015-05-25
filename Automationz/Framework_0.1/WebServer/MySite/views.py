@@ -7304,21 +7304,24 @@ def TestCase_Results(request):
             UserData = request.GET.get(u'Query', '')
             item = int(request.GET.get(u'itemPerPage',''))
             page = int(request.GET.get(u'PageCurrent',''))
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
             sQuery = "select tc_id,tc_name from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='" + \
-                UserData + "')) "
+                UserData + "' and project_id='"+project_id+"' and team_id='"+team_id+"')) "
             #sQuery = "select tc.tc_id,tc.tc_name,ps.section_path from test_cases tc,test_case_tag tct,product_sections ps where tc.tc_id=tct.tc_id and tct.property='section_id' and ps.section_id::text=tct.name and tc.tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='%s')) " %UserData
             TableData = DB.GetData(conn, sQuery, False)
             condition = "limit %d offset %d" % (item, (page - 1) * item)
             
             query = sQuery + condition
             p_list = DB.GetData(conn,query,False)
-            Check_TestCase(p_list, RefinedData)
+            #Check_TestCase(p_list, RefinedData)
             
             Final =  []
-            for each in RefinedData:
+            for each in p_list:
                 Data = []
                 for i in each:
                     Data.append(i)
+                Data.append(Check_TestCase(each[0]))
                 temp = DB.GetData(conn,"select pf.feature_path from test_case_tag tct, product_features pf where property='feature_id' and tc_id='"+each[0]+"' and tct.name=pf.feature_id::text")
                 Data.append(temp[0].replace('.','/'))
                 temp = DB.GetData(conn,"select ps.section_path from test_case_tag tct, product_sections ps where property='section_id' and tc_id='"+each[0]+"' and tct.name=ps.section_id::text")
