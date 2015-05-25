@@ -3,8 +3,8 @@ import os
 import time
 
 ###########Production / Dev Config variables######################
-Environment = "Test"
-#Environment = "Production"
+#Environment = "Test"
+Environment = "Production"
  
 def get_ip(print_env=False):
     if Environment == "Test":
@@ -14,7 +14,7 @@ def get_ip(print_env=False):
     elif Environment == "Production":
         if print_env:
             print "Running on Production Environment..."
-        return "135.23.123.206"
+        return "24.212.218.235"
 def get_port():
     if Environment=="Test":
         return 8000
