@@ -3,8 +3,8 @@ import os
 import time
 
 ###########Production / Dev Config variables######################
-#Environment = "Test"
-Environment = "Production"
+Environment = "Test"
+#Environment = "Production"
  
 def get_ip(print_env=False):
     if Environment == "Test":

@@ -2873,9 +2873,7 @@ def Run_Test(request):
                     RegisterReRunPermanentInfo(runid,previous_run,first_slot)
                     AddReRunInfo(runid, previous_run,first_slot)
                 else:
-                    Conn = GetConnection()
                     RegisterPermanentInfo(runid, first_slot)
-                    Conn.close()
                     AddInfo(runid,first_slot)
                     
                 run_description = ""
@@ -2934,7 +2932,7 @@ def Run_Test(request):
                 else:
                     if len(second_slot)>0:
                         RegisterPermanentInfo(runid, second_slot)
-                    AddInfo(runid,second_slot)
+                        AddInfo(runid,second_slot)
                 
                 #email notify
                 try:

@@ -268,6 +268,7 @@ def main():
         print DBUtil.UpdateRecordInTable(conn,"test_run_env",sWhereQuery,**Dict)
         conn.close()
         TestCaseLists=[]
+        automation_count=len(filter(lambda  x:x[1]=='Automated',AutomationList))
         TestCaseLists=filter(lambda  x:x[1]=='Automated',AutomationList)
         print TestCaseLists
         if len(TestCaseLists) > 0:
@@ -883,7 +884,7 @@ def main():
             print "Test Set Cancelled by the User"
             CommonUtil.ExecLog(sModuleInfo, "Test Set Cancelled by the User", 1)
         else:
-            if automation_count>0 and automation_count==len(TestCaseLists)and (forced_count==0 and manual_count==0):
+            if automation_count>0 and automation_count==len(TestCaseLists):
                 conn=DBUtil.ConnectToDataBase()
                 print DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='Complete', testendtime='%s' % (sTestSetEndTime), duration='%s' % (TestSetDuration))
                 conn.close()
