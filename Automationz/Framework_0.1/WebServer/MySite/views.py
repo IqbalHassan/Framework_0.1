@@ -4737,13 +4737,14 @@ def ViewTestCase(TC_Id):
             Conn = GetConnection()
             test_case_details = DB.GetData(
                 Conn,
-                "select tc_name,tc_createdby,tc_type from test_cases where tc_id = '%s'" %
+                "select tc_name,tc_createdby,tc_type,test_case_time from test_cases where tc_id = '%s'" %
                 TC_Id,
                 False)
             Conn.close()
             TC_Name = test_case_details[0][0]
             TC_Creator = test_case_details[0][1]
             TC_Type=test_case_details[0][2]
+            TC_Time=test_case_details[0][3]
             # Test Case dataset details
             Conn = GetConnection()
             test_case_dataset_details = DB.GetData(
@@ -4966,6 +4967,7 @@ def ViewTestCase(TC_Id):
                 'TC_Id': TC_Id,
                 'TC_Name': TC_Name,
                 'TC_Creator': TC_Creator,
+                'TC_Time':TC_Time,
                 'Tags List': Tag_List,
                 'Priority': Priority,
                 'Dependency List': Dependency_List,
@@ -5470,14 +5472,19 @@ def Get_Users(request):
         testConnection(Conn)
         default_choice = DB.GetData(Conn, query, False)
         if isinstance(default_choice, list) and len(default_choice) == 1:
+            Conn=GetConnection()
+            project_name=DB.GetData(Conn,"select project_name from projects where project_id='%s'"%default_choice[0][0],False)
+            Conn.close()
             Dict.update({
                 'project_id': default_choice[0][0],
+                'project_name':project_name[0][0],
                 'team_id': default_choice[0][1],
                 'team_name': default_choice[0][2]
             })
         else:
             Dict.update({
                 'project_id': "",
+                'project_name':"",
                 'team_id': "",
                 'team_name': ""
             })
