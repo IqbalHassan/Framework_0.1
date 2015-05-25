@@ -100,7 +100,7 @@
                     </table>
 
                     &nbsp;&nbsp;&nbsp;
-                    <table>
+                    <!--table>
                         <tr>
                             <td class="tc_form_label_col">
                                 <b class="Text">Data Requirement:</b>
@@ -108,13 +108,13 @@
                             <td class="tc_form_input_col">
                                 <select id="step_data" class="select-drop" name="step_data">
                                     <!--option value="0" selected="selected">Select from list:</option-->
-                                    <option value="1">Data</option>
+                                    <!--option value="1">Data</option>
                                     <option value="2" selected="selected">No Data</option>
                                     <option value="3">Edit Data</option>
                                 </select>
                             </td>
                         </tr>
-                    </table>
+                    </table-->
 
 
                     &nbsp;&nbsp;&nbsp;
@@ -149,6 +149,31 @@
                                     <option value="Easily automatable">Easily automatable</option>
                                     <option value="Very easily automatable">Very easily automatable</option>
                                 </select>
+                            </td>
+                        </tr>
+                    </table>
+
+                    &nbsp;&nbsp;&nbsp;
+                    <table>
+                        <tr>
+                            <td class="tc_form_label_col">
+                                <b class="Text">Always Run:</b>
+                            </td>
+                            <td class="tc_form_input_col">
+                                <table class="always_run">
+                                    <tr>
+                                        <td>
+                                            <!--input id="Enable_radio" type="radio"  name="Status" value="Production" style="width:auto"-->
+                                            <a id="yes_always" type="radio" value="Yes" class="button">Yes</a>
+                                            <!--label for="Enable_radio">Enabled</label--> &nbsp; &nbsp;
+                                        </td>
+                                        <td>
+                                            <a id="no_always" type="radio" value="No" class="button selected">No</a>
+                                            <!--label for="Disable_radio">Disabled</label-->
+                                            <input id="always_run" name="always_run" value="" type="text" style="display: none">
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                     </table>
@@ -228,30 +253,7 @@
                             </td>
                         </tr>
                     </table>
-                    &nbsp;&nbsp;&nbsp;
-                    <table>
-                        <tr>
-                            <td class="tc_form_label_col">
-                                <b class="Text">Always Run:</b>
-                            </td>
-                            <td class="tc_form_input_col">
-                                <table class="always_run">
-                                    <tr>
-                                        <td>
-                                            <!--input id="Enable_radio" type="radio"  name="Status" value="Production" style="width:auto"-->
-                                            <a id="yes_always" type="radio" value="Yes" class="button">Yes</a>
-                                            <!--label for="Enable_radio">Enabled</label--> &nbsp; &nbsp;
-                                        </td>
-                                        <td>
-                                            <a id="no_always" type="radio" value="No" class="button selected">No</a>
-                                            <!--label for="Disable_radio">Disabled</label-->
-                                            <input id="always_run" name="always_run" value="" type="text" style="display: none">
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
+                    
                     &nbsp;&nbsp;&nbsp;
                     <table>
                         <tr>

@@ -7839,7 +7839,7 @@ def CreateEditStep(request):
             step_name = request.GET.get(u'step_name','').strip()
             step_desc = request.GET.get(u'step_desc','').strip()
             step_feature = request.GET.get(u'step_feature','').strip()
-            step_data = request.GET.get(u'step_data','').strip()
+            #step_data = request.GET.get(u'step_data','').strip()
             step_type = request.GET.get(u'step_type','').strip()
             step_driver = request.GET.get(u'step_driver','').strip()
             step_enable = request.GET.get(u'step_enable','').strip()
@@ -7879,7 +7879,7 @@ def CreateEditStep(request):
                         step_name + "'"
                     result = DB.GetData(conn, sQuery)
                     if(result[0] > 0):"""
-                if(step_data == "1"):
+                """if(step_data == "1"):
                     data = "true"
                     edit_data = "false"
                 if(step_data == "3"):
@@ -7887,7 +7887,7 @@ def CreateEditStep(request):
                     edit_data = "true"
                 if(step_data == "2"):
                     data = "false"
-                    edit_data = "false"
+                    edit_data = "false"  """
                 if(step_type == "1"):
                     s_type = "automated"
                 if(step_type == "2"):
@@ -7907,12 +7907,12 @@ def CreateEditStep(request):
                         query,
                         stepname=step_name,
                         description=step_desc,
-                        data_required=data,
+                        #data_required=data,
                         steptype=s_type,
                         driver=step_driver,
                         stepfeature=fid,
                         stepenable=enable,
-                        step_editable=edit_data,
+                        #step_editable=edit_data,
                         case_desc=case_desc,
                         expected=step_expect,
                         verify_point=verify_radio,
@@ -7957,12 +7957,12 @@ def CreateEditStep(request):
                         "test_steps_list",
                         stepname=step_name,
                         description=step_desc,
-                        data_required=data,
+                        #data_required=data,
                         steptype=s_type,
                         driver=step_driver,
                         stepfeature=fid,
                         stepenable=enable,
-                        step_editable=edit_data,
+                        #step_editable=edit_data,
                         case_desc=case_desc,
                         expected=step_expect,
                         verify_point=verify_radio,
