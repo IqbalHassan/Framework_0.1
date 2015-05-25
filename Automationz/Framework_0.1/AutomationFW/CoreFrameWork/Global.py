@@ -43,7 +43,8 @@ elif Environment == "Production":
     go_url = "enter/url"
 
     #database ip
-    database_ip ="24.212.218.235"
+    database_ip = "135.23.123.206"
+
     #Folder Paths
     if os.name == 'nt':
         #Email List for Daily Build

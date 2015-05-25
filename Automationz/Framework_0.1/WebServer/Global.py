@@ -14,7 +14,7 @@ def get_ip(print_env=False):
     elif Environment == "Production":
         if print_env:
             print "Running on Production Environment..."
-        return "24.212.218.235"
+        return "135.23.123.206"
 def get_port():
     if Environment=="Test":
         return 8000
