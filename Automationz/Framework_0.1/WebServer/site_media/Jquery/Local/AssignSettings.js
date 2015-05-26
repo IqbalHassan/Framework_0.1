@@ -853,17 +853,60 @@ function initialize_button(value,project_id,team_id,value_name){
     $('#usage_dependency').on('click',function(){
         var UserText=(value_name+":").trim();
         var pageNumber=1;
-        $.get('TableDataTestCasesOtherPages',{
-            Query: UserText,
-            test_status_request:true,
-            project_id:project_id,
-            team_id:team_id,
-            total_time:'true',
-            test_case_per_page:test_case_per_page,
-            test_case_page_current:pageNumber
-        },function(data){
-           alert(data['Count']);
-        });
+        performDependencySearches(UserText,project_id,team_id,test_case_per_page,pageNumber);
+    });
+    $('#delete_dependency').on('click',function(){
+        var UserText=(value_name+":").trim();
+        var pageNumber=1;
+        performDependencySearches(UserText,project_id,team_id,test_case_per_page,pageNumber,false);
+    })
+}
+function performDependencySearches(UserText,project_id,team_id,test_case_per_page,test_case_page_current,delete_tag){
+    if(delete_tag===undefined){
+        delete_tag=true;
+    }
+    $.get('TableDataDependencyTestCases',{
+        Query: UserText,
+        test_status_request:true,
+        project_id:project_id,
+        team_id:team_id,
+        test_case_per_page:test_case_per_page,
+        test_case_page_current:test_case_page_current
+    },function(data){
+        if(delete_tag){
+            form_table('extended_div',data['Heading'],data['TableData'],data['Count'],'Test Cases');
+            $('#pagination_div').pagination({
+                items:data['Count'],
+                itemsOnPage:test_case_per_page,
+                cssStyle: 'dark-theme',
+                currentPage:test_case_page_current,
+                displayedPages:2,
+                edges:2,
+                hrefTextPrefix:'#',
+                onPageClick:function(PageNumber){
+                    performDependencySearches(UserText,project_id,team_id,test_case_per_page,PageNumber);
+                }
+            });
+        }else{
+            var message='';
+            if(data['Count']>0){
+                message+=data['Count']+' Test Cases are linked.It can\'t be deleted.'
+            }
+            else{
+                message+='You are about to delete <b>'+UserText.split(":")[0].trim()+'</b>.Are you sure?';
+            }
+            alertify.confirm(message,function(e){
+                if(e){
+                    if(data['Count']>0){
+                        alertify.alert().close_all();
+                    }else{
+                        delete_dependency(UserText.split(":")[0],project_id,team_id);
+                    }
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        }
     });
 }
 function rename_dependency(value,project_id,team_id,value_name,new_dep){
@@ -1072,6 +1115,7 @@ function initialize_second_level(value,text,parent_name,project_id,team_id){
     });
     $('#usage_version').on('click',function(){
         var UserText=(text+":").trim();
+        var UserText=(text+":").trim();
         var test_case_page_current=1;
         PerformSearch(UserText,project_id,team_id,test_case_per_page,test_case_page_current);
     });
@@ -1111,7 +1155,7 @@ function PerformSearch(UserText,project_id,team_id,test_case_per_page,test_case_
         }else{
             var message='';
             if(data['Count']>0){
-                message+=data['Count']+' Test Cases are linked.It Can\'t be deleted.'
+                message+=data['Count']+' Test Cases are linked.It can\'t be deleted.'
             }
             else{
                 message+='You are about to delete <b>'+UserText.split(":")[0].trim()+'</b>.Are you sure?';
@@ -1144,6 +1188,21 @@ function delete_dependency_name(name,project_id,team_id){
         }
     });
 }
+function delete_dependency(name,project_id,team_id){
+    $.get('delete_dependency',{
+        'name':name,
+        'project_id':project_id,
+        'team_id':team_id
+    },function(data){
+        if(data['message']){
+            window.location.reload(true);
+        }
+        else{
+            window.location.reload(false);
+        }
+    });
+}
+
 var colors = {
     'pass' : '#65bd10',
     'fail' : '#fd0006',

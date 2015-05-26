@@ -19169,3 +19169,103 @@ def delete_dependency_name(request):
             Dict={'message':message,'log_message':log_message}
             result=simplejson.dumps(Dict)
             return HttpResponse(result,mimetype='application/json')
+
+def TableDataDependencyTestCases(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            UserData = request.GET.get(u'Query', '')
+            UserText = UserData.split(":")
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current')
+            test_status_request = request.GET.get(u'test_status_request', '')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+
+            condition=" offset %d limit %d"%(offset,limit)
+            QueryText = []
+            for eachitem in UserText:
+                if len(eachitem) != 0 and len(
+                        eachitem) != 1 and eachitem.strip() not in QueryText:
+                    QueryText.append(eachitem.strip())
+            print QueryText
+            count=1
+            for eachitem in QueryText:
+                if count == 1:
+                    Query = "HAVING COUNT(CASE WHEN property ='%s' THEN 1 END) > 0 "%(eachitem.strip())
+                    count = count + 1
+                else:
+                    Query += "AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip())
+                    count = count + 1
+            Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+            Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+            query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
+            Query=query
+            query=query+ condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+            final_list=[]
+            for each in TableData:
+                type_case=get_test_case_type(each[0])
+                time=get_test_case_time(each[0])
+                section=get_section(each[0])
+                feature=get_feature(each[0])
+                if test_status_request:
+                    status=get_status(each[0])
+                    final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                else:
+                    final_list.append((each[0],each[1],feature,section,type_case,time))
+            Heading = ['ID','Title','Feature','Folder','Type','Time']
+            if test_status_request:
+                Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+            results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
+
+        else:
+            results = {'Heading': [], 'TableData': [],'Count':0}
+
+        json = simplejson.dumps(results)
+        return HttpResponse(json, mimetype='application/json')
+def delete_dependency(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            name=request.GET.get(u'name','')
+            query="select array_agg(dn.id),d.id from dependency d,dependency_management dm,dependency_name dn  where dm.dependency=d.id and dm.dependency=dn.dependency_id and d.id=dn.dependency_id and dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.id"%(name,project_id,int(team_id))
+            Conn=GetConnection()
+            value_tuple=DB.GetData(Conn,query,False)[0]
+            name_id=value_tuple[1]
+            list_value=value_tuple[0]
+            Conn.close()
+            if isinstance(name_id,int):
+                #delete all entry from the  dependency values table
+                for each in list_value:
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"dependency_values",id=int(each))
+                    Conn.close()
+                #delete all from the dependency_name table
+                for each in list_value:
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"dependency_name",id=int(each),dependency_id=name_id)
+                    Conn.close()
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"dependency_management",project_id=project_id,team_id=int(team_id),dependency=int(name_id))
+                Conn.close()
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"dependency",id=int(name_id))
+                Conn.close()
+                message=True
+                log_message="Dependency Name deleted successfully."
+            else:
+                message=False
+                log_message="Dependency Name is not deleted successfully."
+
+            Dict={'message':message,'log_message':log_message}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
