@@ -281,6 +281,13 @@ def main():
             return False
         #TestCaseLists = list(TestCaseLists[0])
         for TestCaseID in TestCaseLists:
+            #first check that it is all copied otherwise check it periodically.
+            test_case_copy_status=False
+            while(test_case_copy_status!=True):
+                query="select copy_status from test_run where tc_id='%s' and run_id='%s'"%(TestCaseID[0],TestRunID[0])
+                Conn=DBUtil.ConnectToDataBase()
+                test_case_copy_status=DBUtil.GetData(Conn,query)[0]
+                Conn.close()
             Global.sTestStepExecLogId = "MainDriver"
             StepSeq = 1
             TCID = list(TestCaseID)[0]

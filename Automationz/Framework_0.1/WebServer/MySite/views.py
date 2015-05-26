@@ -2856,7 +2856,7 @@ def Run_Test(request):
                     Conn.close()    
                 count=1
                 for eachitem in TestCasesIDs:
-                    Dict = {'run_id': runid, 'tc_id': str(eachitem),'test_order':count}
+                    Dict = {'run_id': runid, 'tc_id': str(eachitem),'test_order':count,'copy_status':False}
                     Conn = GetConnection()
                     Result = DB.InsertNewRecordInToTable(Conn,"test_run",**Dict)
                     Conn.close()
@@ -3101,7 +3101,10 @@ def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
             if not result:
                 CleanRun(run_id)
 
-
+        Conn=GetConnection()
+        whereQuery="where tc_id='%s' and run_id='%s'"%(test_case,run_id)
+        print DB.UpdateRecordInTable(Conn,"test_run",whereQuery,copy_status=True)
+        Conn.close()
 def RegisterPermanentInfo(run_id, TestCasesIDs):
     print run_id
     test_cases = TestCasesIDs
@@ -3285,7 +3288,10 @@ def RegisterPermanentInfo(run_id, TestCasesIDs):
             Conn.close()
             if not result:
                 CleanRun(run_id)
-
+        Conn=GetConnection()
+        whereQuery="where tc_id='%s' and run_id='%s'"%(test_case,run_id)
+        print DB.UpdateRecordInTable(Conn,"test_run",whereQuery,copy_status=True)
+        Conn.close()
 
 def CleanRun(runid):
     print runid
@@ -12192,7 +12198,7 @@ def GetData(run_id, index, capacity, userText=""):
     # form the query
     query = ""
     query += "select * from ("
-    query += "(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc,test_run tr  where tr.run_id=tcr.run_id and tr.run_id=rtc.run_id and tr.tc_id=tcr.tc_id and tr.tc_id=rtc.tc_id and tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id " % run_id
+    query += "(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc,test_run tr  where tr.run_id=tcr.run_id and tr.run_id=rtc.run_id and tr.tc_id=tcr.tc_id and tr.tc_id=rtc.tc_id and tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id and tr.copy_status=True " % run_id
     if userText != "":
         query += "and "
         query += userText
