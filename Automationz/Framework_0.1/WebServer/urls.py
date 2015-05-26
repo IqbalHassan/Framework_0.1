@@ -395,6 +395,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/GetRelatedUrl/$', Get_Related_Url),
     url(r'^Home/.*/updatemailingdetails/$',updatemailingdetails),
     url(r'^Home/.*/getemaildetails/$',getemaildetails),
+    url(r'^Home/.*/delete_dependency_name/$',delete_dependency_name),
     )
 
 

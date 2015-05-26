@@ -19130,3 +19130,42 @@ def getemaildetails(request):
                 Dict.update({each[0]:each[1]})
             result=simplejson.dumps(Dict)
             return HttpResponse(result,mimetype='application/json')
+
+def delete_dependency_name(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            name=request.GET.get(u'name','')
+            query="select id,default_choices,dm.dependency from dependency_name dn,dependency_management dm where dm.dependency=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d and name='%s'"%(project_id,int(team_id),name)
+            Conn=GetConnection()
+            value_tuple=DB.GetData(Conn,query,False)[0]
+            name_id=value_tuple[0]
+            default_choices=value_tuple[1].split(",")
+            parent=int(value_tuple[2])
+            Conn.close()
+            if isinstance(name_id,int):
+                #delete all entry from the  dependency values table
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"dependency_values",id=int(name_id))
+                Conn.close()
+                #delete all from the dependency_name table
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"dependency_name",id=int(name_id))
+                Conn.close()
+                if str(name_id) in default_choices:
+                    temp=list(set(default_choices)-set([str(name_id)]))
+                    string_format=str(",".join(temp))
+                    wherQuery="where project_id='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(parent))
+                    Conn=GetConnection()
+                    print DB.UpdateRecordInTable(Conn,"dependency_management",wherQuery,default_choices=string_format)
+                    Conn.close()
+                message=True
+                log_message="Dependency Name deleted successfully."
+            else:
+                message=False
+                log_message="Dependency Name is not deleted successfully."
+
+            Dict={'message':message,'log_message':log_message}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')

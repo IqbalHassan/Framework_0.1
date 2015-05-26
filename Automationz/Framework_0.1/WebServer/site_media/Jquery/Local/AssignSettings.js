@@ -5,7 +5,7 @@ var time_out=1500;
 var name_field_error="Name field can't be empty";
 var dep_value="";
 var dep_name="";
-
+var test_case_per_page=5;
 $(document).ready(function(){
     $('body').css({'font-size':'100%'});
     var project_id= $.session.get('project_id');
@@ -175,6 +175,9 @@ function get_all_data(project_id,team_id){
             $('.dependency').css({'background-color':'#fff'});
             $(this).addClass('selected');
             $(this).css({'background-color':'#ccc'});
+            $('#extended_div').empty();
+            $('#pagination_div').pagination('destroy');
+            $('#pagination_div').empty();
             get_dependency_under_name($(this).attr('data-id'),project_id,team_id,$(this).text());
         });
         var global_dependency_list=data['unused_dependency_list'];
@@ -775,13 +778,17 @@ function get_dependency_under_name(value,project_id,team_id,value_name){
             var message='';
             message+='<input type="button" id="add_name" class="m-btn green" value="Add Name"/> ';
             message+='<input type="button" id="rename_dependency" class="m-btn green" value="Rename"/> ';
-            message+='<input type="button" class="m-btn green" value="Usage"/> ';
+            message+='<input type="button" class="m-btn green" value="Usage" id="usage_dependency"/> ';
+            message+='<input type="button" class="m-btn red" value="Delete" id="delete_dependency"/> ';
             $('#control_panel').html(message);
             initialize_button(value,project_id,team_id,value_name);
             $('#bread_crumb').html('<a href="#" class="bread_crumb_element">'+value_name+'</a>');
             $('.dependency_name').on('click',function(){
                 $('.dependency_name').css({'background-color':"#fff"});
                 $(this).css({'background-color':'#ccc'});
+                $('#extended_div').empty();
+                $('#pagination_div').pagination('destroy');
+                $('#pagination_div').empty();
                 get_all_version($(this).attr('data-id'),$(this).text(),value_name,project_id,team_id);
             });
         }
@@ -792,10 +799,10 @@ function get_dependency_under_name(value,project_id,team_id,value_name){
             var message='';
             message+='<input type="button" id="add_name" class="m-btn green" value="Add Name"/> ';
             message+='<input type="button" id="rename_dependency" class="m-btn green" value="Rename"/> ';
-            message+='<input type="button" class="m-btn green" value="Usage"/> ';
+            message+='<input type="button" class="m-btn green" value="Usage" id="usage_dependency"/> ';
+            message+='<input type="button" class="m-btn red" value="Delete" id="delete_dependency"/> ';
             $('#control_panel').html(message);
             initialize_button(value,project_id,team_id,value_name);
-
         }
     });
 }
@@ -841,6 +848,21 @@ function initialize_button(value,project_id,team_id,value_name){
                 alertify.alert().close_all();
             }
 
+        });
+    });
+    $('#usage_dependency').on('click',function(){
+        var UserText=(value_name+":").trim();
+        var pageNumber=1;
+        $.get('TableDataTestCasesOtherPages',{
+            Query: UserText,
+            test_status_request:true,
+            project_id:project_id,
+            team_id:team_id,
+            total_time:'true',
+            test_case_per_page:test_case_per_page,
+            test_case_page_current:pageNumber
+        },function(data){
+           alert(data['Count']);
         });
     });
 }
@@ -984,7 +1006,8 @@ function initialize_second_level(value,text,parent_name,project_id,team_id){
     var message='';
     message+='<input type="button" id="add_version" class="m-btn green" value="Add Version"/> ';
     message+='<input type="button" id="rename_name" class="m-btn green" value="Rename"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage" id="usage_version"/> ';
+    message+='<input type="button" class="m-btn red" value="Delete" id="delete_name"/>';
     $('#control_panel').html(message);
     $('#add_version').on('click',function(){
         var message='';
@@ -1047,8 +1070,121 @@ function initialize_second_level(value,text,parent_name,project_id,team_id){
 
         });
     });
+    $('#usage_version').on('click',function(){
+        var UserText=(text+":").trim();
+        var test_case_page_current=1;
+        PerformSearch(UserText,project_id,team_id,test_case_per_page,test_case_page_current);
+    });
+    $('#delete_name').on('click',function(){
+        var UserText=(text+":").trim();
+        var test_case_page_current=1;
+        PerformSearch(UserText,project_id,team_id,test_case_per_page,test_case_page_current,false);
+    });
 }
+function PerformSearch(UserText,project_id,team_id,test_case_per_page,test_case_page_current,usage){
+    if(usage==undefined){
+        usage=true;
+    }
+    $.get('TableDataTestCasesOtherPages',{
+        Query: UserText,
+        test_status_request:true,
+        project_id:project_id,
+        team_id:team_id,
+        total_time:'true',
+        test_case_per_page:test_case_per_page,
+        test_case_page_current:test_case_page_current
+    },function(data){
+        if(usage){
+            form_table('extended_div',data['Heading'],data['TableData'],data['Count'],'Test Cases');
+            $('#pagination_div').pagination({
+                items:data['Count'],
+                itemsOnPage:test_case_per_page,
+                cssStyle: 'dark-theme',
+                currentPage:test_case_page_current,
+                displayedPages:2,
+                edges:2,
+                hrefTextPrefix:'#',
+                onPageClick:function(PageNumber){
+                    PerformSearch(UserText,project_id,team_id,test_case_per_page,PageNumber);
+                }
+            });
+        }else{
+            var message='';
+            if(data['Count']>0){
+                message+=data['Count']+' Test Cases are linked.It Can\'t be deleted.'
+            }
+            else{
+                message+='You are about to delete <b>'+UserText.split(":")[0].trim()+'</b>.Are you sure?';
+            }
+            alertify.confirm(message,function(e){
+                if(e){
+                    if(data['Count']>0){
+                        alertify.alert().close_all();
+                    }else{
+                        delete_dependency_name(UserText.split(":")[0],project_id,team_id);
+                    }
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        }
+    });
+}
+function delete_dependency_name(name,project_id,team_id){
+    $.get('delete_dependency_name',{
+        'name':name,
+        'project_id':project_id,
+        'team_id':team_id
+    },function(data){
+        if(data['message']){
+            window.location.reload(true);
+        }
+        else{
+            window.location.reload(false);
+        }
+    });
+}
+var colors = {
+    'pass' : '#65bd10',
+    'fail' : '#fd0006',
+    'block' : '#ff9e00',
+    'submitted' : '#808080',
+    'in-progress':'#0000ff',
+    'skipped':'#cccccc',
+    'dev': '#aaaaaa',
+    'ready': '#65bd10'
+};
 
+function form_table(divname,column,data,total_data,type_case){
+    var tooltip=type_case||':)';
+    var message='';
+    message+= "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + total_data + " " + type_case+"</p>";
+    message+='<table class="two-column-emphasis">';
+    message+='<tr>';
+    for(var i=0;i<column.length;i++){
+        message+='<th>'+column[i]+'</th>';
+    }
+    message+='</tr>';
+    for(var i=0;i<data.length;i++){
+        message+='<tr>';
+        for(var j=0;j<data[i].length;j++){
+            switch(data[i][j]){
+                case 'Dev':
+                    message+='<td style="background-color: ' + colors['dev'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                case 'Ready':
+                    message+='<td style="background-color: ' + colors['ready'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                default :
+                    message+='<td>'+data[i][j]+'</td>';
+                    continue;
+            }
+        }
+        message+='</tr>';
+    }
+    message+='</table>';
+    $('#'+divname).html(message);
+}
 function add_new_version(value,text,parent_name,version,bit){
     $.get('add_new_version',{
         value:value,
