@@ -66,12 +66,14 @@ def schedule_run(timediff):
                 }
                 if each[2]=='Fiv':
                     difference=5
-                if each[2]=='Ten':
+                elif each[2]=='Ten':
                     difference=10
-                if each[2]=='Thi':
+                elif each[2]=='Thi':
                     difference=30
-                if each[2]=='One':
+                elif each[2]=='One':
                     difference=60
+                else:
+                    difference=0
                 next_time_string=(datetime.strptime(each[1], "%H:%M")+timedelta(minutes=int(difference))).strftime("%H:%M")
                 sWhereQuery="where schedule=%d"%int(each[0])
                 Conn=DB.ConnectToDataBase(db_name, user, password_user, server)
