@@ -11784,15 +11784,15 @@ def ViewAndOrganizeTestCases(request):
                     count = 1
                     for eachitem in QueryText:
                         if count == 1:
-                            Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 " % (
-                                eachitem.strip(), wherequery)
+                            Query = "HAVING ( COUNT(CASE WHEN name = '%s' and property in ('section_id') THEN 1 END) > 0 " % (
+                                eachitem.strip())#, wherequery)
                             count = count + 1
                         else:
-                            Query += "AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 " % (
-                                eachitem.strip(), wherequery)
+                            Query += "OR COUNT(CASE WHEN name = '%s' and property in ('section_id') THEN 1 END) > 0 " % (
+                                eachitem.strip())#, wherequery)
                             count = count + 1
                     Query = Query + \
-                        " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+                        ") AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
                     Query = Query + \
                         " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
                     query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + \
