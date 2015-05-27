@@ -17697,76 +17697,31 @@ def rename_feature(request):
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = "Feature"
-                old_name = request.GET.get(u'old_name', '')
-                new_name = request.GET.get(u'new_name', '')
-                query = "select count(*) from product_features where feature_path='%s'" % old_name.strip(
-                )
-                Conn = GetConnection()
-                old_name_count = DB.GetData(Conn, query)
+                old_name = request.GET.get(u'old_feature_name', '')
+                new_name = request.GET.get(u'new_feature_name', '')
+                project_id=request.GET.get(u'project_id','')
+                team_id=int(request.GET.get(u'team_id',''))
+                #chck the availablility of the new feature name
+                query="select count(*) from product_features where project_id='%s' and team_id=%d and feature_path ~'%s'"%(project_id,int(team_id),new_name)
+                Conn=GetConnection()
+                availablity=int(DB.GetData(Conn,query)[0])
                 Conn.close()
-                query = "select count(*) from product_features where feature_path='%s'" % new_name.strip(
-                )
-                Conn = GetConnection()
-                new_name_count = DB.GetData(Conn, query)
-                Conn.close()
-                if isinstance(old_name_count, list):
-                    if len(old_name_count) == 1 and old_name_count[0] > 0:
-                        if len(new_name_count) == 1 and new_name_count[0] == 0:
-                            sWhereQuery = "where feature_path='%s'" % old_name.strip()
-                            Dict = {
-                                'feature_path': new_name.strip()
-                            }
-                            Conn = GetConnection()
-                            result = DB.UpdateRecordInTable(
-                                Conn,
-                                "product_features",
-                                sWhereQuery,
-                                **Dict)
-                            Conn.close()
-                            if result:
-                                PassMessasge(
-                                    sModuleInfo,
-                                    update_success(
-                                        old_name,
-                                        new_name,
-                                        type_tag),
-                                    success_tag)
-                                message = True
-                                log_message = update_success(
-                                    old_name,
-                                    new_name,
-                                    type_tag)
-                            else:
-                                PassMessasge(
-                                    sModuleInfo,
-                                    update_fail(
-                                        old_name,
-                                        type_tag),
-                                    error_tag)
-                                message = False
-                                log_message = update_fail(old_name, type_tag)
-                        if len(new_name_count) == 1 and new_name_count[0] > 0:
-                            PassMessasge(
-                                sModuleInfo,
-                                multiple_instance(
-                                    new_name,
-                                    type_tag),
-                                error_tag)
-                            message = False
-                            log_message = multiple_instance(new_name, type_tag)
-                    if len(old_name_count) == 1 and old_name_count[0] == 0:
-                        PassMessasge(
-                            sModuleInfo,
-                            unavailable(
-                                old_name,
-                                type_tag),
-                            error_tag)
-                        message = False
-                        log_message = unavailable(old_name, type_tag)
+                if isinstance(availablity,int) and availablity==0:
+                    query="select feature_id,feature_path from team_wise_settings tws, product_features pf where pf.project_id=tws.project_id and pf.team_id=tws.team_id and tws.type='Feature' and pf.project_id='%s' and pf.team_id=%d and tws.parameters=pf.feature_id and (pf.feature_path ~ '%s' or pf.feature_path ~'%s.*')"%(project_id,int(team_id),old_name,old_name)
+                    Conn=GetConnection()
+                    feature_list=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    print feature_list
+                    for each in feature_list:
+                        whereQuery="where feature_id=%d"%int(each[0])
+                        Conn=GetConnection()
+                        print DB.UpdateRecordInTable(Conn,"product_features",whereQuery,feature_path=each[1].replace(old_name,new_name))
+                        Conn.close()
+                    message=True
+                    log_message="Feature Name is updated Successfully"
                 else:
-                    PassMessasge(sModuleInfo, DBError, error_tag)
-                    message = False
-                    log_message = DBError
+                    message=False
+                    log_message="Name Already Exists in the database"
                 result = {
                     'message': message,
                     'log_message': log_message

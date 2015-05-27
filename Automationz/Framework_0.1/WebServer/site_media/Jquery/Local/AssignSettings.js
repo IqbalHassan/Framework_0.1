@@ -51,8 +51,8 @@ $(document).ready(function(){
             if(e){
                 var feature_name=$('#new_feature').val().trim();
                 if(feature_name!=''){
-                    if(feature_name.indexOf('.')!=-1){
-                        alertify.error('You can\'t give . in the Feature Name',time_out);
+                    if(feature_name.indexOf('.')!=-1 || feature_name.indexOf("_")!=-1){
+                        alertify.error('You can\'t give "." or "_" in the Feature Name',time_out);
                         return false;
                     }
                     else{
@@ -151,6 +151,10 @@ function get_all_data(project_id,team_id){
         $('#control_panel').empty();
         $('#branch_version_list').empty();
         $('#branch_control_panel').empty();
+        $("#sub_feature_list").empty();
+        $("#second_level_feature_list").empty();
+        $("#third_level_feature_list").empty();
+        $("#feature_control_panel").empty();
         var dependency_list=data['dependency_list'];
         console.log(dependency_list);
         var  message='';
@@ -583,6 +587,9 @@ function initialize_third_feature_tab_button(feature_id,project_id,team_id,featu
     });$('#delete_button').on('click',function(){
         get_feature_usage(feature_id,project_id,team_id,5,1,true);
     });
+    $('#rename_feature').on('click',function(){
+        rename_feature(feature_id,project_id,team_id);
+    });
 }
 function initialize_second_feature_tab_button(feature_id,project_id,team_id,feature){
     var message='';
@@ -604,9 +611,17 @@ function initialize_second_feature_tab_button(feature_id,project_id,team_id,feat
         alertify.confirm(message,function(e){
             if(e){
                 var sub_feature=$('#sub_feature').val().trim();
+                if(sub_feature==''){
+                    alertify.error("You can't give empty name");
+                    return false;
+                }
+                if(sub_feature==''){
+                    alertify.error("You can't give empty name");
+                    return false;
+                }
                 if(sub_feature!=''){
-                    if(sub_feature.indexOf('.')!=-1){
-                        alertify.error('You can\'t give . in feature name',time_out);
+                    if(sub_feature.indexOf('.')!=-1 || sub_feature.indexOf('_')!=-1){
+                        alertify.error('You can\'t give "." or "_" in feature name',time_out);
                         return false;
                     }
                     else{
@@ -643,7 +658,10 @@ function initialize_second_feature_tab_button(feature_id,project_id,team_id,feat
     });
     $('#feature_delete').on('click',function(){
         get_feature_usage(feature_id,project_id,team_id,5,1,true);
-    })
+    });
+    $('#rename_feature').on('click',function(){
+        rename_feature(feature_id,project_id,team_id);
+    });
 }
 function get_feature_usage(UserText,project_id,team_id,test_case_per_page,test_case_page_current,delete_tag){
     if(delete_tag===undefined){
@@ -727,9 +745,13 @@ function initialize_feature_tab_button(feature_id,project_id,team_id,feature){
         alertify.confirm(message,function(e){
             if(e){
                 var sub_feature=$('#sub_feature').val().trim();
+                if(sub_feature==''){
+                    alertify.error("You can't give empty name");
+                    return false;
+                }
                 if(sub_feature!=''){
-                    if(sub_feature.indexOf('.')!=-1){
-                        alertify.error('You can\'t give . in feature name',time_out);
+                    if(sub_feature.indexOf('.')!=-1 || sub_feature.indexOf("_")!=-1){
+                        alertify.error('You can\'t give "." or "_" in feature name',time_out);
                         return false;
                     }
                     else{
@@ -767,6 +789,65 @@ function initialize_feature_tab_button(feature_id,project_id,team_id,feature){
     $('#feature_delete').on('click',function(){
         get_feature_usage(feature_id,project_id,team_id,5,1,true);
     });
+    $('#rename_feature').on('click',function(){
+        rename_feature(feature_id,project_id,team_id);
+    });
+}
+function rename_feature(feature_full_path,project_id,team_id){
+    //get the last part
+    feature_full_path=feature_full_path.replace(/ /g,'_');
+    var value_name=feature_full_path.split(".")[feature_full_path.split(".").length-1].replace(/_/g,' ');
+    var message='';
+    message+='<table width="100%;">';
+    message+='<tr><td><b>Old Name:</b></td><td>'+value_name+'</td></tr>';
+    message+='<tr><td><b>New Name:</b></td><td><input id="new_feature" style="width: 100%;" class="textbox"/></td></tr>'
+    message+='</table>';
+    alertify.confirm(message,function(e){
+        if(e){
+            var new_feature_name=$("#new_feature").val().trim();
+            if(new_feature_name==''){
+                alertify.error("You can't give empty name");
+                return false;
+            }
+            if(new_feature_name.indexOf('.')!=-1 || new_feature_name.indexOf('_')!=-1){
+                alertify.error("You can not give '.' or '_' in feature name",time_out);
+                return false;
+            }
+            else{
+                //form the new name
+                value_name=value_name.replace(/ /g,'_');
+                var new_content=removeA(feature_full_path.split("."),value_name);
+                new_content.push(new_feature_name.replace(/ /g,'_'));
+                $.get('rename_feature',{
+                    old_feature_name:feature_full_path,
+                    new_feature_name:new_content.join("."),
+                    project_id:project_id,
+                    team_id:team_id
+                },function(data){
+                    if(data['message']){
+                        alertify.success(data['log_message'],time_out);
+                        get_all_data(project_id,team_id);
+                    }
+                    else{
+                        alertify.error(data['log_message'],1500);
+                        alertify.alert().close_all();
+                    }
+                });
+            }
+        }else{
+            alertify.alert().close_all();
+        }
+    });
+}
+function removeA(arr) {
+    var what, a = arguments, L = a.length, ax;
+    while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax= arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
 }
 function link_dependency(dependency,project_id,team_id){
     $.get('link_dependency',{
