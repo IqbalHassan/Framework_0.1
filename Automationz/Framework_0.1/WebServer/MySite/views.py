@@ -5251,16 +5251,12 @@ def Get_Sections(request):
         project_id = request.GET.get(u'project_id', '')
         team_id = request.GET.get(u'team_id', '')
         if section == '':
-            query = "select distinct subltree(section_path,0,1) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d" % (
-                project_id, int(team_id))
+            query = "select distinct subltree(section_path,0,1) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and ps.project_id=tws.project_id and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d" %(project_id, int(team_id))
             results = DB.GetData(Conn, query, False)
             levelnumber = 0
         else:
             levelnumber = section.count('.') + 1
-            query = "select distinct subltree(section_path,%d,%d) from product_sections ps where section_path~'*.%s.*' and nlevel(section_path)>%d" % (
-                int(levelnumber), int(levelnumber + 1), section, int(levelnumber))
-            """query = "select distinct subltree(section_path,%d,%d) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d and section_path~'*.%s.*' and nlevel(section_path)>%d" % (
-                int(levelnumber), int(levelnumber + 1), project_id, int(team_id), section, int(levelnumber))"""
+            query = "select distinct subltree(section_path,%d,%d) from product_sections ps,team_wise_settings tws where tws.project_id=ps.project_id and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d and tws.parameters=ps.section_id and section_path~'*.%s.*' and nlevel(section_path)>%d"%(int(levelnumber), int(levelnumber + 1), project_id,int(team_id),section, int(levelnumber))
             results = DB.GetData(Conn, query, False)
 
     results.insert(0, (str(levelnumber),))
@@ -12443,11 +12439,11 @@ def create_section(request):
 
         try:
             query = '''
-            INSERT INTO product_sections (section_path) VALUES (%s) RETURNING section_id
+            INSERT INTO product_sections (section_path,project_id,team_id) VALUES (%s,%s,%s) RETURNING section_id
             '''
 #             time.sleep(0.5)
 
-            cur.execute(query, (section_text, ))
+            cur.execute(query, (section_text,project_id,team_id ))
 
             new_section_id = cur.fetchone()[0]
 
