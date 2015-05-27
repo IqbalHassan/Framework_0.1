@@ -398,6 +398,8 @@ urlpatterns += patterns('',
     url(r'^Home/.*/delete_dependency_name/$',delete_dependency_name),
     url(r'^Home/.*/delete_dependency/$',delete_dependency),
     url(r'^Home/.*/TableDataDependencyTestCases/$',TableDataDependencyTestCases),
+    url(r'^Home/.*/FeatureUsageTestCase/$',FeatureUsageTestCase),
+    url(r'^Home/.*/delete_feature/$',delete_feature),
     )
 
 

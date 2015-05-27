@@ -19197,7 +19197,7 @@ def TableDataDependencyTestCases(request):
                     Query = "HAVING COUNT(CASE WHEN property ='%s' THEN 1 END) > 0 "%(eachitem.strip())
                     count = count + 1
                 else:
-                    Query += "AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 "%(eachitem.strip())
+                    Query += "AND COUNT(CASE WHEN  property ='%s' THEN 1 END) > 0 "%(eachitem.strip())
                     count = count + 1
             Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
             Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
@@ -19265,6 +19265,100 @@ def delete_dependency(request):
             else:
                 message=False
                 log_message="Dependency Name is not deleted successfully."
+
+            Dict={'message':message,'log_message':log_message}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+def FeatureUsageTestCase(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            UserData = request.GET.get(u'Query', '')
+            UserText = UserData.split(":")
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current')
+            test_status_request = request.GET.get(u'test_status_request', '')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+
+            condition=" offset %d limit %d"%(offset,limit)
+            QueryText = []
+            for eachitem in UserText:
+                if len(eachitem) != 0 and len(eachitem) != 1 and eachitem.strip() not in QueryText:
+                    QueryText.append(eachitem.strip())
+            print QueryText
+            feature_id=[]
+            for each in QueryText:
+                query="select feature_id::text from team_wise_settings tws,product_features pf where tws.parameters=pf.feature_id and type='Feature' and pf.project_id=tws.project_id and pf.team_id=tws.team_id and tws.project_id='%s' and tws.team_id=%d and (feature_path ~ '%s' or feature_path ~ '%s.*')"%(project_id,int(team_id),eachitem.replace(' ','_'),eachitem.replace(' ','_'))
+                Conn=GetConnection()
+                feature_id=DB.GetData(Conn,query)
+                Conn.close()
+
+            count=1
+            for eachitem in feature_id:
+                if count == 1:
+                    Query = "HAVING (COUNT(CASE WHEN property ='feature_id' and name='%s' THEN 1 END) > 0 "%(str(eachitem).strip())
+                    count = count + 1
+                else:
+                    Query += "or COUNT(CASE WHEN name = '%s' and property ='feature_id' THEN 1 END) > 0 "%(str(eachitem).strip())
+                    count = count + 1
+            Query = Query + ") AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+            Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+            query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
+            Query=query
+            query=query+ condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+            final_list=[]
+            for each in TableData:
+                type_case=get_test_case_type(each[0])
+                time=get_test_case_time(each[0])
+                section=get_section(each[0])
+                feature=get_feature(each[0])
+                if test_status_request:
+                    status=get_status(each[0])
+                    final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                else:
+                    final_list.append((each[0],each[1],feature,section,type_case,time))
+            Heading = ['ID','Title','Feature','Folder','Type','Time']
+            if test_status_request:
+                Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+            results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
+
+        else:
+            results = {'Heading': [], 'TableData': [],'Count':0}
+
+        json = simplejson.dumps(results)
+        return HttpResponse(json, mimetype='application/json')
+def delete_feature(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            name=request.GET.get(u'name','')
+            query="select feature_id from team_wise_settings tws,product_features pf where tws.parameters=pf.feature_id and type='Feature' and pf.project_id=tws.project_id and pf.team_id=tws.team_id and tws.project_id='%s' and tws.team_id=%d and (feature_path ~ '%s' or feature_path ~ '%s.*')"%(project_id,int(team_id),name.replace(' ','_'),name.replace(' ','_'))
+            Conn=GetConnection()
+            feature_list=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(feature_list,list):
+                for each in feature_list:
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"team_wise_settings",type='Feature',project_id=project_id,team_id=int(team_id),parameters=each)
+                    Conn.close()
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"product_features",feature_id=each)
+                    Conn.close()
+                message=True
+                log_message="Feature deleted successfully."
+            else:
+                message=False
+                log_message="Feature is not deleted successfully."
 
             Dict={'message':message,'log_message':log_message}
             result=simplejson.dumps(Dict)

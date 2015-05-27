@@ -232,6 +232,9 @@ function get_all_data(project_id,team_id){
             $(this).css({'background-color':'#ccc'});
             $('.feature').removeClass('selected');
             $(this).addClass('selected');
+            $('#feature_extended_div').empty();
+            $('#feature_pagination_div').pagination('destroy');
+            $('#feature_pagination_div').empty();
             var feature_id=$(this).attr('data-id');
             var feature=$(this).text().trim();
             get_features(feature_id,project_id,team_id,feature);
@@ -489,6 +492,9 @@ function get_features(feature_id,project_id,team_id,feature){
             $(this).css({'background-color':'#ccc'});
             $('.sub_feature_first_level').removeClass('selected');
             $(this).removeClass('selected');
+            $('#feature_extended_div').empty();
+            $('#feature_pagination_div').pagination('destroy');
+            $('#feature_pagination_div').empty();
             var parent_name=$(this).attr('data-id');
             var child_name=$(this).text().trim().replace(/ /g,'_');
             var modified_name=parent_name+'.'+child_name;
@@ -519,6 +525,9 @@ function get_features(feature_id,project_id,team_id,feature){
                     $(this).css({'background-color':'#ccc'});
                     $('.sub_feature_second_level').removeClass('selected');
                     $(this).addClass('selected');
+                    $('#feature_extended_div').empty();
+                    $('#feature_pagination_div').pagination('destroy');
+                    $('#feature_pagination_div').empty();
                     var parent_name=$(this).attr('data-id');
                     var child_name=$(this).text().trim().replace(/ /g,'_');
                     var modified_name=parent_name+'.'+child_name;
@@ -548,6 +557,9 @@ function get_features(feature_id,project_id,team_id,feature){
                             $(this).css({'background-color':'#ccc'});
                             $('.sub_feature_third_level').removeClass('selected');
                             $(this).addClass('selected');
+                            $('#feature_extended_div').empty();
+                            $('#feature_pagination_div').pagination('destroy');
+                            $('#feature_pagination_div').empty();
                             var parent_name=$(this).attr('data-id');
                             var child_name=$(this).text().trim().replace(/ /g,'_');
                             var modified_name=parent_name+'.'+child_name;
@@ -563,18 +575,21 @@ function initialize_third_feature_tab_button(feature_id,project_id,team_id,featu
     var message='';
     //message+='<input type="button" id="add_sub_feature" class="m-btn green" value="Add Sub Feature"/> ';
     message+='<input type="button" id="rename_feature" class="m-btn green" value="Rename Feature"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage" id="feature_usage"/> ';
     message+='<input type="button" class="m-btn red" id="delete_button" value="Delete"/> ';
     $('#feature_control_panel').html(message);
-    $('#delete_button').on('click',function(){
-        alert(feature_id);
+    $('#feature_usage').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1);
+    });$('#delete_button').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1,true);
     });
 }
 function initialize_second_feature_tab_button(feature_id,project_id,team_id,feature){
     var message='';
     message+='<input type="button" id="add_sub_feature" class="m-btn green" value="Add Sub Feature"/> ';
     message+='<input type="button" id="rename_feature" class="m-btn green" value="Rename Feature"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage" id="feature_usage"/> ';
+    message+='<input type="button" class="m-btn red" value="Delete" id="feature_delete"/> ';
     $('#feature_control_panel').html(message);
 
     $('#add_sub_feature').on('click',function(e){
@@ -623,12 +638,80 @@ function initialize_second_feature_tab_button(feature_id,project_id,team_id,feat
             }
         });
     });
+    $('#feature_usage').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1);
+    });
+    $('#feature_delete').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1,true);
+    })
+}
+function get_feature_usage(UserText,project_id,team_id,test_case_per_page,test_case_page_current,delete_tag){
+    if(delete_tag===undefined){
+        delete_tag=false;
+    }
+    $.get('FeatureUsageTestCase',{
+        Query:UserText,
+        project_id:project_id,
+        team_id:team_id,
+        test_case_per_page:test_case_per_page,
+        test_case_page_current:test_case_page_current
+    },function(data){
+        if(delete_tag){
+            var message='';
+            if(data['Count']>0){
+                message+=data['Count']+' Test Cases are linked.It can\'t be deleted.'
+            }
+            else{
+                message+='You are about to delete <b>'+UserText.split(".")[UserText.split(".").length-1].replace(/_/g,' ').trim()+'</b>.Are you sure?';
+            }
+            alertify.confirm(message,function(e){
+                if(e){
+                    if(data['Count']>0){
+                        alertify.alert().close_all();
+                    }else{
+                        delete_feature(UserText,project_id,team_id);
+                    }
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        }else{
+            form_table('feature_extended_div',data['Heading'],data['TableData'],data['Count'],'Test Cases');
+            $('#feature_pagination_div').pagination({
+                items:data['Count'],
+                itemsOnPage:test_case_per_page,
+                cssStyle: 'dark-theme',
+                currentPage:test_case_page_current,
+                displayedPages:2,
+                edges:2,
+                hrefTextPrefix:'#',
+                onPageClick:function(PageNumber){
+                    get_feature_usage(UserText,project_id,team_id,test_case_per_page,PageNumber);
+                }
+            });
+        }
+    });
+}
+function delete_feature(UserText,project_id,team_id){
+    $.get('delete_feature',{
+        'name':UserText,
+        'project_id':project_id,
+        'team_id':team_id
+    },function(data){
+        if(data['message']){
+            window.location.reload(true);
+        }
+        else{
+            window.location.reload(false);
+        }
+    });
 }
 function initialize_feature_tab_button(feature_id,project_id,team_id,feature){
     var message='';
     message+='<input type="button" id="add_sub_feature" class="m-btn green" value="Add Sub Feature"/> ';
     message+='<input type="button" id="rename_feature" class="m-btn green" value="Rename Feature"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage" id="feature_usage"/> ';
+    message+='<input type="button" class="m-btn red" value="Delete" id="feature_delete"/> ';
     $('#feature_control_panel').html(message);
 
     $('#add_sub_feature').on('click',function(e){
@@ -677,6 +760,12 @@ function initialize_feature_tab_button(feature_id,project_id,team_id,feature){
                 alertify.alert().close_all();
             }
         });
+    });
+    $('#feature_usage').on('click',function(e){
+        get_feature_usage(feature_id,project_id,team_id,5,1);
+    });
+    $('#feature_delete').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1,true);
     });
 }
 function link_dependency(dependency,project_id,team_id){
@@ -1057,7 +1146,7 @@ function initialize_second_level(value,text,parent_name,project_id,team_id){
         message+='<table>';
         message+='<tr><td align="right"><b>'+parent_name+' Name:</b></td><td align="left">'+text+'</td></tr>';
         message+='<tr><td align="right"><b>Bit:</b></td><td align="left"><select id="bit"><option value="32">32 Bit</option><option value="64">64 Bit</option></select></td></tr>';
-        message+='<tr><td align="right"><b>Dependency Name:</b></td><td align="left"><input id="version_name" class="textbox" style="width: 100%;"/></td></tr>';
+        message+='<tr><td align="right"><b>Version:</b></td><td align="left"><input id="version_name" class="textbox" style="width: 100%;"/></td></tr>';
         message+='</table>';
         alertify.confirm(message,function(e){
             if(e){
