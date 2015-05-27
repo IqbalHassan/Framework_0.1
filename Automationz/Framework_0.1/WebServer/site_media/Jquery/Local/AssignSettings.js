@@ -540,9 +540,8 @@ function buttonConfig(branch_id,project_id,team_id,branch){
     var message='';
     message+='<input type="button" id="add_branch_version" class="m-btn green" value="Add Version"/> ';
     message+='<input type="button" id="rename_branch" class="m-btn green" value="Rename Branch"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn red" value="Delete"/> ';
     $('#branch_control_panel').html(message);
-
     $('#add_branch_version').on('click',function(){
         var message='';
         message+='<table>';
@@ -570,7 +569,40 @@ function buttonConfig(branch_id,project_id,team_id,branch){
             }
         });
     });
-
+    $('#rename_branch').on('click',function(){
+        var message='';
+        message+='<table width="100%;">';
+        message+='<tr><td><b>Old Name:</b></td><td>'+branch+'</td></tr>';
+        message+='<tr><td><b>New Name:</b></td><td><input id="new_branch" style="width: 100%;" class="textbox"/></td></tr>'
+        message+='</table>';
+        alertify.confirm(message,function(e){
+            if(e){
+                var new_branch=$("#new_branch").val().trim();
+                if(new_branch==''){
+                    alertify.error("You can't give empty name");
+                    return false;
+                }else{
+                    $.get('rename_branch',{
+                        old_name:branch,
+                        new_name:new_branch,
+                        project_id:project_id,
+                        team_id:team_id
+                    },function(data){
+                        if(data['message']){
+                            alertify.success(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                        else{
+                            alertify.error(data['log_message'],1500);
+                            alertify.alert().close_all();
+                        }
+                    });
+                }
+            }else{
+                alertify.alert().close_all();
+            }
+        });
+    });
 }
 function get_features(feature_id,project_id,team_id,feature){
     if (feature_id==''){

@@ -17127,82 +17127,29 @@ def add_new_version_branch(request):
 
 
 def rename_branch(request):
-    sModuleInfo = inspect.stack()[0][3] + \
-        " : " + inspect.getmoduleinfo(__file__).name
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = "Branch"
                 old_name = request.GET.get(u'old_name', '')
                 new_name = request.GET.get(u'new_name', '')
-                query = "select count(*) from branch where branch_name='%s'" % old_name.strip(
-                )
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                query = "select count(*) from branch b,branch_management bm where b.project_id=bm.project_id and b.team_id=bm.team_id and bm.branch=b.id and branch_name='%s' and bm.project_id='%s' and b.team_id=%d" %(new_name.strip(),project_id.strip(),int(team_id))
                 Conn = GetConnection()
-                old_name_count = DB.GetData(Conn, query)
+                new_name_count = int(DB.GetData(Conn, query)[0])
                 Conn.close()
-                query = "select count(*) from branch where branch_name='%s'" % new_name.strip(
-                )
-                Conn = GetConnection()
-                new_name_count = DB.GetData(Conn, query)
-                Conn.close()
-                if isinstance(old_name_count, list):
-                    if len(old_name_count) == 1 and old_name_count[0] > 0:
-                        if len(new_name_count) == 1 and new_name_count[0] == 0:
-                            sWhereQuery = "where branch_name='%s'" % old_name.strip()
-                            Dict = {
-                                'branch_name': new_name.strip()
-                            }
-                            Conn = GetConnection()
-                            result = DB.UpdateRecordInTable(
-                                Conn,
-                                "branch",
-                                sWhereQuery,
-                                **Dict)
-                            Conn.close()
-                            if result:
-                                PassMessasge(
-                                    sModuleInfo,
-                                    update_success(
-                                        old_name,
-                                        new_name,
-                                        type_tag),
-                                    success_tag)
-                                message = True
-                                log_message = update_success(
-                                    old_name,
-                                    new_name,
-                                    type_tag)
-                            else:
-                                PassMessasge(
-                                    sModuleInfo,
-                                    update_fail(
-                                        old_name,
-                                        type_tag),
-                                    error_tag)
-                                message = False
-                                log_message = update_fail(old_name, type_tag)
-                        if len(new_name_count) == 1 and new_name_count[0] > 0:
-                            PassMessasge(
-                                sModuleInfo,
-                                multiple_instance(
-                                    new_name,
-                                    type_tag),
-                                error_tag)
-                            message = False
-                            log_message = multiple_instance(new_name, type_tag)
-                    if len(old_name_count) == 1 and old_name_count[0] == 0:
-                        PassMessasge(
-                            sModuleInfo,
-                            unavailable(
-                                old_name,
-                                type_tag),
-                            error_tag)
-                        message = False
-                        log_message = unavailable(old_name, type_tag)
+                if isinstance(new_name_count,int) and new_name_count==0:
+                    whereQuery="where branch_name='%s' and project_id='%s' and team_id=%d"%(old_name,project_id,int(team_id))
+                    Conn=GetConnection()
+                    print DB.UpdateRecordInTable(Conn,"branch",whereQuery,branch_name=new_name)
+                    Conn.close()
+                    message=True
+                    log_message="Branch name is updated successfully"
                 else:
-                    PassMessasge(sModuleInfo, DBError, error_tag)
-                    message = False
-                    log_message = DBError
+                    message=False
+                    log_message="Branch With Same name exists"
                 result = {
                     'message': message,
                     'log_message': log_message
