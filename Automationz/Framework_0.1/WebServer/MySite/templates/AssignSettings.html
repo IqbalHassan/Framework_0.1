@@ -1,268 +1,6 @@
 {% extends 'BaseTemplate.html' %}
 {% block title%}Team Wise Settings{% endblock %}
 {% block content%}
-<!--<style>
-    .searchbox {
-        width: 94%;
-        padding: 5px;
-        max-width: 95%;
-        outline-color: #000;
-        outline-style: none;
-        box-shadow: 0 6px 6px -6px black;
-        font-size: 1.2em;
-    }
-
-    .searchbox:focus {
-        box-shadow: 0 6px 6px -6px blue;
-    }
-</style>
-<article>
-    <div>
-        <div align="left">
-            <a href=""><b class="Text">Project</b></a> / <a href=""><b class="Text">Team</b></a> / <b class="Text">Default settings</b>
-        </div>
-    </div>
-    <div class="responsive-tabs">
-        <h2>Dependency</h2>
-        <div class="tabs-div">
-            <table style="width: 100%;margin-top: 2%;">
-                <thead>
-                <tr>
-                    <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text">Dependency</td>
-                    <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text">Name</td>
-                    <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text">Bit & Version</td>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="width: 22%; border-right: 2px solid #ccc;">
-                            <div style="width: 100%;">
-                                <input type="text" id="searchbox" placeholder="Search Dependency" class="searchbox">
-                            </div>
-                            <div style="width:100%; ">
-                                <table width="100%" style="margin-top: 5%;">
-                                    <thead>
-                                    <tr>
-                                        <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Linked Dependency</b></td>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="dependency_body">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div style="width:100%;margin-top:2%;" align="center" >
-                                <a href="" id="create_new_dependency" class="m-btn purple">Create New Dependency</a>
-                            </div>
-                            <div style="width:100%;">
-                                <table width="100%" style="margin-top: 5%;">
-                                    <thead>
-                                    <tr>
-                                        <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Global Dependency</b></td>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="unused_dependency">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                        <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
-                            <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="name_dependency_tab">
-
-                            </div>
-                        </td>
-                        <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
-                            <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="version_dependency_tab">
-
-                            </div>
-                        </td>
-
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <h2>Version</h2>
-        <div class="tabs-div">
-            <table style="width: 100%;margin-top: 2%;">
-                <thead>
-                <tr>
-                    <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text" width="33%">Branch</td>
-                    <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text" width="33%">Version</td>
-                    <td width="33%">&nbsp</td>
-
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td style="width: 22%; border-right: 2px solid #ccc;">
-                        <div style="width: 100%;">
-                            <input type="text" id="searchbox_version" class="searchbox" placeholder="Search Branch">
-                        </div>
-                        <div style="width:100%; ">
-                            <table width="100%" style="margin-top: 5%;">
-                                <thead>
-                                <tr>
-                                    <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Linked Branch</b></td>
-                                </tr>
-                                </thead>
-                                <tbody id="branch_body">
-
-                                </tbody>
-                            </table>
-                        </div>
-                        <div style="width:100%;margin-top:2%;" align="center" >
-                            <a href="" id="create_new_branch" class="m-btn purple">Create New Branch</a>
-                        </div>
-                        <div style="width:100%;">
-                            <table width="100%" style="margin-top: 5%;">
-                                <thead>
-                                <tr>
-                                    <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Global Branch</b></td>
-                                </tr>
-                                </thead>
-                                <tbody id="unused_branch">
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </td>
-                    <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
-                        <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="version_tab">
-
-                        </div>
-                    </td>
-                    <td style="width: 33%; border-left: 2px solid #ccc; position: relative;">
-                        &nbsp;
-                    </td>
-
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <h2>Features</h2>
-        <div class="tabs-div">
-            <table style="width: 100%;margin-top: 2%;">
-                <thead>
-                <tr>
-                    <td style="border-bottom: 4px solid #ccc; text-align: center;" class="Text" width="33%">Features</td>
-                    <td style="text-align: center; border-bottom: 4px solid #ccc;" class="Text" width="33%" colspan="3">Sub Features</td>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td style="width: 22%; border-right: 2px solid #ccc;">
-                        <div style="width: 100%;">
-                            <input type="text" id="searchbox_feature" class="searchbox" placeholder="Search Features">
-                        </div>
-                        <div style="width:100%; ">
-                            <table width="100%" style="margin-top: 5%;">
-                                <thead>
-                                <tr>
-                                    <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Linked Features</b></td>
-                                </tr>
-                                </thead>
-                                <tbody id="feature_body">
-
-                                </tbody>
-                            </table>
-                        </div>
-                        <div style="width:100%;margin-top:2%;" align="center" >
-                            <a href="" id="create_new_feature" class="m-btn purple">Create New Feature</a>
-                        </div>
-                        <div style="width:100%;">
-                            <table width="100%" style="margin-top: 5%;">
-                                <thead>
-                                <tr>
-                                    <td colspan="2" style="border-bottom: 4px solid #ccc; text-align: center;"><b>Global Dependency</b></td>
-                                </tr>
-                                </thead>
-                                <tbody id="unused_feature">
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </td>
-                    <td style="width: 25%; border-left: 2px solid #ccc; position: relative;">
-                        <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="name_feature_tab">
-
-                        </div>
-                    </td>
-                    <td style="width: 25%; border-left: 2px solid #ccc; position: relative;">
-                        <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="version_feature_tab">
-
-                        </div>
-                    </td>
-                    <td style="width: 25%; border-left: 2px solid #ccc; position: relative;">
-                        <div style="position: absolute; min-width: 100%; top: 0;" align="center" id="last_feature_tab">
-
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <h2>Drivers</h2>
-        <div class="tabs-div">
-
-        </div>
-    </div>
-    <ul class='custom-menu custom-menu-dependency' style="list-style-type: none;padding: 0px;margin: 0px;">
-        <li data-action = "create">New</li>
-        <li data-action = "rename">Rename</li>
-        <li data-action = "usage">Usage</li>
-        <li data-action = "unlink">Unlink</li>
-    </ul>
-    <ul class='custom-menu custom-menu-add_dependency' style="list-style-type: none;padding: 0px;margin: 0px;">
-        <li data-action = "link">Link</li>
-        <li data-action = "rename">Rename</li>
-        <li data-action = "usage">Usage</li>
-        <li data-action = "delete">Delete</li>
-    </ul>
-    <ul class='custom-menu custom-menu-branch' style="list-style-type: none;padding: 0px;margin: 0px;">
-        <li data-action = "create">New</li>
-        <li data-action = "rename">Rename</li>
-        <li data-action = "usage">Usage</li>
-        <li data-action = "unlink">Unlink</li>
-    </ul>
-    <ul class='custom-menu custom-menu-add_branch' style="list-style-type: none;padding: 0px;margin: 0px;">
-        <li data-action = "link">Link</li>
-        <li data-action = "rename">Rename</li>
-        <li data-action = "usage">Usage</li>
-        <li data-action = "delete">Delete</li>
-    </ul>
-    <ul class='custom-menu custom-menu-dependency_name' style="list-style-type: none;padding: 0px;margin: 0px;">
-        <li data-action = "create_name">New</li>
-        <li data-action = "rename_name">Rename</li>
-        <li data-action = "usage_name">Usage</li>
-    </ul>
-    <ul class='custom-menu custom-menu-add_feature' style="list-style-type: none;padding: 0px;margin: 0px;">
-        <li data-action = "link">Link</li>
-        <li data-action = "rename">Rename</li>
-        <li data-action = "usage">Usage</li>
-        <li data-action = "delete">Delete</li>
-    </ul>
-    <ul class='custom-menu custom-menu-feature' style="list-style-type: none;padding: 0px;margin: 0px;">
-        <li data-action = "create">New</li>
-        <li data-action = "rename">Rename</li>
-        <li data-action = "usage">Usage</li>
-        <li data-action = "unlink">Unlink</li>
-    </ul>
-    <ul class='custom-menu custom-menu-first_level_feature' style="list-style-type: none;padding: 0px;margin: 0px;">
-        <li data-action = "create">New</li>
-        <li data-action = "rename">Rename</li>
-        <li data-action = "usage">Usage</li>
-        <li data-action = "delete">Delete</li>
-    </ul>
-    <ul class='custom-menu custom-menu-second_level_feature' style="list-style-type: none;padding: 0px;margin: 0px;">
-        <li data-action = "create">New</li>
-        <li data-action = "rename">Rename</li>
-        <li data-action = "usage">Usage</li>
-        <li data-action = "delete">Delete</li>
-    </ul>
-    <script type="text/javascript" src="/site_media/Jquery/Local/AssignSettings.js"></script>
-</article>
--->
 <article>
     <style>
         #searchbox {
@@ -279,9 +17,9 @@
             box-shadow: 0 6px 6px -6px blue;
         }
     </style>
+    <link rel="stylesheet" href="/site_media/Jquery/simplepagination/simplePagination.css"/>
+    <script src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
     <script src="/site_media/Jquery/Local/AssignSettings.js" type="text/javascript"></script>
-    <script src="/site_media/Jquery/ContextMenu/contextMenu.min.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="/site_media/Jquery/ContextMenu/contextMenu.css"/>
     <div class="responsive-tabs">
         <h2>Dependency</h2>
         <div class="tabs-div">
@@ -336,6 +74,12 @@
                 </tr>
                 </tbody>
             </table>
+            <div id="extended_div" align="center">
+
+            </div>
+            <div id="pagination_div">
+
+            </div>
 
         </div>
 
@@ -385,6 +129,12 @@
                     </tr>
                 </tbody>
             </table>
+            <div id="feature_extended_div" align="center">
+
+            </div>
+            <div id="feature_pagination_div">
+
+            </div>
         </div>
         <h2>Drivers</h2>
         <div class="tabs-div">
@@ -402,12 +152,20 @@
                                 <input type="button" class="m-btn green" value="Create Driver" id="create_driver"/>
                             </div>
                         </td>
-                        <td>
-                            &nbsp;
+                        <td style="vertical-align: 5%;">
+                            <div id="driver_control_panel" style="padding-left: 2%;">
+
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
+            <div id="driver_extended_div" align="center">
+
+            </div>
+            <div id="driver_pagination_div">
+
+            </div>
         </div>
 
         <h2>Branch</h2>

@@ -2856,7 +2856,7 @@ def Run_Test(request):
                     Conn.close()    
                 count=1
                 for eachitem in TestCasesIDs:
-                    Dict = {'run_id': runid, 'tc_id': str(eachitem),'test_order':count}
+                    Dict = {'run_id': runid, 'tc_id': str(eachitem),'test_order':count,'copy_status':False}
                     Conn = GetConnection()
                     Result = DB.InsertNewRecordInToTable(Conn,"test_run",**Dict)
                     Conn.close()
@@ -3101,7 +3101,10 @@ def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
             if not result:
                 CleanRun(run_id)
 
-
+        Conn=GetConnection()
+        whereQuery="where tc_id='%s' and run_id='%s'"%(test_case,run_id)
+        print DB.UpdateRecordInTable(Conn,"test_run",whereQuery,copy_status=True)
+        Conn.close()
 def RegisterPermanentInfo(run_id, TestCasesIDs):
     print run_id
     test_cases = TestCasesIDs
@@ -3285,7 +3288,10 @@ def RegisterPermanentInfo(run_id, TestCasesIDs):
             Conn.close()
             if not result:
                 CleanRun(run_id)
-
+        Conn=GetConnection()
+        whereQuery="where tc_id='%s' and run_id='%s'"%(test_case,run_id)
+        print DB.UpdateRecordInTable(Conn,"test_run",whereQuery,copy_status=True)
+        Conn.close()
 
 def CleanRun(runid):
     print runid
@@ -5245,16 +5251,12 @@ def Get_Sections(request):
         project_id = request.GET.get(u'project_id', '')
         team_id = request.GET.get(u'team_id', '')
         if section == '':
-            query = "select distinct subltree(section_path,0,1) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d" % (
-                project_id, int(team_id))
+            query = "select distinct subltree(section_path,0,1) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and ps.project_id=tws.project_id and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d" %(project_id, int(team_id))
             results = DB.GetData(Conn, query, False)
             levelnumber = 0
         else:
             levelnumber = section.count('.') + 1
-            query = "select distinct subltree(section_path,%d,%d) from product_sections ps where section_path~'*.%s.*' and nlevel(section_path)>%d" % (
-                int(levelnumber), int(levelnumber + 1), section, int(levelnumber))
-            """query = "select distinct subltree(section_path,%d,%d) from team_wise_settings tws,product_sections ps where ps.section_id=tws.parameters and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d and section_path~'*.%s.*' and nlevel(section_path)>%d" % (
-                int(levelnumber), int(levelnumber + 1), project_id, int(team_id), section, int(levelnumber))"""
+            query = "select distinct subltree(section_path,%d,%d) from product_sections ps,team_wise_settings tws where tws.project_id=ps.project_id and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d and tws.parameters=ps.section_id and section_path~'*.%s.*' and nlevel(section_path)>%d"%(int(levelnumber), int(levelnumber + 1), project_id,int(team_id),section, int(levelnumber))
             results = DB.GetData(Conn, query, False)
 
     results.insert(0, (str(levelnumber),))
@@ -11778,15 +11780,15 @@ def ViewAndOrganizeTestCases(request):
                     count = 1
                     for eachitem in QueryText:
                         if count == 1:
-                            Query = "HAVING COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 " % (
-                                eachitem.strip(), wherequery)
+                            Query = "HAVING ( COUNT(CASE WHEN name = '%s' and property in ('section_id') THEN 1 END) > 0 " % (
+                                eachitem.strip())#, wherequery)
                             count = count + 1
                         else:
-                            Query += "AND COUNT(CASE WHEN name = '%s' and property in (%s) THEN 1 END) > 0 " % (
-                                eachitem.strip(), wherequery)
+                            Query += "OR COUNT(CASE WHEN name = '%s' and property in ('section_id') THEN 1 END) > 0 " % (
+                                eachitem.strip())#, wherequery)
                             count = count + 1
                     Query = Query + \
-                        " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+                        ") AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
                     Query = Query + \
                         " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
                     query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + \
@@ -12192,7 +12194,7 @@ def GetData(run_id, index, capacity, userText=""):
     # form the query
     query = ""
     query += "select * from ("
-    query += "(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc,test_run tr  where tr.run_id=tcr.run_id and tr.run_id=rtc.run_id and tr.tc_id=tcr.tc_id and tr.tc_id=rtc.tc_id and tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id " % run_id
+    query += "(select rtc.tc_id,tc_name,tcr.status,to_char((tcr.testendtime-tcr.teststarttime),'HH24:MI:SS'),tcr.failreason,tcr.logid from test_case_results tcr, result_test_cases rtc,test_run tr  where tr.run_id=tcr.run_id and tr.run_id=rtc.run_id and tr.tc_id=tcr.tc_id and tr.tc_id=rtc.tc_id and tcr.run_id='%s' and tcr.tc_id=rtc.tc_id and rtc.run_id=tcr.run_id and tr.copy_status=True " % run_id
     if userText != "":
         query += "and "
         query += userText
@@ -12437,11 +12439,11 @@ def create_section(request):
 
         try:
             query = '''
-            INSERT INTO product_sections (section_path) VALUES (%s) RETURNING section_id
+            INSERT INTO product_sections (section_path,project_id,team_id) VALUES (%s,%s,%s) RETURNING section_id
             '''
 #             time.sleep(0.5)
 
-            cur.execute(query, (section_text, ))
+            cur.execute(query, (section_text,project_id,team_id ))
 
             new_section_id = cur.fetchone()[0]
 
@@ -17121,82 +17123,29 @@ def add_new_version_branch(request):
 
 
 def rename_branch(request):
-    sModuleInfo = inspect.stack()[0][3] + \
-        " : " + inspect.getmoduleinfo(__file__).name
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = "Branch"
                 old_name = request.GET.get(u'old_name', '')
                 new_name = request.GET.get(u'new_name', '')
-                query = "select count(*) from branch where branch_name='%s'" % old_name.strip(
-                )
+                project_id=request.GET.get(u'project_id','')
+                team_id=request.GET.get(u'team_id','')
+                query = "select count(*) from branch b,branch_management bm where b.project_id=bm.project_id and b.team_id=bm.team_id and bm.branch=b.id and branch_name='%s' and bm.project_id='%s' and b.team_id=%d" %(new_name.strip(),project_id.strip(),int(team_id))
                 Conn = GetConnection()
-                old_name_count = DB.GetData(Conn, query)
+                new_name_count = int(DB.GetData(Conn, query)[0])
                 Conn.close()
-                query = "select count(*) from branch where branch_name='%s'" % new_name.strip(
-                )
-                Conn = GetConnection()
-                new_name_count = DB.GetData(Conn, query)
-                Conn.close()
-                if isinstance(old_name_count, list):
-                    if len(old_name_count) == 1 and old_name_count[0] > 0:
-                        if len(new_name_count) == 1 and new_name_count[0] == 0:
-                            sWhereQuery = "where branch_name='%s'" % old_name.strip()
-                            Dict = {
-                                'branch_name': new_name.strip()
-                            }
-                            Conn = GetConnection()
-                            result = DB.UpdateRecordInTable(
-                                Conn,
-                                "branch",
-                                sWhereQuery,
-                                **Dict)
-                            Conn.close()
-                            if result:
-                                PassMessasge(
-                                    sModuleInfo,
-                                    update_success(
-                                        old_name,
-                                        new_name,
-                                        type_tag),
-                                    success_tag)
-                                message = True
-                                log_message = update_success(
-                                    old_name,
-                                    new_name,
-                                    type_tag)
-                            else:
-                                PassMessasge(
-                                    sModuleInfo,
-                                    update_fail(
-                                        old_name,
-                                        type_tag),
-                                    error_tag)
-                                message = False
-                                log_message = update_fail(old_name, type_tag)
-                        if len(new_name_count) == 1 and new_name_count[0] > 0:
-                            PassMessasge(
-                                sModuleInfo,
-                                multiple_instance(
-                                    new_name,
-                                    type_tag),
-                                error_tag)
-                            message = False
-                            log_message = multiple_instance(new_name, type_tag)
-                    if len(old_name_count) == 1 and old_name_count[0] == 0:
-                        PassMessasge(
-                            sModuleInfo,
-                            unavailable(
-                                old_name,
-                                type_tag),
-                            error_tag)
-                        message = False
-                        log_message = unavailable(old_name, type_tag)
+                if isinstance(new_name_count,int) and new_name_count==0:
+                    whereQuery="where branch_name='%s' and project_id='%s' and team_id=%d"%(old_name,project_id,int(team_id))
+                    Conn=GetConnection()
+                    print DB.UpdateRecordInTable(Conn,"branch",whereQuery,branch_name=new_name)
+                    Conn.close()
+                    message=True
+                    log_message="Branch name is updated successfully"
                 else:
-                    PassMessasge(sModuleInfo, DBError, error_tag)
-                    message = False
-                    log_message = DBError
+                    message=False
+                    log_message="Branch With Same name exists"
                 result = {
                     'message': message,
                     'log_message': log_message
@@ -17314,7 +17263,7 @@ def add_new_driver(request):
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = "Driver"
-                dependency = request.GET.get(u'name', '').strip()
+                dependency = request.GET.get(u'name', '').replace(' ','_').strip()
                 project_id=request.GET.get(u'project_id','')
                 team_id=int(request.GET.get(u'team_id',''))
                 query = "select count(*) from drivers where driver_name='%s' and project_id='%s' and team_id=%d" %(dependency.strip(),project_id,int(team_id))
@@ -17691,76 +17640,31 @@ def rename_feature(request):
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = "Feature"
-                old_name = request.GET.get(u'old_name', '')
-                new_name = request.GET.get(u'new_name', '')
-                query = "select count(*) from product_features where feature_path='%s'" % old_name.strip(
-                )
-                Conn = GetConnection()
-                old_name_count = DB.GetData(Conn, query)
+                old_name = request.GET.get(u'old_feature_name', '')
+                new_name = request.GET.get(u'new_feature_name', '')
+                project_id=request.GET.get(u'project_id','')
+                team_id=int(request.GET.get(u'team_id',''))
+                #chck the availablility of the new feature name
+                query="select count(*) from product_features where project_id='%s' and team_id=%d and feature_path ~'%s'"%(project_id,int(team_id),new_name)
+                Conn=GetConnection()
+                availablity=int(DB.GetData(Conn,query)[0])
                 Conn.close()
-                query = "select count(*) from product_features where feature_path='%s'" % new_name.strip(
-                )
-                Conn = GetConnection()
-                new_name_count = DB.GetData(Conn, query)
-                Conn.close()
-                if isinstance(old_name_count, list):
-                    if len(old_name_count) == 1 and old_name_count[0] > 0:
-                        if len(new_name_count) == 1 and new_name_count[0] == 0:
-                            sWhereQuery = "where feature_path='%s'" % old_name.strip()
-                            Dict = {
-                                'feature_path': new_name.strip()
-                            }
-                            Conn = GetConnection()
-                            result = DB.UpdateRecordInTable(
-                                Conn,
-                                "product_features",
-                                sWhereQuery,
-                                **Dict)
-                            Conn.close()
-                            if result:
-                                PassMessasge(
-                                    sModuleInfo,
-                                    update_success(
-                                        old_name,
-                                        new_name,
-                                        type_tag),
-                                    success_tag)
-                                message = True
-                                log_message = update_success(
-                                    old_name,
-                                    new_name,
-                                    type_tag)
-                            else:
-                                PassMessasge(
-                                    sModuleInfo,
-                                    update_fail(
-                                        old_name,
-                                        type_tag),
-                                    error_tag)
-                                message = False
-                                log_message = update_fail(old_name, type_tag)
-                        if len(new_name_count) == 1 and new_name_count[0] > 0:
-                            PassMessasge(
-                                sModuleInfo,
-                                multiple_instance(
-                                    new_name,
-                                    type_tag),
-                                error_tag)
-                            message = False
-                            log_message = multiple_instance(new_name, type_tag)
-                    if len(old_name_count) == 1 and old_name_count[0] == 0:
-                        PassMessasge(
-                            sModuleInfo,
-                            unavailable(
-                                old_name,
-                                type_tag),
-                            error_tag)
-                        message = False
-                        log_message = unavailable(old_name, type_tag)
+                if isinstance(availablity,int) and availablity==0:
+                    query="select feature_id,feature_path from team_wise_settings tws, product_features pf where pf.project_id=tws.project_id and pf.team_id=tws.team_id and tws.type='Feature' and pf.project_id='%s' and pf.team_id=%d and tws.parameters=pf.feature_id and (pf.feature_path ~ '%s' or pf.feature_path ~'%s.*')"%(project_id,int(team_id),old_name,old_name)
+                    Conn=GetConnection()
+                    feature_list=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    print feature_list
+                    for each in feature_list:
+                        whereQuery="where feature_id=%d"%int(each[0])
+                        Conn=GetConnection()
+                        print DB.UpdateRecordInTable(Conn,"product_features",whereQuery,feature_path=each[1].replace(old_name,new_name))
+                        Conn.close()
+                    message=True
+                    log_message="Feature Name is updated Successfully"
                 else:
-                    PassMessasge(sModuleInfo, DBError, error_tag)
-                    message = False
-                    log_message = DBError
+                    message=False
+                    log_message="Name Already Exists in the database"
                 result = {
                     'message': message,
                     'log_message': log_message
@@ -19122,5 +19026,339 @@ def getemaildetails(request):
             Dict={}
             for each in zip(col,alldata):
                 Dict.update({each[0]:each[1]})
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+
+def delete_dependency_name(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            name=request.GET.get(u'name','')
+            query="select id,default_choices,dm.dependency from dependency_name dn,dependency_management dm where dm.dependency=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d and name='%s'"%(project_id,int(team_id),name)
+            Conn=GetConnection()
+            value_tuple=DB.GetData(Conn,query,False)[0]
+            name_id=value_tuple[0]
+            default_choices=value_tuple[1].split(",")
+            parent=int(value_tuple[2])
+            Conn.close()
+            if isinstance(name_id,int):
+                #delete all entry from the  dependency values table
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"dependency_values",id=int(name_id))
+                Conn.close()
+                #delete all from the dependency_name table
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"dependency_name",id=int(name_id))
+                Conn.close()
+                if str(name_id) in default_choices:
+                    temp=list(set(default_choices)-set([str(name_id)]))
+                    string_format=str(",".join(temp))
+                    wherQuery="where project_id='%s' and team_id=%d and dependency=%d"%(project_id,int(team_id),int(parent))
+                    Conn=GetConnection()
+                    print DB.UpdateRecordInTable(Conn,"dependency_management",wherQuery,default_choices=string_format)
+                    Conn.close()
+                message=True
+                log_message="Dependency Name deleted successfully."
+            else:
+                message=False
+                log_message="Dependency Name is not deleted successfully."
+
+            Dict={'message':message,'log_message':log_message}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+
+def TableDataDependencyTestCases(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            UserData = request.GET.get(u'Query', '')
+            UserText = UserData.split(":")
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current')
+            test_status_request = request.GET.get(u'test_status_request', '')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+
+            condition=" offset %d limit %d"%(offset,limit)
+            QueryText = []
+            for eachitem in UserText:
+                if len(eachitem) != 0 and len(
+                        eachitem) != 1 and eachitem.strip() not in QueryText:
+                    QueryText.append(eachitem.strip())
+            print QueryText
+            count=1
+            for eachitem in QueryText:
+                if count == 1:
+                    Query = "HAVING COUNT(CASE WHEN property ='%s' THEN 1 END) > 0 "%(eachitem.strip())
+                    count = count + 1
+                else:
+                    Query += "AND COUNT(CASE WHEN  property ='%s' THEN 1 END) > 0 "%(eachitem.strip())
+                    count = count + 1
+            Query = Query + " AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+            Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+            query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
+            Query=query
+            query=query+ condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+            final_list=[]
+            for each in TableData:
+                type_case=get_test_case_type(each[0])
+                time=get_test_case_time(each[0])
+                section=get_section(each[0])
+                feature=get_feature(each[0])
+                if test_status_request:
+                    status=get_status(each[0])
+                    final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                else:
+                    final_list.append((each[0],each[1],feature,section,type_case,time))
+            Heading = ['ID','Title','Feature','Folder','Type','Time']
+            if test_status_request:
+                Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+            results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
+
+        else:
+            results = {'Heading': [], 'TableData': [],'Count':0}
+
+        json = simplejson.dumps(results)
+        return HttpResponse(json, mimetype='application/json')
+def delete_dependency(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            name=request.GET.get(u'name','')
+            query="select array_agg(dn.id),d.id from dependency d,dependency_management dm,dependency_name dn  where dm.dependency=d.id and dm.dependency=dn.dependency_id and d.id=dn.dependency_id and dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.id"%(name,project_id,int(team_id))
+            Conn=GetConnection()
+            value_tuple=DB.GetData(Conn,query,False)[0]
+            name_id=value_tuple[1]
+            list_value=value_tuple[0]
+            Conn.close()
+            if isinstance(name_id,int):
+                #delete all entry from the  dependency values table
+                for each in list_value:
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"dependency_values",id=int(each))
+                    Conn.close()
+                #delete all from the dependency_name table
+                for each in list_value:
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"dependency_name",id=int(each),dependency_id=name_id)
+                    Conn.close()
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"dependency_management",project_id=project_id,team_id=int(team_id),dependency=int(name_id))
+                Conn.close()
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"dependency",id=int(name_id))
+                Conn.close()
+                message=True
+                log_message="Dependency Name deleted successfully."
+            else:
+                message=False
+                log_message="Dependency Name is not deleted successfully."
+
+            Dict={'message':message,'log_message':log_message}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+def FeatureUsageTestCase(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            UserData = request.GET.get(u'Query', '')
+            UserText = UserData.split(":")
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current')
+            test_status_request = request.GET.get(u'test_status_request', '')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+
+            condition=" offset %d limit %d"%(offset,limit)
+            QueryText = []
+            for eachitem in UserText:
+                if len(eachitem) != 0 and len(eachitem) != 1 and eachitem.strip() not in QueryText:
+                    QueryText.append(eachitem.strip())
+            print QueryText
+            feature_id=[]
+            for each in QueryText:
+                query="select feature_id::text from team_wise_settings tws,product_features pf where tws.parameters=pf.feature_id and type='Feature' and pf.project_id=tws.project_id and pf.team_id=tws.team_id and tws.project_id='%s' and tws.team_id=%d and (feature_path ~ '%s' or feature_path ~ '%s.*')"%(project_id,int(team_id),eachitem.replace(' ','_'),eachitem.replace(' ','_'))
+                Conn=GetConnection()
+                feature_id=DB.GetData(Conn,query)
+                Conn.close()
+
+            count=1
+            for eachitem in feature_id:
+                if count == 1:
+                    Query = "HAVING (COUNT(CASE WHEN property ='feature_id' and name='%s' THEN 1 END) > 0 "%(str(eachitem).strip())
+                    count = count + 1
+                else:
+                    Query += "or COUNT(CASE WHEN name = '%s' and property ='feature_id' THEN 1 END) > 0 "%(str(eachitem).strip())
+                    count = count + 1
+            Query = Query + ") AND COUNT(CASE WHEN property = 'Project' and name = '" + project_id + "' THEN 1 END) > 0"
+            Query = Query + " AND COUNT(CASE WHEN property = 'Team' and name = '" + team_id + "' THEN 1 END) > 0"
+            query = "select distinct tct.tc_id,tc.tc_name from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id  group by tct.tc_id,tc.tc_name " + Query
+            Query=query
+            query=query+ condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+            final_list=[]
+            for each in TableData:
+                type_case=get_test_case_type(each[0])
+                time=get_test_case_time(each[0])
+                section=get_section(each[0])
+                feature=get_feature(each[0])
+                if test_status_request:
+                    status=get_status(each[0])
+                    final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                else:
+                    final_list.append((each[0],each[1],feature,section,type_case,time))
+            Heading = ['ID','Title','Feature','Folder','Type','Time']
+            if test_status_request:
+                Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+            results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
+
+        else:
+            results = {'Heading': [], 'TableData': [],'Count':0}
+
+        json = simplejson.dumps(results)
+        return HttpResponse(json, mimetype='application/json')
+def delete_feature(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            name=request.GET.get(u'name','')
+            query="select feature_id from team_wise_settings tws,product_features pf where tws.parameters=pf.feature_id and type='Feature' and pf.project_id=tws.project_id and pf.team_id=tws.team_id and tws.project_id='%s' and tws.team_id=%d and (feature_path ~ '%s' or feature_path ~ '%s.*')"%(project_id,int(team_id),name.replace(' ','_'),name.replace(' ','_'))
+            Conn=GetConnection()
+            feature_list=DB.GetData(Conn,query)
+            Conn.close()
+            if isinstance(feature_list,list):
+                for each in feature_list:
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"team_wise_settings",type='Feature',project_id=project_id,team_id=int(team_id),parameters=each)
+                    Conn.close()
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"product_features",feature_id=each)
+                    Conn.close()
+                message=True
+                log_message="Feature deleted successfully."
+            else:
+                message=False
+                log_message="Feature is not deleted successfully."
+
+            Dict={'message':message,'log_message':log_message}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+def rename_driver(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            driver_id=int(request.GET.get(u'driver_id',''))
+            old_name=request.GET.get(u'old_name','')
+            new_name=request.GET.get(u'new_name','')
+            project_id=request.GET.get(u'project_id','')
+            team_id=int(request.GET.get(u'team_id',''))
+            query="select count(*) from drivers d, team_wise_settings tws where tws.project_id=d.project_id and tws.team_id=d.team_id and tws.type='Driver' and tws.project_id='%s' and tws.team_id=%d and d.driver_name='%s'"%(project_id,int(team_id),new_name)
+            Conn=GetConnection()
+            avail=int(DB.GetData(Conn,query)[0])
+            Conn.close()
+            if isinstance(avail,int) and avail==0:
+                wherequery="where driver_name='%s' and id=%d"%(old_name,driver_id)
+                Conn=GetConnection()
+                print DB.UpdateRecordInTable(Conn,"drivers",wherequery,driver_name=new_name)
+                Conn.close()
+                whereQuery="where driver='%s'"%(old_name)
+                Conn=GetConnection()
+                print DB.UpdateRecordInTable(Conn,"test_steps_list",whereQuery,driver=new_name)
+                Conn.close()
+                message=True
+                log_message="Driver Name is updated successfully"
+            else:
+                message=False
+                log_message="Driver with same name exists"
+
+
+            result={'message':message,'log_message':log_message}
+            result=simplejson.dumps(result)
+            return HttpResponse(result,mimetype='application/json')
+
+def DriverUsageTestCase(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            UserData = request.GET.get(u'Query', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current')
+            test_status_request = request.GET.get(u'test_status_request', '')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+            condition=" offset %d limit %d"%(offset,limit)
+            Query="select distinct tc.tc_id,tc.tc_name from test_cases tc, test_case_tag tct , test_steps ts ,test_steps_list tsl where tsl.step_id=ts.step_id and ts.tc_id=tct.tc_id and tc.tc_id=tct.tc_id and tc.tc_id =ts.tc_id group by tc.tc_id,tc.tc_name having count(case when tct.name='%s' and property='Project' then 1 end)>0 and count(case when tct.name='%s' and property='Team' then 1 end)>0 and count(case when driver='%s' then 1 end)>0"%(project_id,str(team_id),UserData)
+            query=Query+condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+            final_list=[]
+            for each in TableData:
+                type_case=get_test_case_type(each[0])
+                time=get_test_case_time(each[0])
+                section=get_section(each[0])
+                feature=get_feature(each[0])
+                if test_status_request:
+                    status=get_status(each[0])
+                    final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                else:
+                    final_list.append((each[0],each[1],feature,section,type_case,time))
+            Heading = ['ID','Title','Feature','Folder','Type','Time']
+            if test_status_request:
+                Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+            results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
+
+        else:
+            results = {'Heading': [], 'TableData': [],'Count':0}
+
+        json = simplejson.dumps(results)
+        return HttpResponse(json, mimetype='application/json')
+
+def delete_driver(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            name=request.GET.get(u'name','')
+            query="select id from team_wise_settings tws,drivers pf where tws.parameters=pf.id and type='Driver' and pf.project_id=tws.project_id and pf.team_id=tws.team_id and tws.project_id='%s' and tws.team_id=%d and driver_name='%s'"%(project_id,int(team_id),name.replace(' ','_'))
+            Conn=GetConnection()
+            driver_id=int(DB.GetData(Conn,query)[0])
+            Conn.close()
+            if isinstance(driver_id,int):
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"team_wise_settings",type='Driver',project_id=project_id,team_id=int(team_id),parameters=driver_id)
+                Conn.close()
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"drivers",id=driver_id)
+                Conn.close()
+                message=True
+                log_message="Feature deleted successfully."
+            else:
+                message=False
+                log_message="Feature is not deleted successfully."
+
+            Dict={'message':message,'log_message':log_message}
             result=simplejson.dumps(Dict)
             return HttpResponse(result,mimetype='application/json')

@@ -841,7 +841,7 @@ def Update_TestCaseDetails(Conn, New_TC_Id, TC_Name, TC_Creator,TC_Type):
     # Form the Dictionary to add test case information
     Dict = {
               'tc_id':New_TC_Id,
-              'tc_name':TC_Name,
+              'tc_name':TC_Name.strip(),
               'tc_type':TC_Type,
               'tc_localization':'Yes',
               'tc_modifiedby':TC_Creator,

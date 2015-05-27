@@ -5,7 +5,7 @@ var time_out=1500;
 var name_field_error="Name field can't be empty";
 var dep_value="";
 var dep_name="";
-
+var test_case_per_page=5;
 $(document).ready(function(){
     $('body').css({'font-size':'100%'});
     var project_id= $.session.get('project_id');
@@ -51,8 +51,8 @@ $(document).ready(function(){
             if(e){
                 var feature_name=$('#new_feature').val().trim();
                 if(feature_name!=''){
-                    if(feature_name.indexOf('.')!=-1){
-                        alertify.error('You can\'t give . in the Feature Name',time_out);
+                    if(feature_name.indexOf('.')!=-1 || feature_name.indexOf("_")!=-1){
+                        alertify.error('You can\'t give "." or "_" in the Feature Name',time_out);
                         return false;
                     }
                     else{
@@ -90,7 +90,7 @@ $(document).ready(function(){
             if(e){
                 var driver_name=$('#new_driver').val().trim();
                 $.get('add_new_driver',{
-                    'name':driver_name,
+                    'name':driver_name.replace(/ /g,'_'),
                     'project_id':project_id,
                     'team_id':team_id
                 },function(data){
@@ -151,6 +151,13 @@ function get_all_data(project_id,team_id){
         $('#control_panel').empty();
         $('#branch_version_list').empty();
         $('#branch_control_panel').empty();
+        $("#sub_feature_list").empty();
+        $("#second_level_feature_list").empty();
+        $("#third_level_feature_list").empty();
+        $("#feature_control_panel").empty();
+        $('#driver_control_panel').empty();
+        $('#driver_extended_div').empty();
+        $('#driver_pagination_div').empty();
         var dependency_list=data['dependency_list'];
         console.log(dependency_list);
         var  message='';
@@ -175,6 +182,9 @@ function get_all_data(project_id,team_id){
             $('.dependency').css({'background-color':'#fff'});
             $(this).addClass('selected');
             $(this).css({'background-color':'#ccc'});
+            $('#extended_div').empty();
+            $('#pagination_div').pagination('destroy');
+            $('#pagination_div').empty();
             get_dependency_under_name($(this).attr('data-id'),project_id,team_id,$(this).text());
         });
         var global_dependency_list=data['unused_dependency_list'];
@@ -229,6 +239,9 @@ function get_all_data(project_id,team_id){
             $(this).css({'background-color':'#ccc'});
             $('.feature').removeClass('selected');
             $(this).addClass('selected');
+            $('#feature_extended_div').empty();
+            $('#feature_pagination_div').pagination('destroy');
+            $('#feature_pagination_div').empty();
             var feature_id=$(this).attr('data-id');
             var feature=$(this).text().trim();
             get_features(feature_id,project_id,team_id,feature);
@@ -278,7 +291,7 @@ function get_all_data(project_id,team_id){
         message+='<table class="two-column-emphasis"><caption><b style="font-size: 150%;">Assigned Driver</b></caption>';
         if(driver_list.length>0){
             for(var i=0;i<driver_list.length;i++){
-                message+='<tr><td data-id="'+driver_list[i][0]+'">'+driver_list[i][1]+'</td></tr>';
+                message+='<tr><td style="cursor: pointer" class="driver" data-id="'+driver_list[i][0]+'">'+driver_list[i][1].replace(/_/g,' ')+'</td></tr>';
             }
         }
         else{
@@ -286,14 +299,26 @@ function get_all_data(project_id,team_id){
         }
         message+='</table>';
         $('#driver_list').html(message);
-
+        $('.driver').on('click',function(){
+            $('.driver').removeClass('selected');
+            $(this).addClass('selected');
+            $('.driver').css({'background-color':'#fff'});
+            $(this).css({'background-color':'#ccc'});
+            $('#driver_control_panel').empty();
+            $('#driver_extended_div').empty();
+            $('#driver_pagination_div').pagination('destroy');
+            $("#driver_pagination_div").empty();
+            var driver_id=$(this).attr('data-id');
+            var driver_text=$(this).text().replace(/ /g,'_').trim();
+            driver_control_panel(driver_id,driver_text,project_id,team_id);
+        });
         var global_driver_list=data['unused_driver_list'];
         var message='';
         message+='<table class="two-column-emphasis">';
         message+='<caption><b style="font-size: 150%;">Global Driver</b></caption>';
         if(global_driver_list.length>0){
             for(var i=0;i<global_driver_list.length;i++){
-                message+='<tr><td data-id="'+global_driver_list[i][0]+'">'+global_driver_list[i][1]+'</td>';
+                message+='<tr><td data-id="'+global_driver_list[i][0]+'">'+global_driver_list[i][1].replace(/_/g,' ')+'</td>';
                 message+='<td class="add_global_driver"><img src="/site_media/plus1.png" style="cursor: pointer" width="20px" height="20px"/></td>';
             }
         }else{
@@ -304,8 +329,8 @@ function get_all_data(project_id,team_id){
 
         $('.add_global_driver').on('click',function(){
             var driver_id=$(this).prev().attr('data-id');
-            var driver=$(this).prev().text().trim();
-            var message='Do you want to link Driver <b>'+driver+'</b>?';
+            var driver=$(this).prev().text().replace(/ /g,'_').trim();
+            var message='Do you want to link Driver <b>'+driver.replace(/_/g,' ')+'</b>?';
             alertify.confirm(message,function(e){
                 if(e){
                     $.get('link_driver',{
@@ -391,6 +416,102 @@ function get_all_data(project_id,team_id){
         });
     });
 }
+function get_driver_usage(UserText,project_id,team_id,test_case_per_page,test_case_page_current,delete_tag){
+    if(delete_tag===undefined){
+        delete_tag=false;
+    }
+    $.get('DriverUsageTestCase',{
+        Query:UserText,
+        project_id:project_id,
+        team_id:team_id,
+        test_case_per_page:test_case_per_page,
+        test_case_page_current:test_case_page_current
+    },function(data){
+        if(delete_tag){
+            var message='';
+            if(data['Count']>0){
+                message+=data['Count']+' Test Cases are linked.It can\'t be deleted.'
+            }
+            else{
+                message+='You are about to delete <b>'+UserText.replace(/_/g,' ').trim()+'</b>.Are you sure?';
+            }
+            alertify.confirm(message,function(e){
+                if(e){
+                    if(data['Count']>0){
+                        alertify.alert().close_all();
+                    }else{
+                        delete_driver(UserText,project_id,team_id);
+                    }
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        }else{
+            form_table('driver_extended_div',data['Heading'],data['TableData'],data['Count'],'Test Cases');
+            $('#driver_pagination_div').pagination({
+                items:data['Count'],
+                itemsOnPage:test_case_per_page,
+                cssStyle: 'dark-theme',
+                currentPage:test_case_page_current,
+                displayedPages:2,
+                edges:2,
+                hrefTextPrefix:'#',
+                onPageClick:function(PageNumber){
+                    get_driver_usage(UserText,project_id,team_id,test_case_per_page,PageNumber);
+                }
+            });
+        }
+    });
+}
+
+function rename_driver(driver_id,driver_text,new_name,project_id,team_id){
+    $.get('rename_driver',{
+        driver_id:driver_id,
+        old_name:driver_text,
+        new_name:new_name,
+        project_id:project_id,
+        team_id:team_id
+    },function(data){
+        if(data['message']){
+            alertify.success(data['log_message'],time_out);
+            get_all_data(project_id,team_id);
+        }
+        else{
+            alertify.error(data['log_message'],time_out);
+            get_all_data(project_id,team_id);
+        }
+    });
+}
+function driver_control_panel(driver_id,driver_text,project_id,team_id){
+    var message='';
+    message+='<input type="button" id="rename_driver" class="m-btn green" value="Rename Driver"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage" id="usage_driver"/> ';
+    message+='<input type="button" class="m-btn red" value="Delete" id="delete_driver"/> ';
+    $('#driver_control_panel').html(message);
+    $("#rename_driver").on('click',function(){
+        var message='';
+        message+='<table width="100%;">';
+        message+='<tr><td><b>Old Name:</b></td><td>'+driver_text.replace(/_/g,' ')+'</td></tr>';
+        message+='<tr><td><b>New Name:</b></td><td><input id="new_name" style="width: 100%;" class="textbox"/></td></tr>';
+        message+='</table>';
+        alertify.confirm(message,function(){
+            var new_name=$("#new_name").val().trim();
+            if(new_name!=''){
+                rename_driver(driver_id,driver_text,new_name,project_id,team_id)
+            }else{
+                alertify.error("You can't give empty name",time_out);
+                alertify.alert().close_all();
+                return false;
+            }
+        });
+    });
+    $("#usage_driver").on('click',function(){
+        get_driver_usage(driver_text,project_id,team_id,5,1);
+    });
+    $('#delete_driver').on('click',function(){
+        get_driver_usage(driver_text,project_id,team_id,5,1,true);
+    });
+}
 function get_version(branch_id,project_id,team_id,branch){
     $.get('get_all_version_under_branch',{
         value:branch_id,
@@ -419,9 +540,8 @@ function buttonConfig(branch_id,project_id,team_id,branch){
     var message='';
     message+='<input type="button" id="add_branch_version" class="m-btn green" value="Add Version"/> ';
     message+='<input type="button" id="rename_branch" class="m-btn green" value="Rename Branch"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn red" value="Delete"/> ';
     $('#branch_control_panel').html(message);
-
     $('#add_branch_version').on('click',function(){
         var message='';
         message+='<table>';
@@ -449,7 +569,40 @@ function buttonConfig(branch_id,project_id,team_id,branch){
             }
         });
     });
-
+    $('#rename_branch').on('click',function(){
+        var message='';
+        message+='<table width="100%;">';
+        message+='<tr><td><b>Old Name:</b></td><td>'+branch+'</td></tr>';
+        message+='<tr><td><b>New Name:</b></td><td><input id="new_branch" style="width: 100%;" class="textbox"/></td></tr>'
+        message+='</table>';
+        alertify.confirm(message,function(e){
+            if(e){
+                var new_branch=$("#new_branch").val().trim();
+                if(new_branch==''){
+                    alertify.error("You can't give empty name");
+                    return false;
+                }else{
+                    $.get('rename_branch',{
+                        old_name:branch,
+                        new_name:new_branch,
+                        project_id:project_id,
+                        team_id:team_id
+                    },function(data){
+                        if(data['message']){
+                            alertify.success(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                        else{
+                            alertify.error(data['log_message'],1500);
+                            alertify.alert().close_all();
+                        }
+                    });
+                }
+            }else{
+                alertify.alert().close_all();
+            }
+        });
+    });
 }
 function get_features(feature_id,project_id,team_id,feature){
     if (feature_id==''){
@@ -486,6 +639,9 @@ function get_features(feature_id,project_id,team_id,feature){
             $(this).css({'background-color':'#ccc'});
             $('.sub_feature_first_level').removeClass('selected');
             $(this).removeClass('selected');
+            $('#feature_extended_div').empty();
+            $('#feature_pagination_div').pagination('destroy');
+            $('#feature_pagination_div').empty();
             var parent_name=$(this).attr('data-id');
             var child_name=$(this).text().trim().replace(/ /g,'_');
             var modified_name=parent_name+'.'+child_name;
@@ -516,6 +672,9 @@ function get_features(feature_id,project_id,team_id,feature){
                     $(this).css({'background-color':'#ccc'});
                     $('.sub_feature_second_level').removeClass('selected');
                     $(this).addClass('selected');
+                    $('#feature_extended_div').empty();
+                    $('#feature_pagination_div').pagination('destroy');
+                    $('#feature_pagination_div').empty();
                     var parent_name=$(this).attr('data-id');
                     var child_name=$(this).text().trim().replace(/ /g,'_');
                     var modified_name=parent_name+'.'+child_name;
@@ -545,6 +704,9 @@ function get_features(feature_id,project_id,team_id,feature){
                             $(this).css({'background-color':'#ccc'});
                             $('.sub_feature_third_level').removeClass('selected');
                             $(this).addClass('selected');
+                            $('#feature_extended_div').empty();
+                            $('#feature_pagination_div').pagination('destroy');
+                            $('#feature_pagination_div').empty();
                             var parent_name=$(this).attr('data-id');
                             var child_name=$(this).text().trim().replace(/ /g,'_');
                             var modified_name=parent_name+'.'+child_name;
@@ -560,18 +722,24 @@ function initialize_third_feature_tab_button(feature_id,project_id,team_id,featu
     var message='';
     //message+='<input type="button" id="add_sub_feature" class="m-btn green" value="Add Sub Feature"/> ';
     message+='<input type="button" id="rename_feature" class="m-btn green" value="Rename Feature"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage" id="feature_usage"/> ';
     message+='<input type="button" class="m-btn red" id="delete_button" value="Delete"/> ';
     $('#feature_control_panel').html(message);
-    $('#delete_button').on('click',function(){
-        alert(feature_id);
+    $('#feature_usage').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1);
+    });$('#delete_button').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1,true);
+    });
+    $('#rename_feature').on('click',function(){
+        rename_feature(feature_id,project_id,team_id);
     });
 }
 function initialize_second_feature_tab_button(feature_id,project_id,team_id,feature){
     var message='';
     message+='<input type="button" id="add_sub_feature" class="m-btn green" value="Add Sub Feature"/> ';
     message+='<input type="button" id="rename_feature" class="m-btn green" value="Rename Feature"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage" id="feature_usage"/> ';
+    message+='<input type="button" class="m-btn red" value="Delete" id="feature_delete"/> ';
     $('#feature_control_panel').html(message);
 
     $('#add_sub_feature').on('click',function(e){
@@ -586,9 +754,17 @@ function initialize_second_feature_tab_button(feature_id,project_id,team_id,feat
         alertify.confirm(message,function(e){
             if(e){
                 var sub_feature=$('#sub_feature').val().trim();
+                if(sub_feature==''){
+                    alertify.error("You can't give empty name");
+                    return false;
+                }
+                if(sub_feature==''){
+                    alertify.error("You can't give empty name");
+                    return false;
+                }
                 if(sub_feature!=''){
-                    if(sub_feature.indexOf('.')!=-1){
-                        alertify.error('You can\'t give . in feature name',time_out);
+                    if(sub_feature.indexOf('.')!=-1 || sub_feature.indexOf('_')!=-1){
+                        alertify.error('You can\'t give "." or "_" in feature name',time_out);
                         return false;
                     }
                     else{
@@ -620,12 +796,98 @@ function initialize_second_feature_tab_button(feature_id,project_id,team_id,feat
             }
         });
     });
+    $('#feature_usage').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1);
+    });
+    $('#feature_delete').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1,true);
+    });
+    $('#rename_feature').on('click',function(){
+        rename_feature(feature_id,project_id,team_id);
+    });
 }
+function get_feature_usage(UserText,project_id,team_id,test_case_per_page,test_case_page_current,delete_tag){
+    if(delete_tag===undefined){
+        delete_tag=false;
+    }
+    $.get('FeatureUsageTestCase',{
+        Query:UserText,
+        project_id:project_id,
+        team_id:team_id,
+        test_case_per_page:test_case_per_page,
+        test_case_page_current:test_case_page_current
+    },function(data){
+        if(delete_tag){
+            var message='';
+            if(data['Count']>0){
+                message+=data['Count']+' Test Cases are linked.It can\'t be deleted.'
+            }
+            else{
+                message+='You are about to delete <b>'+UserText.split(".")[UserText.split(".").length-1].replace(/_/g,' ').trim()+'</b>.Are you sure?';
+            }
+            alertify.confirm(message,function(e){
+                if(e){
+                    if(data['Count']>0){
+                        alertify.alert().close_all();
+                    }else{
+                        delete_feature(UserText,project_id,team_id);
+                    }
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        }else{
+            form_table('feature_extended_div',data['Heading'],data['TableData'],data['Count'],'Test Cases');
+            $('#feature_pagination_div').pagination({
+                items:data['Count'],
+                itemsOnPage:test_case_per_page,
+                cssStyle: 'dark-theme',
+                currentPage:test_case_page_current,
+                displayedPages:2,
+                edges:2,
+                hrefTextPrefix:'#',
+                onPageClick:function(PageNumber){
+                    get_feature_usage(UserText,project_id,team_id,test_case_per_page,PageNumber);
+                }
+            });
+        }
+    });
+}
+function delete_feature(UserText,project_id,team_id){
+    $.get('delete_feature',{
+        'name':UserText,
+        'project_id':project_id,
+        'team_id':team_id
+    },function(data){
+        if(data['message']){
+            window.location.reload(true);
+        }
+        else{
+            window.location.reload(false);
+        }
+    });
+}
+function delete_driver(UserText,project_id,team_id){
+    $.get('delete_driver',{
+        'name':UserText,
+        'project_id':project_id,
+        'team_id':team_id
+    },function(data){
+        if(data['message']){
+            window.location.reload(true);
+        }
+        else{
+            window.location.reload(false);
+        }
+    });
+}
+
 function initialize_feature_tab_button(feature_id,project_id,team_id,feature){
     var message='';
     message+='<input type="button" id="add_sub_feature" class="m-btn green" value="Add Sub Feature"/> ';
     message+='<input type="button" id="rename_feature" class="m-btn green" value="Rename Feature"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage" id="feature_usage"/> ';
+    message+='<input type="button" class="m-btn red" value="Delete" id="feature_delete"/> ';
     $('#feature_control_panel').html(message);
 
     $('#add_sub_feature').on('click',function(e){
@@ -641,9 +903,13 @@ function initialize_feature_tab_button(feature_id,project_id,team_id,feature){
         alertify.confirm(message,function(e){
             if(e){
                 var sub_feature=$('#sub_feature').val().trim();
+                if(sub_feature==''){
+                    alertify.error("You can't give empty name");
+                    return false;
+                }
                 if(sub_feature!=''){
-                    if(sub_feature.indexOf('.')!=-1){
-                        alertify.error('You can\'t give . in feature name',time_out);
+                    if(sub_feature.indexOf('.')!=-1 || sub_feature.indexOf("_")!=-1){
+                        alertify.error('You can\'t give "." or "_" in feature name',time_out);
                         return false;
                     }
                     else{
@@ -675,6 +941,71 @@ function initialize_feature_tab_button(feature_id,project_id,team_id,feature){
             }
         });
     });
+    $('#feature_usage').on('click',function(e){
+        get_feature_usage(feature_id,project_id,team_id,5,1);
+    });
+    $('#feature_delete').on('click',function(){
+        get_feature_usage(feature_id,project_id,team_id,5,1,true);
+    });
+    $('#rename_feature').on('click',function(){
+        rename_feature(feature_id,project_id,team_id);
+    });
+}
+function rename_feature(feature_full_path,project_id,team_id){
+    //get the last part
+    feature_full_path=feature_full_path.replace(/ /g,'_');
+    var value_name=feature_full_path.split(".")[feature_full_path.split(".").length-1].replace(/_/g,' ');
+    var message='';
+    message+='<table width="100%;">';
+    message+='<tr><td><b>Old Name:</b></td><td>'+value_name+'</td></tr>';
+    message+='<tr><td><b>New Name:</b></td><td><input id="new_feature" style="width: 100%;" class="textbox"/></td></tr>'
+    message+='</table>';
+    alertify.confirm(message,function(e){
+        if(e){
+            var new_feature_name=$("#new_feature").val().trim();
+            if(new_feature_name==''){
+                alertify.error("You can't give empty name");
+                return false;
+            }
+            if(new_feature_name.indexOf('.')!=-1 || new_feature_name.indexOf('_')!=-1){
+                alertify.error("You can not give '.' or '_' in feature name",time_out);
+                return false;
+            }
+            else{
+                //form the new name
+                value_name=value_name.replace(/ /g,'_');
+                var new_content=removeA(feature_full_path.split("."),value_name);
+                new_content.push(new_feature_name.replace(/ /g,'_'));
+                $.get('rename_feature',{
+                    old_feature_name:feature_full_path,
+                    new_feature_name:new_content.join("."),
+                    project_id:project_id,
+                    team_id:team_id
+                },function(data){
+                    if(data['message']){
+                        alertify.success(data['log_message'],time_out);
+                        get_all_data(project_id,team_id);
+                    }
+                    else{
+                        alertify.error(data['log_message'],1500);
+                        alertify.alert().close_all();
+                    }
+                });
+            }
+        }else{
+            alertify.alert().close_all();
+        }
+    });
+}
+function removeA(arr) {
+    var what, a = arguments, L = a.length, ax;
+    while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax= arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
 }
 function link_dependency(dependency,project_id,team_id){
     $.get('link_dependency',{
@@ -775,13 +1106,17 @@ function get_dependency_under_name(value,project_id,team_id,value_name){
             var message='';
             message+='<input type="button" id="add_name" class="m-btn green" value="Add Name"/> ';
             message+='<input type="button" id="rename_dependency" class="m-btn green" value="Rename"/> ';
-            message+='<input type="button" class="m-btn green" value="Usage"/> ';
+            message+='<input type="button" class="m-btn green" value="Usage" id="usage_dependency"/> ';
+            message+='<input type="button" class="m-btn red" value="Delete" id="delete_dependency"/> ';
             $('#control_panel').html(message);
             initialize_button(value,project_id,team_id,value_name);
             $('#bread_crumb').html('<a href="#" class="bread_crumb_element">'+value_name+'</a>');
             $('.dependency_name').on('click',function(){
                 $('.dependency_name').css({'background-color':"#fff"});
                 $(this).css({'background-color':'#ccc'});
+                $('#extended_div').empty();
+                $('#pagination_div').pagination('destroy');
+                $('#pagination_div').empty();
                 get_all_version($(this).attr('data-id'),$(this).text(),value_name,project_id,team_id);
             });
         }
@@ -792,10 +1127,10 @@ function get_dependency_under_name(value,project_id,team_id,value_name){
             var message='';
             message+='<input type="button" id="add_name" class="m-btn green" value="Add Name"/> ';
             message+='<input type="button" id="rename_dependency" class="m-btn green" value="Rename"/> ';
-            message+='<input type="button" class="m-btn green" value="Usage"/> ';
+            message+='<input type="button" class="m-btn green" value="Usage" id="usage_dependency"/> ';
+            message+='<input type="button" class="m-btn red" value="Delete" id="delete_dependency"/> ';
             $('#control_panel').html(message);
             initialize_button(value,project_id,team_id,value_name);
-
         }
     });
 }
@@ -842,6 +1177,64 @@ function initialize_button(value,project_id,team_id,value_name){
             }
 
         });
+    });
+    $('#usage_dependency').on('click',function(){
+        var UserText=(value_name+":").trim();
+        var pageNumber=1;
+        performDependencySearches(UserText,project_id,team_id,test_case_per_page,pageNumber);
+    });
+    $('#delete_dependency').on('click',function(){
+        var UserText=(value_name+":").trim();
+        var pageNumber=1;
+        performDependencySearches(UserText,project_id,team_id,test_case_per_page,pageNumber,false);
+    })
+}
+function performDependencySearches(UserText,project_id,team_id,test_case_per_page,test_case_page_current,delete_tag){
+    if(delete_tag===undefined){
+        delete_tag=true;
+    }
+    $.get('TableDataDependencyTestCases',{
+        Query: UserText,
+        test_status_request:true,
+        project_id:project_id,
+        team_id:team_id,
+        test_case_per_page:test_case_per_page,
+        test_case_page_current:test_case_page_current
+    },function(data){
+        if(delete_tag){
+            form_table('extended_div',data['Heading'],data['TableData'],data['Count'],'Test Cases');
+            $('#pagination_div').pagination({
+                items:data['Count'],
+                itemsOnPage:test_case_per_page,
+                cssStyle: 'dark-theme',
+                currentPage:test_case_page_current,
+                displayedPages:2,
+                edges:2,
+                hrefTextPrefix:'#',
+                onPageClick:function(PageNumber){
+                    performDependencySearches(UserText,project_id,team_id,test_case_per_page,PageNumber);
+                }
+            });
+        }else{
+            var message='';
+            if(data['Count']>0){
+                message+=data['Count']+' Test Cases are linked.It can\'t be deleted.'
+            }
+            else{
+                message+='You are about to delete <b>'+UserText.split(":")[0].trim()+'</b>.Are you sure?';
+            }
+            alertify.confirm(message,function(e){
+                if(e){
+                    if(data['Count']>0){
+                        alertify.alert().close_all();
+                    }else{
+                        delete_dependency(UserText.split(":")[0],project_id,team_id);
+                    }
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        }
     });
 }
 function rename_dependency(value,project_id,team_id,value_name,new_dep){
@@ -984,14 +1377,15 @@ function initialize_second_level(value,text,parent_name,project_id,team_id){
     var message='';
     message+='<input type="button" id="add_version" class="m-btn green" value="Add Version"/> ';
     message+='<input type="button" id="rename_name" class="m-btn green" value="Rename"/> ';
-    message+='<input type="button" class="m-btn green" value="Usage"/> ';
+    message+='<input type="button" class="m-btn green" value="Usage" id="usage_version"/> ';
+    message+='<input type="button" class="m-btn red" value="Delete" id="delete_name"/>';
     $('#control_panel').html(message);
     $('#add_version').on('click',function(){
         var message='';
         message+='<table>';
         message+='<tr><td align="right"><b>'+parent_name+' Name:</b></td><td align="left">'+text+'</td></tr>';
         message+='<tr><td align="right"><b>Bit:</b></td><td align="left"><select id="bit"><option value="32">32 Bit</option><option value="64">64 Bit</option></select></td></tr>';
-        message+='<tr><td align="right"><b>Dependency Name:</b></td><td align="left"><input id="version_name" class="textbox" style="width: 100%;"/></td></tr>';
+        message+='<tr><td align="right"><b>Version:</b></td><td align="left"><input id="version_name" class="textbox" style="width: 100%;"/></td></tr>';
         message+='</table>';
         alertify.confirm(message,function(e){
             if(e){
@@ -1047,8 +1441,137 @@ function initialize_second_level(value,text,parent_name,project_id,team_id){
 
         });
     });
+    $('#usage_version').on('click',function(){
+        var UserText=(text+":").trim();
+        var UserText=(text+":").trim();
+        var test_case_page_current=1;
+        PerformSearch(UserText,project_id,team_id,test_case_per_page,test_case_page_current);
+    });
+    $('#delete_name').on('click',function(){
+        var UserText=(text+":").trim();
+        var test_case_page_current=1;
+        PerformSearch(UserText,project_id,team_id,test_case_per_page,test_case_page_current,false);
+    });
+}
+function PerformSearch(UserText,project_id,team_id,test_case_per_page,test_case_page_current,usage){
+    if(usage==undefined){
+        usage=true;
+    }
+    $.get('TableDataTestCasesOtherPages',{
+        Query: UserText,
+        test_status_request:true,
+        project_id:project_id,
+        team_id:team_id,
+        total_time:'true',
+        test_case_per_page:test_case_per_page,
+        test_case_page_current:test_case_page_current
+    },function(data){
+        if(usage){
+            form_table('extended_div',data['Heading'],data['TableData'],data['Count'],'Test Cases');
+            $('#pagination_div').pagination({
+                items:data['Count'],
+                itemsOnPage:test_case_per_page,
+                cssStyle: 'dark-theme',
+                currentPage:test_case_page_current,
+                displayedPages:2,
+                edges:2,
+                hrefTextPrefix:'#',
+                onPageClick:function(PageNumber){
+                    PerformSearch(UserText,project_id,team_id,test_case_per_page,PageNumber);
+                }
+            });
+        }else{
+            var message='';
+            if(data['Count']>0){
+                message+=data['Count']+' Test Cases are linked.It can\'t be deleted.'
+            }
+            else{
+                message+='You are about to delete <b>'+UserText.split(":")[0].trim()+'</b>.Are you sure?';
+            }
+            alertify.confirm(message,function(e){
+                if(e){
+                    if(data['Count']>0){
+                        alertify.alert().close_all();
+                    }else{
+                        delete_dependency_name(UserText.split(":")[0],project_id,team_id);
+                    }
+                }else{
+                    alertify.alert().close_all();
+                }
+            });
+        }
+    });
+}
+function delete_dependency_name(name,project_id,team_id){
+    $.get('delete_dependency_name',{
+        'name':name,
+        'project_id':project_id,
+        'team_id':team_id
+    },function(data){
+        if(data['message']){
+            window.location.reload(true);
+        }
+        else{
+            window.location.reload(false);
+        }
+    });
+}
+function delete_dependency(name,project_id,team_id){
+    $.get('delete_dependency',{
+        'name':name,
+        'project_id':project_id,
+        'team_id':team_id
+    },function(data){
+        if(data['message']){
+            window.location.reload(true);
+        }
+        else{
+            window.location.reload(false);
+        }
+    });
 }
 
+var colors = {
+    'pass' : '#65bd10',
+    'fail' : '#fd0006',
+    'block' : '#ff9e00',
+    'submitted' : '#808080',
+    'in-progress':'#0000ff',
+    'skipped':'#cccccc',
+    'dev': '#aaaaaa',
+    'ready': '#65bd10'
+};
+
+function form_table(divname,column,data,total_data,type_case){
+    var tooltip=type_case||':)';
+    var message='';
+    message+= "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + total_data + " " + type_case+"</p>";
+    message+='<table class="two-column-emphasis">';
+    message+='<tr>';
+    for(var i=0;i<column.length;i++){
+        message+='<th>'+column[i]+'</th>';
+    }
+    message+='</tr>';
+    for(var i=0;i<data.length;i++){
+        message+='<tr>';
+        for(var j=0;j<data[i].length;j++){
+            switch(data[i][j]){
+                case 'Dev':
+                    message+='<td style="background-color: ' + colors['dev'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                case 'Ready':
+                    message+='<td style="background-color: ' + colors['ready'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                default :
+                    message+='<td>'+data[i][j]+'</td>';
+                    continue;
+            }
+        }
+        message+='</tr>';
+    }
+    message+='</table>';
+    $('#'+divname).html(message);
+}
 function add_new_version(value,text,parent_name,version,bit){
     $.get('add_new_version',{
         value:value,
