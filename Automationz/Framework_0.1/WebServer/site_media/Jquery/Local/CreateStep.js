@@ -114,14 +114,14 @@ $(document).ready(function(){
         success: function( json ) {
             if(json.length > 1)
                 for(var i = 1; i < json.length; i++)
-                    json[i] = json[i][0].replace(/_/g,' ')
+                    json[i] = json[i][0].replace(/ /g,'_')
             $.each(json, function(i, value) {
                 //if(i == 0)return;
                 if(value=="Manual"){
-                    $(".step-driv[data-level='']").append($('<option selected="selected">').text(value).attr('value', value));
+                    $(".step-driv[data-level='']").append($('<option selected="selected">').text(value.toString().replace(/_/g,' ')).attr('value', value));
                 }
                 else{
-                    $(".step-driv[data-level='']").append($('<option>').text(value).attr('value', value));
+                    $(".step-driv[data-level='']").append($('<option>').text(value.toString().replace(/_/g,' ')).attr('value', value));
                 }
             });
         }

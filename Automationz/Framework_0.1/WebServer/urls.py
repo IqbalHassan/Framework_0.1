@@ -311,6 +311,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/add_new_name_dependency/$',add_new_name_dependency),
     url(r'^Home/.*/get_all_name_under_dependency/$',get_all_name_under_dependency),
     url(r'^Home/.*/rename_dependency/$',rename_dependency),
+    url(r'^Home/.*/rename_driver/$',rename_driver),
     url(r'^Home/.*/add_new_version/$',add_new_version),
     url(r'^Home/.*/get_all_version_bit/$',get_all_version_bit),
     url(r'^Home/.*/link_dependency/$',link_dependency),
@@ -400,6 +401,8 @@ urlpatterns += patterns('',
     url(r'^Home/.*/TableDataDependencyTestCases/$',TableDataDependencyTestCases),
     url(r'^Home/.*/FeatureUsageTestCase/$',FeatureUsageTestCase),
     url(r'^Home/.*/delete_feature/$',delete_feature),
+    url(r'^Home/.*/delete_driver/$',delete_driver),
+    url(r'^Home/.*/DriverUsageTestCase/$',DriverUsageTestCase),
     )
 
 

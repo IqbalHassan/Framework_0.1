@@ -17320,7 +17320,7 @@ def add_new_driver(request):
         if request.method == 'GET':
             if request.is_ajax():
                 type_tag = "Driver"
-                dependency = request.GET.get(u'name', '').strip()
+                dependency = request.GET.get(u'name', '').replace(' ','_').strip()
                 project_id=request.GET.get(u'project_id','')
                 team_id=int(request.GET.get(u'team_id',''))
                 query = "select count(*) from drivers where driver_name='%s' and project_id='%s' and team_id=%d" %(dependency.strip(),project_id,int(team_id))
@@ -19309,6 +19309,107 @@ def delete_feature(request):
                     Conn=GetConnection()
                     print DB.DeleteRecord(Conn,"product_features",feature_id=each)
                     Conn.close()
+                message=True
+                log_message="Feature deleted successfully."
+            else:
+                message=False
+                log_message="Feature is not deleted successfully."
+
+            Dict={'message':message,'log_message':log_message}
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,mimetype='application/json')
+def rename_driver(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            driver_id=int(request.GET.get(u'driver_id',''))
+            old_name=request.GET.get(u'old_name','')
+            new_name=request.GET.get(u'new_name','')
+            project_id=request.GET.get(u'project_id','')
+            team_id=int(request.GET.get(u'team_id',''))
+            query="select count(*) from drivers d, team_wise_settings tws where tws.project_id=d.project_id and tws.team_id=d.team_id and tws.type='Driver' and tws.project_id='%s' and tws.team_id=%d and d.driver_name='%s'"%(project_id,int(team_id),new_name)
+            Conn=GetConnection()
+            avail=int(DB.GetData(Conn,query)[0])
+            Conn.close()
+            if isinstance(avail,int) and avail==0:
+                wherequery="where driver_name='%s' and id=%d"%(old_name,driver_id)
+                Conn=GetConnection()
+                print DB.UpdateRecordInTable(Conn,"drivers",wherequery,driver_name=new_name)
+                Conn.close()
+                whereQuery="where driver='%s'"%(old_name)
+                Conn=GetConnection()
+                print DB.UpdateRecordInTable(Conn,"test_steps_list",whereQuery,driver=new_name)
+                Conn.close()
+                message=True
+                log_message="Driver Name is updated successfully"
+            else:
+                message=False
+                log_message="Driver with same name exists"
+
+
+            result={'message':message,'log_message':log_message}
+            result=simplejson.dumps(result)
+            return HttpResponse(result,mimetype='application/json')
+
+def DriverUsageTestCase(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            UserData = request.GET.get(u'Query', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current')
+            test_status_request = request.GET.get(u'test_status_request', '')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+            condition=" offset %d limit %d"%(offset,limit)
+            Query="select distinct tc.tc_id,tc.tc_name from test_cases tc, test_case_tag tct , test_steps ts ,test_steps_list tsl where tsl.step_id=ts.step_id and ts.tc_id=tct.tc_id and tc.tc_id=tct.tc_id and tc.tc_id =ts.tc_id group by tc.tc_id,tc.tc_name having count(case when tct.name='%s' and property='Project' then 1 end)>0 and count(case when tct.name='%s' and property='Team' then 1 end)>0 and count(case when driver='%s' then 1 end)>0"%(project_id,str(team_id),UserData)
+            query=Query+condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+            final_list=[]
+            for each in TableData:
+                type_case=get_test_case_type(each[0])
+                time=get_test_case_time(each[0])
+                section=get_section(each[0])
+                feature=get_feature(each[0])
+                if test_status_request:
+                    status=get_status(each[0])
+                    final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                else:
+                    final_list.append((each[0],each[1],feature,section,type_case,time))
+            Heading = ['ID','Title','Feature','Folder','Type','Time']
+            if test_status_request:
+                Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+            results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
+
+        else:
+            results = {'Heading': [], 'TableData': [],'Count':0}
+
+        json = simplejson.dumps(results)
+        return HttpResponse(json, mimetype='application/json')
+
+def delete_driver(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            project_id=request.GET.get(u'project_id','')
+            team_id=request.GET.get(u'team_id','')
+            name=request.GET.get(u'name','')
+            query="select id from team_wise_settings tws,drivers pf where tws.parameters=pf.id and type='Driver' and pf.project_id=tws.project_id and pf.team_id=tws.team_id and tws.project_id='%s' and tws.team_id=%d and driver_name='%s'"%(project_id,int(team_id),name.replace(' ','_'))
+            Conn=GetConnection()
+            driver_id=int(DB.GetData(Conn,query)[0])
+            Conn.close()
+            if isinstance(driver_id,int):
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"team_wise_settings",type='Driver',project_id=project_id,team_id=int(team_id),parameters=driver_id)
+                Conn.close()
+                Conn=GetConnection()
+                print DB.DeleteRecord(Conn,"drivers",id=driver_id)
+                Conn.close()
                 message=True
                 log_message="Feature deleted successfully."
             else:
