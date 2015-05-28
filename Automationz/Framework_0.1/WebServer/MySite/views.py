@@ -2940,20 +2940,23 @@ def Run_Test(request):
                         #AddInfo(runid,second_slot)
                 
                 #email notify
-                try:
-                    urllib2.urlopen("http://www.google.com").close()
-                    EmailNotify.Send_Email(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date, '', '' , '')
-                    print "connected"
-                    results = ['OK']
-                except urllib2.URLError:
-                    print "disconnected"
-                    results = ['NOK']
+                mail_thread1=threading.Thread(name='mail_thread',target=mail_thread,kwargs=dict(stEmailIds=stEmailIds, runid=runid, TestObjective=TestObjective, Testers=Testers, starting_date=starting_date, ending_date=ending_date))
+                mail_thread1.start()
+
                 results = {'Result': result, 'runid': runid}
             json = simplejson.dumps(results)
             return HttpResponse(json, mimetype='application/json')
 
     except Exception as e:
         PassMessasge(sModuleInfo, e, error_tag)
+def mail_thread(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date):
+    try:
+        urllib2.urlopen("http://www.google.com").close()
+        EmailNotify.Send_Email(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date, '', '' , '')
+        print "connected"
+    except urllib2.URLError:
+        print "disconnected"
+
 def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
     print threading.current_thread().getName()+' starting'
     test_cases = TestCasesIDs
