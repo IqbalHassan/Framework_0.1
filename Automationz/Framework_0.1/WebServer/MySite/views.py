@@ -12588,14 +12588,11 @@ def delete_section(request):
 
 
 def DeleteTestCase(request):
-    Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             test_case_list = request.GET.get(u'Query', '')
             test_case_list = test_case_list.split("|")
-            modified_test_case_list = TestCaseCreateEdit.Delete_Test_Case(
-                Conn,
-                test_case_list)
+            modified_test_case_list = TestCaseCreateEdit.Delete_Test_Case(test_case_list)
     result = simplejson.dumps(modified_test_case_list)
     return HttpResponse(result, mimetype='application/json')
 
