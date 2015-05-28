@@ -496,8 +496,14 @@ function PopulateStepInfo(value){
 }
 
 function get_cases(UserText,itemPerPage,PageCurrent){
-    $.get("TestCase_Results",{Query: UserText,itemPerPage:itemPerPage,PageCurrent:PageCurrent, project_id:project_id, team_id:team_id},function(data) {
-
+    $.get("TestCase_Results",{
+        Query: UserText,
+        test_case_per_page:itemPerPage,
+        test_case_page_current:PageCurrent,
+        project_id:project_id,
+        team_id:team_id,
+        test_status_request:true
+    },function(data) {
             if (data['TableData'].length == 0)
             {
                 alertify.log("Sorry There is No Test Cases For Selected Query!","",0);
@@ -509,8 +515,8 @@ function get_cases(UserText,itemPerPage,PageCurrent){
             else
             {
                 $("#inner").show();
-                ResultTable('#search_result',data['Heading'],data['TableData'],"Test Cases");
-
+                //ResultTable('#search_result',data['Heading'],data['TableData'],"Test Cases");
+                form_table('search_result',data['Heading'],data['TableData'],data['Count'],"Test Cases");
                 $('#pagination_tab').pagination({
                     items:data['count'],
                     itemsOnPage:itemPerPage,
@@ -520,7 +526,6 @@ function get_cases(UserText,itemPerPage,PageCurrent){
                     edges:2,
                     hrefTextPrefix:'#',
                     onPageClick:function(PageNumber){
-                        //PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
                         get_cases(UserText,itemPerPage,PageNumber);
                     }
                 });
@@ -552,6 +557,36 @@ function get_cases(UserText,itemPerPage,PageCurrent){
 
         });
 
+}
+function form_table(divname,column,data,total_data,type_case){
+    var tooltip=type_case||':)';
+    var message='';
+    message+= "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + total_data + " " + type_case+"</p>";
+    message+='<table class="two-column-emphasis">';
+    message+='<tr>';
+    for(var i=0;i<column.length;i++){
+        message+='<th>'+column[i]+'</th>';
+    }
+    message+='</tr>';
+    for(var i=0;i<data.length;i++){
+        message+='<tr>';
+        for(var j=0;j<data[i].length;j++){
+            switch(data[i][j]){
+                case 'Dev':
+                    message+='<td style="background-color: ' + colors['dev'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                case 'Ready':
+                    message+='<td style="background-color: ' + colors['ready'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                default :
+                    message+='<td>'+data[i][j]+'</td>';
+                    continue;
+            }
+        }
+        message+='</tr>';
+    }
+    message+='</table>';
+    $('#'+divname).html(message);
 }
 
 function ready_feature(){

@@ -755,48 +755,46 @@ def ViewSteps(request):
 
 
 def Steps_List(request):
-    Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
             project_id = request.GET.get(u'project_id','')
             team_id = request.GET.get(u'team_id')
-            """current_page=int(request.GET.get(u'PageCurrent',''))
-            itemPerPage=int(request.GET.get(u'itemPerPage',''))
-            
-            condition = "limit %d offset %d" % (
-                itemPerPage, (current_page - 1) * itemPerPage)"""
-
-            
-            query="select stepname,description,driver,steptype,automatable,stepenable,data_required,always_run,created_by,cv.team_name from test_steps_list tsl,team cv where tsl.team_id=cv.id::text and cv.project_id='"+project_id+"' and tsl.project_id='"+project_id+"' "
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current','')
+            offset=int(test_case_per_page)*(int(test_case_page_current)-1)
+            Query="select stepname,description,driver,steptype,automatable,stepenable,data_required,always_run,created_by,cv.team_name from test_steps_list tsl,team cv where tsl.team_id=cv.id::text and cv.project_id='"+project_id+"' and tsl.project_id='"+project_id+"' "
+            query=Query
+            Conn=GetConnection()
             steps_list=DB.GetData(Conn, query, False)
-            count = len(steps_list)
-            
+            Conn.close()
+            Conn=GetConnection()
+            total_data=DB.GetData(Conn,Query,False)
+            Conn.close()
             p_steps_list = []
+            print steps_list
             for each in steps_list:
-                query="select count(tc_id) from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='" + each[0] + "'))"
-                temp = DB.GetData(Conn, query, False)
-                #query="select pf.feature_path from test_steps_list tsl, product_features pf where tsl.stepfeature=pf.feature_id::text and tsl.stepname='"+each[0]+"'"
-                #feat = DB.GetData(Conn, query, False)
-                Data=[]
-                for i in each:
-                    Data.append(i)
-                Data.append(temp[0][0])
-                p_steps_list.append(tuple(Data))
-                
-            p_steps_list = sorted(p_steps_list,key=operator.itemgetter(9),reverse=True)
-            
-            #pquery = query + condition
-            #p_steps_list = DB.GetData(Conn, pquery, False)
-            
-        
-        
+                test_case_count=get_test_case_count(each[0],project_id,team_id);
+                temp=list(each)
+                temp.append(test_case_count)
+                p_steps_list.append(tuple(temp))
+            p_steps_list=sorted(p_steps_list,key=sort_key,reverse=True)
+            if offset==0:
+                p_steps_list=p_steps_list[:int(test_case_per_page)]
+            else:
+                p_steps_list=p_steps_list[offset:offset+int(test_case_per_page)]
     Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Always Run','Created By','Team','Test Cases']    
-    results = {'Heading':Heading,'steps':p_steps_list, 'count': count}
+    results = {'Heading':Heading,'TableData':p_steps_list, 'Count': len(total_data)}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, mimetype='application/json')
-
-
+def sort_key(each):
+    return each[10]
+def get_test_case_count(step_name,project_id,team_id):
+    query="select distinct tc.tc_id,tc.tc_name from test_cases tc, test_case_tag tct , test_steps ts ,test_steps_list tsl where tsl.step_id=ts.step_id and ts.tc_id=tct.tc_id and tc.tc_id=tct.tc_id and tc.tc_id =ts.tc_id group by tc.tc_id,tc.tc_name having count(case when tct.name='%s' and property='Project' then 1 end)>0 and count(case when tct.name='%s' and property='Team' then 1 end)>0 and count(case when stepname='%s' then 1 end)>0"%(project_id,str(team_id),step_name)
+    Conn=GetConnection()
+    data_count=DB.GetData(Conn,query,False)
+    Conn.close()
+    return len(data_count)
 def EditBug(request, bug_id):
     bug_id = request.GET.get('bug_id', '')
     if bug_id != "":
@@ -7331,50 +7329,47 @@ def Milestone_Process(request):
 
 
 def TestCase_Results(request):
-    conn = GetConnection()
-    TableData = []
-    RefinedData = []
     if request.is_ajax():
         if request.method == 'GET':
             UserData = request.GET.get(u'Query', '')
-            item = int(request.GET.get(u'itemPerPage',''))
-            page = int(request.GET.get(u'PageCurrent',''))
-            project_id = request.GET.get(u'project_id','')
-            team_id = request.GET.get(u'team_id','')
-            sQuery = "select tc_id,tc_name from test_cases where tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='" + \
-                UserData + "' and project_id='"+project_id+"' and team_id='"+team_id+"')) "
-            #sQuery = "select tc.tc_id,tc.tc_name,ps.section_path from test_cases tc,test_case_tag tct,product_sections ps where tc.tc_id=tct.tc_id and tct.property='section_id' and ps.section_id::text=tct.name and tc.tc_id in (SELECT distinct tc_id FROM test_steps where step_id=(SELECT distinct step_id FROM test_steps_list WHERE stepname='%s')) " %UserData
-            TableData = DB.GetData(conn, sQuery, False)
-            condition = "limit %d offset %d" % (item, (page - 1) * item)
-            
-            query = sQuery + condition
-            p_list = DB.GetData(conn,query,False)
-            #Check_TestCase(p_list, RefinedData)
-            
-            Final =  []
-            for each in p_list:
-                Data = []
-                for i in each:
-                    Data.append(i)
-                Data.append(Check_TestCase(each[0]))
-                temp = DB.GetData(conn,"select pf.feature_path from test_case_tag tct, product_features pf where property='feature_id' and tc_id='"+each[0]+"' and tct.name=pf.feature_id::text")
-                Data.append(temp[0].replace('.','/'))
-                temp = DB.GetData(conn,"select ps.section_path from test_case_tag tct, product_sections ps where property='section_id' and tc_id='"+each[0]+"' and tct.name=ps.section_id::text")
-                Data.append(temp[0].replace('.','/'))
-                temp = DB.GetData(conn,"select name from test_case_tag where property='Status' and tc_id='"+each[0]+"'")
-                Data.append(temp[0])
-                temp = DB.GetData(conn,"select description from master_data where id ~ '"+each[0]+"' and field='estimated' and value='time'")
-                Data.append(ConvertTime(int(temp[0])))
-                Final.append(Data)
-                
-            conn.close()
-            
-    Heading = ['TC-ID', 'Title','Type','Feature','Folder','Status','Time']
-    results = {'Heading': Heading, 'TableData': Final,'count':len(TableData)}
-    # results={'TableData':TableData}
-    json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current')
+            test_status_request = request.GET.get(u'test_status_request', '')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+            condition=" offset %d limit %d"%(offset,limit)
+            Query="select distinct tc.tc_id,tc.tc_name from test_cases tc, test_case_tag tct , test_steps ts ,test_steps_list tsl where tsl.step_id=ts.step_id and ts.tc_id=tct.tc_id and tc.tc_id=tct.tc_id and tc.tc_id =ts.tc_id group by tc.tc_id,tc.tc_name having count(case when tct.name='%s' and property='Project' then 1 end)>0 and count(case when tct.name='%s' and property='Team' then 1 end)>0 and count(case when stepname='%s' then 1 end)>0"%(project_id,str(team_id),UserData)
+            query=Query+condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+            final_list=[]
+            for each in TableData:
+                type_case=get_test_case_type(each[0])
+                time=get_test_case_time(each[0])
+                section=get_section(each[0])
+                feature=get_feature(each[0])
+                if test_status_request:
+                    status=get_status(each[0])
+                    final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                else:
+                    final_list.append((each[0],each[1],feature,section,type_case,time))
+            Heading = ['ID','Title','Feature','Folder','Type','Time']
+            if test_status_request:
+                Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+            results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
 
+        else:
+            results = {'Heading': [], 'TableData': [],'Count':0}
+
+        json = simplejson.dumps(results)
+        return HttpResponse(json, mimetype='application/json')
 
 def TestSteps_Results(request):
     conn = GetConnection()
