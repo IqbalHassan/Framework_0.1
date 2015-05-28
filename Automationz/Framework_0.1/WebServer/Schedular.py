@@ -1,7 +1,6 @@
 import time
 import Global
 import requests
-import socket
 from datetime import datetime, timedelta
 user='postgres'
 password_user='password'

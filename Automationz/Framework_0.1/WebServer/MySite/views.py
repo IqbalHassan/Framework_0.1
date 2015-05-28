@@ -74,6 +74,7 @@ except ImportError:
     import json
 
 
+import threading
 '''
 Global variables
 '''
@@ -1963,13 +1964,13 @@ def RunId_TestCases(request, RunId):
     Env_Details_Data=final_list
     # Code for the total estimated time for the RUNID
     totalRunIDTime = 0
-    query = "select tc_id from test_run where run_id='%s'" % RunId
+    query = "select distinct tc_id,test_order from test_run where run_id='%s' and copy_status=true order by test_order" % RunId
     Conn = GetConnection()
-    test_case_list = DB.GetData(Conn, query)
+    test_case_list = DB.GetData(Conn, query,False)
     Conn.close()
     for each in test_case_list:
         # Get the step_count
-        query = "select sum(description::int) from result_master_data where field='estimated' and value='time' and id ilike '%s%%' and run_id='%s'" %(each, RunId)
+        query = "select sum(description::int) from result_master_data where field='estimated' and value='time' and id ilike '%s%%' and run_id='%s'" %(each[0], RunId)
         Conn = GetConnection()
         step_count = DB.GetData(Conn, query)
         Conn.close()
@@ -2868,12 +2869,12 @@ def Run_Test(request):
                 second_slot=temp_list[1:]+list(set(TestCasesIDs)-set(temp_list))
                 #now first save the first slot and progress
                 if is_rerun == "rerun":
-                    RegisterReRunPermanentInfo(runid,previous_run,first_slot)
-                    AddReRunInfo(runid, previous_run,first_slot)
+                    t1=threading.Thread(name='permanent_info',target=RegisterReRunPermanentInfo,kwargs=dict(run_id=runid, previous_run=previous_run, TestCasesIDs=first_slot))
+                    t1.start()
                 else:
-                    RegisterPermanentInfo(runid, first_slot)
-                    AddInfo(runid,first_slot)
-                    
+                    t1=threading.Thread(name='permanent_info',target=RegisterPermanentInfo,kwargs=dict(run_id=runid, TestCasesIDs=first_slot))
+                    t1.start()
+
                 run_description = ""
                 for each in QueryText:
                     run_description += (each + " ")
@@ -2925,12 +2926,18 @@ def Run_Test(request):
                 
                 if is_rerun == "rerun":
                     if len(second_slot)>0:
-                        RegisterReRunPermanentInfo(runid,previous_run,second_slot)
-                        AddReRunInfo(runid, previous_run,second_slot)
+                        p1=threading.Thread(name='permanent_info',target=RegisterReRunPermanentInfo,kwargs=dict(run_id=runid, previous_run=previous_run, TestCasesIDs=second_slot))
+                        p1.start()
+                        #p1.join()
+                        #RegisterReRunPermanentInfo(runid,previous_run,second_slot)
+                        #AddReRunInfo(runid, previous_run,second_slot)
                 else:
                     if len(second_slot)>0:
-                        RegisterPermanentInfo(runid, second_slot)
-                        AddInfo(runid,second_slot)
+                        p1=threading.Thread(name='permanent_info',target=RegisterPermanentInfo,kwargs=dict(run_id=runid, TestCasesIDs=second_slot))
+                        p1.start()
+                        #p1.join()
+                        #RegisterPermanentInfo(runid, second_slot)
+                        #AddInfo(runid,second_slot)
                 
                 #email notify
                 try:
@@ -2947,9 +2954,8 @@ def Run_Test(request):
 
     except Exception as e:
         PassMessasge(sModuleInfo, e, error_tag)
-
-
 def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
+    print threading.current_thread().getName()+' starting'
     test_cases = TestCasesIDs
     for each in test_cases:
         test_case = each
@@ -3103,8 +3109,11 @@ def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
         whereQuery="where tc_id='%s' and run_id='%s'"%(test_case,run_id)
         print DB.UpdateRecordInTable(Conn,"test_run",whereQuery,copy_status=True)
         Conn.close()
+    p2=threading.Thread(name='result_info',target=AddReRunInfo,kwargs=dict(run_id=run_id, previous_run=previous_run,TestCaseList=TestCasesIDs))
+    p2.start()
+
 def RegisterPermanentInfo(run_id, TestCasesIDs):
-    print run_id
+    print threading.current_thread().getName()+' starting'
     test_cases = TestCasesIDs
     for each in test_cases:
         test_case = each
@@ -3290,12 +3299,15 @@ def RegisterPermanentInfo(run_id, TestCasesIDs):
         whereQuery="where tc_id='%s' and run_id='%s'"%(test_case,run_id)
         print DB.UpdateRecordInTable(Conn,"test_run",whereQuery,copy_status=True)
         Conn.close()
+    p2=threading.Thread(name='result_info',target=AddInfo,kwargs=dict(run_id=run_id,TestCaseList=TestCasesIDs))
+    p2.start()
 
 def CleanRun(runid):
     print runid
 
 
 def AddReRunInfo(run_id, previous_run,TestCaseList):
+    print threading.current_thread().getName()+' starting'
     for eachcase in TestCaseList:
         print eachcase
         conn = GetConnection()
@@ -3330,6 +3342,7 @@ def AddReRunInfo(run_id, previous_run,TestCaseList):
 
 
 def AddInfo(run_id,TestCaseList):
+    print threading.current_thread().getName()+' starting'
     for eachcase in TestCaseList:
         print eachcase
         conn = GetConnection()
