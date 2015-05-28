@@ -3112,8 +3112,7 @@ def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
         whereQuery="where tc_id='%s' and run_id='%s'"%(test_case,run_id)
         print DB.UpdateRecordInTable(Conn,"test_run",whereQuery,copy_status=True)
         Conn.close()
-    p2=threading.Thread(name='result_info',target=AddReRunInfo,kwargs=dict(run_id=run_id, previous_run=previous_run,TestCaseList=TestCasesIDs))
-    p2.start()
+        AddReRunInfo(run_id,previous_run,[test_case])
 
 def RegisterPermanentInfo(run_id, TestCasesIDs):
     print threading.current_thread().getName()+' starting'
@@ -3302,9 +3301,7 @@ def RegisterPermanentInfo(run_id, TestCasesIDs):
         whereQuery="where tc_id='%s' and run_id='%s'"%(test_case,run_id)
         print DB.UpdateRecordInTable(Conn,"test_run",whereQuery,copy_status=True)
         Conn.close()
-    p2=threading.Thread(name='result_info',target=AddInfo,kwargs=dict(run_id=run_id,TestCaseList=TestCasesIDs))
-    p2.start()
-
+        AddInfo(run_id, [test_case])
 def CleanRun(runid):
     print runid
 
