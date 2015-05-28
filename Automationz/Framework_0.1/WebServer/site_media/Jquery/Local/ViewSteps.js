@@ -77,6 +77,12 @@ function get_steps(project_id,team_id,test_case_per_page,test_case_page_current)
 }
 function styling(wheretoplace){
     $('#'+wheretoplace+" tr td:nth-child(1)").css({'color' : 'blue','cursor' : 'pointer'});
+    $('#'+wheretoplace+" tr td:first-child").each(function(){
+       $(this).on('click',function(){
+            var step = $(this).text().trim();       
+            window.location = '/Home/ManageTestCases/EditStep/' + step ;
+       });
+    });
     $('#'+wheretoplace+" tr td:nth-child(11)").css({'color' : 'blue','cursor' : 'pointer','cursor':'pointer'});
     $('#'+wheretoplace+" tr td:nth-child(11)").each(function(){
        $(this).on('click',function(){
