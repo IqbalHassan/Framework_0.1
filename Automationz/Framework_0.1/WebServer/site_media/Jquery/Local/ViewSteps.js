@@ -78,5 +78,55 @@ function get_steps(project_id,team_id,test_case_per_page,test_case_page_current)
 function styling(wheretoplace){
     $('#'+wheretoplace+" tr td:nth-child(1)").css({'color' : 'blue','cursor' : 'pointer'});
     $('#'+wheretoplace+" tr td:nth-child(11)").css({'color' : 'blue','cursor' : 'pointer','cursor':'pointer'});
+    $('#'+wheretoplace+" tr td:nth-child(11)").each(function(){
+       $(this).on('click',function(){
+            var step_name=$(this).parent().find('td:first-child').text().trim();
+            get_test_cases(step_name,project_id,team_id,5,1);
+       });
+    });
 }
-
+function get_test_cases(stepname,project_id,team_id,itemPerPage,PageCurrent){
+    $('#step_name').html("Test cases for step: "+ stepname);
+    $.get("TestCase_Results",{
+        Query: stepname,
+        test_case_per_page:itemPerPage,
+        test_case_page_current:PageCurrent,
+        project_id:project_id,
+        team_id:team_id,
+        test_status_request:true
+    },function(data) {
+        form_table("usage_div",data['Heading'],data['TableData'],data['Count'],"Test Cases");
+        implementDropDown('#usage_div');
+        $('#usage_pagination_div').pagination({
+            items:data['Count'],
+            itemsOnPage:test_case_per_page,
+            cssStyle: 'dark-theme',
+            currentPage:test_case_page_current,
+            displayedPages:2,
+            edges:2,
+            hrefTextPrefix:'#',
+            onPageClick:function(PageNumber){
+                get_test_cases(stepname,project_id,team_id,itemPerPage,PageNumber);
+            }
+        });
+    });
+}
+function implementDropDown(wheretoplace){
+    $(wheretoplace+" tr td:nth-child(1)").css({'color' : 'blue','cursor' : 'pointer'});
+    $(wheretoplace+" tr td:nth-child(1)").each(function() {
+        var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+        var name=$(this).text().trim();
+        $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+        $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+            var data_list=data['Result'];
+            var column=data['column'];
+            ResultTable('#'+ID+'detail',column,data_list,"");
+            $('#'+ID+'detail tr').each(function(){
+                $(this).css({'textAlign':'left'});
+            });
+        });
+        $(this).live('click',function(){
+            $('#'+ID+'detail').slideToggle("slow");
+        });
+    });
+}
