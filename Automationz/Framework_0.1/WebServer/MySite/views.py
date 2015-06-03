@@ -4727,8 +4727,16 @@ def Create_Submit_New_TestCase(request):
             Project_id,
             Team_id)
         whereQuery="where tc_id='%s'"%(TC_Id)
+        whQuery="select tc_type from test_cases where tc_id='%s'"%(TC_Id)
         Conn=GetConnection()
-        print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
+        force_settings=DB.GetData(Conn,whQuery)[0]
+        Conn.close()
+        if force_settings=='Auto':
+            test_case_type=Check_TestCase(TC_Id)
+        else:
+            test_case_type='Manual'
+        Conn=GetConnection()
+        print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=test_case_type)
         Conn.close()
         Conn=GetConnection()
         print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_time=Check_TestCaseTime(TC_Id))
@@ -5192,8 +5200,16 @@ def EditTestCase(request):
                 Project_Id,
                 Team_Id)
             whereQuery="where tc_id='%s'"%(TC_Id)
+            whQuery="select tc_type from test_cases where tc_id='%s'"%(TC_Id)
             Conn=GetConnection()
-            print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=Check_TestCase(TC_Id))
+            force_settings=DB.GetData(Conn,whQuery)[0]
+            Conn.close()
+            if force_settings=='Auto':
+                test_case_type=Check_TestCase(TC_Id)
+            else:
+                test_case_type='Manual'
+            Conn=GetConnection()
+            print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=test_case_type)
             Conn.close()
             Conn=GetConnection()
             print DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_time=Check_TestCaseTime(TC_Id))
