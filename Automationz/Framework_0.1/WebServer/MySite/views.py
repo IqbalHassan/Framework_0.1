@@ -7980,9 +7980,20 @@ def CreateEditStep(request):
                             type='driver',
                             value=step_driver)
                         
-                    """conn.close()
-                    result = simplejson.dumps(step_name)
-                    return HttpResponse(result, mimetype='application/json')"""
+                    query="select tc_id from test_steps where step_id=%d"%step_id
+                    Conn=GetConnection()
+                    test_case_list=DB.GetData(Conn,query)
+                    Conn.close()
+                    count=0
+                    for each in test_case_list:
+                        test_status=Check_TestCase(each)
+                        whereQuery=" where tc_id='%s'"%each
+                        Conn=GetConnection()
+                        result=DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=test_status)
+                        if result == True:
+                            count+=1
+                        Conn.close()
+                    print "%d out of %d test cases are updated."%(count,len(test_case_list))
 
                 if operation == "1":
                     testrunenv = DB.InsertNewRecordInToTable(
