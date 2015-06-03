@@ -273,6 +273,12 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     return "Pass"
 def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    query="select name from test_case_tag where property='%s' and tc_id='%s'"%('Project',tc_id)
+    if DBUtil.IsDBConnectionGood(Conn) == False:
+        time.sleep(1)
+        Conn = GetConnection()
+    project_id=DBUtil.GetData(Conn,query)[0]
+
     # Collect the master data table entry and the test_steps_table_entry
     test_step_collect_query = "select tc_id,step_id,teststepsequence from test_steps where tc_id='%s' order by teststepsequence" % tc_id
     # test_steps_data_collect_query=""
@@ -293,7 +299,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
         step_time = each[5]
         step_continue=each[6]
         # get the step_id for the current step_name
-        step_id_query = "select step_id,data_required from test_steps_list where stepname='%s'" % step_name
+        step_id_query = "select step_id,data_required from test_steps_list where stepname='%s' and project_id='%s'" %(step_name,project_id)
         if DBUtil.IsDBConnectionGood(Conn) == False:
             time.sleep(1)
             Conn = GetConnection()
@@ -591,7 +597,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
         message+=str(each[2])
         if index<(len(updated_test_step_list)-1):
             message+=','
-    print message 
+    print message
     query="delete from test_steps where teststepsequence not in(%s) and tc_id='%s'"%(message,tc_id)
     if DBUtil.IsDBConnectionGood(Conn) == False:
         time.sleep(1)
@@ -1137,12 +1143,12 @@ def AddTag(conn, TC_Id, name, property):
         err_msg = LogMessage(sModuleInfo, e, 2)
         return err_msg
 
-def Insert_TestSteps_StepsData(Conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_List):
+def Insert_TestSteps_StepsData(Conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_List,project_id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     Step_Index = 1
     for each in Steps_Data_List:
         step_name = each[0]
-        step_data_query = "select step_id,data_required from test_steps_list where stepname='%s'" % step_name
+        step_data_query = "select step_id,data_required from test_steps_list where stepname='%s' and project_id='%s'" %(step_name,project_id)
         if DBUtil.IsDBConnectionGood(Conn) == False:
             time.sleep(1)
             Conn = GetConnection()

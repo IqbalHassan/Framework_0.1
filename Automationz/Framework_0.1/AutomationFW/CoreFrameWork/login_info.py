@@ -3,10 +3,10 @@ import Global
 sys.path.append("..")
 
     
-username='iqbal_hassan'
-password='iqbal_hassan'
-project='AscendLearning'
-team='ClickSafety'
+username='riz'
+password='.'
+project='Sprout'
+team='QA'
 server=Global.database_ip
 port=5432
 

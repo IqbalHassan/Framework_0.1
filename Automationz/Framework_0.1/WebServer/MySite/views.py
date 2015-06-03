@@ -2869,10 +2869,10 @@ def Run_Test(request):
                 second_slot=temp_list[1:]+list(set(TestCasesIDs)-set(temp_list))
                 #now first save the first slot and progress
                 if is_rerun == "rerun":
-                    t1=threading.Thread(name='permanent_info',target=RegisterReRunPermanentInfo,kwargs=dict(run_id=runid, previous_run=previous_run, TestCasesIDs=first_slot))
+                    t1=threading.Thread(name='permanent_info',target=RegisterReRunPermanentInfo,kwargs=dict(run_id=runid, previous_run=previous_run, TestCasesIDs=first_slot,project_id=project_id,team_id=int(team_id)))
                     t1.start()
                 else:
-                    t1=threading.Thread(name='permanent_info',target=RegisterPermanentInfo,kwargs=dict(run_id=runid, TestCasesIDs=first_slot))
+                    t1=threading.Thread(name='permanent_info',target=RegisterPermanentInfo,kwargs=dict(run_id=runid, TestCasesIDs=first_slot,project_id=project_id,team_id=int(team_id)))
                     t1.start()
 
                 run_description = ""
@@ -2957,8 +2957,9 @@ def mail_thread(stEmailIds, runid, TestObjective, Testers, starting_date, ending
     except urllib2.URLError:
         print "disconnected"
 
-def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
+def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs,project_id,team_id):
     print threading.current_thread().getName()+' starting'
+    print previous_run
     test_cases = TestCasesIDs
     for each in test_cases:
         test_case = each
@@ -2967,9 +2968,11 @@ def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
         Conn=GetConnection()
         test_step_column = DB.GetData(Conn, test_step_column_query)
         Conn.close()
-        test_step_query = "select * from result_test_steps_list where step_id in (select step_id from result_test_steps where tc_id='" + test_case + "' and run_id='" + previous_run + "') and run_id='" + previous_run + "'"
+        test_step_query = "select * from result_test_steps_list where step_id in (select step_id from result_test_steps where tc_id='%s' and run_id='%s') and run_id='%s' and project_id='%s' and team_id='%s'"%(test_case,previous_run,previous_run,project_id,str(team_id))
+        print test_step_query
         Conn=GetConnection()
         test_step_list_data = DB.GetData(Conn, test_step_query, False)
+        print test_step_list_data
         Conn.close()
         # #form the dictionary
         for each in test_step_list_data:
@@ -3114,7 +3117,7 @@ def RegisterReRunPermanentInfo(run_id, previous_run, TestCasesIDs):
         Conn.close()
         AddReRunInfo(run_id,previous_run,[test_case])
 
-def RegisterPermanentInfo(run_id, TestCasesIDs):
+def RegisterPermanentInfo(run_id, TestCasesIDs,project_id,team_id):
     print threading.current_thread().getName()+' starting'
     test_cases = TestCasesIDs
     for each in test_cases:
@@ -3124,8 +3127,7 @@ def RegisterPermanentInfo(run_id, TestCasesIDs):
         Conn=GetConnection()
         test_step_column = DB.GetData(Conn, test_step_column_query)
         Conn.close()
-        test_step_query = "select * from test_steps_list where step_id in (select step_id from test_steps where tc_id='" + \
-            test_case + "')"
+        test_step_query = "select * from test_steps_list where step_id in (select step_id from test_steps where tc_id='%s') and project_id='%s' and team_id='%s'"%(test_case,project_id,str(team_id))
         Conn=GetConnection()
         test_step_list_data = DB.GetData(Conn, test_step_query, False)
         Conn.close()
@@ -4699,7 +4701,7 @@ def Create_Submit_New_TestCase(request):
             Conn,
             TC_Id,
             Test_Case_DataSet_Id,
-            Steps_Data_List)
+            Steps_Data_List,Project_id)
 
         if test_case_steps_result != 'Pass':
             # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
