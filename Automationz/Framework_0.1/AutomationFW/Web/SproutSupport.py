@@ -9,8 +9,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from CoreFrameWork import CommonUtil
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 global WebDriver_Wait
-WebDriver_Wait = 20
+WebDriver_Wait = 30
 global WebDriver_Wait_Short
 WebDriver_Wait_Short = 10
 
@@ -212,7 +213,7 @@ def Verify_Text_Message_By_Text(expected_text):
         CommonUtil.ExecLog(sModuleInfo, "Could not find your expected text: %s. Error: %s"%(expected_text, Error_Detail), 3,local_run)
         return "failed"
 
-def Click_Element_By_Class(class_name,text=False,parent=False):
+def Click_Element_By_Class(class_name,text=False,parent=False,uppercase=False):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     try:
         CommonUtil.TakeScreenShot(sModuleInfo, local_run)
@@ -230,10 +231,16 @@ def Click_Element_By_Class(class_name,text=False,parent=False):
                 CommonUtil.ExecLog(sModuleInfo, "Found more than one element and will use the first one.  ** if fails, try providing parent element or try by ID** ", 2, local_run)
             for each in allElements:
                 if isinstance(text, bool)==False:
-                    if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.text)) == text:
-                        Element = each
-                        CommonUtil.ExecLog(sModuleInfo, "Found your element by class: %s.  Using the first element found to click"%class_name, 1,local_run)
-                        break
+                    if uppercase:
+                        if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.text)) == text.upper():
+                            Element = each
+                            CommonUtil.ExecLog(sModuleInfo, "Found your element by class: %s.  Using the first element found to click"%class_name, 1,local_run)
+                            break
+                    else:
+                        if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.text)) == text:
+                            Element = each
+                            CommonUtil.ExecLog(sModuleInfo, "Found your element by class: %s.  Using the first element found to click"%class_name, 1,local_run)
+                            break
                 else:
                     if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.is_displayed())) == True:
                         Element = each
@@ -251,7 +258,7 @@ def Click_Element_By_Class(class_name,text=False,parent=False):
         CommonUtil.ExecLog(sModuleInfo, "Unable to expand menu: %s.   Error: %s"%(class_name,Error_Detail), 3,local_run)
         return "failed"
 
-def Click_Element_By_Link_Text(_name,parent=False):
+def Click_Element_By_Link_Text(_name,parent=False,uppercase=False):
     '''
     Use this function only if you are sure that there wont be any conflicting Name.
     If possible use Click_Element_By_ID
@@ -263,9 +270,15 @@ def Click_Element_By_Link_Text(_name,parent=False):
         #Find all elements containing the name
         CommonUtil.ExecLog(sModuleInfo, "Trying to find element by Link Text: %s"%_name, 1,local_run)
         if isinstance(parent, (bool)) == True:
-            allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.LINK_TEXT,_name)))
+            if uppercase:
+                allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.LINK_TEXT, _name.upper())))
+            else:
+                allElements = WebDriverWait(sBrowser, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.LINK_TEXT,_name)))
         else:
-            allElements = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.LINK_TEXT, _name)))
+            if uppercase:
+                allElements = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.LINK_TEXT, _name.upper())))
+            else:
+                allElements = WebDriverWait(parent, WebDriver_Wait).until(EC.presence_of_all_elements_located((By.LINK_TEXT, _name)))
         if allElements == []:
             CommonUtil.ExecLog(sModuleInfo, "Could not find your element by Link Text: %s"%_name, 3,local_run)
             return "failed"
@@ -273,11 +286,18 @@ def Click_Element_By_Link_Text(_name,parent=False):
             if len(allElements) > 1:
                 CommonUtil.ExecLog(sModuleInfo, "Found more than one element and will use the first one.  ** if fails, try providing parent element or try by ID** ", 2, local_run)
             for each in allElements:
-                if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.text==_name)) == True:
-                    Element = each
-                    CommonUtil.ExecLog(sModuleInfo, "Found your element by Link Text: %s.  Using the first element found to click"%_name, 1,local_run)
-                    break
-                    #Now we simply click it
+                if uppercase:
+                    if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.text==_name.upper())) == True:
+                        Element = each
+                        CommonUtil.ExecLog(sModuleInfo, "Found your element by Link Text: %s.  Using the first element found to click"%_name, 1,local_run)
+                        break
+                        #Now we simply click it
+                else:
+                    if (WebDriverWait(each, WebDriver_Wait).until(lambda driver : each.text==_name)) == True:
+                        Element = each
+                        CommonUtil.ExecLog(sModuleInfo, "Found your element by Link Text: %s.  Using the first element found to click"%_name, 1,local_run)
+                        break
+
         Element.click()
         CommonUtil.TakeScreenShot(sModuleInfo, local_run)
         CommonUtil.ExecLog(sModuleInfo, "Successfully clicked your element: %s"%_name, 1,local_run)
@@ -388,6 +408,41 @@ def Verify_Text_Message_By_ID(_name,expected_text):
         else:
             CommonUtil.ExecLog(sModuleInfo, "Expected text is:'%s' and Actual text is '%s' "%(expected_text,actual_text), 3,local_run)
             return "failed"
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        CommonUtil.ExecLog(sModuleInfo, "Could not find your expected text: %s. Error: %s"%(expected_text, Error_Detail), 3,local_run)
+        return "failed"
+
+def CreateGroup(group_name,description,visibility):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        CommonUtil.TakeScreenShot(sModuleInfo, local_run)
+        _parent=sBrowser.find_element_by_id('header-menu');
+        Click_Element_By_Link_Text('Groups',_parent,True)
+        group_parent=sBrowser.find_element_by_id('btn-block-type1')
+        Click_Element_By_Class('btn-m','Create a Group',group_parent,True)
+        Set_Text_Field_Value_By_ID('name',group_name)
+        Set_Text_Field_Value_By_ID('description',description)
+        Select_Radio_Button(visibility)
+        Click_Element_By_Class(class_name='btn-m',text='Create',uppercase=True)
+        Click_Element_By_Link_Text('Skip')
+        Verify_Text_Message_By_Text(group_name.upper())
+    except Exception, e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
+        CommonUtil.ExecLog(sModuleInfo, "Error: %s"%(Error_Detail), 3,local_run)
+        return "failed"
+
+def Select_Radio_Button(_name):
+    sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    try:
+        CommonUtil.TakeScreenShot(sModuleInfo, local_run)
+        element=sBrowser.find_element_by_id(_name.lower())
+        element.click()
+        CommonUtil.ExecLog(sModuleInfo,"Successfully Clicked Radio Button",1,local_run)
     except Exception, e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]

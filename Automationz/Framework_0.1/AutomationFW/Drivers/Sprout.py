@@ -37,6 +37,7 @@ def log_in_to_sprout(dependency,step_data,temp_q):
     except:
         temp_q.put("Failed")
         return "Failed"
+
 def change_profile_detail(dependency,step_data,temp_q):
     try:
         first_data_set=step_data[0]
@@ -49,6 +50,20 @@ def change_profile_detail(dependency,step_data,temp_q):
     except:
         temp_q.put("Failed")
         return "Failed"
+def create_new_group(dependency,step_data,temp_q):
+    try:
+        first_data_set=step_data[0]
+        group_name = first_data_set[0][1]
+        description = first_data_set[1][1]
+        group_type= first_data_set[2][1]
+        sTestStepReturnStatus = SproutSupport.CreateGroup(group_name,description,group_type)
+        print sTestStepReturnStatus
+        temp_q.put(sTestStepReturnStatus)
+        return sTestStepReturnStatus
+    except:
+        temp_q.put("Failed")
+        return "Failed"
+
 def tear_down(dependency,step_data,temp_q):
     try:
         sTestStepReturnStatus = SproutSupport.Tear_Down()

@@ -12,11 +12,16 @@ def ChangingFirstName():
     Login('hossain.iqbal@gmail.com','teamWork','Riz')
     ChangeProfileDetail(firstname='Raju',lastname='Ahmed')
     Tear_Down()
-
+def CreateNewGroup():
+    BrowserSelection('Firefox')
+    OpenLink('https://sproutqa.sproutatwork.com')
+    Login('hossain.iqbal@gmail.com','teamWork','Raju')
+    CreateGroup('New Group','This is a group creation test','Private')
+    #Tear_Down()
 def TestSuite():
     #LoginTestCase()
-    ChangingFirstName()
-
+    #ChangingFirstName()
+    CreateNewGroup()
 def main():
     TestSuite()
 if __name__=='__main__':
