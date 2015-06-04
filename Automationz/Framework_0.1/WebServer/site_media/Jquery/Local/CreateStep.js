@@ -329,7 +329,7 @@ function PopulateStepInfo(value){
     $.ajax({
         url:"Populate_info_div",
         dataType:"json",
-        data:{term:value},
+        data:{term:value,project_id:project_id,team_id:team_id},
         success:function(data){
             console.log(data[0])
             //info_div(data[0])

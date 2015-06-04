@@ -7449,7 +7449,9 @@ def Populate_info_div(request):
     conn = GetConnection()
     if request.method == 'GET':
         value = request.GET.get(u'term', '')
-        sQuery = "SELECT step_id,stepname,description,driver,steptype,data_required,stepfeature,stepenable,step_editable,case_desc,expected,verify_point,step_continue,estd_time,automatable,created_by,modified_by,cast(created_date as text),cast(modified_date as text),always_run from test_steps_list where stepname='" + value + "'"
+        project_id=request.GET.get(u'project_id','')
+        team_id=request.GET.get(u'team_id','')
+        sQuery = "SELECT step_id,stepname,description,driver,steptype,data_required,stepfeature,stepenable,step_editable,case_desc,expected,verify_point,step_continue,estd_time,automatable,created_by,modified_by,cast(created_date as text),cast(modified_date as text),always_run from test_steps_list where stepname='%s' and project_id='%s' and team_id='%s'"%(value,project_id,str(team_id))
     results = DB.GetData(conn, sQuery, False)
     """temp = DB.GetData(conn, "SELECT pf.feature_path from test_steps_list tsl,product_features pf where tsl.stepfeature=pf.feature_id::text and stepname='" + value + "'", False)
     if temp is not None:
