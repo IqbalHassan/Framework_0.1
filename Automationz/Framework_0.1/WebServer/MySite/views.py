@@ -2926,14 +2926,14 @@ def Run_Test(request):
                 
                 if is_rerun == "rerun":
                     if len(second_slot)>0:
-                        p1=threading.Thread(name='permanent_info',target=RegisterReRunPermanentInfo,kwargs=dict(run_id=runid, previous_run=previous_run, TestCasesIDs=second_slot))
+                        p1=threading.Thread(name='permanent_info',target=RegisterReRunPermanentInfo,kwargs=dict(run_id=runid, previous_run=previous_run, TestCasesIDs=second_slot,project_id=project_id,team_id=int(team_id)))
                         p1.start()
                         #p1.join()
                         #RegisterReRunPermanentInfo(runid,previous_run,second_slot)
                         #AddReRunInfo(runid, previous_run,second_slot)
                 else:
                     if len(second_slot)>0:
-                        p1=threading.Thread(name='permanent_info',target=RegisterPermanentInfo,kwargs=dict(run_id=runid, TestCasesIDs=second_slot))
+                        p1=threading.Thread(name='permanent_info',target=RegisterPermanentInfo,kwargs=dict(run_id=runid, TestCasesIDs=second_slot,project_id=project_id,team_id=int(team_id)))
                         p1.start()
                         #p1.join()
                         #RegisterPermanentInfo(runid, second_slot)
