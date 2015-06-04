@@ -447,5 +447,5 @@ def Select_Radio_Button(_name):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
-        CommonUtil.ExecLog(sModuleInfo, "Could not find your expected text: %s. Error: %s"%(expected_text, Error_Detail), 3,local_run)
+        CommonUtil.ExecLog(sModuleInfo, "Could not find your expected text: %s. Error: %s"%(_name, Error_Detail), 3,local_run)
         return "failed"
