@@ -37,6 +37,18 @@ def log_in_to_sprout(dependency,step_data,temp_q):
     except:
         temp_q.put("Failed")
         return "Failed"
+def change_profile_detail(dependency,step_data,temp_q):
+    try:
+        first_data_set=step_data[0]
+        firstname = first_data_set[0][1]
+        lastname = first_data_set[1][1]
+        sTestStepReturnStatus = SproutSupport.ChangeProfileDetail(firstname=firstname,lastname=lastname)
+        print sTestStepReturnStatus
+        temp_q.put(sTestStepReturnStatus)
+        return sTestStepReturnStatus
+    except:
+        temp_q.put("Failed")
+        return "Failed"
 def tear_down(dependency,step_data,temp_q):
     try:
         sTestStepReturnStatus = SproutSupport.Tear_Down()
