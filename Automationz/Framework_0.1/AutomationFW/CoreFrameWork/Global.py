@@ -5,10 +5,10 @@ import sys
 sys.path.append("..")
 
 if os.name == 'nt':
-    from PCDesktop import WinCommonFoldersPaths
+    from AutomationFW.PCDesktop import WinCommonFoldersPaths
     #from AutomationFW import PCDesktop.WinCommonFoldersPaths as WinCommonFoldersPaths
 else:
-    from MacDesktop import MacCommonFoldersPaths as WinCommonFoldersPaths
+    from AutomationFW.MacDesktop import MacCommonFoldersPaths as WinCommonFoldersPaths
 
 ###########Production / Dev Config variables######################
 #Environment = "Test"

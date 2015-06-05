@@ -9,7 +9,7 @@ import os
 import time
 import MainDriver
 import Global
-from CoreFrameWork import FileUtilities
+from AutomationFW.CoreFrameWork import FileUtilities
 import ConfigParser
 def RunProcess(sTesterid):
     while (1):

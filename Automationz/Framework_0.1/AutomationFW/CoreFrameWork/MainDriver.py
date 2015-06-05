@@ -20,16 +20,16 @@ import inspect
 import DataBaseUtilities as DBUtil
 import FileUtilities as FL
 import CommonUtil
-import Drivers
+import AutomationFW.Drivers
 import importlib
 import Global
 
 
 
 #import FSDriver
-from CoreFrameWork import Performance
+from AutomationFW.CoreFrameWork import Performance
 #from distutils.tests.test_check import CheckTestCase
-from CoreFrameWork import DataFetching
+from AutomationFW.CoreFrameWork import DataFetching
 ReRunTag="ReRun"
 
 passed_tag_list=['Pass','pass','PASS','PASSED','Passed','passed','true','TRUE','True',True,1,'1','Success','success','SUCCESS']

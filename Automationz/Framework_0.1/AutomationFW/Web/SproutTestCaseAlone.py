@@ -1,6 +1,6 @@
 __author__ = 'Raju'
 import sys
-from Web.SproutSupport import *
+from AutomationFW.Web.SproutSupport import *
 def LoginTestCase():
     BrowserSelection('Firefox')
     OpenLink('https://sproutqa.sproutatwork.com')
