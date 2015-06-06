@@ -441,7 +441,7 @@ def main():
                     conn.close()
                     steps_data=[]
                     #get the steps data from here
-                    if TestStepsList[StepSeq-1][5] and TestStepsList[StepSeq-1][6]:
+                    """if TestStepsList[StepSeq-1][5] and TestStepsList[StepSeq-1][6]:
                         #for the edit data steps
                         container_id_data_query="select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = 'CLI-0382ds' and teststepseq = 13060 and ctd.curname Ilike '%_s2%'"
                     elif TestStepsList[StepSeq-1][5] and not TestStepsList[StepSeq-1][6]:
@@ -454,7 +454,15 @@ def main():
                             From_Data = DataFetching.Get_PIM_Data_By_Id(each_data_id[0])
                             steps_data.append(From_Data)
                     else:
-                        steps_data=[]
+                        steps_data=[]"""
+                    container_id_data_query="select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = '%s' and teststepseq = %d and ctd.curname Ilike '%%_s%s%%'"%(EachDataSet[0],int(TestStepsList[StepSeq-1][2]),StepSeq)
+                    conn=DBUtil.ConnectToDataBase()
+                    container_data_details=DBUtil.GetData(conn,container_id_data_query,False)
+                    conn.close()
+                    steps_data=[]
+                    for each_data_id in container_data_details:
+                        From_Data = DataFetching.Get_PIM_Data_By_Id(each_data_id[0])
+                        steps_data.append(From_Data)
                     print "steps data for #%d: "%StepSeq,steps_data
                     CommonUtil.ExecLog(sModuleInfo,"steps data for #%d: %s"%(StepSeq,str(steps_data)),1)
                     #get the estimateed time for the steps
