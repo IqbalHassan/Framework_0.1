@@ -38,30 +38,28 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from psycopg2.extras import DictCursor
 
-import BugOperations
-from CommonUtil import TimeStamp
-import DataBaseUtilities as DB
-import EmailNotify
-from FileUploader import FileUploader
-from LogModule import PassMessasge
-import LogModule
-from MySite.forms import Comment,tc_file_upload
-import RequirementOperations
-from TaskOperations import testConnection
-import TaskOperations
-from TestCaseCreateEdit import LogMessage
-import TestCaseCreateEdit
-from TestCaseOperations import Cleanup_TestCase
-import TestCaseOperations
+import WebServer.BugOperations
+from WebServer.CommonUtil import TimeStamp
+import WebServer.DataBaseUtilities as DB
+import WebServer.EmailNotify
+from WebServer.FileUploader import FileUploader
+from WebServer.LogModule import PassMessasge
+import WebServer.LogModule
+from WebServer.MySite.forms import Comment,tc_file_upload
+import WebServer.RequirementOperations
+from WebServer.TaskOperations import testConnection
+import WebServer.TaskOperations
+from WebServer.TestCaseCreateEdit import LogMessage
+import WebServer.TestCaseCreateEdit
+from WebServer.TestCaseOperations import Cleanup_TestCase
+import WebServer.TestCaseOperations
 from models import *
-from settings import MEDIA_ROOT, PROJECT_ROOT
-from settings import TIME_ZONE
+from WebServer.settings import MEDIA_ROOT, PROJECT_ROOT
+from WebServer.settings import TIME_ZONE
 from django.http.response import HttpResponse
 from __builtin__ import True
 from distutils.sysconfig import project_base
 from datetime import timedelta
-
-
 # #
 #=======
 # >>>>>>> parent of 5208765... Create Test Set added with create,update and  function

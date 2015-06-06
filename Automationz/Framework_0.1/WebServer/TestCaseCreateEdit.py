@@ -383,7 +383,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                 Conn = GetConnection()
             master_data_collected_data = DBUtil.GetData(Conn, master_data_collect_query, False)
             print master_data_collected_data
-            if step_info[0][1]:
+            """if step_info[0][1]:
                 print "data step"
                 current_step_data = PrepareDataStep(master_id, step_data)
                 if len(current_step_data) > 0:
@@ -525,6 +525,7 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                             LogMessage(sModuleInfo, "Deleted Unnecessary entry %s from container_type_data while updating step %s in test case %s" % (str(each), Step_Index, tc_id), 1)
                         else:
                             LogMessage(sModuleInfo, result, 3)
+            """
             # form master_id
             master_data_current_data = PrepareNonDataStep(master_id, step_description, step_expected, step_verification, step_time,step_continue)
             print master_data_current_data
@@ -1183,7 +1184,12 @@ def Insert_TestSteps_StepsData(Conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                 verification_point = each[4]
                 time_expected = each[5]
                 continue_point=each[6]
-                if step_data_required:
+                Master_Data_ID = ('%s_s%s' % (TC_Id, Step_Index))
+                if DBUtil.IsDBConnectionGood(Conn) == False:
+                    time.sleep(1)
+                    Conn = GetConnection()
+                InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result, verification_point, time_expected,continue_point)
+                """if step_data_required:
                     # Data_List=each[1]
                     print seq
                     if DBUtil.IsDBConnectionGood(Conn) == False:
@@ -1206,13 +1212,7 @@ def Insert_TestSteps_StepsData(Conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                             msg = "Added test_steps_data tcdataset:%s" % Test_Case_DataSet_Id
                             LogMessage(sModuleInfo, msg, 1)
                         else:
-                            LogMessage(sModuleInfo, result, 3)
-                else:
-                    Master_Data_ID = ('%s_s%s' % (TC_Id, Step_Index))
-                    if DBUtil.IsDBConnectionGood(Conn) == False:
-                        time.sleep(1)
-                        Conn = GetConnection()
-                    InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result, verification_point, time_expected,continue_point)
+                            LogMessage(sModuleInfo, result, 3)"""
             else:
                 error_message = ("No stepsequence is listed test_steps table for test case %s and step id %s" % (TC_Id, step_id))
                 LogMessage(sModuleInfo, error_message, 2)
