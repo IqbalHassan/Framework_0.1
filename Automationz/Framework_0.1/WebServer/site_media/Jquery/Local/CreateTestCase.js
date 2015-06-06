@@ -1094,37 +1094,42 @@ $(document).ready(function() {
                         else{
 
                         }*/
-                        for(var j=1;j<=popupdivrowcount[i-1];j++){
-                            var dataset=[];
-                            var tableid=$('#step'+i+'data'+j+'entrytable');
-                            var tableLength=tableid.find('tr').length;
-                            var row=tableid.find('tr:eq(1)');
-                            for(var k=0;k<tableLength-1;k++){
-                                if(row.find('td:eq(0) input:eq(0)').is(':checked')){
-                                    var keyfield=true;
-                                }
-                                else{
-                                    var keyfield=false;
-                                }
-                                var field=row.find('td:eq(1) input:eq(0)').val();
-                                field=field.trim();
-                                var sub_field=row.find('td:eq(2) input:eq(0)').val();
-                                sub_field=sub_field.trim();
-                                var value=row.find('td:eq(3) textarea:eq(0)').val();
-                                value=value.trim();
-                                if(row.find('td:eq(4) input:eq(0)').is(':checked')){
-                                    var ignorefield=true;
-                                }
-                                else{
-                                    var ignorefield=false;
-                                }
-                                var tempObject={field:field , sub_field:sub_field ,value:value,keyfield:keyfield,ignorefield:ignorefield};
-                                dataset.push(tempObject);
-                                row=row.next();
-                            }
-                            step_array.push(dataset);
+                        if(!$('#searchbox'+(i)+'data').find('span:eq(0)').hasClass('filled')){
+                            finalArray[i-1]=undefined;
                         }
-                        finalArray[i-1]=step_array;
+                        else{
+                            for(var j=1;j<=popupdivrowcount[i-1];j++){
+                                var dataset=[];
+                                var tableid=$('#step'+i+'data'+j+'entrytable');
+                                var tableLength=tableid.find('tr').length;
+                                var row=tableid.find('tr:eq(1)');
+                                for(var k=0;k<tableLength-1;k++){
+                                    if(row.find('td:eq(0) input:eq(0)').is(':checked')){
+                                        var keyfield=true;
+                                    }
+                                    else{
+                                        var keyfield=false;
+                                    }
+                                    var field=row.find('td:eq(1) input:eq(0)').val();
+                                    field=field.trim();
+                                    var sub_field=row.find('td:eq(2) input:eq(0)').val();
+                                    sub_field=sub_field.trim();
+                                    var value=row.find('td:eq(3) textarea:eq(0)').val();
+                                    value=value.trim();
+                                    if(row.find('td:eq(4) input:eq(0)').is(':checked')){
+                                        var ignorefield=true;
+                                    }
+                                    else{
+                                        var ignorefield=false;
+                                    }
+                                    var tempObject={field:field , sub_field:sub_field ,value:value,keyfield:keyfield,ignorefield:ignorefield};
+                                    dataset.push(tempObject);
+                                    row=row.next();
+                                }
+                                step_array.push(dataset);
+                            }
+                            finalArray[i-1]=step_array;
+                        }
                     }
                 }
             }
@@ -1147,7 +1152,53 @@ $(document).ready(function() {
                 /***********************Step Data Processing Here ********************************/
                 else{
                     for(var j=1;j<=stepData.length;j++){
-                        if($('#searchbox'+i+'data_table').attr('data-id')=='edit'){
+                        var currentDataSet=stepData[j-1];
+                        var mainFields=[];
+                        var subFieldskey=[];
+                        var withsubFields=[];
+                        for(var k=0;k<currentDataSet.length;k++){
+                            //First Check whether it's a mainField or Not
+                            if(currentDataSet[k].sub_field==""){
+                                var temp_object={mainField:currentDataSet[k].field,fieldValue:currentDataSet[k].value,keyfield:currentDataSet[k].keyfield,ignorefield:currentDataSet[k].ignorefield};
+                                mainFields.push(temp_object);
+                            }
+                            else{
+                                var field_name=currentDataSet[k].field;
+                                if($.inArray(field_name,subFieldskey)===-1){
+                                    subFieldskey.push(field_name);
+                                }
+                                withsubFields.push(currentDataSet[k]);
+                            }
+                        }
+                        /***************************create old format Data*********************************/
+                        var temp="";
+                        temp+="[";
+                        for(var k=0;k<mainFields.length;k++){
+                            temp+=("("+mainFields[k].mainField+","+mainFields[k].fieldValue+","+mainFields[k].keyfield+","+mainFields[k].ignorefield+"),");
+                        }
+                        if(withsubFields.length==0 && subFieldskey==0){
+                            temp=temp.substring(0,temp.length-1);
+                            temp+="]";
+                        }
+                        else{
+                            for(var k=0;k<subFieldskey.length;k++){
+                                var mainField=subFieldskey[k];
+                                temp+=("("+mainField+",[");
+                                for(var l=0;l<withsubFields.length;l++){
+                                    if(mainField==withsubFields[l].field){
+                                        temp+=("("+withsubFields[l].sub_field+","+withsubFields[l].value+","+withsubFields[l].keyfield+","+withsubFields[l].ignorefield+"),");
+                                    }
+                                }
+                                temp=temp.substring(0,temp.length-1);
+                                temp+="]),";
+                            }
+                            temp=temp.substring(0,temp.length-1);
+                            temp+="]";
+                        }
+                        tempSTR.push(temp);
+                        /*************************** end create old format Data*********************************/
+
+                        /*if($('#searchbox'+i+'data_table').attr('data-id')=='edit'){
                             var currentDataSet=stepData[j-1];
                             var edit_data=[]
                             for(var k=0;k<currentDataSet.length;k++){
@@ -1168,7 +1219,7 @@ $(document).ready(function() {
                                         withsubFields.push(temp);
                                     }
                                 }
-                                /***************************create old format Data*********************************/
+                                //***************************create old format Data*********************************
                                 var temp="";
                                 temp+="[";
                                 for(var m=0;m<mainFields.length;m++){
@@ -1195,7 +1246,7 @@ $(document).ready(function() {
                                 }
 //                                console.log(temp);
                                 edit_data.push(temp);
-                                /*************************** end create old format Data*********************************/
+                                //*************************** end create old format Data*********************************
                             }
                             tempSTR.push(edit_data.join('#'));
                         }
@@ -1218,7 +1269,7 @@ $(document).ready(function() {
                                     withsubFields.push(currentDataSet[k]);
                                 }
                             }
-                            /***************************create old format Data*********************************/
+                            //***************************create old format Data*********************************
                             var temp="";
                             temp+="[";
                             for(var k=0;k<mainFields.length;k++){
@@ -1245,13 +1296,12 @@ $(document).ready(function() {
                             }
 //                            console.log(temp);
                             tempSTR.push(temp);
-                            /*************************** end create old format Data*********************************/
+                            //*************************** end create old format Data*********************************
 
-                        }
+                        }*/
                         /*********************** END Step Data Processing Here ********************************/
                         stepDataSTR[i-1]=tempSTR.join('%');
                     }
-//                    console.log(stepDataSTR);
                 }
             }
             /*************************End Filtering***********************************************/
@@ -2174,6 +2224,7 @@ function checkFunction(divname){
     var index=divname.split('x')[1].split('d')[0].trim();
     if(popupdivrowcount[index-1]<=0){
         $('#searchbox'+index+'data').find('span:eq(0)').removeClass('filled');
+        $('#searchbox'+index+'data').find('span:eq(0)').removeClass('unfilled');
     }
     else{
         for(var i=0;i<popupdivrowcount[index-1];i++){

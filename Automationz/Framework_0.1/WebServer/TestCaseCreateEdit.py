@@ -383,6 +383,110 @@ def Update_Test_Steps_Data(Conn, tc_id, dataset_id, steps_data_list):
                 Conn = GetConnection()
             master_data_collected_data = DBUtil.GetData(Conn, master_data_collect_query, False)
             print master_data_collected_data
+            current_step_data = PrepareDataStep(master_id, step_data)
+            if len(current_step_data) > 0:
+                for each in current_step_data:
+                    if each not in master_data_collected_data:
+                        master_data_column = ['id', 'field', 'value', 'description','keyfield','ignorefield']
+                        master_data_dict = {}
+                        for eachitem in zip(master_data_column, each):
+                            master_data_dict.update({eachitem[0]:eachitem[1]})
+                        if DBUtil.IsDBConnectionGood(Conn) == False:
+                            time.sleep(1)
+                            Conn = GetConnection()
+                        result = DBUtil.InsertNewRecordInToTable(Conn, "master_data", **master_data_dict)
+                        if result == True:
+                            LogMessage(sModuleInfo, "Tuple %s is added in master_data for step %s of test_case %s" % (str(each), Step_Index, tc_id), 1)
+                        else:
+                            LogMessage(sModuleInfo, result, 3)
+                    else:
+                        master_data_collected_data.remove(each)
+                        LogMessage(sModuleInfo, "Tuple %s is present in the master_data before for step %s of test_case %s" % (str(each), Step_Index, tc_id), 1)
+            else:
+                #err_msg = "Test Case Data is not in Valid Format"
+
+                err_msg="Test Steps Data is empty"
+                LogMessage(sModuleInfo, err_msg, 3)
+
+            # edit the test step data
+            # form the entry
+            test_steps_data_entry = {'tcdatasetid':dataset_id, 'testdatasetid':master_id, 'teststepseq':Step_Seq}
+            test_steps_data_collect_query = "select tcdatasetid,testdatasetid,teststepseq from test_steps_data where testdatasetid='%s'" % master_id
+            if DBUtil.IsDBConnectionGood(Conn) == False:
+                time.sleep(1)
+                Conn = GetConnection()
+            test_steps_data_collected_data = DBUtil.GetData(Conn, test_steps_data_collect_query, False)
+            if (test_steps_data_entry['tcdatasetid'], test_steps_data_entry['testdatasetid'], test_steps_data_entry['teststepseq']) not in test_steps_data_collected_data:
+                # print insert the test steps data
+                if DBUtil.IsDBConnectionGood(Conn) == False:
+                    time.sleep(1)
+                    Conn = GetConnection()
+                result = DBUtil.InsertNewRecordInToTable(Conn, "test_steps_data", **test_steps_data_entry)
+                if result == True:
+                    LogMessage(sModuleInfo, "Added %s in test_steps_data while updating step %s for test case %s" % (str(test_steps_data_entry), Step_Index, tc_id), 1)
+                else:
+                    LogMessage(sModuleInfo, result, 3)
+            else:
+                LogMessage(sModuleInfo, "Tuple %s is present already in the test_steps_data table for step %s for test case %s" % (str(test_steps_data_entry), Step_Index, tc_id), 1)
+                test_steps_data_collected_data.remove((test_steps_data_entry['tcdatasetid'], test_steps_data_entry['testdatasetid'], test_steps_data_entry['teststepseq']))
+            test_steps_data_column = ['tcdatasetid', 'testdatasetid', 'teststepseq']
+            for each in test_steps_data_collected_data:
+                test_steps_data_dict = {}
+                for eachitem in zip(test_steps_data_column, each):
+                    test_steps_data_dict.update({eachitem[0]:eachitem[1]})
+                if DBUtil.IsDBConnectionGood(Conn) == False:
+                    time.sleep(1)
+                    Conn = GetConnection()
+                result = DBUtil.DeleteRecord(Conn, "test_steps_data", **test_steps_data_dict)
+                if result == True:
+                    LogMessage(sModuleInfo, "Deleted %s from test_steps_data for step %s updating test case %s" % (str(test_steps_data_dict), Step_Index, tc_id), 1)
+                else:
+                    LogMessage(sModuleInfo, result, 3)
+            # container data change
+            if isinstance(step_data, list):
+                # form tuple for the container type data table
+                DataSet = 1
+                container_list = []
+                # new_name=None
+                for each in step_data:
+                    curname = master_id + ('_d') + str(DataSet)
+                    container_list.append((master_id, curname))
+                    DataSet += 1
+                container_type_data_query = "select dataid,curname from container_type_data where dataid='%s'" % master_id
+                if DBUtil.IsDBConnectionGood(Conn) == False:
+                    time.sleep(1)
+                    Conn = GetConnection()
+                container_type_data = DBUtil.GetData(Conn, container_type_data_query, False)
+                container_data_column = ['dataid', 'curname']
+                for each in container_list:
+                    if each not in container_type_data:
+                        container_type_data_dict = {}
+                        for eachitem in zip(container_data_column, each):
+                            container_type_data_dict.update({eachitem[0]:eachitem[1]})
+                        if DBUtil.IsDBConnectionGood(Conn) == False:
+                            time.sleep(1)
+                            Conn = GetConnection()
+                        result = DBUtil.InsertNewRecordInToTable(Conn, "container_type_data", **container_type_data_dict)
+                        if result == True:
+                            LogMessage(sModuleInfo, "Added %s tuple to container_type_data while updating test case %s Step %s" % (str(container_type_data_dict), tc_id, Step_Index), 1)
+                        else:
+                            LogMessage(sModuleInfo, result, 3)
+                    else:
+                        container_type_data.remove(each)
+                        LogMessage(sModuleInfo, "Tuple %s found in container_type_data already for step %s in test case %s" % (str(each), Step_Index, tc_id), 1)
+                for each in container_type_data:
+                    container_data_dict = {}
+                    for eachitem in zip(container_data_column, each):
+                        container_data_dict.update({eachitem[0]:eachitem[1]})
+                    # del container_data_dict['newname']
+                    if DBUtil.IsDBConnectionGood(Conn) == False:
+                        time.sleep(1)
+                        Conn = GetConnection()
+                    result = DBUtil.DeleteRecord(Conn, "container_type_data", **container_data_dict)
+                    if result == True:
+                        LogMessage(sModuleInfo, "Deleted Unnecessary entry %s from container_type_data while updating step %s in test case %s" % (str(each), Step_Index, tc_id), 1)
+                    else:
+                        LogMessage(sModuleInfo, result, 3)
             """if step_info[0][1]:
                 print "data step"
                 current_step_data = PrepareDataStep(master_id, step_data)
@@ -1188,7 +1292,28 @@ def Insert_TestSteps_StepsData(Conn, TC_Id, Test_Case_DataSet_Id, Steps_Data_Lis
                 if DBUtil.IsDBConnectionGood(Conn) == False:
                     time.sleep(1)
                     Conn = GetConnection()
-                InsertMasterMetaData(Conn, Master_Data_ID, step_description, expected_result, verification_point, time_expected,continue_point)
+                print seq
+                if DBUtil.IsDBConnectionGood(Conn) == False:
+                    time.sleep(1)
+                    Conn = GetConnection()
+                Data_ID_List = InsertMasterDataForDataRequired(Conn, TC_Id, Step_Index, step_data, step_description, expected_result, verification_point, time_expected,continue_point)
+                if isinstance(Data_ID_List, list):
+                    # Get them to the container_data
+                    if DBUtil.IsDBConnectionGood(Conn) == False:
+                        time.sleep(1)
+                        Conn = GetConnection()
+                    container_data_id = InsertContainerData(Conn, TC_Id, Step_Index, Data_ID_List)
+                    # #insert it in the test_steps_data
+                    test_steps_data_dict = {'tcdatasetid':Test_Case_DataSet_Id, 'testdatasetid':container_data_id, 'teststepseq':seq}
+                    if DBUtil.IsDBConnectionGood(Conn) == False:
+                        time.sleep(1)
+                        Conn = GetConnection()
+                    result = DBUtil.InsertNewRecordInToTable(Conn, "test_steps_data", **test_steps_data_dict)
+                    if result == True:
+                        msg = "Added test_steps_data tcdataset:%s" % Test_Case_DataSet_Id
+                        LogMessage(sModuleInfo, msg, 1)
+                    else:
+                        LogMessage(sModuleInfo, result, 3)
                 """if step_data_required:
                     # Data_List=each[1]
                     print seq
