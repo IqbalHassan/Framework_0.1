@@ -136,7 +136,28 @@ $(document).ready(function() {
     if (indx != -1 || indx2 != -1) {
         $('#add_test_step').live('click',function(){
             addMainTableRow('#steps_table');
+            $('.data-popup').on('click',function(){
+                //if(($(this).find('span:eq(0)').hasClass('unfilled')) || ($(this).find('span:eq(0)').hasClass('filled'))){
+                var id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
+                $('#searchbox'+id+'datapop').dialog({
+                    buttons : {
+                        "OK" : function() {
+                            checkFunction($(this).attr('id'));
+                            $(this).dialog("destroy");
+                        }
+                    },
 
+                    show : {
+                        effect : 'drop',
+                        direction : "up"
+                    },
+
+                    modal : true,
+                    width : 800,
+                    height : 600,
+                    title: "Data: Step "+id
+                });
+            });
         });
         $('#remove_test_step').live('click',function(){
             alertify.confirm("Are you sure you want to delete the test step?", function(e) {
@@ -155,6 +176,28 @@ $(document).ready(function() {
             //console.log('will be added after '+$('#steps_table>tr:eq('+(step_id-1)+')').attr('id'));
             //console.log('will be added after '+$('#searchbox'+step_id+'datapop').attr('id'));
             addMainTableRowFixedPlace(step_id);
+            $('.data-popup').on('click',function(){
+                //if(($(this).find('span:eq(0)').hasClass('unfilled')) || ($(this).find('span:eq(0)').hasClass('filled'))){
+                var id=$(this).closest('tr').find('td:nth-child(2)').text().trim();
+                $('#searchbox'+id+'datapop').dialog({
+                    buttons : {
+                        "OK" : function() {
+                            checkFunction($(this).attr('id'));
+                            $(this).dialog("destroy");
+                        }
+                    },
+
+                    show : {
+                        effect : 'drop',
+                        direction : "up"
+                    },
+
+                    modal : true,
+                    width : 800,
+                    height : 600,
+                    title: "Data: Step "+id
+                });
+            });
             var temp=popupdivrowcount.pop();
             popupdivrowcount.splice(step_id,0,temp);
             reOrganize();
@@ -2052,7 +2095,6 @@ function reOrganize(){
         currentdescpop=currentdescpop.next();
     }
     /*******************ReOrdering the Pop Up End*********************/
-
 }
 function adddataentry(tablename){
     var message="";

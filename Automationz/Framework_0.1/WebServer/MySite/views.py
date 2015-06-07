@@ -7982,9 +7982,9 @@ def CreateEditStep(request):
                         project_id = project_id,
                         team_id = team_id)
                     if testrunenv:
-                        LogModule.PassMessasge(sModuleInfo,"Updated step - " +step_name +" successfully",1)
+                        PassMessasge(sModuleInfo,"Updated step - " +step_name +" successfully",1)
                     else:
-                        LogModule.PassMessasge(sModuleInfo,"Test step - " +step_name +" Not updated",1)
+                        PassMessasge(sModuleInfo,"Test step - " +step_name +" Not updated",1)
                     query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
                         step_feature + "'"
                     feature_count = DB.GetData(conn, query)
@@ -8045,9 +8045,9 @@ def CreateEditStep(request):
                         project_id = project_id,
                         team_id = team_id)
                     if testrunenv:
-                        LogModule.PassMessasge(sModuleInfo,"Updated step - " +step_name +" successfully",1)
+                        PassMessasge(sModuleInfo,"Updated step - " +step_name +" successfully",1)
                     else:
-                        LogModule.PassMessasge(sModuleInfo,"Test step - " +step_name +" not updated",1)
+                        PassMessasge(sModuleInfo,"Test step - " +step_name +" not updated",1)
                     query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
                         step_feature + "'"
                     feature_count = DB.GetData(conn, query)
