@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import imp
+"""import imp
 
 from django.core.management import execute_manager
 
@@ -16,3 +16,14 @@ except ImportError:
 
 if __name__ == "__main__":
     execute_manager(settings)
+"""
+
+import os
+import sys
+
+if __name__ == "__main__":
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "WebServer.settings")
+
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(sys.argv)

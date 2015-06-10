@@ -189,7 +189,7 @@ def GetProjectNameForTopBar(request):
                 'teams': all_teams
             })"""
             result = simplejson.dumps(temp_dict)
-            return HttpResponse(result, mimetype='application/json')
+            return HttpResponse(result, content_type='application/json')
 
 """ Main Pages functions """
 # @login_required(login_url='/Home/Login/')
@@ -284,7 +284,7 @@ def get_all_machine(request):
                 'count': len(count_list)
             }
             result = simplejson.dumps(Dict)
-            return HttpResponse(result, mimetype='appliaction/json')
+            return HttpResponse(result, content_type='appliaction/json')
 
 
 def edit_machine(request, machine_id):
@@ -328,7 +328,7 @@ def getLabelinfo(request):
                     }
             conn.close()
     result = simplejson.dumps(Dict)
-    return HttpResponse(result, mimetype='appliaction/json')
+    return HttpResponse(result, content_type='appliaction/json')
 
 
 def make_array(get_list):
@@ -505,7 +505,7 @@ def GetPageCount(request):
             if((totalEntry[0] % step) > 0):
                 totalPage += 1
     result = simplejson.dumps(totalPage)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def ResultPage(request, Page_No):
@@ -552,7 +552,7 @@ def Result_Table(request):
         run_type = request.GET.get(u'run_type', '')
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Search2(request, Run_Id):
@@ -785,7 +785,7 @@ def Steps_List(request):
     results = {'Heading':Heading,'TableData':p_steps_list, 'Count': len(total_data)}
     json = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 def sort_key(each):
     return each[10]
 def get_test_case_count(step_name,project_id,team_id):
@@ -829,7 +829,7 @@ def EditBug(request, bug_id):
 """def ViewBug(bug_id):
     def returnResult(string):
         json = simplejson.dumps(string)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 
     try:
         bug_id=bug_id.GET.get('bug_id')
@@ -850,7 +850,7 @@ def EditBug(request, bug_id):
             results = {'bug_details':bug_details}
 
             json = simplejson.dumps(results)
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
         else:
             err_msg = "Bug is not found:%s" % (bug_id)
@@ -928,7 +928,7 @@ def MKS_Report_Table(request):
     results = {'Headings': Headings, 'Result': Results, 'TotalTime': TotalTime}
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Data in List as user Type on Run Test Page====
@@ -1023,7 +1023,7 @@ def AutoCompleteTestCasesSearch(request):
         #   results.append(("*Dev","Status"))
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ===============Returns Available Test Case in other page without the platform =========================#
@@ -1089,7 +1089,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):
                 results.append(result_dict)
             has_next_page = data['has_next']
             json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
 
 
@@ -1153,7 +1153,7 @@ def AutoCompleteTestCasesSearchTestSet(request):
             results = DB.GetData(Conn,query,False)
             Conn.close()
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 
@@ -1191,7 +1191,7 @@ def AutoCompleteUsersSearch(request):
             has_next_page = data['has_next']
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 # ==================Returns Abailable Emails in List as user Type on Selec
 def AutoCompleteEmailSearch(request):
 
@@ -1218,7 +1218,7 @@ def AutoCompleteEmailSearch(request):
             has_next_page = data['has_next']
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
         
 def AutoCompleteMilestoneSearch(request):
     # if request.is_ajax():
@@ -1244,7 +1244,7 @@ def AutoCompleteMilestoneSearch(request):
             has_next_page = data['has_next']
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
 
 def AutoCompleteObjectiveSearch(request):
@@ -1276,7 +1276,7 @@ def AutoCompleteObjectiveSearch(request):
     json = simplejson.dumps({'items': results, 'more': has_next_page})
     
     #json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 
@@ -1290,7 +1290,7 @@ def AutoCompleteTag(request):
             tag_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(tag_list)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def AutoCompleteLabel(request):
@@ -1304,7 +1304,7 @@ def AutoCompleteLabel(request):
             label_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(label_list)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def AutoCompleteTask(request):
@@ -1320,7 +1320,7 @@ def AutoCompleteTask(request):
             task_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(task_list)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def AutoCompleteRequirements(request):
@@ -1336,7 +1336,7 @@ def AutoCompleteRequirements(request):
             req_list = DB.GetData(Conn, query, False)
             Conn.close()
     json = simplejson.dumps(req_list)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def AutoCompleteTesterSearch(request):
@@ -1369,7 +1369,7 @@ def AutoCompleteTesterSearch(request):
             has_next_page = data['has_next']
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
 
 def AutoCompleteTagSearch(request):
@@ -1396,7 +1396,7 @@ def AutoCompleteTagSearch(request):
         # results = list(set(results + mastertags))
     Conn.close()
     json = simplejson.dumps(mastertags)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def AutoCompleteTestStepSearch(request):
@@ -1422,7 +1422,7 @@ def AutoCompleteTestStepSearch(request):
 
     json = simplejson.dumps(results["rows"])
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Test Cases When User Send Query List From Run
@@ -1585,7 +1585,7 @@ def Table_Data_TestCases(request):
         'TimeEstimated': formatTime}
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Test Results When User Launch Test Result Page
@@ -1689,7 +1689,7 @@ def Table_Data_TestResult(request):
     results = {'Heading': Col, 'TableData': Results}
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Table_Data_DailyBuild(request):
@@ -1766,7 +1766,7 @@ def Table_Data_DailyBuild(request):
                }
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Test Steps When User Click on Test Case on Tes
@@ -1799,7 +1799,7 @@ def TestCase_TestSteps(request):
 
                }
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Test Steps When User Click on Test Case on Tes
@@ -1833,7 +1833,7 @@ def TestCase_TestSteps_SearchPage(request):
                 result.append(Result_type[0])
     results = {'Result': result}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def GetRunIDStatus(RunId):
@@ -2107,7 +2107,7 @@ def TestCase_Detail_Table(request):
         'TestCase_Detail_Col': TestCase_Detail_Col,
     }
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Test Step Details Table When User Click on Tes
@@ -2244,8 +2244,8 @@ def TestStep_Detail_Table(request):
 
     JS = simplejson.dumps(results)
 # return HttpResponse(json.dumps(results, encoding='utf-8',
-# ensure_ascii=False), mimetype='application/json')
-    return HttpResponse(JS, mimetype='application/json')
+# ensure_ascii=False), content_type='application/json')
+    return HttpResponse(JS, content_type='application/json')
 
 
 # ==================Returns Test Cases When User Click on Fail Step On Tes
@@ -2290,7 +2290,7 @@ def FailStep_TestCases(request):
         'FailStep_TC_Col': FailStep_TC_Col
     }
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Message if Depandency is missing when User Cli
@@ -2405,7 +2405,7 @@ def Verify_Query(request):
 #     results = {'Response':Response, 'Result': Result}
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Available user list When there is no error in
@@ -2462,7 +2462,7 @@ def Table_Data_UserList(request):
                 # Heading.reverse()
     results = {'Heading': Heading, 'TableData': Machine_List}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns True/Error Message  When User Click on Run but
@@ -2708,7 +2708,7 @@ def Run_Test(request):
                     if isinstance(count,list) and count[0]==0:
                         results={'result':False}
                         json = simplejson.dumps(results)
-                        return HttpResponse(json, mimetype='application/json')
+                        return HttpResponse(json, content_type='application/json')
                     
                 TestIDList = []
                 for eachitem in QueryText:
@@ -2943,7 +2943,7 @@ def Run_Test(request):
 
                 results = {'Result': result, 'runid': runid}
             json = simplejson.dumps(results)
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
     except Exception as e:
         PassMessasge(sModuleInfo, e, error_tag)
@@ -3490,7 +3490,7 @@ def ReRun_Fail_TestCases(request):
     results = {'Response': Response, 'RunID': NewRunID}
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def createTablefromString(request):
@@ -3507,7 +3507,7 @@ def createTablefromString(request):
     results = {'Heading': numCol, 'TableData': RunId}
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def PerformanceResult_01(request):
@@ -3577,7 +3577,7 @@ def PerformanceResult_01(request):
                 'MemoryTable': MemoryTable}
 
             json = simplejson.dumps(results)
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
 
 def getDatafromList(resp):
@@ -3594,8 +3594,8 @@ def getDatafromList(resp):
 
     JS = simplejson.dumps(results)
 # return HttpResponse(json.dumps(results, encoding='utf-8',
-# ensure_ascii=False), mimetype='application/json')
-    return HttpResponse(JS, mimetype='application/json')
+# ensure_ascii=False), content_type='application/json')
+    return HttpResponse(JS, content_type='application/json')
 #    mData = []
 #    for eachField in resp:
 #        col1 = eachField[0]
@@ -4044,7 +4044,7 @@ def PerformanceResult(request):
             'Categories': Categories}
 
         json = simplejson.dumps(results)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 
 
 def Performance_ClickedBundle_Details(request, type):
@@ -4113,7 +4113,7 @@ def Performance_ClickedBundle_Details(request, type):
         'Heading': Col}
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestCaseSearch(request):
@@ -4153,7 +4153,7 @@ def TestCaseSearch(request):
 
     json = simplejson.dumps({'items': results, 'more': has_next_page})
 #     print "JSON:", json
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestStepSearch(request):
@@ -4192,7 +4192,7 @@ def TestStepSearch(request):
     json = simplejson.dumps({'items': results, 'more': has_next_page})
     
     #json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 
@@ -4218,7 +4218,7 @@ def SearchTestCase(request):
 
     json = simplejson.dumps(results)
 #     print "JSON:", json
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Selected_TestCaseID_Analaysis(request):
@@ -4243,7 +4243,7 @@ def Selected_TestCaseID_Analaysis(request):
         'Heading': Col,
         'TestCase_Analysis_Result': TestCase_Analysis_Result}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Selected_TestCaseID_History(request):
@@ -4260,7 +4260,7 @@ def Selected_TestCaseID_History(request):
         'Heading': Col,
         'TestCase_Analysis_Result': TestCase_Analysis_Result}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def ExecutionReport(request):
@@ -4323,7 +4323,7 @@ def Execution_Report_Table(request):
     results = {'Headings': Headings, 'Result': BundleResultTable}
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestCase_ParseData(
@@ -4499,7 +4499,7 @@ def Create_Submit_New_TestCase(request):
 
     def returnResult(string):
         json = simplejson.dumps(string)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 
     try:
         sModuleInfo = inspect.stack()[0][
@@ -4764,7 +4764,7 @@ def Create_Submit_New_TestCase(request):
 def ViewTestCase(TC_Id):
     def returnResult(string):
         json = simplejson.dumps(string)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 
     try:
         TC_Id = TC_Id.GET.get('TC_Id')
@@ -5037,7 +5037,7 @@ def ViewTestCase(TC_Id):
             }
 
             json = simplejson.dumps(results)
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
         else:
             err_msg = "TEST CASE id is not found:%s" % (TC_Id)
@@ -5054,7 +5054,7 @@ def ViewTestCase(TC_Id):
 def EditTestCase(request):
     def returnResult(string):
         json = simplejson.dumps(string)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 
     try:
         sModuleInfo = inspect.stack()[0][
@@ -5294,7 +5294,7 @@ def Get_Sections(request):
 
     results.insert(0, (str(levelnumber),))
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Abailable User Name in List as user Type on Ru
@@ -5321,7 +5321,7 @@ def Get_SubSections(request):
 
     results.insert(0, (str(levelnumber),))
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Abailable User Name in List as user Type on Ru
@@ -5352,7 +5352,7 @@ def Get_Features(request):
 
     results.insert(0, (str(levelnumber),))
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 # ==================Returns Abailable User Name in List as user Type on Ru
@@ -5379,7 +5379,7 @@ def Get_SubFeatures(request):
 
     results.insert(0, (str(levelnumber),))
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Browsers(request):
@@ -5396,7 +5396,7 @@ def Get_Browsers(request):
             results = DB.GetData(Conn, query, False)
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Go_TestCaseID(request):
@@ -5424,7 +5424,7 @@ def Go_TestCaseID(request):
         results.append(cases[indx + 1])
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Go_TestCaseStatus(request):
@@ -5450,7 +5450,7 @@ def Go_TestCaseStatus(request):
     results.append(total)
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Auto_Step_Create(request):
@@ -5504,7 +5504,7 @@ def Auto_Step_Create(request):
             stepfeature=fid)
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Users(request):
@@ -5558,7 +5558,7 @@ def Get_Users(request):
     # get the default_team and project id
 
     json = simplejson.dumps(Dict)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_RunTypes(request):
@@ -5574,7 +5574,7 @@ def Get_RunTypes(request):
                 False)
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Testers(request):
@@ -5590,7 +5590,7 @@ def Get_Testers(request):
                 False)
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Status(request):
@@ -5606,7 +5606,7 @@ def Get_Status(request):
                 False)
 
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Versions(request):
@@ -5651,7 +5651,7 @@ def Get_Versions(request):
             results.append(Nil)
 
     json = simplejson.dumps(tuple(results))
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def BundleReport_Table(request):
@@ -5827,7 +5827,7 @@ def BundleReport_Table(request):
         'Env': env_details,
         'ReportTable': ReportTable}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def New_Execution_Report(request):
@@ -6296,7 +6296,7 @@ def New_Execution_Report(request):
         'Cases': cases_list,
         'Short': Short}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def BundleReport_Table_Latest(request):
@@ -6600,7 +6600,7 @@ def BundleReport_Table_Latest(request):
         'Env': env_details,
         'ReportTable': ReportTable}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 """def Single_Env(request):
     Conn = GetConnection()
@@ -6625,7 +6625,7 @@ def BundleReport_Table_Latest(request):
     Heading = ['Section','Passed','Failed','Blocked','Not run','Defected','Total']
     results = {'Heading':Heading}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')"""
+    return HttpResponse(json, content_type='application/json')"""
 
 
 # ==================Returns Report data for a specific product version (eg
@@ -6826,7 +6826,7 @@ def Bundle_Report(request):
         'ReportTable': ReportTable,
         'DefectTable': DefectTable}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def BundleReport(request):
@@ -6868,7 +6868,7 @@ def Process_Git(request):
         elif command == 'Log':
             message = GitApi.git_log(-4)
     json = simplejson.dumps(message)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def DeleteExistingTestCase(TC_Ids):
@@ -6912,7 +6912,7 @@ def TestSet_Auto(request):
         # if len(results) > 0:
         #   results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestFeatureDriver_Auto(request):  # minar09
@@ -6932,7 +6932,7 @@ def TestFeatureDriver_Auto(request):  # minar09
         # if len(results)>0:
         # results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestTag_Auto(request):
@@ -6948,7 +6948,7 @@ def TestTag_Auto(request):
         if len(results) > 0:
             results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestCase_Auto(request):
@@ -6964,7 +6964,7 @@ def TestCase_Auto(request):
         if len(results) > 0:
             results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 """def TestSet(request, message=""):
     return render_to_response('TestSet_Tag.html', {'error_message':message}, context_instance=RequestContext(request))
@@ -7212,7 +7212,7 @@ def TestStep_Delete(request):
                 "test_steps_list",
                 stepname=value)
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestFeature_Auto(request):
@@ -7229,7 +7229,7 @@ def TestFeature_Auto(request):
         # if len(results)>0:
         # results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Feature(request):
@@ -7245,7 +7245,7 @@ def Get_Feature(request):
         # if len(results)>0:
             # results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def ResultFilter(request):
@@ -7260,7 +7260,7 @@ def ResultFilter(request):
         # if len(results)>0:
         # results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestDriver_Auto(request):
@@ -7277,7 +7277,7 @@ def TestDriver_Auto(request):
         # if len(results)>0:
         # results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Driver(request):
@@ -7295,7 +7295,7 @@ def Get_Driver(request):
         # if len(results)>0:
             # results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestStep_Auto(request):
@@ -7313,7 +7313,7 @@ def TestStep_Auto(request):
         # if len(results)>0:
         #  results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 """def Milestone_Auto(request):
     Conn = GetConnection()
@@ -7324,7 +7324,7 @@ def TestStep_Auto(request):
         # if len(results)>0:
         #  results.append("*Dev")
     json=simplejson.dumps(results)
-    return HttpResponse(json,mimetype='application/json')
+    return HttpResponse(json,content_type='application/json')
 
 def Milestone_Process(request):
 
@@ -7359,7 +7359,7 @@ def Milestone_Process(request):
         message="Input Fields are empty"
 
     result=simplejson.dumps(message)
-    return HttpResponse(result,mimetype='application/json')
+    return HttpResponse(result,content_type='application/json')
 """
 
 
@@ -7404,7 +7404,7 @@ def TestCase_Results(request):
             results = {'Heading': [], 'TableData': [],'Count':0}
 
         json = simplejson.dumps(results)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 
 def TestSteps_Results(request):
     conn = GetConnection()
@@ -7421,7 +7421,7 @@ def TestSteps_Results(request):
     results = {'Heading': Heading, 'TableData': TableData}
     # results={'TableData':TableData}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Check_TestCase(test_case):
@@ -7461,7 +7461,7 @@ def Populate_info_div(request):
     if temp is not None:
         results.append(temp[0][0])"""
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 def get_feature_path(request):
     conn = GetConnection()
@@ -7474,7 +7474,7 @@ def get_feature_path(request):
     if temp is not None:
         results.append(temp[0][0])"""
     json = simplejson.dumps(results[0][0])
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestStepDelete(request):
@@ -8069,7 +8069,7 @@ def CreateEditStep(request):
                  
                 conn.close()
                 json = simplejson.dumps(step_name)
-                return HttpResponse(json, mimetype='application/json')
+                return HttpResponse(json, content_type='application/json')
             
             except Exception as e:
                 print "Exception:", e
@@ -8349,7 +8349,7 @@ def FeatureDriverOperation(request):  # minar09
                'error_message': error_message
                }
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def FeatureDriver_Delete(request):  # minar09
@@ -8372,7 +8372,7 @@ def FeatureDriver_Delete(request):  # minar09
                 type=data_type,
                 value=input1)
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def FeatureDriverDelete(request):  # minar09
@@ -8872,7 +8872,7 @@ def TestTypeStatus_Report(request):  # minar09
         'Summary': tuple(temp)}
     # results = {'Heading':Heading, 'TableData':RefinedData}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def count_Sum(caseCount):
@@ -9403,7 +9403,7 @@ def New_TestTypeStatus_Report(request):  # minar09
         'Summary': tuple(temp)}
     # results = {'Heading':Heading, 'TableData':RefinedData}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 
@@ -9439,7 +9439,7 @@ def TestStepAutoComplete(request):
     if len(results) > 0:
         results.append("*Dev")
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TestStep_TestCases(request):
@@ -9469,7 +9469,7 @@ def TestStep_TestCases(request):
         Heading = ['TestCase_ID', 'TestCase_Name', 'TestCase_Type']
         results = {'Heading': Heading, 'TableData': RefinedData}
         json = simplejson.dumps(results)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 
 
 def TestStepWithTypeInTable(request):
@@ -9495,7 +9495,7 @@ def TestStepWithTypeInTable(request):
     column = ['Step Name', 'Step Type']
     results = {'Result': result, 'column': column}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def ViewRunIDTestCases(request, Run_Id, TC_Id):
@@ -9698,7 +9698,7 @@ def Update_RelatedItems(request):
         message = "Related Items are updated."
 
     results = simplejson.dumps(message)
-    return HttpResponse(results, mimetype='application/json')
+    return HttpResponse(results, content_type='application/json')
 
 
 def DataFetchForTestCases(request):
@@ -9820,7 +9820,7 @@ def DataFetchForTestCases(request):
         'attachment':attachement_list
     }
     results = simplejson.dumps(message)
-    return HttpResponse(results, mimetype='application/json')
+    return HttpResponse(results, content_type='application/json')
 
 
 def TestDataFetch(request):
@@ -9892,7 +9892,7 @@ def TestDataFetch(request):
             Step_Data = ProcessRunIDData(Step_Data)
             print Step_Data
     results = simplejson.dumps(Step_Data)
-    return HttpResponse(results, mimetype='application/json')
+    return HttpResponse(results, content_type='application/json')
 
 
 def ProcessRunIDData(Step_Data):
@@ -10023,7 +10023,7 @@ def LogFetch(request):
         'step': step_name
     }
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def RunIDStatus(request):
@@ -10055,7 +10055,7 @@ def RunIDStatus(request):
         'message': temp
     }
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def Make_List(
@@ -10326,7 +10326,7 @@ def Send_Report(request):
                 results = ['NOK']
             
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
     ##########################################################################
 
 
@@ -10516,7 +10516,7 @@ def UpdateData(request):
                 start_time,
                 end_time)
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def GetOS(request):
@@ -10552,7 +10552,7 @@ def GetOS(request):
                 'dependency_list': final_list
             }
             results = simplejson.dumps(results)
-            return HttpResponse(results, mimetype='application/json')
+            return HttpResponse(results, content_type='application/json')
 
 
 def Auto_MachineName(request):
@@ -10567,7 +10567,7 @@ def Auto_MachineName(request):
             machine_list = DB.GetData(Conn, query, False)
             Conn.close()
     result = simplejson.dumps(machine_list)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def CheckMachine(request):
@@ -10581,7 +10581,7 @@ def CheckMachine(request):
             Conn.close()
             print machine_info
     result = simplejson.dumps(machine_info)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def AddManualTestMachine(request):
@@ -10808,7 +10808,7 @@ def AddManualTestMachine(request):
             'log_message': log_message
         }
         result = simplejson.dumps(result)
-        return HttpResponse(result, mimetype='application/json')
+        return HttpResponse(result, content_type='application/json')
     except Exception as e:
         PassMessasge(sModuleInfo, e, error_tag)
 
@@ -10842,7 +10842,7 @@ def chartDraw(request):
             skipped = DB.GetData(Conn, skipped_query)
             list.append(skipped[0])
     result = simplejson.dumps(list)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def ReRun(request):
@@ -10884,7 +10884,7 @@ def ReRun(request):
         Column = ['Test Case ID', 'Test Case Name', 'Type', 'Status']
     result = {'col': Column, 'list': test_case_list}
     result = simplejson.dumps(result)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def LoginPage(request):
@@ -10915,7 +10915,7 @@ def User_Login(request):
         message = "User Not Found"
 
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def getProductSection(request):
@@ -10959,7 +10959,7 @@ def getProductSection(request):
                 query = "select distinct subpath(section_path,0,1) from product_sections"
                 section_path = DB.GetData(Conn, query)
     result = simplejson.dumps(section_path)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def getProductFeature(request):
@@ -11003,7 +11003,7 @@ def getProductFeature(request):
                 query = "select distinct subpath(feature_path,0,1) from product_features"
                 feature_path = DB.GetData(Conn, query)
     result = simplejson.dumps(feature_path)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 ##########MileStone Code####################
@@ -11016,7 +11016,7 @@ def AutoMileStone(request):
             query = "select name,status,description,cast(starting_date as text),cast(finishing_date as text),created_by,cast(created_date as text),modified_by,cast(modified_date as text) from milestone_info where name ilike'%%%s%%'" % milestone
             milestone_list = DB.GetData(Conn, query, False)
     result = simplejson.dumps(milestone_list)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def Get_MileStones(request):
@@ -11037,7 +11037,7 @@ def Get_MileStones(request):
         'Status']
     results = {'Heading': Heading, 'TableData': milestone_list}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_MileStone_Names(request):
@@ -11050,7 +11050,7 @@ def Get_MileStone_Names(request):
             query = "select mi.name from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.project_id='"+project+"' and tws.team_id="+team+" and tws.type='Milestone'"
             results = DB.GetData(Conn, query, False)
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def get_run_objectives(request):
@@ -11063,7 +11063,7 @@ def get_run_objectives(request):
             query = "select distinct test_objective from test_run_env tre, machine_project_map mpm where tre.id = mpm.machine_serial and mpm.project_id='"+project+"' and mpm.team_id="+team+" order by tre.test_objective"
             results = DB.GetData(Conn, query, False)
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Feature_Path(request):
@@ -11078,7 +11078,7 @@ def Get_Feature_Path(request):
 
     data = {'Path': results[0][0]}
     json = simplejson.dumps(data)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Check_Feature_Path(request):
@@ -11092,7 +11092,7 @@ def Check_Feature_Path(request):
             results = DB.GetData(Conn, query, False)
 
     json = simplejson.dumps(results[0])
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_MileStone_ID(request):
@@ -11104,7 +11104,7 @@ def Get_MileStone_ID(request):
                 milestone + "'"
             milestone_info = DB.GetData(Conn, query)
     json = simplejson.dumps(milestone_info)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Related_Url(request):
@@ -11115,7 +11115,7 @@ def Get_Related_Url(request):
             query = "select hyperlink from related_items where project_id='"+project+"'"
             related_items = DB.GetData(Conn, query)
     json = simplejson.dumps(related_items)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_MileStone_By_ID(request):
@@ -11127,7 +11127,7 @@ def Get_MileStone_By_ID(request):
                 id + "'"
             milestone_info = DB.GetData(Conn, query, False)
     json = simplejson.dumps(milestone_info)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Milestone_Requirements(request):
@@ -11142,7 +11142,7 @@ def Milestone_Requirements(request):
     Heading = ['Requirement ID', 'Requirement Name', 'Status']
     results = {'Heading': Heading, 'TableData': requirements_list}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Milestone_Tasks(request):
@@ -11157,7 +11157,7 @@ def Milestone_Tasks(request):
     Heading = ['Task ID', 'Task title', 'Status']
     results = {'Heading': Heading, 'TableData': tasks_list}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Milestone_Bugs(request):
@@ -11172,7 +11172,7 @@ def Milestone_Bugs(request):
     Heading = ['Bug ID', 'Bug title', 'Status']
     results = {'Heading': Heading, 'TableData': bugs_list}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Milestone_Report(request):
@@ -11227,7 +11227,7 @@ def Milestone_Report(request):
         'In-progress': inprogress_list,
         'progress': temp}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Milestone_Testings(request):
@@ -11247,7 +11247,7 @@ def Milestone_Testings(request):
         'Status']
     results = {'Heading': Heading, 'TableData': testings_list}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Milestone_Teams(request):
@@ -11260,7 +11260,7 @@ def Milestone_Teams(request):
                 milestone + "%'"
             teams_list = DB.GetData(Conn, query, False)
     json = simplejson.dumps(teams_list)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_AssignedTests(request):
@@ -11279,7 +11279,7 @@ def Get_AssignedTests(request):
     Heading = ['Run ID', 'Description', 'Tester', 'Status']
     results = {'Heading': Heading, 'TableData': TableData}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Get_Requirements(request):
@@ -11302,7 +11302,7 @@ def Get_Requirements(request):
         'Team ID']
     results = {'Heading': Heading, 'TableData': TableData}
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def MileStoneOperation(request):
@@ -11468,7 +11468,7 @@ def MileStoneOperation(request):
                'error_message': error_message
                }
     result = simplejson.dumps(results)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 # ==================Returns Test Cases When User Send Query List From Run
@@ -11665,7 +11665,7 @@ def TableDataTestCasesOtherPages(request):
                 if total_time == "true":
                     results.update({'time': ""})
             json = simplejson.dumps(results)
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 def get_test_case_type(test_case):
     query="select test_case_type from test_cases where tc_id='%s'"%test_case
     Conn = GetConnection()
@@ -11731,7 +11731,7 @@ def ReorderSet(request):
                 Conn.close()
             message=True
             result=simplejson.dumps(message)
-            return HttpResponse(result,mimetype='application/json')    
+            return HttpResponse(result,content_type='application/json')    
 
 def ViewAndOrganizeTestCases(request):
     Conn = GetConnection()
@@ -11891,7 +11891,7 @@ def ViewAndOrganizeTestCases(request):
                 if total_time == "true":
                     results.update({'time': ""})
             json = simplejson.dumps(results)
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
         
 
@@ -11925,7 +11925,7 @@ def GetStepNameType(request):
 
     Dict = {'test_steps': test_steps_list}
     result = simplejson.dumps(Dict)
-    return HttpResponse(result, mimetype='appliction/json')
+    return HttpResponse(result, content_type='appliction/json')
 
 
 def Result(request):
@@ -12040,7 +12040,7 @@ def GetResultAuto(request):
                     if each not in final:
                         final.append(each)
             result = simplejson.dumps(final)
-            return HttpResponse(result, mimetype='application/json')
+            return HttpResponse(result, content_type='application/json')
     except Exception as e:
         print e
 
@@ -12096,7 +12096,7 @@ def GetFilteredDataResult(request):
                 team_id,
                 capacity)
     result = simplejson.dumps(final)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def NewResultFetch(
@@ -12205,7 +12205,7 @@ def RunID_New(request):
                 'runCol': Col,
                 'total': runData['count']}
     result = simplejson.dumps(runDetail)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def FormCondition(userText):
@@ -12369,7 +12369,7 @@ def manage_test_cases(request):
                 except:
                     return HttpResponse("NULL")
 
-            return HttpResponse(result, mimetype="application/json")
+            return HttpResponse(result, content_type="application/json")
 
         else:
             return render(request, 'ManageTestCases.html', {})
@@ -12416,9 +12416,9 @@ def manage_tc_data(request):
                 result = json.dumps(test_case_ids)
 #                 print result
                 Conn.close()
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
-                return HttpResponse('', mimetype='application/json')
+                return HttpResponse('', content_type='application/json')
 
 
 def FilterDataForRunID(request):
@@ -12460,7 +12460,7 @@ def FilterDataForRunID(request):
             has_next_page = data['has_next']
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
 def create_section(request):
     if request.method == 'GET' and request.is_ajax():
@@ -12637,7 +12637,7 @@ def DeleteTestCase(request):
             test_case_list = test_case_list.split("|")
             modified_test_case_list = WebServer.TestCaseCreateEdit.Delete_Test_Case(test_case_list)
     result = simplejson.dumps(modified_test_case_list)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def contact_page(request):
@@ -12680,7 +12680,7 @@ def GetSetTag(request):
                 # if len(temp)!=0:
                 final.append((each, temp))
     result = simplejson.dumps(final)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def SetTagEdit(request, type, name):
@@ -12723,7 +12723,7 @@ def createNewSetTag(request):
                 message = "Failed to create.Test %s with name '%s' exists already." % (
                     type_tag.strip(), name.strip())
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def DeleteSetTag(request):
@@ -12761,7 +12761,7 @@ def DeleteSetTag(request):
                 message = "Failed.No Test %s with name %s is found in DataBase" % (
                     type_tag.strip(), name.strip())
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def AddTestCasesSetTag(request):
@@ -12827,7 +12827,7 @@ def AddTestCasesSetTag(request):
                     type_tag.strip(), name.strip())
 
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def DeleteTestCasesSetTag(request):
@@ -12893,7 +12893,7 @@ def DeleteTestCasesSetTag(request):
                     type_tag.strip(), name.strip())
 
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def UpdateSetTag(request):
@@ -12952,7 +12952,7 @@ def UpdateSetTag(request):
                 message = "Failed.No Test %s with name %s exists." % (
                     type_tag.strip(), old_name.strip())
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def select2(request):
@@ -13173,7 +13173,7 @@ def Selected_TaskID_Analaysis(request):
         'reqs': reqs}
     json = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Selected_Requirement_Analaysis(request):
@@ -13225,7 +13225,7 @@ def Selected_Requirement_Analaysis(request):
         'cases': cases}
     json = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def FetchProject(request):
@@ -13241,7 +13241,7 @@ def FetchProject(request):
             Conn.close()
     result = {'project': project, 'team': team, 'manager': manager}
     result = simplejson.dumps(result)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def ManageBug(request):
@@ -13298,7 +13298,7 @@ def Bugs_List(request):
     results = {'Heading': Heading, 'bugs': bugs, 'labels': labels}
     json = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Tasks_List(request):
@@ -13345,7 +13345,7 @@ def Tasks_List(request):
     results = {'Heading': Heading, 'tasks': tasks_list}
     json = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Reqs_List(request):
@@ -13390,7 +13390,7 @@ def Reqs_List(request):
     results = {'Heading': Heading, 'reqs': reqs_list}
     json = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def CreateBug(request):
@@ -13439,7 +13439,7 @@ def BugSearch(request):
     results = list(set(results))
     json = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def Selected_BugID_Analaysis(request):
@@ -13475,7 +13475,7 @@ def Selected_BugID_Analaysis(request):
         'Feature': feature[0][0]}
     json = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def LogNewBug(request):
@@ -13534,7 +13534,7 @@ def LogNewBug(request):
                 if result:
                     bug_id = result
                 json = simplejson.dumps(bug_id)
-                return HttpResponse(json, mimetype='application/json')
+                return HttpResponse(json, content_type='application/json')
             except Exception as e:
                 print "Exception:", e
 
@@ -13597,7 +13597,7 @@ def ModifyBug(request):
                 if result:
                     bugid = result
                 result = simplejson.dumps(bugid)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             except Exception as e:
                 print "Exception:", e
 
@@ -13707,7 +13707,7 @@ def BugOperation(request):
                }
     result = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def ManageLabel(request):
@@ -13767,7 +13767,7 @@ def CreateLabel(request):
                 final = 'meh'
     result = simplejson.dumps(final)
     Conn.close()
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def EditLabel(request):
@@ -13808,7 +13808,7 @@ def EditLabel(request):
                 final = 'meh'
     result = simplejson.dumps(final)
     Conn.close()
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def Get_Labels(request):
@@ -13820,7 +13820,7 @@ def Get_Labels(request):
             labels = DB.GetData(Conn, query, False)
     result = simplejson.dumps(labels)
     Conn.close()
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def ManageRequirement(request):
@@ -13878,7 +13878,7 @@ def GetAllTeam(request):
                 'project_name':project_name[0]
             }
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 
 def GetTesterManager(request):
     if request.is_ajax():
@@ -13909,7 +13909,7 @@ def GetTesterManager(request):
             has_next_page = data['has_next']
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
 
 def Create_Team(request):
@@ -13952,7 +13952,7 @@ def Create_Team(request):
                     message = "Failed.Team name insert Failure"
     result = simplejson.dumps(message)
     Conn.close()
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 def GetTeamInfo(request):
     if request.is_ajax():
@@ -13984,7 +13984,7 @@ def GetTeamInfo(request):
     }
     result = simplejson.dumps(result_data)
     Conn.close()
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def GetTestStepsAndTestCasesOnDriverValue(request):
@@ -14046,7 +14046,7 @@ def GetTestStepsAndTestCasesOnDriverValue(request):
             print results
     json = simplejson.dumps(results)
     Conn.close()
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def TeamData(request, project_id,team_name):
@@ -14109,7 +14109,7 @@ def Add_Members(request):
                         message = "Successfully Updated."
     result = simplejson.dumps(message)
     Conn.close()
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def Delete_Members(request):
@@ -14143,7 +14143,7 @@ def Delete_Members(request):
                         message = "Successfully Updated."
     result = simplejson.dumps(message)
     Conn.close()
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def Delete_Team(request):
@@ -14169,7 +14169,7 @@ def Delete_Team(request):
                 else:
                     message = "Failed."
     result = simplejson.dumps(message)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def UpdateTeamName(request):
@@ -14219,7 +14219,7 @@ def UpdateTeamName(request):
                 message=False
     Dict={'message':message,'log_message':log_message}
     result = simplejson.dumps(Dict)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def SearchEditDev(request):
@@ -14303,7 +14303,7 @@ def Create_New_Project(request):
                 'project_id': project_id.strip()
             }
         result = simplejson.dumps(result_dict)
-        return HttpResponse(result, mimetype='application/json')
+        return HttpResponse(result, content_type='application/json')
     except Exception as e:
         print "Exception:", e
 
@@ -14512,7 +14512,7 @@ def Edit_Project(request):
                 else:
                     message=False
                 result=simplejson.dumps(message)
-                return HttpResponse(result,mimetype='application/json')
+                return HttpResponse(result,content_type='application/json')
 def GetProjectTeamInfo(team_number):
     try:
         fullTeamDetail = []
@@ -14621,7 +14621,7 @@ def Small_Project_Detail(request):
                     'due_message': due_message,
                 })
         result = simplejson.dumps(Dict)
-        return HttpResponse(result, mimetype='application/json')
+        return HttpResponse(result, content_type='application/json')
     except Exception as e:
         print "Exception:", e
 
@@ -14644,7 +14644,7 @@ def Get_Projects(request):
                         member_project.append((each[0],each[1]))
                 memeber_project=list(set(member_project))
                 result=simplejson.dumps(memeber_project)
-                return HttpResponse(result,mimetype='application/json')
+                return HttpResponse(result,content_type='application/json')
             except Exception as e:
                 print "Exception:", e
 def FileUpload(request, project_id):
@@ -14872,7 +14872,7 @@ def AddTeamtoProject(request):
                             Conn = GetConnection()
         message = "Success"
         result = simplejson.dumps(message)
-        return HttpResponse(result, mimetype='application/json')
+        return HttpResponse(result, content_type='application/json')
         # return
         # HttpResponseRedirect(reverse('project_detail',kwargs={'project_id':project_id}))
     except Exception as e:
@@ -15164,7 +15164,7 @@ def getRequirements(request, project_id):
                         result = json.dumps(result)
                 except:
                     return HttpResponse("NULL")
-            return HttpResponse(result, mimetype='application/json')
+            return HttpResponse(result, content_type='application/json')
         else:
             return render(request, 'ManageRequirement.html', {})
 
@@ -15209,7 +15209,7 @@ def CreateRequirement(request):
                 if result:
                     requirement_id = result
     result = simplejson.dumps(requirement_id)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 # getting required requirement and team info on the project_id change
 
 
@@ -15252,7 +15252,7 @@ def SubmitEditRequirement(request):
             if result:
                 requirement_id = result
     result = simplejson.dumps(requirement_id)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def SubmitChildRequirement(request):
@@ -15293,7 +15293,7 @@ def SubmitChildRequirement(request):
             if result:
                 requirement_id = result
     result = simplejson.dumps(requirement_id)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def GetTeamInfoToCreateRequirement(request):
@@ -15305,7 +15305,7 @@ def GetTeamInfoToCreateRequirement(request):
             team_list = DB.GetData(Conn, team_query, False)
             Dict = {'teams': team_list}
     result = simplejson.dumps(Dict)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 # function to get the small detail of the requirements
@@ -15361,7 +15361,7 @@ def SmallViewRequirements(request):
                 'parent_id': parent_requirement
             }
     result = simplejson.dumps(Dict)
-    return HttpResponse(result, mimetype='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def PostRequirementComment(request, project_id, requirement_id):
@@ -15658,7 +15658,7 @@ def Get_RequirementSections(request):
 
     results.insert(0, (str(levelnumber),))
     json = simplejson.dumps(results)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 
 def convert_date_from_string(given_date):
@@ -15711,7 +15711,7 @@ def SubmitNewTask(request):
                 test_cases,
                 requirements)
     results = simplejson.dumps(result)
-    return HttpResponse(results, mimetype='application/json')
+    return HttpResponse(results, content_type='application/json')
 
 
 def SubmitEditedTask(request):
@@ -15758,7 +15758,7 @@ def SubmitEditedTask(request):
                 test_cases,
                 requirements)
     results = simplejson.dumps(result)
-    return HttpResponse(results, mimetype='application/json')
+    return HttpResponse(results, content_type='application/json')
 
 
 def SubmitChildTask(request):
@@ -15803,7 +15803,7 @@ def SubmitChildTask(request):
                 test_cases,
                 requirements)
     results = simplejson.dumps(result)
-    return HttpResponse(results, mimetype='application/json')
+    return HttpResponse(results, content_type='application/json')
 
 
 def ViewTaskPage(request, project_id):
@@ -15885,7 +15885,7 @@ def ProfileDetail(request):
             else:
                 temp_dict.update({'selected_project_id': projects[0][0], 'selected_team_id': projects[0][1]})
             result=simplejson.dumps(temp_dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 def GetProfileInfo(request, user_id, success):
     try:
         """query = "select distinct user_id,full_name,user_level,username from permitted_user_list pul,user_info usr where pul.user_names=usr.full_name and pul.user_id='%s'" % user_id
@@ -15942,7 +15942,7 @@ def GetProfileInfo(request, user_id, success):
                 team_id = DB.GetData(Conn, query, False)
                 Dict = {'teams': team_id}
                 message = simplejson.dumps(Dict)
-                return HttpResponse(message, mimetype='application/json')
+                return HttpResponse(message, content_type='application/json')
             except Exception as e:
                 print "Exception:", e
 """
@@ -16014,7 +16014,7 @@ def updateAccountInfo(request):
                     else:
                         message = False
                 result = simplejson.dumps(message)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             except Exception as e:
                 print "Exception:", e
 
@@ -16036,7 +16036,7 @@ def UpdateDefaultTeamForUser(request):
             else:
                 message = False
             result = simplejson.dumps(message)
-            return HttpResponse(result, mimetype='application/json')
+            return HttpResponse(result, content_type='application/json')
 
 
 def UpdateDefaultProjectForUser(request):
@@ -16056,7 +16056,7 @@ def UpdateDefaultProjectForUser(request):
             else:
                 message = False
             result = simplejson.dumps(message)
-            return HttpResponse(result, mimetype='application/json')
+            return HttpResponse(result, content_type='application/json')
 
 # for the assign test PAGES
 
@@ -16184,7 +16184,7 @@ def get_all_data_dependency_page(request):
                     'unused_driver_list':unused_driver_list
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16257,7 +16257,7 @@ def add_new_dependency(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16335,7 +16335,7 @@ def add_new_name_dependency(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16366,7 +16366,7 @@ def delete_version(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16403,7 +16403,7 @@ def get_all_name_under_dependency(request):
                     'default_list': default_list
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16501,7 +16501,7 @@ def rename_dependency(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16567,7 +16567,7 @@ def add_new_version(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16592,7 +16592,7 @@ def get_all_version_bit(request):
                     'version_list': version_list
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16642,7 +16642,7 @@ def link_dependency(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16689,7 +16689,7 @@ def unlink_dependency(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16789,7 +16789,7 @@ def rename_name(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16850,7 +16850,7 @@ def rename_version(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16945,7 +16945,7 @@ def make_default_name(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -16995,7 +16995,7 @@ def get_default_settings(request):
                     'result': final_list
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17048,7 +17048,7 @@ def add_new_branch(request):
                 }
 
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17078,7 +17078,7 @@ def get_all_version_under_branch(request):
                     'default_list': []
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17153,7 +17153,7 @@ def add_new_version_branch(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17191,7 +17191,7 @@ def rename_branch(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17238,7 +17238,7 @@ def unlink_branch(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17288,7 +17288,7 @@ def link_branch(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17357,7 +17357,7 @@ def add_new_driver(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17436,7 +17436,7 @@ def add_new_feature(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17488,7 +17488,7 @@ def link_driver(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17558,7 +17558,7 @@ def link_feature(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17608,7 +17608,7 @@ def link_team(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17664,7 +17664,7 @@ def unlink_feature(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17710,7 +17710,7 @@ def rename_feature(request):
                     'log_message': log_message
                 }
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
             else:
                 PassMessasge(sModuleInfo, AjaxError, error_tag)
         else:
@@ -17745,7 +17745,7 @@ def get_all_first_level_sub_feature(request):
                 }
 
                 result = simplejson.dumps(result)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
     except Exception as e:
         PassMessasge(sModuleInfo, e, 3)
 
@@ -17787,7 +17787,7 @@ def CreateLevelWiseFeature(request):
                         result = simplejson.dumps(result)
                         return HttpResponse(
                             result,
-                            mimetype='application/json')
+                            content_type='application/json')
                     if len(count) == 1 and count[0] > 0:
                         PassMessasge(
                             sModuleInfo,
@@ -17803,7 +17803,7 @@ def CreateLevelWiseFeature(request):
                         result = simplejson.dumps(result)
                         return HttpResponse(
                             result,
-                            mimetype='application/json')
+                            content_type='application/json')
                 else:
                     PassMessasge(sModuleInfo, DBError, error_tag)
 
@@ -17845,7 +17845,7 @@ def AutoTestCasePass(request):
                 update_runid(run_id)
                 message = True
                 result = simplejson.dumps(message)
-                return HttpResponse(result, mimetype='application/json')
+                return HttpResponse(result, content_type='application/json')
     except Exception as e:
         PassMessasge(sModuleInfo, e, 3)
 
@@ -17962,7 +17962,7 @@ def specific_dependency_settings(request):
                     final_list = DB.GetData(Conn, test_case_query, False)
                     Conn.close()
                     result = simplejson.dumps(final_list)
-                    return HttpResponse(result, mimetype='application/json')
+                    return HttpResponse(result, content_type='application/json')
     except Exception as e:
         PassMessasge(sModuleInfo, e, 3)
         
@@ -18011,7 +18011,7 @@ def update_team_project(request):
                 except Exception,e:
                     print "Exception:",e
             json = simplejson.dumps({'message':True})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
         
 def GetProjectOwner(request):
     if request.method == 'GET':
@@ -18034,7 +18034,7 @@ def GetProjectOwner(request):
                 results.append(result_dict)
             has_next_page = data['has_next']
             json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 
 def get_projects(request):
     if request.method=='GET':
@@ -18064,7 +18064,7 @@ def get_projects(request):
                 results.append(tuple(temp))
             project_list=results
             json = simplejson.dumps({'project_list':sorted(project_list,key=main_key)})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
 def main_key(each):
     return each[1]        
 def Create_New_User(request):
@@ -18107,7 +18107,7 @@ def Create_New_User(request):
                 else:
                     message = False
             result = simplejson.dumps(message)
-            return HttpResponse(result, mimetype='application/json')
+            return HttpResponse(result, content_type='application/json')
 
 def Edit_User(request):
     if request.method == 'GET':
@@ -18152,7 +18152,7 @@ def Edit_User(request):
                 else:
                     message = False
             result = simplejson.dumps(message)
-            return HttpResponse(result, mimetype='application/json')
+            return HttpResponse(result, content_type='application/json')
 
 
 def ListAllUser(request):
@@ -18314,7 +18314,7 @@ def TestCaseDataFromMainDriver(request):
                 'dependency':dependency_list
             }
             result = simplejson.dumps(result)
-            return HttpResponse(result, mimetype = 'application/json')
+            return HttpResponse(result, content_type = 'application/json')
 def test_case_file_upload(request):
     if request.method=='POST':
         print request.FILES
@@ -18366,7 +18366,7 @@ def get_cleanup_data(request):
                 'column':Column
             }
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 
 def cleanup_data(request):
     if request.method=='GET':
@@ -18388,7 +18388,7 @@ def cleanup_data(request):
                 'message':True
             }
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 '''        
 You must use @csrf_protect before any 'post' handling views
 You must also add {% csrf_token %} just after the <form> tag as in:
@@ -18624,7 +18624,7 @@ def get_all_schedule_run(request):
             Conn.close()    
             Dict={'owner_tag':owner_tag,'schedule_list':schedule_list}
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
         
 def test_owner(project_id,user_id):
     query="select project_owners from projects where project_id='%s'"%project_id
@@ -18662,7 +18662,7 @@ def AutoSetSearch(request):
             has_next_page = data['has_next']
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
-            return HttpResponse(json, mimetype='application/json')
+            return HttpResponse(json, content_type='application/json')
         
 def enlist_schedule(request):
     if request.method=='GET':
@@ -18745,7 +18745,7 @@ def enlist_schedule(request):
                 Dict.update({'Result':False})
             
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 def get_all_schedule_detail(request):
     if request.method=='GET':
         if request.is_ajax():
@@ -18814,7 +18814,7 @@ def get_all_schedule_detail(request):
                 print Dict
                 Dict.update({'owner':test_owner(project_id, user_id)})
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 def delete_schedule_run(request):
     if request.method=='GET':
         if request.is_ajax():
@@ -18829,7 +18829,7 @@ def delete_schedule_run(request):
             Conn.close()
             Dict={'message':True,'log_message':'Schedule run deleted successfully'}
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')      
+            return HttpResponse(result,content_type='application/json')      
         
 def Edit_Schedule_Page(request,project_id,schedule_id):
     Dict={}
@@ -18979,7 +18979,7 @@ def edit_schedule(request):
         else:
             Dict.update({'Result':False})    
         result=simplejson.dumps(Dict)
-        return HttpResponse(result,mimetype='application/json')
+        return HttpResponse(result,content_type='application/json')
 def SetupEmailHome(request,project_id):
     query="select id,team_name from team t,project_team_map ptm where t.project_id=ptm.project_id and t.id=ptm.team_id::int and ptm.project_id='%s'"%project_id
     Conn=GetConnection()
@@ -19052,7 +19052,7 @@ def updatemailingdetails(request):
                 log_message="Database query error"
             Dict={'message':message,'log_message':log_message}
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 def getemaildetails(request):
     if request.method=='GET':
         if request.is_ajax():
@@ -19067,7 +19067,7 @@ def getemaildetails(request):
             for each in zip(col,alldata):
                 Dict.update({each[0]:each[1]})
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 
 def delete_dependency_name(request):
     if request.method=='GET':
@@ -19106,7 +19106,7 @@ def delete_dependency_name(request):
 
             Dict={'message':message,'log_message':log_message}
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 
 def TableDataDependencyTestCases(request):
     if request.method=='GET':
@@ -19168,7 +19168,7 @@ def TableDataDependencyTestCases(request):
             results = {'Heading': [], 'TableData': [],'Count':0}
 
         json = simplejson.dumps(results)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 def delete_dependency(request):
     if request.method=='GET':
         if request.is_ajax():
@@ -19206,7 +19206,7 @@ def delete_dependency(request):
 
             Dict={'message':message,'log_message':log_message}
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 def FeatureUsageTestCase(request):
     if request.method=='GET':
         if request.is_ajax():
@@ -19273,7 +19273,7 @@ def FeatureUsageTestCase(request):
             results = {'Heading': [], 'TableData': [],'Count':0}
 
         json = simplejson.dumps(results)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 def delete_feature(request):
     if request.method=='GET':
         if request.is_ajax():
@@ -19300,7 +19300,7 @@ def delete_feature(request):
 
             Dict={'message':message,'log_message':log_message}
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 def rename_driver(request):
     if request.is_ajax():
         if request.method=='GET':
@@ -19331,7 +19331,7 @@ def rename_driver(request):
 
             result={'message':message,'log_message':log_message}
             result=simplejson.dumps(result)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
 
 def DriverUsageTestCase(request):
     if request.method=='GET':
@@ -19374,7 +19374,7 @@ def DriverUsageTestCase(request):
             results = {'Heading': [], 'TableData': [],'Count':0}
 
         json = simplejson.dumps(results)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, content_type='application/json')
 
 def delete_driver(request):
     if request.method=='GET':
@@ -19401,4 +19401,4 @@ def delete_driver(request):
 
             Dict={'message':message,'log_message':log_message}
             result=simplejson.dumps(Dict)
-            return HttpResponse(result,mimetype='application/json')
+            return HttpResponse(result,content_type='application/json')
