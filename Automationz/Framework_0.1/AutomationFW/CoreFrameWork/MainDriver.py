@@ -25,9 +25,8 @@ import CommonUtil
 import AutomationFW.Drivers
 import importlib
 import Global
-
-
-
+from funkload import BenchRunner
+import unittest
 #import FSDriver
 from AutomationFW.CoreFrameWork import Performance
 #from distutils.tests.test_check import CheckTestCase
@@ -271,7 +270,7 @@ def main():
         conn.close()
         TestCaseLists=[]
         automation_count=len(filter(lambda  x:x[1]=='Automated',AutomationList))
-        TestCaseLists=filter(lambda  x:x[1]=='Automated',AutomationList)
+        TestCaseLists=filter(lambda  x:x[1]=='Automated' or x[1]=='Performance',AutomationList)
         print TestCaseLists
         if len(TestCaseLists) > 0:
             print "Running Test cases from list : ", TestCaseLists[0:len(TestCaseLists)]
@@ -283,6 +282,7 @@ def main():
             return False
         #TestCaseLists = list(TestCaseLists[0])
         for TestCaseID in TestCaseLists:
+            print TestCaseID
             #first check that it is all copied otherwise check it periodically.
             test_case_copy_status=False
             while(test_case_copy_status!=True):
@@ -293,6 +293,8 @@ def main():
             Global.sTestStepExecLogId = "MainDriver"
             StepSeq = 1
             TCID = list(TestCaseID)[0]
+            test_case_type=TestCaseID[1]
+            print test_case_type
             print "-------------*************--------------"
             """if Rerun==False:
                 TestCaseName = DBUtil.GetData(conn, "Select tc_name From test_cases Where tc_id = '%s'" % TCID, False)
@@ -487,20 +489,33 @@ def main():
                                 module_name=importlib.import_module(TestStepsList[StepSeq-1][3])
                                 step_name=TestStepsList[StepSeq-1][1]
                                 step_name=step_name.lower().replace(' ','_')
-                                functionTocall=getattr(module_name, step_name)    
-                                simple_queue=Queue.Queue() 
-                                if Global.ThreadingEnabled:
-                                    stepThread = threading.Thread(target=functionTocall, args=(dependency_list_final,steps_data,simple_queue))
+                                if test_case_type=='Performance':
+                                    functionTocall=getattr(module_name, step_name)
+                                    functionTocall(['Sprout','Sprout.performance_test_case'])
+                                    """class_inst=getattr(module_name,TestStepsList[StepSeq-1][3])
+                                    suit_run=unittest.TestSuite()
+                                    suit_run.addTest(class_inst(step_name))
+                                    runner=unittest.TextTestRunner()
+                                    TestResult=runner.run(suit_run)
+                                    if TestResult.wasSuccessful():
+                                        sStepResult='Passed'
+                                    else:
+                                        sStepResult='Failed'"""
                                 else:
-                                    #from Drivers import Futureshop
-                                    sStepResult = functionTocall(dependency_list_final,steps_data,simple_queue)
-                                    if sStepResult in passed_tag_list:
-                                        sStepResult='PASSED'
-                                    if sStepResult in failed_tag_list:
-                                        sStepResult='FAILED'
-                                    q.put(sStepResult)
-                                    #sStepResult = module_name.ExecuteTestSteps(TestRunID[0],TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
-                                    #sStepResult = Futureshop.ExecuteTestSteps(TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
+                                    functionTocall=getattr(module_name, step_name)
+                                    simple_queue=Queue.Queue()
+                                    if Global.ThreadingEnabled:
+                                        stepThread = threading.Thread(target=functionTocall, args=(dependency_list_final,steps_data,simple_queue))
+                                    else:
+                                        #from Drivers import Futureshop
+                                        sStepResult = functionTocall(dependency_list_final,steps_data,simple_queue)
+                                        if sStepResult in passed_tag_list:
+                                            sStepResult='PASSED'
+                                        if sStepResult in failed_tag_list:
+                                            sStepResult='FAILED'
+                                        q.put(sStepResult)
+                                        #sStepResult = module_name.ExecuteTestSteps(TestRunID[0],TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
+                                        #sStepResult = Futureshop.ExecuteTestSteps(TestStepsList[StepSeq - 1][1],q,dependency_list,steps_data)
 
                             else:
                                 #If threading is enabled

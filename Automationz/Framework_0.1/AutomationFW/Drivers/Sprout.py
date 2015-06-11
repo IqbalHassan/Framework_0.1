@@ -1,6 +1,8 @@
 __author__ = 'Raju'
-from Web import SproutSupport
-
+from AutomationFW.Web import SproutSupport
+import unittest
+from funkload.BenchRunner import BenchRunner
+from funkload.FunkLoadTestCase import FunkLoadTestCase
 def start_browser(dependency,step_data,temp_q):
     try:
         sClientName=dependency['Browser']
@@ -73,3 +75,15 @@ def tear_down(dependency,step_data,temp_q):
     except:
         temp_q.put("Failed")
         return "Failed"
+
+class Sprout(FunkLoadTestCase):
+    def performance_test_case(self):
+        print "hello world"
+
+from funkload.BenchRunner import parse_sys_args
+
+def performance_test_case(argument_list):
+    options, args, module_name = parse_sys_args(argument_list)
+    klass, method = args[1].split('.')
+    bench = BenchRunner(module_name, klass, method, options)
+    return bench.run()
