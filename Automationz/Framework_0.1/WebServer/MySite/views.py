@@ -2950,7 +2950,7 @@ def Run_Test(request):
 def mail_thread(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date):
     try:
         urllib2.urlopen("http://www.google.com").close()
-        EmailNotify.Send_Email(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date, '', '' , '')
+        WebServer.EmailNotify.Send_Email(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date, '', '' , '')
         print "connected"
     except urllib2.URLError:
         print "disconnected"
