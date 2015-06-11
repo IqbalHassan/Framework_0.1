@@ -8,6 +8,8 @@ import urllib2
 from poster.encode import multipart_encode
 import traceback, os.path
 sys.path.append("..")
+top_path=os.path.realpath(os.path.join(os.path.join(os.getcwd(),os.pardir),os.pardir))
+sys.path.append(top_path)
 #adding driver folder to sys.path
 current_file_path=os.path.dirname(os.getcwd())#getting parent folder
 driver_folder=os.path.join(current_file_path,'Drivers')

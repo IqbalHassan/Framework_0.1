@@ -22,8 +22,12 @@ import os
 import sys
 
 if __name__ == "__main__":
+    #get the source name here
+    source_path=os.getcwd()
+    content_root=os.path.realpath(os.path.join(source_path,os.pardir))
+    sys.path.append(source_path)
+    sys.path.append(content_root)
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "WebServer.settings")
-
     from django.core.management import execute_from_command_line
 
     execute_from_command_line(sys.argv)

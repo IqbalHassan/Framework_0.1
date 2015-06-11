@@ -3,7 +3,8 @@ import os
 import time
 import sys
 sys.path.append("..")
-
+top_path=os.path.realpath(os.path.join(os.path.join(os.getcwd(),os.pardir),os.pardir))
+sys.path.append(top_path)
 if os.name == 'nt':
     from AutomationFW.PCDesktop import WinCommonFoldersPaths
     #from AutomationFW import PCDesktop.WinCommonFoldersPaths as WinCommonFoldersPaths

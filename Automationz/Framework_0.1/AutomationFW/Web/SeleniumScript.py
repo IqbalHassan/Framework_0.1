@@ -13,7 +13,7 @@ from selenium.webdriver.common.keys import Keys
 #Ver1.0
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-from CoreFrameWork import CommonUtil
+from AutomationFW.CoreFrameWork import CommonUtil
 from selenium.webdriver.support import expected_conditions as EC
 
 global WebDriver_Wait 
