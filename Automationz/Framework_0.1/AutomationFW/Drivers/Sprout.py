@@ -1,4 +1,6 @@
 __author__ = 'Raju'
+import os
+from AutomationFW.CoreFrameWork import FileUtilities
 from AutomationFW.Web import SproutSupport
 import unittest
 from funkload.BenchRunner import BenchRunner
@@ -80,10 +82,20 @@ class Sprout(FunkLoadTestCase):
     def performance_test_case(self):
         print "hello world"
 
-from funkload.BenchRunner import parse_sys_args
-
-def performance_test_case(argument_list):
+from funkload.BenchRunner import parse_sys_args, load_unittest
+from AutomationFW.CoreFrameWork.ConfigFileGenerator import write_config_file
+from funkload.utils import mmn_encode
+def performance_test_case(dependency_list,steps_data,temp_q):
+    argument_list=dependency_list[2:]
     options, args, module_name = parse_sys_args(argument_list)
     klass, method = args[1].split('.')
+    full_file_name=dependency_list[0]
+    #generate the config file from here
+    default_configs={
+        'bench':[('cycles','5:10:20:50'),('duration',10),('startup_delay',0.01),('sleep_time',0.01),('cycle_time',1),('log_to','console file'),('sleep_time_min',0),('sleep_time_max',0.5),('log_path','Log/funkload-bench.log'),('result_path','Result/funkload-bench.xml')],
+        'main': [('title','Performance Test Case in '+klass),('description','This will run a Performance Test case in '+klass+ ' module'),('url','offical link of the owner of '+klass+' module')]
+    }
+    write_config_file(full_file_name,method,dependency_list[1],steps_data,default_configs,klass)
+    test = load_unittest(module_name, klass,mmn_encode(method, 0, 0, 0), options)
     bench = BenchRunner(module_name, klass, method, options)
     return bench.run()

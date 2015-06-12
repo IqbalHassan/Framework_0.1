@@ -15,9 +15,8 @@ import re
 import math
 import Global
 import ConfigParser
-
 if os.name == 'nt':
-    from PCDesktop import WinCommonFoldersPaths as ComPath
+    from AutomationFW.PCDesktop import WinCommonFoldersPaths as ComPath
     import win32com.client
     import wmi
     import win32api
@@ -25,7 +24,7 @@ if os.name == 'nt':
     from PIL import ImageGrab
     from PIL import Image
 elif os.name == 'posix':
-    from MacDesktop import MacCommonFoldersPaths as ComPath
+    from AutomationFW.MacDesktop import MacCommonFoldersPaths as ComPath
     import plistlib
     from appscript import *
     
@@ -1514,5 +1513,3 @@ def LogFailedException(sModuleInfo, e):
     ExecLog(sModuleInfo, "Exception:%s" % e, 2)
     ExecLog(sModuleInfo, "Framework Error", 3)
     return "Failed"
-
-

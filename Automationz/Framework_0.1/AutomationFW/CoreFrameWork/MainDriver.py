@@ -490,8 +490,15 @@ def main():
                                 step_name=TestStepsList[StepSeq-1][1]
                                 step_name=step_name.lower().replace(' ','_')
                                 if test_case_type=='Performance':
-                                    functionTocall=getattr(module_name, step_name)
-                                    functionTocall(['Sprout','Sprout.performance_test_case'])
+                                    config_file_path=os.path.realpath(os.path.join((os.path.join(module_name.__file__,os.pardir)),os.pardir))
+                                    conf=config_file_path+os.sep+'ConfigFiles'+os.sep+TestStepsList[StepSeq-1][3]+'.conf'
+                                    functionTocall = getattr(module_name, step_name)
+                                    simple_queue=Queue.Queue()
+                                    sStepResult = functionTocall([config_file_path, TestRunID[0], '--config',conf, TestStepsList[StepSeq-1][3], TestStepsList[StepSeq-1][3]+'.'+step_name], steps_data, simple_queue)
+                                    if sStepResult==0:
+                                        sStepResult='Passed'
+                                    else:
+                                        sStepResult='Failed'
                                     """class_inst=getattr(module_name,TestStepsList[StepSeq-1][3])
                                     suit_run=unittest.TestSuite()
                                     suit_run.addTest(class_inst(step_name))
@@ -502,7 +509,7 @@ def main():
                                     else:
                                         sStepResult='Failed'"""
                                 else:
-                                    functionTocall=getattr(module_name, step_name)
+                                    functionTocall = getattr(module_name, step_name)
                                     simple_queue=Queue.Queue()
                                     if Global.ThreadingEnabled:
                                         stepThread = threading.Thread(target=functionTocall, args=(dependency_list_final,steps_data,simple_queue))
