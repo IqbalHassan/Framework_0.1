@@ -12344,7 +12344,7 @@ def manage_test_cases(request):
                 return HttpResponse("NULL")
 
             if requested_id == '#':
-                result = json.dumps(parent_sections)
+                result = simplejson.dumps(parent_sections)
             else:
                 print "Node with id %s is being loaded" % requested_id
 
@@ -12379,7 +12379,7 @@ def manage_tc_data(request):
     if request.method == 'GET':
         if request.is_ajax():
             test_case_ids = ''
-            decoded_string = json.loads(
+            decoded_string = simplejson.loads(
                 request.GET.get(
                     'selected_section_ids',
                     []))
@@ -12413,7 +12413,7 @@ def manage_tc_data(request):
                     else:
                         test_case_ids += ' %s:' % row['tc_id']
 
-                result = json.dumps(test_case_ids)
+                result = simplejson.dumps(test_case_ids)
 #                 print result
                 Conn.close()
                 return HttpResponse(result, content_type='application/json')
@@ -19402,3 +19402,6 @@ def delete_driver(request):
             Dict={'message':message,'log_message':log_message}
             result=simplejson.dumps(Dict)
             return HttpResponse(result,content_type='application/json')
+def PerformanceGraph(request,Run_Id):
+    query=""
+    return render(request,'PerformanceGraph.html',{})
