@@ -1,0 +1,198 @@
+{% extends 'BaseTemplate.html' %}
+{% block title %}Performance Graph{% endblock %}
+{% block content %}
+<script src="/site_media/Jquery/Chart.js"></script>
+<style>
+    #canvas-holder1 {
+        width: 300px;
+        margin: 20px auto;
+    }
+    #canvas-holder2 {
+        width: 50%;
+        height: 20%;
+
+    }
+    .chartjs-tooltip {
+        opacity: 1;
+        position: absolute;
+        background: rgba(0, 0, 0, .7);
+        color: white;
+        padding: 3px;
+        border-radius: 3px;
+        -webkit-transition: all .1s ease;
+        transition: all .1s ease;
+        pointer-events: none;
+        -webkit-transform: translate(-50%, 0);
+        transform: translate(-50%, 0);
+    }
+    .chartjs-tooltip-key{
+        display:inline-block;
+        width:10px;
+        height:10px;
+    }
+</style>
+<table class="two-column-emphasis" width="50%;">
+    <thead>
+        <tr>
+            {% for x in column %}
+                <th>{{x}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in test_case_list %}
+        <tr class="row_class">
+            {% for y in x %}
+                <td>{{y}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<table>
+    <tr id="result_type">
+
+    </tr>
+</table>
+<table>
+    <tr id="parameter">
+
+    </tr>
+</table>
+<div id="canvas-holder2">
+    <canvas id="chart2" width="450" height="300" />
+</div>
+<div class="chartjs-tooltip"></div>
+<script type="text/javascript">
+    Chart.defaults.global.pointHitDetectionRadius = 1;
+    Chart.defaults.global.customTooltips = function(tooltip) {
+
+        var tooltipEl = $('.chartjs-tooltip');
+
+        if (!tooltip) {
+            tooltipEl.css({
+                opacity: 0
+            });
+            return;
+        }
+
+        tooltipEl.removeClass('above below');
+        tooltipEl.addClass(tooltip.yAlign);
+
+        var innerHtml = '';
+        for (var i = tooltip.labels.length - 1; i >= 0; i--) {
+            innerHtml += [
+                '<div class="chartjs-tooltip-section">',
+                '	<span class="chartjs-tooltip-key" style="background-color:' + tooltip.legendColors[i].fill + '"></span>',
+                '	<span class="chartjs-tooltip-value">' + tooltip.labels[i] + '</span>',
+                '</div>'
+            ].join('');
+        }
+        tooltipEl.html(innerHtml);
+
+        tooltipEl.css({
+            opacity: 1,
+            left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
+            top: tooltip.chart.canvas.offsetTop + tooltip.y + 'px',
+            fontFamily: tooltip.fontFamily,
+            fontSize: tooltip.fontSize,
+            fontStyle: tooltip.fontStyle,
+        });
+    };
+    var run_id="{{run_id}}";
+    $(document).ready(function(){
+       $('.row_class').on('click',function(){
+           $('.row_class').css({'background-color':'#ffffff'});
+           $(this).css({'background-color':'#cccccc'});
+           var tc_id=$(this).find('td:first-child').text().trim();
+           get_type_data(tc_id,run_id);
+       });
+    });
+    var color_value={
+                'max_time':[40,40,40],
+                'min_time':[70,70,70],
+                'avg_time':[100,100,100],
+                'total_time':[140,140,140],
+                'count':[180,180,180],
+                'success':[210,210,210],
+                'error':[240,240,240]
+    };
+    function get_type_data(tc_id,run_id){
+        $.get('get_performance_type',{
+            tc_id:tc_id,
+            run_id:run_id
+        },function(data){
+            result_type_list=data['result_type'];
+            var message="";
+            for(var i=0;i<result_type_list.length;i++){
+                message+='<td><input id="'+result_type_list[i].replace(/ /g,'_')+'"class="cmn-toggle cmn-toggle-yes-no" type="radio" name="result_type" value="'+result_type_list[i]+'"><label for="'+result_type_list[i].replace(/ /g,'_')+'" data-on="'+result_type_list[i]+'" data-off="'+result_type_list[i]+'"></label></td>';
+            }
+            $('#result_type').html(message);
+            var message="";
+            var column_name=['Max','Min','Avg','Total','Count','Success','Error'];
+            var column_value=['max_time','min_time','avg_time','total_time','count','success','error'];
+            for(var i=0;i<column_name.length;i++){
+                message+='<td><input id="'+column_name[i].replace(/ /g,'_')+'"class="cmn-toggle cmn-toggle-yes-no" type="checkbox" name="parameter" value="'+column_value[i]+'"><label for="'+column_name[i].replace(/ /g,'_')+'" data-on="'+column_name[i]+'" data-off="'+column_name[i]+'"></label></td>';
+            }
+            $('#parameter').html(message);
+            for(var i=0;i<result_type_list.length;i++){
+                $('#'+result_type_list[i].replace(/ /g,'_')).on('click',function(){
+                    $('input[name="parameter"]').each(function(){
+                        $(this).removeAttr('checked');
+                    })
+                });
+            }
+            $('input[name="parameter"]').on('click',function(){
+                var result_type=$('input[name="result_type"]:checked').val();
+                if(result_type==undefined){
+                    alertify.error("Result Type is to be selected.",1500);
+                    return false;
+                }else{
+                    var temp=[]
+                    $('input[name="parameter"]:checked').each(function(){
+                        temp.push($(this).val().trim());
+                    });
+                    if(temp.length==0){
+                        alertify.error("No parameter is selected.",1500);
+                        return false;
+                    }else{
+                        $.get('Get_graph_data',{
+                            'tc_id':tc_id,
+                            'run_id':run_id,
+                            'parameter':temp.join(":"),
+                            'result_type':result_type
+                        },function(data){
+                            var cycles=data['cycles'];
+                            var graph_datasets=[]
+                            for(var i=0;i<temp.length;i++){
+                                var object=data[temp[i]];
+                                var t_obj={
+                                    label:"My First dataset",
+                                    fillColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",0.2)",
+                                    strokeColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
+                                    pointColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
+                                    pointStrokeColor: "#fff",
+                                    pointHighlightFill: "#fff",
+                                    pointHighlightStroke: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
+                                    data:object
+                                };
+                                graph_datasets.push(t_obj);
+                            }
+                            var LineChartData={
+                                labels:cycles,
+                                datasets:graph_datasets
+                            }
+
+                            var ctx2 = $("#chart2").get(0).getContext("2d");
+                            window.myLine = new Chart(ctx2).Line(LineChartData, {
+                                pointDot:true,
+                                responsive: true
+                            });
+                        });
+                    }
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}

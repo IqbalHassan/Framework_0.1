@@ -7,6 +7,10 @@ $(document).ready(function(){
     GetAllData(current_page,itemPerPage,UserText);
     EnableAutocomplete();
     DeleteFilterData();
+    $('#performance_view').on('click',function(){
+        var run_id=$('#fetch_run_id').text().trim();
+        window.location='/Home/RunID/'+run_id+'/PerformanceGraph/';
+    });
     $('#filterCount').on('change',function(){
         if($(this).val()!=''){
             itemPerPage=$(this).val();

@@ -91,11 +91,13 @@ def decode_result_performance(config_file_path):
             for i in range(0,7):
                 #print ":".join(str(each[i]) for each in test_list)
                 temp.append({column[i]:":".join(str(each[i]) for each in test_list)})
+            temp.append({'result_type':'test'})
             Dict.update({'test':temp})
             temp=[{'cycles':":".join(str(x) for x in cycles)}]
             for i in range(0,7):
                 #print ":".join(str(each[i]) for each in response_list)
                 temp.append({column[i]:":".join(str(each[i]) for each in response_list)})
+            temp.append({'result_type':'response'})
             Dict.update({'response':temp})
             return Dict
         else:

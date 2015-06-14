@@ -42,6 +42,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/GetResultAuto/$', GetResultAuto),
     url(r'^Home/.*/GetFilteredDataResult/$', GetFilteredDataResult),
     url(r'^Home/RunID/(?P<Run_Id>[^/]*)/$', Search2),
+    url(r'^Home/RunID/(?P<Run_Id>[^/]*)/PerformanceGraph/$', PerformanceGraph),
     url(r'^Home/.*/RunID_New/$', RunID_New),
     url(r'^Home/', include('urls_direct')),
     url(r'^Home/.*/DataFetchForTestCases/$', DataFetchForTestCases),
@@ -403,6 +404,8 @@ urlpatterns += patterns('',
     url(r'^Home/.*/delete_feature/$',delete_feature),
     url(r'^Home/.*/delete_driver/$',delete_driver),
     url(r'^Home/.*/DriverUsageTestCase/$',DriverUsageTestCase),
+    url(r'^Home/.*/get_performance_type/$',get_performance_type),
+    url(r'^Home/.*/Get_graph_data/$',Get_graph_data),
     )
 
 

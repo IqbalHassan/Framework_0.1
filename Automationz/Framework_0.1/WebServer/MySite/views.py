@@ -19408,5 +19408,54 @@ def PerformanceGraph(request,Run_Id):
     test_case_list=DB.GetData(Conn,query,False)
     Conn.close()
     column=['ID','Name','Status']
-    Dict={'test_case_list':test_case_list,'column':column}
+    Dict={'test_case_list':test_case_list,'column':column,'run_id':Run_Id}
     return render(request,'PerformanceGraph.html',Dict)
+def get_performance_type(request):
+    tc_id=request.GET.get(u'tc_id','')
+    run_id=request.GET.get(u'run_id','')
+    query="select distinct result_type from performance_results where tc_id='%s' and run_id='%s'"%(tc_id,run_id)
+    Conn=GetConnection()
+    result_type=DB.GetData(Conn,query)
+    print result_type
+    Conn.close()
+    Dict={'result_type':result_type}
+    result=simplejson.dumps(Dict)
+    return HttpResponse(result,content_type='application/json')
+
+
+def Get_graph_data(request):
+    if request.is_ajax():
+        if request.method=='GET':
+            paramter=request.GET.get('parameter')
+            result_type=request.GET.get('result_type')
+            tc_id=request.GET.get('tc_id')
+            run_id=request.GET.get('run_id')
+            parameter=paramter.replace(':',',')
+            print parameter
+            query="select cycles,%s from performance_results where run_id='%s' and tc_id='%s' and result_type='%s'"%(parameter,run_id,tc_id,result_type)
+            print query
+            Conn=GetConnection()
+            data_list=DB.GetData(Conn,query,False)
+            Conn.close()
+            Dict={}
+            if len(data_list)>0:
+                cycles=data_list[0][0]
+                cycles=cycles.split(":")
+                temp=[]
+                for each in cycles:
+                    temp.append(int(each))
+                cycles=sorted(temp)
+                Dict.update({'cycles':cycles})
+                parameter=parameter.split(",")
+                for each in range(0,len(parameter)):
+                    data=data_list[0][each+1]
+                    temp=[]
+                    for x in data.split(":"):
+                        temp.append(round(float(x),2))
+                    t=[]
+                    for i in range(len(temp)-1,-1,-1):
+                       t.append(temp[i])
+                    Dict.update({parameter[each]:t})
+            print Dict
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,content_type='application/json')
