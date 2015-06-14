@@ -5,8 +5,8 @@ sys.path.append("..")
     
 username='riz'
 password='.'
-project='Sprout'
-team='QA'
+project='AscendLearning'
+team='ClickSafety'
 server=Global.database_ip
 port=5432
 
