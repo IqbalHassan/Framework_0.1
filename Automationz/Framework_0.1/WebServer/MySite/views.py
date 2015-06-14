@@ -33,7 +33,7 @@ from django.shortcuts import render_to_response
 from django.template import Context
 from django.template import RequestContext
 from django.template.loader import get_template
-from django.utils import simplejson
+#from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from psycopg2.extras import DictCursor
@@ -67,7 +67,7 @@ from datetime import timedelta
 #=======
 # >>>>>>> 79295d8a9281fee2054c6e15061b281b41f17493
 try:
-    import simplejson as json
+    import simplejson
 except ImportError:
     import json
 
