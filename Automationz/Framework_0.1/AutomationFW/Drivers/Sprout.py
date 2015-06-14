@@ -83,12 +83,16 @@ class Sprout(FunkLoadTestCase):
         self.server_url=self.conf_get('main','url')
     def performance_test_case(self):
         server_url=self.server_url
+        username=self.conf_get('performance_test_case','username')
+        password=self.conf_get('performance_test_case','password')
+        path=self.conf_get('performance_test_case','path')
+        server_url= 'http://127.0.0.1:8000'
         res = self.get(server_url, description='Get url')
         self.assertEqual(res.code, 200)
         #self.assertEqual(res.body, "Hello World")
-        res=self.get(server_url+'/Home/Login/', params={'username':self.conf_get('performance_test_case','username'),'password':self.conf_get('performance_test_case','password')})
+        res=self.get(server_url+'/Home/Login/', params={'username':username,'password':password})
         self.assertEqual(res.code, 200)
-        res=self.get(server_url+'/Home/Results/')
+        res=self.get(server_url+'/Home'+path)
         print res.code
 
 from funkload.BenchRunner import parse_sys_args, load_unittest
@@ -102,7 +106,7 @@ def performance_test_case(dependency_list,steps_data,temp_q):
     #generate the config file from here
     default_configs={
         'bench':[('cycles','5:10:20:50'),('duration',10),('startup_delay',0.01),('sleep_time',0.01),('cycle_time',1),('log_to','console file'),('sleep_time_min',0),('sleep_time_max',0.5),('log_path','Log/funkload-bench.log'),('result_path','Result/funkload-bench.xml')],
-        'main': [('title','Performance Test Case in '+klass),('description','This will run a Performance Test case in '+klass+ ' module'),('url','127.0.0.1:8000')]
+        'main': [('title','Performance Test Case in '+klass),('description','This will run a Performance Test case in '+klass+ ' module'),('url','http://127.0.0.1:8000')]
     }
     write_config_file(full_file_name,method,dependency_list[1],steps_data,default_configs,klass)
     test = load_unittest(module_name, klass,mmn_encode(method, 0, 0, 0), options)

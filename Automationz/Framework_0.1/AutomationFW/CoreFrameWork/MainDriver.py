@@ -25,9 +25,8 @@ import CommonUtil
 import AutomationFW.Drivers
 import importlib
 import Global
-from funkload import BenchRunner
-import unittest
 #import FSDriver
+from AutomationFW.CoreFrameWork import ConfigFileGenerator
 from AutomationFW.CoreFrameWork import Performance
 #from distutils.tests.test_check import CheckTestCase
 from AutomationFW.CoreFrameWork import DataFetching
@@ -261,7 +260,12 @@ def main():
             else:
                 run_type='Manual'
         else:
-            run_type='Automation'
+            if (len(filter(lambda x:x[1]=='Performance',AutomationList)))== 0 and (len(filter(lambda x:x[1]=='Automated',AutomationList)))>0:
+                run_type='Automation'
+            elif (len(filter(lambda x:x[1]=='Performance',AutomationList)))>0 and (len(filter(lambda x:x[1]=='Automated',AutomationList)))==0:
+                run_type='Performance'
+            else:
+                run_type='Hybrid'
         Dict={}
         Dict.update({'run_type':run_type})
         sWhereQuery="where run_id='%s'" %TestRunID[0]
@@ -499,6 +503,7 @@ def main():
                                         sStepResult='Passed'
                                     else:
                                         sStepResult='Failed'
+                                    perf_result = ConfigFileGenerator.decode_result_performance(config_file_path)
                                     """class_inst=getattr(module_name,TestStepsList[StepSeq-1][3])
                                     suit_run=unittest.TestSuite()
                                     suit_run.addTest(class_inst(step_name))
