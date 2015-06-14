@@ -23,8 +23,8 @@ import sys
 
 if __name__ == "__main__":
     #get the source name here
-    source_path=os.getcwd()
-    content_root=os.path.realpath(os.path.join(source_path,os.pardir))
+    source_path=os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    content_root=os.path.dirname(os.path.realpath(__file__))
     sys.path.append(source_path)
     sys.path.append(content_root)
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "WebServer.settings")
