@@ -274,6 +274,7 @@ def main():
         conn.close()
         TestCaseLists=[]
         automation_count=len(filter(lambda  x:x[1]=='Automated',AutomationList))
+        performance_count=len(filter(lambda  x:x[1]=='Performance',AutomationList))
         TestCaseLists=filter(lambda  x:x[1]=='Automated' or x[1]=='Performance',AutomationList)
         print TestCaseLists
         if len(TestCaseLists) > 0:
@@ -503,7 +504,21 @@ def main():
                                         sStepResult='Passed'
                                     else:
                                         sStepResult='Failed'
-                                    perf_result = ConfigFileGenerator.decode_result_performance(config_file_path)
+                                    perf_result = ConfigFileGenerator.decode_result_performance(conf)
+                                    if not isinstance(perf_result,bool):
+                                        for each in perf_result.keys():
+                                            t=perf_result[each]
+                                            Dict={'tc_id':TCID,'run_id':TestRunID[0]}
+                                            for t_t in range(0,len(t)):
+                                                temp=t[t_t]
+                                                for echit in temp.keys():
+                                                    Dict.update({echit:temp[echit]})
+                                            print Dict
+                                            Conn=DBUtil.ConnectToDataBase()
+                                            print DBUtil.InsertNewRecordInToTable(Conn,"performance_results",**Dict)
+                                            Conn.close()
+                                    else:
+                                        print "error in file path"
                                     """class_inst=getattr(module_name,TestStepsList[StepSeq-1][3])
                                     suit_run=unittest.TestSuite()
                                     suit_run.addTest(class_inst(step_name))
@@ -928,7 +943,7 @@ def main():
             print "Test Set Cancelled by the User"
             CommonUtil.ExecLog(sModuleInfo, "Test Set Cancelled by the User", 1)
         else:
-            if automation_count>0 and automation_count==len(TestCaseLists):
+            if (automation_count>0 or performance_count>0) and (automation_count+performance_count)==len(TestCaseLists):
                 conn=DBUtil.ConnectToDataBase()
                 print DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='Complete', testendtime='%s' % (sTestSetEndTime), duration='%s' % (TestSetDuration))
                 conn.close()
