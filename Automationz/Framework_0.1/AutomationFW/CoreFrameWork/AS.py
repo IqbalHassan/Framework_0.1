@@ -1,5 +1,6 @@
 import sys
 sys.path.append("..")
+print "Connecting to database and verifying user authentication"
 import traceback, os.path
 import DataBaseUtilities as DB
 from dependencyCollector import dependency,product_version
@@ -11,6 +12,8 @@ import MainDriver
 import Global
 from CoreFrameWork import FileUtilities
 import ConfigParser
+
+
 def RunProcess(sTesterid):
     while (1):
         try:
@@ -54,6 +57,7 @@ def RunProcess(sTesterid):
 
 def Login():
     try:
+        
         print "Username = ",username, " : Project = ",project, " : Team = ", team
 
         result=Check_Credentials(username,password,project,team,server,port)
