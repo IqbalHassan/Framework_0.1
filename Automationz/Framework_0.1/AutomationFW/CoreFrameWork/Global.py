@@ -37,7 +37,7 @@ if Environment == "Test":
         NetworkLogFolder = "/Volumes/AutomationLogNetworkPath"
 elif Environment == "Production":
     ###########Prod Config Variables############################
-    print "Running on Production Environment..."
+    #print "Running on Production Environment..."
     time.sleep(1)
 
     #go site URL

@@ -34,16 +34,20 @@ def Installer_With_Pip():
     
     
     # Check and install django
-    django_version = "1.5"
+    django_version = "1.8.2"
     try:
         install(type="pip", module_name="django", module_version=django_version)
     except:
         print "unable to install/update %s"%module_name  
     
-
+#pip install -U pyautoit
     
     # Check and install django-celery
-    
+    try:
+        install(type="pip", module_name="pyautoit")
+    except:
+        print "unable to install/update %s"%module_name  
+        
     try:
         install(type="pip", module_name="django-celery")
     except:
@@ -131,6 +135,14 @@ def Installer_With_Exe():
         try:
             PIL_easy_install = "easy_install http://effbot.org/downloads/PIL-1.1.7.win32-py2.7.exe"
             install(cmd=PIL_easy_install)
+        except:
+            print "unable to install/update ImageGrab"
+    try:
+        import funkload
+    except ImportError as e:
+        try:
+            funkload_easy_install = "easy_install https://github.com/nuxeo/FunkLoad/archive/master.zip"
+            install(cmd=funkload_easy_install)
         except:
             print "unable to install/update ImageGrab"
 

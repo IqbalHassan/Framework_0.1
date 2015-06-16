@@ -1,5 +1,6 @@
 import sys
 sys.path.append("..")
+print "Connecting to database and verifying user authentication"
 import traceback, os.path
 import DataBaseUtilities as DB
 from dependencyCollector import dependency,product_version
@@ -11,6 +12,8 @@ import MainDriver
 import Global
 from CoreFrameWork import FileUtilities
 import ConfigParser
+
+
 def RunProcess(sTesterid):
     while (1):
         try:
@@ -54,7 +57,9 @@ def RunProcess(sTesterid):
 
 def Login():
     try:
-        print username
+        
+        print "Username = ",username, " : Project = ",project, " : Team = ", team
+
         result=Check_Credentials(username,password,project,team,server,port)
         if result:
             tester_id=update_machine(collectAlldependency(project,team,dependency))
@@ -83,11 +88,11 @@ def collectAlldependency(project,team_info,dependency):
         else:
             project_id=''
         query="select distinct dependency_name from dependency d ,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=(select id from team where team_name='%s' and project_id='%s')"%(project_id,team_info,project_id)
-        print query
+        #print query
         Conn=DB.ConnectToDataBase(database_name, superuser, super_password, server)
         dependency_list=DB.GetData(Conn, query)
         Conn.close()
-        print dependency_list
+        print "Dependency: ",dependency_list
     
         #Get Local Info object
         oLocalInfo = CommonUtil.LocalInfo()
