@@ -1,15 +1,15 @@
 {% extends 'BaseTemplate.html' %}
 {% block title %}Performance Graph{% endblock %}
 {% block content %}
-<script src="/site_media/Jquery/Chart.js"></script>
+<script src="/site_media/Jquery/ChartNew.js"></script>
 <style>
     #canvas-holder1 {
         width: 300px;
         margin: 20px auto;
     }
     #canvas-holder2 {
-        width: 50%;
-        height: 20%;
+        width: 70%;
+        height: 50%;
 
     }
     .chartjs-tooltip {
@@ -29,6 +29,12 @@
         display:inline-block;
         width:10px;
         height:10px;
+    }
+    .chart-legend li span{
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-right: 5px;
     }
 </style>
 <table class="two-column-emphasis" width="50%;">
@@ -59,45 +65,17 @@
 
     </tr>
 </table>
-<div id="canvas-holder2">
+<div id="canvas-holder2" width="100%;">
     <canvas id="chart2" width="450" height="300" />
 </div>
 <div class="chartjs-tooltip"></div>
 <script type="text/javascript">
-    Chart.defaults.global.pointHitDetectionRadius = 1;
-    Chart.defaults.global.customTooltips = function(tooltip) {
-
-        var tooltipEl = $('.chartjs-tooltip');
-
-        if (!tooltip) {
-            tooltipEl.css({
-                opacity: 0
-            });
-            return;
-        }
-
-        tooltipEl.removeClass('above below');
-        tooltipEl.addClass(tooltip.yAlign);
-
-        var innerHtml = '';
-        for (var i = tooltip.labels.length - 1; i >= 0; i--) {
-            innerHtml += [
-                '<div class="chartjs-tooltip-section">',
-                '	<span class="chartjs-tooltip-key" style="background-color:' + tooltip.legendColors[i].fill + '"></span>',
-                '	<span class="chartjs-tooltip-value">' + tooltip.labels[i] + '</span>',
-                '</div>'
-            ].join('');
-        }
-        tooltipEl.html(innerHtml);
-
-        tooltipEl.css({
-            opacity: 1,
-            left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
-            top: tooltip.chart.canvas.offsetTop + tooltip.y + 'px',
-            fontFamily: tooltip.fontFamily,
-            fontSize: tooltip.fontSize,
-            fontStyle: tooltip.fontStyle,
-        });
+    function resetCanvas(){
+        $('#chart2').remove(); // this is my <canvas> element
+        $('#canvas-holder2').append('<canvas id="chart2" width="600" height="300"><canvas>');
+        canvas = document.querySelector('#chart2');
+        ctx = canvas.getContext('2d');
+        return ctx;
     };
     var run_id="{{run_id}}";
     $(document).ready(function(){
@@ -109,13 +87,13 @@
        });
     });
     var color_value={
-                'max_time':[40,40,40],
-                'min_time':[70,70,70],
-                'avg_time':[100,100,100],
-                'total_time':[140,140,140],
-                'count':[180,180,180],
-                'success':[210,210,210],
-                'error':[240,240,240]
+                'max_time':[255,0,0],
+                'min_time':[0,255,0],
+                'avg_time':[0,0,255],
+                'total_time':[255,0,255],
+                'count':[50,55,50],
+                'success':[255,255,0],
+                'error':[50,100,100]
     };
     function get_type_data(tc_id,run_id){
         $.get('get_performance_type',{
@@ -166,16 +144,51 @@
                             var graph_datasets=[]
                             for(var i=0;i<temp.length;i++){
                                 var object=data[temp[i]];
-                                var t_obj={
-                                    label:"My First dataset",
-                                    fillColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",0.2)",
-                                    strokeColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
-                                    pointColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
-                                    pointStrokeColor: "#fff",
-                                    pointHighlightFill: "#fff",
-                                    pointHighlightStroke: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
-                                    data:object
-                                };
+                                var l,double_axis;
+                                if(temp[i]=='max_time'){
+                                    l='Maximum Time';
+                                }else if(temp[i]=='min_time'){
+                                    l='Minimum Time';
+                                }else if(temp[i]=='avg_time'){
+                                    l='Average Time';
+                                }else if(temp[i]=='total_time'){
+                                    l='Total Time';
+                                }else if(temp[i]=='count'){
+                                    l='Total Count';
+                                    double_axis=true;
+                                }else if(temp[i]=='success'){
+                                    l='Total Success';
+                                    double_axis=true;
+                                }else if(temp[i]=='error'){
+                                    l='Total Error';
+                                    double_axis=true;
+                                }
+
+                                if(double_axis){
+                                    var t_obj={
+                                        label:l,
+                                        fillColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",0.2)",
+                                        strokeColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
+                                        pointColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
+                                        pointStrokeColor: "#fff",
+                                        pointHighlightFill: "#fff",
+                                        pointHighlightStroke: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
+                                        data:object,
+                                        axis:2,
+                                    };
+                                }else{
+                                    var t_obj={
+                                        label:l,
+                                        fillColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",0.2)",
+                                        strokeColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
+                                        pointColor: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
+                                        pointStrokeColor: "#fff",
+                                        pointHighlightFill: "#fff",
+                                        pointHighlightStroke: "rgba("+color_value[temp[i]][0]+","+color_value[temp[i]][1]+","+color_value[temp[i]][2]+",1)",
+                                        data:object,
+                                        axis:1
+                                    };
+                                }
                                 graph_datasets.push(t_obj);
                             }
                             var LineChartData={
@@ -183,11 +196,19 @@
                                 datasets:graph_datasets
                             }
 
-                            var ctx2 = $("#chart2").get(0).getContext("2d");
-                            window.myLine = new Chart(ctx2).Line(LineChartData, {
+                            var ctx2 = resetCanvas();//$("#chart2").get(0).getContext("2d");
+                            var options={
                                 pointDot:true,
-                                responsive: true
-                            });
+                                responsive: true,
+                                xAxisLabel:'Number of Users',
+                                yAxisRight : true ,
+                                yAxisUnit : 'seconds',
+                                yAxisLabel : 'Time',
+                                yAxisUnit2 : 'Number',
+                                yAxisLabel2 : 'Response',
+                            }
+                            window.myLine = new Chart(ctx2).Line(LineChartData,options);
+
                         });
                     }
                 }
