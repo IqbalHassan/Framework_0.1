@@ -1723,7 +1723,7 @@ window.Chart = function(context) {
 		annotateDisplay: true,
 		annotateRelocate: true,
 		savePng: true,
-		savePngOutput: "NewWindow", // Allowed values : "NewWindow", "CurrentWindow", "Save"
+		savePngOutput: "Save", // Allowed values : "NewWindow", "CurrentWindow", "Save"
 		savePngFunction: "mousedown right",
 		savePngBackgroundColor: 'WHITE',
 		annotateFunction: "mousemove",
