@@ -198,7 +198,7 @@ def Update_Test_Case_Tag(Conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     if DBUtil.IsDBConnectionGood(Conn) == False:
         time.sleep(1)
         Conn = GetConnection()
-    Section_Id = DBUtil.GetData(Conn, "select section_id from product_sections where section_path = '%s'" % Section_Path)
+    Section_Id = DBUtil.GetData(Conn, "select * from product_sections ps,team_wise_settings tws where section_path ~ '%s' and ps.project_id=tws.project_id and type='Section' and ps.project_id='%s'" %(Section_Path,Project_Id))
     if len(Section_Id) > 0:
         Tag_List.append(('%d' % Section_Id[0], Section_Path_Tag))
 
@@ -1171,7 +1171,7 @@ def Insert_TestCase_Tags(conn, TC_Id, Custom_Tag_List, Dependency_List, Priority
     if DBUtil.IsDBConnectionGood(conn) == False:
         time.sleep(1)
         conn = GetConnection()
-    Section_Id = DBUtil.GetData(conn, "select section_id from product_sections where section_path = '%s'" % Section_Path)
+    Section_Id = DBUtil.GetData(conn, "select * from product_sections ps,team_wise_settings tws where section_path ~ '%s' and ps.project_id=tws.project_id and type='Section' and ps.project_id='%s'" %(Section_Path,Project_Id))
     if len(Section_Id) > 0:
         Tag_List.append(('%d' % Section_Id[0], Section_Path_Tag))
         
