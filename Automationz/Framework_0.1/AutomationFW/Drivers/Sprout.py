@@ -105,7 +105,7 @@ def performance_test_case(dependency_list,steps_data,temp_q):
     full_file_name=dependency_list[0]
     #generate the config file from here
     default_configs={
-        'bench':[('cycles','5:10:20:50'),('duration',10),('startup_delay',0.01),('sleep_time',0.01),('cycle_time',1),('log_to','console file'),('sleep_time_min',0),('sleep_time_max',0.5),('log_path','Log/funkload-bench.log'),('result_path','Result/funkload-bench.xml')],
+        'bench':[('cycles','5:10:15:20'),('duration',10),('startup_delay',0.01),('sleep_time',0.01),('cycle_time',1),('log_to','console file'),('sleep_time_min',0),('sleep_time_max',0.5),('log_path','Log/funkload-bench.log'),('result_path','Result/funkload-bench.xml')],
         'main': [('title','Performance Test Case in '+klass),('description','This will run a Performance Test case in '+klass+ ' module'),('url','http://127.0.0.1:8000')]
     }
     write_config_file(full_file_name,method,dependency_list[1],steps_data,default_configs,klass)

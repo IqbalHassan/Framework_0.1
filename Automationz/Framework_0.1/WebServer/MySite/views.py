@@ -19403,7 +19403,7 @@ def delete_driver(request):
             result=simplejson.dumps(Dict)
             return HttpResponse(result,content_type='application/json')
 def PerformanceGraph(request,Run_Id):
-    query="select tc.tc_id,tc_name,tcr.status from result_test_cases tc,test_case_results tcr,test_run tr where tc.run_id=tr.run_id and tcr.run_id=tr.run_id and tc.run_id=tcr.run_id and tc.tc_id=tcr.tc_id and tcr.tc_id=tr.tc_id and tc.tc_id=tr.tc_id and tc.run_id='%s' and tr.copy_status=true"%Run_Id
+    query="select tc.tc_id,tc_name,tc.test_case_type,tcr.status from result_test_cases tc,test_case_results tcr,test_run tr where tc.run_id=tr.run_id and tcr.run_id=tr.run_id and tc.run_id=tcr.run_id and tc.tc_id=tcr.tc_id and tcr.tc_id=tr.tc_id and tc.tc_id=tr.tc_id and tc.run_id='%s' and tr.copy_status=true"%Run_Id
     Conn=GetConnection()
     test_case_list=DB.GetData(Conn,query,False)
     Conn.close()
