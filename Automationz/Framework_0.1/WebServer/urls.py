@@ -406,6 +406,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/DriverUsageTestCase/$',DriverUsageTestCase),
     url(r'^Home/.*/get_performance_type/$',get_performance_type),
     url(r'^Home/.*/Get_graph_data/$',Get_graph_data),
+    url(r'^Home/Help/$',Help),
     )
 
 

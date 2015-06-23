@@ -19459,3 +19459,6 @@ def Get_graph_data(request):
             print Dict
             result=simplejson.dumps(Dict)
             return HttpResponse(result,content_type='application/json')
+
+def Help(request):
+    return render_to_response('Help.html',{},context_instance=RequestContext(request))
