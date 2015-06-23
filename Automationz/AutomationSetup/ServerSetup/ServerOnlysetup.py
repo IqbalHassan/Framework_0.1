@@ -5,7 +5,7 @@ import subprocess
 import webbrowser
 from zipfile import *
 
-
+path= "C:\Python27\Lib\site-packages"
 install_str = "pip install"
 server_zip_file = "test.zip"
 
@@ -40,20 +40,30 @@ raw_input("Finished downloading and installing PostgreSQL? [Press \"Enter\" to c
 
 
 # Check and install django
-django_version = "1.5"
+django_version = "1.8.2"
 try:
     import django
 except ImportError as e:
-    install(type="pip", module_name="django", module_version="1.5")
+    install(type="pip", module_name="django", module_version="1.8.2")
 
+# Check and install wheel
+try:
+    import wheel
+except ImportError as e:
+    psycopg2_pip_uri = "pip install wheel -t "+path
+    install(cmd=psycopg2_pip_uri)
 
 # Check and install psycopg2
 try:
     import psycopg2
 except ImportError as e:
-    psycopg2_pip_uri = "pip install git+https://github.com/nwcell/psycopg2-windows.git@win64-py27#egg=psycopg2"
-    install(cmd=psycopg2_pip_uri)
-
+	psycopg2_pip_uri = "pip install wheel RequiredFiles\psycopg2-2.5.5-cp27-none-win32.whl"
+	install(cmd=psycopg2_pip_uri)
+try:
+	import simplejson
+except ImportError as e:
+	simplejson_command="pip install git+https://github.com/simplejson/simplejson.git"
+	install(cmd=simplejson_command)
 
 # Extract the zip file containing the server
 # https://docs.python.org/2/library/zipfile.html

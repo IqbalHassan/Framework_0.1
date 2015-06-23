@@ -94,17 +94,23 @@ def Installer_With_Pip():
         install(type="pip", module_name="poster")
     except:
         print "unable to install/update %s"%module_name  
-
-
+	
+	# Check and install wheel
+    try:
+        install(type="pip", module_name="wheel")
+    except:
+        print "unable to install/update %s"%module_name
+	
+	
 def Installer_With_Exe():
     # Check and install psycopg2
     try:
         import psycopg2
     except ImportError as e:
         try:
-            psycopg2_easy_install = "easy_install http://www.stickpeople.com/projects/python/win-psycopg/2.6.0/psycopg2-2.6.0.win32-py2.7-pg9.4.1-release.exe"
-            
-            install(cmd=psycopg2_easy_install)
+            #psycopg2_easy_install = "easy_install http://www.stickpeople.com/projects/python/win-psycopg/2.6.0/psycopg2-2.6.0.win32-py2.7-pg9.4.1-release.exe"
+			psycopg2_easy_install = "pip install wheel backupDriverFiles\psycopg2-2.5.5-cp27-none-win32.whl"
+			install(cmd=psycopg2_easy_install)
         except:
             print "unable to install/update psycopg2"
     # Check and install win32api
@@ -145,7 +151,12 @@ def Installer_With_Exe():
             install(cmd=funkload_easy_install)
         except:
             print "unable to install/update ImageGrab"
-
+	try:
+		appium_easy_install = "easy_install https://github.com/appium/python-client/archive/master.zip"
+		install(cmd=appium_easy_install)
+	except:
+		print "unable to install/update Appium"    
+	
 def Selenium_Driver_Files():
     Chrom_Driver_Download()
     Ie_Driver_Download()
