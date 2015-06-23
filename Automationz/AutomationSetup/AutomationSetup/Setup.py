@@ -243,9 +243,10 @@ def appium():
 	os.system(os.getcwd().replace('\\','/')+'/backupDriverFiles/Android/appium.bat')
 	
 def main():
-    #Installer_With_Pip()
-    #Installer_With_Exe()
-    #Selenium_Driver_Files()
+	Installer_With_Pip()
+	Installer_With_Exe()
+	Selenium_Driver_Files()
 	appium()
 
-main()
+if __name__=="__main__":
+	main()
