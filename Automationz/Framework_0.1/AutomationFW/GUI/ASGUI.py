@@ -1,3 +1,4 @@
+"""
 import kivy
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.boxlayout import BoxLayout
@@ -76,7 +77,8 @@ class LoginScreen(Screen):
         else:
             dict_status={'status':False}
             return dict_status
-    pass
+    pass
+
 class HomeScreen(Screen):
     user_id=StringProperty('')
     def __init__(self,**kwargs):
@@ -104,3 +106,50 @@ class RunmanagerApp(App):
 if __name__=='__main__':
     runmanager=RunmanagerApp()
     runmanager.run()
+
+"""
+from Tkinter import Tk,Frame,BOTH,Button,Entry,Label
+from win32api import GetSystemMetrics
+
+def hello_world(username,password,frame2):
+    print username
+    print password
+    print frame2
+class MainWindow(Frame):
+    def __init__(self,parent,width,height):
+        Frame.__init__(self,parent,background="white")
+        self.parent = parent
+        self.initUI(width,height)
+        frame1=Frame(self,height=height,width=(width/2),padx=40)
+        frame1.pack(side="left")
+        frame2=Frame(self,height=height,width=(width/2),bg="black")
+        frame2.pack(side="right")
+        #L1 = Label(frame1, text="User Name: ")
+        #L1.pack( side = "left")
+        username=Entry(frame1,width=50)
+        username.pack()
+        #L2 = Label(frame1, text="Password: ")
+        #L2.pack( side = "left")
+        password=Entry(frame1,show="*",width=50)
+        password.pack()
+        button=Button(frame1,text="login",command=hello_world(username,password,frame2))
+        button.pack()
+
+    def center_window(self,w,h):
+        #get screen height & width
+        sw = (GetSystemMetrics(0)-w)/2
+        sh = (GetSystemMetrics(1)-h)/2
+        self.parent.geometry("%dx%d+%d+%d"%(w,h,sw,sh))
+    def initUI(self,width,height):
+        self.parent.title("Simple")
+        self.pack(fill=BOTH,expand=1)
+        self.center_window(width,height)
+def main():
+    root = Tk()
+    width=800
+    height=500
+    app=MainWindow(root,width,height)
+    root.mainloop()
+
+if __name__=="__main__":
+    main()

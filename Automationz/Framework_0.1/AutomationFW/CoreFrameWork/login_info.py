@@ -3,8 +3,8 @@ import Global
 sys.path.append("..")
 
     
-username='riz'
-password='.'
+username='shetu'
+password='shetu'
 project='Sprout'
 team='QA'
 server=Global.database_ip
