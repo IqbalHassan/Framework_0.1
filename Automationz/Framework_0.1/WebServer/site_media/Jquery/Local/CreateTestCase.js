@@ -1461,12 +1461,11 @@ $(document).ready(function() {
                     }
                     else if(query == "e" && dataValidationCheck){
 //                        var _TC_Id = $('#header').text().split('/')[2].trim();
-
                         $("#submit").attr('disabled','disabled');
                         $.get("Edit_TestCase",{
                                 Section_Path:newSectionPath,
                                 Feature_Path:newFeaturePath,
-                                TC_Id:tc_id,
+                                TC_Id:referred_test_case,
                                 //Platform:platformList.join("|"),
                                 //Manual_TC_Id:test_case_Id,
                                 TC_Name:tc_title,
