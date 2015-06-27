@@ -43,16 +43,16 @@ if os.name == 'nt':
     current_location=current_location+('\\Drivers\\')
     if current_location not in sys.path:
         sys.path.append(current_location)
-def GetAllDriver():
+def GetAllDriver(server_id):
     query="select distinct driver from test_steps_list"
-    Conn=DBUtil.ConnectToDataBase()
+    Conn=DBUtil.ConnectToDataBase(sHost=server_id)
     driver_name=DBUtil.GetData(Conn,query)
     if 'Manual' in driver_name:
         driver_name.remove('Manual')
     return driver_name
-def collectAlldependency(project,team):
+def collectAlldependency(project,team,server_id):
     query="select dependency_name, array_agg(distinct name) from dependency d,dependency_management dm,dependency_name dn where d.id=dm.dependency and d.id=dn.dependency_id and dm.project_id='%s' and dm.team_id=%d group by dependency_name"%(project,int(team))
-    conn=DBUtil.ConnectToDataBase()
+    conn=DBUtil.ConnectToDataBase(sHost=server_id)
     dependency_list=DBUtil.GetData(conn,query,False)
     conn.close()
     return dependency_list
@@ -82,7 +82,7 @@ def update_global_config(section,key,value):
     with(open(file_name,'w')) as open_file:
         config.write(open_file)
                     
-def main():
+def main(server_id):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     def TimeStamp():
         """
@@ -151,7 +151,7 @@ def main():
     cur = conn.cursor()"""
     #first setup the config.ini file
     update_global_config('sectionOne','sTestStepExecLogId', sModuleInfo)
-    conn=DBUtil.ConnectToDataBase()
+    conn=DBUtil.ConnectToDataBase(sHost=server_id)
     Userid = (CommonUtil.GetLocalUser()).lower()
     UserList = DBUtil.GetData(conn, "Select User_Names from permitted_user_list")
     conn.close()
@@ -160,9 +160,9 @@ def main():
         return "You Don't Have Permission"
     
     #Get all the drivers
-    Driver_list=GetAllDriver()
+    Driver_list=GetAllDriver(server_id)
     #Find Test Runs scheduled for this user from test_run_env table
-    conn=DBUtil.ConnectToDataBase()
+    conn=DBUtil.ConnectToDataBase(sHost=server_id)
     TestRunLists = DBUtil.GetData(conn, "Select run_id,rundescription,tester_id from test_run_env Where tester_id = '%s' and (status = 'Submitted')" % Userid, False)
     conn.close()
     if len(TestRunLists) > 0:
@@ -178,13 +178,13 @@ def main():
     for TestRunID in TestRunLists:
         #get the dependency of all projects
         query="select distinct project_id, team_id from test_run_env tre, machine_project_map mpm where mpm.machine_serial=tre.id and run_id='%s'"%TestRunID[0]
-        conn=DBUtil.ConnectToDataBase()
+        conn=DBUtil.ConnectToDataBase(sHost=server_id)
         project_team=DBUtil.GetData(conn,query,False)
         conn.close()
-        dependency_list=collectAlldependency(project_team[0][0],project_team[0][1])
+        dependency_list=collectAlldependency(project_team[0][0],project_team[0][1],server_id)
         #code for the dependency_list will go here.
         query="select rundescription from test_run_env where run_id='%s'"%TestRunID[0]
-        conn=DBUtil.ConnectToDataBase()
+        conn=DBUtil.ConnectToDataBase(sHost=server_id)
         rundescription=DBUtil.GetData(conn,query)
         conn.close()
         dependency_list_final={}
@@ -201,7 +201,7 @@ def main():
         print dependency_list_final
         #TestResultsEnv Table
         #Update test_run_env table with status for the current TestRunId
-        conn=DBUtil.ConnectToDataBase()
+        conn=DBUtil.ConnectToDataBase(sHost=server_id)
         print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "where run_id = '%s'" % TestRunID[0], status='In-Progress')
         conn.close()
         currentTestSetStatus = 'In-Progress'
@@ -210,14 +210,14 @@ def main():
         #sTestResultsRunId = TestRunID[0] + '-' + sTimeStamp
         sTestResultsRunId = TestRunID[0]# + sTimeStamp
         #test set start time
-        conn=DBUtil.ConnectToDataBase()
+        conn=DBUtil.ConnectToDataBase(sHost=server_id)
         now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
         conn.close()
         sTestSetStartTime = str(now[0][0])
         iTestSetStartTime = now[0][0]
         #cur.execute("insert into test_env_results (run_id,rundescription,tester_id,status,teststarttime) values ('%s','%s','%s','In-Progress','%s')" % (sTestResultsRunId, TestRunID[1], Userid, sTestSetStartTime))
         #conn.commit()
-        conn=DBUtil.ConnectToDataBase()
+        conn=DBUtil.ConnectToDataBase(sHost=server_id)
         DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='In-Progress', teststarttime='%s' % (sTestSetStartTime))
         conn.close()
 
@@ -235,7 +235,7 @@ def main():
 
         #This step will remain here for now, just to make sure test case is added in the previous one
         #Find all test cases added in the test_run table for the current run id
-        conn=DBUtil.ConnectToDataBase()
+        conn=DBUtil.ConnectToDataBase(sHost=server_id)
         query="select distinct tc.tc_id,test_case_type,test_order from result_test_cases tc, test_run tr where tr.run_id=tc.run_id and tr.tc_id=tc.tc_id and tc.run_id='%s' order by tr.test_order"%TestRunID[0].strip()
         TestCaseLists = DBUtil.GetData(conn, query,False) #"Select TC_ID From test_run Where run_id = '%s'" % TestRunID[0], False)
         conn.close()
@@ -246,7 +246,7 @@ def main():
             print each
             test_case_id=each[0]
             query="select tc_type from result_test_cases where tc_id='%s' and run_id='%s'"%(test_case_id,TestRunID[0])
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             forced=DBUtil.GetData(conn,query)
             conn.close()
             if forced[0]=='Forc':
@@ -269,7 +269,7 @@ def main():
         Dict={}
         Dict.update({'run_type':run_type})
         sWhereQuery="where run_id='%s'" %TestRunID[0]
-        conn=DBUtil.ConnectToDataBase()
+        conn=DBUtil.ConnectToDataBase(sHost=server_id)
         print DBUtil.UpdateRecordInTable(conn,"test_run_env",sWhereQuery,**Dict)
         conn.close()
         TestCaseLists=[]
@@ -292,7 +292,7 @@ def main():
             test_case_copy_status=False
             while(test_case_copy_status!=True):
                 query="select copy_status from test_run where tc_id='%s' and run_id='%s'"%(TestCaseID[0],TestRunID[0])
-                Conn=DBUtil.ConnectToDataBase()
+                Conn=DBUtil.ConnectToDataBase(sHost=server_id)
                 test_case_copy_status=DBUtil.GetData(Conn,query)[0]
                 Conn.close()
             Global.sTestStepExecLogId = "MainDriver"
@@ -306,7 +306,7 @@ def main():
             else:
                 TestCaseName = DBUtil.GetData(conn, "Select tc_name From result_test_cases Where tc_id = '%s' and run_id='%s'" % (TCID,referred_run_id), False)
             """
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             TestCaseName = DBUtil.GetData(conn, "Select tc_name From result_test_cases Where tc_id = '%s' and run_id='%s'" % (TCID,TestRunID[0]), False)
             conn.close()
             #Create Log Folder for the TC
@@ -353,7 +353,7 @@ def main():
 
 
             #test Case start time
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
             conn.close()
             
@@ -363,11 +363,11 @@ def main():
             #cur.execute("insert into test_case_results (run_id,tc_id,status,teststarttime ) values ('%s','%s','In-Progress','%s')" % (sTestResultsRunId, TCID, sTestCaseStartTime))
             #conn.commit()
             condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"'"
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             print DBUtil.UpdateRecordInTable(conn,"test_case_results", condition,status='In-Progress',teststarttime=sTestCaseStartTime)
             conn.close()
             #Get Test Case Index to be inserted to test_step_results table
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             TestCaseResultIndex = DBUtil.GetData(conn, "Select id From test_case_results where run_id = '%s' and TC_ID = '%s' Order By id desc limit 1" % (sTestResultsRunId, TCID), False)
             conn.close()
             #get the test case steps for this test case
@@ -377,7 +377,7 @@ def main():
             else:
                 TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,ts.test_step_type From result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' and ts.run_id='%s' Order By teststepsequence" % (TCID,referred_run_id), False)
             """
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             TestStepsList = DBUtil.GetData(conn, "Select ts.step_id,stepname,teststepsequence,tsl.driver,tsl.steptype,tsl.data_required,tsl.step_editable From result_test_steps ts,result_test_steps_list tsl where ts.run_id=tsl.run_id and TC_ID = '%s' and ts.step_id = tsl.step_id and tsl.stepenable='true' and ts.run_id='%s' Order By teststepsequence" % (TCID,TestRunID[0]), False)
             conn.close()
             Stepscount = len(TestStepsList)
@@ -392,7 +392,7 @@ def main():
             else:
                 DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from result_test_case_datasets where tc_id='%s' and run_id='%s'" % (TCID,referred_run_id), False)
             """
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             DataSetList = DBUtil.GetData(conn, "Select tcdatasetid from result_test_case_datasets where tc_id='%s' and run_id='%s'" % (TCID,TestRunID[0]), False)
             conn.close()
             if len(DataSetList) == 0:
@@ -412,7 +412,7 @@ def main():
                     print "Step: ", TestStepsList[StepSeq - 1][1]
                     CommonUtil.ExecLog(sModuleInfo, "Step : %s" % TestStepsList[StepSeq - 1][1], 1)
                     testcasecontinue=False
-                    Conn=DBUtil.ConnectToDataBase()
+                    Conn=DBUtil.ConnectToDataBase(sHost=server_id)
                     query="select description from master_data where field='continue' and value='point' and id ='%s'"%(TCID+'_s'+str(StepSeq))
                     test_case_continue=DBUtil.GetData(Conn,query,False)
                     Conn.close()
@@ -432,7 +432,7 @@ def main():
                     #open a file handler and write it to it
                     update_global_config('sectionOne', 'sTestStepExecLogId', Global.sTestStepExecLogId)
                     # Test Step start time
-                    conn=DBUtil.ConnectToDataBase()
+                    conn=DBUtil.ConnectToDataBase(sHost=server_id)
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
                     conn.close()
                     sTestStepStartTime = str(now[0][0])
@@ -445,7 +445,7 @@ def main():
                     #conn.commit()
                     condition="where run_id='"+sTestResultsRunId+"' and tc_id='"+TCID+"' and teststep_id='"+str(TestStepsList[StepSeq - 1][0])+"' and teststepsequence='"+str(TestStepsList[StepSeq - 1][2])+"'"
                     Dict={'teststepsequence':TestStepsList[StepSeq - 1][2],'status':'In-Progress','stepstarttime':sTestStepStartTime,'logid':Global.sTestStepExecLogId,'start_memory':WinMemBegin,'testcaseresulttindex':TestCaseResultIndex[0][0]}
-                    conn=DBUtil.ConnectToDataBase()
+                    conn=DBUtil.ConnectToDataBase(sHost=server_id)
                     DBUtil.UpdateRecordInTable(conn,"test_step_results",condition,**Dict)
                     conn.close()
                     steps_data=[]
@@ -465,7 +465,7 @@ def main():
                     else:
                         steps_data=[]"""
                     container_id_data_query="select ctd.curname,ctd.newname from test_steps_data tsd, container_type_data ctd where tsd.testdatasetid = ctd.dataid and tcdatasetid = '%s' and teststepseq = %d and ctd.curname Ilike '%%_s%s%%'"%(EachDataSet[0],int(TestStepsList[StepSeq-1][2]),StepSeq)
-                    conn=DBUtil.ConnectToDataBase()
+                    conn=DBUtil.ConnectToDataBase(sHost=server_id)
                     container_data_details=DBUtil.GetData(conn,container_id_data_query,False)
                     conn.close()
                     steps_data=[]
@@ -476,7 +476,7 @@ def main():
                     CommonUtil.ExecLog(sModuleInfo,"steps data for #%d: %s"%(StepSeq,str(steps_data)),1)
                     #get the estimateed time for the steps
                     step_time_query="select description from result_master_data where field='estimated' and value='time' and run_id='%s' and id='%s'"%(TestRunID[0].strip(),(TCID+'_s'+str(StepSeq)).strip())
-                    conn=DBUtil.ConnectToDataBase()
+                    conn=DBUtil.ConnectToDataBase(sHost=server_id)
                     step_time=DBUtil.GetData(conn,step_time_query)
                     conn.close()
                     step_time=step_time[0]    
@@ -514,7 +514,7 @@ def main():
                                                 for echit in temp.keys():
                                                     Dict.update({echit:temp[echit]})
                                             print Dict
-                                            Conn=DBUtil.ConnectToDataBase()
+                                            Conn=DBUtil.ConnectToDataBase(sHost=server_id)
                                             print DBUtil.InsertNewRecordInToTable(Conn,"performance_results",**Dict)
                                             Conn.close()
                                     else:
@@ -601,7 +601,7 @@ def main():
                         print Error_Detail
                         CommonUtil.ExecLog(sModuleInfo, "Exception closing DB connection:%s" % Error_Detail, 2)
                     #test Step End time
-                    conn=DBUtil.ConnectToDataBase()
+                    conn=DBUtil.ConnectToDataBase(sHost=server_id)
                     now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
                     conn.close()
                     sTestStepEndTime = str(now[0][0])
@@ -640,7 +640,7 @@ def main():
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Passed"
                         CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Passed" % TestStepsList[StepSeq - 1][1], 1)
                         #Update Test Step Results table
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
                                                    status='Passed',
                                                    stependtime='%s' % (sTestStepEndTime),
@@ -654,7 +654,7 @@ def main():
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Warning"
                         CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Warning" % TestStepsList[StepSeq - 1][1], 2)
                         #Update Test Step Results table
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
                                                    status='Warning',
                                                    stependtime='%s' % (sTestStepEndTime),
@@ -670,7 +670,7 @@ def main():
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Not Run"
                         CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Not Run" % TestStepsList[StepSeq - 1][1], 2)
                         #Update Test Step Results table
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
                                                    status='Not Run',
                                                    stependtime='%s' % (sTestStepEndTime),
@@ -684,7 +684,7 @@ def main():
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Failed Failure"
                         CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Failed Failure" % TestStepsList[StepSeq - 1][1], 3)
                         #Update Test Step Results table
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
                                                    status='Failed',
                                                    stependtime='%s' % (sTestStepEndTime),
@@ -703,7 +703,7 @@ def main():
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Blocked"
                         CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Blocked" % TestStepsList[StepSeq - 1][1], 3)
                         #Update Test Step Results table
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         DBUtil.UpdateRecordInTable(conn, 'test_step_results', "Where run_id = '%s' and tc_id = '%s' and teststep_id = '%s' and teststepsequence = '%d' and testcaseresulttindex = '%d'" % (sTestResultsRunId, TCID, TestStepsList[StepSeq - 1][0], TestStepsList[StepSeq - 1][2], TestCaseResultIndex[0][0]),
                                                    status='Blocked',
                                                    stependtime='%s' % (sTestStepEndTime),
@@ -719,43 +719,43 @@ def main():
                         print TestStepsList[StepSeq - 1][1] + ": Test Step Cancelled"
                         CommonUtil.ExecLog(sModuleInfo, "%s : Test Step Cancelled" % TestStepsList[StepSeq - 1][1], 3)
                         #deleting all the run status and loggging
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"result_master_data",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"result_test_steps_data",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"result_container_type_data",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"result_test_case_datasets",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"result_test_case_tag",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"result_test_steps",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"result_test_steps_list",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"test_step_results",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"test_case_results",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"test_env_results",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"test_run",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"test_run_env",run_id=TestRunID[0])
                         conn.close()
-                        conn=DBUtil.ConnectToDataBase()
+                        conn=DBUtil.ConnectToDataBase(sHost=server_id)
                         print DBUtil.DeleteRecord(conn,"result_test_cases",run_id=TestRunID[0])
                         conn.close()
                         return "pass"
@@ -765,7 +765,7 @@ def main():
                     StepSeq = StepSeq + 1
 
                     #Check if Test Set status is 'Cancelled' When it is stopped from Website
-                    conn=DBUtil.ConnectToDataBase()
+                    conn=DBUtil.ConnectToDataBase(sHost=server_id)
                     currentTestSetStatus = DBUtil.GetData(conn, "Select status"
                               " From test_run_env"
                               " Where run_id = '%s'" % sTestResultsRunId, False)
@@ -782,7 +782,7 @@ def main():
 
             #End of test case
             #test Case End time
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
             conn.close()
             sTestCaseEndTime = str(now[0][0])
@@ -804,7 +804,7 @@ def main():
                 datasetid=TestCaseID[0]+'_s'+str(step_index)
                 query="select description from master_data where field='verification' and value='point' and id='%s'"%datasetid
                 #Conn=GetConnection()
-                conn=DBUtil.ConnectToDataBase()
+                conn=DBUtil.ConnectToDataBase(sHost=server_id)
                 status=DBUtil.GetData(conn,query,False)
                 conn.close()
                 if status[0][0]=="yes":
@@ -870,7 +870,7 @@ def main():
             request = urllib2.Request(upload_link, datagen, headers)"""
             #Find Test case failed reason
             try:
-                conn=DBUtil.ConnectToDataBase()
+                conn=DBUtil.ConnectToDataBase(sHost=server_id)
                 FailReason = CommonUtil.FindTestCaseFailedReason(conn, sTestResultsRunId, TCID)
                 conn.close()
             except Exception, e:
@@ -882,7 +882,7 @@ def main():
                 FailReason = ""
 
             #Update test case result
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             DBUtil.UpdateRecordInTable(conn, 'test_case_results', "Where run_id = '%s' and tc_id = '%s'" % (sTestResultsRunId, TCID), status='%s' % (sTestCaseStatus), testendtime='%s' % (sTestCaseEndTime), duration='%s' % (TestCaseDuration), failreason='%s' % (FailReason), logid='%s' % (TCLogFile))
             conn.close()
             #Update Performance Results if Its a Performance test case And if test case had Passed
@@ -900,7 +900,7 @@ def main():
                 hwmodel = HWobj.CompInfo().HWModel
                 print "HW Model:", hwmodel
 
-                conn=DBUtil.ConnectToDataBase()
+                conn=DBUtil.ConnectToDataBase(sHost=server_id)
                 DBUtil.InsertNewRecordInToTable(conn, 'performance_results',
                         product_version=product_version,
                         tc_id=list(TestCaseID)[0],
@@ -912,7 +912,7 @@ def main():
                         hw_model=hwmodel)
                 conn.close()
             #Check if Test Set status is 'Cancelled' When it is stopped from Website
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             currentTestSetStatus = DBUtil.GetData(conn, "Select status"
                       " From test_run_env"
                       " Where run_id = '%s'" % sTestResultsRunId, False)
@@ -928,7 +928,7 @@ def main():
         #End of Test Set    
         #Update entry in the TestResultsEnv table that this run is completed
         #test set end time
-        conn=DBUtil.ConnectToDataBase()
+        conn=DBUtil.ConnectToDataBase(sHost=server_id)
         now = DBUtil.GetData(conn, "SELECT CURRENT_TIMESTAMP;", False)
         conn.close()
         sTestSetEndTime = str(now[0][0])
@@ -937,82 +937,24 @@ def main():
 
         #Update Test Run tables based on the Test Set Status
         if currentTestSetStatus == 'Cancelled':
-            conn=DBUtil.ConnectToDataBase()
+            conn=DBUtil.ConnectToDataBase(sHost=server_id)
             DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='Cancelled', testendtime='%s' % (sTestSetEndTime), duration='%s' % (TestSetDuration))
             conn.close()
             print "Test Set Cancelled by the User"
             CommonUtil.ExecLog(sModuleInfo, "Test Set Cancelled by the User", 1)
         else:
             if (automation_count>0 or performance_count>0) and (automation_count+performance_count)==len(TestCaseLists):
-                conn=DBUtil.ConnectToDataBase()
+                conn=DBUtil.ConnectToDataBase(sHost=server_id)
                 print DBUtil.UpdateRecordInTable(conn, 'test_env_results', "Where run_id = '%s' and tester_id = '%s'" % (sTestResultsRunId, Userid), status='Complete', testendtime='%s' % (sTestSetEndTime), duration='%s' % (TestSetDuration))
                 conn.close()
                 #Update test_run_env schedule table with status so that this Test Set will not be run again
-                conn=DBUtil.ConnectToDataBase()
+                conn=DBUtil.ConnectToDataBase(sHost=server_id)
                 print DBUtil.UpdateRecordInTable(conn, 'test_run_env', "Where run_id = '%s' and tester_id = '%s'" % (TestRunID[0], Userid), status='Complete',email_flag=True)
                 conn.close()
                 print "Test Set Completed"
             #CommonUtil.ExecLog(sModuleInfo, "Test Set Completed", 1)
 
             Global.sTestStepExecLogId = "MainDriver"
-            """
-            try:
-                #Send Summary Email
-                oConn=DBUtil.ConnectToDataBase()
-                ToEmailAddress = DBUtil.GetData(oConn, "select email_notification from test_run_env where run_id = '%s'" % (TestRunID[0]))
-                TestObjective = DBUtil.GetData(oConn, "select test_objective from test_run_env where run_id = '"+TestRunID[0]+"'")
-                tester = DBUtil.GetData(oConn, "select assigned_tester from test_run_env where run_id = '"+TestRunID[0]+"'")
-                #import EmailNotify
-                #EmailNotify.Complete_Email(allEmailIds,run_id,TestObjective,status,'','')
-                mlist = [] 
-                #global mlist
-                
-                pass_query = "select count(*) from test_case_results where run_id='%s' and status='Passed'" % TestRunID[0]
-                passed = DBUtil.GetData(oConn, pass_query)
-                mlist.append(passed)
-                fail_query = "select count(*) from test_case_results where run_id='%s' and status='Failed'" % TestRunID[0]
-                fail = DBUtil.GetData(oConn, fail_query)
-                mlist.append(fail)
-                blocked_query = "select count(*) from test_case_results where run_id='%s' and status='Blocked'" % TestRunID[0]
-                blocked = DBUtil.GetData(oConn, blocked_query)
-                mlist.append(blocked)
-                progress_query = "select count(*) from test_case_results where run_id='%s' and status='In-Progress'" % TestRunID[0]
-                progress = DBUtil.GetData(oConn, progress_query)
-                mlist.append(progress)
-                submitted_query = "select count(*) from test_case_results where run_id='%s' and status='Submitted'" % TestRunID[0]
-                submitted = DBUtil.GetData(oConn, submitted_query)
-                mlist.append(submitted)
-                skipped_query = "select count(*) from test_case_results where run_id='%s' and status='Skipped'" % TestRunID[0]
-                skipped = DBUtil.GetData(oConn, skipped_query)
-                mlist.append(skipped)
-                total_query = "select count(*) from test_case_results where run_id='%s'" % TestRunID[0]
-                total = DBUtil.GetData(oConn, total_query)
-                mlist.append(total)
-                duration = DBUtil.GetData(
-                    oConn,
-                    "select to_char(now()-teststarttime,'HH24:MI:SS') as Duration from test_env_results where run_id = '" +
-                    TestRunID[0] +
-                    "'")
-                
-                oConn.close()
-                if ToEmailAddress[0]:
-                    #conn=DBUtil.ConnectToDataBase()
-                    #email notify
-                    try:
-                        urllib2.urlopen("http://www.google.com").close()
-                        EmailNotify.Complete_Email(self,ToEmailAddress[0],TestRunID[0],TestObjective[0],status,mlist,tester,duration,'','')
-                        print "connected"
-                        results = ['OK']
-                    except urllib2.URLError:
-                        print "disconnected"
-                        results = ['NOK']
-            except Exception, e:
-                exc_type, exc_obj, exc_tb = sys.exc_info()        
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
-                print Error_Detail
-                return "pass"
-            """
     #Close DB Connection
     conn.close()
     return "pass"
@@ -1020,6 +962,6 @@ def main():
 if __name__ == "__main__":
 
     Global.sTestStepExecLogId = "MainDriver"
-    print main()
+    print main(Global.database_ip)
 
 
