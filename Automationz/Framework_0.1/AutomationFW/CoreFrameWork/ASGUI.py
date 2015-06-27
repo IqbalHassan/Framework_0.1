@@ -93,7 +93,7 @@ class MyWizard(wx.wizard.Wizard):
     def create_log_page(self):
         console_log=WizardPage(self,"console_page")
         console_log.SetName("consolePage")
-        self.log=wx.TextCtrl(console_log,style=wx.TE_MULTILINE|wx.TE_READONLY,size=(600,600))
+        self.log=wx.TextCtrl(console_log,style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_AUTO_SCROLL,size=(500,350))
         #self.log.Disable()
         dir=RedirectText(self.log)
         sys.stdout=dir
@@ -136,7 +136,9 @@ class AS(threading.Thread):
     def run(self):
         print threading.currentThread().getName()
         if self.check_credential():
-            self.run_process(self.update_machine(self.collectAllDependency(dependency)))
+            value = self.run_process(self.update_machine(self.collectAllDependency(dependency)))
+            if value:
+                self.run()
         else:
             self.update_machine(self.collectAllDependency(dependency))
     def run_process(self,sTesterid):
