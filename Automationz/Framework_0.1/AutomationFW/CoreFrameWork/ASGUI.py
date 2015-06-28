@@ -409,14 +409,14 @@ class AS(threading.Thread):
                         name=temp.split('-')[0].split(' ')[0].strip()
                         temp_list.append((name,bit,version))
                     if each=='Browser':
-                        print temp
+                        #print temp
                         temp=temp.split(",")
                         for eachitem in temp:
                             if ";" not in eachitem:
                                 bit=0
                                 version='Nil'
                                 name=temp[0].strip()
-                                print name
+                                #print name
                             else:
                                 bit=int(eachitem.split(";")[1].strip()[0:2])
                                 version=eachitem.split(";")[0].split("(")[1].split("V")[1].strip()
