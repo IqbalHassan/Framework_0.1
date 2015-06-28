@@ -4,7 +4,7 @@ import sys
 import threading
 import os
 import DataBaseUtilities as DB
-from dependencyCollector import product_version,dependency
+from dependencyCollector import product_version
 import CommonUtil
 import Global
 import MainDriver
@@ -51,12 +51,19 @@ class MyWizard(wx.wizard.Wizard):
         wx.wizard.Wizard.__init__(self, None, -1, "Automation Solutionz")
         self.SetPageSize((500, 350))
         self.login_page=self.create_login_page()
+        self.dependency_page=self.create_dependency_page()
         self.console_log=self.create_log_page()
         self.Bind(wx.wizard.EVT_WIZARD_PAGE_CHANGED,self.pageChanged)
         self.Bind(wx.wizard.EVT_WIZARD_FINISHED,self.Destruction)
+        self.login_page.SetNext(self.dependency_page)
+        self.dependency_page.SetNext(self.console_log)
         self.RunWizard(self.login_page)
     def Destruction(self):
         self.Destroy()
+    def create_dependency_page(self):
+        dependency_page=WizardPage(self,"dependency_page")
+        dependency_page.SetName('dependencyPage')
+        return dependency_page
     def create_login_page(self):
         login_page=WizardPage(self,"login_page")
         Username_label=wx.StaticText(login_page,label="Username: ")
@@ -98,8 +105,7 @@ class MyWizard(wx.wizard.Wizard):
         dir=RedirectText(self.log)
         sys.stdout=dir
         sys.stderr=dir
-        self.login_page.SetNext(console_log)
-
+        return console_log
     def OnUpdate(self,event):
         username = self.username.GetValue()
         password = self.password.GetValue()
@@ -112,8 +118,48 @@ class MyWizard(wx.wizard.Wizard):
             forward_btn.Enable()
         else:
             forward_btn.Disable()
+
+    def onChoice(self,evt):
+        temp_object={}
+        okay=False
+        for each in range(1,len(self.dependency)+1):
+            temp=getattr(self,'dependency_'+str(each))
+            forward_btn=self.FindWindowById(wx.ID_FORWARD)
+            if temp.GetCurrentSelection()==-1:
+                forward_btn.Disable()
+                okay=False
+            else:
+                temp_object.update({self.dependency[each-1][0]:self.dependency[each-1][1][temp.GetCurrentSelection()]})
+                forward_btn.Enable()
+                okay=True
+        if okay:
+            self.selected_dependency=temp_object
     def pageChanged(self,evt):
         page=evt.GetPage()
+        if page.GetName()=='dependencyPage':
+            forward_btn=self.FindWindowById(wx.ID_FORWARD)
+            forward_btn.Disable()
+            username = self.username.GetValue()
+            password = self.password.GetValue()
+            server = self.ServerText.GetValue()
+            port = self.port.GetValue()
+            project = self.project.GetValue()
+            team = self.team.GetValue()
+            query="select dependency_name,array_agg(distinct name) from dependency_management dm,dependency d,dependency_name dn where d.project_id=dm.project_id and d.id=dm.dependency and dm.project_id=(select project_id from projects where project_name='%s') and dm.team_id=(select id from team where project_id=(select project_id from projects where project_name='%s') and team_name='%s') and dn.dependency_id=d.id group by dependency_name"%(project,project,team)
+            Conn=DB.ConnectToDataBase(sHost=server)
+            dependency=DB.GetData(Conn,query,False)
+            Conn.close()
+            #dependency=[('Browser',['Chrome','Firefox']),('Platform',['Android','PC'])]
+            self.dependency=dependency
+            count=1
+            for each in self.dependency:
+                span=wx.StaticText(self.dependency_page,label=each[0]+":")
+                choices=wx.Choice(self.dependency_page,choices=each[1])#,pos=(x_pos+20,y_pos+5))
+                self.dependency_page.addWidget(choices,(count,10),(count,10))
+                self.dependency_page.addWidget(span,(count,1),(count,1))
+                self.Bind(wx.EVT_CHOICE,self.onChoice,choices)
+                setattr(self,'dependency_'+str(count),choices)
+                count+=1
         if page.GetName()=='consolePage':
             username=self.username.GetValue()
             password=self.password.GetValue()
@@ -121,11 +167,11 @@ class MyWizard(wx.wizard.Wizard):
             port = self.port.GetValue()
             project = self.project.GetValue()
             team = self.team.GetValue()
-            worker=AS(username,password,project,team,server,port)
+            worker=AS(username,password,project,team,server,port,self.selected_dependency)
             worker.setName("Automation Solutionz is running")
             worker.start()
 class AS(threading.Thread):
-    def __init__(self,username,password,project,team,server,port):
+    def __init__(self,username,password,project,team,server,port,dependency):
         threading.Thread.__init__(self)
         self.username=username
         self.password=password
@@ -133,14 +179,15 @@ class AS(threading.Thread):
         self.team=team
         self.server=server
         self.port=port
+        self.dep=dependency
     def run(self):
         print threading.currentThread().getName()
         if self.check_credential():
-            value = self.run_process(self.update_machine(self.collectAllDependency(dependency)))
+            value = self.run_process(self.update_machine(self.collectAllDependency(self.dep)))
             if value:
                 self.run()
         else:
-            self.update_machine(self.collectAllDependency(dependency))
+            self.update_machine(self.collectAllDependency(self.dep))
     def run_process(self,sTesterid):
         while (1):
             try:
@@ -362,11 +409,18 @@ class AS(threading.Thread):
                         name=temp.split('-')[0].split(' ')[0].strip()
                         temp_list.append((name,bit,version))
                     if each=='Browser':
+                        print temp
                         temp=temp.split(",")
                         for eachitem in temp:
-                            bit=int(eachitem.split(";")[1].strip()[0:2])
-                            version=eachitem.split(";")[0].split("(")[1].split("V")[1].strip()
-                            name=eachitem.split(";")[0].split("(")[0].strip()
+                            if ";" not in eachitem:
+                                bit=0
+                                version='Nil'
+                                name=temp[0].strip()
+                                print name
+                            else:
+                                bit=int(eachitem.split(";")[1].strip()[0:2])
+                                version=eachitem.split(";")[0].split("(")[1].split("V")[1].strip()
+                                name=eachitem.split(";")[0].split("(")[0].strip()
                             temp_list.append((name,bit,version))
                     if each=='TestCaseType':
                         temp_list.append((temp,0,''))
