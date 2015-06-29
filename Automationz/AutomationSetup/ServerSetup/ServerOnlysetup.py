@@ -64,6 +64,11 @@ try:
 except ImportError as e:
 	simplejson_command="pip install git+https://github.com/simplejson/simplejson.git"
 	install(cmd=simplejson_command)
+try:
+	import mailer
+except ImportError as e:
+	simplejson_command="pip install mailer"
+	install(cmd=simplejson_command)
 
 # Extract the zip file containing the server
 # https://docs.python.org/2/library/zipfile.html

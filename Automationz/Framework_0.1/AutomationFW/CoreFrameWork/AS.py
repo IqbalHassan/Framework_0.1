@@ -36,7 +36,7 @@ def RunProcess(sTesterid):
                         config.set('sectionOne','temp_run_file_path',current_path)
                         with (open(current_path_file,'w')) as configFile:
                             config.write(configFile)
-                    value=MainDriver.main()
+                    value=MainDriver.main(Global.database_ip)
                     print "updating db with parameter"
                     if value=="pass":
                         break

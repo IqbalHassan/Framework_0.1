@@ -933,6 +933,7 @@ def Update_Test_Case_Datasets(Conn, dataset_id, tc_id):
 def Update_TestCaseDetails(Conn, New_TC_Id, TC_Name, TC_Creator,TC_Type):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
     # Form the Dictionary to add test case information
+    TC_Name=TC_Name[:100]
     Dict = {
               'tc_id':New_TC_Id,
               'tc_name':TC_Name.strip(),
@@ -1539,6 +1540,7 @@ def Insert_TestCaseDataSet(conn, TC_DataSet_Id, TC_Id):
 
 def Insert_TestCaseName(Conn, TC_Id, TC_Name, TC_Creator,TC_Type):
     sModuleInfo = inspect.stack()[0][3] + " : " + inspect.getmoduleinfo(__file__).name
+    TC_Name=TC_Name[:100]
     # Form the Dictionary to add test case information
     Dict = {
               'tc_id':TC_Id,
