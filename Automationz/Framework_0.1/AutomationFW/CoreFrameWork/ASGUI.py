@@ -50,15 +50,21 @@ class MyWizard(wx.wizard.Wizard):
         wx.wizard.Wizard.__init__(self, None, -1, "Automation Solutionz")
         self.SetPageSize((500, 350))
         self.login_page=self.create_login_page()
+        self.project_team_page=self.create_project_team_page()
         self.dependency_page=self.create_dependency_page()
         self.version_page=self.create_version_page()
         self.console_log=self.create_log_page()
         self.Bind(wx.wizard.EVT_WIZARD_PAGE_CHANGED,self.pageChanged)
         self.Bind(wx.wizard.EVT_WIZARD_FINISHED,self.Destruction)
-        self.login_page.SetNext(self.dependency_page)
+        self.login_page.SetNext(self.project_team_page)
+        self.project_team_page.SetNext(self.dependency_page)
         self.dependency_page.SetNext(self.version_page)
         self.version_page.SetNext(self.console_log)
         self.RunWizard(self.login_page)
+    def create_project_team_page(self):
+        project_team_page=WizardPage(self,'project_team_page')
+        project_team_page.SetName('projectPage')
+        return project_team_page
     def create_version_page(self):
         version_page=WizardPage(self,'version_page')
         version_page.SetName('versionPage')
@@ -84,23 +90,13 @@ class MyWizard(wx.wizard.Wizard):
         server_text=wx.StaticText(login_page,label="Server: ")
         login_page.addWidget(server_text,(3,10),(1,10))
         self.ServerText=wx.TextCtrl(login_page)
-        self.ServerText.SetValue('24.212.218.235')
+        self.ServerText.SetValue('127.0.0.1')
         login_page.addWidget(self.ServerText,(3,20),(1,20))
         port_text=wx.StaticText(login_page,label="Port: ")
         login_page.addWidget(port_text,(4,10),(1,10))
         self.port=wx.TextCtrl(login_page)
         self.port.SetValue('5432')
         login_page.addWidget(self.port,(4,20),(1,20))
-        project_text=wx.StaticText(login_page,label="Project: ")
-        login_page.addWidget(project_text,(5,10),(1,10))
-        self.project=wx.TextCtrl(login_page)
-        self.project.SetValue('AscendLearning')
-        login_page.addWidget(self.project,(5,20),(1,20))
-        team_text=wx.StaticText(login_page,label="Team: ")
-        login_page.addWidget(team_text,(6,10),(1,10))
-        self.team=wx.TextCtrl(login_page)
-        self.team.SetValue('ClickSafety')
-        login_page.addWidget(self.team,(6,20),(1,20))
         return login_page
     def create_log_page(self):
         console_log=WizardPage(self,"console_page")
@@ -116,10 +112,8 @@ class MyWizard(wx.wizard.Wizard):
         password = self.password.GetValue()
         server = self.ServerText.GetValue()
         port = self.port.GetValue()
-        project = self.project.GetValue()
-        team = self.team.GetValue()
         forward_btn = self.FindWindowById(wx.ID_FORWARD)
-        if username and password and server and project and team and port:
+        if username and password and server and port:
             forward_btn.Enable()
         else:
             forward_btn.Disable()
@@ -210,15 +204,78 @@ class MyWizard(wx.wizard.Wizard):
             forward_btn.Enable()
         else:
             forward_btn.Disable()
+    def on_team_change(self,evt):
+        self.check_project()
+    def check_project(self):
+        project_elem=getattr(self,'project_name')
+        t=getattr(self,'team_name')
+        forward_btn=self.FindWindowById(wx.ID_FORWARD)
+        if project_elem.GetCurrentSelection()==-1 or t.GetCurrentSelection()==-1:
+            forward_btn.Disable()
+        else:
+            self.project_name_full=project_elem.GetString(project_elem.GetCurrentSelection())
+            self.team_name_full=t.GetString(t.GetCurrentSelection())
+            forward_btn.Enable()
+    def on_project_change(self,evt):
+        project_elem=getattr(self,'project_name')
+        project_name = project_elem.GetString(project_elem.GetCurrentSelection())
+        username=self.username.GetValue()
+        password=self.password.GetValue()
+        server = self.ServerText.GetValue()
+        query="select distinct team_name from team_info ti, team t where ti.team_id =t.id and t.project_id=(select project_id from projects where project_name='%s') and ti.user_id=(select user_id::text from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names and ui.username='%s' and ui.password='%s')"%(project_name,username,password)
+        #print query
+        Conn=DB.ConnectToDataBase(sHost=server)
+        team_list=DB.GetData(Conn,query)
+        Conn.close()
+        t=getattr(self,'team_name')
+        t.Clear()
+        for each in team_list:
+            t.Append(str(each))
+        self.check_project()
     def pageChanged(self,evt):
         page=evt.GetPage()
+        if page.GetName()=='projectPage':
+            username = self.username.GetValue()
+            password = self.password.GetValue()
+            server = self.ServerText.GetValue()
+            port = self.port.GetValue()
+            query="select distinct p.project_name from projects p,user_project_map upm, project_team_map  ptm where p.project_id=upm.project_id and p.project_id=ptm.project_id and upm.project_id=ptm.project_id  and upm.user_id=(select user_id from permitted_user_list pul, user_info ui where ui.full_name=pul.user_names and ui.username='%s' and ui.password='%s')"%(username,password)
+            Conn=DB.ConnectToDataBase(sHost=server)
+            project_list=DB.GetData(Conn,query)
+            Conn.close()
+            final_list=[]
+            for each in project_list:
+                query="select count(*) from project_team_map where project_id=(select project_id from projects where project_name='%s')"%each
+                Conn=DB.ConnectToDataBase(sHost=server)
+                count=DB.GetData(Conn,query)
+                Conn.close()
+                if len(count)==1 and count[0]>0:
+                    final_list.append(each)
+            project_list=final_list
+            forward_btn=self.FindWindowById(wx.ID_FORWARD)
+            forward_btn.Disable()
+            count=1
+            project_span=wx.StaticText(self.project_team_page,label='Project: ')
+            self.project_team_page.addWidget(project_span,(count,1),(count,1))
+            project_choice=wx.Choice(self.project_team_page,choices=project_list)
+            self.project_team_page.addWidget(project_choice,(count,10),(count,20))
+            count+=1
+            team_span=wx.StaticText(self.project_team_page,label='Team: ')
+            self.project_team_page.addWidget(team_span,(count,1),(count,1))
+            team_choice=wx.Choice(self.project_team_page,choices=[])
+            self.project_team_page.addWidget(team_choice,(count,10),(count,20))
+            self.Bind(wx.EVT_CHOICE,self.on_project_change,project_choice)
+            self.Bind(wx.EVT_CHOICE,self.on_team_change,team_choice)
+            setattr(self,'project_name',project_choice)
+            setattr(self,'team_name',team_choice)
+
         if page.GetName()=='versionPage':
             username = self.username.GetValue()
             password = self.password.GetValue()
             server = self.ServerText.GetValue()
             port = self.port.GetValue()
-            project = self.project.GetValue()
-            team = self.team.GetValue()
+            project = self.project_name_full
+            team = self.team_name_full
             branch_query="select branch_name,array_agg(version_name) from branch_management bm,branch b,versions v where bm.branch=b.id and b.id =v.id and bm.project_id=(select project_id from projects where project_name='%s') and bm.team_id=(select id from team where project_id=(select project_id from projects where project_name='%s') and team_name='%s') group by b.branch_name"%(project,project,team)
             Conn=DB.ConnectToDataBase(sHost=server)
             branch_version=DB.GetData(Conn,branch_query,False)
@@ -227,7 +284,7 @@ class MyWizard(wx.wizard.Wizard):
             #print self.branch
             count=1
             forward_btn=self.FindWindowById(wx.ID_FORWARD)
-            forward_btn.Disable()
+            #forward_btn.Disable()
             branch_span=wx.StaticText(self.version_page,label='Branch: ')
             b=[x[0] for x in self.branch]
             self.version_page.addWidget(branch_span,(count,1),(count,1))
@@ -245,10 +302,10 @@ class MyWizard(wx.wizard.Wizard):
             password = self.password.GetValue()
             server = self.ServerText.GetValue()
             port = self.port.GetValue()
-            project = self.project.GetValue()
-            team = self.team.GetValue()
+            project = self.project_name_full
+            team = self.team_name_full
             forward_btn=self.FindWindowById(wx.ID_FORWARD)
-            forward_btn.Disable()
+            #forward_btn.Disable()
             query="select dependency_name,array_agg(distinct name) from dependency_management dm,dependency d,dependency_name dn where d.project_id=dm.project_id and d.id=dm.dependency and dm.project_id=(select project_id from projects where project_name='%s') and dm.team_id=(select id from team where project_id=(select project_id from projects where project_name='%s') and team_name='%s') and dn.dependency_id=d.id group by dependency_name"%(project,project,team)
             #print query
             Conn=DB.ConnectToDataBase(sHost=server)
@@ -296,8 +353,8 @@ class MyWizard(wx.wizard.Wizard):
             password=self.password.GetValue()
             server = self.ServerText.GetValue()
             port = self.port.GetValue()
-            project = self.project.GetValue()
-            team = self.team.GetValue()
+            project = self.project_name_full
+            team = self.team_name_full
             worker=AS(username,password,project,team,server,port,self.selected_dependency,self.product_version)
             worker.setName("Automation Solutionz is running")
             worker.start()
