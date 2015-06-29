@@ -109,7 +109,7 @@ function getAllmachine(machinePerPage,machinePageCurrent,project_id,team_id){
             hrefTextPrefix:'#',
             onPageClick:function(PageNumber){
                 //PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
-                getAllmachine(machinePerPage,PageNumber);
+                getAllmachine(machinePerPage,PageNumber,project_id,team_id);
             }
         });
     });
