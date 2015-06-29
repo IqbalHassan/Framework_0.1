@@ -4,7 +4,6 @@ import sys
 import threading
 import os
 import DataBaseUtilities as DB
-from dependencyCollector import product_version
 import CommonUtil
 import Global
 import MainDriver
@@ -52,12 +51,18 @@ class MyWizard(wx.wizard.Wizard):
         self.SetPageSize((500, 350))
         self.login_page=self.create_login_page()
         self.dependency_page=self.create_dependency_page()
+        self.version_page=self.create_version_page()
         self.console_log=self.create_log_page()
         self.Bind(wx.wizard.EVT_WIZARD_PAGE_CHANGED,self.pageChanged)
         self.Bind(wx.wizard.EVT_WIZARD_FINISHED,self.Destruction)
         self.login_page.SetNext(self.dependency_page)
-        self.dependency_page.SetNext(self.console_log)
+        self.dependency_page.SetNext(self.version_page)
+        self.version_page.SetNext(self.console_log)
         self.RunWizard(self.login_page)
+    def create_version_page(self):
+        version_page=WizardPage(self,'version_page')
+        version_page.SetName('versionPage')
+        return version_page
     def Destruction(self):
         self.Destroy()
     def create_dependency_page(self):
@@ -69,17 +74,17 @@ class MyWizard(wx.wizard.Wizard):
         Username_label=wx.StaticText(login_page,label="Username: ")
         login_page.addWidget(Username_label,(1,10),(1,10))
         self.username = wx.TextCtrl(login_page)
-        self.username.SetValue('shetu')
+        self.username.SetValue('riz')
         login_page.addWidget(self.username,(1,20),(1,20))
         password_label = wx.StaticText(login_page,label="Password: ")
         login_page.addWidget(password_label,(2,10),(1,10))
         self.password = wx.TextCtrl(login_page,style=wx.TE_PASSWORD)
-        self.password.SetValue('shetu')
+        self.password.SetValue('.')
         login_page.addWidget(self.password,(2,20),(1,20))
         server_text=wx.StaticText(login_page,label="Server: ")
         login_page.addWidget(server_text,(3,10),(1,10))
         self.ServerText=wx.TextCtrl(login_page)
-        self.ServerText.SetValue('127.0.0.1')
+        self.ServerText.SetValue('24.212.218.235')
         login_page.addWidget(self.ServerText,(3,20),(1,20))
         port_text=wx.StaticText(login_page,label="Port: ")
         login_page.addWidget(port_text,(4,10),(1,10))
@@ -89,12 +94,12 @@ class MyWizard(wx.wizard.Wizard):
         project_text=wx.StaticText(login_page,label="Project: ")
         login_page.addWidget(project_text,(5,10),(1,10))
         self.project=wx.TextCtrl(login_page)
-        self.project.SetValue('Automation Solutionz')
+        self.project.SetValue('AscendLearning')
         login_page.addWidget(self.project,(5,20),(1,20))
         team_text=wx.StaticText(login_page,label="Team: ")
         login_page.addWidget(team_text,(6,10),(1,10))
         self.team=wx.TextCtrl(login_page)
-        self.team.SetValue('AutomationTester')
+        self.team.SetValue('ClickSafety')
         login_page.addWidget(self.team,(6,20),(1,20))
         return login_page
     def create_log_page(self):
@@ -120,45 +125,171 @@ class MyWizard(wx.wizard.Wizard):
             forward_btn.Disable()
 
     def onChoice(self,evt):
+        temp=str(evt.GetId()).split('1000')[1].strip()
+        choice=(int(temp),int(evt.GetEventObject().GetCurrentSelection()))
+        selected_data=self.dependency[choice[0]-1][1][choice[1]]
+        c=[str(x[0]) for x in selected_data[1]]
+        v=getattr(self,'version_'+str(choice[0]))
+        t=getattr(self,'bit_'+str(choice[0]))
+        t.Clear()
+        v.Clear()
+        #print c
+        if c:
+            for each in c:
+                t.Append(each)
+        else:
+            t.Append("N/A")
+            v.Append("N/A")
+        self.check_valid()
+    def check_valid(self):
         temp_object={}
         okay=False
+        forward_btn=self.FindWindowById(wx.ID_FORWARD)
         for each in range(1,len(self.dependency)+1):
             temp=getattr(self,'dependency_'+str(each))
-            forward_btn=self.FindWindowById(wx.ID_FORWARD)
-            if temp.GetCurrentSelection()==-1:
-                forward_btn.Disable()
+            bit=getattr(self,'bit_'+str(each))
+            version=getattr(self,'version_'+str(each))
+            if temp.GetCurrentSelection()==-1 or bit.GetCurrentSelection()==-1 or version.GetCurrentSelection()==-1 :
                 okay=False
             else:
-                temp_object.update({self.dependency[each-1][0]:self.dependency[each-1][1][temp.GetCurrentSelection()]})
-                forward_btn.Enable()
+                name=temp.GetString(temp.GetCurrentSelection())
+                bit=bit.GetString(bit.GetCurrentSelection())
+                version=version.GetString(version.GetCurrentSelection())
+                tmp_string=name+":"+bit+":"+version
+                temp_object.update({self.dependency[each-1][0]:tmp_string})
                 okay=True
         if okay:
             self.selected_dependency=temp_object
+            #print self.selected_dependency
+            forward_btn.Enable()
+        else:
+            forward_btn.Disable()
+
+    def onBit(self,evt):
+        temp_id=str(evt.GetId()).split('2000')[1].strip()
+        b=getattr(self,'bit_'+temp_id)
+        #print temp_id
+        #print b.GetCurrentSelection()
+        d=getattr(self,'dependency_'+temp_id)
+        if b.GetString(b.GetCurrentSelection())!='N/A':
+            index=int(temp_id)
+            selected_data=self.dependency[index-1][1][d.GetCurrentSelection()][1][b.GetCurrentSelection()][1]
+            #print selected_data
+            v=getattr(self,'version_'+temp_id)
+            v.Clear()
+            for each in selected_data:
+                v.Append(str(each))
+        self.check_valid()
+    def onVersion(self,evt):
+        self.check_valid()
+    def onBranch_Version(self,evt):
+        self.check_version_valid()
+    def onBranch(self,evt):
+        obj=getattr(self,'branch_name')
+        data=self.branch[obj.GetCurrentSelection()][1]
+        v=getattr(self,'branch_version')
+        v.Clear()
+        for each in data:
+            v.Append(each)
+        self.check_version_valid()
+    def check_version_valid(self):
+        branch_okay=False
+        branch_name=getattr(self,'branch_name')
+        branch_version=getattr(self,'branch_version')
+        forward_btn=self.FindWindowById(wx.ID_FORWARD)
+        #print branch_name.GetCurrentSelection()
+        #print branch_version.GetCurrentSelection()
+        if branch_name.GetCurrentSelection()==-1 or branch_version.GetCurrentSelection()==-1:
+            branch_okay=False
+        else:
+            tmp_string=branch_name.GetString(branch_name.GetCurrentSelection())+":"+branch_version.GetString(branch_version.GetCurrentSelection())
+            #print tmp_string
+            branch_okay=True
+        if branch_okay:
+            self.product_version=tmp_string
+            forward_btn.Enable()
+        else:
+            forward_btn.Disable()
     def pageChanged(self,evt):
         page=evt.GetPage()
-        if page.GetName()=='dependencyPage':
-            forward_btn=self.FindWindowById(wx.ID_FORWARD)
-            forward_btn.Disable()
+        if page.GetName()=='versionPage':
             username = self.username.GetValue()
             password = self.password.GetValue()
             server = self.ServerText.GetValue()
             port = self.port.GetValue()
             project = self.project.GetValue()
             team = self.team.GetValue()
+            branch_query="select branch_name,array_agg(version_name) from branch_management bm,branch b,versions v where bm.branch=b.id and b.id =v.id and bm.project_id=(select project_id from projects where project_name='%s') and bm.team_id=(select id from team where project_id=(select project_id from projects where project_name='%s') and team_name='%s') group by b.branch_name"%(project,project,team)
+            Conn=DB.ConnectToDataBase(sHost=server)
+            branch_version=DB.GetData(Conn,branch_query,False)
+            Conn.close()
+            self.branch=branch_version
+            #print self.branch
+            count=1
+            forward_btn=self.FindWindowById(wx.ID_FORWARD)
+            forward_btn.Disable()
+            branch_span=wx.StaticText(self.version_page,label='Branch: ')
+            b=[x[0] for x in self.branch]
+            self.version_page.addWidget(branch_span,(count,1),(count,1))
+            branch_choice=wx.Choice(self.version_page,choices=b)
+            self.version_page.addWidget(branch_choice,(count,10),(count,10))
+            branch_version_choice=wx.Choice(self.version_page,choices=[])
+            self.version_page.addWidget(branch_version_choice,(count,22),(count,8))
+            self.Bind(wx.EVT_CHOICE,self.onBranch,branch_choice)
+            self.Bind(wx.EVT_CHOICE,self.onBranch_Version,branch_version_choice)
+            setattr(self,'branch_name',branch_choice)
+            setattr(self,'branch_version',branch_version_choice)
+
+        if page.GetName()=='dependencyPage':
+            username = self.username.GetValue()
+            password = self.password.GetValue()
+            server = self.ServerText.GetValue()
+            port = self.port.GetValue()
+            project = self.project.GetValue()
+            team = self.team.GetValue()
+            forward_btn=self.FindWindowById(wx.ID_FORWARD)
+            forward_btn.Disable()
             query="select dependency_name,array_agg(distinct name) from dependency_management dm,dependency d,dependency_name dn where d.project_id=dm.project_id and d.id=dm.dependency and dm.project_id=(select project_id from projects where project_name='%s') and dm.team_id=(select id from team where project_id=(select project_id from projects where project_name='%s') and team_name='%s') and dn.dependency_id=d.id group by dependency_name"%(project,project,team)
+            #print query
             Conn=DB.ConnectToDataBase(sHost=server)
             dependency=DB.GetData(Conn,query,False)
             Conn.close()
-            #dependency=[('Browser',['Chrome','Firefox']),('Platform',['Android','PC'])]
-            self.dependency=dependency
+            final=[]
+            for each in dependency:
+                tag=each[0]
+                temp=[]
+                for eachitem in each[1]:
+                    query="select bit_name,array_agg(distinct version) from dependency_values dv, dependency_name dn,dependency d,dependency_management dm where dv.id=dn.id and d.id=dn.dependency_id and dm.dependency=d.id and dm.project_id=(select project_id from projects where project_name='%s') and dm.team_id=(select id from team where project_id=(select project_id from projects where project_name='%s') and team_name='%s') and d.dependency_name='%s' and dn.name='%s' group by bit_name"%(project,project,team,tag,eachitem)
+                    Conn=DB.ConnectToDataBase(sHost=server)
+                    bit_version=DB.GetData(Conn,query,False)
+                    Conn.close()
+                    temp.append((eachitem,bit_version))
+                final.append((tag,temp))
+            #dependency=[('Browser',[('Chrome',[(32,[53,65.63]),(64,[56,76,73])]),('Firefox',[(32,[])])]),('Platform',[('Android',[]),('PC',[])])]
+            #print final
+            self.dependency=final
             count=1
+            #print self.dependency
             for each in self.dependency:
+                c=[x[0] for x in each[1]]
                 span=wx.StaticText(self.dependency_page,label=each[0]+":")
-                choices=wx.Choice(self.dependency_page,choices=each[1])#,pos=(x_pos+20,y_pos+5))
-                self.dependency_page.addWidget(choices,(count,10),(count,10))
+                temp_id='1000'+str(count)
+                choices=wx.Choice(self.dependency_page,id=int(temp_id),choices=c)#,pos=(x_pos+20,y_pos+5))
+                temp_id='2000'+str(count)
+                bit=wx.Choice(self.dependency_page,id=int(temp_id),choices=[])
+                temp_id='3000'+str(count)
+                versiont=wx.Choice(self.dependency_page,id=int(temp_id),choices=[])
+                #print count
                 self.dependency_page.addWidget(span,(count,1),(count,1))
+                self.dependency_page.addWidget(choices,(count,10),(count,10))
+                self.dependency_page.addWidget(bit,(count,22),(count,8))
+                self.dependency_page.addWidget(versiont,(count,32),(count,8))
                 self.Bind(wx.EVT_CHOICE,self.onChoice,choices)
-                setattr(self,'dependency_'+str(count),choices)
+                self.Bind(wx.EVT_CHOICE,self.onBit,bit)
+                self.Bind(wx.EVT_CHOICE,self.onVersion,versiont)
+                setattr(self,'dependency_'+str(int(count)),choices)
+                setattr(self,'bit_'+str(int(count)),bit)
+                setattr(self,'version_'+str(int(count)),versiont)
                 count+=1
         if page.GetName()=='consolePage':
             username=self.username.GetValue()
@@ -167,11 +298,11 @@ class MyWizard(wx.wizard.Wizard):
             port = self.port.GetValue()
             project = self.project.GetValue()
             team = self.team.GetValue()
-            worker=AS(username,password,project,team,server,port,self.selected_dependency)
+            worker=AS(username,password,project,team,server,port,self.selected_dependency,self.product_version)
             worker.setName("Automation Solutionz is running")
             worker.start()
 class AS(threading.Thread):
-    def __init__(self,username,password,project,team,server,port,dependency):
+    def __init__(self,username,password,project,team,server,port,dependency,product):
         threading.Thread.__init__(self)
         self.username=username
         self.password=password
@@ -180,14 +311,15 @@ class AS(threading.Thread):
         self.server=server
         self.port=port
         self.dep=dependency
+        self.p=product
     def run(self):
         print threading.currentThread().getName()
         if self.check_credential():
-            value = self.run_process(self.update_machine(self.collectAllDependency(self.dep)))
+            value = self.run_process(self.update_machine(self.dep,self.p))
             if value:
                 self.run()
         else:
-            self.update_machine(self.collectAllDependency(self.dep))
+            self.update_machine(self.dep,self.p)
     def run_process(self,sTesterid):
         while (1):
             try:
@@ -229,7 +361,7 @@ class AS(threading.Thread):
                 print Error_Detail
         return True
 
-    def update_machine(self,dependency):
+    def update_machine(self,dependency,product_version):
         try:
             #Get Local Info object
             oLocalInfo = CommonUtil.LocalInfo()
@@ -298,20 +430,30 @@ class AS(threading.Thread):
                 conn.close()
                 if isinstance(machine_id,list) and len(machine_id)==1:
                     machine_id=machine_id[0]
-                for each in dependency:
-                    type_name=each[0]
-                    listings=each[1]
-                    for eachitem in listings:
-                        temp_dict={
-                            'name':eachitem[0],
-                            'bit':eachitem[1],
-                            'version':eachitem[2],
-                            'type':type_name,
-                            'machine_serial':machine_id
-                        }
-                        conn=DB.ConnectToDataBase(sHost=self.server)
-                        result=DB.InsertNewRecordInToTable(conn,"machine_dependency_settings",**temp_dict)
-                        conn.close()
+                for each in dependency.keys():
+                    type_name=each
+                    listings=dependency[each]
+                    listings=listings.split(":")
+                    name=listings[0]
+                    if listings[1].strip()=='N/A':
+                        bit=0
+                    else:
+                        bit=int(listings[1])
+                    if listings[1].strip()=='N/A':
+                        version='Nil'
+                    else:
+                        version=listings[2].strip()
+
+                    temp_dict={
+                        'name':name,
+                        'bit':bit,
+                        'version':version,
+                        'type':type_name,
+                        'machine_serial':machine_id
+                    }
+                    conn=DB.ConnectToDataBase(sHost=self.server)
+                    result=DB.InsertNewRecordInToTable(conn,"machine_dependency_settings",**temp_dict)
+                    conn.close()
                 query="select project_id from projects where project_name='%s'"%self.project
                 Conn=DB.ConnectToDataBase(sHost=self.server)
                 project_id=DB.GetData(Conn,query)
@@ -363,88 +505,7 @@ class AS(threading.Thread):
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
             print Error_Detail
-    def collectAllDependency(self,dependency):
-        try:
-            query="select distinct project_id from projects where project_name='%s'"%self.project.strip()
-            Conn=DB.ConnectToDataBase(sHost=self.server)
-            project_id=DB.GetData(Conn,query)
-            Conn.close()
-            if isinstance(project_id,list) and len(project_id)==1:
-                project_id=project_id[0]
-            else:
-                project_id=''
-            query="select distinct dependency_name from dependency d ,dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=(select id from team where team_name='%s' and project_id='%s')"%(project_id,self.team.strip(),project_id)
-            Conn=DB.ConnectToDataBase(sHost=self.server)
-            dependency_list=DB.GetData(Conn, query)
-            Conn.close()
-            #print "Dependency: ",dependency_list
 
-            #Get Local Info object
-            oLocalInfo = CommonUtil.LocalInfo()
-
-            final_dependency=[]
-            for each in dependency_list:
-                temp=""
-                temp_list=[]
-                if each in dependency.keys():
-                    if dependency[each]!='':
-                        temp=dependency[each]
-                    else:
-                        if each=='Platform':
-                            temp=oLocalInfo.getLocalOS()
-                        if each=='Browser':
-                            temp=oLocalInfo.getInstalledClients()
-                else:
-                    if each=='Platform':
-                        temp=oLocalInfo.getLocalOS()
-                    if each=='Browser':
-                        temp=oLocalInfo.getInstalledClients()
-                    if each=='OS':
-                        import platform
-                        temp=platform.platform()
-                if temp!='':
-                    if each=='Platform':
-                        bit=int(temp.split('-')[1].strip()[0:2])
-                        version=temp.split('-')[0].split(' ')[1].strip()
-                        name=temp.split('-')[0].split(' ')[0].strip()
-                        temp_list.append((name,bit,version))
-                    if each=='Browser':
-                        #print temp
-                        temp=temp.split(",")
-                        for eachitem in temp:
-                            if ";" not in eachitem:
-                                bit=0
-                                version='Nil'
-                                name=temp[0].strip()
-                                #print name
-                            else:
-                                bit=int(eachitem.split(";")[1].strip()[0:2])
-                                version=eachitem.split(";")[0].split("(")[1].split("V")[1].strip()
-                                name=eachitem.split(";")[0].split("(")[0].strip()
-                            temp_list.append((name,bit,version))
-                    if each=='TestCaseType':
-                        temp_list.append((temp,0,''))
-                    if each=='OS':
-                        if temp.index('Windows')==0:
-                            name='PC'
-                            version=platform.platform()[platform.platform().index('Windows')+len('Windows')+1:platform.platform().index('Windows')+len('Windows')+2]
-                            if 'PROGRAMFILES(x86)' in os.environ:
-                                bit=64
-                            else:
-                                bit=32
-                        else:
-                            name='MAC'
-                            version='0'
-                            bit=''
-                        temp_list.append((name,bit,version))
-                    final_dependency.append((each,temp_list))
-
-            return final_dependency
-        except Exception, e:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            Error_Detail = ((str(exc_type).replace("type ", "Error Type: ")) + ";" +  "Error Message: " + str(exc_obj) +";" + "File Name: " + fname + ";" + "Line: "+ str(exc_tb.tb_lineno))
-            print Error_Detail
 def main():
     """"""
     wizard = MyWizard()
