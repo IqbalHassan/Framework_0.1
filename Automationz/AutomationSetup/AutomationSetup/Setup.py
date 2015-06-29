@@ -100,6 +100,8 @@ def Installer_With_Pip():
         install(type="pip", module_name="wheel")
     except:
         print "unable to install/update %s"%module_name
+
+
 	
 	
 def Installer_With_Exe():
@@ -108,8 +110,7 @@ def Installer_With_Exe():
         import psycopg2
     except ImportError as e:
         try:
-            #psycopg2_easy_install = "easy_install http://www.stickpeople.com/projects/python/win-psycopg/2.6.0/psycopg2-2.6.0.win32-py2.7-pg9.4.1-release.exe"
-			psycopg2_easy_install = "pip install wheel backupDriverFiles\psycopg2-2.5.5-cp27-none-win32.whl"
+            psycopg2_easy_install = "easy_install http://www.stickpeople.com/projects/python/win-psycopg/2.6.0/psycopg2-2.6.0.win32-py2.7-pg9.4.1-release.exe"
 			install(cmd=psycopg2_easy_install)
         except:
             print "unable to install/update psycopg2"
@@ -168,6 +169,17 @@ def Installer_With_Exe():
 		install(cmd=appium_easy_install)
 	except:
 		print "unable to install/update Appium"    	
+
+    # Check and install simplejson
+    try:
+        import simplejson
+    except ImportError as e:
+        try: 
+            simplejson_easy_install = "easy_install https://github.com/simplejson/simplejson/archive/master.zip"
+            install(cmd=simplejson_easy_install)
+        except:
+            print "unable to install/update win32api"
+
 	
 	
 def Selenium_Driver_Files():
