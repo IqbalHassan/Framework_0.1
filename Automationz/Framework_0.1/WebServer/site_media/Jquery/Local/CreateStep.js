@@ -360,16 +360,26 @@ function PopulateStepInfo(value){
             if(row[5]==true && row[8]==true){
                 $("#step_data").val(3);
             }*/
-            if(row[4]=="manual"){
-                $("#step_type").val(2);
-            }
-            if(row[4]=="automated"){
+            
+            /*if(row[4]=="automated"){
                 $("#step_type").val(1);
             }
-            if(row[4]=="performance"){
+            if(row[4]=="easily_automatable"){
+                $("#step_type").val(2);
+            }
+            if(row[4]=="hard_to_automate"){
                 $("#step_type").val(3);
             }
-            //$("#step_feature").val(row[6]);
+            if(row[4]=="not_automatable"){
+                $("#step_type").val(4);
+            }
+            if(row[4]=="performance"){
+                $("#step_type").val(5);
+            }
+            if(row[4]=="not_defined"){
+                $("#step_type").val(6);
+            }*/
+            $("#step_type").val(row[4]);
             
             $.get("get_feature_path",{'term':value ,'id':row[6]},function(data)
             {
@@ -484,7 +494,7 @@ function PopulateStepInfo(value){
             $(".timepicker").timepicker('setTime', convertToString(row[13]));
 
             
-            $("#automata").val(row[14]);
+            //$("#automata").val(row[14]);
             if(row[19]==true){
                 $("#yes_always").trigger('click');
             }
@@ -539,6 +549,7 @@ function get_cases(UserText,itemPerPage,PageCurrent){
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
                     $(this).after('<i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i>');
+                    $(this).after('&nbsp;&nbsp;');
                     $(this).after('<i class="fa fa-pencil fa-2x editBtn" id="'+ID+'" style="cursor:pointer"></i>');
 
                     indx++;
@@ -887,7 +898,7 @@ function submit_step(){
         var continue_radio = $("#continue_radio").val().trim();
         var always_run=$("#always_run").val().trim();
         var step_time = $("#step_time").val().trim();
-        var automata = $("#automata").val().trim();
+        //var automata = $("#automata").val().trim();
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
         $.get("CreateEditStep/",{
@@ -904,7 +915,7 @@ function submit_step(){
             'continue_radio' : continue_radio,
             'always_run':always_run,
             'step_time' : step_time,
-            'automata' : automata,
+            //'automata' : automata,
             'user' : user,
             'project_id' : project_id,
             'team_id' : team_id,

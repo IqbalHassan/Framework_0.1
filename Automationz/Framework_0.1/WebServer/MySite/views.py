@@ -754,6 +754,7 @@ def ViewSteps(request):
 
 
 def Steps_List(request):
+    p_steps_list = []
     if request.is_ajax():
         if request.method == 'GET':
             project_id = request.GET.get(u'project_id','')
@@ -761,7 +762,7 @@ def Steps_List(request):
             test_case_per_page=request.GET.get(u'test_case_per_page','')
             test_case_page_current=request.GET.get(u'test_case_page_current','')
             offset=int(test_case_per_page)*(int(test_case_page_current)-1)
-            Query="select stepname,description,driver,steptype,automatable,stepenable,data_required,always_run,created_by,cv.team_name from test_steps_list tsl,team cv where tsl.team_id=cv.id::text and cv.project_id='"+project_id+"' and tsl.project_id='"+project_id+"' "
+            Query="select stepname,description,driver,steptype,stepenable,data_required,always_run,created_by,cv.team_name from test_steps_list tsl,team cv where tsl.team_id=cv.id::text and cv.project_id='"+project_id+"' and tsl.project_id='"+project_id+"' "
             query=Query
             Conn=GetConnection()
             steps_list=DB.GetData(Conn, query, False)
@@ -769,7 +770,7 @@ def Steps_List(request):
             Conn=GetConnection()
             total_data=DB.GetData(Conn,Query,False)
             Conn.close()
-            p_steps_list = []
+            #p_steps_list = []
             print steps_list
             for each in steps_list:
                 test_case_count=get_test_case_count(each[0],project_id,team_id);
@@ -781,13 +782,13 @@ def Steps_List(request):
                 p_steps_list=p_steps_list[:int(test_case_per_page)]
             else:
                 p_steps_list=p_steps_list[offset:offset+int(test_case_per_page)]
-    Heading = ['Title','Description','Driver','Type','Automatable','Enabled','Data Required','Always Run','Created By','Team','Test Cases']    
+    Heading = ['Title','Description','Driver','Type','Enabled','Data Required','Always Run','Created By','Team','Test Cases']    
     results = {'Heading':Heading,'TableData':p_steps_list, 'Count': len(total_data)}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, content_type='application/json')
 def sort_key(each):
-    return each[10]
+    return each[9]
 def get_test_case_count(step_name,project_id,team_id):
     query="select distinct tc.tc_id,tc.tc_name from test_cases tc, test_case_tag tct , test_steps ts ,test_steps_list tsl where tsl.step_id=ts.step_id and ts.tc_id=tct.tc_id and tc.tc_id=tct.tc_id and tc.tc_id =ts.tc_id group by tc.tc_id,tc.tc_name having count(case when tct.name='%s' and property='Project' then 1 end)>0 and count(case when tct.name='%s' and property='Team' then 1 end)>0 and count(case when stepname='%s' then 1 end)>0"%(project_id,str(team_id),step_name)
     Conn=GetConnection()
@@ -7425,7 +7426,7 @@ def TestSteps_Results(request):
 
 
 def Check_TestCase(test_case):
-    test_type = [u'automated', u'manual', u'performance']
+    test_type = [u'automated', u'Easily Automatable', u'Hard to Automate', u'Not Automatable', u'performance', u'Not Defined']
     type_selector = []
     for item in test_type:
         sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + test_case + "') and steptype='" + item + "'"
@@ -7439,13 +7440,22 @@ def Check_TestCase(test_case):
     conn.close()
     b = type_selector[1]
     c = type_selector[2]
+    d = type_selector[3]
+    e = type_selector[4]
+    f = type_selector[5]
     if tc_type=='Forc':
         return "Manual" 
     else:
-        if b[0]>0:
+        if f[0]>0:
+            return "Manual"
+        elif d[0]>0:
+            return "Manual"
+        elif c[0]>0:
+            return "Manual"
+        elif b[0]>0:
             return "Manual"
         else:
-            if c[0]>0:
+            if e[0]>0:
                 return "Performance"
             else:
                 return "Automated"
@@ -7536,7 +7546,7 @@ def Process_TestStep(request):
         step_type = request.POST['step_type']
         step_driver = request.POST['step_driver']
         step_enable = request.POST['step_enable']
-        automata = request.POST['automata']
+        #automata = request.POST['automata']
         if step_name != "" and step_desc != "" and step_feature != "" and step_data != "0" and step_enable != "0":
             if step_type != "0" and step_driver != "":
                 conn = GetConnection()
@@ -7574,8 +7584,8 @@ def Process_TestStep(request):
                         driver=step_driver,
                         stepfeature=step_feature,
                         stepenable=enable,
-                        step_editable=edit_data,
-                        automatable=automata)
+                        step_editable=edit_data)
+                        #automatable=automata)
                     query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
                         step_feature + "'"
                     feature_count = DB.GetData(conn, query)
@@ -7637,8 +7647,8 @@ def Process_TestStep(request):
                         driver=step_driver,
                         stepfeature=step_feature,
                         stepenable=enable,
-                        step_editable=edit_data,
-                        automatable=automata)
+                        step_editable=edit_data)
+                        #automatable=automata)
                     query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
                         step_feature + "'"
                     feature_count = DB.GetData(conn, query)
@@ -7701,7 +7711,7 @@ def Process_CreateStep(request):
         verify_radio = request.POST['verify_radio'].strip()
         continue_radio = request.POST['continue_radio'].strip()
         step_time = request.POST['step_time'].strip()
-        automata = request.POST['automata']
+        #automata = request.POST['automata']
         user = request.POST['step_user']
         project_id = request.POST['step_project']
         team_id = request.POST['step_team']
@@ -7763,7 +7773,7 @@ def Process_CreateStep(request):
                         verify_point=verify_radio,
                         step_continue=continue_radio,
                         estd_time=step_time,
-                        automatable=automata,
+                        #automatable=automata,
                         modified_by=user,
                         modified_date=now,
                         project_id = project_id,
@@ -7835,7 +7845,7 @@ def Process_CreateStep(request):
                         verify_point=verify_radio,
                         step_continue=continue_radio,
                         estd_time=step_time,
-                        automatable=automata,
+                        #automatable=automata,
                         created_by=user,
                         created_date=now,
                         modified_by=user,
@@ -7906,7 +7916,7 @@ def CreateEditStep(request):
             continue_radio = request.GET.get(u'continue_radio','').strip()
             always_run=request.GET.get(u'always_run','').strip()
             step_time = request.GET.get(u'step_time','').strip()
-            automata = request.GET.get(u'automata','').strip()
+            #automata = request.GET.get(u'automata','').strip()
             user = request.GET.get(u'user','').strip()
             project_id = request.GET.get(u'project_id','').strip()
             team_id = request.GET.get(u'team_id','').strip()
@@ -7944,13 +7954,20 @@ def CreateEditStep(request):
                     edit_data = "true"
                 if(step_data == "2"):
                     data = "false"
-                    edit_data = "false"  """
+                    edit_data = "false"  
                 if(step_type == "1"):
                     s_type = "automated"
                 if(step_type == "2"):
-                    s_type = "manual"
+                    s_type = "easily_automatable"
                 if(step_type == "3"):
+                    s_type = "hard_to_automate"
+                if(step_type == "4"):
+                    s_type = "not_automatable"
+                if(step_type == "5"):
                     s_type = "performance"
+                if(step_type == "6"):
+                    s_type = "not_defined"   """
+                    
                 if(step_enable == "1"):
                     enable = "true"
                 if(step_enable == "2"):
@@ -7965,7 +7982,7 @@ def CreateEditStep(request):
                         stepname=step_name,
                         description=step_desc,
                         #data_required=data,
-                        steptype=s_type,
+                        steptype=step_type,
                         driver=step_driver,
                         stepfeature=fid,
                         stepenable=enable,
@@ -7976,7 +7993,7 @@ def CreateEditStep(request):
                         step_continue=continue_radio,
                         always_run=always_run,
                         estd_time=step_time,
-                        automatable=automata,
+                        #automatable=automata,
                         modified_by=user,
                         modified_date=now,
                         project_id = project_id,
@@ -8037,7 +8054,7 @@ def CreateEditStep(request):
                         step_continue=continue_radio,
                         always_run=always_run,
                         estd_time=step_time,
-                        automatable=automata,
+                        #automatable=automata,
                         created_by=user,
                         created_date=now,
                         modified_by=user,
