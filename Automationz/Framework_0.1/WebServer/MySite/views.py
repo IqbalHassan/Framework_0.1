@@ -8043,7 +8043,7 @@ def CreateEditStep(request):
                         stepname=step_name,
                         description=step_desc,
                         #data_required=data,
-                        steptype=s_type,
+                        steptype=step_type,
                         driver=step_driver,
                         stepfeature=fid,
                         stepenable=enable,
