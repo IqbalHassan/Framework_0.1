@@ -548,9 +548,9 @@ function get_cases(UserText,itemPerPage,PageCurrent){
                 $('#search_result tr>td:nth-child(7)').each(function(){
                     var ID = $("#search_result tr>td:nth-child(1):eq("+indx+")").text().trim();
 
-                    $(this).after('<i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i>');
-                    $(this).after('&nbsp;&nbsp;');
-                    $(this).after('<i class="fa fa-pencil fa-2x editBtn" id="'+ID+'" style="cursor:pointer"></i>');
+                    $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i></span>');
+                    //$(this).after('&nbsp;&nbsp;');
+                    $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-pencil fa-2x editBtn" id="'+ID+'" style="cursor:pointer"></i></span>');
 
                     indx++;
                 });
