@@ -1,0 +1,230 @@
+
+$(document).ready(function(){
+
+    //Sections
+
+    $('.combo-box').combobox();
+    $.ajax({
+        url:'GetSections/',
+        dataType : "json",
+        data : {
+            section : '',
+            project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')
+        },
+        success: function( json ) {
+            if(json.length > 0)
+                for(var i = 1; i < json.length; i++)
+                    json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                if(i == 0)return;
+                $(".section[data-level='']").append($('<option>').text(value).attr('value', value));
+            });
+        }
+    });
+
+    $(".generate").click(function(event)
+    {
+        var choice = $(".section").val();
+        if(choice != 0)
+        {
+            /*$("#space").append('' +
+                '<br/>' +
+                '<hr/>' );*/
+
+            $.get("TestStepTypeStatus",{choice : choice, project_id: $.session.get('project_id'),
+            team_id: $.session.get('default_team_identity')},function(data)
+            {
+                ResultTable(TestTypeStatusTable,data['Heading'],data['TableData'],"Test Type Status Report");
+
+
+                /***************pie chart***********************/
+
+                RenderPieChart('TestTypeStatusChart', [
+                    ['Manual ('+data['Summary'][2]+')', data['Summary'][2]],
+                    ['Manual in-progress ('+data['Summary'][3]+')', data['Summary'][3]],
+                    ['Automated ('+data['Summary'][4]+')',  data['Summary'][4]],
+                    ['Automated in-progress ('+data['Summary'][5]+')', data['Summary'][5]],
+                    ['Performance ('+data['Summary'][6]+')',  data['Summary'][6]],
+                    ['Performance in-progress ('+data['Summary'][7]+')', data['Summary'][7]]
+                ],choice);
+
+               
+                $('#TestTypeStatusTable tr>td:nth-child(n+3)').each(function(){
+                    if($(this).text() != '0') {
+                        $(this).css({
+                        'cursor':'pointer'
+                        });
+                        $(this).hover(function(){$(this).css("text-decoration","underline");},function(){$(this).css("text-decoration","none");});
+                        var row = $(this).closest('tr').index();
+                        var col = $(this).index();
+                        var pos = col + 1;
+                        var section = $(this).siblings(':first-child').text();
+                        var status = $(this).parent().siblings().first().children(':nth-child('+pos+')').text();
+                        $(this).live('click',function(){
+
+                            $("#inner").show();
+                            $("#tc_title").html('Test Cases List : ' + section + ' - ' + status )
+                            //ResultTable(tc_table,data['Short'],data['Cases'][row-1][col],"Test Cases", "Click on TC-IDs to see run history");
+                            //$("#tc_table tbody").addClass("paginate");
+                            tctable('#tc_table',data['Short'],data['Cases'][row-1][col],"Test Cases", "Click on TC-IDs to see run history");
+                            pagination();
+                            $('#tc_table tr>td:first-child').each(function () {
+                                $(this).css({
+                                    'color': 'blue',
+                                    'cursor': 'pointer',
+                                    'textAlign': 'left'
+                                });
+                                $(this).click(function(){
+                                    var tc_id = $(this).text().trim();
+                                    //var location='/Home/RunHistory/'+data+'/';
+                                    //window.location=location;
+                                    $.get("Selected_TestCaseID_Analaysis",{Selected_TC_Analysis : tc_id,project_id:project_id,team_id:team_id},function(data){
+                                        //ResultTable(tc_table,data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id);
+                                        //$("#tc_table tbody").addClass("paginate");
+                                        tctable('#tc_table',data['Heading'],data['TestCase_Analysis_Result'],"Test Analysis Result of "+tc_id, "Click Run-IDs to go to run details page");
+                                        makeRunClickable();
+                                        pagination();
+                                    });
+                                });
+                            });
+                            $('#tc_table tr>td:nth-child(2)').each(function(){
+                               if($(this).text() != 'N/A'){
+                                    $(this).css({
+                                      'color':'blue',
+                                       'cursor':'pointer'
+                                   });
+                                   $(this).click(function(){
+                                      var run_id=$(this).text().trim();
+                                      var location='/Home/RunID/'+run_id;
+                                      window.location=location;
+                                   });
+                               }
+                            });
+
+                        }); 
+                    }
+                });
+
+                $('#TestTypeStatusTable table').each(function () {
+
+                    var dimension_cells = new Array();
+                    var dimension_col = null;
+
+                    var i = 1;
+                    // First, scan first row of headers for the "Dimensions" column.
+                    $(this).find('th').each(function () {
+                        if ($(this).text() == 'Section') {
+                            dimension_col = i;
+                        }
+                        i++;
+                    });
+
+                    // first_instance holds the first instance of identical td
+                    var first_instance = null;
+                    // iterate through rows
+                    $(this).find('tr').each(function () {
+
+                        // find the td of the correct column (determined by the dimension_col set above)
+                        var dimension_td = $(this).find('td:nth-child('+ dimension_col + ')');
+
+                        if (first_instance == null) {
+                            // must be the first row
+                            first_instance = dimension_td;
+                        } else if (dimension_td.text() == first_instance.text()) {
+                            // the current td is identical to the previous
+                            // remove the current td
+                            dimension_td.html("");
+                            // increment the rowspan attribute of the first instance
+                            first_instance.attr('rowspan', first_instance.attr('rowspan') + 1);
+                        } else {
+                            // this cell is different from the last
+                            first_instance = dimension_td;
+                        }
+
+                    });
+                });
+
+            });
+        }
+
+        //$("#TestTypeStatusChart").selectmenu('refresh', true);
+        //$("#TestTypeStatusTable").selectmenu('refresh', true);
+
+    });
+});
+
+
+function AnalysisTableActions()
+{
+    $("p.flip[title =  'Test Type Status']").click(function() {
+
+        $("#TestTypeStatusTable").slideToggle("slow");
+    });
+}
+
+function RenderPieChart(elementId, dataList, title) {
+    Highcharts.setOptions({
+        colors: ['#1240AB', 'red', 'orange', 'green', '#009999', '#7109AA']
+    });
+    new Highcharts.Chart({
+        chart: {
+            renderTo: elementId,
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            height: 500
+        }, title: {
+            text: 'Summary - ' + title
+        },
+        tooltip: {
+            /*formatter: function () {
+             return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
+             }*/
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    /*formatter: function () {
+                        return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
+                    }*/
+                }
+                /*dataLabels: {
+                 enabled: false
+                 }*/,
+                showInLegend: true,
+                size : '95%'
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Bundle Report',
+            data: dataList
+        }]
+    });
+}
+
+function make_number_clickable(divname,Cases){
+    $(divname+' tr>td:nth-child(n+2)').each(function(){
+        if($(this).text() != '0') {
+            $(this).css({
+            'cursor':'pointer'
+            });
+            var row = $(this).closest('tr').index();
+            var col = $(this).index();
+            $(this).live('click',function(){
+
+                $("#inner").show();
+                ResultTable(tc_table,'',Cases[row][col],"Test Cases List");
+
+            }); 
+        }
+    });
+}

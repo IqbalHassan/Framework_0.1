@@ -909,6 +909,13 @@ def TestTypeStatus(request):
     return HttpResponse(output)
 
 
+def TestStepType(request):
+    templ = get_template('TestStepType.html')
+    variables = Context({})
+    output = templ.render(variables)
+    return HttpResponse(output)
+
+
 def MKS_Report_Table(request):
 
     Results = []
@@ -7426,7 +7433,7 @@ def TestSteps_Results(request):
 
 
 def Check_TestCase(test_case):
-    test_type = [u'automated', u'Easily Automatable', u'Hard to Automate', u'Not Automatable', u'performance', u'Not Defined']
+    test_type = [u'automated', u'performance', u'Easily Automatable', u'Hard to Automate', u'Undefined', u'Not Automatable']
     type_selector = []
     for item in test_type:
         sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + test_case + "') and steptype='" + item + "'"
@@ -7448,14 +7455,14 @@ def Check_TestCase(test_case):
     else:
         if f[0]>0:
             return "Manual"
+        elif e[0]>0:
+            return "Manual"
         elif d[0]>0:
             return "Manual"
         elif c[0]>0:
             return "Manual"
-        elif b[0]>0:
-            return "Manual"
         else:
-            if e[0]>0:
+            if b[0]>0:
                 return "Performance"
             else:
                 return "Automated"
@@ -9413,6 +9420,86 @@ def New_TestTypeStatus_Report(request):  # minar09
         'Automated in-progress',
         'Performance',
         'Performance in-progress',
+        'Total']
+    results = {
+        'Heading': Heading,
+        'TableData': TableData,
+        'Summary': tuple(temp)}
+    # results = {'Heading':Heading, 'TableData':RefinedData}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
+
+
+
+def TestStepTypeStatusReport(request):  # minar09
+    Conn = GetConnection()
+    sections = []
+    testCases = []
+    totalCases = []
+    TableData = []
+    manCount = []
+    autoCount = []
+    perCount = []
+    Table = []
+    Table1 = []
+    Table2 = []
+    Table3 = []
+    Table4 = []
+    Table5 = []
+    Table6 = []
+    manTab = []
+    autoTab = []
+    perTab = []
+    RefinedData = []
+    totalCount = []
+    Conn = GetConnection()
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'choice', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            if " " in UserData:
+                UserData = UserData.replace(' ', '_')
+            if UserData == "All":
+                sectionQuery = "select ps.section_path from product_sections ps, test_case_tag tct where ps.section_id::text = tct.name and tct.property='section_id' and tct.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and tct.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by ps.section_path order by ps.section_path"
+                testCasesQuery = "select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by test_case_tag.tc_id, product_sections.section_path"
+                totalCaseQuery = "select count(test_case_tag.tc_id) from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by product_sections.section_path order by product_sections.section_path"
+            else:
+                sectionQuery = "select product_sections.section_path from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '" + \
+                    UserData + ".*' and test_case_tag.property='section_id' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by product_sections.section_path order by product_sections.section_path"
+                testCasesQuery = "select test_case_tag.tc_id, product_sections.section_path from product_sections, test_case_tag where product_sections.section_id::text = test_case_tag.name and test_case_tag.property='section_id' and product_sections.section_path ~ '" + \
+                    UserData + ".*' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by test_case_tag.tc_id, product_sections.section_path"
+                totalCaseQuery = "select count(test_case_tag.tc_id) from product_sections,test_case_tag where product_sections.section_id::text = test_case_tag.name and product_sections.section_path ~ '" + \
+                    UserData + ".*' and test_case_tag.property='section_id' and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Project' and name='"+project_id+"') and test_case_tag.tc_id in (select tc_id from test_case_tag where property='Team' and name='"+team_id+"') group by product_sections.section_path order by product_sections.section_path"
+        sections = DB.GetData(Conn, sectionQuery, False)
+        totalCases = DB.GetData(Conn, totalCaseQuery, False)
+        testCases = DB.GetData(Conn, testCasesQuery, False)
+
+    for each in testCases:
+        Data = []
+        Data.append(each[0])
+        Data.append(each[1])
+        if Check_TestCase(each[0]) == 'Manual':
+            manTab.append(tuple(Data))                
+        elif Check_TestCase(each[0]) == 'Automated':
+            autoTab.append(tuple(Data))
+        elif Check_TestCase(each[0]) == 'Performance':            
+            perTab.append(tuple(Data))
+                
+    Count_Per_Section(manTab, sections, manCount)
+    Count_Per_Section(autoTab, sections, autoCount)
+    Count_Per_Section(perTab, sections, perCount)
+    
+    temp = []
+
+    Heading = [
+        'Folder',
+        'Automated',
+        'Easily Automatable',
+        'Hard to Automate',
+        'Not Automatable',
+        'Undefined',
+        'Performance',
         'Total']
     results = {
         'Heading': Heading,
