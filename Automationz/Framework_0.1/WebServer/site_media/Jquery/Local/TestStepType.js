@@ -41,16 +41,16 @@ $(document).ready(function(){
                 /***************pie chart***********************/
 
                 RenderPieChart('TestTypeStatusChart', [
-                    ['Manual ('+data['Summary'][2]+')', data['Summary'][2]],
-                    ['Manual in-progress ('+data['Summary'][3]+')', data['Summary'][3]],
-                    ['Automated ('+data['Summary'][4]+')',  data['Summary'][4]],
-                    ['Automated in-progress ('+data['Summary'][5]+')', data['Summary'][5]],
-                    ['Performance ('+data['Summary'][6]+')',  data['Summary'][6]],
-                    ['Performance in-progress ('+data['Summary'][7]+')', data['Summary'][7]]
+                    ['Automated ('+data['Summary'][1]+')', data['Summary'][1]],
+                    ['Easily Automatable ('+data['Summary'][2]+')', data['Summary'][2]],
+                    ['Hard to Automate ('+data['Summary'][3]+')',  data['Summary'][3]],
+                    ['Not Automatable ('+data['Summary'][4]+')', data['Summary'][4]],
+                    ['Undefined ('+data['Summary'][5]+')',  data['Summary'][5]],
+                    ['Performance ('+data['Summary'][6]+')', data['Summary'][6]]
                 ],choice);
 
                
-                $('#TestTypeStatusTable tr>td:nth-child(n+3)').each(function(){
+                $('#TestTypeStatusTable tr>td:nth-child(n+2)').each(function(){
                     if($(this).text() != '0') {
                         $(this).css({
                         'cursor':'pointer'
@@ -147,7 +147,10 @@ $(document).ready(function(){
 
             });
         }
-
+        else{
+            alertify.set({delay:300000})
+            alertify.error("You need to select an option!")
+        }
         //$("#TestTypeStatusChart").selectmenu('refresh', true);
         //$("#TestTypeStatusTable").selectmenu('refresh', true);
 
@@ -165,7 +168,7 @@ function AnalysisTableActions()
 
 function RenderPieChart(elementId, dataList, title) {
     Highcharts.setOptions({
-        colors: ['#1240AB', 'red', 'orange', 'green', '#009999', '#7109AA']
+        colors: ['green', '#309959', '#124992', 'red', '#8109AF', 'orange']
     });
     new Highcharts.Chart({
         chart: {
