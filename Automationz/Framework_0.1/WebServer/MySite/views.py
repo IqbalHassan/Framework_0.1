@@ -7466,6 +7466,45 @@ def Check_TestCase(test_case):
                 return "Performance"
             else:
                 return "Automated"
+
+
+def CheckTestCase_StepBased(test_case):
+    test_type = [u'automated', u'performance', u'Easily Automatable', u'Hard to Automate', u'Undefined', u'Not Automatable']
+    type_selector = []
+    for item in test_type:
+        sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + test_case + "') and steptype='" + item + "'"
+        conn = GetConnection()
+        result = DB.GetData(conn, sQuery, False)
+        conn.close()
+        type_selector.append(result[0])
+    conn=GetConnection()
+    query="select tc_type from test_cases where tc_id='%s'"%(test_case.strip())
+    tc_type=DB.GetData(conn,query)[0]
+    conn.close()
+    b = type_selector[1]
+    c = type_selector[2]
+    d = type_selector[3]
+    e = type_selector[4]
+    f = type_selector[5]
+    if tc_type=='Forc':
+        return "Manual" 
+    else:
+        if f[0]>0:
+            return "Not Automatable"
+        elif e[0]>0:
+            return "Undefined"
+        elif d[0]>0:
+            return "Hard to Automate"
+        elif c[0]>0:
+            return "Easily Automatable"
+        else:
+            if b[0]>0:
+                return "Performance"
+            else:
+                return "Automated"
+
+
+
 def Populate_info_div(request):
     conn = GetConnection()
     if request.method == 'GET':
@@ -9432,26 +9471,12 @@ def New_TestTypeStatus_Report(request):  # minar09
 
 
 def TestStepTypeStatusReport(request):  # minar09
-    Conn = GetConnection()
-    sections = []
-    testCases = []
-    totalCases = []
-    TableData = []
-    manCount = []
-    autoCount = []
-    perCount = []
-    Table = []
-    Table1 = []
-    Table2 = []
-    Table3 = []
-    Table4 = []
-    Table5 = []
-    Table6 = []
-    manTab = []
     autoTab = []
+    autoCount = []
     perTab = []
-    RefinedData = []
-    totalCount = []
+    perCount = []
+    TableData = []
+    
     Conn = GetConnection()
     if request.is_ajax():
         if request.method == 'GET':
@@ -9478,15 +9503,12 @@ def TestStepTypeStatusReport(request):  # minar09
     for each in testCases:
         Data = []
         Data.append(each[0])
-        Data.append(each[1])
-        if Check_TestCase(each[0]) == 'Manual':
-            manTab.append(tuple(Data))                
-        elif Check_TestCase(each[0]) == 'Automated':
+        Data.append(each[1])   
+        if CheckTestCase_StepBased(each[0]) == 'Automated':
             autoTab.append(tuple(Data))
-        elif Check_TestCase(each[0]) == 'Performance':            
+        elif CheckTestCase_StepBased(each[0]) == 'Performance':            
             perTab.append(tuple(Data))
                 
-    Count_Per_Section(manTab, sections, manCount)
     Count_Per_Section(autoTab, sections, autoCount)
     Count_Per_Section(perTab, sections, perCount)
     

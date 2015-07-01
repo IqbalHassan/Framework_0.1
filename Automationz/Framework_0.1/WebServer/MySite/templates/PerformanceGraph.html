@@ -122,7 +122,8 @@
             $('input[name="parameter"]').on('click',function(){
                 var result_type=$('input[name="result_type"]:checked').val();
                 if(result_type==undefined){
-                    alertify.error("Result Type is to be selected.",1500);
+                    alertify.set({ delay: 300000 });
+                    alertify.error("Result Type is to be selected.");
                     return false;
                 }else{
                     var temp=[]
@@ -130,7 +131,8 @@
                         temp.push($(this).val().trim());
                     });
                     if(temp.length==0){
-                        alertify.error("No parameter is selected.",1500);
+                        alertify.set({ delay: 300000 });
+                        alertify.error("No parameter is selected.");
                         return false;
                     }else{
                         $.get('Get_graph_data',{

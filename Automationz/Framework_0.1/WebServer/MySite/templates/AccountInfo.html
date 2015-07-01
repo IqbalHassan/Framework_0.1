@@ -85,15 +85,18 @@
 
     	var success = "{{ success }}";
     	if (success === 'successful') {
-    		alertify.success("Profile picture upload successful.<br><span style='font-size: 0.8em;'>Click to dismiss</span>", 0);
+            alertify.set({ delay: 300000 });
+    		alertify.success("Profile picture upload successful.<br><span style='font-size: 0.8em;'>Click to dismiss</span>");
     	} else if (success === 'unsuccessful') {
-    		alertify.error("Profile picture upload unsuccessful.<br><span style='font-size: 0.8em;'>Click to dismiss</span>", 0);
+            alertify.set({ delay: 300000 });
+    		alertify.error("Profile picture upload unsuccessful.<br><span style='font-size: 0.8em;'>Click to dismiss</span>");
     	}
     	
     	window.is_valid_type = false;
     	$('#file_field').on('change', function() {
     		var ext = $(this).val().split('.').pop().toLowerCase();
             if($.inArray(ext, ['gif','png','jpg','jpeg']) == -1) {
+                alertify.set({ delay: 300000 });
                 alertify.error("Invalid file type!");
                 window.is_valid_type = false;
             } else {
@@ -113,6 +116,7 @@
 			if (status === 'success') {
 		        $("#profile_picture").attr("src", data);
 			} else {
+                alertify.set({ delay: 300000 });
 				alertify.error("Could not fetch profile picture.<br><span style='font-size: 0.8em;'>Click to dismiss</span>");
 			}
 		});

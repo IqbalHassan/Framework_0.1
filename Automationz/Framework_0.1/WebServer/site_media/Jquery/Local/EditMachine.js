@@ -245,7 +245,8 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             var name=dependency_list[i][0];
             temp.push(name);
             if($('#'+name+'_name option:selected').val().trim()==""){
-                alertify.error(name+' name is empty',1500);
+                alertify.set({ delay: 300000 });
+                alertify.error(name+' name is empty');
                 return false;
             }
             else{
@@ -255,7 +256,8 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                 temp.push('Nil');
             }
             else if($('#'+name+'_bit option:selected').val().trim()==""){
-                alertify.error(name+' bit is empty',1500);
+                alertify.set({ delay: 300000 });
+                alertify.error(name+' bit is empty');
                 return false;
             }
             else{
@@ -265,7 +267,8 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
                 temp.push('Nil');
             }
             else if($('#'+name+'_version option:selected').val().trim()==""){
-                alertify.error(name+' version is empty',1500);
+                alertify.set({ delay: 300000 });
+                alertify.error(name+' version is empty');
                 return false;
             }
             else{
@@ -274,10 +277,12 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             dependency.push(temp.join('|'));
         }
         if($('#branch_name').val().trim()==""){
-            alertify.error('Branch name is empty',1500);
+            alertify.set({ delay: 300000 });
+            alertify.error('Branch name is empty');
         }
         if($('#branch_version').val().trim()==""){
-            alertify.error('Branch Version is empty',1500);
+            alertify.set({ delay: 300000 });
+            alertify.error('Branch Version is empty');
         }
         var branch_name=$('#branch_name').val().trim();
         var branch_version=$('#branch_version').val().trim();
@@ -292,11 +297,13 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             'team_id':team_id
         },function(data){
             if(data['message']){
-                alertify.success(data['log_message'],1500)
+                alertify.set({ delay: 300000 });
+                alertify.success(data['log_message'])
                 window.location.reload(true);
             }
             else{
-                alertify.error(data['log_message'],1500);
+                alertify.set({ delay: 300000 });
+                alertify.error(data['log_message']);
                 window.location.reload(true);
             }
         });

@@ -907,8 +907,8 @@ $(document).ready(function() {
 
             if ($("#test_case_search_box").select2("val") === "" || $("#test_case_search_box").select2("val") === []) {
                 e.preventDefault();
-
-                alertify.error("Please provide the <span style='font-weight: bold;'>Test Case title</span>", 2500);
+                alertify.set({ delay: 300000 });
+                alertify.error("Please provide the <span style='font-weight: bold;'>Test Case title</span>");
 
                 $("#test_case_search_box").select2("open");
 
@@ -922,32 +922,38 @@ $(document).ready(function() {
                 return false;
             }
             if(Tc_Type==undefined){
+                alertify.set({ delay: 300000 });
                 alertify.error("Test Case Type is not selected","",0);
                 return false;
             }
             if($('#section-flag').hasClass('unfilled')){
                 //alert("Section Path is not defined Correctly");
-                alertify.error("Section Path is not defined Correctly","",0);
+                alertify.set({ delay: 300000 });
+                alertify.error("Folder Path is not defined Correctly","",0);
                 return false;
             }
             if($('#feature-flag').hasClass('unfilled')){
                 //alert("Feature Path is not defined Correctly");
+                alertify.set({ delay: 300000 });
                 alertify.error("Feature Path is not defined Correctly","",0);
                 return false;
             }
             for(var i=0;i<dependency_classes.length;i++){
                 if($('#'+dependency_classes[i].name.split(' ').join('_').trim()+'-flag').hasClass('unfilled')){
                     //alert("Platform is not selected correctly");
+                    alertify.set({ delay: 300000 });
                     alertify.error(dependency_classes[i].name.trim()+" is not selected correctly","",0);
                     return false;
                 }
             }
             if($('#project_identity option:selected').val()==""){
-                alertify.error("Please select a project topbar",1500);
+                alertify.set({ delay: 300000 });
+                alertify.error("Please select a project topbar");
                 return false;
             }
             if($('#default_team_identity option:selected').val()==""){
-                alertify.error("Please select a team from topbar",1500);
+                alertify.set({ delay: 300000 });
+                alertify.error("Please select a team from topbar");
                 return false;
             }
             var row_count=$('#steps_table tr').length;
@@ -958,6 +964,7 @@ $(document).ready(function() {
                 else{
                     if($('#searchbox'+(i+1)+'data').find('span:eq(0)').hasClass('unfilled')){
                         //alert("Data in the Step #"+(i+1)+" is not complete");
+                        alertify.set({ delay: 300000 });
                         alertify.error("Data in the Step #"+(i+1)+" is incomplete","",0);
                         return false;
                     }
@@ -973,6 +980,7 @@ $(document).ready(function() {
                 }*/
             }
             if(checked_count<=0){
+                alertify.set({ delay: 300000 });
                 alertify.error("Atleast One step is to be set as Verfication point","",0);
                 return false;
             }
@@ -1055,22 +1063,26 @@ $(document).ready(function() {
             for(var i=1;i<=step_num;i++){
                 if($('#searchbox'+i+'name').val()==""){
                     //alert('Step Name for step Number#'+i+' can not be empty');
+                    alertify.set({ delay: 300000 });
                     alertify.error('Step Name for step Number#'+i+' can not be empty',"",0);
                     return false;
                 }
                 else{
                     if($('#searchbox'+i+'info').val()==""){
                         //alert('Step Description for step Number#'+i+' can not be empty');
+                        alertify.set({ delay: 300000 });
                         alertify.error('Step Description for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
                     if($('#searchbox'+i+'expected').val()==""){
                         //alert('Expected Result for step Number#'+i+' can not be empty');
+                        alertify.set({ delay: 300000 });
                         alertify.error('Expected Result for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
                     if($('#searchbox'+i+'time').val()==""){
                         //alert('Estimated time for step Number#'+i+' can not be empty');
+                        alertify.set({ delay: 300000 });
                         alertify.error('Estimated time for step Number#'+i+' can not be empty',"",0);
                         return false;
                     }
@@ -1179,6 +1191,7 @@ $(document).ready(function() {
             /*****************************************verifying the keyfield and ignore***************************/
             return_type=keyfield_ignorefield(finalArray);
             if(!return_type.status){
+                alertify.set({ delay: 300000 });
                 alertify.error("Please give correct key field in all datasets in  Step #"+(return_type.index+1),"",0);
                 return false;
             }
@@ -1398,6 +1411,7 @@ $(document).ready(function() {
                             }
                             if(!tag_found){
                                 //alert("Tag Name Not present in the Database");
+                                alertify.set({ delay: 300000 });
                                 alertify.error("Tag Name Not present in the Database","",0);
                                 tag_alert=1;
                                 return false;
@@ -1452,6 +1466,7 @@ $(document).ready(function() {
                             labels:labels.join("|")
                         },function(data) {
                             //alert(data);
+                            alertify.set({ delay: 300000 });
                             alertify.success("Test Case '"+data+"' successfully created!","",0);
                             desktop_notify("Test Case '"+data+"'-'"+title+"' successfully created!");
                             $("#submit").removeAttr('disabled');
@@ -1491,6 +1506,7 @@ $(document).ready(function() {
                             },
                             function(data) {
                                 //alert(data+" edited successfully");
+                                alertify.set({ delay: 300000 });
                                 alertify.success("Test Case '"+data+"' successfully updated!","",0);
                                 desktop_notify("Test Case '"+data+"' successfully updated!");
                                 $("#submit").removeAttr('disabled');
@@ -1500,6 +1516,7 @@ $(document).ready(function() {
                     }
                     else{
                         //alert("Wrong data in StepName,StepType");
+                        alertify.set({ delay: 300000 });
                         alertify.error("Wrong data in StepName,StepType","",0);
                         return false;
                     }
@@ -2873,6 +2890,7 @@ function auto_step_create(step,feature){
         },
         success: function( json ) {
             if(json[0]==0){
+                alertify.set({ delay: 300000 });
                 alertify.success("New step created with title '"+step+"'","",0)
             }
         }

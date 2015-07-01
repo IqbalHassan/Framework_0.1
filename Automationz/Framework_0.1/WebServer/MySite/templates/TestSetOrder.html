@@ -30,10 +30,12 @@
             });
             $.get('ReorderSet',{'test_case_id':test_case_id.join("|"),project_id:project_id,team_id:team_id,set_name:name},function(data){
                 if(data){
-                    alertify.success(name+' is reordered successfully',1500);
+                    alertify.set({ delay: 300000 });
+                    alertify.success(name+' is reordered successfully');
                     window.location.reload(true);
                 }else{
-                    alertify.error(name+' is not reordered successfully',1500);
+                    alertify.set({ delay: 300000 });
+                    alertify.error(name+' is not reordered successfully');
                     window.location.reload(false);
                 }
 

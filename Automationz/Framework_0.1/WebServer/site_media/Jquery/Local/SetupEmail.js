@@ -21,23 +21,28 @@ $(document).ready(function(){
                 var ttls=false;
             }
             if(!validateEmail(email)){
-                alertify.error("From Email Address is not valid.",1500);
+                alertify.set({ delay: 300000 });
+                alertify.error("From Email Address is not valid.");
                 return false;
             }
             if(!isNumber(port)){
-                alertify.error("Port must be a number",1500);
+                alertify.set({ delay: 300000 });
+                alertify.error("Port must be a number");
                 return false;
             }
             if(smtp_address==''){
-                alertify.error("SMTP Address must be valid",1500);
+                alertify.set({ delay: 300000 });
+                alertify.error("SMTP Address must be valid");
                 return false;
             }
             if(username==''){
-                alertify.error("Username must be valid",1500);
+                alertify.set({ delay: 300000 });
+                alertify.error("Username must be valid");
                 return false;
             }
             if(password==''){
-                alertify.error("Password must be valid",1500);
+                alertify.set({ delay: 300000 });
+                alertify.error("Password must be valid");
                 return false;
             }
             $.get('updatemailingdetails',{
@@ -52,9 +57,11 @@ $(document).ready(function(){
                 user_id: $.session.get('fullname')
             },function(data){
                 if(data['message']){
+                    alertify.set({ delay: 300000 });
                     alertify.success(data['log_message']);
                 }
                 else{
+                    alertify.set({ delay: 300000 });
                     alertify.error(data['log_message']);
                 }
                 window.location.reload(true);

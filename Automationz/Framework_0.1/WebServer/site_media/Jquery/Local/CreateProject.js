@@ -42,7 +42,8 @@ $(document).ready(function(){
     $('#create_project').on('click',function(){
         var project_name=$('#project_name').val().trim();
         if(project_name==""){
-            alertify.error('Project Name is empty',1500);
+            alertify.set({ delay: 300000 });
+            alertify.error('Project Name is empty');
         }
         var project_owner=[];
         $('#owner_list td').each(function(){
@@ -57,11 +58,13 @@ $(document).ready(function(){
             project_owner:project_owner.join(',')
         },function(data){
             if(data['message']){
-                alertify.success('Project: '+project_name+' is created successfully',1500);
+                alertify.set({ delay: 300000 });
+                alertify.success('Project: '+project_name+' is created successfully');
                 window.location='/Home/superAdminFunction/ListProject/';
             }
             else{
-                alertify.error('Project: '+project_name+' exists',1500)
+                alertify.set({ delay: 300000 });
+                alertify.error('Project: '+project_name+' exists')
                 return false;
             }
         });

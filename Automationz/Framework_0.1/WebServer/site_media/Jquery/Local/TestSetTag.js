@@ -34,9 +34,11 @@ $(document).ready(function(){
                 var str=data;
                 var substr='Failed'
                 if(str.lastIndexOf(substr, 0) == 0){
+                    alertify.set({ delay: 300000 });
                     alertify.error(data,"",0);
                 }
                 else{
+                    alertify.set({ delay: 300000 });
                     alertify.success(data,"",0);
                 }
                 var location='/Home/ManageSetTag/';
@@ -92,9 +94,11 @@ function configureLinks(temp,name,project_id,team_id){
                 var str=data;
                 var substr='Failed'
                 if(str.lastIndexOf(substr, 0) == 0){
+                    alertify.set({ delay: 300000 });
                     alertify.error(data,"",0);
                 }
                 else{
+                    alertify.set({ delay: 300000 });
                     alertify.success(data,"",0);
                 }
                 var location='/Home/ManageSetTag/';
@@ -129,9 +133,11 @@ function configureLinks(temp,name,project_id,team_id){
                 var str=data;
                 var substr='Failed'
                 if(str.lastIndexOf(substr, 0) == 0){
+                    alertify.set({ delay: 300000 });
                     alertify.error(data,"",0);
                 }
                 else{
+                    alertify.set({ delay: 300000 });
                     alertify.success(data,"",0);
                 }
                 var location='/Home/ManageSetTag/';
@@ -154,7 +160,8 @@ function configureLinks(temp,name,project_id,team_id){
         alertify.confirm("Are you sure you want to delete the test "+temp.toLocaleUpperCase().trim()+" named "+name.trim()+"?", function(e) {
             if (e) {
                 $.get("DeleteSetTag",{type:temp.toLocaleUpperCase(),name:name.trim()},function(data){
-                    alertify.success(data,"",5);
+                    alertify.set({ delay: 300000 });
+                    alertify.success(data,"",0);
                     desktop_notify(data);
                     var location='/Home/ManageSetTag/';
                     window.location=location;
@@ -290,9 +297,11 @@ function ClickButton(project_id,team_id,test_case_per_page,test_case_page_curren
                 var str=data;
                 var substr='Failed'
                 if(str.lastIndexOf(substr, 0) == 0){
+                    alertify.set({ delay: 300000 });
                     alertify.error(data,"",0);
                 }
                 else{
+                    alertify.set({ delay: 300000 });
                     alertify.success(data,"",0);
                 }
                 var location='/Home/ManageSetTag/';

@@ -18,6 +18,7 @@ function ClickButton(){
             }
         });
         $.get("DeleteTestCase",{Query:tc_list.join('|')},function(data) {
+            alertify.set({ delay: 300000 });
             alertify.success(data+' deleted successfully');
             PerformSearch(project_id,team_id,test_case_per_page,test_case_page_current);
         });
