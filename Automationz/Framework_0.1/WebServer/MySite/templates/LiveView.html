@@ -1,0 +1,10 @@
+{% extends 'BaseTemplate.html' %}
+{% block title %}Live View{% endblock %}
+{% block content%}
+<script type="text/javascript" src="/site_media/Jquery/Local/live_view.js"></script>
+<div  style="width:1024px;height:600px;overflow-y:scroll;background-color: #000;color:#fff;font-family: 'Consolas'"; id="live_console">
+</div>
+<script type="text/javascript">
+    var run_id="{{run_id}}";
+</script>
+{% endblock %}
