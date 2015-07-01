@@ -328,11 +328,13 @@
                 'user': $.session.get('fullname')
             },function(data){
                 if(data){
-                    alertify.success('Project Updated Successfully',1500);
+                    alertify.set({ delay: 300000 });
+                    alertify.success('Project Updated Successfully');
                     window.location.reload(true);
                 }
                 else{
-                    alertify.error("Project not updated",1500);
+                    alertify.set({ delay: 300000 });
+                    alertify.error("Project not updated");
                     window.location.reload(false);
                 }
             });

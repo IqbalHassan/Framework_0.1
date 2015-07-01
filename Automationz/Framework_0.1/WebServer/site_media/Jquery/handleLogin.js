@@ -36,6 +36,7 @@ $(document).ready(function() {
 					
 					
 					else {
+						alertify.set({ delay: 300000 });
 						alertify.success("Welcome, " + data['message'][1]);
 						var path_to_redirect = sessionStorage.getItem("path_to_redirect");
 						if(data['message'][2]=='admin'){
@@ -49,8 +50,9 @@ $(document).ready(function() {
                         /*
 						setTimeout(function() 
 						{
-                           alertify.success("Redirecting you to the previous page.");
-						}, 1000);
+							alertify.set({ delay: 300000 });
+                            alertify.success("Redirecting you to the previous page.");
+						},  1000);
 						*/
 						
 						$.session.set('username', username);

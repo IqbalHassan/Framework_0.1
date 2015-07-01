@@ -16,7 +16,11 @@ $(document).ready(function(){
                 },
                 success: function( json ) {
                     $("#error").html("<p><b> Git  '"+command+"'</b></p>");
-                    alertify.log("Git pulled.","",0)
+                    alertify.log("Git pulled.","",0);
+                },
+                error: function(){
+                    alertify.set({ delay: 300000 });
+                    alertify.error("Service Unavailable!");
                 }
             });
         }

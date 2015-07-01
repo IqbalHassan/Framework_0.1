@@ -51,11 +51,13 @@ function GetAllTeam(user_id,project_id){
                     if(e){
                         $.get('link_team',{'team_name':team_text.trim(),'team_id':team_id,project_id:project_id},function(data){
                             if(data['message']){
-                                alertify.success(data['log_message'],1500);
+                                alertify.set({ delay: 300000 });
+                                alertify.success(data['log_message']);
                                 window.location.reload(true);
                             }
                             else{
-                                alertify.error(data['log_message'],1500);
+                                alertify.set({ delay: 300000 });
+                                alertify.error(data['log_message']);
                                 window.location.reload(true);
                             }
                         });
@@ -238,16 +240,19 @@ function GetAllTeam(user_id,project_id){
                             if(new_name!=''){
                                 $.get('UpdateTeamName',{'new_name':new_name,'old_name':team_name,project_id:project_id},function(data){
                                     if(data['message']){
-                                        alertify.success(data['log_message'],1500);
+                                        alertify.set({ delay: 300000 });
+                                        alertify.success(data['log_message']);
                                         window.location.reload(true);
                                     }else{
-                                        alertify.error(data['log_message'],1500);
+                                        alertify.set({ delay: 300000 });
+                                        alertify.error(data['log_message']);
                                         window.location.reload(true);
                                     }
                                 });
                             }
                             else{
-                                alertify.error('Team Name empty',1500);
+                                alertify.set({ delay: 300000 });
+                                alertify.error('Team Name empty');
                                 return false;
                             }
 

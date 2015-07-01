@@ -533,11 +533,13 @@ function Submit_button_preparation(){
     $('#submit').click(function(){
 
         if($('#project_identity option:selected').val()==""){
-            alertify.error("Please select a project topbar",1500);
+            alertify.set({ delay: 300000 });
+            alertify.error("Please select a project topbar");
             return false;
         }
         if($('#default_team_identity option:selected').val()==""){
-            alertify.error("Please select a team from topbar",1500);
+            alertify.set({ delay: 300000 });
+            alertify.error("Please select a team from topbar");
             return false;
         }
 
@@ -550,6 +552,7 @@ function Submit_button_preparation(){
         var title=$('#title').val().trim();
 
         if(title==""){
+            alertify.set({ delay: 300000 });
             alertify.error("Title is empty!");
         }
         /*if($("#section-flag").hasClass("unfilled")){
@@ -707,7 +710,7 @@ function Buttons(){
             list.push($(this).attr('id').trim());
         });
         if(list.length==0){
-            alertify.log('No Test Case selected');
+            alertify.log('No Test Case selected',"",0);
             return false;
         }
         else{

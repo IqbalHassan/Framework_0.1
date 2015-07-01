@@ -20,7 +20,8 @@ $(document).ready(function(){
                 run_id_list:run_id.join('|')
             },function(data){
                 if(data['message']){
-                    alertify.success('Run Id erased successfully',1500);
+                    alertify.set({ delay: 300000 });
+                    alertify.success('Run Id erased successfully');
                     get_data(project_id,team_id,current_page,run_per_page);
                 }
             });

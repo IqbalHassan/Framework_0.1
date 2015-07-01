@@ -213,11 +213,13 @@
         $('#run_test').on('click',function(){
             var schedule_name=$('#schedule_name').val();
             if(schedule_name==''){
-                alertify.error('No Schedule Name is given',1500);
+                alertify.set({ delay: 300000 });
+                alertify.error('No Schedule Name is given');
                 return false;
             }
             if(schedule_name.length>50){
-                alertify.error('Schedule name must be within 50 characters',1500);
+                alertify.set({ delay: 300000 });
+                alertify.error('Schedule name must be within 50 characters');
                 return false;
             }
             var UserText="";
@@ -228,7 +230,8 @@
                 console.log(UserText);
             }
             else{
-                alertify.error('No Test cases selected',1500);
+                alertify.set({ delay: 300000 });
+                alertify.error('No Test cases selected');
                 return false;
             }
 
@@ -244,7 +247,8 @@
                     }
                 }
                 else{
-                    alertify.error('No '+dependency_classes[i].name.split(' ').join('_')+' is selected',1500);
+                    alertify.set({ delay: 300000 });
+                    alertify.error('No '+dependency_classes[i].name.split(' ').join('_')+' is selected');
                     return false;
                 }
             }
@@ -254,12 +258,14 @@
             var time=$('#time_picker').val();
             var day=$('#specific_day').val();
             if(day==''){
-                alertify.error('No Day is given',1500);
+                alertify.set({ delay: 300000 });
+                alertify.error('No Day is given');
                 return false;
             }
             if(['Fiv','Ten','Thi','One'].indexOf(day)==-1){
                 if(time==''){
-                    alertify.error('No Time of the Day is given',1500);
+                    alertify.set({ delay: 300000 });
+                    alertify.error('No Time of the Day is given');
                     return false;
                 }
             }

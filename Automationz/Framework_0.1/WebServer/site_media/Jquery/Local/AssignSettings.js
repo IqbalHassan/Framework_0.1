@@ -1,7 +1,7 @@
 /**
  * Created by Admin on 9/9/14.
  */
-var time_out=1500;
+var time_out=300000;
 var name_field_error="Name field can't be empty";
 var dep_value="";
 var dep_name="";
@@ -26,10 +26,12 @@ $(document).ready(function(){
                     team_id:team_id
                 },function(data){
                     if(data['message']){
+                        alertify.set({ delay: 300000 });
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
                     else{
+                        alertify.set({ delay: 300000 });
                         alertify.error(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
@@ -52,6 +54,7 @@ $(document).ready(function(){
                 var feature_name=$('#new_feature').val().trim();
                 if(feature_name!=''){
                     if(feature_name.indexOf('.')!=-1 || feature_name.indexOf("_")!=-1){
+                        alertify.set({ delay: 300000 });
                         alertify.error('You can\'t give "." or "_" in the Feature Name',time_out);
                         return false;
                     }
@@ -62,10 +65,12 @@ $(document).ready(function(){
                             team_id:team_id
                         },function(data){
                             if(data['message']){
+                                alertify.set({ delay: 300000 });
                                 alertify.success(data['log_message'],time_out);
                                 get_all_data(project_id,team_id);
                             }
                             else{
+                                alertify.set({ delay: 300000 });
                                 alertify.error(data['log_message'],time_out);
                                 get_all_data(project_id,team_id);
                             }
@@ -95,10 +100,12 @@ $(document).ready(function(){
                     'team_id':team_id
                 },function(data){
                     if(data['message']){
+                        alertify.set({ delay: 300000 });
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
                     else{
+                        alertify.set({ delay: 300000 });
                         alertify.error(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
@@ -123,10 +130,12 @@ $(document).ready(function(){
                     'team_id':team_id
                 },function(data){
                     if(data['message']){
+                        alertify.set({ delay: 300000 });
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
                     else{
+                        alertify.set({ delay: 300000 });
                         alertify.error(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
@@ -273,9 +282,11 @@ function get_all_data(project_id,team_id){
                         team_id:team_id
                     },function(data){
                         if(data['message']){
+                            alertify.set({ delay: 300000 });
                             alertify.success(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
                         }else{
+                            alertify.set({ delay: 300000 });
                             alertify.error(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
                         }
@@ -339,9 +350,11 @@ function get_all_data(project_id,team_id){
                         team_id:team_id
                     },function(data){
                         if(data['message']){
+                            alertify.set({ delay: 300000 });
                             alertify.success(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
                         }else{
+                            alertify.set({ delay: 300000 });
                             alertify.error(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
                         }
@@ -402,9 +415,11 @@ function get_all_data(project_id,team_id){
                         team_id:team_id
                     },function(data){
                         if(data['message']){
+                            alertify.set({ delay: 300000 });
                             alertify.success(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
                         }else{
+                            alertify.set({ delay: 300000 });
                             alertify.error(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
                         }
@@ -473,10 +488,12 @@ function rename_driver(driver_id,driver_text,new_name,project_id,team_id){
         team_id:team_id
     },function(data){
         if(data['message']){
+            alertify.set({ delay: 300000 });
             alertify.success(data['log_message'],time_out);
             get_all_data(project_id,team_id);
         }
         else{
+            alertify.set({ delay: 300000 });
             alertify.error(data['log_message'],time_out);
             get_all_data(project_id,team_id);
         }
@@ -499,6 +516,7 @@ function driver_control_panel(driver_id,driver_text,project_id,team_id){
             if(new_name!=''){
                 rename_driver(driver_id,driver_text,new_name,project_id,team_id)
             }else{
+                alertify.set({ delay: 300000 });
                 alertify.error("You can't give empty name",time_out);
                 alertify.alert().close_all();
                 return false;
@@ -556,9 +574,11 @@ function buttonConfig(branch_id,project_id,team_id,branch){
                     new_value:branch_id
                 },function(data){
                     if(data['message']){
+                        alertify.set({ delay: 300000 });
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }else{
+                        alertify.set({ delay: 300000 });
                         alertify.error(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
@@ -579,6 +599,7 @@ function buttonConfig(branch_id,project_id,team_id,branch){
             if(e){
                 var new_branch=$("#new_branch").val().trim();
                 if(new_branch==''){
+                    alertify.set({ delay: 300000 });
                     alertify.error("You can't give empty name");
                     return false;
                 }else{
@@ -589,11 +610,13 @@ function buttonConfig(branch_id,project_id,team_id,branch){
                         team_id:team_id
                     },function(data){
                         if(data['message']){
+                            alertify.set({ delay: 300000 });
                             alertify.success(data['log_message'],time_out);
                             get_all_data(project_id,team_id);
                         }
                         else{
-                            alertify.error(data['log_message'],1500);
+                            alertify.set({ delay: 300000 });
+                            alertify.error(data['log_message']);
                             alertify.alert().close_all();
                         }
                     });
@@ -755,15 +778,18 @@ function initialize_second_feature_tab_button(feature_id,project_id,team_id,feat
             if(e){
                 var sub_feature=$('#sub_feature').val().trim();
                 if(sub_feature==''){
+                    alertify.set({ delay: 300000 });
                     alertify.error("You can't give empty name");
                     return false;
                 }
                 if(sub_feature==''){
+                    alertify.set({ delay: 300000 });
                     alertify.error("You can't give empty name");
                     return false;
                 }
                 if(sub_feature!=''){
                     if(sub_feature.indexOf('.')!=-1 || sub_feature.indexOf('_')!=-1){
+                        alertify.set({ delay: 300000 });
                         alertify.error('You can\'t give "." or "_" in feature name',time_out);
                         return false;
                     }
@@ -777,10 +803,12 @@ function initialize_second_feature_tab_button(feature_id,project_id,team_id,feat
                             'type':'sub_feature'
                         },function(data){
                             if(data['message']){
+                                alertify.set({ delay: 300000 });
                                 alertify.success(data['log_message'],time_out);
                                 get_features('',project_id,team_id,feature_id_temp);
                             }
                             else{
+                                alertify.set({ delay: 300000 });
                                 alertify.error(data['log_message'],time_out);
                                 get_features('',project_id,team_id,feature_id_temp);
                             }
@@ -904,11 +932,13 @@ function initialize_feature_tab_button(feature_id,project_id,team_id,feature){
             if(e){
                 var sub_feature=$('#sub_feature').val().trim();
                 if(sub_feature==''){
+                    alertify.set({ delay: 300000 });
                     alertify.error("You can't give empty name");
                     return false;
                 }
                 if(sub_feature!=''){
                     if(sub_feature.indexOf('.')!=-1 || sub_feature.indexOf("_")!=-1){
+                        alertify.set({ delay: 300000 });
                         alertify.error('You can\'t give "." or "_" in feature name',time_out);
                         return false;
                     }
@@ -922,10 +952,12 @@ function initialize_feature_tab_button(feature_id,project_id,team_id,feature){
                             'type':'sub_feature'
                         },function(data){
                             if(data['message']){
+                                alertify.set({ delay: 300000 });
                                 alertify.success(data['log_message'],time_out);
                                 get_features('',project_id,team_id,feature_id_temp);
                             }
                             else{
+                                alertify.set({ delay: 300000 });
                                 alertify.error(data['log_message'],time_out);
                                 get_features('',project_id,team_id,feature_id_temp);
                             }
@@ -964,10 +996,12 @@ function rename_feature(feature_full_path,project_id,team_id){
         if(e){
             var new_feature_name=$("#new_feature").val().trim();
             if(new_feature_name==''){
+                alertify.set({ delay: 300000 });
                 alertify.error("You can't give empty name");
                 return false;
             }
             if(new_feature_name.indexOf('.')!=-1 || new_feature_name.indexOf('_')!=-1){
+                alertify.set({ delay: 300000 });
                 alertify.error("You can not give '.' or '_' in feature name",time_out);
                 return false;
             }
@@ -983,10 +1017,12 @@ function rename_feature(feature_full_path,project_id,team_id){
                     team_id:team_id
                 },function(data){
                     if(data['message']){
+                        alertify.set({ delay: 300000 });
                         alertify.success(data['log_message'],time_out);
                         get_all_data(project_id,team_id);
                     }
                     else{
+                        alertify.set({ delay: 300000 });
                         alertify.error(data['log_message'],1500);
                         alertify.alert().close_all();
                     }
@@ -1014,6 +1050,7 @@ function link_dependency(dependency,project_id,team_id){
         team_id:team_id
     },function(data){
         if(data['message']){
+            alertify.set({ delay: 300000 });
             alertify.success(data['log_message']);
             get_all_data(project_id,team_id);
         }
@@ -1065,9 +1102,11 @@ function get_dependency_under_name(value,project_id,team_id,value_name){
                                 team_id:team_id
                             },function(data){
                                 if(data['message']){
+                                    alertify.set({ delay: 300000 });
                                     alertify.success(data['log_message'],time_out);
                                     get_dependency_under_name(value,project_id,team_id,value_name);
                                 }else{
+                                    alertify.set({ delay: 300000 });
                                     alertify.error(data['log_message'],time_out);
                                     get_dependency_under_name(value,project_id,team_id,value_name);
                                 }
@@ -1090,9 +1129,11 @@ function get_dependency_under_name(value,project_id,team_id,value_name){
                                 team_id:team_id
                             },function(data){
                                 if(data['message']){
+                                    alertify.set({ delay: 300000 });
                                     alertify.success(data['log_message'],time_out);
                                     get_dependency_under_name(value,project_id,team_id,value_name);
                                 }else{
+                                    alertify.set({ delay: 300000 });
                                     alertify.error(data['log_message'],time_out);
                                     get_dependency_under_name(value,project_id,team_id,value_name);
                                 }
@@ -1244,11 +1285,13 @@ function rename_dependency(value,project_id,team_id,value_name,new_dep){
         project_id:project_id
     },function(data){
         if(data['message']){
+            alertify.set({ delay: 300000 });
             alertify.success(data['log_message'],time_out);
             get_all_data(project_id,team_id);
         }
         else{
-            alertify.error(data['log_message'],1500);
+            alertify.set({ delay: 300000 });
+            alertify.error(data['log_message']);
             alertify.alert().close_all();
         }
     });
@@ -1259,8 +1302,9 @@ function add_new_name_under_dependency(value,project_id,team_id,value_name,new_n
         new_value:value
     },function(data){
        if(data['message']){
-           alertify.success(data['log_message'],time_out);
-           get_dependency_under_name(value,project_id,team_id,value_name);
+            alertify.set({ delay: 300000 });
+            alertify.success(data['log_message'],time_out);
+            get_dependency_under_name(value,project_id,team_id,value_name);
        }
     });
 }
@@ -1321,10 +1365,12 @@ function intialize_third_level(value,text,parent_name,project_id,team_id,version
                     bit: bit
                 },function(data){
                     if(data['message']){
+                        alertify.set({ delay: 300000 });
                         alertify.success(data['log_message'],time_out);
                         get_all_version(value,text,parent_name,project_id,team_id);
                     }
                     else{
+                        alertify.set({ delay: 300000 });
                         alertify.error(data['log_message'],time_out);
                         get_all_version(value,text,parent_name,project_id,team_id);
                     }
@@ -1353,10 +1399,12 @@ function intialize_third_level(value,text,parent_name,project_id,team_id,version
                         bit:bit
                     },function(data){
                         if(data['message']){
+                            alertify.set({ delay: 300000 });
                             alertify.success(data['log_message'],time_out);
                             get_all_version(value,text,parent_name,project_id,team_id);
                         }
                         else{
+                            alertify.set({ delay: 300000 });
                             alertify.error(data['log_message'],time_out);
                             get_all_version(value,text,parent_name,project_id,team_id);
                         }
@@ -1423,10 +1471,12 @@ function initialize_second_level(value,text,parent_name,project_id,team_id){
                         'main_dependency':main_dep_value
                     },function(data){
                         if(data['message']){
+                            alertify.set({ delay: 300000 });
                             alertify.success(data['log_message'],time_out);
                             get_dependency_under_name(main_dependency,project_id,team_id,main_dep_value);
                         }
                         else{
+                            alertify.set({ delay: 300000 });
                             alertify.error(data['log_message'],time_out);
                             get_dependency_under_name(main_dependency,project_id,team_id,main_dep_value);
                         }
@@ -1579,10 +1629,12 @@ function add_new_version(value,text,parent_name,version,bit){
         version:version
     },function(data){
         if(data['message']){
+            alertify.set({ delay: 300000 });
             alertify.success(data['log_message'],time_out);
             get_all_version(value,text,parent_name);
         }
         else{
+            alertify.set({ delay: 300000 });
             alertify.error(data['log_message'],time_out);
             get_all_version(value,text,parent_name);
         }

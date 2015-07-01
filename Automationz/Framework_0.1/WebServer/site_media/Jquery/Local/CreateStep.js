@@ -868,8 +868,8 @@ function submit_step(){
     $("#submit_button").live('click',function(e){
         if ($("#step_name").select2("val") === "" || $("#step_name").select2("val") === []) {
                 e.preventDefault();
-
-                alertify.error("Please provide the <span style='font-weight: bold;'>Test Step title</span>", 2500);
+                alertify.set({ delay: 300000 });
+                alertify.error("Please provide the <span style='font-weight: bold;'>Test Step title</span>");
 
                 $("#step_name").select2("open");
 
@@ -923,10 +923,12 @@ function submit_step(){
             'step_id' : step_id
         },function(data) {
             if (operation==1) {
+                alertify.set({ delay: 300000 });
                 alertify.success("Test Step '"+data+"' successfully created!","",0);
                 desktop_notify("Test Step -'"+data+"' successfully created!");
             };
             if (operation==2) {
+                alertify.set({ delay: 300000 });
                 alertify.success("Test Step '"+data+"' successfully updated!","",0);
                 desktop_notify("Test Step -'"+data+"' successfully updated!");
             };

@@ -175,7 +175,8 @@
                 });
             }
             else{
-                alertify.error("None is selected","",0);
+                alertify.set({ delay: 300000 });
+                alertify.error("None is selected");
                 return false;
             }
         });
@@ -208,7 +209,8 @@
                 });
             }
             else{
-                alertify.error("None is selected","",0);
+                alertify.set({ delay: 300000 });
+                alertify.error("None is selected");
                 return false;
             }
         });

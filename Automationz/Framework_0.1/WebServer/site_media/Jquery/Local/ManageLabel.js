@@ -39,13 +39,15 @@ $(document).ready(function(){
                 team:team_id,
                 user:$.session.get('fullname')
             },function(data){
+                alertify.set({ delay: 300000 });
                 alertify.success("Label Created!");
                 $("#label_creation").slideUp('slow');
                 window.location.reload(true);
             });
         }
         else{
-            alertify.error("Label Name is needed!", 5000);
+            alertify.set({ delay: 300000 });
+            alertify.error("Label Name is needed!");
         }
     });
 })

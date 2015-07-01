@@ -38,12 +38,14 @@ $(document).ready(function(){
 //    	console.log('Remove profile picture:', username);
 		$.get('/Home/RemoveProfilePicture', {'username': username})
 		.done(function(data) {
-			 alertify.success('Profile picture removed successfully.<br><span style="font-size: 0.8em;">Reloading in 3 seconds.</span>', 3000);
+            alertify.set({ delay: 300000 });
+			 alertify.success('Profile picture removed successfully.<br><span style="font-size: 0.8em;">Reloading in 3 seconds.</span>');
 			 setTimeout(function() {
 				 window.location.reload();
 			 }, 3000);
 		})
 		.fail(function() {
+            alertify.set({ delay: 300000 });
 			alertify.error('Could not remove profile picture.<br><span style="font-size: 0.8em;">Click to dismiss</span>');
 		});
     });

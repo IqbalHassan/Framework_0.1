@@ -79,12 +79,14 @@ $(document).ready(function(){
 	                team:team_id,
 	                user:user
 	            },function(data){
+	            	alertify.set({ delay: 300000 });
 	                alertify.success("Label Updated!");
 	                window.location.reload(true);
 	            });
 	        }
 	        else{
-	            alertify.error("Label Name is needed!", 5000);
+	        	alertify.set({ delay: 300000 });
+	            alertify.error("Label Name is needed!");
 	        }
 	    });
     }

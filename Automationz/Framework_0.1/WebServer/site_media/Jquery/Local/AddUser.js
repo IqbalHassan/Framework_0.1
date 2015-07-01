@@ -11,10 +11,12 @@ $(document).ready(function(){
         var confirm_password=$('#confirm_password').val().trim();
         var user_level=$('#user_level option:selected').val().trim();
         if(user_name=='' || full_name==''||email==''||user_level==''||password==''||confirm_password==''){
-            alertify.error('Check Input Fields',1500)
+            alertify.set({ delay: 300000 });
+            alertify.error('Check Input Fields')
         }
         if(password!=confirm_password){
-            alertify.error('Password don\'t match',1500);
+            alertify.set({ delay: 300000 });
+            alertify.error('Password don\'t match');
         }
         $.get('Create_New_User',{
             user_name:user_name.trim(),

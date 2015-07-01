@@ -30,7 +30,8 @@ function Buttons(type,name){
         }
         else{
             $.get('AddTestCasesSetTag',{type:type.toLocaleUpperCase().trim(),name:name.trim(),list:list.join('|')},function(data){
-                alertify.success(data,1500);
+                alertify.set({ delay: 300000 });
+                alertify.success(data);
                 var location='/Home/ManageSetTag/'+type+'/'+name+'/';
                 window.location=location;
             });
@@ -52,7 +53,8 @@ function Buttons(type,name){
             alertify.confirm("Are you sure you want to delete test cases "+list.join(",")+" from test "+type.toLocaleUpperCase().trim()+" named "+name.trim()+"?", function(e) {
                 if (e) {
                     $.get('DeleteTestCasesSetTag',{type:type.toLocaleUpperCase().trim(),name:name.trim(),list:list.join('|')},function(data){
-                        alertify.success(data,"",3);
+                        alertify.set({ delay: 300000 });
+                        alertify.success(data,"",0);
                         var location='/Home/ManageSetTag/'+type+'/'+name+'/';
                         window.location=location;
                     });

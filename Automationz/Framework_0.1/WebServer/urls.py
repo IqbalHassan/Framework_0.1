@@ -408,7 +408,9 @@ urlpatterns += patterns('',
     url(r'^Home/.*/get_performance_type/$',get_performance_type),
     url(r'^Home/.*/Get_graph_data/$',Get_graph_data),
     url(r'^Home/Help/$',Help),
-    url(r'^Home/.*/get_execution_log/$',get_execution_log),
-    )
+	url(r'^Home/.*/get_execution_log/$',get_execution_log),# Test Step Type Status Page                                #minar09
+    url(r'^Home/TestStepType/$', TestStepType),
+    url(r'^Home/TestStepType/get?$', TestStepType),
+    url(r'^Home/.*/TestStepTypeStatus/$', TestStepTypeStatusReport),    )
 
 

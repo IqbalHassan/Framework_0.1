@@ -125,6 +125,7 @@ var do_on_load = function do_on_load () {
                     }
                 });
 			} else {
+				alertify.set({ delay: 300000 });
 				alertify.error("Could not eastablish connection to the server.");
 				$("#pageitem").hide();
 			}
@@ -163,15 +164,18 @@ var do_on_load = function do_on_load () {
                     },
 					function(data, status) {
 						if (status === 'success' && data === "1") {
+							alertify.set({ delay: 300000 });
 							alertify.success("Section '" + str + "' created successfully.");
 							initiateRefresh("#tree");
 						} else {
+							alertify.set({ delay: 300000 });
 							alertify.error("Could not eastablish connection to the server :(");
 						}
 					}
 				);
 			} else {
-				alertify.error("No text was provided", 3000);
+				alertify.set({ delay: 300000 });
+				alertify.error("No text was provided");
 			}
 		});
 	}
@@ -199,7 +203,8 @@ var do_on_load = function do_on_load () {
 					}
 				});
 			} else {
-				alertify.error("No text was provided", 3000);
+				alertify.set({ delay: 300000 });
+				alertify.error("No text was provided");
 			}
 		}, new_text);
 	}
@@ -208,14 +213,17 @@ var do_on_load = function do_on_load () {
 		if (window.section_has_no_tc && node.children.length === 0) {
 			$.get("/Home/ManageTestCases/setData/deleteSection/", { 'section_id': node.id }, function(data, status) {
 				if (status === 'success') {
+					alertify.set({ delay: 300000 });
 					alertify.success("Section with ID '" + data + "' deleted successfully");
 					initiateRefresh("#tree");
 					$("#tree").jstree(true).delete_node(node);
 				} else {
+					alertify.set({ delay: 300000 });
 					alertify.error("Could not eastablish connection to the server.");
 				}
 			});
 		} else {
+			alertify.set({ delay: 300000 });
 			alertify.error("Could not delete node as it has child section(s)/test cases.");
 		}
 	}
