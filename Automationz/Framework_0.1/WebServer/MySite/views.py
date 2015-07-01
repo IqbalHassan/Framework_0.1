@@ -19638,3 +19638,28 @@ def Get_graph_data(request):
 
 def Help(request):
     return render_to_response('Help.html',{},context_instance=RequestContext(request))
+
+def live_view(request,Run_Id):
+    return render(request,"LiveView.html",{'run_id':Run_Id})
+def get_execution_log(request):
+    if request.method=='GET':
+        if request.is_ajax():
+            run_id=request.GET.get(u'run_id','')
+            offset=request.GET.get(u'offset','')
+            print offset
+            query="select executionlogid,modulename,details from execution_log where logid ilike '%s%%'  and executionlogid > %d order by executionlogid limit 1"%(run_id,int(offset))
+            Conn=GetConnection()
+            log_id=DB.GetData(Conn,query,False)
+            Conn.close()
+            last_log_id=offset
+            if log_id:
+                last_log_id=log_id[-1][0]
+            #print last_log_id
+            log_id=[(x[1],x[2]) for x in log_id]
+            Dict={
+                'log':log_id,
+                'last_id':last_log_id
+            }
+            #print log_id
+            result=simplejson.dumps(Dict)
+            return HttpResponse(result,content_type='application/json')

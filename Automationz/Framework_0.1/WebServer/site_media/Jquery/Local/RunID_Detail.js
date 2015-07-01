@@ -11,6 +11,11 @@ $(document).ready(function(){
         var run_id=$('#fetch_run_id').text().trim();
         window.location='/Home/RunID/'+run_id+'/PerformanceGraph/';
     });
+    $('#live_view').on('click',function(){
+        var run_id=$('#fetch_run_id').text().trim();
+        window.location='/Home/RunID/'+run_id+'/LiveView/';
+    });
+
     $('#filterCount').on('change',function(){
         if($(this).val()!=''){
             itemPerPage=$(this).val();
