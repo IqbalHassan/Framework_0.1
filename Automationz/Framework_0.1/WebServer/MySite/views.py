@@ -5493,7 +5493,7 @@ def Auto_Step_Create(request):
             stepname=step,
             description=step,
             driver='WebDriver',
-            steptype='manual',
+            steptype='Undefined',
             data_required='false',
             #stepfeature='Common',
             stepenable='true',
@@ -9475,6 +9475,16 @@ def TestStepTypeStatusReport(request):  # minar09
     autoCount = []
     perTab = []
     perCount = []
+    easyTab = []
+    easyCount = []
+    hardTab = []
+    hardCount = []
+    notTab = []
+    notCount = []
+    undTab = []
+    undCount = []
+    #totalTab = []
+    #totalCount = []
     TableData = []
     
     Conn = GetConnection()
@@ -9508,11 +9518,51 @@ def TestStepTypeStatusReport(request):  # minar09
             autoTab.append(tuple(Data))
         elif CheckTestCase_StepBased(each[0]) == 'Performance':            
             perTab.append(tuple(Data))
+        elif CheckTestCase_StepBased(each[0]) == 'Easily Automatable':            
+            easyTab.append(tuple(Data))
+        elif CheckTestCase_StepBased(each[0]) == 'Hard to Automate':            
+            hardTab.append(tuple(Data))
+        elif CheckTestCase_StepBased(each[0]) == 'Undefined':            
+            undTab.append(tuple(Data))
+        elif CheckTestCase_StepBased(each[0]) == 'Not Automatable':            
+            notTab.append(tuple(Data))
+        
                 
     Count_Per_Section(autoTab, sections, autoCount)
     Count_Per_Section(perTab, sections, perCount)
+    Count_Per_Section(easyTab, sections, easyCount)
+    Count_Per_Section(hardTab, sections, hardCount)
+    Count_Per_Section(notTab, sections, notCount)
+    Count_Per_Section(undTab, sections, undCount)
+    
+    i=0
+    for e in sections:
+        t = []
+        t.append(e[0])
+        t.append(autoCount[i])
+        t.append(easyCount[i])
+        t.append(hardCount[i])
+        t.append(notCount[i])
+        t.append(undCount[i])
+        t.append(perCount[i])
+        t.append(autoCount[i]+easyCount[i]+hardCount[i]+notCount[i]+undCount[i]+perCount[i])
+        TableData.append(tuple(t))
+        i = i+1
     
     temp = []
+    temp.append("Summary")
+    temp.append(count_Sum(autoCount))
+    temp.append(count_Sum(easyCount))
+    temp.append(count_Sum(hardCount))
+    temp.append(count_Sum(notCount))
+    temp.append(count_Sum(undCount))
+    temp.append(count_Sum(perCount))
+    count = 0
+    for each in totalCases:
+        count = count + each[0]
+    temp.append(count)
+    TableData.append(tuple(temp))
+
 
     Heading = [
         'Folder',
