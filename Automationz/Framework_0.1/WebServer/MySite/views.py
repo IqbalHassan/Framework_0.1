@@ -9573,10 +9573,16 @@ def TestStepTypeStatusReport(request):  # minar09
         'Undefined',
         'Performance',
         'Total']
+    
+    Short = [
+        'TC-ID',
+        'Section']
+    
     results = {
         'Heading': Heading,
         'TableData': TableData,
-        'Summary': tuple(temp)}
+        'Summary': tuple(temp),
+        'Short' : Short}
     # results = {'Heading':Heading, 'TableData':RefinedData}
     json = simplejson.dumps(results)
     return HttpResponse(json, content_type='application/json')
@@ -10722,8 +10728,11 @@ def GetOS(request):
                 project_id, int(team_id))
             Conn = GetConnection()
             version_list = DB.GetData(Conn, query, False)
+            #if version_list[0]=='':
+            branch_list = DB.GetData(Conn,"select distinct branch_name from branch b,branch_management bm where b.id=bm.branch and bm.project_id='"+project_id+"' and bm.team_id="+team_id+" group by b.branch_name", False)
             Conn.close()
             results = {
+                'branch_list': branch_list,
                 'version_list': version_list,
                 'dependency_list': final_list
             }

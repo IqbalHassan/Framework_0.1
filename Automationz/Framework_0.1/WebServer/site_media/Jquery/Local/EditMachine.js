@@ -144,7 +144,8 @@ function ManageMilestone(project_id,team_id,location_name){
     },function(data){
         dependency_list=data['dependency_list'];
         global_version_list=data['version_list'];
-        populate_manual_div(dependency_list,global_version_list,project_id,team_id);
+        branch_list=data['branch_list'];
+        populate_manual_div(dependency_list,branch_list,global_version_list,project_id,team_id);
         $.get("CheckMachine",{name:location_name},function(data){
             $('#machine_name').val(location_name);
             if(data.length>0){
@@ -172,7 +173,7 @@ function ManageMilestone(project_id,team_id,location_name){
     });
 }
 
-function populate_manual_div(dependency_list,global_version_list,project_id,team_id){
+function populate_manual_div(dependency_list,branch_list,global_version_list,project_id,team_id){
     var message="";
     message+='<tr>';
     message+='<td align="right"><b class="Text">Machine Name:</b></td>';
@@ -200,9 +201,12 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
     message+='<td align="right"><b class="Text">Version:</b></td>';
     message+='<td align="left"><table width="100%"><tr>';
     message+='<td width="19%"><select id="branch_name"><option value="">Branch</option>';
-    for(var i=0;i<global_version_list.length;i++){
-        message+='<option value="'+global_version_list[i][0]+'">'+global_version_list[i][0]+'</option> ';
+    for(var i=0;i<branch_list.length;i++){
+        message+='<option value="'+branch_list[i][0]+'">'+branch_list[i][0]+'</option> ';
     }
+    /*for(var i=0;i<global_version_list.length;i++){
+        message+='<option value="'+global_version_list[i][0]+'">'+global_version_list[i][0]+'</option> ';
+    }*/
     message+='</select></td><td><select id="branch_version" style="display: none;"></select></td>'
     message+='</tr></table></td>'
     message+='</tr>';
@@ -280,12 +284,16 @@ function populate_manual_div(dependency_list,global_version_list,project_id,team
             alertify.set({ delay: 300000 });
             alertify.error('Branch name is empty');
         }
-        if($('#branch_version').val().trim()==""){
-            alertify.set({ delay: 300000 });
-            alertify.error('Branch Version is empty');
+        var branch_version = "";
+        if($('#branch_version').is(":visible")){
+            if($('#branch_version').val().trim()==""){
+                alertify.set({ delay: 300000 });
+                alertify.error('Branch Version is empty');
+            }
+            branch_version=$('#branch_version').val().trim();
         }
         var branch_name=$('#branch_name').val().trim();
-        var branch_version=$('#branch_version').val().trim();
+        //var branch_version=$('#branch_version').val().trim();
 
         $.get('AddManualTestMachine',{
             'machine_name':machine_name,
