@@ -43,6 +43,7 @@ function test(run_id,numitem){
                 current_step_id=step_id;
             }
             $('#live_console').append('<span style="color:'+color[status]+'">'+tstamp+" -- "+module_name+" - " +log+'</span><br>');
+            $('#live_console').scrollTop($('#live_console').height())
         }
         log_id=data['last_id'];
     });

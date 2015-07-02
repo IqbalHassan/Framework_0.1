@@ -19647,7 +19647,10 @@ def get_execution_log(request):
             run_id=request.GET.get(u'run_id','')
             offset=request.GET.get(u'offset','')
             print offset
-            query="select executionlogid,modulename,details,logid,tstamp,status from execution_log where logid ilike '%s%%'  and executionlogid > %d order by executionlogid"%(run_id,int(offset))
+            if int(offset)==0:
+                query="select executionlogid,modulename,details,logid,tstamp,status from execution_log where logid ilike '%s%%'  and executionlogid > %d order by executionlogid desc limit 100"%(run_id,int(offset))
+            else:
+                query="select executionlogid,modulename,details,logid,tstamp,status from execution_log where logid ilike '%s%%'  and executionlogid > %d order by executionlogid"%(run_id,int(offset))
             Conn=GetConnection()
             log_id=DB.GetData(Conn,query,False)
             Conn.close()
@@ -19657,8 +19660,9 @@ def get_execution_log(request):
             #print last_log_id
             final=[]
             for each in log_id:
-                test_case=each[3][int(len(run_id)):int(len(run_id))+8]
-                step_name=each[3][int(len(run_id))+8:int(len(run_id))+9]
+                sp=each[3].split("|")
+                test_case=sp[1].strip()
+                step_name=sp[2].strip()
                 Conn=GetConnection()
                 query="select tc_name from result_test_cases where run_id='%s' and tc_id='%s'"%(run_id,test_case)
                 tc_name=DB.GetData(Conn,query)
