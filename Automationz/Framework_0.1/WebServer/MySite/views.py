@@ -19648,16 +19648,23 @@ def get_execution_log(request):
             offset=request.GET.get(u'offset','')
             print offset
             if int(offset)==0:
-                query="select executionlogid,modulename,details,logid,tstamp,status from execution_log where logid ilike '%s%%'  and executionlogid > %d order by executionlogid desc limit 100"%(run_id,int(offset))
+                query="select executionlogid,modulename,details,logid,tstamp,status from execution_log where logid ilike '%s%%'  and executionlogid > %d order by executionlogid desc limit 10"%(run_id,int(offset))
             else:
                 query="select executionlogid,modulename,details,logid,tstamp,status from execution_log where logid ilike '%s%%'  and executionlogid > %d order by executionlogid"%(run_id,int(offset))
             Conn=GetConnection()
             log_id=DB.GetData(Conn,query,False)
             Conn.close()
             last_log_id=offset
+            print log_id
             if log_id:
-                last_log_id=log_id[-1][0]
+                if (int(offset))!=0:
+                    last_log_id=log_id[-1][0]
+                else:
+                    last_log_id=log_id[0][0]
             #print last_log_id
+            if int(offset)==0:
+                log_id=sorted(log_id,key=lambda x:x[0])
+                print log_id
             final=[]
             for each in log_id:
                 sp=each[3].split("|")
