@@ -19597,7 +19597,7 @@ def get_execution_log(request):
             run_id=request.GET.get(u'run_id','')
             offset=request.GET.get(u'offset','')
             print offset
-            query="select executionlogid,modulename,details from execution_log where logid ilike '%s%%'  and executionlogid > %d order by executionlogid limit 1"%(run_id,int(offset))
+            query="select executionlogid,modulename,details,logid,tstamp,status from execution_log where logid ilike '%s%%'  and executionlogid > %d order by executionlogid"%(run_id,int(offset))
             Conn=GetConnection()
             log_id=DB.GetData(Conn,query,False)
             Conn.close()
@@ -19605,9 +19605,21 @@ def get_execution_log(request):
             if log_id:
                 last_log_id=log_id[-1][0]
             #print last_log_id
-            log_id=[(x[1],x[2]) for x in log_id]
+            final=[]
+            for each in log_id:
+                test_case=each[3][int(len(run_id)):int(len(run_id))+8]
+                step_name=each[3][int(len(run_id))+8:int(len(run_id))+9]
+                Conn=GetConnection()
+                query="select tc_name from result_test_cases where run_id='%s' and tc_id='%s'"%(run_id,test_case)
+                tc_name=DB.GetData(Conn,query)
+                Conn.close()
+                query="select stepname from result_test_steps_list tsl, result_test_steps ts where tsl.run_id=ts.run_id and tsl.step_id=ts.step_id and ts.run_id='%s' and ts.tc_id='%s' and ts.step_id=%d"%(run_id,test_case,int(step_name))
+                Conn=GetConnection()
+                step_id=DB.GetData(Conn,query)
+                Conn.close()
+                final.append((test_case,tc_name[0],step_id[0],each[1],each[2],step_name,str(each[4]),each[5]))
             Dict={
-                'log':log_id,
+                'log':final,
                 'last_id':last_log_id
             }
             #print log_id

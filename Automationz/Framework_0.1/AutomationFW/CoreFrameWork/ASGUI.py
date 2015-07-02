@@ -305,7 +305,7 @@ class MyWizard(wx.wizard.Wizard):
             project = self.project_name_full
             team = self.team_name_full
             forward_btn=self.FindWindowById(wx.ID_FORWARD)
-            #forward_btn.Disable()
+            forward_btn.Disable()
             query="select dependency_name,array_agg(distinct name) from dependency_management dm,dependency d,dependency_name dn where d.project_id=dm.project_id and d.id=dm.dependency and dm.project_id=(select project_id from projects where project_name='%s') and dm.team_id=(select id from team where project_id=(select project_id from projects where project_name='%s') and team_name='%s') and dn.dependency_id=d.id group by dependency_name"%(project,project,team)
             #print query
             Conn=DB.ConnectToDataBase(sHost=server)
