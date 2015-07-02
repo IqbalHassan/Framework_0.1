@@ -427,7 +427,7 @@ def main(server_id):
                         Global.sTestStepType = TestStepsList[StepSeq - 1][4]
 
                     #Test Step Log id
-                    Global.sTestStepExecLogId = sTestResultsRunId + TCID + str(TestStepsList[StepSeq - 1][0]) + str(StepSeq)
+                    Global.sTestStepExecLogId = sTestResultsRunId+"|" + TCID +"|"+str(TestStepsList[StepSeq - 1][0]) +"|"+str(StepSeq)
                     
                     #open a file handler and write it to it
                     update_global_config('sectionOne', 'sTestStepExecLogId', Global.sTestStepExecLogId)
