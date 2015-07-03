@@ -12482,25 +12482,25 @@ def manage_test_cases(request):
             parent_sections = list(set(i.split('.', 1)[0] for i in sections))
 
             try:
-                for i in data:
-                    temp = {}
+                for i in range(len(data)-1,-1,-1):
+                    temp={}
                     for section_name in parent_sections:
-                        # If its a parent section, save it one way
-                        if section_name == i[1]:
-                            temp['id'] = i[0]
-                            temp['text'] = i[1]
+                        tmp_name=data[i]
+                        if section_name==tmp_name[1]:
+                            temp['id'] = tmp_name[0]
+                            temp['text'] = tmp_name[1]
                             temp['children'] = True
                             temp['type'] = 'parent_section'
                             temp['undetermined'] = True
                             temp_list.append(temp)
-                            data.remove(i)
+                            del data[i]
+                            break
 
                 parent_sections = temp_list
 
                 for i in data:
                     temp = {}
                     section = i[1].split('.')
-    #                 print section
                     for parent_section in parent_sections:
                         if section[0] == parent_section['text']:
                             temp['id'] = i[0]
@@ -12652,55 +12652,49 @@ def create_section(request):
         section_text = request.GET.get('section_text', '')
         project_id = request.GET.get('project_id', '')
         team_id = request.GET.get('team_id', '')
-
-#         empty_section_id = None
-        Conn = GetConnection()
-        cur = Conn.cursor()
-#         query = '''
-#         SELECT section_id FROM product_sections
-#         '''
-#
-#         data = DB.GetData(Conn, query, False, False)
-#         data = sorted(data)
-#         time.sleep(0.5)
-#         empty_section_id = int(data[-1][0]) + 1
-
         try:
-            query = '''
-            INSERT INTO product_sections (section_path,project_id,team_id) VALUES (%s,%s,%s) RETURNING section_id
-            '''
-#             time.sleep(0.5)
+            query="select count(*) from product_sections where section_path ~ '%s' and project_id='%s' and team_id=%d"%(section_text,project_id,int(team_id))
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            Conn.close()
+            if count[0]==0 and len(count)>0:
+                query = '''
+                INSERT INTO product_sections (section_path,project_id,team_id) VALUES (%s,%s,%s) RETURNING section_id
+                '''
 
-            cur.execute(query, (section_text,project_id,team_id ))
+                Conn = GetConnection()
+                cur = Conn.cursor()
+                cur.execute(query, (section_text,project_id,team_id ))
 
-            new_section_id = cur.fetchone()[0]
+                new_section_id = cur.fetchone()[0]
 
-            Conn.commit()
-            # cur.close()
+                Conn.commit()
+                # cur.close()
 
-            query = '''
-            INSERT INTO team_wise_settings (project_id, team_id, parameters, type) VALUES (%s, %s, %s, %s);
-            '''
-            # Conn = GetConnection()
-            # cursor = Conn.cursor()
+                query = '''
+                INSERT INTO team_wise_settings (project_id, team_id, parameters, type) VALUES (%s, %s, %s, %s);
+                '''
+                # Conn = GetConnection()
+                # cursor = Conn.cursor()
 
-            cur.execute(
-                query,
-                (project_id,
-                 team_id,
-                 new_section_id,
-                 'Section'))
+                cur.execute(
+                    query,
+                    (project_id,
+                     team_id,
+                     new_section_id,
+                     'Section'))
 
-            Conn.commit()
-            # cur.close()
+                Conn.commit()
+                # cur.close()
 
-            return HttpResponse(1)
+                cur.close()
+                Conn.close()
+                return HttpResponse(1)
+            else:
+                return HttpResponse(0)
         except Exception as e:
             print e
             return HttpResponse(0)
-        finally:
-            cur.close()
-            Conn.close()
 
 
 def rename_section(request):

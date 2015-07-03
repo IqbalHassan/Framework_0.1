@@ -169,7 +169,7 @@ var do_on_load = function do_on_load () {
 							initiateRefresh("#tree");
 						} else {
 							alertify.set({ delay: 300000 });
-							alertify.error("Could not eastablish connection to the server :(");
+							alertify.error("Section '" + str + "' can not be created.");
 						}
 					}
 				);
