@@ -1160,6 +1160,7 @@ def AutoCompleteTestCasesSearchTestSet(request):
             Conn = GetConnection()
             results = DB.GetData(Conn,query,False)
             Conn.close()
+                
     json = simplejson.dumps(results)
     return HttpResponse(json, content_type='application/json')
 

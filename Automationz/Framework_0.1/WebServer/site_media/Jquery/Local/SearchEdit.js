@@ -55,7 +55,7 @@ function RunAutoCompleteTestSearch(){
             var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
         }
         else if(tag_select=='Section'){
-            var markup ='<div><i class="fa fa-folder-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
+            var markup ='<div><i class="fa fa-folder-o"></i><span style="font-weight: bold;"><span>' + test_case_details.text.replace('Section','Folder') + '</span></div>';
         }
         else{
             var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' + test_case_details.text + '</span></div>';
