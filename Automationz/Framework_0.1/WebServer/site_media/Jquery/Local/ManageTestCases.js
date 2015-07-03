@@ -54,7 +54,7 @@ var do_on_load = function do_on_load () {
 						"Create" : {
 							"separator_before": false,
 							"separator_after": false,
-							"label": "Create Section",
+							"label": "Create Folder",
 							"icon": "fa fa-plus",
 							"action": function(obj) {
 								try {
@@ -69,7 +69,7 @@ var do_on_load = function do_on_load () {
 						"Rename" : {
 							"separator_before": false,
 							"separator_after": false,
-							"label": "Rename Section",
+							"label": "Rename Folder",
 							"icon": "fa fa-edit",
 							"action": function(obj) {
 								renameNode(node, node.id);
@@ -79,7 +79,7 @@ var do_on_load = function do_on_load () {
 							"separator_before": false,
 							"separator_after": false,
 							"icon": "fa fa-trash-o",
-							"label": "Delete Section",
+							"label": "Delete Folder",
 							"action": function(obj) {
 								deleteNode(node);
 							}
@@ -151,7 +151,7 @@ var do_on_load = function do_on_load () {
 		var node_text = '';
 		var text = text || "";
 		
-		alertify.prompt("Name of the new section:<br><span style='font-size: 10px;'>" + text.split('.').join(' > ') + "</span>", function(e, str) {
+		alertify.prompt("Name of the new folder:<br><span style='font-size: 10px;'>" + text.split('.').join(' > ') + "</span>", function(e, str) {
 			if (e) {
 				node_text = text + str;
 				node_text = node_text.split(' ').join('_');
@@ -165,7 +165,7 @@ var do_on_load = function do_on_load () {
 					function(data, status) {
 						if (status === 'success' && data === "1") {
 							alertify.set({ delay: 300000 });
-							alertify.success("Section '" + str + "' created successfully.");
+							alertify.success("Folder '" + str + "' created successfully.");
 							initiateRefresh("#tree");
 						} else {
 							alertify.set({ delay: 300000 });
@@ -192,11 +192,11 @@ var do_on_load = function do_on_load () {
 		} catch (TypeError) {
 			text = node.text;
 		}
-		alertify.prompt("New name of the section:", function(e, str) {
+		alertify.prompt("New name of the folder:", function(e, str) {
 			if (e) {		
 				$.get("/Home/ManageTestCases/setData/renameSection/", { 'section_id': node.id, 'section_path': section_path, 'new_text': str }, function(data, status) {
 					if (status === 'success' && data === "1") {
-						alertify.success("Section '" + node.text + "' renamed to '" + str + "' successfully.");
+						alertify.success("Folder '" + node.text + "' renamed to '" + str + "' successfully.");
 						initiateRefresh("#tree");
 					} else {
 						alertify.error("Could not eastablish connection to the server :(");
@@ -214,7 +214,7 @@ var do_on_load = function do_on_load () {
 			$.get("/Home/ManageTestCases/setData/deleteSection/", { 'section_id': node.id }, function(data, status) {
 				if (status === 'success') {
 					alertify.set({ delay: 300000 });
-					alertify.success("Section with ID '" + data + "' deleted successfully");
+					alertify.success("Folder with ID '" + data + "' deleted successfully");
 					initiateRefresh("#tree");
 					$("#tree").jstree(true).delete_node(node);
 				} else {
@@ -263,7 +263,7 @@ var do_on_load = function do_on_load () {
 	        {
 	        	window.section_has_no_tc = true;
 	            $('#RunTestResultTable').children().remove();
-	            $('#RunTestResultTable').append("<p class = 'Text' style=\"text-align: center;\">No Test Cases to view :(<br>It's either because you have not selected any section(s) or there are no test case(s) for the selected section(s).</p>");
+	            $('#RunTestResultTable').append("<p class = 'Text' style=\"text-align: center;\">No Test Cases to view :(<br>It's either because you have not selected any folder(s) or there are no test case(s) for the selected folder(s).</p>");
 	            $("#DepandencyCheckboxes").children().remove();
 	            $('#pagination_div').pagination('destroy');
 	            //$('#pageitem').hide();

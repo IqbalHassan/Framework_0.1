@@ -179,7 +179,7 @@ function Suggestion(project_id,team_id,test_case_per_page,test_case_page_current
         }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
         return $( "<li></li>" )
             .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .append( "<a>" + item[0] + "<strong> - " + item[1].replace('Section','Folder') + "</strong></a>" )
             .appendTo( ul );
     };
 
