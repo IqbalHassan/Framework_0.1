@@ -12704,80 +12704,45 @@ def rename_section(request):
         section_id = int(request.GET.get('section_id', ''))
         section_path = request.GET.get('section_path', '')
         new_text = request.GET.get('new_text', '')
-
-        old_section_text = ''
-        Conn = GetConnection()
-        cur = Conn.cursor()
-
-        temp = section_path.split('.')
-        old_section_text = temp[-1]
-        temp[-1] = new_text
-        temp = '.'.join(temp)
-        new_section_path = temp.replace(' ', '_')
+        project_id=request.GET.get(u'project_id','')
+        team_id=int(request.GET.get(u'team_id',''))
+        query="select section_path from product_sections ps,team_wise_settings tws where tws.team_id=ps.team_id and tws.project_id=ps.project_id and type='Section' and ps.section_id=tws.parameters and tws.project_id='%s' and tws.team_id=%d and section_id=%d"%(project_id,team_id,int(section_id))
+        Conn=GetConnection()
+        old_parent=DB.GetData(Conn,query)
+        Conn.close()
         if section_path=='':
-            query="select section_path from product_sections where section_id=%d"%(int(section_id))
-            Conn=GetConnection()
-            section_path_text=DB.GetData(Conn,query)
-            Conn.close()
-            if isinstance(section_path_text,list) and len(section_path_text)==1:
-                section_path=section_path_text[0]
-                old_section_text=section_path
-        query="select count(*) from product_sections where section_path ~'%s'"%new_section_path
+            section_path=old_parent[0]
+            new_path=new_text
+        else:
+            new_path=section_path.split(".")
+            new_path[-1]=new_text.replace(" ",'_')
+            new_path=".".join(new_path)
+        print section_path
+        print new_path
+        query="select count(*) from product_sections ps,team_wise_settings tws where tws.team_id=ps.team_id and tws.project_id=ps.project_id and type='Section' and ps.section_id=tws.parameters and tws.project_id='%s' and tws.team_id=%d and section_path ~'%s'"%(project_id,team_id,new_path)
         Conn=GetConnection()
         count=DB.GetData(Conn,query)
         Conn.close()
-        
-        if isinstance(count,list) and count[0]==0:
-            #take out all the child here.
-            query="select section_path from product_sections where section_path ~ '%s.*' except (select section_path from product_sections where section_path ~ '%s')"%(section_path,section_path)
+        if count[0]==0 and len(count)>0:
+            swhereQuery="where section_path~'%s' and section_id=%d"%(section_path,int(section_id))
             Conn=GetConnection()
-            child_sections=DB.GetData(Conn,query)
+            print DB.UpdateRecordInTable(Conn,"product_sections",swhereQuery,section_path=new_path)
             Conn.close()
-            #print child_sections
-            #updating the base
-            sWhereQuery="where section_path ~ '%s'"%section_path
+            #get the child sections
+            query="select section_id,section_path from product_sections ps,team_wise_settings tws where tws.team_id=ps.team_id and tws.project_id=ps.project_id and type='Section' and ps.section_id=tws.parameters and tws.project_id='%s' and tws.team_id=%d and section_path ~'%s.*'"%(project_id,team_id,section_path)
             Conn=GetConnection()
-            print DB.UpdateRecordInTable(Conn, "product_sections", sWhereQuery,section_path=new_section_path)
+            child_section_list=DB.GetData(Conn,query,False)
             Conn.close()
-            sWhereQuery="where name='%s' and property='Section'"%(old_section_text.strip())
-            Conn=GetConnection()
-            print DB.UpdateRecordInTable(Conn,"test_case_tag", sWhereQuery,name=new_text)
-            Conn.close()
-            for each in child_sections:
-                sWhereQuery="where section_path ~ '%s'"%each.strip()
-                temp_path=(each.replace(old_section_text,new_text)).replace(' ','_')
-                #print each,'---->',temp_path
+            for each in child_section_list:
+                swhereQuery="where section_path~'%s' and section_id=%d"%(each[1],int(each[0]))
+                tmp=each[1]
+                tmp=tmp.replace(section_path,new_path)
                 Conn=GetConnection()
-                print DB.UpdateRecordInTable(Conn,"product_sections",sWhereQuery,section_path=temp_path)
+                print DB.UpdateRecordInTable(Conn,"product_sections",swhereQuery,section_path=tmp)
+                Conn.close()
             return HttpResponse(1)
         else:
             return HttpResponse(0)
-        """
-        try:
-            query = '''
-            UPDATE product_sections SET section_path=%s WHERE section_id=%s
-            '''
-#             time.sleep(0.5)
-
-            cur.execute(query, (new_section_path, section_id))
-            Conn.commit()
-
-            query = '''
-            UPDATE test_case_tag SET name=%s WHERE name=%s AND property=%s
-            '''
-#             time.sleep(0.5)
-
-            cur.execute(query, (new_text, old_section_text, 'Section'))
-            Conn.commit()
-        except Exception as e:
-            return HttpResponse(0)
-        finally:
-            cur.close()
-            Conn.close()
-
-        return HttpResponse(1)
-        """
-
 def delete_section(request):
     if request.method == 'GET' and request.is_ajax():
         section_id = int(request.GET.get('section_id', 0))

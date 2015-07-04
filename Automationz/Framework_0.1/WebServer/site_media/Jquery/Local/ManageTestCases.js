@@ -194,12 +194,12 @@ var do_on_load = function do_on_load () {
 		}
 		alertify.prompt("New name of the folder:", function(e, str) {
 			if (e) {		
-				$.get("/Home/ManageTestCases/setData/renameSection/", { 'section_id': node.id, 'section_path': section_path, 'new_text': str }, function(data, status) {
+				$.get("/Home/ManageTestCases/setData/renameSection/", { 'project_id': $.session.get('project_id'),'team_id': $.session.get('default_team_identity') ,'section_id': node.id, 'section_path': section_path, 'new_text': str }, function(data, status) {
 					if (status === 'success' && data === "1") {
 						alertify.success("Folder '" + node.text + "' renamed to '" + str + "' successfully.");
 						initiateRefresh("#tree");
 					} else {
-						alertify.error("Could not eastablish connection to the server :(");
+						alertify.error("Same Folder name exists");
 					}
 				});
 			} else {
