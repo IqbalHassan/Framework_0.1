@@ -64,7 +64,7 @@ id: function(obj) {
 	i=0;
         // return html markup for individual result item
        // markup = '<img src="'+post.image+'" style="width:40%;float:left;margin-right:5px">';
-        markup = '<div>'+post[0]+"-"+post[1]+'</div>';      
+        markup = '<div>'+post[0]+"-"+post[1].replace('Section','Folder')+'</div>';      
         return markup;
     },
     formatSelection: function(post) {

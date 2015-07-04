@@ -1,6 +1,7 @@
 /**
  * Created by minar09 on 3/20/15.
  */
+ var createpath="CreateNewLabel/";
 var editpath="ViewEditLabel/";
 var project_id= $.session.get('project_id');
 var team_id= $.session.get('default_team_identity');
@@ -9,6 +10,7 @@ var user = $.session.get('fullname');
 $(document).ready(function(){
 
 	var URL=window.location.pathname;
+    var create_index=URL.indexOf(createpath);
     var edit_index=URL.indexOf(editpath);
     var template = URL.length > (URL.lastIndexOf("/")+1) && URL.indexOf(createpath) != -1;
     

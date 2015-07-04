@@ -113,7 +113,7 @@ function RunAutoCompleteTestSearch(env){
     ).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
         return $( "<li></li>" )
             .data( "ui-autocomplete-item", item )
-            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .append( "<a>" + item[0] + "<strong> - " + item[1].replace('Section','Folder') + "</strong></a>" )
             .appendTo( ul );
     };
     $("#searchbox").keypress(function(event) {
