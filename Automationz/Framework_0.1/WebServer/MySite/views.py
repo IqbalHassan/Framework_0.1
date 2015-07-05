@@ -300,6 +300,9 @@ def CaseRunHistory(request, tc_id):
     return render_to_response('Analysis.html', {})
 
 
+def CreateNewLabel(request):
+    return render_to_response('ViewEditLabel.html')
+
 def ViewEditLabel(request, label_id):
     return render_to_response('ViewEditLabel.html')
 
