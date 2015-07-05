@@ -38,7 +38,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from psycopg2.extras import DictCursor
 
-import WebServer.BugOperations
+import BugOperations
+import RequirementOperations
 from WebServer.CommonUtil import TimeStamp
 import WebServer.DataBaseUtilities as DB
 import WebServer.EmailNotify
@@ -48,7 +49,7 @@ import WebServer.LogModule
 from WebServer.MySite.forms import Comment,tc_file_upload
 import WebServer.RequirementOperations
 from WebServer.TaskOperations import testConnection
-import WebServer.TaskOperations
+import TaskOperations
 from WebServer.TestCaseCreateEdit import LogMessage
 import WebServer.TestCaseCreateEdit
 from WebServer.TestCaseOperations import Cleanup_TestCase
@@ -4159,6 +4160,46 @@ def TestCaseSearch(request):
             result_dict['id'] = test_case[0]
             # In the UI, it should be displayed as, AAA-000: Test For 'X'
             result_dict['text'] = '%s: %s' % (result_dict['id'], test_case[1])
+            results.append(result_dict)
+
+        has_next_page = data['has_next']
+
+    json = simplejson.dumps({'items': results, 'more': has_next_page})
+#     print "JSON:", json
+    return HttpResponse(json, content_type='application/json')
+
+
+def LabelSearch(request):
+    Conn = GetConnection()
+    results = []
+    items_per_page = 10
+    has_next_page = False
+
+    if request.method == "GET":
+        term = request.GET.get(u'term', '')
+        requested_page = int(request.GET.get(u'page', ''))
+        project_id=request.GET.get(u'project_id')
+        team_id=request.GET.get(u'team_id')
+#         print "#############################"
+#         print "Term:", term
+#         print "Page:", requested_page
+        data = DB.GetData(
+            Conn,
+            #"SELECT DISTINCT tc.tc_id,tc_name FROM test_cases tc, test_case_tag tct WHERE tc.tc_id=tct.tc_id and (tc.tc_id Ilike '%%%s%%' or tc_name Ilike '%%%s%%') group by tc.tc_id having count(case when name='%s' and property='Project' then 1 end)>0  and count(case when property='Team' and name='%s' then 1 end)>0"%(term,term,project_id,team_id),
+            "SELECT DISTINCT label_id,label_name, label_color FROM labels WHERE (label_id Ilike '%%%s%%' or label_name Ilike '%%%s%%') and project_id='%s' and team_id='%s'"%(term,term,project_id,team_id),
+            bList=False,
+            dict_cursor=False,
+            paginate=True,
+            page=requested_page,
+            page_limit=items_per_page,
+            order_by='label_id')
+
+        for label in data['rows']:
+            result_dict = {}
+            # AAA-000
+            result_dict['id'] = label[0]
+            # In the UI, it should be displayed as, AAA-000: Test For 'X'
+            result_dict['text'] = '%s: %s - %s' % (result_dict['id'], label[1], label[2])
             results.append(result_dict)
 
         has_next_page = data['has_next']
