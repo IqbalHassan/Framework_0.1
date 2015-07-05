@@ -1,12 +1,13 @@
 /**
  * Created by minar09 on 3/20/15.
  */
- var createpath="CreateNewLabel/";
+var createpath="CreateNewLabel/";
 var editpath="ViewEditLabel/";
 var project_id= $.session.get('project_id');
 var team_id= $.session.get('default_team_identity');
 var user = $.session.get('fullname');
 var new_label_text = "New label";
+var operation = 0;
 
 $(document).ready(function(){
 
@@ -79,7 +80,7 @@ $(document).ready(function(){
 		var start = label_details.text.indexOf(":") + 1;
 		var start2 = label_details.text.indexOf("#");
 		var length = label_details.text.length;
-		
+		       
 		var label_title = label_details.text.substr(start, start2 - 1);
 		var label_color = label_details.text.substr(start2, length - 1);
 		
@@ -95,16 +96,22 @@ $(document).ready(function(){
 		return markup;
 	}
 
+	if(create_index != -1){
+		operation = 1;
+	}
     if(edit_index!=-1){
         var referred_label=URL.substring((URL.lastIndexOf(editpath)+(editpath).length),(URL.length-1));
         $("#header").html(referred_label);
+        $("#ms_info").show();
+        $("#rename").show();
+        operation = 2;
         
         $.get("getLabelinfo/",{
 	        'label_id':referred_label.trim(),
 	        'project_id':project_id,
 	        'team_id':team_id
 	    },function(data){
-	    	//$("#label_name").val(data['details'][0][1]);
+	    	$("#label_name").val(data['details'][0][1]);
 	    	$("#label_search_box").select2("data", {"id": data['details'][0][0], "text": data['details'][0][0] + ": " + data['details'][0][1]});
 			$("#label_color").val(data['details'][0][2]);
 			$("#created_by").text(data['details'][0][5]);
@@ -151,10 +158,37 @@ $(document).ready(function(){
 
 
 	    $("#edit_button").click(function(){
-	        var name = $("#label_name").val();
+	        
 	        var color = $("#label_color").val();
 
-	        if(name!= ""){
+	        if(operation==1){
+	        	//alertify.error("sdflkjsl");
+	        	var start = $("#label_search_box").select2("data")["text"].indexOf(":") + 1;
+            	var length = $("#label_search_box").select2("data")["text"].length;            		
+            	var title = $("#label_search_box").select2("data")["text"].substr(start, length - 1)
+
+	        	if($("#label_search_box").select2("val") === "" || $("#label_search_box").select2("val") === []){
+	        		alertify.set({ delay: 300000 });
+	            	alertify.error("Label Name is needed!");
+	        	}
+	            $.get("CreateLabel/",{
+	                name:title.trim(),
+	                color:color.trim(),
+	                project:project_id,
+	                team:team_id,
+	                user:$.session.get('fullname')
+	            },function(data){
+	                alertify.set({ delay: 300000 });
+	                alertify.success("Label Created!");
+	                window.location=('/Home/ViewEditLabel/'+data);
+	            });
+	        }
+	        else if(operation==2){
+	        	var name = $("#label_name").val();
+	        	if(name == ""){
+	        		alertify.set({ delay: 300000 });
+	            	alertify.error("Label Name is needed!");
+	        	}
 	            $.get("EditLabel/",{
 	            	id:referred_label.trim(),
 	                name:name.trim(),
@@ -165,13 +199,10 @@ $(document).ready(function(){
 	            },function(data){
 	            	alertify.set({ delay: 300000 });
 	                alertify.success("Label Updated!");
-	                window.location.reload(true);
+	                //window.location.reload(true);
+	                window.location=('/Home/ViewEditLabel/'+data);
 	            });
-	        }
-	        else{
-	        	alertify.set({ delay: 300000 });
-	            alertify.error("Label Name is needed!");
-	        }
+	        }	      
 	    });
     }
 
