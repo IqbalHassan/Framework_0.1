@@ -155,9 +155,10 @@ $(document).ready(function(){
 		         });
 		    });
 	    });
+    }
 
 
-	    $("#edit_button").click(function(){
+    $("#edit_button").click(function(){
 	        
 	        var color = $("#label_color").val();
 
@@ -204,6 +205,5 @@ $(document).ready(function(){
 	            });
 	        }	      
 	    });
-    }
 
 });
