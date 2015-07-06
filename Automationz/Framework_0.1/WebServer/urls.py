@@ -414,6 +414,7 @@ urlpatterns += patterns('',
     url(r'^Home/TestStepType/get?$', TestStepType),
     url(r'^Home/.*/TestStepTypeStatus/$', TestStepTypeStatusReport),  
     url(r'^Home/.*/LabelSearch/$', LabelSearch),
+    url(r'^Home/.*/DeleteLabel/$', DeleteLabel),
       )
 
 

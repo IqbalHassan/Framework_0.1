@@ -13958,6 +13958,39 @@ def CreateLabel(request):
     return HttpResponse(result, content_type='application/json')
 
 
+def DeleteLabel(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            label_id = request.GET.get(u'label_id', '')
+            Conn = GetConnection()
+            final = []
+        
+            sModuleInfo = inspect.stack()[0][
+                3] + " : " + inspect.getmoduleinfo(__file__).name
+            
+            testConnection(Conn)
+            result = DB.DeleteRecord(Conn, "labels", label_id=label_id)
+            tres = DB.DeleteRecord(Conn, "label_map", label_id=label_id)
+            #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
+            if result:
+                # add this line in the code from LogModule import PassMessage
+                # log message successful here
+                # message format be PassMessage(sModuleInfo, message,1 for
+                # pass,2 for warning, 3 for error,debug=True)
+                LogModule.PassMessasge(
+                    sModuleInfo,
+                    "Deleted " +
+                    label_id +
+                    " successfully",
+                    1)
+                final = 'success'
+            else:
+                final = 'meh'
+            result = simplejson.dumps(final)
+    Conn.close()
+    return HttpResponse(result, content_type='application/json')
+
+
 def EditLabel(request):
     if request.is_ajax():
         if request.method == 'GET':

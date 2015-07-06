@@ -50,4 +50,33 @@ $(document).ready(function(){
             alertify.error("Label Name is needed!");
         }
     });
+
+    $("#all_labels tr td:nth-child(3)").each(function(){
+        $(this).on('click',function(){
+            var label = $(this).parent().find('td:first-child').text().trim();
+            var label_id = $(this).parent().find('td:nth-child(2)').text().trim();
+            //reset();
+            var message='';
+            message+='<div>';
+            message+='<p style="font-size:140%">Are you sure to delete label <b>' + label + '</b>?</p>';
+            message+='<br/>';
+            message+='</div>';
+            alertify.confirm(message, function (e) {
+                if (e) {
+                    $.get("DeleteLabel/",{
+                        label_id:label_id
+                    },function(data){
+                        alertify.set({ delay: 300000 });
+                        alertify.success("Label Deleted!");
+                        window.location.reload(true);
+                    });
+                    
+                } else {
+                    alertify.set({ delay: 300000 });
+                    alertify.error("You've clicked Cancel");
+                }
+            });
+            return false;
+       });
+    });
 })
