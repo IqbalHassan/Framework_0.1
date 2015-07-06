@@ -138,7 +138,15 @@ function populate_manual_div(dependency_list,branch_list,global_version_list,pro
     });
     $('#create_manual_machine').on('click',function(){
         var machine_name=$('#machine_name').val().trim();
+        if(machine_name==''){
+            alertify.error('Machine name can not be empty');
+            return false;
+        }
         var machine_ip=$('#machine_ip').val().trim();
+        if(machine_ip==''){
+            alertify.error('Machine ip can not be empty');
+            return false;
+        }
         var dependency=[];
         for(var i=0;i<dependency_list.length;i++){
             var temp=[];
