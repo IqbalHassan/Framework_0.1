@@ -1,7 +1,7 @@
 /**
  * Created by J on 9/11/14.
  */
-var label_per_page=$("#perpageitem").val();
+var label_per_page=10;
 var label_page_current=1;
 var project_id= $.session.get('project_id');
 var team_id= $.session.get('default_team_identity');
@@ -52,7 +52,64 @@ $(document).ready(function(){
         }
     });
 
-    $("#all_labels tr td:nth-child(3)").each(function(){
+    get_labels(project_id,team_id,label_per_page,label_page_current);
+
+    label_per_page = $("#perpageitem").val();
+    $('#perpageitem').on('change',function(){
+        if($(this).val()!=''){
+            label_per_page=$(this).val();
+            label_page_current=1;
+            $('#pagination_tab').pagination('destroy');
+            window.location.hash = "#1";
+            get_labels(project_id,team_id,label_per_page,label_page_current);
+        }
+    });
+})
+
+
+function get_labels(project_id,team_id,label_per_page,label_page_current){
+    $.get("Show_Labels",{'project_id':project_id ,'team_id':team_id,'label_per_page':label_per_page,'label_page_current':label_page_current},function(data){
+        form_table("AllLabelsTable",data['Heading'],data['TableData'],data['Count'],"Labels");
+        
+        $('#pagination_div').pagination({
+            items:data['Count'],
+            itemsOnPage:label_per_page,
+            cssStyle: 'dark-theme',
+            currentPage:label_page_current,
+            displayedPages:2,
+            edges:2,
+            hrefTextPrefix:'#',
+            onPageClick:function(PageNumber){
+                get_labels(project_id,team_id,label_per_page,PageNumber);
+            }
+        });
+    });
+}
+
+
+function form_table(divname,column,data,total_data,type_case){
+    var tooltip=type_case||':)';
+    var message='';
+    message+= "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + total_data + " " + type_case+"</p>";
+    message+='<table class="two-column-emphasis" id="table_vai_table">';
+    message+='<tr>';
+    for(var i=0;i<column.length;i++){
+        message+='<th>'+column[i]+'</th>';
+    }
+    message+='</tr>';
+    for(var i=0;i<data.length;i++){
+        message+='<tr>';
+        message += '<td><a href="/Home/ViewEditLabel/'+data[i][0]+'" class="label" style="background-color: '+data[i][2]+';">'+data[i][1]+'</a></td>'
+        message += '<td>'+data[i][0]+'</td>'
+        message += '<td>'+data[i][3]+'</td>'
+        message += '<td>'+data[i][4]+'</td>'
+        message += '<td><a class="del_label" style="color:red; cursor:pointer">Delete</a></td>'
+        message+='</tr>';
+    }
+    message+='</table>';
+    $('#'+divname).html(message);
+
+    $("#table_vai_table tr td:nth-child(5)").each(function(){
         $(this).on('click',function(){
             var label = $(this).parent().find('td:first-child').text().trim();
             var label_id = $(this).parent().find('td:nth-child(2)').text().trim();
@@ -80,4 +137,4 @@ $(document).ready(function(){
             return false;
        });
     });
-})
+}

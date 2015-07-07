@@ -749,6 +749,34 @@ def ViewMilestone(request):
     return HttpResponse(output)
 
 
+def Show_Labels(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'label_per_page','')
+            test_case_page_current=request.GET.get(u'label_page_current')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+            condition=" offset %d limit %d"%(offset,limit)
+            Query="select label_id,label_name,label_color,created_by,modified_by,private from labels where project_id='%s' and team_id='%s' order by label_name"%(project_id,str(team_id))
+            query=Query+condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+
+
+            Heading = ['Label','Label_ID','Created By','Last Modified By','']    
+            results = {'Heading':Heading,'TableData':TableData, 'Count': len(count_query)}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
+
+
+
 def ViewSteps(request):
     templ = get_template('ViewSteps.html')
     variables = Context({})
@@ -790,6 +818,8 @@ def Steps_List(request):
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, content_type='application/json')
+
+
 def sort_key(each):
     return each[9]
 def get_test_case_count(step_name,project_id,team_id):
