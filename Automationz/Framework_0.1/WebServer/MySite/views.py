@@ -1339,13 +1339,15 @@ def AutoCompleteLabel(request):
     if request.is_ajax():
         if request.method == 'GET':
             value = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'project_id','')
+            team_id = request.GET.get(u'team_id','')
             print value
             Conn = GetConnection()
-            query = "select * from labels where label_name Ilike '%%%s%%' or label_id Ilike '%%%s%%'" % (
-                value, value)
+            query = "select label_id, label_name, label_color from labels where (label_name Ilike '%%%s%%' or label_id Ilike '%%%s%%') and project_id='%s' and team_id='%s'" % (
+                value, value, project_id, team_id)
             label_list = DB.GetData(Conn, query, False)
             Conn.close()
-    json = simplejson.dumps(label_list)
+            json = simplejson.dumps(label_list)
     return HttpResponse(json, content_type='application/json')
 
 

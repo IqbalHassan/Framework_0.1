@@ -1984,7 +1984,9 @@ function AutoCompleteLabel(){
                 url:"AutoCompleteLabel/",
                 dataType:"json",
                 data:{
-                    term:request.term
+                    term:request.term,
+                    'project_id': $.session.get('project_id'),
+                    'team_id': $.session.get('default_team_identity')
                 },
                 success:function(data){
                     response(data);
