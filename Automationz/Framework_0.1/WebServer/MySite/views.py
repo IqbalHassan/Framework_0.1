@@ -37,7 +37,6 @@ from django.template.loader import get_template
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from psycopg2.extras import DictCursor
-
 import BugOperations
 from CommonUtil import TimeStamp
 import DataBaseUtilities as DB
@@ -3001,7 +3000,7 @@ def Run_Test(request):
 def mail_thread(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date):
     try:
         urllib2.urlopen("http://www.google.com").close()
-        WebServer.EmailNotify.Send_Email(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date, '', '' , '')
+        EmailNotify.Send_Email(stEmailIds, runid, TestObjective, Testers, starting_date, ending_date, '', '' , '')
         print "connected"
     except urllib2.URLError:
         print "disconnected"
@@ -4661,7 +4660,7 @@ def Create_Submit_New_TestCase(request):
 
         # 1
         # Data Validation: Check if all required input fields have data
-        test_case_validation_result = WebServer.TestCaseCreateEdit.TestCase_DataValidation(
+        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(
             TC_Name,
             Priority,
             Tag_List,
@@ -4679,7 +4678,7 @@ def Create_Submit_New_TestCase(request):
             tmp_id = DB.GetData(
                 Conn,
                 "select nextval('testcase_testcaseid_seq')")
-            TC_Id = WebServer.TestCaseCreateEdit.Generate_TCId(Section_Path, tmp_id[0])
+            TC_Id = TestCaseCreateEdit.Generate_TCId(Section_Path, tmp_id[0])
             # Check if test case id is used before
             tmp_id = DB.GetData(
                 Conn,
@@ -4689,10 +4688,10 @@ def Create_Submit_New_TestCase(request):
                 print "Error. Test case id already used"
                 error = "TEST CASE CREATION Failed. Test case id already used:%s***********************" % (
                     TC_Name)
-                WebServer.TestCaseCreateEdit.LogMessage(sModuleInfo, error, 3)
+                TestCaseCreateEdit.LogMessage(sModuleInfo, error, 3)
                 return returnResult(error)
             # Insert Test Case
-            test_cases_result = WebServer.TestCaseCreateEdit.Insert_TestCaseName(
+            test_cases_result = TestCaseCreateEdit.Insert_TestCaseName(
                 Conn,
                 TC_Id,
                 TC_Name,
@@ -4701,14 +4700,14 @@ def Create_Submit_New_TestCase(request):
                 # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
                 error = "Returns from TestCaseCreateEdit Module by Failing to enter test case id %s" % TC_Id
                 print error
-                WebServer.TestCaseCreateEdit.LogMessage(
+                TestCaseCreateEdit.LogMessage(
                     sModuleInfo,
                     test_cases_result,
                     3)
                 return returnResult(test_cases_result)
             if len(labels) > 0:
                 if (labels[0] != ''):
-                    labels_result = WebServer.TestCaseCreateEdit.Insert_Linkings(
+                    labels_result = TestCaseCreateEdit.Insert_Linkings(
                         Conn,
                         TC_Id,
                         TC_Name,
@@ -4717,7 +4716,7 @@ def Create_Submit_New_TestCase(request):
                         # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
                         error = "Returns from TestCaseCreateEdit Module by Failing to enter labels for test case id %s" % TC_Id
                         print error
-                        WebServer.TestCaseCreateEdit.LogMessage(
+                        TestCaseCreateEdit.LogMessage(
                             sModuleInfo,
                             labels_result,
                             3)
@@ -4749,10 +4748,10 @@ def Create_Submit_New_TestCase(request):
             error = "Error. Test case Dataset id error"
             print error
             # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
-            WebServer.TestCaseCreateEdit.LogMessage(sModuleInfo, error, 3)
+            TestCaseCreateEdit.LogMessage(sModuleInfo, error, 3)
             return returnResult("Unable to create dataset for this test case")
         # Insert Test Case DataSet
-        test_case_dataset_result = WebServer.TestCaseCreateEdit.Insert_TestCaseDataSet(
+        test_case_dataset_result = TestCaseCreateEdit.Insert_TestCaseDataSet(
             Conn,
             Test_Case_DataSet_Id,
             TC_Id)
@@ -4762,7 +4761,7 @@ def Create_Submit_New_TestCase(request):
                 "Returns from TestCaseCreateEdit Module by Failing to enter test case id %s" %
                 Test_Case_DataSet_Id)
             print msg
-            WebServer.TestCaseCreateEdit.LogMessage(
+            TestCaseCreateEdit.LogMessage(
                 sModuleInfo,
                 test_case_dataset_result,
                 3)
@@ -4781,13 +4780,13 @@ def Create_Submit_New_TestCase(request):
             error = (
                 "Test Steps existing already for the test case %s" %
                 TC_Id)
-            WebServer.TestCaseCreateEdit.LogMessage(sModuleInfo, error, 2)
+            TestCaseCreateEdit.LogMessage(sModuleInfo, error, 2)
             # Here the test cases steps will be cleaned. We need to write a function there.
             # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
             # return returnResult("Test Case steps already exists for this test case")
             # Function for the cleaning the test steps will be here.
         # Insert Test Case Steps & Data
-        test_case_steps_result = WebServer.TestCaseCreateEdit.Insert_TestSteps_StepsData(
+        test_case_steps_result = TestCaseCreateEdit.Insert_TestSteps_StepsData(
             Conn,
             TC_Id,
             Test_Case_DataSet_Id,
@@ -4795,7 +4794,7 @@ def Create_Submit_New_TestCase(request):
 
         if test_case_steps_result != 'Pass':
             # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
-            WebServer.TestCaseCreateEdit.LogMessage(
+            TestCaseCreateEdit.LogMessage(
                 sModuleInfo,
                 test_case_steps_result,
                 3)
@@ -4805,7 +4804,7 @@ def Create_Submit_New_TestCase(request):
         # Test Case Tags
         # Enter tags for the test case
         # Insert Test Case Tags
-        test_case_tags_result = WebServer.TestCaseCreateEdit.Insert_TestCase_Tags(
+        test_case_tags_result = TestCaseCreateEdit.Insert_TestCase_Tags(
             Conn,
             TC_Id,
             Tag_List,
@@ -4835,19 +4834,19 @@ def Create_Submit_New_TestCase(request):
         Conn.close()
         if test_case_steps_result == "Pass":
             msg = "==========================================================================================================="
-            WebServer.TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
+            TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
             return returnResult(TC_Id)
         else:
             # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
             error_message = "Tag is not added for the test case %s" % TC_Id
-            WebServer.TestCaseOperations.LogMessage(sModuleInfo, error_message, 2)
+            TestCaseOperations.LogMessage(sModuleInfo, error_message, 2)
             msg = "==========================================================================================================="
-            WebServer.TestCaseOperations.LogMessage(sModuleInfo, msg, 1)
+            TestCaseOperations.LogMessage(sModuleInfo, msg, 1)
             return returnResult(test_case_tags_result)
 
     except Exception as e:
         print "Exception:", e
-        WebServer.TestCaseOperations.LogMessage(sModuleInfo, e, 2)
+        TestCaseOperations.LogMessage(sModuleInfo, e, 2)
         # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
         Conn = GetConnection()
         return "Critical"
@@ -5059,7 +5058,7 @@ def ViewTestCase(TC_Id):
                 container_data_id_details = DB.GetData(Conn,container_data_id_query,False)
                 # curname contains the data id
                 for each_data_id in container_data_id_details:
-                    From_Data = WebServer.TestCaseCreateEdit.Get_PIM_Data_By_Id(Conn,each_data_id[0])
+                    From_Data = TestCaseCreateEdit.Get_PIM_Data_By_Id(Conn,each_data_id[0])
                     Step_Data.append(From_Data)
                 """
                 if each_test_step[3]:
@@ -5214,7 +5213,7 @@ def EditTestCase(request):
 
         # 0
         # Data Validation: Check if all required input fields have data
-        test_case_validation_result = WebServer.TestCaseCreateEdit.TestCase_DataValidation(
+        test_case_validation_result = TestCaseCreateEdit.TestCase_DataValidation(
             TC_Name,
             Priority,
             Tag_List,
@@ -5241,7 +5240,7 @@ def EditTestCase(request):
             if DB.IsDBConnectionGood(Conn) == False:
                 time.sleep(1)
                 Conn = GetConnection()
-            test_cases_update_result = WebServer.TestCaseCreateEdit.Update_TestCaseDetails(
+            test_cases_update_result = TestCaseCreateEdit.Update_TestCaseDetails(
                 Conn,
                 New_TC_Id,
                 TC_Name,
@@ -5250,7 +5249,7 @@ def EditTestCase(request):
                 err_msg = "Test Case Detail is not updated successfully for test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
                 return err_msg
-            labels_result = WebServer.TestCaseCreateEdit.Insert_Linkings(
+            labels_result = TestCaseCreateEdit.Insert_Linkings(
                 Conn,
                 TC_Id,
                 TC_Name,
@@ -5259,7 +5258,7 @@ def EditTestCase(request):
                 # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
                 error = "Returns from TestCaseCreateEdit Module by Failing to enter labels for test case id %s" % TC_Id
                 print error
-                WebServer.TestCaseCreateEdit.LogMessage(sModuleInfo, labels_result, 3)
+                TestCaseCreateEdit.LogMessage(sModuleInfo, labels_result, 3)
                 return returnResult(labels_result)
 
             # form the test case datasets
@@ -5267,7 +5266,7 @@ def EditTestCase(request):
             if DB.IsDBConnectionGood(Conn) == False:
                 time.sleep(1)
                 Conn = GetConnection()
-            test_case_datasets_result = WebServer.TestCaseCreateEdit.Update_Test_Case_Datasets(
+            test_case_datasets_result = TestCaseCreateEdit.Update_Test_Case_Datasets(
                 Conn,
                 test_case_datasets,
                 New_TC_Id)
@@ -5275,7 +5274,7 @@ def EditTestCase(request):
                 err_msg = "Test Case Datasets is not updated successfully for test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
                 return err_msg
-            test_case_stepdata_result = WebServer.TestCaseCreateEdit.Update_Test_Steps_Data(
+            test_case_stepdata_result = TestCaseCreateEdit.Update_Test_Steps_Data(
                 Conn,
                 New_TC_Id,
                 test_case_datasets,
@@ -5284,7 +5283,7 @@ def EditTestCase(request):
                 err_msg = "Test Case Step Data is not updated successfully for the test case %s" % New_TC_Id
                 LogMessage(sModuleInfo, err_msg, 3)
                 return err_msg
-            test_case_tag_result = WebServer.TestCaseCreateEdit.Update_Test_Case_Tag(
+            test_case_tag_result = TestCaseCreateEdit.Update_Test_Case_Tag(
                 Conn,
                 TC_Id,
                 Tag_List,
@@ -5318,7 +5317,7 @@ def EditTestCase(request):
                 return err_msg
             if test_case_tag_result == "Pass":
                 msg = "==========================================================================================================="
-                WebServer.TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
+                TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
                 return returnResult(New_TC_Id)
 
         else:
@@ -5336,7 +5335,7 @@ def EditTestCase(request):
                 TC_Creator)
             # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id, True, True, New_TC_Id)
         msg = "==========================================================================================================="
-        WebServer.TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
+        TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
         return ViewTestCase(New_TC_Id)
         # 3
         # Recreate the new test case
@@ -5353,7 +5352,7 @@ def EditTestCase(request):
     except Exception as e:
         print "Exception:", e
         msg = "==========================================================================================================="
-        WebServer.TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
+        TestCaseCreateEdit.LogMessage(sModuleInfo, msg, 1)
         # TestCaseOperations.Cleanup_TestCase(Conn, TC_Id)
         return "Critical"
 
@@ -10118,18 +10117,18 @@ def TestDataFetch(request):
                 if step_editable:
                     for each_data_id in container_data_id_details:
                         if len(each_data_id) == 2:
-                            From_Data = WebServer.TestCaseCreateEdit.Result_Get_PIM_Data_By_Id(
+                            From_Data = TestCaseCreateEdit.Result_Get_PIM_Data_By_Id(
                                 Conn,
                                 run_id,
                                 each_data_id[0])
-                            To_Data = WebServer.TestCaseCreateEdit.Result_Get_PIM_Data_By_Id(
+                            To_Data = TestCaseCreateEdit.Result_Get_PIM_Data_By_Id(
                                 Conn,
                                 run_id,
                                 each_data_id[1])
                             Step_Data.append((From_Data, To_Data))
                 else:
                     for each_data_id in container_data_id_details:
-                        From_Data = WebServer.TestCaseCreateEdit.Result_Get_PIM_Data_By_Id(
+                        From_Data = TestCaseCreateEdit.Result_Get_PIM_Data_By_Id(
                             Conn,
                             run_id,
                             each_data_id[0])
@@ -12863,7 +12862,7 @@ def DeleteTestCase(request):
         if request.method == 'GET':
             test_case_list = request.GET.get(u'Query', '')
             test_case_list = test_case_list.split("|")
-            modified_test_case_list = WebServer.TestCaseCreateEdit.Delete_Test_Case(test_case_list)
+            modified_test_case_list = TestCaseCreateEdit.Delete_Test_Case(test_case_list)
     result = simplejson.dumps(modified_test_case_list)
     return HttpResponse(result, content_type='application/json')
 
