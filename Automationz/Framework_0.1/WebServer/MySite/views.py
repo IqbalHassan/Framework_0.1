@@ -4198,7 +4198,8 @@ def LabelSearch(request):
             # AAA-000
             result_dict['id'] = label[0]
             # In the UI, it should be displayed as, AAA-000: Test For 'X'
-            result_dict['text'] = '%s: %s - %s' % (result_dict['id'], label[1], label[2])
+            result_dict['text'] = '%s: %s' % (result_dict['id'], label[1])
+            result_dict['code'] = label[2]
             results.append(result_dict)
 
         has_next_page = data['has_next']

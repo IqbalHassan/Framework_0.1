@@ -1,7 +1,8 @@
 /**
  * Created by J on 9/11/14.
  */
-
+var label_per_page=$("#perpageitem").val();
+var label_page_current=1;
 var project_id= $.session.get('project_id');
 var team_id= $.session.get('default_team_identity');
 var user = $.session.get('fullname');
