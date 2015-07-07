@@ -103,7 +103,7 @@ function form_table(divname,column,data,total_data,type_case){
         message += '<td>'+data[i][0]+'</td>'
         message += '<td>'+data[i][3]+'</td>'
         message += '<td>'+data[i][4]+'</td>'
-        message += '<td><a class="del_label" style="color:red; cursor:pointer">Delete</a></td>'
+        message += '<td><span style="cursor:pointer;" class="hint--right hint--bounce hint--rounded" data-hint="Delete this label"><i class="fa fa-trash fa-fw fa-lg"></span></td>'
         message+='</tr>';
     }
     message+='</table>';
