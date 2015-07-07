@@ -20,22 +20,28 @@ $(document).ready(function(){
         //alertify.alert().close_all();
         alertify.confirm(message,function(e){
             if(e){
-                $.get('add_new_dependency',{
-                    dependency_name:$('#new_dependency').val().trim(),
-                    project_id:project_id,
-                    team_id:team_id
-                },function(data){
-                    if(data['message']){
-                        alertify.set({ delay: 300000 });
-                        alertify.success(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                    }
-                    else{
-                        alertify.set({ delay: 300000 });
-                        alertify.error(data['log_message'],time_out);
-                        get_all_data(project_id,team_id);
-                    }
-                });
+                if($('#new_dependency').val().trim()!=''){
+                    $.get('add_new_dependency',{
+                        dependency_name:$('#new_dependency').val().trim(),
+                        project_id:project_id,
+                        team_id:team_id
+                    },function(data){
+                        if(data['message']){
+                            alertify.set({ delay: 300000 });
+                            alertify.success(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                        else{
+                            alertify.set({ delay: 300000 });
+                            alertify.error(data['log_message'],time_out);
+                            get_all_data(project_id,team_id);
+                        }
+                    });
+                }else{
+                    alertify.set({ delay: 300000 });
+                    alertify.error("Dependency can't be empty",time_out);
+                    get_all_data(project_id,team_id);
+                }
             }
             else{
                 alertify.alert().close_all();
@@ -1189,6 +1195,7 @@ function initialize_button(value,project_id,team_id,value_name){
                     add_new_name_under_dependency(value,project_id,team_id,value_name,new_name);
                 }
                 else{
+                    alertify.error("Name can't be empty",300000);
                     return false;
                 }
             }
