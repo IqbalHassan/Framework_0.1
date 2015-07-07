@@ -237,11 +237,25 @@ def get_all_machine(request):
                 temp = []
                 for eachitem in each:
                     temp.append(eachitem)
-                query = "select distinct last_updated_time,machine_ip,branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),id from test_run_env tre,machine_dependency_settings mds where tre.id=mds.machine_serial  and tester_id='%s' group by id,last_updated_time,machine_ip,branch_version order by id desc limit 1" % (
+                t=[]
+                query="select distinct last_updated_time,machine_ip,branch_version,id from test_run_env where tester_id='%s' order by id desc limit 1"%(each[0])
+                Conn=GetConnection()
+                d=DB.GetData(Conn,query,False)
+                Conn.close()
+                t.append(d[0][0])
+                t.append(d[0][1])
+                t.append(d[0][2])
+                query = "select distinct array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),id from test_run_env tre,machine_dependency_settings mds where tre.id=mds.machine_serial  and tester_id='%s' group by id,last_updated_time,machine_ip,branch_version order by id desc limit 1" % (
                     each[0])
                 Conn = GetConnection()
                 temp_detail = DB.GetData(Conn, query, False)
                 Conn.close()
+                if temp_detail:
+                    t.append(temp_detail[0][0])
+                else:
+                    t.append([])
+                temp_detail=[]
+                temp_detail.append(tuple(t))
                 query="select count(*) from test_run_env where tester_id='%s' and status='Unassigned'"%each[0]
                 Conn=GetConnection()
                 available=DB.GetData(Conn,query)
@@ -251,7 +265,7 @@ def get_all_machine(request):
                     for eachitem in temp_detail:
                         for eachitemtemp in eachitem:
                             temp.append(eachitemtemp)
-                    temp.pop()
+                    #temp.pop()
                     # convert the date time panel
                     update_time = datetime.datetime.strptime(
                         temp_detail[0][0],
