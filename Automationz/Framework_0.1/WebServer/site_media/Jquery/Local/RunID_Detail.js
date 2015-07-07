@@ -648,7 +648,7 @@ function LoadAllTestCases(divname){
                             modal : true,
                             width : 720,
                             height : 620,
-                            title:"#"+index +' - '+ stepname
+                            title:"Log: #"+index +' - '+ stepname
 
                         });
                     });

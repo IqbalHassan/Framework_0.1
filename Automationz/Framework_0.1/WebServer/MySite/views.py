@@ -1945,7 +1945,10 @@ def RunId_TestCases(request, RunId):
         "MileStone",
         "Email",
         "Project",
-        "Team"]
+        "Team",
+        "Start Time",
+        "End Time"
+    ]
     run_id_status = GetRunIDStatus(RunId)
     query = "Select DISTINCT run_id,tester_id,assigned_tester,'%s',branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),machine_ip,test_objective,test_milestone from test_run_env tre,machine_dependency_settings mds Where tre.id=mds.machine_serial and run_id = '%s' group by run_id,tester_id,assigned_tester,branch_version,machine_ip,test_objective,test_milestone" % (
         run_id_status, RunId)
@@ -2028,6 +2031,10 @@ def RunId_TestCases(request, RunId):
                 email_receiver.append(name[0])  
     print email_receiver
     email_name = ",".join(email_receiver)
+    query="select teststarttime,testendtime from test_env_results ter,test_run_env tre where ter.run_id=tre.run_id and tre.run_id='%s'"%(RunId)
+    Conn=GetConnection()
+    time_line=DB.GetData(Conn,query,False)
+    Conn.close()
     temp = []
     for each in Env_Details_Data[0]:
         temp.append(each)
@@ -2035,6 +2042,8 @@ def RunId_TestCases(request, RunId):
     temp.append(email_name)
     temp.append(project_name[0][0])
     temp.append(team_name[0][1])
+    temp.append(time_line[0][0])
+    temp.append(time_line[0][1])
     temp = tuple(temp)
     Env_Details_Data = []
     Env_Details_Data.append(temp)

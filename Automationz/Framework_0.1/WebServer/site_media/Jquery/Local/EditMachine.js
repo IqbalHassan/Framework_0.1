@@ -8,7 +8,22 @@ $(document).ready(function(){
     var location_name=window.location.pathname;
     location_name=location_name.split("/")[3].replace(/_/g,' ');
     //alert(location_name);
-    ManageMilestone(project_id,team_id,location_name);
+    if(location_name=='create new machine') {
+        $('#create').html('Create');
+        location_name = "";
+        $.get('GetOS', {
+            project_id: project_id,
+            team_id: team_id
+        }, function (data) {
+            dependency_list = data['dependency_list'];
+            global_version_list = data['version_list'];
+            branch_list = data['branch_list'];
+            populate_manual_div(dependency_list, branch_list, global_version_list, project_id, team_id);
+        });
+    }
+    else{
+        ManageMilestone(project_id,team_id,location_name);
+    }
     $('#project_identity').on('change',function(){
         $.session.set('project_id',$(this).val().trim());
         window.location.reload(true);
@@ -18,125 +33,6 @@ $(document).ready(function(){
         window.location.reload(true);
     });
 });
-function PerformSearch(project_id,team_id,predicate) {
-
-    $("#AutoSearchResult #searchedtext").each(function() {
-        var UserText = $(this).find("td").text();
-        UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
-        console.log(UserText);
-        if(predicate!=undefined){
-            UserText=UserText+predicate;
-        }
-        $.get("TableDataTestCasesOtherPages",{
-            Query: UserText,
-            test_status_request:true,
-            project_id:project_id,
-            team_id:team_id,
-            total_time:'true'
-        },function(data) {
-            if (data['TableData'].length == 0)
-            {
-                $('#RunTestResultTable').html("");
-                $('#RunTestResultTable').html("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
-                $("#RunTestResultTable").fadeIn(1000);
-                $('#time_panel').html("");
-                $('#time_panel').css({'display':'none'});
-                test_cases=false;
-            }
-            else
-            {
-                $('#time_panel').html('<b class="Text">Time Needed: '+data['time']+'</b> ');
-                $('#time_panel').css({'display':'block'});
-                ResultTable('#RunTestResultTable',data['Heading'],data['TableData'],"Test Cases");
-                $("#RunTestResultTable").fadeIn(1000);
-                test_cases=true;
-                implementDropDown("#RunTestResultTable");
-                if(predicate==undefined){
-                    get_dependency(project_id,team_id);
-                }
-
-            }
-        });
-    });
-}
-function populate_parameter_div(array_list,div_name,project_id,team_id){
-    var message="";
-    for(var i=0;i<array_list.length;i++){
-        var dependency=array_list[i][0];
-        var name_list=array_list[i][1].split(",");
-        message+='<form id="tc_'+dependency+'" class="new_tc_form">';
-        message+='<table>';
-        message+='<tr>';
-        message+='<td class="tc_form_label_col">'
-        message+='<b class="Text">'+dependency+':</b>';
-        message+='</td>';
-        message+='<td class="tc_form_input_col">';
-        message+='<table width="100%">';
-        var equal_size=(100/name_list.length);
-        var dep_name=[];
-        message+='<tr>';
-        for(var j=0;j<name_list.length;j++){
-            message+='<td width="'+equal_size+'%">';
-            message+='<input class="'+dependency+'" id="'+dependency+'_'+name_list[j]+'" type="radio" name="type" value="'+name_list[j]+'" style="width:auto" />';
-            message+='<label for="'+dependency+'_'+name_list[j]+'">'+name_list[j]+'</label>';
-            message+='</td>';
-            dep_name.push(dependency+'_'+name_list[j]);
-        }
-        message+='</tr>';
-        message+='</table>';
-        message+='</td>';
-        message+='<tr>';
-        message+='</table>';
-        message+='</form>';
-        var temp={'name':dependency,'list':dep_name};
-        dependency_classes.push(temp);
-    }
-    $('#'+div_name).html(message);
-    for(var i=0;i<dependency_classes.length;i++){
-        for(var j=0;j<dependency_classes[i].list.length;j++){
-            $('#'+dependency_classes[i].list[j]).on('click',function(){
-               PerformSearch(project_id,team_id,parseValue(dependency_classes));
-            });
-        }
-    }
-}
-function parseValue(dependency_classes){
-    var message="";
-    for(var i=0;i<dependency_classes.length;i++){
-        $('.'+dependency_classes[i].name+':checked').each(function(){
-           message+=($(this).val().trim()+': ');
-        });
-    }
-    return message;
-}
-function get_dependency(project_id,team_id){
-    $.get('get_default_settings',{
-        project_id:project_id,
-        team_id:team_id
-    },function(data){
-        populate_parameter_div(data['result'],"parameter_div",project_id,team_id);
-    });
-}
-
-function implementDropDown(wheretoplace){
-    $(wheretoplace+" tr td:nth-child(2)").css({'color' : 'blue','cursor' : 'pointer'});
-    $(wheretoplace+" tr td:nth-child(2)").each(function() {
-        var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
-        var name=$(this).text().trim();
-        $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
-        $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
-            var data_list=data['Result'];
-            var column=data['column'];
-            ResultTable('#'+ID+'detail',column,data_list,"");
-            $('#'+ID+'detail tr').each(function(){
-                $(this).css({'textAlign':'left'});
-            });
-        });
-        $(this).live('click',function(){
-            $('#'+ID+'detail').slideToggle("slow");
-        });
-    });
-}
 function ManageMilestone(project_id,team_id,location_name){
     $.get('GetOS',{
         project_id:project_id,
@@ -242,7 +138,15 @@ function populate_manual_div(dependency_list,branch_list,global_version_list,pro
     });
     $('#create_manual_machine').on('click',function(){
         var machine_name=$('#machine_name').val().trim();
+        if(machine_name==''){
+            alertify.error('Machine name can not be empty');
+            return false;
+        }
         var machine_ip=$('#machine_ip').val().trim();
+        if(machine_ip==''){
+            alertify.error('Machine ip can not be empty');
+            return false;
+        }
         var dependency=[];
         for(var i=0;i<dependency_list.length;i++){
             var temp=[];
@@ -307,7 +211,7 @@ function populate_manual_div(dependency_list,branch_list,global_version_list,pro
             if(data['message']){
                 alertify.set({ delay: 300000 });
                 alertify.success(data['log_message'])
-                window.location.reload(true);
+                window.location='/Home/Machine/'+machine_name.replace(/ /g, '_')+'/';
             }
             else{
                 alertify.set({ delay: 300000 });
