@@ -94,16 +94,8 @@ $(document).ready(function(){
             var project_text=$('#project_identity option:selected').text().trim();
             var team_text=$('#default_team_identity option:selected').text().trim();
             if (team_text=='No Default Team'){
-                var message='<b>Default team is not selected.Proceed to Account Page?</b>';
-                alertify.confirm(message,function(e){
-                    if(e){
-                        window.location='/Home/User/';
-                    }
-                    else{
-                        alertify.alert().close_all();
-                        return false;
-                    }
-                });
+                var message='<b>No team is selected.</b>';
+                alertify.error(message,15000);
             }
         }
     });
@@ -205,8 +197,9 @@ $(document).ready(function(){
             }
         }
         $('#default_team_identity').html(message);
+        $.session.get('default_team_identity','');
         $('#default_team_identity').val($.session.get('default_team_identity'));
-        if($(this).val()!=""){
+        /*if($(this).val()!=""){
             $.get('UpdateDefaultProjectForUser',{
                 'user_id': $.session.get('user_id'),
                 'project_id': $(this).val()
@@ -216,12 +209,16 @@ $(document).ready(function(){
                     //console.log('changed');
                 }
             });
-        }
+        }*/
     });
     $('#default_team_identity').on('change',function(){
         $.session.set('default_team_identity',$(this).val());
+        var team_id= $.session.get('default_team_identity');
+        if(team_id!=''){
+            window.location.reload(true);
+        }
         //$.session.set('default_team_name',$('#default_team_identity option:selected').text().trim());
-        if($(this).val()!=""){
+        /*if($(this).val()!=""){
             $.get('UpdateDefaultTeamForUser',{
                 'user_id': $.session.get('user_id'),
                 'team_id': $(this).val()
@@ -231,7 +228,7 @@ $(document).ready(function(){
                     //console.log('changed');
                 }
             });
-        }
+        }*/
     });
     [].slice.call( document.querySelectorAll( '.progress-button' ) ).forEach( function( bttn, pos ) {
 		new UIProgressButton( bttn, {
