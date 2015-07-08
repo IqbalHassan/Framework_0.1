@@ -113,6 +113,7 @@ $(document).ready(function() {
     AutoCompleteSearchForPrompt();
     /*****************Shetu's Function************************/
     AutoCompleteLabel();
+    createNewLabel();
     //$(".combo-box").combobox();
     /*****************End Shetu************************/
 
@@ -2938,4 +2939,52 @@ function AddToListLabel(id,name,color) {
         name +
         '</a></td>'
             + '</td>&nbsp;&nbsp;&nbsp;');
+}
+
+
+function createNewLabel(){
+    $("#new_label").click(function(){
+        //$("#label_creation").show();
+        if($("#label_creation").is(":visible")){
+            $("#label_creation").slideUp('slow');
+            //$("#label_creation").hide();
+        }
+        else{
+            $("#label_creation").slideDown('slow');
+            //$("#label_creation").show();
+        }
+    });
+    $("#cancel_label").click(function(){
+        $("#label_creation").slideUp('slow');
+    });
+    /*$("#color_picker").spectrum({
+        color: "#f00",
+        preferredFormat: "hex",
+        showInput: true
+    });*/
+
+    $("#create_label").click(function(){
+        var name = $("#label_name").val();
+        var color = $("#color_picker").val();
+
+        if(name!= ""){
+            $.get("CreateLabel/",{
+                name:name.trim(),
+                color:color.trim(),
+                project:$.session.get('project_id'),
+                team:$.session.get('default_team_identity'),
+                user:$.session.get('fullname')
+            },function(data){
+                alertify.set({ delay: 300000 });
+                alertify.success("Label Created!");
+                $("#label_creation").slideUp('slow');
+                //window.location.reload(true);
+            });
+        }
+        else{
+            alertify.set({ delay: 300000 });
+            alertify.error("Label Name is needed!");
+        }
+    });
+
 }
