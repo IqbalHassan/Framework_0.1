@@ -237,11 +237,25 @@ def get_all_machine(request):
                 temp = []
                 for eachitem in each:
                     temp.append(eachitem)
-                query = "select distinct last_updated_time,machine_ip,branch_version,array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),id from test_run_env tre,machine_dependency_settings mds where tre.id=mds.machine_serial  and tester_id='%s' group by id,last_updated_time,machine_ip,branch_version order by id desc limit 1" % (
+                t=[]
+                query="select distinct last_updated_time,machine_ip,branch_version,id from test_run_env where tester_id='%s' order by id desc limit 1"%(each[0])
+                Conn=GetConnection()
+                d=DB.GetData(Conn,query,False)
+                Conn.close()
+                t.append(d[0][0])
+                t.append(d[0][1])
+                t.append(d[0][2])
+                query = "select distinct array_agg( distinct case when bit=0 then type||' : '||name when bit!=0 then  type||' : '||name||' - '||bit||' - '||version end ),id from test_run_env tre,machine_dependency_settings mds where tre.id=mds.machine_serial  and tester_id='%s' group by id,last_updated_time,machine_ip,branch_version order by id desc limit 1" % (
                     each[0])
                 Conn = GetConnection()
                 temp_detail = DB.GetData(Conn, query, False)
                 Conn.close()
+                if temp_detail:
+                    t.append(temp_detail[0][0])
+                else:
+                    t.append([])
+                temp_detail=[]
+                temp_detail.append(tuple(t))
                 query="select count(*) from test_run_env where tester_id='%s' and status='Unassigned'"%each[0]
                 Conn=GetConnection()
                 available=DB.GetData(Conn,query)
@@ -251,7 +265,7 @@ def get_all_machine(request):
                     for eachitem in temp_detail:
                         for eachitemtemp in eachitem:
                             temp.append(eachitemtemp)
-                    temp.pop()
+                    #temp.pop()
                     # convert the date time panel
                     update_time = datetime.datetime.strptime(
                         temp_detail[0][0],
@@ -10844,11 +10858,29 @@ def CheckMachine(request):
             name = request.GET.get(u'name', '')
             print name
             Conn = GetConnection()
-            query = "select distinct machine_ip,branch_version,array_agg(distinct type||'|'||name||'|'||bit||'|'||version ) from test_run_env tre,permitted_user_list pul,machine_dependency_settings mds where pul.user_names=tre.tester_id and mds.machine_serial=tre.id and tester_id='%s' and pul.user_level='Manual' group by branch_version,machine_ip" % name
+            query = "select distinct array_agg(distinct type||'|'||name||'|'||bit||'|'||version ) from test_run_env tre,permitted_user_list pul,machine_dependency_settings mds where pul.user_names=tre.tester_id and mds.machine_serial=tre.id and tester_id='%s' and pul.user_level='Manual' group by branch_version,machine_ip" % name
             machine_info = DB.GetData(Conn, query, False)
             Conn.close()
-            print machine_info
-    result = simplejson.dumps(machine_info)
+            query="select machine_ip,branch_version from test_run_env tre,permitted_user_list pul where tre.tester_id=pul.user_names and tester_id='%s'"%(name)
+            Conn=GetConnection()
+            m=DB.GetData(Conn,query,False)
+            Conn.close()
+            final=[]
+            if machine_info:
+                t=[]
+                t.append(m[0][0])
+                t.append(m[0][1])
+                t.append(machine_info[0][0])
+                t=tuple(t)
+            else:
+                t=[]
+                t.append(m[0][0])
+                t.append(m[0][1])
+                t.append(machine_info)
+                t=tuple(t)
+            final.append(t)
+            print final
+    result = simplejson.dumps(final)
     return HttpResponse(result, content_type='application/json')
 
 
@@ -10932,8 +10964,11 @@ def AddManualTestMachine(request):
                         'status': 'Unassigned',
                         'last_updated_time': updated_time.strip(),
                         'machine_ip': machine_ip,
-                        'branch_version': (
-                            branch + ':' + version).strip()}
+                    }
+                    if branch!='' and version!='':
+                        Dict.update({'branch_version': (branch + ':' + version).strip()})
+                    if branch!='' and version=='':
+                        Dict.update({'branch_version': (branch).strip()})
                     Conn = GetConnection()
                     tes2 = DB.InsertNewRecordInToTable(
                         Conn,
@@ -10950,22 +10985,31 @@ def AddManualTestMachine(request):
                             problem = False
                             for each in new_dependency:
                                 Dict = {}
-                                Dict.update(
-                                    {'machine_serial': machine_id, 'name': each[1], 'type': each[0]})
-                                if(each[2] != 'Nil'):
-                                    Dict.update(
-                                        {'bit': each[2], 'version': each[3]})
-                                else:
-                                    Dict.update({'bit': 0, 'version': ''})
-                                Conn = GetConnection()
-                                result = DB.InsertNewRecordInToTable(
-                                    Conn,
-                                    "machine_dependency_settings",
-                                    **Dict)
-                                Conn.close()
-                                if not result:
-                                    problem = True
-                                    break
+                                name_=''
+                                bit_=0
+                                version_='Nil'
+                                if(each[1]!=''):
+                                    name_=each[1]
+                                    if each[2]!='Nil':
+                                        bit_=each[2]
+                                    if each[3]!='Nil':
+                                        version_=each[3]
+                                    Dict.update({
+                                        'machine_serial': machine_id,
+                                        'name': name_,
+                                        'bit': bit_,
+                                        'version': version_,
+                                        'type': each[0]}
+                                    )
+                                    Conn = GetConnection()
+                                    result = DB.InsertNewRecordInToTable(
+                                        Conn,
+                                        "machine_dependency_settings",
+                                        **Dict)
+                                    Conn.close()
+                                    if not result:
+                                        problem = True
+                                        break
                             if problem:
                                 log_message = "Machine not registered successfully"
                                 message = False
@@ -11012,8 +11056,12 @@ def AddManualTestMachine(request):
                         'status': 'Unassigned',
                         'last_updated_time': updated_time.strip(),
                         'machine_ip': machine_ip,
-                        'branch_version': (
-                            branch + ':' + version).strip()}
+                        }
+                    if branch!='' and version!='':
+                        Dict.update({'branch_version': (branch + ':' + version).strip()})
+                    if branch!='' and version=='':
+                        Dict.update({'branch_version': (branch).strip()})
+
                     Conn = GetConnection()
                     tes2 = DB.InsertNewRecordInToTable(
                         Conn,
@@ -11030,21 +11078,31 @@ def AddManualTestMachine(request):
                             problem = False
                             for each in new_dependency:
                                 Dict = {}
-                                if each[2] != 'Nil':
-                                    Dict.update({'machine_serial': machine_id, 'name': each[
-                                                1], 'bit': each[2], 'version': each[3], 'type': each[0]})
-                                else:
-                                    Dict.update({'machine_serial': machine_id, 'name': each[
-                                                1], 'bit': 0, 'version': each[3], 'type': each[0]})
-                                Conn = GetConnection()
-                                result = DB.InsertNewRecordInToTable(
-                                    Conn,
-                                    "machine_dependency_settings",
-                                    **Dict)
-                                Conn.close()
-                                if not result:
-                                    problem = True
-                                    break
+                                name_=''
+                                bit_=0
+                                version_='Nil'
+                                if(each[1]!=''):
+                                    name_=each[1]
+                                    if each[2]!='Nil':
+                                        bit_=each[2]
+                                    if each[3]!='Nil':
+                                        version_=each[3]
+                                    Dict.update({
+                                        'machine_serial': machine_id,
+                                        'name': name_,
+                                        'bit': bit_,
+                                        'version': version_,
+                                        'type': each[0]}
+                                    )
+                                    Conn = GetConnection()
+                                    result = DB.InsertNewRecordInToTable(
+                                        Conn,
+                                        "machine_dependency_settings",
+                                        **Dict)
+                                    Conn.close()
+                                    if not result:
+                                        problem = True
+                                        break
                             if not problem:
                                 Dict = {
                                     'machine_serial': machine_id,

@@ -676,7 +676,7 @@ function getAllmachine(machinePerPage,machinePageCurrent,project_id,team_id){
 
                 }
                 else{
-                    if(data['machine'][i][j]==''){
+                    if(data['machine'][i][j]==''||data['machine'][i][j]==null){
                         message+='<td>N/A</td>';
                     }
                     else{
