@@ -34,7 +34,7 @@ function make_ms_clickable(){
             'cursor':'pointer'
         });
         $(this).click(function(){
-            $.get("GetMileStoneID",{term : $(this).text().trim()},function(data)
+            $.get("GetMileStoneID",{term : $(this).text().trim(),project_id:project_id, team_id:team_id},function(data)
             {
                 var location='/Home/EditMilestone/'+data+'/';
                 window.location=location;
@@ -100,7 +100,7 @@ function make_bug_clickable(){
 function PopulateMSInfo(value){
 
     $("#renamebox").show();
-    $.get("GetMileStoneByID",{term : value.trim()},function(data)
+    $.get("GetMileStoneByID",{term : value.trim(),project_id:project_id,team_id:team_id},function(data)
     {
         $("#msinput").val(data[0][1]);
         $("#status").val(data[0][4]);
@@ -273,7 +273,7 @@ function New_UI(){
                 $.ajax({
                     url:"AutoMileStone",
                     dataType:"json",
-                    data:{term:request.term},
+                    data:{term:request.term,project_id:project_id,team_id:team_id},
                     success:function(data){
                         response(data);
 

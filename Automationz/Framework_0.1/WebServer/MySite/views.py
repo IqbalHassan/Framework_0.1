@@ -11363,8 +11363,10 @@ def AutoMileStone(request):
         if request.method == 'GET':
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id','')
             print milestone
-            query = "select name,status,description,cast(starting_date as text),cast(finishing_date as text),created_by,cast(created_date as text),modified_by,cast(modified_date as text) from milestone_info where name ilike'%%%s%%'" % milestone
+            query = "select mi.name,mi.status,mi.description,cast(mi.starting_date as text),cast(mi.finishing_date as text),mi.created_by,cast(mi.created_date as text),mi.modified_by,cast(mi.modified_date as text) from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and name ilike'%%%s%%'" % milestone
             milestone_list = DB.GetData(Conn, query, False)
     result = simplejson.dumps(milestone_list)
     return HttpResponse(result, content_type='application/json')
@@ -11451,8 +11453,9 @@ def Get_MileStone_ID(request):
         if request.method == 'GET':
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
-            query = "select id from milestone_info where name = '" + \
-                milestone + "'"
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id','')
+            query = "select id from milestone_info select mi.id,mi.name,cast(mi.starting_date as text),cast(mi.finishing_date as text),mi.status,mi.description,mi.created_by,mi.modified_by,cast(mi.created_date as text),cast(mi.modified_date as text) from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and name = '" + milestone + "'"
             milestone_info = DB.GetData(Conn, query)
     json = simplejson.dumps(milestone_info)
     return HttpResponse(json, content_type='application/json')
@@ -11474,8 +11477,10 @@ def Get_MileStone_By_ID(request):
         if request.method == 'GET':
             Conn = GetConnection()
             id = request.GET.get(u'term', '')
-            query = "select id,name,cast(starting_date as text),cast(finishing_date as text),status,description,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from milestone_info where id = '" + \
-                id + "'"
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id','')
+            query = "select mi.id,mi.name,cast(mi.starting_date as text),cast(mi.finishing_date as text),mi.status,mi.description,mi.created_by,mi.modified_by,cast(mi.created_date as text),cast(mi.modified_date as text) from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and mi.id = '" + \
+                id + "' order by name"
             milestone_info = DB.GetData(Conn, query, False)
     json = simplejson.dumps(milestone_info)
     return HttpResponse(json, content_type='application/json')
