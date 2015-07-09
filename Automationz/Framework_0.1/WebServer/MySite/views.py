@@ -19376,15 +19376,32 @@ def getemaildetails(request):
         if request.is_ajax():
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
+            user_id=request.GET.get(u'user_id','')
             query="select from_address,smtp,username,password,port,ttls from email_config where project_id='%s' and team_id=%d"%(project_id,int(team_id))
             col=['From','SMTP','USERNAME','PASSWORD','PORT','TTLS']
             Conn=GetConnection()
-            alldata=DB.GetData(Conn,query,False)[0]
+            alldata=DB.GetData(Conn,query,False)
             Conn.close()
             Dict={}
+            if alldata:
+                alldata=alldata[0]
+            else:
+                alldata=['','','','','',False]
             for each in zip(col,alldata):
                 Dict.update({each[0]:each[1]})
-            result=simplejson.dumps(Dict)
+            query="select project_owners from projects where project_id='%s'"%(project_id)
+            Conn=GetConnection()
+            owners=DB.GetData(Conn,query,False)
+            Conn.close()
+            if owners:
+                if user_id in owners[0][0].split(","):
+                    owner_tag=True
+                else:
+                    owner_tag=False
+            else:
+                owner_tag=False
+            result={'result':Dict,'owner':owner_tag}
+            result=simplejson.dumps(result)
             return HttpResponse(result,content_type='application/json')
 
 def delete_dependency_name(request):

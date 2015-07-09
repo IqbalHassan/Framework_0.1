@@ -75,6 +75,8 @@ function get_all_data(project_id,team_id){
         'team_id':team_id,
         'user_id': $.session.get('user_id')
     },function(data){
+        var owner_tag=data['owner'];
+        data=data['result'];
         $('#from_address').val(data['From']);
         $('#smtp_address').val(data['SMTP']);
         $('#port').val(data['PORT']);
@@ -82,6 +84,9 @@ function get_all_data(project_id,team_id){
         $('#password').val(data['PASSWORD']);
         if(data['TTLS']){
             $('#ttls_check').attr('checked','checked');
+        }
+        if (owner_tag){
+            $('#submit_button').css({'display':'block'});
         }
     });
 }
@@ -104,6 +109,6 @@ function format_div(){
     message+='<tr><td><b>TTLS:</b></td><td><input class=" cmn-toggle cmn-toggle-yes-no" id="ttls_check" type="checkbox" name="type" value="yes" style="width:auto" />';
     message+='<label for="ttls_check" data-on="Yes" data-off="No"></label></td></tr>';
     message+='</table>';
-    message+='<input type="button" id="submit_button" class="m-btn green" value="Save"/>';
+    message+='<input type="button" id="submit_button" class="m-btn green" value="Save" style="display:none"/>';
     return message;
 }
