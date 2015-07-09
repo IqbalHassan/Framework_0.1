@@ -7571,7 +7571,7 @@ def TestSteps_Results(request):
 
 
 def Check_TestCase(test_case):
-    test_type = [u'automated', u'performance', u'Easily Automatable', u'Hard to Automate', u'Undefined', u'Not Automatable']
+    test_type = [u'automated', u'performance', u'Manual-Easily Automatable', u'Manual-Hard to Automate', u'Manual-Undefined', u'Manual-Not Automatable']
     type_selector = []
     for item in test_type:
         sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + test_case + "') and steptype='" + item + "'"
@@ -7607,7 +7607,7 @@ def Check_TestCase(test_case):
 
 
 def CheckTestCase_StepBased(test_case):
-    test_type = [u'automated', u'performance', u'Easily Automatable', u'Hard to Automate', u'Undefined', u'Not Automatable']
+    test_type = [u'automated', u'performance', u'Manual-Easily Automatable', u'Manual-Hard to Automate', u'Manual-Undefined', u'Manual-Not Automatable']
     type_selector = []
     for item in test_type:
         sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + test_case + "') and steptype='" + item + "'"
