@@ -4,6 +4,8 @@
 
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageMilestone.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 <!--style>
     #searchbox {
         width: 94%;
@@ -52,7 +54,7 @@
     </div>
 
 
-    <table width="100%">
+    <!--table width="100%">
         <tr>
             <td>
                 <div style="float: left">
@@ -104,7 +106,24 @@
 
             </div>
         </div>
+    </div-->
+    <br><br>
+
+    <div id="pageitem" align="right" style="float: right;">
+        <select id="perpageitem">
+            <option value="">Select Per Page Item</option>
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+
+        </select>
     </div>
+    <div id = "AllMSTable"></div>
+    
+    <div id="pagination_div"></div>
+
 
 
 <!--div align="left">

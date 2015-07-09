@@ -788,6 +788,31 @@ def Show_Labels(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, content_type='application/json')
 
+def Show_Milestones(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'label_per_page','')
+            test_case_page_current=request.GET.get(u'label_page_current')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+            condition=" offset %d limit %d"%(offset,limit)
+            Query="select distinct name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" order by name"
+            query=Query+condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+
+
+            Heading = ['Title','Description','Starting Date','Due Date','Status']    
+            results = {'Heading':Heading,'TableData':TableData, 'Count': len(count_query)}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
 
 
 def ViewSteps(request):
