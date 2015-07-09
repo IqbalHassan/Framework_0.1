@@ -11791,7 +11791,8 @@ def MileStoneOperation(request):
                 else:
                     error_message = "MileStone Not Found"
     results = {'confirm_message': confirm_message,
-               'error_message': error_message
+               'error_message': error_message,
+               'ms_id': mid[0]
                }
     result = simplejson.dumps(results)
     return HttpResponse(result, content_type='application/json')
