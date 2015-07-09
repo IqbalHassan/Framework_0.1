@@ -12885,34 +12885,46 @@ def rename_section(request):
             return HttpResponse(0)
 def delete_section(request):
     if request.method == 'GET' and request.is_ajax():
-        section_id = int(request.GET.get('section_id', 0))
-
-        Conn = GetConnection()
-        cur = Conn.cursor()
-
-        try:
-            query = '''
-            DELETE FROM product_sections WHERE section_id=%s
-            '''
-
-            cur.execute(query, (section_id, ))
-            Conn.commit()
-
-            query = '''
-            DELETE FROM team_wise_settings WHERE parameters=%s and type = 'Section'
-            '''
-
-            cur.execute(query, (section_id, ))
-            Conn.commit()
-        except Exception as e:
-            print e
-            return HttpResponse(0)
-        finally:
-            cur.close()
+        section_id=request.GET.get(u'section_id','')
+        project_id=request.GET.get(u'project_id','')
+        team_id=request.GET.get(u'team_id','')
+        #get the section_id from here.
+        query="select section_id,section_path from product_sections ps ,team_wise_settings tws where tws.parameters=ps.section_id and type='Section' and tws.project_id=ps.project_id and tws.team_id=ps.team_id and ps.project_id='%s' and ps.team_id=%d and section_id=%d"%(project_id,int(team_id),int(section_id))
+        Conn=GetConnection()
+        base_section=DB.GetData(Conn,query,False)
+        Conn.close()
+        if base_section:
+            old_section=base_section[0][1]
+            query="select array_agg(section_id::text) from product_sections ps ,team_wise_settings tws where tws.parameters=ps.section_id and type='Section' and tws.project_id=ps.project_id and tws.team_id=ps.team_id and ps.project_id='%s' and ps.team_id=%d and(section_path ~ '%s' or section_path ~'%s.*')"%(project_id,int(team_id),old_section,old_section)
+            Conn=GetConnection()
+            section_id_list=DB.GetData(Conn,query,False)
             Conn.close()
+            if section_id_list:
+                message=''
+                for each in section_id_list[0][0]:
+                    message+=("'"+str(each)+"',")
+                if message!='':
+                    message=message[:len(message)-1]
+            query="select count(*) from test_case_tag where name in (%s) and property='section_id' and tc_id in (select distinct tct.tc_id from test_case_tag tct,test_cases tc where tct.tc_id=tc.tc_id group by tct.tc_id,tc.tc_name HAVING COUNT(CASE WHEN name = '%s' and property='Project' THEN 1 END) > 0 and COUNT(Case when name='%s' and property='Team' then 1 end)>0)"%(message,project_id,team_id)
+            Conn=GetConnection()
+            count=DB.GetData(Conn,query)
+            Conn.close()
+            if count[0]>0 and len(count)==1:
+                return HttpResponse(3)
+            else:
+                for each in section_id_list[0][0]:
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"product_sections",section_id=int(each))
+                    Conn.close()
+                    Conn=GetConnection()
+                    print DB.DeleteRecord(Conn,"team_wise_settings",parameters=int(each),type='Section')
+                    Conn.close()
+                return HttpResponse(1)
+        else:
+            return HttpResponse(2)
+    else:
+        return HttpResponse(0)
 
-#         time.sleep(1)
-        return HttpResponse(section_id)
 
 
 def DeleteTestCase(request):

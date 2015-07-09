@@ -210,22 +210,29 @@ var do_on_load = function do_on_load () {
 	}
 	
 	function deleteNode(node) {
-		if (window.section_has_no_tc && node.children.length === 0) {
-			$.get("/Home/ManageTestCases/setData/deleteSection/", { 'section_id': node.id }, function(data, status) {
-				if (status === 'success') {
-					alertify.set({ delay: 300000 });
-					alertify.success("Folder with ID '" + data + "' deleted successfully");
-					initiateRefresh("#tree");
-					$("#tree").jstree(true).delete_node(node);
-				} else {
-					alertify.set({ delay: 300000 });
-					alertify.error("Could not eastablish connection to the server.");
-				}
-			});
-		} else {
-			alertify.set({ delay: 300000 });
-			alertify.error("Could not delete node as it has child section(s)/test cases.");
-		}
+		$.get("/Home/ManageTestCases/setData/deleteSection/", { 'section_id': node.id,'project_id': $.session.get('project_id'),'team_id': $.session.get('default_team_identity') }, function(data, status) {
+			if (status === 'success' && data==='1') {
+				alertify.set({ delay: 300000 });
+				alertify.success("Folder is deleted successfully");
+				initiateRefresh("#tree");
+				//$("#tree").jstree(true).delete_node(node);
+			}
+			else if(status==='success' && data==='3'){
+				alertify.set({ delay: 300000 });
+				alertify.error("Test Cases are linked with this folder");
+				return false;
+			}
+			else if(status==='success' && data==='2'){
+				alertify.set({ delay: 300000 });
+				alertify.error("No Section Present");
+				return false;
+			}
+			else {
+				alertify.set({ delay: 300000 });
+				alertify.error("Could not eastablish connection to the server.");
+				return false;
+			}
+		});
 	}
 	
 	
