@@ -72,7 +72,8 @@ $(document).ready(function(){
 function get_all_data(project_id,team_id){
     $.get('getemaildetails',{
         'project_id':project_id,
-        'team_id':team_id
+        'team_id':team_id,
+        'user_id': $.session.get('user_id')
     },function(data){
         $('#from_address').val(data['From']);
         $('#smtp_address').val(data['SMTP']);

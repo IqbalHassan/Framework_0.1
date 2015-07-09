@@ -230,6 +230,18 @@ $(document).ready(function(){
             });
         }*/
     });
+    $('#btn_schedule_run').on('click',function(){
+        var project_id= $.session.get('project_id');
+        window.location='/Home/'+project_id+'/ScheduleRun/';
+    });
+    $('#btn_team_settings').on('click',function(){
+        var project_id= $.session.get('project_id');
+        window.location='/Home/'+project_id+'/ManageTeam/';
+    });
+    $('#btn_setup_mail').on('click',function(){
+        var project_id= $.session.get('project_id');
+        window.location='/Home/'+project_id+'/SetupEmail/';
+    });
     [].slice.call( document.querySelectorAll( '.progress-button' ) ).forEach( function( bttn, pos ) {
 		new UIProgressButton( bttn, {
 			callback : function( instance ) {
