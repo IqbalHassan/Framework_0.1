@@ -182,9 +182,12 @@ $(document).ready(function(){
 	
 	// -------------- Mobile navigation ------------------ //
     $('#project_identity').on('change',function(){
+        var old_project= $.session.get('project_id');
         $.session.set('project_id',$(this).val());
         //load default_team for the project
-
+        var url=window.location.pathname;
+        var old_porject=new RegExp(old_project,"g")
+        url=url.replace(old_porject,$(this).val());
         var message="";
         message+='<option>No Default Team</option>';
         for(var i=0;i<base_project_list.length;i++){
@@ -197,8 +200,9 @@ $(document).ready(function(){
             }
         }
         $('#default_team_identity').html(message);
-        $.session.get('default_team_identity','');
+        $.session.set('default_team_identity','');
         $('#default_team_identity').val($.session.get('default_team_identity'));
+        window.location=url;
         /*if($(this).val()!=""){
             $.get('UpdateDefaultProjectForUser',{
                 'user_id': $.session.get('user_id'),
