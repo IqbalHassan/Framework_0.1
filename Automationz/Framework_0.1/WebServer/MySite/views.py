@@ -1242,6 +1242,7 @@ def AutoCompleteUsersSearch(request):
                 result_dict['text'] = '%s - %s' % (each_user[0], each_user[1])
                 results.append(result_dict)
             has_next_page = data['has_next']
+            print results
             #json = simplejson.dumps(results)
             json = simplejson.dumps({'items': results, 'more': has_next_page})
             return HttpResponse(json, content_type='application/json')
@@ -2924,6 +2925,21 @@ def Run_Test(request):
                     print Result
                     count+=1
                 temp_list=[]
+                auto=len(filter(lambda x : get_test_case_type(x)=='Automated',TestCasesIDs))
+                perf=len(filter(lambda x : get_test_case_type(x)=='Performance',TestCasesIDs))
+                man=len(filter(lambda x : get_test_case_type(x)=='Manual',TestCasesIDs))
+                if man>0:
+                    if auto>0 or perf>0:
+                        run_type='Hybrid'
+                    else:
+                        run_type='Manual'
+                else:
+                    if auto>0 and perf==0:
+                        run_type='Automated'
+                    elif auto==0 and perf>0:
+                        run_type='Automated'
+                    else:
+                        run_type='Hybrid'
                 for test_case in TestCasesIDs:
                     if(get_test_case_type(test_case)=='Automated' or get_test_case_type(test_case)=='Performance'):
                         temp_list.append(test_case)
@@ -2950,7 +2966,7 @@ def Run_Test(request):
                     #'project_id':project_id,
                     #'team_id':team_id,
                     'test_milestone': TestMileStone,
-                    'run_type': 'Manual',
+                    'run_type': run_type,
                     'assigned_tester': Testers,
                     'start_date': starting_date,
                     'end_date': ending_date
