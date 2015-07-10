@@ -78,11 +78,11 @@ $(document).ready(function(){
 	// Should be used for formatting results, LATER
 	function formatLabels(label_details) {
 		var start = label_details.text.indexOf(":") + 1;
-		var start2 = label_details.text.indexOf("#");
+		//var start2 = label_details.text.indexOf("#");
 		var length = label_details.text.length;
 		       
-		var label_title = label_details.text.substr(start, start2 - 1);
-		var label_color = label_details.text.substr(start2, length - 1);
+		var label_title = label_details.text.substr(start, length - 1);
+		//var label_color = label_details.text.substr(start2, length - 1);
 		
 		var markup =
 			'<div>' +
@@ -90,7 +90,7 @@ $(document).ready(function(){
 			': ' +
 			'<span style="font-weight: bold;">' + label_title + '</span>' +
 			'  ' +
-			'<a class="label" style="background-color:' + label_color + '"></a>' +
+			'<a class="label" style="background-color:' + label_details.code + '"></a>' +
 			'</div>';
 		
 		return markup;

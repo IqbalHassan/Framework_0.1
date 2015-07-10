@@ -34,7 +34,7 @@ function make_ms_clickable(){
             'cursor':'pointer'
         });
         $(this).click(function(){
-            $.get("GetMileStoneID",{term : $(this).text().trim()},function(data)
+            $.get("GetMileStoneID",{term : $(this).text().trim(),project_id:project_id, team_id:team_id},function(data)
             {
                 var location='/Home/EditMilestone/'+data+'/';
                 window.location=location;
@@ -100,7 +100,7 @@ function make_bug_clickable(){
 function PopulateMSInfo(value){
 
     $("#renamebox").show();
-    $.get("GetMileStoneByID",{term : value.trim()},function(data)
+    $.get("GetMileStoneByID",{term : value.trim(),project_id:project_id,team_id:team_id},function(data)
     {
         $("#msinput").val(data[0][1]);
         $("#status").val(data[0][4]);
@@ -273,7 +273,7 @@ function New_UI(){
                 $.ajax({
                     url:"AutoMileStone",
                     dataType:"json",
-                    data:{term:request.term},
+                    data:{term:request.term,project_id:project_id,team_id:team_id},
                     success:function(data){
                         response(data);
 
@@ -440,11 +440,23 @@ function New_UI(){
         else if(operation=="3"){
             title_msg = "Milestone Deleted"
         }
+
         if(operation=="0"||new_name==''){
             var error_message="<b style='color: #ff0000'>Fields are empty</b>";
-            alertify.log("Fields are empty","",0);
+            //alertify.log("Fields are empty","",0);
+            alertify.set({ delay: 300000 });
+            alertify.error("Title is empty!");
             $('#error_milestone').html(error_message);
             $('#error_milestone').css({'display':'block'});
+        }
+        else if(description==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Description is empty!");
+        }
+        else if(start_date=="" || end_date=="")
+        {
+            alertify.set({ delay: 300000 });
+            alertify.error("Dates are required!");
         }
         else {
             $.get('MileStoneOperation/',{status:status,description:description.trim(),old_name:old_name,new_name:new_name,operation:operation,start_date:start_date.trim(),end_date:end_date.trim(),created_by:created_by,modified_by:modified_by,project_id:project_id,team_id:team_id},function(data){
@@ -468,7 +480,7 @@ function New_UI(){
                     $('#error_milestone').html('<b style="color:green;">'+data['confirm_message']+'<br>Page will be refreshed in 3 seconds to change effect</b>');
                     $('#error_milestone').slideDown('slow');
                     //setTimeout(function(){window.location='/Home/RunTest/';},4000);
-                    window.location = '/Home/ManageMilestone/';
+                    window.location = '/Home/EditMilestone/'+data['ms_id'];
                 }
 
             })

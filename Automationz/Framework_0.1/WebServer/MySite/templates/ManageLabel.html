@@ -5,6 +5,8 @@
 {% block content %}
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageLabel.js"></script>
 <script type="text/javascript" src="/site_media/Jquery/js/spectrum.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<link href="/site_media/Jquery/simplepagination/simplePagination.css" rel="stylesheet"/>
 <link rel='stylesheet' href='/site_media/spectrum.css' />
 <!--style>
     #searchbox {
@@ -57,7 +59,7 @@
         <input type="button" class="m-btn" id="cancel_label" value="Cancel">
     </div>
 
-    <table class="one-column-emphasis">
+    <!--table class="one-column-emphasis">
         <thead>
         <tr>
             <th>Labels</th>
@@ -67,14 +69,29 @@
 
         {% if labels %}
             {% for x in labels %}
-            <tr><td><!--span class="createnew" style="background-color: {{x.1}}; color: #ffffff">{{x.0}}</span--><a href="/Home/ViewEditLabel/{{x.2}}" class="label" style="background-color: {{x.1}};">{{x.0}}</a></td>
+            <tr><td><a href="/Home/ViewEditLabel/{{x.2}}" class="label" style="background-color: {{x.1}};">{{x.0}}</a></td>
                 <td>{{x.2}}</td>
                 <td><a class="del_label" style="color:red; cursor:pointer">Delete</a></td>
             </tr>
             {% endfor %}
         {% endif %}
         </tbody>
-    </table>
+    </table-->
+    <br/><br/>
+
+    <div id="pageitem" align="right" style="float: right;">
+        <select id="perpageitem">
+            <option value="">Select Per Page Item</option>
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+
+        </select>
+    </div>
+    <div id = "AllLabelsTable"></div>
+    
+    <div id="pagination_div"></div>
 
     <!--table style="width: 100%;">
         <thead>

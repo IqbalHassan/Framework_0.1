@@ -169,7 +169,12 @@
 					
 					<li class='has-sub'><a href='#'><span><i class="fa fa-wrench fa-fw fa-lg"></i> Testing</span></a>
 						<ul>
-							<li><a href='/Home/RunTest/'><span><i class="fa fa-rocket fa-fw fa-lg"></i> Deployment</span></a></li>
+							<li class="has-sub"><a href='#'><span><i class="fa fa-rocket fa-fw fa-lg"></i> Execute</span></a>
+                                <ul>
+                                    <li><a href='/Home/RunTest/'><span><i class="fa fa-play fa-fw fa-lg"></i> Run Now</span></a></li>
+                                    <li><a href='#' id="btn_schedule_run"><span><i class="fa fa-clock-o fa-fw fa-lg"></i> Schedule Run</span></a></li>
+                                </ul>
+							</li>
 							<li><a href='/Home/Results/'><span><i class="fa fa-line-chart fa-fw fa-lg"></i> Result & Execution</span></a></li>
 							<li class='has-sub'><a href='#'><span><i class="fa fa-file-text-o fa-fw fa-lg"></i> Test Case</span></a>
 								<ul>
@@ -243,7 +248,15 @@
 					
 					<li class='has-sub'><a href='#'><span><i class="fa fa-briefcase fa-fw fa-lg"></i> Manage</span></a>
 						<ul>
-							<li><a href="/Home/AssignSettings/"><i class="fa fa-compass fa-fw fa-lg"></i> Project Settings</a></li>
+							<li class="has-sub"><a href="#"><i class="fa fa-compass fa-fw fa-lg"></i> Project Settings</a>
+                            <ul>
+                                <li><a href="/Home/AssignSettings/"><i class="fa fa-th-list fa-fw fa-lg"></i> Dependency</a></li>
+                                <li>
+                                    <a href="#" id="btn_team_settings"><i class="fa fa-group fa-fw fa-lg"></i> Manage Teams</a>
+                                </li>
+                                <li><a href="#" id="btn_setup_mail"><i class="fa fa-envelope fa-fw fa-lg"></i> Setup Email</a></li>
+                            </ul>
+                            </li>
 							<li><a href="/Home/ManageProject/"><i class="fa fa-binoculars fa-fw fa-lg"></i> Project</a></li>
 							<li><a href="#"><i class="fa fa-tags fa-fw fa-lg"></i> Label</a>
 								<ul>

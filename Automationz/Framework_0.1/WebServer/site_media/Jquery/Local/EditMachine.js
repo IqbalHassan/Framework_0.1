@@ -49,9 +49,19 @@ function ManageMilestone(project_id,team_id,location_name){
                 var branch_version=data[0][1];
                 var dependency=data[0][2];
                 $('#machine_ip').val(machine_ip);
-                branch_version=branch_version.split(':');
-                var branch=branch_version[0].trim();
-                var version=branch_version[1].trim();
+                if(branch_version!=null){
+                    branch_version=branch_version.split(':');
+                    var branch=branch_version[0].trim();
+                    var version=branch_version[1];
+                    if (version!=''&&version!=undefined){
+                        version=version.trim();
+                    }
+                }else{
+                    branch_version='';
+                    branch='';
+                    version='';
+                }
+
                 $('#branch_name').val(branch);
                 $('#branch_name').trigger('change');
                 $('#branch_version').val(version);
@@ -152,10 +162,11 @@ function populate_manual_div(dependency_list,branch_list,global_version_list,pro
             var temp=[];
             var name=dependency_list[i][0];
             temp.push(name);
-            if($('#'+name+'_name option:selected').val().trim()==""){
+            if($('#'+name+'_name option:selected').val()==""){
                 alertify.set({ delay: 300000 });
                 alertify.error(name+' name is empty');
-                return false;
+                temp.push($('#'+name+'_name option:selected').val());
+                //return false;
             }
             else{
                 temp.push($('#'+name+'_name option:selected').val().trim());
@@ -163,24 +174,36 @@ function populate_manual_div(dependency_list,branch_list,global_version_list,pro
             if($('#'+name+'_bit option:selected').val()==null){
                 temp.push('Nil');
             }
-            else if($('#'+name+'_bit option:selected').val().trim()==""){
+            else if($('#'+name+'_bit option:selected').val()==""){
                 alertify.set({ delay: 300000 });
                 alertify.error(name+' bit is empty');
-                return false;
+                temp.push('Nil');
+                //return false;
             }
             else{
-                temp.push($('#'+name+'_bit option:selected').val().trim());
+                if($('#'+name+'_bit option:selected').val()!=''){
+                    temp.push($('#'+name+'_bit option:selected').val());
+                }else{
+                    temp.push($('#'+name+'_bit option:selected').val().trim());
+                }
+
             }
             if($('#'+name+'_bit option:selected').val()==null){
                 temp.push('Nil');
             }
-            else if($('#'+name+'_version option:selected').val().trim()==""){
+            else if($('#'+name+'_version option:selected').val()==""){
                 alertify.set({ delay: 300000 });
                 alertify.error(name+' version is empty');
-                return false;
+                temp.push('Nil');
+                //return false;
             }
             else{
-                temp.push($('#'+name+'_version option:selected').val().trim());
+                if($('#'+name+'_version option:selected').val()!=""){
+                    temp.push($('#'+name+'_version option:selected').val());
+                }else{
+                    temp.push($('#'+name+'_version option:selected').val().trim());
+                }
+
             }
             dependency.push(temp.join('|'));
         }
