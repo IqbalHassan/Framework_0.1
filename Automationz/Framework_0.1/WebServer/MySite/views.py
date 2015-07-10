@@ -788,6 +788,31 @@ def Show_Labels(request):
     json = simplejson.dumps(results)
     return HttpResponse(json, content_type='application/json')
 
+def Show_Milestones(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'label_per_page','')
+            test_case_page_current=request.GET.get(u'label_page_current')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+            condition=" offset %d limit %d"%(offset,limit)
+            Query="select distinct name,description,cast(starting_date as text),cast(finishing_date as text),status from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" order by name"
+            query=Query+condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+
+
+            Heading = ['Title','Description','Starting Date','Due Date','Status']    
+            results = {'Heading':Heading,'TableData':TableData, 'Count': len(count_query)}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
 
 
 def ViewSteps(request):
@@ -7546,7 +7571,7 @@ def TestSteps_Results(request):
 
 
 def Check_TestCase(test_case):
-    test_type = [u'automated', u'performance', u'Easily Automatable', u'Hard to Automate', u'Undefined', u'Not Automatable']
+    test_type = [u'automated', u'performance', u'Manual-Easily Automatable', u'Manual-Hard to Automate', u'Manual-Undefined', u'Manual-Not Automatable']
     type_selector = []
     for item in test_type:
         sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + test_case + "') and steptype='" + item + "'"
@@ -7582,7 +7607,7 @@ def Check_TestCase(test_case):
 
 
 def CheckTestCase_StepBased(test_case):
-    test_type = [u'automated', u'performance', u'Easily Automatable', u'Hard to Automate', u'Undefined', u'Not Automatable']
+    test_type = [u'automated', u'performance', u'Manual-Easily Automatable', u'Manual-Hard to Automate', u'Manual-Undefined', u'Manual-Not Automatable']
     type_selector = []
     for item in test_type:
         sQuery = "select count(*) from test_steps_list where step_id in(select step_id from test_steps where tc_id='" + test_case + "') and steptype='" + item + "'"
@@ -11354,8 +11379,10 @@ def AutoMileStone(request):
         if request.method == 'GET':
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id','')
             print milestone
-            query = "select name,status,description,cast(starting_date as text),cast(finishing_date as text),created_by,cast(created_date as text),modified_by,cast(modified_date as text) from milestone_info where name ilike'%%%s%%'" % milestone
+            query = "select mi.name,mi.status,mi.description,cast(mi.starting_date as text),cast(mi.finishing_date as text),mi.created_by,cast(mi.created_date as text),mi.modified_by,cast(mi.modified_date as text) from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and name ilike'%%%s%%'" % milestone
             milestone_list = DB.GetData(Conn, query, False)
     result = simplejson.dumps(milestone_list)
     return HttpResponse(result, content_type='application/json')
@@ -11442,8 +11469,9 @@ def Get_MileStone_ID(request):
         if request.method == 'GET':
             Conn = GetConnection()
             milestone = request.GET.get(u'term', '')
-            query = "select id from milestone_info where name = '" + \
-                milestone + "'"
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id','')
+            query = "select id from milestone_info select mi.id,mi.name,cast(mi.starting_date as text),cast(mi.finishing_date as text),mi.status,mi.description,mi.created_by,mi.modified_by,cast(mi.created_date as text),cast(mi.modified_date as text) from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and name = '" + milestone + "'"
             milestone_info = DB.GetData(Conn, query)
     json = simplejson.dumps(milestone_info)
     return HttpResponse(json, content_type='application/json')
@@ -11465,8 +11493,10 @@ def Get_MileStone_By_ID(request):
         if request.method == 'GET':
             Conn = GetConnection()
             id = request.GET.get(u'term', '')
-            query = "select id,name,cast(starting_date as text),cast(finishing_date as text),status,description,created_by,modified_by,cast(created_date as text),cast(modified_date as text) from milestone_info where id = '" + \
-                id + "'"
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id','')
+            query = "select mi.id,mi.name,cast(mi.starting_date as text),cast(mi.finishing_date as text),mi.status,mi.description,mi.created_by,mi.modified_by,cast(mi.created_date as text),cast(mi.modified_date as text) from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and mi.id = '" + \
+                id + "' order by name"
             milestone_info = DB.GetData(Conn, query, False)
     json = simplejson.dumps(milestone_info)
     return HttpResponse(json, content_type='application/json')
@@ -11807,7 +11837,8 @@ def MileStoneOperation(request):
                 else:
                     error_message = "MileStone Not Found"
     results = {'confirm_message': confirm_message,
-               'error_message': error_message
+               'error_message': error_message,
+               'ms_id': mid[0]
                }
     result = simplejson.dumps(results)
     return HttpResponse(result, content_type='application/json')

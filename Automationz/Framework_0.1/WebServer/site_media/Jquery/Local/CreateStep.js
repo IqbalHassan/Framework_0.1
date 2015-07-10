@@ -380,9 +380,12 @@ function PopulateStepInfo(value){
                 $("#step_type").val(6);
             }*/
             $("#step_type").val(row[4]);
-            if(row[4] != ('automated' || 'performance' || 'Easily Automatable' || 'Hard to Automate' || 'Not Automatable' || 'Undefined')){
-                $("#step_type").val('Undefined');
+            if(row[4] != $("#step_type").val()){
+                $("#step_type").val('Manual-Undefined');
             }
+            //if(row[4] != ('automated' || 'performance' || 'Manual-Easily Automatable' || 'Manual-Hard to Automate' || 'Manual-Not Automatable' || 'Manual-Undefined')){
+              //  $("#step_type").val('Manual-Undefined');
+            //}
             
             $.get("get_feature_path",{'term':value ,'id':row[6]},function(data)
             {
