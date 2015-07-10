@@ -831,7 +831,7 @@ def Steps_List(request):
             test_case_per_page=request.GET.get(u'test_case_per_page','')
             test_case_page_current=request.GET.get(u'test_case_page_current','')
             offset=int(test_case_per_page)*(int(test_case_page_current)-1)
-            Query="select stepname,description,driver,steptype,stepenable,data_required,always_run,created_by,cv.team_name from test_steps_list tsl,team cv where tsl.team_id=cv.id::text and cv.project_id='"+project_id+"' and tsl.project_id='"+project_id+"' "
+            Query="select stepname,description,driver,steptype,stepenable,data_required,always_run,created_by,cv.team_name from test_steps_list tsl,team cv where tsl.team_id=cv.id::text and cv.project_id='"+project_id+"' and tsl.project_id='"+project_id+"' order by stepname"
             query=Query
             Conn=GetConnection()
             steps_list=DB.GetData(Conn, query, False)
