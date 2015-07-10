@@ -1864,8 +1864,67 @@ function GetBrowserSections(){
 /**************************************Database Works**************************************************/
 /***********Autocomplete Step name*****************/
 function AutoCompleteTestStep(){
+    //var new_test_step_text = "New test step";
     var row_count=$('#steps_table>tr').length;
+
     for(var i=1;i<=row_count;i++){
+        /*$('#searchbox'+i+'name').select2({
+            placeholder: "Test Step title...",
+    //      minimumInputLength: 3,
+            width: 460,
+            quietMillis: 250,
+            ajax: {
+                url: "TestStepSearch/",
+                dataType: "json",
+                queitMillis: 250,
+                data: function(term, page) {
+                    return {
+                        'term': term,
+                        'page': page,
+                        'project_id': $.session.get('project_id')
+                        //'team_id': $.session.get('default_team_identity')
+                    };
+                },
+                results: function(data, page) {
+                    return {
+                        results: data.items,
+                        more: data.more
+                    }
+                }
+            },
+            createSearchChoice: function(term) {
+                return {id: new_test_step_text, text: new_test_step_text + ": " + term};
+            },
+            createSearchChoicePosition: "top",
+            formatResult: formatTestSteps
+        })
+        // Listens for changes so that we can prompt the user if they want to edit or
+        // copy existing test cases
+        .on("change", function(e) {
+    //      console.log(JSON.stringify({val: e.val, added: e.added, removed: e.removed}));
+            if (e.val === new_test_step_text) {
+    //          console.log("New test case is being created!");
+                var start = $(this).select2("data")["text"].indexOf(":") + 1;
+                var length = $(this).select2("data")["text"].length;
+                
+                var desc = $(this).select2("data")["text"].substr(start, length - 1);
+                $('#searchbox'+i+'name').val(desc);
+            } else {
+    //          console.log("Existing test case has been selected.");
+                var start = $(this).select2("data")["text"].indexOf(":") + 1;
+                var length = $(this).select2("data")["text"].length;
+                
+                var type = $(this).select2("data")["text"].substr(start, length - 1);
+            
+                var step_name = $(this).val();
+                //$('#searchbox'+i+'name').val(step_name);
+                //$('#searchbox'+i+'name').select2("data", {"id": "Selected step", "text": "Selected step" + ": " + step_name});
+              return false;
+            }
+
+        });*/
+
+
         $('#searchbox'+i+'name').autocomplete({
             source:function(request,response){
                 $.ajax({
@@ -1978,8 +2037,27 @@ function AutoCompleteTestStep(){
         };
     }
 }
+
+function formatTestSteps(step_details) {
+        var start = step_details.text.indexOf(":") + 1;
+        var length = step_details.text.length;
+        
+        var type = step_details.text.substr(start, length - 1);
+        var title = step_details.text.substr(0,start-1);
+        
+        var markup =
+            '<div>' +
+            '<i class="fa fa-file-text fa-fw"></i> <span style="font-weight: bold;">' + step_details.id + '</span>' +
+            ': ' +
+            '<span>' + type + '</span>'
+            '</div>';
+        
+        return markup;
+}
+
+
 function AutoCompleteLabel(){
-    $('#label_txtbox').autocomplete({
+    /*$('#label_txtbox').autocomplete({
         source:function(request,response){
             $.ajax({
                 url:"AutoCompleteLabel/",
@@ -2015,8 +2093,78 @@ function AutoCompleteLabel(){
             event.preventDefault();
 
         }
+    });*/
+
+    $("#label_txtbox").select2({
+        placeholder: "Search & select labels...",
+//      minimumInputLength: 3,
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "LabelSearch/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': $.session.get('project_id'),
+                    'team_id': $.session.get('default_team_identity')
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        /*createSearchChoice: function(term) {
+            return {id: new_label_text, text: new_label_text + ": " + term};
+        },
+        createSearchChoicePosition: "top",*/
+        formatResult: formatLabels
+    })
+    // Listens for changes so that we can prompt the user if they want to edit or
+    // copy existing test cases
+    .on("change", function(e) {
+//      console.log(JSON.stringify({val: e.val, added: e.added, removed: e.removed}));
+        var start = $(this).select2("data")["text"].indexOf(":") + 1;
+        var length = $(this).select2("data")["text"].length;
+        
+        var label_title = $(this).select2("data")["text"].substr(start, length - 1);
+    
+        var label_id = $(this).val();
+        
+        var label_color = $(this).select2("data")["code"];
+
+        if(label_id!=""){
+            AddToListLabel(label_id,label_title,label_color);
+        }
+        //$(this).select2("open");
+      return false;
     });
 }
+
+function formatLabels(label_details) {
+        var start = label_details.text.indexOf(":") + 1;
+        //var start2 = label_details.text.indexOf("#");
+        var length = label_details.text.length;
+               
+        var label_title = label_details.text.substr(start, length - 1);
+        //var label_color = label_details.text.substr(start2, length - 1);
+        
+        var markup =
+            '<div>' +
+            '<i class="fa fa-file-text fa-fw"></i> <span>' + label_details.id + '</span>' +
+            ': ' +
+            '<span style="font-weight: bold;">' + label_title + '</span>' +
+            '  ' +
+            '<a class="label" style="background-color:' + label_details.code + '"></a>' +
+            '</div>';
+        
+        return markup;
+    }
 /************End Autocomplete Step name****************/
 /**************************************End Database Works**************************************************/
 /***********************************Start New Data Pop UP**********************************************************************/
