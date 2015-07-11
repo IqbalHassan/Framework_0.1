@@ -73,7 +73,7 @@ function get_all_data(project_id,team_id){
     $.get('getemaildetails',{
         'project_id':project_id,
         'team_id':team_id,
-        'user_id': $.session.get('user_id')
+        //'user_id': $.session.get('user_id')
     },function(data){
         var owner_tag=data['owner'];
         data=data['result'];

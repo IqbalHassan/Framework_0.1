@@ -1,4 +1,4 @@
-{% extends "BaseTemplate.html" %}
+{% extends "AdminBaseTemplate.html" %}
 
 {% block title%}Team Edit{% endblock %}
 
@@ -55,7 +55,7 @@
     var project_id="{{project_id}}";
     var team_name="{{team_name}}";
     $(document).ready(function(){
-        $('body').css({'font-size':'100%'});
+        //$('body').css({'font-size':'100%'});
         $("#tester_search").select2({
             placeholder: "Available Testers...",
             width: 460,

@@ -9,6 +9,8 @@
                 <td><b>{{x}}</b></td>
             {% endfor %}
             <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
         </tr>
     </thead>
     <tbody>
@@ -17,7 +19,9 @@
                 {% for y in x %}
                     <td>{{y}}</td>
                 {% endfor %}
-                    <td><a href="/Home/superAdminFunction/Project/{{x.0}}/"><img src="/site_media/edit.png" width="20" height="20" style="cursor: pointer"/></a></td>
+                    <td><a href="/Home/superAdminFunction/Project/{{x.0}}/"><img title="Edit" src="/site_media/edit.png" width="20" height="20" style="cursor: pointer"/></a></td>
+                    <td><a href="/Home/{{x.0}}/ManageTeam/"><img title="Manage Team" src="/site_media/team.png" width="20" height="20" style="cursor: pointer"/></a></td>
+                    <td><a href="/Home/{{x.0}}/SetupEmail/"><img title="Setup Email" src="/site_media/mail.png" width="20" height="20" style="cursor: pointer"/></a></td>
             </tr>
 
         {% endfor %}

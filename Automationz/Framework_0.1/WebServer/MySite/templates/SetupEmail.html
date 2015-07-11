@@ -1,17 +1,15 @@
-{%extends 'BaseTemplate.html'%}
+{%extends 'AdminBaseTemplate.html'%}
 {% block title %}Setup Email{%endblock%}
+{% block pageindicator %}Setup Email{% endblock %}
 {% block content%}
 <script type="text/javascript">
     var project_id="{{project_id}}";
-    $(document).ready(function(){
-       $('body').css({'font-size':'100%;'});
-    });
 </script>
 <script type="text/javascript" src="/site_media/Jquery/Local/SetupEmail.js"></script>
 <table width="100%;">
     <caption><b style="font-size: 150%;">Team wise Email Settings</b></caption>
     <tr>
-        <td style="width:25%;vertical-align: 0%;">
+        <td style="width:22%;vertical-align: 0%;">
             <table  class="two-column-emphasis">
                 <caption><b>Teams</b></caption>
                 {% if team_list %}
@@ -23,8 +21,8 @@
                 {% endif %}
             </table>
         </td>
-        <td style="vertical-align: 0%;">
-            <div id="mainbody">&nbsp;</div>
+        <td style="margin-left:5%;vertical-align: 0%;">
+            <div id="mainbody" style="margin-left: 5%;">&nbsp;</div>
         </td>
     </tr>
 </table>
