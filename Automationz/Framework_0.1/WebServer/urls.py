@@ -418,7 +418,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/Show_Labels/$', Show_Labels),
     url(r'^Home/.*/Show_Milestones/$', Show_Milestones),
     url(r'^Home/.*/Get_Filtered_MileStone/$', Get_Filtered_MileStone),
-    url(r'^Home/RunParameter/$', RunParameter),
-)
-
+	url(r'^Home/.*/TestCases_PerLabel/$', TestCases_PerLabel),
+	url(r'^Home/RunParameter/$', RunParameter),
+      )
 

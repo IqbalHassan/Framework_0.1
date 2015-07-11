@@ -13,6 +13,17 @@ $(document).ready(function(){
         side: 'left'
     });
     get_steps(project_id, team_id,test_case_per_page,test_case_page_current);
+
+    test_case_per_page = $("#perpageitem").val();
+    $('#perpageitem').on('change',function(){
+        if($(this).val()!=''){
+            test_case_per_page=$(this).val();
+            test_case_page_current=1;
+            $('#pagination_tab').pagination('destroy');
+            window.location.hash = "#1";
+            get_steps(project_id, team_id,test_case_per_page,test_case_page_current);
+        }
+    });
 });
 
 var colors = {
