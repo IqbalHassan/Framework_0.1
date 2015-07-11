@@ -1,11 +1,9 @@
-var user_id=$.session.get('user_id')
 $(document).ready(function(){
-    GetAllTeam(user_id,project_id);
+    GetAllTeam(project_id);
 });
-function GetAllTeam(user_id,project_id){
+function GetAllTeam(project_id){
     $.get('GetAllTeam',{
         'project_id':project_id,
-        'user_id':user_id
     },function(data){
         var owner=data['owner'];
         var team_list=data['team_list'];

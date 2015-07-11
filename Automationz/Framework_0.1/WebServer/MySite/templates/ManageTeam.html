@@ -1,7 +1,7 @@
-{% extends "BaseTemplate.html" %}
+{% extends "AdminBaseTemplate.html" %}
 
 {% block title%}Manage Team{% endblock %}
-
+{% block pageindicator%}Manage Team{% endblock%}
 {% block content %}
 <table width="100%;">
     <tr>
@@ -19,9 +19,6 @@
 
 <script type="text/javascript">
     var project_id="{{project_id}}";
-    $(document).ready(function(){
-        $('body').css({'font-size':'100%'});
-    });
 </script>
 <script type="text/javascript" src="/site_media/Jquery/Local/ManageTeam.js"></script>
 <script>

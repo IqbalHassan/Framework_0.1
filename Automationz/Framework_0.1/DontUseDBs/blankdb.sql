@@ -1,4 +1,4 @@
---
+﻿--
 -- PostgreSQL database dump
 --
 
@@ -1074,7 +1074,7 @@ ALTER TABLE permitted_user_list OWNER TO postgres;
 --
 
 CREATE SEQUENCE permitted_user_list_user_id_seq
-    START WITH 1
+    START WITH 2
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
@@ -3502,3 +3502,6 @@ GRANT ALL ON TABLE test_steps_list TO PUBLIC;
 -- PostgreSQL database dump complete
 --
 
+
+insert into permitted_user_list values (1,'Admin','admin','admin@admin.com');
+insert into user_info values('admin','@dm!n','Admin','');

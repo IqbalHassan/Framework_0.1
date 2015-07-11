@@ -14213,10 +14213,10 @@ def ManageTeam(request,project_id):
 def GetAllTeam(request):
     if request.method=='GET':
         if request.is_ajax():
-            user_id=request.GET.get(u'user_id','')
+            #user_id=request.GET.get(u'user_id','')
             project_id=request.GET.get(u'project_id','')
             #check if the owner of this project
-            query="select project_owners from projects where project_id='%s'"%(project_id.strip())
+            """query="select project_owners from projects where project_id='%s'"%(project_id.strip())
             Conn=GetConnection()
             project_owners=DB.GetData(Conn,query)
             Conn.close()
@@ -14224,6 +14224,8 @@ def GetAllTeam(request):
                 owner_tag=True
             else:
                 owner_tag=False
+            """
+            owner_tag=True
             if owner_tag:
                 #get all the assigned team
                 query="select t.id,t.team_name  from project_team_map ptm,projects p,team t where p.project_id=ptm.project_id and ptm.project_id='%s' and t.id=cast(ptm.team_id as int)"%(project_id.strip())
@@ -18478,7 +18480,7 @@ def Create_New_User(request):
                         Conn,
                         "permitted_user_list",
                         **Dict)
-                    Conn = GetConnection()
+                    Conn.close()
                     if result:
                         message = True
                 else:
