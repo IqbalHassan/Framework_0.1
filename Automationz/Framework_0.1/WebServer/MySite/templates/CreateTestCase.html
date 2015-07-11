@@ -182,17 +182,18 @@
                                         <b class="Text">Label(s):</b> <br>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <input class="ui-corner-all ui-autocomplete-input textbox m-wrap" id="label_txtbox" type="text"
-                                               name="searchboxname" autocomplete="on" placeholder="Search & Select Labels">
+                                        <input type="hidden" id="label_txtbox">
+                                        <!--input class="ui-corner-all ui-autocomplete-input textbox m-wrap" id="label_txtbox" type="text"
+                                               name="searchboxname" autocomplete="on" placeholder="Search & Select Labels"-->
                                     </td>
-                                    <td><a id="new_label" class="label" style="background-color:#ccc; cursor:pointer"><i class="icon-plus-sign"></i></a>
+                                    <td><a id="new_label" class="label hint--right hint--bounce hint--rounded" style="background-color:#ccc; cursor:pointer" data-hint="Create New Label"><i class="icon-plus-sign"></i></a>
                                     </td>
                                 </tr>
                                 
                                 <tr>
                                     <div id="label_creation" class="tray" align="center" style="border: 2px solid ghostwhite; width: 40%;margin-left: 20%;display: none">
                                         <input class="textbox" placeholder="Label Name..." id="label_name" style="width:auto;">&nbsp;
-                                        <input type="color" class="textbox" id="color_picker" style="width:15%">
+                                        <input type="color" class="textbox hint--left hint--bounce hint--rounded" data-hint="Choose Color" id="color_picker" style="width:20%">
                                         &nbsp;&nbsp;&nbsp;
                                         <input type="button" class="m-btn purple" id="create_label" value="Create Label">
                                         <input type="button" class="m-btn" id="cancel_label" value="Cancel">
