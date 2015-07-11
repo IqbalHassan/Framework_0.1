@@ -3123,10 +3123,15 @@ function createNewLabel(){
                 team:$.session.get('default_team_identity'),
                 user:$.session.get('fullname')
             },function(data){
-                alertify.set({ delay: 300000 });
-                alertify.success("Label Created!");
-                $("#label_creation").slideUp('slow');
-                //window.location.reload(true);
+                if(data=="Label name already exists!"){
+                    alertify.set({ delay: 300000 });
+                    alertify.error(data);
+                }
+                else{
+                    alertify.set({ delay: 300000 });
+                    alertify.success("Label Created!");
+                    $("#label_creation").slideUp('slow');
+                }
             });
         }
         else{

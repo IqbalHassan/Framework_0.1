@@ -135,12 +135,13 @@
                                 <!--td><input id="milestone_list" class="textbox" placeholder="Milestone Here"></td>
                                 <td><table><tr id="milestone"></tr></table></td-->
                                 <td>
-                                    <select id="milestone">
-                                        {% if milestone_list %}
+                                    <select class="milestone">
+                                        <option value="">Select an option</option>
+                                        <!--{% if milestone_list %}
                                         {% for x in milestone_list %}
                                         <option value="{{x.0}}"/>{{x.1}}</option>
                                         {% endfor %}
-                                        {% endif %}
+                                        {% endif %}-->
                                     </select>
                                 </td>
                             </tr>

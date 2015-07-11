@@ -218,7 +218,22 @@
                                         <b class="Text">Priority:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <table>
+                                        <table><tr>
+                                            <td>
+                                            <input id="P1" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="priority" value="P1" checked="checked">
+                                            <label for="P1" data-on="P1" data-off="P1"></label>
+                                            </td><td>
+                                            <input id="P2" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="priority" value="P2">
+                                            <label for="P2" data-on="P2" data-off="P2"></label>
+                                            </td><td>
+                                            <input id="P3" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="priority" value="P3">
+                                            <label for="P3" data-on="P3" data-off="P3"></label>
+                                            </td><td>
+                                            <input id="P4" class="cmn-toggle cmn-toggle-yes-no" type="radio" name="priority" value="P4">
+                                            <label for="P4" data-on="P4" data-off="P4"></label>
+                                            </td></tr></table>
+
+                                        <!--table>
                                             <tr>
                                                 {% if priority_list %}
                                                     {% for x in priority_list%}
@@ -228,7 +243,7 @@
                                                     {% endfor %}
                                                 {% endif %}
                                             </tr>
-                                        </table>
+                                        </table-->
                                     </td>
                                 </tr>
                             </table>
@@ -240,12 +255,13 @@
                                         <b class="Text">Milestone:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <select id="milestone">
-                                            {% if milestone_list %}
+                                        <select class="milestone">
+                                            <option value="">Select an option</option>
+                                            <!--{% if milestone_list %}
                                                 {% for x in milestone_list %}
                                                     <option value="{{x.0}}"/>{{x.1}}</option>
                                                 {% endfor %}
-                                            {% endif %}
+                                            {% endif %}-->
                                         </select>
                                     </td>
                                 </tr>

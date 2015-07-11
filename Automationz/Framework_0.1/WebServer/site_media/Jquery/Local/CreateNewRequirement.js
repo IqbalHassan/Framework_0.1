@@ -8,6 +8,10 @@ var req_id = "";
 var sectionpath = "";
 
 
+    var project_id= $.session.get('project_id');
+    var team_id= $.session.get('default_team_identity');
+
+
 
 var lowest_section = 0;
 var isAtLowestSection = false;
@@ -18,6 +22,25 @@ var isAtLowestFeature = false;
 $(document).ready(function(){
 
     AutoCompleteTask();
+
+    $.ajax({
+        url:'Get_Filtered_MileStone/',
+        dataType : "json",
+        data : {
+            project_id: project_id,
+            team_id: team_id
+        },
+        success: function( json ) {
+            //if(json.length > 0)
+                //for(var i = 0; i < json.length; i++)
+                    //json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".milestone").append($('<option>').text(value[1]).attr('value', value[0]));
+            });
+        }
+    });
+
 
     var URL=window.location.pathname;
     var create_index=URL.indexOf(createpath);
@@ -91,7 +114,7 @@ $(document).ready(function(){
         //var priority="";
         //var priority=$('input[name="priority"]:checked').val();
         var priority=$('input[name="priority"]:checked').val();
-        var milestone=$('#milestone option:selected').val();
+        var milestone=$('.milestone option:selected').val();
         var title=$('#title').val();
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
@@ -201,7 +224,7 @@ function PopulateReqInfo(req_id){
             }
         });
 
-        $("#milestone").val(data['Req_Info'][0][6]);
+        $(".milestone").val(data['Req_Info'][0][6]);
 
         $('input[name="labels"]').each(function(){
             $(this).prop('checked',false);

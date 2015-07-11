@@ -11,6 +11,25 @@ var team_id= $.session.get('default_team_identity');
 
 $(document).ready(function(){
 
+    $.ajax({
+        url:'Get_Filtered_MileStone/',
+        dataType : "json",
+        data : {
+            project_id: project_id,
+            team_id: team_id
+        },
+        success: function( json ) {
+            //if(json.length > 0)
+                //for(var i = 0; i < json.length; i++)
+                    //json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".milestone").append($('<option>').text(value[1]).attr('value', value[0]));
+            });
+        }
+    });
+
+
     $('.scrollbox1').enscroll({
         verticalTrackClass: 'track1',
         verticalHandleClass: 'handle1',
@@ -127,7 +146,7 @@ $(document).ready(function(){
         var team=team_id;
         //var priority= 'P' + $('#priority').val();
         var priority=$('input[name="priority"]:checked').val();
-        var milestone=$("#milestone").val();
+        var milestone=$(".milestone").val();
         var title=$('#title').val();
         //var creator = $("#created_by").val();
         //var testers= $("#tester").text();
@@ -400,7 +419,7 @@ function PopulateBugInfo(bug_id){
                 $(this).prop('checked',true);
             }
         });
-        $('#milestone').val(data['Bug_Info'][0][6]);
+        $('.milestone').val(data['Bug_Info'][0][6]);
         $("#bug_info").show();
         $("#created_by").text(data['Bug_Info'][0][7]);
         $("#created_date").text(data['Bug_Info'][0][8]);

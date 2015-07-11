@@ -179,9 +179,16 @@ $(document).ready(function(){
 	                team:team_id,
 	                user:$.session.get('fullname')
 	            },function(data){
-	                alertify.set({ delay: 300000 });
-	                alertify.success("Label Created!");
-	                window.location=('/Home/ViewEditLabel/'+data);
+	            	if(data=="Label name already exists!"){
+	            		alertify.set({ delay: 300000 });
+	                	alertify.error(data);
+	            	}
+	            	else{
+		            	alertify.set({ delay: 300000 });
+		                alertify.success("Label Created!");
+		                //window.location.reload(true);
+		                window.location=('/Home/ViewEditLabel/'+data);
+	            	}
 	            });
 	        }
 	        else if(operation==2){
@@ -198,10 +205,16 @@ $(document).ready(function(){
 	                team:team_id,
 	                user:user
 	            },function(data){
-	            	alertify.set({ delay: 300000 });
-	                alertify.success("Label Updated!");
-	                //window.location.reload(true);
-	                window.location=('/Home/ViewEditLabel/'+data);
+	            	if(data=="Label name already exists!"){
+	            		alertify.set({ delay: 300000 });
+	                	alertify.error(data);
+	            	}
+	            	else{
+		            	alertify.set({ delay: 300000 });
+		                alertify.success("Label Updated!");
+		                //window.location.reload(true);
+		                window.location=('/Home/ViewEditLabel/'+data);
+	            	}
 	            });
 	        }	      
 	    });

@@ -194,12 +194,13 @@
                                         <b class="Text">Milestone:</b>
                                     </td>
                                     <td class="tc_form_input_col">
-                                        <select id="milestone" class="m-wrap">
-                                            {% if milestone_list %}
+                                        <select class="milestone">
+                                            <option value="">Select an option</option>
+                                            <!--{% if milestone_list %}
                                                 {% for x in milestone_list %}
                                                     <option value="{{x.0}}"/>{{x.1}}</option>
                                                 {% endfor %}
-                                            {% endif %}
+                                            {% endif %}-->
                                         </select>
                                     </td>
                                 </tr>
