@@ -19699,7 +19699,7 @@ def FeatureUsageTestCase(request):
             condition=" offset %d limit %d"%(offset,limit)
             QueryText = []
             for eachitem in UserText:
-                if len(eachitem) != 0 and len(eachitem) != 1 and eachitem.strip() not in QueryText:
+                if len(eachitem) != 0  and eachitem.strip() not in QueryText:
                     QueryText.append(eachitem.strip())
             print QueryText
             feature_id=[]
@@ -19987,3 +19987,5 @@ def get_execution_log(request):
             return HttpResponse(result,content_type='application/json')
 def RunParameter(request):
     return render(request,'Dependency.html',{})
+def Version(request):
+    return render(request,'Version.html',{})
