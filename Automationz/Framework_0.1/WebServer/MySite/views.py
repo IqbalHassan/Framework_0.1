@@ -11422,6 +11422,19 @@ def Get_MileStone_Names(request):
     return HttpResponse(json, content_type='application/json')
 
 
+def Get_Filtered_MileStone(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            project = request.GET.get(u'project_id', '')
+            team = request.GET.get(u'team_id','')
+            # print milestone
+            query = "select mi.id,mi.name from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.project_id='"+project+"' and tws.team_id="+team+" and tws.type='Milestone' order by mi.name"
+            results = DB.GetData(Conn, query, False)
+    json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
+
+
 def get_run_objectives(request):
     if request.is_ajax():
         if request.method == 'GET':

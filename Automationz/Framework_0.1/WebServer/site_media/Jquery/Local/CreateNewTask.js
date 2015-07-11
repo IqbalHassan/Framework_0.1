@@ -60,6 +60,26 @@ $(document).ready(function(){
 
 });
 function Suggestion(project_id,team_id){
+
+    $.ajax({
+        url:'Get_Filtered_MileStone/',
+        dataType : "json",
+        data : {
+            project_id: project_id,
+            team_id: team_id
+        },
+        success: function( json ) {
+            //if(json.length > 0)
+                //for(var i = 0; i < json.length; i++)
+                    //json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".milestone").append($('<option>').text(value[1]).attr('value', value[0]));
+            });
+        }
+    });
+
+
     $("#searchbox").autocomplete(
         {
             source : function(request, response) {
@@ -388,7 +408,7 @@ function PopulateTaskInfo(task_id){
         $("#modified_by").text(data['Task_Info'][0][8]);
         $("#modified_date").text(data['Task_Info'][0][9]);
 
-        $("#milestone").val(data['Task_Info'][0][5]);
+        $(".milestone").val(data['Task_Info'][0][5]);
 
 
         $('input[name="priority"]').each(function(){
@@ -586,7 +606,7 @@ function Submit_button_preparation(){
         var starting_date=$('#starting_date').val().trim();
         var ending_date=$('#ending_date').val().trim();
         var priority=$('input[name="priority"]:checked').val();
-        var milestone=$('#milestone option:selected').val();
+        var milestone=$('.milestone option:selected').val();
         var project_id= $("#project_identity").val();
         //var newSectionPath = $("#sectiongroup select.section:last-child").attr("data-level").replace(/ /g,'_') + $("#sectiongroup select.section:last-child option:selected").val().replace(/ /g,'_');
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
