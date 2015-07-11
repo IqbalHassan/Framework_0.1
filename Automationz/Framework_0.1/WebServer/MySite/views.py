@@ -7570,6 +7570,50 @@ def TestSteps_Results(request):
     return HttpResponse(json, content_type='application/json')
 
 
+def TestCases_PerLabel(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'Query', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current')
+            test_status_request = request.GET.get(u'test_status_request', '')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+            condition=" offset %d limit %d"%(offset,limit)
+            Query="select distinct tc.tc_id,tc.tc_name from test_cases tc, test_case_tag tct , label_map lm where lm.id=tc.tc_id and lm.type='TC' and tc.tc_id=tct.tc_id and lm.label_id='%s' group by tc.tc_id,tc.tc_name having count(case when tct.name='%s' and property='Project' then 1 end)>0 and count(case when tct.name='%s' and property='Team' then 1 end)>0"%(UserData,project_id,str(team_id))
+            query=Query+condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+            final_list=[]
+            for each in TableData:
+                type_case=get_test_case_type(each[0])
+                time=get_test_case_time(each[0])
+                section=get_section(each[0])
+                feature=get_feature(each[0])
+                if test_status_request:
+                    status=get_status(each[0])
+                    final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                else:
+                    final_list.append((each[0],each[1],feature,section,type_case,time))
+            Heading = ['ID','Title','Feature','Folder','Type','Time']
+            if test_status_request:
+                Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+            results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
+
+        else:
+            results = {'Heading': [], 'TableData': [],'Count':0}
+
+        json = simplejson.dumps(results)
+        return HttpResponse(json, content_type='application/json')
+
+
 def Check_TestCase(test_case):
     test_type = [u'automated', u'performance', u'Manual-Easily Automatable', u'Manual-Hard to Automate', u'Manual-Undefined', u'Manual-Not Automatable']
     type_selector = []
