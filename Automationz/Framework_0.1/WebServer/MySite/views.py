@@ -11528,9 +11528,9 @@ def Get_MileStone_ID(request):
             milestone = request.GET.get(u'term', '')
             project_id = request.GET.get(u'project_id', '')
             team_id = request.GET.get(u'team_id','')
-            query = "select id from milestone_info select mi.id,mi.name,cast(mi.starting_date as text),cast(mi.finishing_date as text),mi.status,mi.description,mi.created_by,mi.modified_by,cast(mi.created_date as text),cast(mi.modified_date as text) from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id="+team_id+" and name = '" + milestone + "'"
+            query = "select mi.id from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project_id+"' and tws.team_id='"+str(team_id)+"' and mi.name = '" + milestone + "'"
             milestone_info = DB.GetData(Conn, query)
-    json = simplejson.dumps(milestone_info)
+    json = simplejson.dumps(milestone_info[0])
     return HttpResponse(json, content_type='application/json')
 
 

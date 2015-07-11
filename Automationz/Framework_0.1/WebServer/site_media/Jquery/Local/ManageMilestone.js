@@ -72,7 +72,7 @@ function make_clickable(divname) {
             'textAlign': 'left'
         });
         $(this).click(function(){
-            $.get("GetMileStoneID",{term : $(this).text().trim()},function(data)
+            $.get("GetMileStoneID",{term : $(this).text().trim(),project_id:project_id, team_id:team_id},function(data)
             {
                 var location='/Home/EditMilestone/'+data+'/';
                 window.location=location;
