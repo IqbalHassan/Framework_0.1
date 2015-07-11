@@ -51,7 +51,7 @@ $(document).ready(function(){
         if($(this).val()!=''){
             label_per_page=$(this).val();
             label_page_current=1;
-            $('#pagination_tab').pagination('destroy');
+            $('#pagination_div').pagination('destroy');
             window.location.hash = "#1";
             get_labels(project_id,team_id,label_per_page,label_page_current);
         }

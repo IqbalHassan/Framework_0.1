@@ -199,7 +199,7 @@ $(document).ready(function(){
         window.location.reload(true);
     });
 
-    $.get("Tasks_List",{project_id : project_id, team_id:team_id},function(data)
+    /*$.get("Tasks_List",{project_id : project_id, team_id:team_id},function(data)
     {
         if(data['tasks'].length>0) {
             //make a table column
@@ -228,7 +228,7 @@ $(document).ready(function(){
         else{
             $("#allTasks").html('<h2>No Data Available</h2>')
         }
-    });
+    });*/
 
 
     get_labels(project_id,team_id,label_per_page,label_page_current);
@@ -238,7 +238,7 @@ $(document).ready(function(){
         if($(this).val()!=''){
             label_per_page=$(this).val();
             label_page_current=1;
-            $('#pagination_tab').pagination('destroy');
+            $('#pagination_div').pagination('destroy');
             window.location.hash = "#1";
             get_labels(project_id,team_id,label_per_page,label_page_current);
         }
@@ -276,9 +276,9 @@ function make_clickable(divname) {
                 'textAlign': 'left'
             });
         }*/
-        var divider = $(this).lastIndexOf("/");
-        
-        console.log(divider);
+        //var divider = $(this).lastIndexOf("/");
+
+        //console.log(divider);
 
     });
 }
