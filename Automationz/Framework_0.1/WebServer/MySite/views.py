@@ -19437,7 +19437,7 @@ def getemaildetails(request):
         if request.is_ajax():
             project_id=request.GET.get(u'project_id','')
             team_id=request.GET.get(u'team_id','')
-            user_id=request.GET.get(u'user_id','')
+            #user_id=request.GET.get(u'user_id','')
             query="select from_address,smtp,username,password,port,ttls from email_config where project_id='%s' and team_id=%d"%(project_id,int(team_id))
             col=['From','SMTP','USERNAME','PASSWORD','PORT','TTLS']
             Conn=GetConnection()
@@ -19450,7 +19450,7 @@ def getemaildetails(request):
                 alldata=['','','','','',False]
             for each in zip(col,alldata):
                 Dict.update({each[0]:each[1]})
-            query="select project_owners from projects where project_id='%s'"%(project_id)
+            """query="select project_owners from projects where project_id='%s'"%(project_id)
             Conn=GetConnection()
             owners=DB.GetData(Conn,query,False)
             Conn.close()
@@ -19460,7 +19460,8 @@ def getemaildetails(request):
                 else:
                     owner_tag=False
             else:
-                owner_tag=False
+                owner_tag=False"""
+            owner_tag=True
             result={'result':Dict,'owner':owner_tag}
             result=simplejson.dumps(result)
             return HttpResponse(result,content_type='application/json')
