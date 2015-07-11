@@ -127,4 +127,5 @@ function form_table(divname,column,data,total_data,type_case){
     }
     message+='</table>';
     $('#'+divname).html(message);
+    make_clickable('#'+divname);
 }

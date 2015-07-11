@@ -832,8 +832,8 @@ def Show_Tasks(request):
             tasks_list = []
             #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
             #query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi,requirement_sections rs,task_team_map ttm where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text and ttm.task_id=t.tasks_id and ttm.team_id='"+team_id+"' order by tasks_id desc"
-            Query = "select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi where mi.id::text=t.tasks_milestone and t.project_id='" + \
-                project_id + "' and t.team_id='" + team_id + "' order by tasks_id desc"
+            Query = "select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),pul.user_names,mi.name,t.status from tasks t, milestone_info mi, permitted_user_list pul where mi.id::text=t.tasks_milestone and t.project_id='" + \
+                project_id + "' and t.team_id='" + team_id + "' and pul.user_id::text=t.tester order by tasks_id desc"
             query=Query+condition
             Conn = GetConnection()
             tasks = DB.GetData(Conn, query, False)
@@ -864,6 +864,7 @@ def Show_Tasks(request):
             'Description',
             'Starting Date',
             'Due Date',
+            'Assignee',
             'Milestone',
             'Status',
             'Parent']

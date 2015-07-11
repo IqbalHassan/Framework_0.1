@@ -80,7 +80,59 @@ function Suggestion(project_id,team_id){
     });
 
 
-    $("#searchbox").autocomplete(
+    $("#searchbox").select2({
+        placeholder: "Search & Select Filter Here..",
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "AutoCompleteTestCasesSearchTestSet/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': $.session.get('project_id'),
+                    'team_id': $.session.get('default_team_identity')
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        formatResult: formatTestCasesSearch
+    }).on("change", function(e) {
+        var tag_id=$(this).select2('data')['id'];
+        $("#searchedFilter").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+            + '<td name = "submitquery" class = "Text" style = "size:10">'
+            + tag_id
+            + ":&nbsp"
+            + '</td>'
+        );
+        PerformSearch(project_id,team_id,test_case_per_page,test_case_page_current);
+        DeleteFilterData(project_id,team_id);
+        $(this).select2('val','');
+        return false;
+    });
+    function formatTestCasesSearch(test_case_details) {
+        var tag_select=test_case_details.text.split(' - ');
+        tag_select=tag_select[tag_select.length-1].trim();
+        if (tag_select=='Test Case'){
+            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + '  ' + test_case_details.text + '</span></div>';
+        }
+        else if(tag_select=='Section'){
+            var markup ='<div><i class="fa fa-folder-o"></i><span style="font-weight: bold;"><span>' + '  ' + test_case_details.text.replace('Section','Folder') + '</span></div>';
+        }
+        else{
+            var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' + '  ' + test_case_details.text + '</span></div>';
+        }
+        return markup;
+    }
+
+    /*$("#searchbox").autocomplete(
         {
             source : function(request, response) {
                 $.ajax({
@@ -127,7 +179,7 @@ function Suggestion(project_id,team_id){
             event.preventDefault();
 
         }
-    });
+    });*/
 
 }
 function DeleteFilterData(project_id,team_id){
