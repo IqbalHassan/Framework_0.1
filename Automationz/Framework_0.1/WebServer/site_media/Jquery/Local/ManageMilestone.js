@@ -8,9 +8,6 @@ var team_id= $.session.get('default_team_identity');
 var user = $.session.get('fullname');
 $(document).ready(function(){
 
-    var project_id= $.session.get('project_id');
-    var team_id= $.session.get('default_team_identity');
-
     $("#simple-menu").sidr({
         name: 'sidr',
         side: 'left'
@@ -105,7 +102,7 @@ function form_table(divname,column,data,total_data,type_case){
     var tooltip=type_case||':)';
     var message='';
     message+= "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + total_data + " " + type_case+"</p>";
-    message+='<table class="two-column-emphasis" id="table_vai_table">';
+    message+='<table class="two-column-emphasis">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
         message+='<th>'+column[i]+'</th>';
@@ -113,14 +110,21 @@ function form_table(divname,column,data,total_data,type_case){
     message+='</tr>';
     for(var i=0;i<data.length;i++){
         message+='<tr>';
-        for(var j=0;j<data[i].length;j++){    
-                message+='<td>'+data[i][j]+'</td>';
-                continue;
+        for(var j=0;j<data[i].length;j++){
+            switch(data[i][j]){
+                case 'Dev':
+                    message+='<td style="background-color: ' + colors['dev'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                case 'Ready':
+                    message+='<td style="background-color: ' + colors['ready'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                default :
+                    message+='<td>'+data[i][j]+'</td>';
+                    continue;
             }
+        }
         message+='</tr>';
     }
     message+='</table>';
     $('#'+divname).html(message);
-
-    make_clickable('#'+divname);
 }
