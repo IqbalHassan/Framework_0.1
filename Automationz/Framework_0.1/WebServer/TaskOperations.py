@@ -22,7 +22,7 @@ def insert_new_section(Conn,new_task_path):
     Conn.commit()
     return sequence
         
-def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements):
+def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements,bugs):
     try:
         Conn=GetConnection()
         query="select nextval('taskid_seq')"
@@ -109,6 +109,16 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
                     }
                     new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                     
+            if bugs[0] != '':
+                for each in bugs:
+                    bugs_Dict={
+                               'id1':task_id,
+                               'id2':each.strip(),
+                               'type1':'TASK',
+                               'type2':'BUG'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**bugs_Dict)
+                    
             if requirements[0] != '':
                 for each in requirements:
                     req_Dict={
@@ -127,7 +137,18 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
                                        'type1':'REQ',
                                        'type2':'TC'
                             }
+                            lsres=DB.DeleteRecord(Conn,"components_map", id1=each,id2=tc,type1='REQ',type2='TC')
                             new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                            
+                        for tc in bugs:
+                            bugs_Dict={
+                                       'id1':each.strip(),
+                                       'id2':tc.strip(),
+                                       'type1':'REQ',
+                                       'type2':'BUG'
+                            }
+                            lsres=DB.DeleteRecord(Conn,"components_map", id1=each,id2=tc,type1='REQ',type2='BUG')
+                            new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**bugs_Dict)
                     
             return task_id
         
@@ -140,7 +161,7 @@ def CreateNewTask(title,status,description,start_date,end_date,team_id,tester,pr
         
         
         
-def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements):
+def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements,bugs):
     try:
         Conn=GetConnection()
         
@@ -222,7 +243,18 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
                                'type1':'TASK',
                                'type2':'TC'
                     }
-                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)      
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)   
+                    
+            if bugs[0] != '':
+                lsres=DB.DeleteRecord(Conn,"components_map", id1=task_id,type1='TASK',type2='BUG')
+                for each in bugs:
+                    bugs_Dict={
+                               'id1':task_id,
+                               'id2':each.strip(),
+                               'type1':'TASK',
+                               'type2':'BUG'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**bugs_Dict)   
                     
             if requirements[0] != '':
                 lsres=DB.DeleteRecord(Conn,"components_map", id2=task_id,type1='REQ',type2='TASK')
@@ -245,7 +277,18 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
                             }
                             #case_exist = DB.GetData(Conn,"select count(*) from components_map where id1='"+each+" and id2'"+tc+"' and type1='REQ' and type2='TC'")
                             #if case_exist == 0:
+                            lsres=DB.DeleteRecord(Conn,"components_map", id1=each,id2=tc,type1='REQ',type2='TC')
                             new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)  
+                            
+                        for tc in bugs:
+                            bugs_Dict={
+                                       'id1':each.strip(),
+                                       'id2':tc.strip(),
+                                       'type1':'REQ',
+                                       'type2':'BUG'
+                            }
+                            lsres=DB.DeleteRecord(Conn,"components_map", id1=each,id2=tc,type1='REQ',type2='BUG')
+                            new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**bugs_Dict)
                     
             return task_id
         
@@ -258,7 +301,7 @@ def ModifyTask(task_id,title,status,description,start_date,end_date,team_id,test
         
         
         
-def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements):
+def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,priority,milestone,project_id,section_path,feature_path,user_name,labels,test_cases,requirements,bugs):
     try:
         Conn=GetConnection()
         query="select nextval('taskid_seq')"
@@ -350,6 +393,16 @@ def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,
                     }
                     new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                     
+            if bugs[0] != '':
+                for each in bugs:
+                    bugs_Dict={
+                               'id1':task_id,
+                               'id2':each.strip(),
+                               'type1':'TASK',
+                               'type2':'BUG'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**bugs_Dict)
+                    
             if requirements[0] != '':
                 for each in requirements:
                     req_Dict={
@@ -368,7 +421,18 @@ def CreateChildTask(title,status,description,start_date,end_date,team_id,tester,
                                        'type1':'REQ',
                                        'type2':'TC'
                             }
+                            lsres=DB.DeleteRecord(Conn,"components_map", id1=each,id2=tc,type1='REQ',type2='TC')
                             new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                            
+                        for tc in bugs:
+                            bugs_Dict={
+                                       'id1':each.strip(),
+                                       'id2':tc.strip(),
+                                       'type1':'REQ',
+                                       'type2':'BUG'
+                            }
+                            lsres=DB.DeleteRecord(Conn,"components_map", id1=each,id2=tc,type1='REQ',type2='BUG')
+                            new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**bugs_Dict)
             
             return task_id
         

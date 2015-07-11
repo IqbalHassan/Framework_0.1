@@ -1480,6 +1480,22 @@ def AutoCompleteRequirements(request):
     return HttpResponse(json, content_type='application/json')
 
 
+def AutoCompleteBugs(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            value = request.GET.get(u'term', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+
+            Conn = GetConnection()
+            query = "select distinct b.bug_id,b.bug_title,b.status,mi.name from bugs b, milestone_info mi where b.bug_milestone=mi.id::text and b.project_id='%s' and (b.bug_title Ilike '%%%s%%' or b.bug_id Ilike '%%%s%%') and b.team_id='%s'" % (
+                project_id, value, value, team_id)
+            req_list = DB.GetData(Conn, query, False)
+            Conn.close()
+    json = simplejson.dumps(req_list)
+    return HttpResponse(json, content_type='application/json')
+
+
 def AutoCompleteTesterSearch(request):
     if request.is_ajax():
         if request.method == 'GET':
@@ -13655,6 +13671,9 @@ def Selected_TaskID_Analaysis(request):
 
         query = "select distinct r.requirement_id,r.requirement_title,r.status,mi.name from requirements r, milestone_info mi, components_map cm where r.requirement_milestone=mi.id::text and cm.id1=r.requirement_id and cm.id2='%s' and cm.type1='REQ' and cm.type2='TASK'" % UserData
         reqs = DB.GetData(Conn, query, False)
+        
+        query = "select distinct b.bug_id,b.bug_title,b.status,mi.name from bugs b, milestone_info mi, components_map cm where b.bug_milestone=mi.id::text and cm.id2=b.bug_id and cm.id1='%s' and cm.type2='BUG' and cm.type1='TASK'" % UserData
+        bugs = DB.GetData(Conn, query, False)
 
         #query = "select team_id from task_team_map where task_id='%s'" %UserData
         #team = DB.GetData(Conn,query)
@@ -13676,7 +13695,8 @@ def Selected_TaskID_Analaysis(request):
         'Feature': feature[0][0],
         'labels': labels,
         'cases': cases,
-        'reqs': reqs}
+        'reqs': reqs,
+        'bugs':bugs}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, content_type='application/json')
@@ -16245,6 +16265,8 @@ def SubmitNewTask(request):
             test_cases = test_cases.split("|")
             requirements = request.GET.get(u'requirements', '')
             requirements = requirements.split("|")
+            bugs = request.GET.get(u'bugs', '')
+            bugs = bugs.split("|")
             result = TaskOperations.CreateNewTask(
                 title,
                 status,
@@ -16261,7 +16283,8 @@ def SubmitNewTask(request):
                 user_name,
                 labels,
                 test_cases,
-                requirements)
+                requirements,
+                bugs)
     results = simplejson.dumps(result)
     return HttpResponse(results, content_type='application/json')
 
@@ -16291,6 +16314,8 @@ def SubmitEditedTask(request):
             test_cases = test_cases.split("|")
             requirements = request.GET.get(u'requirements', '')
             requirements = requirements.split("|")
+            bugs = request.GET.get(u'bugs', '')
+            bugs = bugs.split("|")
             result = TaskOperations.ModifyTask(
                 task_id,
                 title,
@@ -16308,7 +16333,8 @@ def SubmitEditedTask(request):
                 user_name,
                 labels,
                 test_cases,
-                requirements)
+                requirements,
+                bugs)
     results = simplejson.dumps(result)
     return HttpResponse(results, content_type='application/json')
 
@@ -16337,6 +16363,8 @@ def SubmitChildTask(request):
             test_cases = test_cases.split("|")
             requirements = request.GET.get(u'requirements', '')
             requirements = requirements.split("|")
+            bugs = request.GET.get(u'bugs', '')
+            bugs = bugs.split("|")
             result = TaskOperations.CreateChildTask(
                 title,
                 status,
@@ -16353,7 +16381,8 @@ def SubmitChildTask(request):
                 user_name,
                 labels,
                 test_cases,
-                requirements)
+                requirements,
+                bugs)
     results = simplejson.dumps(result)
     return HttpResponse(results, content_type='application/json')
 
