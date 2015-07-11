@@ -14085,45 +14085,51 @@ def CreateLabel(request):
             team_id = request.GET.get(u'team','')
             user = request.GET.get(u'user','')
             Conn = GetConnection()
-            final = []
-            now = datetime.datetime.now().date()
-            query = "select nextval('labelid_seq')"
-            label_id = DB.GetData(Conn, query)
-            label_id = ('LABEL-' + str(label_id[0]))
-            label_id = label_id.strip()
-        
-            sModuleInfo = inspect.stack()[0][
-                3] + " : " + inspect.getmoduleinfo(__file__).name
-            Dict = {
-                'label_id': label_id,
-                'label_name': label_name,
-                'label_color': label_color,
-                'project_id': project_id,
-                'team_id':team_id,
-                'created_by':user,
-                'modified_by':user,
-                'created_date':now,
-                'modified_date':now
-            }
-            testConnection(Conn)
-            result = DB.InsertNewRecordInToTable(Conn, "labels", **Dict)
-            #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
-            if result:
-                # add this line in the code from LogModule import PassMessage
-                # log message successful here
-                # message format be PassMessage(sModuleInfo, message,1 for
-                # pass,2 for warning, 3 for error,debug=True)
-                LogModule.PassMessasge(
-                    sModuleInfo,
-                    "Inserted " +
-                    label_id +
-                    " successfully",
-                    1)
-                final = 'success'
+            #final = []
+            exist = DB.GetData(Conn, "Select count(label_name) from labels where label_name='"+label_name+"' and project_id='"+project_id+"' and team_id='"+team_id+"'")
+            if exist[0]>0:
+                final = "Label name already exists!"
+                result = simplejson.dumps(final)
             else:
-                final = 'meh'
-            result = simplejson.dumps(label_id)
-    Conn.close()
+                now = datetime.datetime.now().date()
+                query = "select nextval('labelid_seq')"
+                label_id = DB.GetData(Conn, query)
+                label_id = ('LABEL-' + str(label_id[0]))
+                label_id = label_id.strip()
+            
+                sModuleInfo = inspect.stack()[0][
+                    3] + " : " + inspect.getmoduleinfo(__file__).name
+                Dict = {
+                    'label_id': label_id,
+                    'label_name': label_name,
+                    'label_color': label_color,
+                    'project_id': project_id,
+                    'team_id':team_id,
+                    'created_by':user,
+                    'modified_by':user,
+                    'created_date':now,
+                    'modified_date':now
+                }
+                testConnection(Conn)
+                result = DB.InsertNewRecordInToTable(Conn, "labels", **Dict)
+                #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
+                if result:
+                    # add this line in the code from LogModule import PassMessage
+                    # log message successful here
+                    # message format be PassMessage(sModuleInfo, message,1 for
+                    # pass,2 for warning, 3 for error,debug=True)
+                    LogModule.PassMessasge(
+                        sModuleInfo,
+                        "Inserted " +
+                        label_id +
+                        " successfully",
+                        1)
+                    final = 'success'
+                else:
+                    final = 'meh'
+
+                result = simplejson.dumps(label_id)
+            Conn.close()
     return HttpResponse(result, content_type='application/json')
 
 
@@ -14170,34 +14176,39 @@ def EditLabel(request):
             team_id = request.GET.get(u'team','')
             user = request.GET.get(u'user','')
             Conn = GetConnection()
-            final = []
-            now = datetime.datetime.now().date()
-            sModuleInfo = inspect.stack()[0][
-                3] + " : " + inspect.getmoduleinfo(__file__).name
-            Dict = {
-                #'label_id': label_id,
-                'label_name': label_name,
-                'label_color': label_color,
-                'project_id': project_id,
-                'team_id':team_id,
-                'modified_by':user,
-                'modified_date':now
-            }
-            testConnection(Conn)
-            result = DB.UpdateRecordInTable(Conn, "labels", " where label_id='"+label_id+"' ",**Dict)
-            #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
-            if result:
-                LogModule.PassMessasge(
-                    sModuleInfo,
-                    "Updated " +
-                    label_id +
-                    " successfully",
-                    1)
-                final = 'success'
+            #final = []
+            exist = DB.GetData(Conn, "Select count(label_name) from labels where label_name='"+label_name+"' and project_id='"+project_id+"' and team_id='"+team_id+"'")
+            if exist[0]>0:
+                final = "Label name already exists!"
+                result = simplejson.dumps(final)
             else:
-                final = 'meh'
-    result = simplejson.dumps(label_id)
-    Conn.close()
+                now = datetime.datetime.now().date()
+                sModuleInfo = inspect.stack()[0][
+                    3] + " : " + inspect.getmoduleinfo(__file__).name
+                Dict = {
+                    #'label_id': label_id,
+                    'label_name': label_name,
+                    'label_color': label_color,
+                    'project_id': project_id,
+                    'team_id':team_id,
+                    'modified_by':user,
+                    'modified_date':now
+                }
+                testConnection(Conn)
+                result = DB.UpdateRecordInTable(Conn, "labels", " where label_id='"+label_id+"' ",**Dict)
+                #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
+                if result:
+                    LogModule.PassMessasge(
+                        sModuleInfo,
+                        "Updated " +
+                        label_id +
+                        " successfully",
+                        1)
+                    final = 'success'
+                else:
+                    final = 'meh'
+                result = simplejson.dumps(label_id)
+            Conn.close()
     return HttpResponse(result, content_type='application/json')
 
 

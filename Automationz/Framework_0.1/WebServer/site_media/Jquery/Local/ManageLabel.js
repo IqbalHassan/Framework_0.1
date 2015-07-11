@@ -40,10 +40,17 @@ $(document).ready(function(){
                 team:team_id,
                 user:$.session.get('fullname')
             },function(data){
-                alertify.set({ delay: 300000 });
-                alertify.success("Label Created!");
-                $("#label_creation").slideUp('slow');
-                window.location.reload(true);
+                if(data=="Label name already exists!"){
+                    alertify.set({ delay: 300000 });
+                    alertify.error(data);
+                }
+                else{
+                    alertify.set({ delay: 300000 });
+                    alertify.success("Label Created!");
+                    $("#label_creation").slideUp('slow');
+                    //window.location.reload(true);
+                    get_labels(project_id,team_id,label_per_page,label_page_current);
+                }
             });
         }
         else{
