@@ -422,5 +422,6 @@ urlpatterns += patterns('',
 	url(r'^Home/RunParameter/$', RunParameter),
 	url(r'^Home/Version/$', Version),
     url(r'^Home/.*/TestCases_PerLabel/$', TestCases_PerLabel),
+    url(r'^Home/.*/TestCases_PerTask/$', TestCases_PerTask),
 )
 

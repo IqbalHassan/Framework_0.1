@@ -10,13 +10,10 @@ var task_id = "";
 var newsectionpath = "";
 var test_case_per_page=5;
 var test_case_page_current=1;
-
+var project_id = $.session.get('project_id');
+var team_id = $.session.get('default_team_identity');
+var user = $.session.get('fullname');
 $(document).ready(function(){
-
-    var project_id= $.session.get('project_id');
-    var team_id= $.session.get('default_team_identity');
-    var test_case_per_page=5;
-    var test_case_page_current=1;
 
     $('#project_id').text($.session.get('project_id'));
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
@@ -25,7 +22,7 @@ $(document).ready(function(){
     $('.combo-box').combobox();
 
     addingSections();
-    TestCaseLinking();
+    //TestCaseLinking();
     RequirementLinking(project_id,team_id);
     Suggestion(project_id,team_id);
     DeleteFilterData(project_id,team_id);
@@ -481,7 +478,10 @@ function PopulateTaskInfo(task_id){
             }
         });
 
-        $(data['cases']).each(function(i){
+
+        get_test_cases(task_id,project_id,team_id,test_case_per_page,test_case_page_current);
+
+        /*$(data['cases']).each(function(i){
             $(".tc_linking").append('<tr>' +
             '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
             + '<td>'
@@ -494,7 +494,7 @@ function PopulateTaskInfo(task_id){
             data['cases'][i][1] +
             "</td>" +
             "</tr>");
-        });
+        });*/
 
         $(data['reqs']).each(function(i){
             $(".req_linking").append('<tr>' +
@@ -786,6 +786,7 @@ function Buttons(){
             return false;
         }
         else{
+            $("#link_new").show();
             $.each(list, function(index, value) {
                 $(".tc_linking").append('<tr>' +
                 '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
@@ -1033,3 +1034,101 @@ function recursivelyAddFeature(_this){
     });
 }
 
+function get_test_cases(stepname,project_id,team_id,itemPerPage,PageCurrent){
+    //$('#step_name').html("Test cases for step: "+ stepname);
+    $.get("TestCases_PerTask",{
+        Query: stepname,
+        test_case_per_page:itemPerPage,
+        test_case_page_current:PageCurrent,
+        project_id:project_id,
+        team_id:team_id,
+        test_status_request:true
+    },function(data) {
+        form_table("usage_div",data['Heading'],data['TableData'],data['Count'],"Test Cases");
+        implementDropDown('#usage_div');
+        $('#usage_pagination_div').pagination({
+            items:data['Count'],
+            itemsOnPage:test_case_per_page,
+            cssStyle: 'dark-theme',
+            currentPage:test_case_page_current,
+            displayedPages:2,
+            edges:2,
+            hrefTextPrefix:'#',
+            onPageClick:function(PageNumber){
+                get_test_cases(stepname,project_id,team_id,itemPerPage,PageNumber);
+            }
+        });
+        var indx = 0;
+        $('#usage_div tr>td:nth-child(7)').each(function(){
+            var ID = $("#usage_div tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+            $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i></span>');
+            //$(this).after('&nbsp;&nbsp;');
+            $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-pencil fa-2x editBtn" id="'+ID+'" style="cursor:pointer"></i></span>');
+
+            indx++;
+        });
+
+        $(".editBtn").click(function (){
+            window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id");
+        });
+        $(".templateBtn").click(function (){
+            window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id");
+        });
+    });
+}
+function implementDropDown(wheretoplace){
+    $(wheretoplace+" tr td:nth-child(1)").css({'color' : 'blue','cursor' : 'pointer'});
+    $(wheretoplace+" tr td:nth-child(1)").each(function() {
+        var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+        var name=$(this).text().trim();
+        $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+        $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+            var data_list=data['Result'];
+            var column=data['column'];
+            ResultTable('#'+ID+'detail',column,data_list,"");
+            $('#'+ID+'detail tr').each(function(){
+                $(this).css({'textAlign':'left'});
+            });
+        });
+        $(this).live('click',function(){
+            $('#'+ID+'detail').slideToggle("slow");
+        });
+    });
+}
+function form_table(divname,column,data,total_data,type_case){
+    var tooltip=type_case||':)';
+    var message='';
+    message+= "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + total_data + " " + type_case+"</p>";
+    message+='<table class="two-column-emphasis">';
+    message+='<tr>';
+    for(var i=0;i<column.length;i++){
+        message+='<th>'+column[i]+'</th>';
+    }
+    message+='</tr>';
+    for(var i=0;i<data.length;i++){
+        message+='<tr>';
+        
+        for(var j=0;j<data[i].length;j++){
+            switch(data[i][j]){
+                case 'Dev':
+                    message+='<td style="background-color: ' + colors['dev'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                case 'Ready':
+                    message+='<td style="background-color: ' + colors['ready'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                default :
+                    message+='<td>'+data[i][j]+'</td>';
+                    continue;
+            }
+        }
+        message+='<td>' 
+            + '<input type="checkbox" class="Buttons" checked="true" name="test_cases" value="'
+            + data[i][0]
+            + '"/>' +
+            '</td>';
+        message+='</tr>';
+    }
+    message+='</table>';
+    $('#'+divname).html(message);
+}
