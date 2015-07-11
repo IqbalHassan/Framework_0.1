@@ -733,10 +733,7 @@ function Submit_button_preparation(){
 
         var title=$('#title').val().trim();
 
-        if(title==""){
-            alertify.set({ delay: 300000 });
-            alertify.error("Title is empty!");
-        }
+        
         /*if($("#section-flag").hasClass("unfilled")){
             alertify.error("You need to choose a section!");
         }*/
@@ -752,6 +749,7 @@ function Submit_button_preparation(){
         var status = $("#status").val();
 
         var description=$('#description').val().trim();
+
         //var team = $(".teams").val();
 
         var team= $("#default_team_identity").val();
@@ -793,7 +791,27 @@ function Submit_button_preparation(){
             bugs.push($(this).val());
         });
 
-        if(operation==1){
+        if(title==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Title is empty!");
+        }
+        else if(description==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Description is empty!");
+        }
+        else if(tester==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Assignee is needed!");
+        }
+        else if(starting_date=="" || ending_date==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Dates are required!");
+        }
+        else if(milestone==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Please select a milestone!");
+        }
+        else if(operation==1){
             $.get('SubmitNewTask/',{
                 'title':title,
                 'status':status,
