@@ -231,7 +231,7 @@ urlpatterns += patterns('',
     # Admin Page
     url(r'^Home/Admin/$', Admin),
     url(r'^Home/.*/Process_Git/$', Process_Git),
-    url(r'^Home/FeaDri/$', TestStep),
+    url(r'^Home/Driver/$', TestStep),
     url(r'^Home/ManageStep/$', ManageStep),
     # url(r'^Home/FeaDri/$',FeaDri),
     # url(r'^Home/FeaDri/Process_FeatureDriver/$',Process_FeatureDriver),

@@ -7698,7 +7698,7 @@ def TestStep(request, error_message=""):
     return HttpResponse(output)"""
     output = {'error_message': error_message}
     return render_to_response(
-        'TestStep.html',
+        'Driver.html',
         output,
         context_instance=RequestContext(request))
 
