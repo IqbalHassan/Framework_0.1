@@ -19604,7 +19604,10 @@ def delete_dependency_name(request):
             Conn=GetConnection()
             value_tuple=DB.GetData(Conn,query,False)[0]
             name_id=value_tuple[0]
-            default_choices=value_tuple[1].split(",")
+            if value_tuple[1] is None:
+                default_choices=[]
+            else:
+                default_choices=value_tuple[1].split(",")
             parent=int(value_tuple[2])
             Conn.close()
             if isinstance(name_id,int):
@@ -19702,10 +19705,17 @@ def delete_dependency(request):
             name=request.GET.get(u'name','')
             query="select array_agg(dn.id),d.id from dependency d,dependency_management dm,dependency_name dn  where dm.dependency=d.id and dm.dependency=dn.dependency_id and d.id=dn.dependency_id and dependency_name='%s' and dm.project_id='%s' and dm.team_id=%d group by d.id"%(name,project_id,int(team_id))
             Conn=GetConnection()
-            value_tuple=DB.GetData(Conn,query,False)[0]
-            name_id=value_tuple[1]
-            list_value=value_tuple[0]
+            value_tuple=DB.GetData(Conn,query,False)
             Conn.close()
+            if value_tuple:
+                name_id=value_tuple[0][1]
+                list_value=value_tuple[0][0]
+            else:
+                query="select d.id from dependency d where dependency_name='%s' and d.project_id='%s' and d.team_id=%d"%(name,project_id,int(team_id))
+                Conn=GetConnection()
+                name_id=DB.GetData(Conn,query)[0]
+                Conn.close()
+                list_value=[]
             if isinstance(name_id,int):
                 #delete all entry from the  dependency values table
                 for each in list_value:
@@ -19749,7 +19759,7 @@ def FeatureUsageTestCase(request):
             condition=" offset %d limit %d"%(offset,limit)
             QueryText = []
             for eachitem in UserText:
-                if len(eachitem) != 0 and len(eachitem) != 1 and eachitem.strip() not in QueryText:
+                if len(eachitem) != 0  and eachitem.strip() not in QueryText:
                     QueryText.append(eachitem.strip())
             print QueryText
             feature_id=[]
@@ -20035,3 +20045,7 @@ def get_execution_log(request):
             #print log_id
             result=simplejson.dumps(Dict)
             return HttpResponse(result,content_type='application/json')
+def RunParameter(request):
+    return render(request,'Dependency.html',{})
+def Version(request):
+    return render(request,'Version.html',{})

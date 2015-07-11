@@ -308,7 +308,7 @@ urlpatterns += patterns('',
     url(r'^Home/.*/UpdateDefaultProjectForUser/$',UpdateDefaultProjectForUser),
     
     #pages for the assignment of the team settings
-    url(r'^Home/AssignSettings/$', assign_settings),
+    url(r'^Home/Feature/$', assign_settings),
     url(r'^Home/.*/get_all_data_dependency_page/$',get_all_data_dependency_page),
     url(r'^Home/.*/add_new_dependency/$',add_new_dependency),
     url(r'^Home/.*/add_new_name_dependency/$',add_new_name_dependency),
@@ -418,8 +418,8 @@ urlpatterns += patterns('',
     url(r'^Home/.*/Show_Labels/$', Show_Labels),
     url(r'^Home/.*/Show_Milestones/$', Show_Milestones),
     url(r'^Home/.*/Get_Filtered_MileStone/$', Get_Filtered_MileStone),
-    url(r'^Home/.*/TestCases_PerLabel/$', TestCases_PerLabel),
-    url(r'^Home/.*/Show_Tasks/$', Show_Tasks),
-      )
-
+	url(r'^Home/.*/Show_Tasks/$', Show_Tasks),
+	url(r'^Home/RunParameter/$', RunParameter),
+	url(r'^Home/Version/$', Version),
+)
 

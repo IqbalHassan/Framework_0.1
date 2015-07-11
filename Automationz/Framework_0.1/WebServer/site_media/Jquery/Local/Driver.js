@@ -223,6 +223,21 @@ function get_all_data(project_id,team_id){
     });
 }
 var time_out=300000;
+var name_field_error="Name field can't be empty";
+var dep_value="";
+var dep_name="";
+var test_case_per_page=5;
+
+var colors = {
+    'pass' : '#65bd10',
+    'fail' : '#fd0006',
+    'block' : '#ff9e00',
+    'submitted' : '#808080',
+    'in-progress':'#0000ff',
+    'skipped':'#cccccc',
+    'dev': '#aaaaaa',
+    'ready': '#65bd10'
+};
 
 $(document).ready(function(){
     $('#create_driver').on('click',function(){

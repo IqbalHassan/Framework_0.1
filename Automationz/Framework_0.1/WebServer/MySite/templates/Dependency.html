@@ -1,81 +1,72 @@
 {% extends 'BaseTemplate.html' %}
-{% block title%}Feature Page{% endblock %}
-{% block content%}
-<article>
-    <style>
-        #searchbox {
-            width: 94%;
-            padding: 5px;
-            max-width: 95%;
-            outline-color: #000;
-            outline-style: none;
-            box-shadow: 0 6px 6px -6px black;
-            font-size: 1.2em;
-        }
+{% block title %}Dependency Page{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/site_media/Jquery/simplepagination/simplePagination.css"/>
+<script src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
+<script type="text/javascript" src="/site_media/Jquery/Local/RunParameter.js"></script>
+<div class="responsive-tabs">
+    <h2>Dependency</h2>
+    <div class="tabs-div">
+        <table style="width: 100%;">
+            <thead>
+            <tr>
+                <td style="text-align: center;" class="Text">&nbsp;</td>
+                <td style="text-align: center; " class="Text">&nbsp;</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="width: 22%;">
+                    <!--<div style="width: 100%;">
+                        <input type="text" id="searchbox" placeholder="Search Sections">
+                    </div>-->
+                    <div style="margin-top: 5%;">
+                        <div id="dependency_list">
 
-        #searchbox:focus {
-            box-shadow: 0 6px 6px -6px blue;
-        }
-    </style>
-    <link rel="stylesheet" href="/site_media/Jquery/simplepagination/simplePagination.css"/>
-    <script src="/site_media/Jquery/simplepagination/jquery.simplePagination.js"></script>
-    <script src="/site_media/Jquery/Local/AssignSettings.js" type="text/javascript"></script>
-    <div class="responsive-tabs">
-        <h2>Features</h2>
-        <div class="tabs-div">
-            <table width="100%">
-                <tbody>
-                    <tr>
-                        <td style="width:22%">
-                            <div id="feature_list" style="margin-top: 5%;">
+                        </div>
+                        <div id="global_dependency_list">
 
-                            </div>
-                            <div id="global_feature_list">
+                        </div>
+                        <div style="margin-bottom: 1%">
+                            <input type="button" class="m-btn green" value="Create Dependency" id="create_dependency"/>
+                        </div>
 
-                            </div>
-                            <div style="margin-bottom: 1%">
-                                <input type="button" class="m-btn green" value="Create Feature" id="create_feature"/>
-                            </div>
-                        </td>
-                        <td style="vertical-align: 0%;">
-                            <table width="100%">
-                                <tr>
-                                    <td width="30%" style="vertical-align: 0%;padding-left: 2%;">
-                                        <div id="sub_feature_list">
+                    </div>
+                </td>
+                <td style="vertical-align: 0%;padding-left: 2%;">
+                    <div id="bread_crumb">
 
-                                        </div>
-                                    </td>
-                                    <td width="30%" style="vertical-align: 0%;padding-left: 2%;">
-                                        <div id="second_level_feature_list">
+                    </div>
+                    <table>
+                        <tr>
+                            <td width="40%" style="padding-right: 5%;">
+                                <div id="name_list">
 
-                                        </div>
-                                    </td>
-                                    <td width="30%" style="vertical-align: 0%;padding-left: 2%;">
-                                        <div id="third_level_feature_list">
+                                </div>
+                            </td>
+                            <td style="vertical-align: 0%; padding-left: 5%;" width="60%;" >
+                                <div id="version_list">
 
-                                        </div>
-                                    </td>
-                                    <td width="10%" style="vertical-align: 0%; padding-left: 2%;">
-                                        &nbsp;
-                                    </td>
-                                </tr>
-                            </table>
-                            <div id="feature_control_panel" style="padding-left: 2%;">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div id="control_panel">
 
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div id="feature_extended_div" align="center">
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div id="extended_div" align="center">
 
-            </div>
-            <div id="feature_pagination_div">
-
-            </div>
         </div>
+        <div id="pagination_div">
+
+        </div>
+
     </div>
-</article>
+</div>
 <script>
     var RESPONSIVEUI={};(function($){RESPONSIVEUI.responsiveTabs=function(){var $tabSets=$(".responsive-tabs");if(!$tabSets.hasClass("responsive-tabs--enabled")){$tabSets.addClass("responsive-tabs--enabled");var tablistcount=1;$tabSets.each(function(){var $tabs=$(this);$tabs.children(":header").addClass("responsive-tabs__heading");$tabs.children("div").addClass("responsive-tabs__panel");var $activePanel=$tabs.find(".responsive-tabs__panel--active");if(!$activePanel.length){$activePanel=$tabs.find(".responsive-tabs__panel").first().addClass("responsive-tabs__panel--active")}$tabs.find(".responsive-tabs__panel").not(".responsive-tabs__panel--active").hide().attr("aria-hidden","true");$activePanel.attr("aria-hidden","false");$activePanel.addClass("responsive-tabs__panel--closed-accordion-only");var $tabsWrapper=$("<div/>",{"class":"responsive-tabs-wrapper"});$tabs.wrap($tabsWrapper);var highestHeight=0;$tabs.find(".responsive-tabs__panel").each(function(){var tabHeight=$(this).height();if(tabHeight>highestHeight){highestHeight=tabHeight}});var $tabList=$("<ul/>",{"class":"responsive-tabs__list",role:"tablist"});var tabcount=1;$tabs.find(".responsive-tabs__heading").each(function(){var $tabHeading=$(this);var $tabPanel=$(this).next();$tabHeading.attr("tabindex",0);var $tabListItem=$("<li/>",{"class":"responsive-tabs__list__item",id:"tablist"+tablistcount+"-tab"+tabcount,"aria-controls":"tablist"+tablistcount+"-panel"+tabcount,role:"tab",tabindex:0,text:$tabHeading.text(),keydown:function(objEvent){if(objEvent.keyCode===13){$tabListItem.click()}},click:function(){$tabsWrapper.css("height",highestHeight);$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");$tabs.find(".responsive-tabs__panel--active").toggle().removeClass("responsive-tabs__panel--active").attr("aria-hidden","true").prev().removeClass("responsive-tabs__heading--active");$tabPanel.toggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");$tabList.find(".responsive-tabs__list__item--active").removeClass("responsive-tabs__list__item--active");$tabListItem.addClass("responsive-tabs__list__item--active");$tabsWrapper.css("height","auto")}});$tabPanel.attr({role:"tabpanel","aria-labelledby":$tabListItem.attr("id"),id:"tablist"+tablistcount+"-panel"+tabcount});if($tabPanel.hasClass("responsive-tabs__panel--active")){$tabListItem.addClass("responsive-tabs__list__item--active")}$tabList.append($tabListItem);$tabHeading.keydown(function(objEvent){if(objEvent.keyCode===13){$tabHeading.click()}});$tabHeading.click(function(){$tabs.find(".responsive-tabs__panel--closed-accordion-only").removeClass("responsive-tabs__panel--closed-accordion-only");if(!$tabHeading.hasClass("responsive-tabs__heading--active")){var oldActivePos,$activeHeading=$tabs.find(".responsive-tabs__heading--active");if($activeHeading.length){oldActivePos=$activeHeading.offset().top}$tabs.find(".responsive-tabs__panel--active").slideToggle().removeClass("responsive-tabs__panel--active").prev().removeClass("responsive-tabs__heading--active");$tabs.find(".responsive-tabs__panel").hide().attr("aria-hidden","true");$tabPanel.slideToggle().addClass("responsive-tabs__panel--active").attr("aria-hidden","false");$tabHeading.addClass("responsive-tabs__heading--active");var $currentActive=$tabs.find(".responsive-tabs__list__item--active");$currentActive.removeClass("responsive-tabs__list__item--active");var panelId=$tabPanel.attr("id");var tabId=panelId.replace("panel","tab");$("#"+tabId).addClass("responsive-tabs__list__item--active");var tabsPos=$tabs.offset().top;var newActivePos=($tabHeading.offset().top)-15;if(oldActivePos<newActivePos){$("html, body").animate({scrollTop:tabsPos},0).animate({scrollTop:newActivePos},400)}}else{$tabPanel.removeClass("responsive-tabs__panel--active").slideToggle(function(){$(this).addClass("responsive-tabs__panel--closed-accordion-only")});$tabHeading.removeClass("responsive-tabs__heading--active")}});tabcount++});$tabs.prepend($tabList);tablistcount++})}}})(jQuery);
 </script>
@@ -87,5 +78,4 @@
         RESPONSIVEUI.responsiveTabs();
     });
 </script>
-
 {% endblock %}
