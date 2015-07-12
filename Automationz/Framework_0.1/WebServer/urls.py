@@ -424,5 +424,6 @@ urlpatterns += patterns('',
     url(r'^Home/.*/TestCases_PerLabel/$', TestCases_PerLabel),
     url(r'^Home/.*/TestCases_PerTask/$', TestCases_PerTask),
     url(r'^Home/.*/AutoCompleteBugs/$', AutoCompleteBugs),
+    url(r'^Home/.*/Show_Reqs/$', Show_Reqs),
 )
 

@@ -875,6 +875,66 @@ def Show_Tasks(request):
     return HttpResponse(json, content_type='application/json')
 
 
+def Show_Reqs(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'label_per_page','')
+            test_case_page_current=request.GET.get(u'label_page_current')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+            condition=" offset %d limit %d"%(offset,limit)
+            
+            
+            now = datetime.datetime.now().date()
+            tasks_list = []
+            #query="select bug_id, bug_title, bug_description, cast(bug_startingdate as text), cast(bug_endingdate as text), bug_priority, bug_milestone, bug_createdby, cast(bug_creationdate as text), bug_modifiedby, cast(bug_modifydate as text), status, team_id, project_id, tester from bugs"
+            #query="select distinct tasks_id,tasks_title,tasks_description,cast(tasks_startingdate as text),cast(tasks_endingdate as text),mi.name,t.status from tasks t, milestone_info mi,requirement_sections rs,task_team_map ttm where mi.id::text=t.tasks_milestone and t.project_id='"+project_id+"' and t.parent_id=rs.requirement_path_id::text and ttm.task_id=t.tasks_id and ttm.team_id='"+team_id+"' order by tasks_id desc"
+            Query = "select distinct requirement_id,requirement_title,requirement_description,cast(requirement_startingdate as text),cast(requirement_endingdate as text),mi.name,r.status from requirements r,milestone_info mi where project_id='" + \
+            project_id + "' and mi.id::text=r.requirement_milestone order by requirement_id desc"
+            query=Query+condition
+            Conn = GetConnection()
+            tasks = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+    
+            query = "select requirement_path from requirements r,requirement_sections rs where project_id='" + \
+                project_id + "' and r.parent_requirement_id=rs.requirement_path_id::text order by requirement_id desc" + condition
+            parents = DB.GetData(Conn, query, False)
+            
+    
+            for x in zip(tasks, parents):
+                data = []
+                for y in x[0]:
+                    data.append(y)
+                temp = x[1][0].replace('_', '-')
+                temp = temp.replace('.', '/')
+                if temp == data[0]:
+                    data.append('None')
+                else:
+                    data.append(temp)
+                # data.append(x[1])
+                tasks_list.append(data)
+
+        Heading = [
+            'REQ-ID',
+            'Title',
+            'Description',
+            'Starting Date',
+            'Due Date',
+            'Milestone',
+            'Status',
+            'Parent']
+        Conn.close()
+    #results = {'Heading': Heading, 'tasks': tasks_list}
+    results = {'Heading':Heading,'TableData':tasks_list, 'Count': len(count_query)}
+    json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
+
+
 def ViewSteps(request):
     templ = get_template('ViewSteps.html')
     variables = Context({})

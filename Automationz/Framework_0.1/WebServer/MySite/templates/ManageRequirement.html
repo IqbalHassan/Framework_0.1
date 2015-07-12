@@ -58,6 +58,7 @@
         <article>
             <a id="simple-menu" href="#sidr" class="button hint--right hint--bounce hint--rounded" data-hint="Apply Filter" style="text-decoration: none;"><img class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
             <a style="float: right" href="" id="create_new_requirement" class="m-btn purple" type="button">New Requirement</a>
+            <h3 style="font-size: 19px;"><a style="font-weight: bold; float:left">All Requirements</a></h3>
             <div id="sidr" class="sidr">
                 <h3>Select Filters to apply</h3>
                 <ul>
@@ -84,11 +85,11 @@
             </div>
 
 
-            <table width="100%">
+            <!--table width="100%">
                 <tr>
                     <td>
                         <div style="float: left">
-                            <h3 style="font-size: 19px;"><a style="font-weight: bold"><span id="project_code" style="cursor: pointer;"></span> / Manage Requirements</a></h3>
+                            <h3 style="font-size: 19px;"><a style="font-weight: bold"><span id="project_code" style="cursor: pointer;"></span> / Manage Requirements</a></h3></div>
                             <b style="display: none;" id="pagination_no">1</b>
                         </div>
                     </td>
@@ -136,7 +137,25 @@
 
                     </div>
                 </div>
+            </div-->
+
+            <br><br>
+
+            <div id="pageitem" align="right" style="float: right;">
+                <select id="perpageitem">
+                    <option value="">Select Per Page Item</option>
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+
+                </select>
             </div>
+            <div id = "AllMSTable"></div>
+            
+            <div id="pagination_div"></div>
+
 
         </article>
 
