@@ -1185,7 +1185,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):
             Priority_Tag = 'Priority'
             Status = 'Status'
             set_type = 'set'
-            tag_type = 'tag'
+            tag_type = 'Label'
             query = "select distinct dependency_name from dependency d, dependency_management dm where d.project_id=dm.project_id and d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
                 project_id, int(team_id))
             Conn = GetConnection()
@@ -1216,7 +1216,7 @@ def AutoCompleteTestCasesSearchOtherPages(request):
                            "'")
             print wherequery
             #query="select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !='' and case when property != 'tcid' then name ilike '%%%s%%' when property='tcid' then  tc_name ilike '%%%s%%' end group by name,property,tc.tc_name"%(value,value)
-            query = "select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !='' and case when property != 'tcid' then name ilike '%%%s%%' when property='tcid' then  tc_name ilike '%%%s%%' end group by name,property,tc.tc_name"%(project_id,int(team_id),value,value)
+            query = "select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','Label','tcid') and name !='' and case when property != 'tcid' then name ilike '%%%s%%' when property='tcid' then  tc_name ilike '%%%s%%' end group by name,property,tc.tc_name"%(project_id,int(team_id),value,value)
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
             Conn.close()
@@ -1226,6 +1226,15 @@ def AutoCompleteTestCasesSearchOtherPages(request):
                 result_dict['id']=each_item[0].split(' - ')[0].strip()
                 result_dict['text']=each_item[0]+' - '+each_item[1]
                 results.append(result_dict)
+            """"query = "select distinct l.label_id,l.label_name,'Label' from label_map lm, labels l, test_cases tc where l.label_id=lm.label_id and tc.tc_id=lm.id and l.project_id='"+project_id+"' and l.team_id='"+str(team_id)+"'"
+            Conn=GetConnection()
+            data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='label_id')
+            Conn.close()
+            for each_item in data['rows']:
+                result_dict={}
+                result_dict['id']=each_item[0].split(' - ')[0].strip()
+                result_dict['text']=each_item[0]+' - '+each_item[1]
+                results.append(result_dict)"""
             has_next_page = data['has_next']
             json = simplejson.dumps({'items': results, 'more': has_next_page})
             return HttpResponse(json, content_type='application/json')
@@ -1251,7 +1260,7 @@ def AutoCompleteTestCasesSearchTestSet(request):
             Priority_Tag = 'Priority'
             Status = 'Status'
             set_type = 'set'
-            tag_type = 'tag'
+            tag_type = 'Label'
             query = "select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
                 project_id, int(team_id))
             Conn = GetConnection()
@@ -1281,7 +1290,7 @@ def AutoCompleteTestCasesSearchTestSet(request):
                            tag_type +
                            "'")
             print wherequery
-            query = "select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','tag','tcid') and name !='' and case when property != 'tcid' then name ilike '%%%s%%' when property='tcid' then  tc_name ilike '%%%s%%' end group by name,property,tc.tc_name"%(project_id,int(team_id),value,value)
+            query = "select distinct case when property!='tcid' then name when property='tcid' then name ||' - ' || tc_name end as name ,case when property='tcid' then 'Test Case' when property !='tcid' then property end  from test_case_tag tct,test_cases tc where tc.tc_id=tct.tc_id and tc.tc_id in (select distinct tct.tc_id from test_case_tag tct, team_wise_settings tws where tct.property='section_id' and tct.name=tws.parameters::text and tws.type='Section' and tws.project_id='%s' and tws.team_id=%d) and property in('Browser','Feature','Section','CustomTag','Priority','Status','set','Label','tcid') and name !='' and case when property != 'tcid' then name ilike '%%%s%%' when property='tcid' then  tc_name ilike '%%%s%%' end group by name,property,tc.tc_name"%(project_id,int(team_id),value,value)
             Conn=GetConnection()
             data = DB.GetData(Conn,query,bList=False,dict_cursor=False,paginate=True,page=requested_page,page_limit=items_per_page,order_by='name')
             Conn.close()
@@ -12051,6 +12060,13 @@ def TableDataTestCasesOtherPages(request):
                         if len(eachitem) != 0 and len(
                                 eachitem) != 1 and eachitem.strip() not in QueryText:
                             QueryText.append(eachitem.strip())
+                        """if 'LABEL' in eachitem:
+                            Conn = GetConnection()
+                            test = DB.GetData(Conn,"select distinct tc.tc_id,tc.tc_name from test_cases tc, test_case_tag tct , label_map lm where lm.id=tc.tc_id and lm.type='TC' and tc.tc_id=tct.tc_id and lm.label_id='%s' group by tc.tc_id,tc.tc_name having count(case when tct.name='%s' and property='Project' then 1 end)>0 and count(case when tct.name='%s' and property='Team' then 1 end)>0"%(eachitem,project_id,str(team_id)))
+                            Conn.close()
+                            for each in test:
+                                if each not in QueryText:
+                                    QueryText.append(each.strip())"""
                     print QueryText
                     Section_Tag = 'Section'
                     Feature_Tag = 'Feature'
@@ -12059,7 +12075,7 @@ def TableDataTestCasesOtherPages(request):
                     Feature_Path_Tag = 'feature_id'
                     Priority_Tag = 'Priority'
                     set_type = 'set'
-                    tag_type = 'tag'
+                    tag_type = 'Label'
                     Status = 'Status'
                     query = "select distinct dependency_name from dependency d, dependency_management dm where d.id=dm.dependency and dm.project_id='%s' and dm.team_id=%d" % (
                         project_id, int(team_id))
@@ -18466,7 +18482,7 @@ def specific_dependency_settings(request):
                     Feature_Path_Tag = 'feature_id'
                     Priority_Tag = 'Priority'
                     set_type = 'set'
-                    tag_type = 'tag'
+                    tag_type = 'Label'
                     Status = 'Status'
                     dependency_query=wherequery
                     wherequery += (",'" +

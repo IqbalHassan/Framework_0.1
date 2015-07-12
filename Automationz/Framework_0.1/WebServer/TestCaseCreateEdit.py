@@ -1585,16 +1585,24 @@ def Insert_Linkings(Conn, TC_Id, TC_Name, labels):
     # Form the Dictionary to add test case information
     if labels[0] != '':
         lsres=DBUtil.DeleteRecord(Conn,"label_map", id=TC_Id, type='TC')
+        lsres=DBUtil.DeleteRecord(Conn,"test_case_tag", tc_id=TC_Id, property='Label')
         for each in labels:
             label_Dict={
                        'id':TC_Id,
                        'label_id':each.strip(),
                        'type':'TC'
             }
+            label_name = DBUtil.GetData(Conn, "select label_name from labels where label_id='"+each.strip()+"'")
+            tag_Dict={
+                       'tc_id':TC_Id,
+                       'name':label_name[0].strip(),
+                       'property':'Label'
+            }
             if DBUtil.IsDBConnectionGood(Conn)==False:
                 time.sleep(1)
                 Conn=GetConnection()
             result=DBUtil.InsertNewRecordInToTable(Conn,"label_map",**label_Dict)
+            result=DBUtil.InsertNewRecordInToTable(Conn,"test_case_tag",**tag_Dict)
     
         if result == True:
             LogMessage(sModuleInfo, "Entered labels for TC %s: %s" % (TC_Id, TC_Name), 1)
