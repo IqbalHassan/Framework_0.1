@@ -261,7 +261,10 @@ $(document).ready(function(){
         $(this).css({'display':'none'});
     });
     $('#create_new').on('click',function(){
-        window.location="/Home/Machine/create_new_machine/";
+        //window.location="/Home/Machine/create_new_machine/";
+        url="/Home/Machine/create_new_machine/";
+        window.open(url, '_blank');
+
     });
     RunAutoCompleteTestSearch(project_id,team_id);
     AutoSuggestions(project_id,team_id);
@@ -555,12 +558,12 @@ function SubmitRun(project_id,team_id){
         console.log(message);
         var start_date=$('#start_date').val();
         if(start_date==undefined || start_date==""){
-            alertify.log("Starting Date Must be selected","",0);
+            alertify.log("Starting Date must be selected","",0);
             return false;
         }
         var end_date=$('#end_date').val();
         if(end_date==undefined || end_date==""){
-            alertify.log("Ending Date Must be selected","",0);
+            alertify.log("Ending Date must be selected","",0);
             return false;
         }
         var TesterQuery=[];
