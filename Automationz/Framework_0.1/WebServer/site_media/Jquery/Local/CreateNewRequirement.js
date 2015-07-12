@@ -45,6 +45,61 @@ $(document).ready(function(){
 
     BugLinking(project_id,team_id);
 
+
+    $("#searchbox").select2({
+        placeholder: "Search & Select Filter Here..",
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "AutoCompleteTestCasesSearchTestSet/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': $.session.get('project_id'),
+                    'team_id': $.session.get('default_team_identity')
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        formatResult: formatTestCasesSearch
+    }).on("change", function(e) {
+        var tag_id=$(this).select2('data')['id'];
+        $("#searchedFilter").append('<td><img class="delete" title = "Delete" src="/site_media/deletebutton.png" /></td>'
+            + '<td name = "submitquery" class = "Text" style = "size:10">'
+            + tag_id
+            + ":&nbsp"
+            + '</td>'
+        );
+        PerformSearch(project_id,team_id,test_case_per_page,test_case_page_current);
+        DeleteFilterData(project_id,team_id);
+        $(this).select2('val','');
+        return false;
+    });
+    function formatTestCasesSearch(test_case_details) {
+        var tag_select=test_case_details.text.split(' - ');
+        tag_select=tag_select[tag_select.length-1].trim();
+        if (tag_select=='Test Case'){
+            var markup ='<div><i class="fa fa-file-text-o"></i><span style="font-weight: bold;"><span>' + '  ' + test_case_details.text + '</span></div>';
+        }
+        else if(tag_select=='Section'){
+            var markup ='<div><i class="fa fa-folder-o"></i><span style="font-weight: bold;"><span>' + '  ' + test_case_details.text.replace('Section','Folder') + '</span></div>';
+        }
+        else{
+            var markup ='<div><i class="fa fa-file"></i><span style="font-weight: bold;"><span>' + '  ' + test_case_details.text + '</span></div>';
+        }
+        return markup;
+    }
+    
+    Buttons();
+
     var URL=window.location.pathname;
     var create_index=URL.indexOf(createpath);
     var edit_index=URL.indexOf(editpath);
@@ -131,6 +186,11 @@ $(document).ready(function(){
             tasks.push($(this).val());
         });
 
+        var test_cases=[];
+        $('input[name="test_cases"]:checked').each(function(){
+            test_cases.push($(this).val());
+        });
+
         var bugs=[];
         $('input[name="bugs"]:checked').each(function(){
             bugs.push($(this).val());
@@ -167,7 +227,8 @@ $(document).ready(function(){
                 'feature_path':newFeaturePath,
                 'labels':labels.join("|"),
                 'tasks':tasks.join("|"),
-                'bugs':bugs.join("|")
+                'bugs':bugs.join("|"),
+                'test_cases':test_cases.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
@@ -188,7 +249,8 @@ $(document).ready(function(){
                 'feature_path':newFeaturePath,
                 'labels':labels.join("|"),
                 'tasks':tasks.join("|"),
-                'bugs':bugs.join("|")
+                'bugs':bugs.join("|"),
+                'test_cases':test_cases.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
@@ -209,7 +271,8 @@ $(document).ready(function(){
                 'requirement_id':sectionpath,
                 'labels':labels.join("|"),
                 'tasks':tasks.join("|"),
-                'bugs':bugs.join("|")
+                'bugs':bugs.join("|"),
+                'test_cases':test_cases.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
@@ -315,7 +378,10 @@ function PopulateReqInfo(req_id){
         });
 
 
-        $(data['cases']).each(function(i){
+        get_test_cases(req_id,project_id,team_id,test_case_per_page,test_case_page_current);
+
+
+        /*$(data['cases']).each(function(i){
             $(".tc_linking").append('<tr>' +
             '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
             + '<td>'
@@ -328,7 +394,7 @@ function PopulateReqInfo(req_id){
             data['cases'][i][1] +
             "</td>" +
             "</tr>");
-        });
+        });*/
 
         //FeaturePath
         var features=data['Feature'];
@@ -708,4 +774,180 @@ function BugLinking(project_id,team_id){
         $(this).remove();
 
     });
+}
+
+function PerformSearch(project_id,team_id,test_case_per_page,test_case_page_current){
+    $("#searchedFilter").each(function() {
+        var UserText = $(this).find("td").text();
+        UserText = UserText.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+/g, "")
+        $.get('TableDataTestCasesOtherPages/',{Query:UserText,test_status_request:false,project_id:project_id,team_id:team_id,
+            test_case_per_page:test_case_per_page,
+            test_case_page_current:test_case_page_current},function(data){
+            if(data['TableData'].length!=0){
+                ResultTable("#RunTestResultTable",data['Heading'],data['TableData'],'Test Cases');
+                implementDropDown("#RunTestResultTable");
+                $('#RunTestResultTable tr>td:nth-child(7)').each(function(){
+                    var id=$(this).closest('tr').find('td:first-child').text().trim();
+                    $(this).after('<div><input id="'+id+'" type="checkbox" class="Buttons add"/></div>');
+                });
+                $('#RunTestResultTable').css({'display':'block'});
+                $('#add_button').css({'display':'block'});
+                $('#pagination_div').pagination({
+                    items:data['Count'],
+                    itemsOnPage:test_case_per_page,
+                    cssStyle: 'dark-theme',
+                    currentPage:test_case_page_current,
+                    displayedPages:2,
+                    edges:2,
+                    hrefTextPrefix:'#',
+                    onPageClick:function(PageNumber){
+                        PerformSearch(project_id,team_id,test_case_per_page,PageNumber);
+                    }
+                });
+
+            }
+            else{
+                $('#RunTestResultTable').html('<p style="font-weight: bold; text-align: center;" class="Text">There is no test cases for this filter</p>');
+                $('#RunTestResultTable').css({'display':'block'});
+                $('#add_button').css({'display':'none'});
+                $('#pagination_div').pagination('destroy');
+            }
+        });
+    });
+}
+
+function get_test_cases(stepname,project_id,team_id,itemPerPage,PageCurrent){
+    //$('#step_name').html("Test cases for step: "+ stepname);
+    $.get("TestCases_PerRequirement",{
+        Query: stepname,
+        test_case_per_page:itemPerPage,
+        test_case_page_current:PageCurrent,
+        project_id:project_id,
+        team_id:team_id,
+        test_status_request:true
+    },function(data) {
+        form_table("usage_div",data['Heading'],data['TableData'],data['Count'],"Test Cases");
+        implementDropDown('#usage_div');
+        $('#usage_pagination_div').pagination({
+            items:data['Count'],
+            itemsOnPage:test_case_per_page,
+            cssStyle: 'dark-theme',
+            currentPage:test_case_page_current,
+            displayedPages:2,
+            edges:2,
+            hrefTextPrefix:'#',
+            onPageClick:function(PageNumber){
+                get_test_cases(stepname,project_id,team_id,itemPerPage,PageNumber);
+            }
+        });
+        var indx = 0;
+        $('#usage_div tr>td:nth-child(7)').each(function(){
+            var ID = $("#usage_div tr>td:nth-child(1):eq("+indx+")").text().trim();
+
+            $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Copy Test Case"><i class="fa fa-copy fa-2x templateBtn" id="'+ID+'" style="cursor:pointer"></i></span>');
+            //$(this).after('&nbsp;&nbsp;');
+            $(this).after('<span style="cursor: pointer; margin-left: 8px;" class="hint--left hint--bounce hint--rounded" data-hint="Edit Test Case"><i class="fa fa-pencil fa-2x editBtn" id="'+ID+'" style="cursor:pointer"></i></span>');
+
+            indx++;
+        });
+
+        $(".editBtn").click(function (){
+            window.location = '/Home/ManageTestCases/Edit/'+ $(this).attr("id");
+        });
+        $(".templateBtn").click(function (){
+            window.location = '/Home/ManageTestCases/CreateNew/'+ $(this).attr("id");
+        });
+    });
+}
+function implementDropDown(wheretoplace){
+    $(wheretoplace+" tr td:nth-child(1)").css({'color' : 'blue','cursor' : 'pointer'});
+    $(wheretoplace+" tr td:nth-child(1)").each(function() {
+        var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+        var name=$(this).text().trim();
+        $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+        $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+            var data_list=data['Result'];
+            var column=data['column'];
+            ResultTable('#'+ID+'detail',column,data_list,"");
+            $('#'+ID+'detail tr').each(function(){
+                $(this).css({'textAlign':'left'});
+            });
+        });
+        $(this).live('click',function(){
+            $('#'+ID+'detail').slideToggle("slow");
+        });
+    });
+}
+function form_table(divname,column,data,total_data,type_case){
+    var tooltip=type_case||':)';
+    var message='';
+    message+= "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + total_data + " " + type_case+"</p>";
+    message+='<table class="two-column-emphasis">';
+    message+='<tr>';
+    for(var i=0;i<column.length;i++){
+        message+='<th>'+column[i]+'</th>';
+    }
+    message+='</tr>';
+    for(var i=0;i<data.length;i++){
+        message+='<tr>';
+        
+        for(var j=0;j<data[i].length;j++){
+            switch(data[i][j]){
+                case 'Dev':
+                    message+='<td style="background-color: ' + colors['dev'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                case 'Ready':
+                    message+='<td style="background-color: ' + colors['ready'] + '; color: #fff;">' + data[i][j] + '</td>';
+                    continue;
+                default :
+                    message+='<td>'+data[i][j]+'</td>';
+                    continue;
+            }
+        }
+        message+='<td>' 
+            + '<input type="checkbox" class="Buttons" checked="true" name="test_cases" value="'
+            + data[i][0]
+            + '"/>' +
+            '</td>';
+        message+='</tr>';
+    }
+    message+='</table>';
+    $('#'+divname).html(message);
+}
+
+function Buttons(){
+    $('#add_button').click(function(event){
+        event.preventDefault();
+        var list=[]
+        $('.add:checked').each(function(){
+            list.push($(this).attr('id').trim());
+        });
+        if(list.length==0){
+            alertify.log('No Test Case selected',"",0);
+            return false;
+        }
+        else{
+            $("#link_new").show();
+            $.each(list, function(index, value) {
+                $(".tc_linking").append('<tr>' +
+                '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+                + '<td>'
+                + '<input type="checkbox" class="Buttons" checked="true" name="test_cases" value="'
+                + value
+                + '"/>' +
+                '</td><td>'
+                + value
+                + "</td>" +
+                "</tr>");
+            });
+            /*$.get('AddTestCasesSetTag',{type:type.toLocaleUpperCase().trim(),name:name.trim(),list:list.join('|')},function(data){
+                alertify.success(data,"",3);
+                var location='/Home/ManageSetTag/'+type+'/'+name+'/';
+                window.location=location;
+            });*/
+
+        }
+
+    });
+
 }

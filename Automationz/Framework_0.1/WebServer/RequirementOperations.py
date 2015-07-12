@@ -1,7 +1,7 @@
 import DataBaseUtilities as DB
 from MySite.models import GetConnection
 import datetime                    
-def CreateParentRequirement(title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,labels, tasks, bugs):
+def CreateParentRequirement(title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,labels, tasks, bugs, test_cases):
     Conn=GetConnection()
     try:
         req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
@@ -119,6 +119,16 @@ def CreateParentRequirement(title, description, project_id, team_list, start_dat
                                                    'type2':'TC'
                                         }
                                         new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                        if test_cases[0] != '':
+                            for each in test_cases:
+                                cases_Dict={
+                                           'id1':req_id,
+                                           'id2':each.strip(),
+                                           'type1':'REQ',
+                                           'type2':'TC'
+                                }
+                                new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                        
                         return req_id
                     else:
                         return False
@@ -133,7 +143,7 @@ def CreateParentRequirement(title, description, project_id, team_list, start_dat
         
         
         
-def EditRequirement(req_id,title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,labels,tasks,bugs):
+def EditRequirement(req_id,title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,labels,tasks,bugs, test_cases):
     Conn=GetConnection()
     try:
         now=datetime.datetime.now().date()
@@ -229,6 +239,16 @@ def EditRequirement(req_id,title, description, project_id, team_list, start_date
                                        'type2':'TC'
                             }
                             new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+            if test_cases[0] != '':
+                lsres=DB.DeleteRecord(Conn,"components_map", id1=req_id,type1='REQ',type2='TC')
+                for each in test_cases:
+                    cases_Dict={
+                               'id1':req_id,
+                               'id2':each.strip(),
+                               'type1':'REQ',
+                               'type2':'TC'
+                    }
+                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
             return req_id
         else:
             return False
@@ -238,7 +258,7 @@ def EditRequirement(req_id,title, description, project_id, team_list, start_date
 
 
 
-def CreateChildRequirement(title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,section_path,labels,tasks,bugs):
+def CreateChildRequirement(title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,section_path,labels,tasks,bugs, test_cases):
     Conn=GetConnection()
     try:
         req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
@@ -362,7 +382,15 @@ def CreateChildRequirement(title, description, project_id, team_list, start_date
                                                'type2':'TC'
                                     }
                                     new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
-                            
+                    if test_cases[0] != '':
+                        for each in test_cases:
+                            cases_Dict={
+                                       'id1':req_id,
+                                       'id2':each.strip(),
+                                       'type1':'REQ',
+                                       'type2':'TC'
+                            }
+                            new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                     return req_id
             except Exception,e:
                 print "Exception: ",e 
