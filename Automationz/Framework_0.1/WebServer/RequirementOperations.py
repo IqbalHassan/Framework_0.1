@@ -1,7 +1,7 @@
 import DataBaseUtilities as DB
 from MySite.models import GetConnection
 import datetime                    
-def CreateParentRequirement(title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,labels, tasks):
+def CreateParentRequirement(title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,labels, tasks, bugs):
     Conn=GetConnection()
     try:
         req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
@@ -100,6 +100,25 @@ def CreateParentRequirement(title, description, project_id, team_list, start_dat
                                                    'type2':'TC'
                                         }
                                         new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                        if bugs[0] != '':
+                            for each in bugs:
+                                bug_Dict={
+                                           'id1':req_id,
+                                           'id2':each.strip(),
+                                           'type1':'REQ',
+                                           'type2':'BUG'
+                                }
+                                hehe_result=DB.InsertNewRecordInToTable(Conn,"components_map",**bug_Dict)
+                                if hehe_result==True:
+                                    t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+each+"' and type1='BUG' and type2='TC'",False)
+                                    for tc in t_cases:
+                                        cases_Dict={
+                                                   'id1':req_id,
+                                                   'id2':tc.strip(),
+                                                   'type1':'REQ',
+                                                   'type2':'TC'
+                                        }
+                                        new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
                         return req_id
                     else:
                         return False
@@ -114,7 +133,7 @@ def CreateParentRequirement(title, description, project_id, team_list, start_dat
         
         
         
-def EditRequirement(req_id,title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,labels,tasks):
+def EditRequirement(req_id,title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,labels,tasks,bugs):
     Conn=GetConnection()
     try:
         now=datetime.datetime.now().date()
@@ -190,6 +209,26 @@ def EditRequirement(req_id,title, description, project_id, team_list, start_date
                                        'type2':'TC'
                             }
                             new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+            if bugs[0] != '':
+                result = DB.DeleteRecord(Conn,"components_map",id1=req_id,type1='REQ',type2='BUG')
+                for each in bugs:
+                    bug_Dict={
+                               'id1':req_id,
+                               'id2':each.strip(),
+                               'type1':'REQ',
+                               'type2':'BUG'
+                    }
+                    hehe_result=DB.InsertNewRecordInToTable(Conn,"components_map",**bug_Dict)
+                    if hehe_result==True:
+                        t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+each+"' and type1='BUG' and type2='TC'",False)
+                        for tc in t_cases:
+                            cases_Dict={
+                                       'id1':req_id,
+                                       'id2':tc.strip(),
+                                       'type1':'REQ',
+                                       'type2':'TC'
+                            }
+                            new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
             return req_id
         else:
             return False
@@ -199,7 +238,7 @@ def EditRequirement(req_id,title, description, project_id, team_list, start_date
 
 
 
-def CreateChildRequirement(title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,section_path,labels,tasks):
+def CreateChildRequirement(title, description, project_id, team_list, start_date, end_date, priority, status, milestone, username, feature_path,section_path,labels,tasks,bugs):
     Conn=GetConnection()
     try:
         req_id=DB.GetData(Conn,"select nextval('requirementid_seq')")
@@ -296,6 +335,25 @@ def CreateChildRequirement(title, description, project_id, team_list, start_date
                             hehe_result=DB.InsertNewRecordInToTable(Conn,"components_map",**task_Dict)
                             if hehe_result==True:
                                 t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+each+"' and type1='TASK' and type2='TC'",False)
+                                for tc in t_cases:
+                                    cases_Dict={
+                                               'id1':req_id,
+                                               'id2':tc.strip(),
+                                               'type1':'REQ',
+                                               'type2':'TC'
+                                    }
+                                    new_result=DB.InsertNewRecordInToTable(Conn,"components_map",**cases_Dict)
+                    if bugs[0] != '':
+                        for each in bugs:
+                            bug_Dict={
+                                       'id1':req_id,
+                                       'id2':each.strip(),
+                                       'type1':'REQ',
+                                       'type2':'BUG'
+                            }
+                            hehe_result=DB.InsertNewRecordInToTable(Conn,"components_map",**bug_Dict)
+                            if hehe_result==True:
+                                t_cases = DB.GetData(Conn,"select id2 from components_map where id1='"+each+"' and type1='BUG' and type2='TC'",False)
                                 for tc in t_cases:
                                     cases_Dict={
                                                'id1':req_id,

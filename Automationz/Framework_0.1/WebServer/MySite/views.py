@@ -13803,6 +13803,9 @@ def Selected_Requirement_Analaysis(request):
 
         query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 = '%s' and btm.id2=tc.tc_id and type1='REQ' and type2='TC'" % UserData
         cases = DB.GetData(Conn, query, False)
+        
+        query = "select distinct b.bug_id,b.bug_title,b.status,mi.name from bugs b, milestone_info mi, components_map cm where b.bug_milestone=mi.id::text and cm.id2=b.bug_id and cm.id1='%s' and cm.type2='BUG' and cm.type1='REQ'" % UserData
+        bugs = DB.GetData(Conn, query, False)
 
         #query = "select team_id from task_team_map where task_id='%s'" %UserData
         #team = DB.GetData(Conn,query)
@@ -13824,7 +13827,8 @@ def Selected_Requirement_Analaysis(request):
         'labels': labels,
         #'teams': teams,
         'tasks': tasks,
-        'cases': cases}
+        'cases': cases,
+        'bugs':bugs}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, content_type='application/json')
@@ -15839,6 +15843,8 @@ def CreateRequirement(request):
             labels = labels.split("|")
             tasks = request.GET.get(u'tasks', '')
             tasks = tasks.split("|")
+            bugs = request.GET.get(u'bugs', '')
+            bugs = bugs.split("|")
             if parent_requirement_id == "":
                 result = RequirementOperations.CreateParentRequirement(
                     title,
@@ -15853,7 +15859,8 @@ def CreateRequirement(request):
                     user_name,
                     feature_path,
                     labels,
-                    tasks)
+                    tasks,
+                    bugs)
                 if result:
                     requirement_id = result
     result = simplejson.dumps(requirement_id)
@@ -15882,6 +15889,8 @@ def SubmitEditRequirement(request):
             labels = labels.split("|")
             tasks = request.GET.get(u'tasks', '')
             tasks = tasks.split("|")
+            bugs = request.GET.get(u'bugs', '')
+            bugs = bugs.split("|")
             result = RequirementOperations.EditRequirement(
                 req_id,
                 title,
@@ -15896,7 +15905,8 @@ def SubmitEditRequirement(request):
                 user_name,
                 feature_path,
                 labels,
-                tasks)
+                tasks,
+                bugs)
             if result:
                 requirement_id = result
     result = simplejson.dumps(requirement_id)
@@ -15923,6 +15933,8 @@ def SubmitChildRequirement(request):
             labels = labels.split("|")
             tasks = request.GET.get(u'tasks', '')
             tasks = tasks.split("|")
+            bugs = request.GET.get(u'bugs', '')
+            bugs = bugs.split("|")
             result = RequirementOperations.CreateChildRequirement(
                 title,
                 description,
@@ -15937,7 +15949,8 @@ def SubmitChildRequirement(request):
                 feature_path,
                 parent_requirement_id,
                 labels,
-                tasks)
+                tasks,
+                bugs)
             if result:
                 requirement_id = result
     result = simplejson.dumps(requirement_id)

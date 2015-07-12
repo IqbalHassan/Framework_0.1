@@ -7,9 +7,11 @@ var operation = 1;
 var req_id = "";
 var sectionpath = "";
 
-
-    var project_id= $.session.get('project_id');
-    var team_id= $.session.get('default_team_identity');
+var test_case_per_page=5;
+var test_case_page_current=1;
+var project_id = $.session.get('project_id');
+var team_id = $.session.get('default_team_identity');
+var user = $.session.get('fullname');
 
 
 
@@ -41,6 +43,7 @@ $(document).ready(function(){
         }
     });
 
+    BugLinking(project_id,team_id);
 
     var URL=window.location.pathname;
     var create_index=URL.indexOf(createpath);
@@ -128,8 +131,28 @@ $(document).ready(function(){
             tasks.push($(this).val());
         });
 
+        var bugs=[];
+        $('input[name="bugs"]:checked').each(function(){
+            bugs.push($(this).val());
+        });
 
-        if(operation==1){
+        if(title==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Title is empty!");
+        }
+        else if(requirement_description==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Description is empty!");
+        }
+        else if(start_date=="" || end_date==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Dates are required!");
+        }
+        else if(milestone==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Please select a milestone!");
+        }
+        else if(operation==1){
             $.get("SubmitCreateRequirement/",{
                 'title':title.trim(),
                 'description':requirement_description.trim(),
@@ -143,7 +166,8 @@ $(document).ready(function(){
                 'user_name':$.session.get('fullname'),
                 'feature_path':newFeaturePath,
                 'labels':labels.join("|"),
-                'tasks':tasks.join("|")
+                'tasks':tasks.join("|"),
+                'bugs':bugs.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
@@ -163,7 +187,8 @@ $(document).ready(function(){
                 'user_name':$.session.get('fullname'),
                 'feature_path':newFeaturePath,
                 'labels':labels.join("|"),
-                'tasks':tasks.join("|")
+                'tasks':tasks.join("|"),
+                'bugs':bugs.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
@@ -183,7 +208,8 @@ $(document).ready(function(){
                 'feature_path':newFeaturePath,
                 'requirement_id':sectionpath,
                 'labels':labels.join("|"),
-                'tasks':tasks.join("|")
+                'tasks':tasks.join("|"),
+                'bugs':bugs.join("|")
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditRequirement/'+data);
             });
@@ -267,6 +293,27 @@ function PopulateReqInfo(req_id){
             + "</td>" +
             "</tr>");
         });
+
+
+        $(data['bugs']).each(function(i){
+            $(".bug_linking").append('<tr>' +
+            '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+            + '<td>'
+            + '<input type="checkbox" class="Buttons" checked="true" name="bugs" value="'
+            + data['bugs'][i][0]
+            + '"/>' +
+            '</td><td>'
+            + data['bugs'][i][0]
+            + "</td><td>" +
+            data['bugs'][i][1] +
+            '</td><td>' +
+            data['bugs'][i][2] +
+            '</td><td>' +
+            data['bugs'][i][3] +
+            '</td>' +
+            "</tr>");
+        });
+
 
         $(data['cases']).each(function(i){
             $(".tc_linking").append('<tr>' +
@@ -572,5 +619,93 @@ function AutoCompleteTask(){
             event.preventDefault();
 
         }
+    });
+}
+
+function BugLinking(project_id,team_id){
+
+    $(".search_bug").autocomplete({
+
+        source:function(request,response){
+            $.ajax({
+                url:"AutoCompleteBugs/",
+                dataType:"json",
+                data:{
+                    term:request.term,
+                    project_id:project_id,
+                    team_id:team_id
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select : function(event, ui) {
+
+            //var value = ui.item[0]
+            //var name = ui.item[1]
+
+            /*var tc_id_name = ui.item[0].split(" - ");
+             var value = "";
+             if (tc_id_name != null)
+             {
+             value = tc_id_name[0].trim();
+             name = tc_id_name[1].trim();
+             }*/
+
+            var value=ui.item[0].trim();
+            //var name=ui.item[1].trim();
+
+            if(value!=""){
+                $(".bug_linking").append('<tr>' +
+                '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+                + '<td>'
+                + '<input type="checkbox" class="Buttons" checked="true" name="bugs" value="'
+                + ui.item[0]
+                + '"/>' +
+                '</td><td>'
+                + ui.item[0]
+                + "</td><td>" +
+                ui.item[1] +
+                '</td><td>' +
+                ui.item[2] +
+                '</td><td>' +
+                ui.item[3] +
+                '</td>' +
+                "</tr>");
+            }
+
+            //$(".search_case").remove();
+
+            /*$("#test_cases").append('<tr class="linking">' +
+             '<td><input class="search_case textbox" placeholder="Search Test Case" style="width: auto" /></td>' +
+             '</tr>');
+             TestCaseLinking();*/
+
+            //$("#tester th").css('display', 'block');
+
+            $(".search_bug").val("");
+            return false;
+
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+
+    $(".search_bug").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteCase").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
     });
 }
