@@ -240,7 +240,7 @@ $(document).ready(function(){
             if(dep_stat){
                 $('#choice_div').css({'display':'none'});
                 $('#dependency_tab').css({'display':'block'});
-                $('#prev').css({'display':'block'});
+                //$('#prev').css({'display':'block'});
                 $(this).css({'display':'none'});
             }else{
                 alertify.error(dependency_classes[i].name+ ' is not selected');
