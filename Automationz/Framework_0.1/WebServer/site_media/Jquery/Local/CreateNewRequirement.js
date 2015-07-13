@@ -97,7 +97,7 @@ $(document).ready(function(){
         }
         return markup;
     }
-    
+
     Buttons();
 
     var URL=window.location.pathname;
