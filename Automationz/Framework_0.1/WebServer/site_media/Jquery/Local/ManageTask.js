@@ -176,7 +176,7 @@ function initCreateDiv(project,team,manager){
     message+='</table>';
     return message;
 }*/
-var label_per_page=5;
+var label_per_page=10;
 var label_page_current=1;
 var project_id= $.session.get('project_id');
 var team_id= $.session.get('default_team_identity');

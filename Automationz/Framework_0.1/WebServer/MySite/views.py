@@ -5776,7 +5776,7 @@ def Auto_Step_Create(request):
             stepname=step,
             description=step,
             driver='WebDriver',
-            steptype='Undefined',
+            steptype='Manual-Undefined',
             data_required='false',
             #stepfeature='Common',
             stepenable='true',
@@ -7802,6 +7802,49 @@ def TestCases_PerTask(request):
         json = simplejson.dumps(results)
         return HttpResponse(json, content_type='application/json')
 
+
+def TestCases_PerRequirement(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            UserData = request.GET.get(u'Query', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
+            test_case_per_page=request.GET.get(u'test_case_per_page','')
+            test_case_page_current=request.GET.get(u'test_case_page_current')
+            test_status_request = request.GET.get(u'test_status_request', '')
+            #form condition
+            offset= int(int(test_case_page_current)-1)*int(test_case_per_page)
+            limit=int(test_case_per_page)
+            condition=" offset %d limit %d"%(offset,limit)
+            Query="select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc, test_case_tag tct where btm.id1 = '%s' and btm.id2=tc.tc_id and type1='REQ' and type2='TC' and tc.tc_id=tct.tc_id group by tc.tc_id,tc.tc_name having count(case when tct.name='%s' and property='Project' then 1 end)>0 and count(case when tct.name='%s' and property='Team' then 1 end)>0" %(UserData,project_id,str(team_id))
+            query=Query+condition
+            Conn = GetConnection()
+            TableData = DB.GetData(Conn, query, False)
+            Conn.close()
+            Conn=GetConnection()
+            count_query=DB.GetData(Conn,Query,False)
+            Conn.close()
+            final_list=[]
+            for each in TableData:
+                type_case=get_test_case_type(each[0])
+                time=get_test_case_time(each[0])
+                section=get_section(each[0])
+                feature=get_feature(each[0])
+                if test_status_request:
+                    status=get_status(each[0])
+                    final_list.append((each[0],each[1],feature,section,status,type_case,time))
+                else:
+                    final_list.append((each[0],each[1],feature,section,type_case,time))
+            Heading = ['ID','Title','Feature','Folder','Type','Time']
+            if test_status_request:
+                Heading = ['ID','Title','Feature','Folder','Status','Type','Time']
+            results = {'Heading': Heading, 'TableData': final_list,'Count':len(count_query)}
+
+        else:
+            results = {'Heading': [], 'TableData': [],'Count':0}
+
+        json = simplejson.dumps(results)
+        return HttpResponse(json, content_type='application/json')
 
 
 def Check_TestCase(test_case):
@@ -13805,6 +13848,9 @@ def Selected_Requirement_Analaysis(request):
 
         query = "select distinct tc.tc_id, tc.tc_name from components_map btm, test_cases tc where btm.id1 = '%s' and btm.id2=tc.tc_id and type1='REQ' and type2='TC'" % UserData
         cases = DB.GetData(Conn, query, False)
+        
+        query = "select distinct b.bug_id,b.bug_title,b.status,mi.name from bugs b, milestone_info mi, components_map cm where b.bug_milestone=mi.id::text and cm.id2=b.bug_id and cm.id1='%s' and cm.type2='BUG' and cm.type1='REQ'" % UserData
+        bugs = DB.GetData(Conn, query, False)
 
         #query = "select team_id from task_team_map where task_id='%s'" %UserData
         #team = DB.GetData(Conn,query)
@@ -13826,7 +13872,8 @@ def Selected_Requirement_Analaysis(request):
         'labels': labels,
         #'teams': teams,
         'tasks': tasks,
-        'cases': cases}
+        'cases': cases,
+        'bugs':bugs}
     json = simplejson.dumps(results)
     Conn.close()
     return HttpResponse(json, content_type='application/json')
@@ -15841,6 +15888,10 @@ def CreateRequirement(request):
             labels = labels.split("|")
             tasks = request.GET.get(u'tasks', '')
             tasks = tasks.split("|")
+            bugs = request.GET.get(u'bugs', '')
+            bugs = bugs.split("|")
+            test_cases = request.GET.get(u'test_cases', '')
+            test_cases = test_cases.split("|")
             if parent_requirement_id == "":
                 result = RequirementOperations.CreateParentRequirement(
                     title,
@@ -15855,7 +15906,9 @@ def CreateRequirement(request):
                     user_name,
                     feature_path,
                     labels,
-                    tasks)
+                    tasks,
+                    bugs,
+                    test_cases)
                 if result:
                     requirement_id = result
     result = simplejson.dumps(requirement_id)
@@ -15884,6 +15937,10 @@ def SubmitEditRequirement(request):
             labels = labels.split("|")
             tasks = request.GET.get(u'tasks', '')
             tasks = tasks.split("|")
+            bugs = request.GET.get(u'bugs', '')
+            bugs = bugs.split("|")
+            test_cases = request.GET.get(u'test_cases', '')
+            test_cases = test_cases.split("|")
             result = RequirementOperations.EditRequirement(
                 req_id,
                 title,
@@ -15898,7 +15955,9 @@ def SubmitEditRequirement(request):
                 user_name,
                 feature_path,
                 labels,
-                tasks)
+                tasks,
+                bugs,
+                test_cases)
             if result:
                 requirement_id = result
     result = simplejson.dumps(requirement_id)
@@ -15925,6 +15984,10 @@ def SubmitChildRequirement(request):
             labels = labels.split("|")
             tasks = request.GET.get(u'tasks', '')
             tasks = tasks.split("|")
+            bugs = request.GET.get(u'bugs', '')
+            bugs = bugs.split("|")
+            test_cases = request.GET.get(u'test_cases', '')
+            test_cases = test_cases.split("|")
             result = RequirementOperations.CreateChildRequirement(
                 title,
                 description,
@@ -15939,7 +16002,9 @@ def SubmitChildRequirement(request):
                 feature_path,
                 parent_requirement_id,
                 labels,
-                tasks)
+                tasks,
+                bugs,
+                test_cases)
             if result:
                 requirement_id = result
     result = simplejson.dumps(requirement_id)
