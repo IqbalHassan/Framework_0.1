@@ -16074,7 +16074,7 @@ def SubmitChildRequirement(request):
     result = simplejson.dumps(requirement_id)
     return HttpResponse(result, content_type='application/json')
 
-
+AutoCompleteTesterSearch
 def GetTeamInfoToCreateRequirement(request):
     if request.is_ajax():
         if request.method == 'GET':

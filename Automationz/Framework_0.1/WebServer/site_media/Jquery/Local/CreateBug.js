@@ -92,7 +92,7 @@ $(document).ready(function(){
     }).on("change", function(e) {
             var user_id=$(this).select2('data')['id'];
             var user_name=$(this).select2('data')['text'].split(' - ')[0].trim();
-            $("#tester").html('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
+            $("#tester").html('<td><img class="delete" id="DeleteTester" title="TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
                 + '<td class="Text" data-id="'+user_id+'">'
                 + user_name
                 + ":&nbsp"
@@ -133,11 +133,6 @@ $(document).ready(function(){
             return false;
         }*/
 
-        if($('#feature-flag').hasClass('unfilled')){
-            //alert("Feature Path is not defined Correctly");
-            alertify.error("Feature Path is not defined Correctly","",0);
-            return false;
-        }
 
         //var project = $("#project_identity").val();
         var bug_desc=$("#bug_desc").val();
@@ -177,8 +172,33 @@ $(document).ready(function(){
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
 
-        if(title!=""){
-            if(operation==1){
+        if(title==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Title is empty!");
+        }
+        else if(bug_desc==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Description is empty!");
+        }
+        else if(start_date=="" || end_date==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Dates are required!");
+        }
+        else if(testers==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Assignee is needed!");
+        }
+        else if($('#feature-flag').hasClass('unfilled')){
+            //alert("Feature Path is not defined Correctly");
+            alertify.set({ delay: 300000 });
+            alertify.error("Feature Path is not defined Correctly");
+            return false;
+        }
+        else if(milestone==""){
+            alertify.set({ delay: 300000 });
+            alertify.error("Please select a milestone!");
+        }
+        else if(operation==1){
                 $.get("LogNewBug/",{
                     title:title.trim(),
                     description:bug_desc.trim(),
@@ -223,11 +243,6 @@ $(document).ready(function(){
                     window.location='/Home/EditBug/'+data;
                 });
             }
-        }
-        else{
-            alertify.log("Title is empty","",0);
-        }
-
         /*if(operation=="0"||title==''){
             var error_message="<b style='color: #ff0000'>Fields are empty</b>";
             alertify.log("Fields are empty","",0);
@@ -398,10 +413,11 @@ function PopulateBugInfo(bug_id){
         $("#start_date").val(data['Bug_Info'][0][3]);
         $("#end_date").val(data['Bug_Info'][0][4]);
         $("#tester").html('<td><img class="delete" id = "DeleteTester" title = "TesterDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/></td>'
-        + '<td class="Text selected">'
+        + '<td class="Text selected" data-id="'+data['Bug_Info'][0][14]+'">'
         + data['tester']
-            //+ "&nbsp"
+         //+ "&nbsp"
         + '</td>');
+
         $('#status').val(data['Bug_Info'][0][11]);
         /*if(data['Bug_Info'][0][5]=='P1')
             $('#priority').val('1');
