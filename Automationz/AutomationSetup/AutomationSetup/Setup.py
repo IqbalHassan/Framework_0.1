@@ -106,25 +106,23 @@ def Installer_With_Pip():
 	
 def Installer_With_Exe():
     # Check and install psycopg2
-	try:
-        import psycopg2
-    except ImportError as e:
-        try:
-            psycopg2_easy_install = "easy_install http://www.stickpeople.com/projects/python/win-psycopg/2.6.0/psycopg2-2.6.0.win32-py2.7-pg9.4.1-release.exe"
-			install(cmd=psycopg2_easy_install)
-        except:
-            print "unable to install/update psycopg2"
-	try:
-        import wx
-    except ImportError as e:
-        try:
-            #psycopg2_easy_install = "easy_install http://www.stickpeople.com/projects/python/win-psycopg/2.6.0/psycopg2-2.6.0.win32-py2.7-pg9.4.1-release.exe"
-			psycopg2_easy_install = "pip install wheel backupDriverFiles\wxPython_common-3.0.2.0-py2-none-any.whl"
-			install(cmd=psycopg2_easy_install)
-			wx_easy_install="pip install wheel backupDriverFiles\wxPython-3.0.2.0-cp27-none-win32.whl"
-			install(cmd=wx_easy_install)
-        except:
-            print "unable to install/update wxpython"
+    try:
+        psycopg2_easy_install = "easy_install http://www.stickpeople.com/projects/python/win-psycopg/2.6.0/psycopg2-2.6.0.win32-py2.7-pg9.4.1-release.exe"
+        install(cmd=psycopg2_easy_install)
+    except:
+        print "unable to install/update psycopg2"
+	
+    
+    try:
+        #psycopg2_easy_install = "easy_install http://www.stickpeople.com/projects/python/win-psycopg/2.6.0/psycopg2-2.6.0.win32-py2.7-pg9.4.1-release.exe"
+        psycopg2_easy_install = "pip install wheel backupDriverFiles\wxPython_common-3.0.2.0-py2-none-any.whl"
+        install(cmd=psycopg2_easy_install)
+        wx_easy_install="pip install wheel backupDriverFiles\wxPython-3.0.2.0-cp27-none-win32.whl"
+        install(cmd=wx_easy_install)
+        dateutil_setup="pip install wheel backupDriverFiles\python_dateutil-2.4.2-py2.py3-none-any.whl"
+        install(cmd=dateutil_setup)
+    except:
+        print "unable to install/update wxpython"
     
     # Check and install win32api
     try:
