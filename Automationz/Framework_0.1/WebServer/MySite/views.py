@@ -11212,6 +11212,7 @@ def CheckMachine(request):
     if request.is_ajax():
         if request.method == 'GET':
             name = request.GET.get(u'name', '')
+            name=name.replace(" ",'_')
             print name
             Conn = GetConnection()
             query = "select distinct array_agg(distinct type||'|'||name||'|'||bit||'|'||version ) from test_run_env tre,permitted_user_list pul,machine_dependency_settings mds where pul.user_names=tre.tester_id and mds.machine_serial=tre.id and tester_id='%s' and pul.user_level='Manual' group by branch_version,machine_ip" % name
@@ -11255,7 +11256,8 @@ def AddManualTestMachine(request):
                 team_id = request.GET.get(u'team_id', '')
                 new_dependency = []
                 for each in dependency:
-                    new_dependency.append(each.split('|'))
+                    if each!='':
+                        new_dependency.append(each.split('|'))
                 print machine_name
                 print machine_ip
                 print branch + ":" + version
