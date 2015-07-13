@@ -907,6 +907,7 @@ function submit_step(){
         //var automata = $("#automata").val().trim();
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
+        
         $.get("CreateEditStep/",{
             'step_name' : step_name,
             'step_desc' : step_desc,
@@ -927,21 +928,76 @@ function submit_step(){
             'team_id' : team_id,
             'operation' : operation,
             'step_id' : step_id
+            },function(data) {
+                if(data['message']=="Step name already taken!"){
+                    alertify.set({ delay: 300000 });
+                    alertify.error(data['message']);
+                }
+                else{
+                    
+                    if (operation==1) {
+                        alertify.set({ delay: 300000 });
+                        alertify.success("Test Step '"+data+"' successfully created!","",0);
+                        desktop_notify("Test Step -'"+data['step_name']+"' successfully created!");
+                    };
+                    if (operation==2) {
+                        alertify.set({ delay: 300000 });
+                        alertify.success("Test Step '"+data+"' successfully updated!","",0);
+                        desktop_notify("Test Step -'"+data['step_name']+"' successfully updated!");
+                    };
+                    
+                    var location='/Home/ManageTestCases/EditStep/'+data['step_name'];
+                    window.location=location;
+                }
+            });
+        /*$.get("CheckStepExistence",{
+            'step_name' : step_name,
+            'project_id' : project_id,
+            'team_id' : team_id
         },function(data) {
-            if (operation==1) {
+            if(data[0]>0){
                 alertify.set({ delay: 300000 });
-                alertify.success("Test Step '"+data+"' successfully created!","",0);
-                desktop_notify("Test Step -'"+data+"' successfully created!");
-            };
-            if (operation==2) {
-                alertify.set({ delay: 300000 });
-                alertify.success("Test Step '"+data+"' successfully updated!","",0);
-                desktop_notify("Test Step -'"+data+"' successfully updated!");
-            };
-            
-            var location='/Home/ManageTestCases/EditStep/'+data;
-            window.location=location;
-        });
+                alertify.error("Sorry! Test Step name already taken.");
+            }
+            else{
+                $.get("CreateEditStep/",{
+                'step_name' : step_name,
+                'step_desc' : step_desc,
+                'step_feature' : newFeaturePath,
+                //'step_data' : step_data,
+                'step_type' : step_type,
+                'step_driver' : step_driver,
+                'step_enable' : step_enable,
+                'case_desc' : case_desc,
+                'step_expect' : step_expect,
+                'verify_radio' : verify_radio,
+                'continue_radio' : continue_radio,
+                'always_run':always_run,
+                'step_time' : step_time,
+                //'automata' : automata,
+                'user' : user,
+                'project_id' : project_id,
+                'team_id' : team_id,
+                'operation' : operation,
+                'step_id' : step_id
+                },function(data) {
+                    if (operation==1) {
+                        alertify.set({ delay: 300000 });
+                        alertify.success("Test Step '"+data+"' successfully created!","",0);
+                        desktop_notify("Test Step -'"+data+"' successfully created!");
+                    };
+                    if (operation==2) {
+                        alertify.set({ delay: 300000 });
+                        alertify.success("Test Step '"+data+"' successfully updated!","",0);
+                        desktop_notify("Test Step -'"+data+"' successfully updated!");
+                    };
+                    
+                    var location='/Home/ManageTestCases/EditStep/'+data;
+                    window.location=location;
+                });
+            }
+        });*/
+        
     });
 }
 

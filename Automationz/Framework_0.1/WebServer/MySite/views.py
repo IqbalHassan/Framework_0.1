@@ -8359,6 +8359,26 @@ def Process_CreateStep(request):
                 context_instance=RequestContext(request))
     return HttpResponse(output)
 
+def CheckStepExistence(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            step_name = request.GET.get(u'step_name','').strip()
+            project_id = request.GET.get(u'project_id','').strip()
+            team_id = request.GET.get(u'team_id','').strip()
+            
+            
+            Conn = GetConnection()
+            query = "select count(stepname) from test_steps_list where stepname='"+step_name+"' and project_id='"+project_id+"'"
+            exist = DB.GetData(Conn, query)
+            Conn.close()
+            
+            """if exist[0]>0:
+                result = "Sorry! Test Step name already taken."
+            else:
+                result = "Cool! You could use this name." """
+
+    json = simplejson.dumps(exist)
+    return HttpResponse(json, content_type='application/json')
 
 
 def CreateEditStep(request):
@@ -8435,118 +8455,136 @@ def CreateEditStep(request):
                     enable = "false"
                     
                 if operation == "2":
-                    query = "Where  step_id = %d" %step_id
-                    testrunenv = DB.UpdateRecordInTable(
-                        conn,
-                        "test_steps_list",
-                        query,
-                        stepname=step_name,
-                        description=step_desc,
-                        #data_required=data,
-                        steptype=step_type,
-                        driver=step_driver,
-                        stepfeature=fid,
-                        stepenable=enable,
-                        #step_editable=edit_data,
-                        case_desc=case_desc,
-                        expected=step_expect,
-                        verify_point=verify_radio,
-                        step_continue=continue_radio,
-                        always_run=always_run,
-                        estd_time=step_time,
-                        #automatable=automata,
-                        modified_by=user,
-                        modified_date=now,
-                        project_id = project_id,
-                        team_id = team_id)
-                    if testrunenv:
-                        PassMessasge(sModuleInfo,"Updated step - " +step_name +" successfully",1)
-                    else:
-                        PassMessasge(sModuleInfo,"Test step - " +step_name +" Not updated",1)
-                    query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
-                        step_feature + "'"
-                    feature_count = DB.GetData(conn, query)
-                    if(feature_count[0] < 1):
-                        testrunenv = DB.InsertNewRecordInToTable(
-                            conn,
-                            "config_values",
-                            type='feature',
-                            value=step_feature)
-                    query = "SELECT count(*) FROM config_values where type='driver' and value='" + \
-                        step_driver + "'"
-                    driver_count = DB.GetData(conn, query)
-                    if(driver_count[0] < 1):
-                        testrunenv = DB.InsertNewRecordInToTable(
-                            conn,
-                            "config_values",
-                            type='driver',
-                            value=step_driver)
-                        
-                    query="select tc_id from test_steps where step_id=%d"%step_id
-                    Conn=GetConnection()
-                    test_case_list=DB.GetData(Conn,query)
+                    Conn = GetConnection()
+                    query = "select step_id from test_steps_list where stepname='"+step_name+"' and project_id='"+project_id+"'"
+                    exist = DB.GetData(Conn, query)
                     Conn.close()
-                    count=0
-                    for each in test_case_list:
-                        test_status=Check_TestCase(each)
-                        whereQuery=" where tc_id='%s'"%each
+                    if exist[0]!=step_id:
+                        PassMessasge(sModuleInfo,"Step name already taken!",1)
+                        message = "Step name already taken!"
+                    else:
+                        query = "Where  step_id = %d" %step_id
+                        testrunenv = DB.UpdateRecordInTable(
+                            conn,
+                            "test_steps_list",
+                            query,
+                            stepname=step_name,
+                            description=step_desc,
+                            #data_required=data,
+                            steptype=step_type,
+                            driver=step_driver,
+                            stepfeature=fid,
+                            stepenable=enable,
+                            #step_editable=edit_data,
+                            case_desc=case_desc,
+                            expected=step_expect,
+                            verify_point=verify_radio,
+                            step_continue=continue_radio,
+                            always_run=always_run,
+                            estd_time=step_time,
+                            #automatable=automata,
+                            modified_by=user,
+                            modified_date=now,
+                            project_id = project_id,
+                            team_id = team_id)
+                        if testrunenv:
+                            PassMessasge(sModuleInfo,"Updated step - " +step_name +" successfully",1)
+                        else:
+                            PassMessasge(sModuleInfo,"Test step - " +step_name +" Not updated",1)
+                        query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
+                            step_feature + "'"
+                        feature_count = DB.GetData(conn, query)
+                        if(feature_count[0] < 1):
+                            testrunenv = DB.InsertNewRecordInToTable(
+                                conn,
+                                "config_values",
+                                type='feature',
+                                value=step_feature)
+                        query = "SELECT count(*) FROM config_values where type='driver' and value='" + \
+                            step_driver + "'"
+                        driver_count = DB.GetData(conn, query)
+                        if(driver_count[0] < 1):
+                            testrunenv = DB.InsertNewRecordInToTable(
+                                conn,
+                                "config_values",
+                                type='driver',
+                                value=step_driver)
+                            
+                        query="select tc_id from test_steps where step_id=%d"%step_id
                         Conn=GetConnection()
-                        result=DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=test_status)
-                        if result == True:
-                            count+=1
+                        test_case_list=DB.GetData(Conn,query)
                         Conn.close()
-                    print "%d out of %d test cases are updated."%(count,len(test_case_list))
+                        count=0
+                        for each in test_case_list:
+                            test_status=Check_TestCase(each)
+                            whereQuery=" where tc_id='%s'"%each
+                            Conn=GetConnection()
+                            result=DB.UpdateRecordInTable(Conn,"test_cases",whereQuery,test_case_type=test_status)
+                            if result == True:
+                                count+=1
+                            Conn.close()
+                        print "%d out of %d test cases are updated."%(count,len(test_case_list))
+                        message = "Successfully updated!"
 
                 if operation == "1":
-                    testrunenv = DB.InsertNewRecordInToTable(
-                        conn,
-                        "test_steps_list",
-                        stepname=step_name,
-                        description=step_desc,
-                        #data_required=data,
-                        steptype=step_type,
-                        driver=step_driver,
-                        stepfeature=fid,
-                        stepenable=enable,
-                        #step_editable=edit_data,
-                        case_desc=case_desc,
-                        expected=step_expect,
-                        verify_point=verify_radio,
-                        step_continue=continue_radio,
-                        always_run=always_run,
-                        estd_time=step_time,
-                        #automatable=automata,
-                        created_by=user,
-                        created_date=now,
-                        modified_by=user,
-                        modified_date=now,
-                        project_id = project_id,
-                        team_id = team_id)
-                    if testrunenv:
-                        PassMessasge(sModuleInfo,"Updated step - " +step_name +" successfully",1)
+                    Conn = GetConnection()
+                    query = "select count(stepname) from test_steps_list where stepname='"+step_name+"' and project_id='"+project_id+"'"
+                    exist = DB.GetData(Conn, query)
+                    Conn.close()
+                    if exist[0]>0:
+                        PassMessasge(sModuleInfo,"Step name already taken!",1)
+                        message = "Step name already taken!"
                     else:
-                        PassMessasge(sModuleInfo,"Test step - " +step_name +" not updated",1)
-                    query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
-                        step_feature + "'"
-                    feature_count = DB.GetData(conn, query)
-                    if(feature_count[0] < 1):
                         testrunenv = DB.InsertNewRecordInToTable(
                             conn,
-                            "config_values",
-                            type='feature',
-                            value=step_feature)
-                    query = "SELECT count(*) FROM config_values where type='driver' and value='" + \
-                        step_driver + "'"
-                    driver_count = DB.GetData(conn, query)
-                    if(driver_count[0] < 1):
-                        testrunenv = DB.InsertNewRecordInToTable(
-                            conn,
-                            "config_values",
-                            type='driver',
-                            value=step_driver)
-                 
+                            "test_steps_list",
+                            stepname=step_name,
+                            description=step_desc,
+                            #data_required=data,
+                            steptype=step_type,
+                            driver=step_driver,
+                            stepfeature=fid,
+                            stepenable=enable,
+                            #step_editable=edit_data,
+                            case_desc=case_desc,
+                            expected=step_expect,
+                            verify_point=verify_radio,
+                            step_continue=continue_radio,
+                            always_run=always_run,
+                            estd_time=step_time,
+                            #automatable=automata,
+                            created_by=user,
+                            created_date=now,
+                            modified_by=user,
+                            modified_date=now,
+                            project_id = project_id,
+                            team_id = team_id)
+                        if testrunenv:
+                            PassMessasge(sModuleInfo,"Created step - " +step_name +" successfully",1)
+                        else:
+                            PassMessasge(sModuleInfo,"Test step - " +step_name +" not created",1)
+                        query = "SELECT count(*) FROM config_values where type='feature' and value='" + \
+                            step_feature + "'"
+                        feature_count = DB.GetData(conn, query)
+                        if(feature_count[0] < 1):
+                            testrunenv = DB.InsertNewRecordInToTable(
+                                conn,
+                                "config_values",
+                                type='feature',
+                                value=step_feature)
+                        query = "SELECT count(*) FROM config_values where type='driver' and value='" + \
+                            step_driver + "'"
+                        driver_count = DB.GetData(conn, query)
+                        if(driver_count[0] < 1):
+                            testrunenv = DB.InsertNewRecordInToTable(
+                                conn,
+                                "config_values",
+                                type='driver',
+                                value=step_driver)
+                        message = "Successfully created!"
                 conn.close()
-                json = simplejson.dumps(step_name)
+                results = {'step_name':step_name, 'message':message}
+                json = simplejson.dumps(results)
                 return HttpResponse(json, content_type='application/json')
             
             except Exception as e:
