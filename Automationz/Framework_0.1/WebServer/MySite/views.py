@@ -5776,7 +5776,7 @@ def Auto_Step_Create(request):
             stepname=step,
             description=step,
             driver='WebDriver',
-            steptype='Undefined',
+            steptype='Manual-Undefined',
             data_required='false',
             #stepfeature='Common',
             stepenable='true',
