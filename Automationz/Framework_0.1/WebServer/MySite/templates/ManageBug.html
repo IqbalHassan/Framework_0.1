@@ -24,6 +24,7 @@
 
     <a id="simple-menu" href="#sidr" class="button hint--right hint--bounce hint--rounded" data-hint="Apply Filter" style="text-decoration: none;"><img class="mini-loader" height="23" src="/site_media/menu.png" width="23"></a>
     <a href="/Home/CreateNewBug/" class="m-btn purple" style="float: right" type="button" id="new_bug">Log New Bug</a>
+    <h3 style="font-size: 19px;"><a style="font-weight: bold; float:left">All Bugs</a></h3>
     <div id="sidr" class="sidr">
         <h3>Select Filters to apply</h3>
         <div style="text-align: center; margin: 12px;">
@@ -53,7 +54,7 @@
     </div>
 
 
-    <table width="100%">
+    <!--table width="100%">
         <tr>
             <td>
                 <div style="float: left">
@@ -105,7 +106,27 @@
 
             </div>
         </div>
+    </div-->
+
+
+
+    <br><br>
+
+    <div id="pageitem" align="right" style="float: right;">
+        <select id="perpageitem">
+            <option value="">Select Per Page Item</option>
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+
+        </select>
     </div>
+    <div id = "AllMSTable"></div>
+    
+    <div id="pagination_div"></div>
+
 
 
 
