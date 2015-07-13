@@ -77,6 +77,24 @@ function Suggestion(project_id,team_id){
         }
     });
 
+    $.ajax({
+        url:'Get_Filtered_Users/',
+        dataType : "json",
+        data : {
+            project_id: project_id,
+            team_id: team_id
+        },
+        success: function( json ) {
+            //if(json.length > 0)
+                //for(var i = 0; i < json.length; i++)
+                    //json[i] = json[i][0].replace(/_/g,' ')
+            $.each(json, function(i, value) {
+                //if(i == 0)return;
+                $(".users").append($('<option>').text(value[1]).attr('value', value[0]));
+            });
+        }
+    });
+
 
     $("#searchbox").select2({
         placeholder: "Search & Select Filter Here..",
@@ -540,6 +558,8 @@ function PopulateTaskInfo(task_id){
             //+ "&nbsp"
         + '</td>');*/
         $(".users").val(data['Task_Info'][0][12]);
+        $(".users option[value="+data['Task_Info'][0][12]+"]").attr('selected','selected');
+        $(".ui-combobox-input").val(data['tester']);
         $(".teams").val(data['team']);
         $("#task_info").show();
         $("#created_by").text(data['Task_Info'][0][6]);
@@ -794,6 +814,10 @@ function Submit_button_preparation(){
         if(title==""){
             alertify.set({ delay: 300000 });
             alertify.error("Title is empty!");
+        }
+        else if(newFeaturePath.indexOf("Choose")!=-1){
+            alertify.set({ delay: 300000 });
+            alertify.error("Feature is to be selected to the lowest path!");
         }
         else if(description==""){
             alertify.set({ delay: 300000 });

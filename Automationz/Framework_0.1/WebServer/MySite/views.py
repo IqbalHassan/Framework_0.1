@@ -11752,6 +11752,32 @@ def Get_Filtered_MileStone(request):
     return HttpResponse(json, content_type='application/json')
 
 
+def Get_Filtered_Users(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            project = request.GET.get(u'project_id', '')
+            team = request.GET.get(u'team_id','')
+            # print milestone
+            query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti, project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.project_id='"+project+"' and ptm.team_id='"+team+"' and ptm.team_id=ti.team_id::text"
+            results = DB.GetData(Conn, query, False)
+    json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
+
+
+def Get_Filtered_Testers(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            Conn = GetConnection()
+            project = request.GET.get(u'project_id', '')
+            team = request.GET.get(u'team_id','')
+            # print milestone
+            query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti, project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.project_id='"+project+"' and ptm.team_id='"+team+"' and ptm.team_id=ti.team_id::text and pul.user_level='assigned_tester'"
+            results = DB.GetData(Conn, query, False)
+    json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
+
+
 def get_run_objectives(request):
     if request.is_ajax():
         if request.method == 'GET':

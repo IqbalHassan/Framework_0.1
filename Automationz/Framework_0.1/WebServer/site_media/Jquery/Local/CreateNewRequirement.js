@@ -200,6 +200,10 @@ $(document).ready(function(){
             alertify.set({ delay: 300000 });
             alertify.error("Title is empty!");
         }
+        else if(newFeaturePath.indexOf("Choose")!=-1){
+            alertify.set({ delay: 300000 });
+            alertify.error("Feature is to be selected to the lowest path!");
+        }
         else if(requirement_description==""){
             alertify.set({ delay: 300000 });
             alertify.error("Description is empty!");

@@ -166,7 +166,8 @@
                                             {% endif %}
                                         </table-->
                                         <select class="users combo-box">
-                                            <option value=""></option>>
+                                            <option value=""></option>
+                                            <!--option value=""></option>
                                             {% if user_list %}
                                             {% for x in user_list %}
 	                                            {% if x.0 == tester_user_id %}
@@ -175,7 +176,7 @@
 	                                            	<option value="{{x.0}}">{{x.1}}</option>
 	                                            {% endif %}
                                             {% endfor %}
-                                            {% endif %}
+                                            {% endif %} -->
                                         </select>
                                     </td>
                                 </tr>
