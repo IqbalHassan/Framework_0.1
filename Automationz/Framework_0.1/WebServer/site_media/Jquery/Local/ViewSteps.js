@@ -62,6 +62,7 @@ function form_table(divname,column,data,total_data,type_case){
                     continue;
             }
         }
+        message += '<td><span style="cursor:pointer;" class="hint--left hint--bounce hint--rounded" data-hint="Delete this step"><i class="fa fa-trash fa-fw fa-lg"></span></td>'
         message+='</tr>';
     }
     message+='</table>';

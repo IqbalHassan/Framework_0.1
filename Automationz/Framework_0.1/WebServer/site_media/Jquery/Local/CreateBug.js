@@ -380,7 +380,9 @@ function BugSearchAuto(){
                 url:"BugSearch",
                 dataType:"json",
                 data:{
-                    term:request.term
+                    term:request.term,
+                    project_id:project_id,
+                    team_id:team_id
                 },
                 success:function(data){
                     response(data);

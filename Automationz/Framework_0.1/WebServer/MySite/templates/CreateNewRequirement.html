@@ -11,7 +11,9 @@
     </div>
     <table width="100%">
         <tr>
-            <td><input class="m-wrap m-ctrl-large" placeholder="Title of the Requirement" id="title" /></td>
+            <td><input type="hidden" id="title"><!--input class="m-wrap m-ctrl-large" placeholder="Title of the Requirement" id="title" /--></td>
+
+            <div class="modal" id="title_prompt" style="display:none;">
             <td id="relation" style="display: none">
                 <a class="m-btn purple" id="create_child" style="float: right;cursor: pointer">Create Child</a>
                 <!--a class="createnew" style="float: right">Create Parent</a-->

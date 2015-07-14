@@ -1028,7 +1028,7 @@ def Steps_List(request):
                 p_steps_list=p_steps_list[:int(test_case_per_page)]
             else:
                 p_steps_list=p_steps_list[offset:offset+int(test_case_per_page)]
-    Heading = ['Title','Description','Driver','Type','Enabled','Data Required','Always Run','Created By','Team','Test Cases']    
+    Heading = ['Title','Description','Driver','Type','Enabled','Data Required','Always Run','Created By','Team','Test Cases','']    
     results = {'Heading':Heading,'TableData':p_steps_list, 'Count': len(total_data)}
     json = simplejson.dumps(results)
     Conn.close()
@@ -4533,6 +4533,45 @@ def TestStepSearch(request):
             result_dict['id'] = test_step[0]
             # In the UI, it should be displayed as, AAA-000: Test For 'X'
             result_dict['text'] = '%s: %s' % (result_dict['id'], test_step[1])
+            results.append(result_dict)
+
+        has_next_page = data['has_next']
+
+    json = simplejson.dumps({'items': results, 'more': has_next_page})
+    
+    #json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
+
+
+def RequirementSearch(request):
+    Conn = GetConnection()
+    results = []
+    items_per_page = 10
+    has_next_page = False
+    
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        project = request.GET.get(u'project_id','')
+        team = request.GET.get(u'team_id','')
+        requested_page = int(request.GET.get(u'page', ''))
+        data = DB.GetData(
+            Conn,
+            "select requirement_id,requirement_title,status from requirements where project_id='"+project+"' and team_id='"+team+"'",
+            bList=False,
+            dict_cursor=False,
+            paginate=True,
+            page=requested_page,
+            page_limit=items_per_page,
+            order_by='requirement_id')
+        # if len(results)>0:
+        #  results.append("*Dev")
+        for test_step in data['rows']:
+            result_dict = {}
+            # AAA-000
+            result_dict['id'] = test_step[0]
+            # In the UI, it should be displayed as, AAA-000: Test For 'X'
+            result_dict['text'] = '%s: %s' % (result_dict['id'], test_step[1])
+            result_dict['status'] = test_step[2]
             results.append(result_dict)
 
         has_next_page = data['has_next']
@@ -14195,17 +14234,20 @@ def BugSearch(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
+        project_id = request.GET.get(u'project_id', '')
+        team_id = request.GET.get(u'team_id', '')
         # Ignore queries shorter than length 3
         # if len(value) > 1:
         # results = DB.GetData(Conn,"Select DISTINCT name from test_case_tag where name != 'Dependency' and name Ilike '%" + value + "%'")
         # results = DB.GetData(Conn, "Select DISTINCT tc_id from test_cases")
         results = DB.GetData(
             Conn,
-            "Select DISTINCT bug_id,bug_title from bugs where bug_id Ilike '%" +
+            "Select DISTINCT bug_id,bug_title from bugs where (bug_id Ilike '%" +
             value +
             "%' or bug_title Ilike '%" +
             value +
-            "%'",
+            "%') and project_id='"+project_id+"' and team_id='"+team_id+"'"
+            ,
             False)
 
     results = list(set(results))

@@ -21,7 +21,96 @@ var lowest_feature = 0;
 var isAtLowestFeature = false;
 
 
+var new_test_step_text = "New Requirement";
+
+
 $(document).ready(function(){
+
+    $("#title").select2({
+        placeholder: "Enter the title...",
+//      minimumInputLength: 3,
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "RequirementSearch/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': project_id,
+                    'team_id': team_id
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        createSearchChoice: function(term) {
+            return {id: new_test_step_text, text: new_test_step_text + ": " + term};
+        },
+        createSearchChoicePosition: "top",
+        formatResult: formatTestSteps
+    })
+    // Listens for changes so that we can prompt the user if they want to edit or
+    // copy existing test cases
+    .on("change", function(e) {
+//      console.log(JSON.stringify({val: e.val, added: e.added, removed: e.removed}));
+        if (e.val === new_test_step_text) {
+//          console.log("New test case is being created!");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var desc = $(this).select2("data")["text"].substr(start, length - 1);
+            $("#step_desc").val(desc);
+            $("#case_desc").val(desc);
+            $("#step_expect").val(desc);
+        } else {
+//          console.log("Existing test case has been selected.");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var title = $(this).select2("data")["text"].substr(start, length - 1);
+        
+            var step_name = $(this).val();
+            $("#step_name").val(step_name);
+            $("#title_prompt").html(
+                    '<p style="text-align: center">You have selected requirement - ' +
+                    '<span style="font-weight: bold;">' + step_name + ' - ' + title + '</span>' +
+                    '<br/> What do you want to do?' +
+                    '</p><br>' +
+                    '<div style="padding-left: 18%">' +
+                    '<a class="twitter" href="/Home/'+ project_id+'/EditRequirement/'+step_name+'">Edit Requirement</a>' +
+                    //'<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
+                    '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+                    '</div>'
+            );
+          $("#title_prompt").modal();
+          return false;
+        }
+
+    });
+
+    function formatTestSteps(step_details) {
+        var start = step_details.text.indexOf(":") + 1;
+        var length = step_details.text.length;
+        
+        var title = step_details.text.substr(start, length - 1);
+        
+        var markup =
+            '<div>' +
+            '<i class="fa fa-file-text fa-fw"></i> <span style="font-weight: bold;">' + step_details.id + '</span>' +
+            ': ' +
+            '<span><b>' + title + '</b> - ' + step_details.status + '</span>'+
+            '</div>';
+        
+        return markup;
+    }
+
 
     AutoCompleteTask();
 
@@ -169,11 +258,19 @@ $(document).ready(function(){
         $('input[name="team"]:checked').each(function(){
             team.push($(this).val());
         });*/
+
+        var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+        var length = $("#title").select2("data")["text"].length;
+        
+        var title = $("#title").select2("data")["text"].substr(start, length - 1);
+        
+
         //var priority="";
         //var priority=$('input[name="priority"]:checked').val();
         var priority=$('input[name="priority"]:checked').val();
         var milestone=$('.milestone option:selected').val();
-        var title=$('#title').val();
+        //var title=$('#title').val();
+        //var title = $('#title').select2("val");
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
         var labels=[];
@@ -196,10 +293,18 @@ $(document).ready(function(){
             bugs.push($(this).val());
         });
 
-        if(title==""){
+        if($("#title").select2("val") === "" || $("#title").select2("val") === []) {
+                //e.preventDefault();
+                alertify.set({ delay: 300000 });
+                alertify.error("Please provide the <span style='font-weight: bold;'>Requirement title</span>");
+
+                $("#title").select2("open");
+                return false;
+            }
+        /*if(title==""){
             alertify.set({ delay: 300000 });
             alertify.error("Title is empty!");
-        }
+        }*/
         else if(newFeaturePath.indexOf("Choose")!=-1){
             alertify.set({ delay: 300000 });
             alertify.error("Feature is to be selected to the lowest path!");
@@ -284,6 +389,14 @@ $(document).ready(function(){
     });
 });
 
+function DeleteFilterData(project_id,team_id){
+    $('#searchedFilter td .delete').live('click',function(){
+        $(this).parent().next().remove();
+        $(this).remove();
+        PerformSearch(project_id,team_id,test_case_per_page,test_case_page_current);
+    });
+}
+
 function PopulateReqInfo(req_id){
 
     $("#relation").show();
@@ -292,7 +405,9 @@ function PopulateReqInfo(req_id){
     });
 
     $.get("Selected_Requirement_Analaysis",{req_id : req_id},function(data) {
-        $("#title").val(data['Req_Info'][0][0]);
+        //$("#title").val(data['Req_Info'][0][0]);
+        $("#title").select2("data", {"id": req_id , "text": req_id + ": "+ data['Req_Info'][0][0]});
+        $("#title").val(req_id);
         $("#status").val(data['Req_Info'][0][1]);
         $("#description").val(data['Req_Info'][0][2]);
 

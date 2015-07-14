@@ -430,5 +430,6 @@ urlpatterns += patterns('',
     url(r'^Home/.*/Get_Filtered_Users/$', Get_Filtered_Users),
     url(r'^Home/.*/Get_Filtered_Testers/$', Get_Filtered_Testers),
     url(r'^Home/.*/Show_Bugs/$', Show_Bugs),
+    url(r'^Home/.*/RequirementSearch/$', RequirementSearch),
 )
 

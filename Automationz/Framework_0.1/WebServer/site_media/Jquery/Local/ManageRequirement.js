@@ -122,7 +122,7 @@ function form_table(divname,column,data,total_data,type_case){
     var tooltip=type_case||':)';
     var message='';
     message+= "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + total_data + " " + type_case+"</p>";
-    message+='<table class="two-column-emphasis">';
+    message+='<table class="one-column-emphasis">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
         message+='<th>'+column[i]+'</th>';
