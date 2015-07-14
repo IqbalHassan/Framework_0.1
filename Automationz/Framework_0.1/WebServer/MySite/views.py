@@ -14594,6 +14594,8 @@ def DeleteLabel(request):
     if request.is_ajax():
         if request.method == 'GET':
             label_id = request.GET.get(u'label_id', '')
+            project_id = request.GET.get(u'project_id', '')
+            team_id = request.GET.get(u'team_id', '')
             Conn = GetConnection()
             final = []
         
@@ -14603,6 +14605,11 @@ def DeleteLabel(request):
             testConnection(Conn)
             result = DB.DeleteRecord(Conn, "labels", label_id=label_id)
             tres = DB.DeleteRecord(Conn, "label_map", label_id=label_id)
+            
+            label = DB.GetData(Conn,"select label_name from labels where label_id='"+label_id+"' and project_id='"+project_id+"' and team_id='"+team_id+"'")
+            tcids = DB.GetData(Conn,"select distinct tc_id from test_case_tag where name='"+label+"' and property='Label' and tc_id in (select distinct tc_id from test_case_tag where name='"+project_id+"' and property='Project') and tc_id in (select distinct tc_id from test_case_tag where name='"+team_id+"' and property='Team')",False)
+            for each in tcids:
+                tres = DB.DeleteRecord(Conn, "test_case_tag", tc_id=each.strip(),name=label[0],property='Label')
             #result = DB.InsertNewRecordInToTable(Conn, "bugs", bug_id=bug_id, bug_title=title, bug_description=description, bug_startingdate=start_date, bug_endingdate=end_date,bug_priority=priority, bug_milestone=milestone, bug_createdby=creator, bug_creationdate=now, bug_modifiedby=user_name, bug_modifydate=now, status=status, tester=testers, team_id=team, project_id=project_id)
             if result:
                 # add this line in the code from LogModule import PassMessage

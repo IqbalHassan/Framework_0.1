@@ -129,7 +129,7 @@ function form_table(divname,column,data,total_data,type_case){
             alertify.confirm(message, function (e) {
                 if (e) {
                     $.get("DeleteLabel/",{
-                        label_id:label_id
+                        label_id:label_id, project_id:project_id, team_id:team_id
                     },function(data){
                         alertify.set({ delay: 300000 });
                         alertify.success("Label Deleted!");
