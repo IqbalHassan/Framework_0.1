@@ -9,6 +9,8 @@ var isAtLowestFeature = false;
 var project_id= $.session.get('project_id');
 var team_id= $.session.get('default_team_identity');
 
+var new_test_step_text = "New Bug";
+
 $(document).ready(function(){
 
     $.ajax({
@@ -142,7 +144,12 @@ $(document).ready(function(){
         //var priority= 'P' + $('#priority').val();
         var priority=$('input[name="priority"]:checked').val();
         var milestone=$(".milestone").val();
-        var title=$('#title').val();
+
+        var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+        var length = $("#title").select2("data")["text"].length;
+        
+        var title = $("#title").select2("data")["text"].substr(start, length - 1);
+        //var title=$('#title').val();
         //var creator = $("#created_by").val();
         //var testers= $("#tester").text();
         var testers = "";
@@ -172,9 +179,17 @@ $(document).ready(function(){
         var newFeaturePath = $("#featuregroup select.feature:last-child").attr("data-level").replace(/ /g,'_') + $("#featuregroup select.feature:last-child option:selected").val().replace(/ /g,'_');
 
 
-        if(title==""){
+        /*if(title==""){
             alertify.set({ delay: 300000 });
             alertify.error("Title is empty!");
+        }*/
+        if($("#title").select2("val") === "" || $("#title").select2("val") === []) {
+                //e.preventDefault();
+                alertify.set({ delay: 300000 });
+                alertify.error("Please provide the <span style='font-weight: bold;'>Bug title</span>");
+
+                $("#title").select2("open");
+                return false;
         }
         else if(bug_desc==""){
             alertify.set({ delay: 300000 });
@@ -374,7 +389,90 @@ function recursivelyAddFeature(_this){
 
 
 function BugSearchAuto(){
-    $('#title').autocomplete({
+    $("#title").select2({
+        placeholder: "Enter the title...",
+//      minimumInputLength: 3,
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "BugSearch_Drop/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': project_id,
+                    'team_id': team_id
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        createSearchChoice: function(term) {
+            return {id: new_test_step_text, text: new_test_step_text + ": " + term};
+        },
+        createSearchChoicePosition: "top",
+        formatResult: formatTestSteps
+    })
+    // Listens for changes so that we can prompt the user if they want to edit or
+    // copy existing test cases
+    .on("change", function(e) {
+//      console.log(JSON.stringify({val: e.val, added: e.added, removed: e.removed}));
+        if (e.val === new_test_step_text) {
+//          console.log("New test case is being created!");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var desc = $(this).select2("data")["text"].substr(start, length - 1);
+            
+        } else {
+//          console.log("Existing test case has been selected.");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var title = $(this).select2("data")["text"].substr(start, length - 1);
+        
+            var step_name = $(this).val();
+            //$("#step_name").val(step_name);
+            $("#title_prompt").html(
+                    '<p style="text-align: center">You have selected bug - ' +
+                    '<span style="font-weight: bold;">' + step_name + ' - ' + title + '</span>' +
+                    '<br/> What do you want to do?' +
+                    '</p><br>' +
+                    '<div style="padding-left: 23%">' +
+                    '<a class="twitter" href="/Home/EditBug/'+step_name+'">Edit Bug</a>' +
+                    //'<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
+                    '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+                    '</div>'
+            );
+          $("#title_prompt").modal();
+          return false;
+        }
+
+    });
+
+    function formatTestSteps(step_details) {
+        var start = step_details.text.indexOf(":") + 1;
+        var length = step_details.text.length;
+        
+        var title = step_details.text.substr(start, length - 1);
+        
+        var markup =
+            '<div>' +
+            '<i class="fa fa-file-text fa-fw"></i> <span style="font-weight: bold;">' + step_details.id + '</span>' +
+            ': ' +
+            '<span><b>' + title + '</b> - ' + step_details.status + '</span>'+
+            '</div>';
+        
+        return markup;
+    }
+
+    /*$('#title').autocomplete({
         source:function(request,response){
             $.ajax({
                 url:"BugSearch",
@@ -405,12 +503,14 @@ function BugSearchAuto(){
             .data( "ui-autocomplete-item", item )
             .append( "<a>" + item[0] +"<strong> - " + item[1] + "</strong></a>" )
             .appendTo( ul );
-    };
+    };*/
 }
 
 function PopulateBugInfo(bug_id){
     $.get("Selected_BugID_Analaysis",{Selected_Bug_Analysis : bug_id},function(data){
-        $("#title").val(data['Bug_Info'][0][1]);
+        //$("#title").val(data['Bug_Info'][0][1]);
+        $("#title").select2("data", {"id": bug_id , "text": bug_id + ": "+ data['Bug_Info'][0][1]});
+        $("#title").val(bug_id);
         $("#bug_desc").val(data['Bug_Info'][0][2]);
         $("#start_date").val(data['Bug_Info'][0][3]);
         $("#end_date").val(data['Bug_Info'][0][4]);

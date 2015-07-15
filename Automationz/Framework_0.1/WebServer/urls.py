@@ -432,5 +432,6 @@ urlpatterns += patterns('',
     url(r'^Home/.*/Show_Bugs/$', Show_Bugs),
     url(r'^Home/.*/RequirementSearch/$', RequirementSearch),
     url(r'^Home/.*/TaskSearch/$', TaskSearch),
+    url(r'^Home/.*/BugSearch_Drop/$', BugSearch_Drop),
 )
 

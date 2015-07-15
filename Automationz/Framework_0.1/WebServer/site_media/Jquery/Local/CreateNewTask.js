@@ -73,7 +73,7 @@ $(document).ready(function(){
                     '<span style="font-weight: bold;">' + step_name + ' - ' + title + '</span>' +
                     '<br/> What do you want to do?' +
                     '</p><br>' +
-                    '<div style="padding-left: 18%">' +
+                    '<div style="padding-left: 22%">' +
                     '<a class="twitter" href="/Home/'+ project_id+'/EditTask/'+step_name+'">Edit Task</a>' +
                     //'<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
                     '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
