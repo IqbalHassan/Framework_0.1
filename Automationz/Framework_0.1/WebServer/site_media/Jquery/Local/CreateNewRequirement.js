@@ -66,9 +66,7 @@ $(document).ready(function(){
             var length = $(this).select2("data")["text"].length;
             
             var desc = $(this).select2("data")["text"].substr(start, length - 1);
-            $("#step_desc").val(desc);
-            $("#case_desc").val(desc);
-            $("#step_expect").val(desc);
+            
         } else {
 //          console.log("Existing test case has been selected.");
             var start = $(this).select2("data")["text"].indexOf(":") + 1;
@@ -77,7 +75,7 @@ $(document).ready(function(){
             var title = $(this).select2("data")["text"].substr(start, length - 1);
         
             var step_name = $(this).val();
-            $("#step_name").val(step_name);
+            //$("#step_name").val(step_name);
             $("#title_prompt").html(
                     '<p style="text-align: center">You have selected requirement - ' +
                     '<span style="font-weight: bold;">' + step_name + ' - ' + title + '</span>' +

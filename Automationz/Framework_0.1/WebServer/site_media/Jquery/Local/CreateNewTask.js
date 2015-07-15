@@ -13,7 +13,94 @@ var test_case_page_current=1;
 var project_id = $.session.get('project_id');
 var team_id = $.session.get('default_team_identity');
 var user = $.session.get('fullname');
+
+var new_test_step_text = "New Task";
+
 $(document).ready(function(){
+
+    $("#title").select2({
+        placeholder: "Enter the title...",
+//      minimumInputLength: 3,
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "TaskSearch/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': project_id,
+                    'team_id': team_id
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        createSearchChoice: function(term) {
+            return {id: new_test_step_text, text: new_test_step_text + ": " + term};
+        },
+        createSearchChoicePosition: "top",
+        formatResult: formatTestSteps
+    })
+    // Listens for changes so that we can prompt the user if they want to edit or
+    // copy existing test cases
+    .on("change", function(e) {
+//      console.log(JSON.stringify({val: e.val, added: e.added, removed: e.removed}));
+        if (e.val === new_test_step_text) {
+//          console.log("New test case is being created!");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var desc = $(this).select2("data")["text"].substr(start, length - 1);
+            
+        } else {
+//          console.log("Existing test case has been selected.");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var title = $(this).select2("data")["text"].substr(start, length - 1);
+        
+            var step_name = $(this).val();
+            //$("#step_name").val(step_name);
+            $("#title_prompt").html(
+                    '<p style="text-align: center">You have selected task - ' +
+                    '<span style="font-weight: bold;">' + step_name + ' - ' + title + '</span>' +
+                    '<br/> What do you want to do?' +
+                    '</p><br>' +
+                    '<div style="padding-left: 18%">' +
+                    '<a class="twitter" href="/Home/'+ project_id+'/EditTask/'+step_name+'">Edit Task</a>' +
+                    //'<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
+                    '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+                    '</div>'
+            );
+          $("#title_prompt").modal();
+          return false;
+        }
+
+    });
+
+    function formatTestSteps(step_details) {
+        var start = step_details.text.indexOf(":") + 1;
+        var length = step_details.text.length;
+        
+        var title = step_details.text.substr(start, length - 1);
+        
+        var markup =
+            '<div>' +
+            '<i class="fa fa-file-text fa-fw"></i> <span style="font-weight: bold;">' + step_details.id + '</span>' +
+            ': ' +
+            '<span><b>' + title + '</b> - ' + step_details.status + '</span>'+
+            '</div>';
+        
+        return markup;
+    }
+
 
     $('#project_id').text($.session.get('project_id'));
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
@@ -517,7 +604,9 @@ function PopulateTaskInfo(task_id){
 
     $.get("Selected_TaskID_Analaysis",{Selected_Task_Analysis : task_id},function(data){
 
-        $("#title").val(data['Task_Info'][0][0]);
+        //$("#title").val(data['Task_Info'][0][0]);
+        $("#title").select2("data", {"id": task_id , "text": task_id + ": "+ data['Task_Info'][0][0]});
+        $("#title").val(task_id);
 
         $("#status").val(data['Task_Info'][0][11]);
         /*if(data['Task_Info'][0][11]=="not_started")
@@ -751,8 +840,12 @@ function Submit_button_preparation(){
             return false;
         }*/
 
-        var title=$('#title').val().trim();
+        //var title=$('#title').val().trim();
 
+        var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+        var length = $("#title").select2("data")["text"].length;
+        
+        var title = $("#title").select2("data")["text"].substr(start, length - 1);
         
         /*if($("#section-flag").hasClass("unfilled")){
             alertify.error("You need to choose a section!");
@@ -811,10 +904,18 @@ function Submit_button_preparation(){
             bugs.push($(this).val());
         });
 
-        if(title==""){
+        if($("#title").select2("val") === "" || $("#title").select2("val") === []) {
+                //e.preventDefault();
+                alertify.set({ delay: 300000 });
+                alertify.error("Please provide the <span style='font-weight: bold;'>Task title</span>");
+
+                $("#title").select2("open");
+                return false;
+        }
+        /*if(title==""){
             alertify.set({ delay: 300000 });
             alertify.error("Title is empty!");
-        }
+        }*/
         else if(newFeaturePath.indexOf("Choose")!=-1){
             alertify.set({ delay: 300000 });
             alertify.error("Feature is to be selected to the lowest path!");

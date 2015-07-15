@@ -9,8 +9,10 @@
 <div align="left">
     <h3 style="font-size: 19px;"><a style="font-weight: bold" id="header">CreateTask</a></h3>
 </div>
-<input class="textbox" placeholder="Title of the Task" id="title" style="float: left"/>
-<div id="relation" style="display: none">
+<!--input class="textbox" placeholder="Title of the Task" id="title" style="float: left"/-->
+<input type="hidden" id="title">
+<div class="modal" id="title_prompt" style="display:none;"></div>
+<div id="relation" style="display: none"></div>
     <a id="create_child" class="m-btn purple" style="float: right;cursor: pointer">Create Child</a>
     <!--a class="createnew" style="float: right">Create Parent</a-->
 </div>

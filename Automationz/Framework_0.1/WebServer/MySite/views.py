@@ -4582,6 +4582,45 @@ def RequirementSearch(request):
     return HttpResponse(json, content_type='application/json')
 
 
+def TaskSearch(request):
+    Conn = GetConnection()
+    results = []
+    items_per_page = 10
+    has_next_page = False
+    
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        project = request.GET.get(u'project_id','')
+        team = request.GET.get(u'team_id','')
+        requested_page = int(request.GET.get(u'page', ''))
+        data = DB.GetData(
+            Conn,
+            "select tasks_id,tasks_title,status from tasks where project_id='"+project+"' and team_id='"+team+"'",
+            bList=False,
+            dict_cursor=False,
+            paginate=True,
+            page=requested_page,
+            page_limit=items_per_page,
+            order_by='tasks_id') 
+        # if len(results)>0:
+        #  results.append("*Dev")
+        for test_step in data['rows']:
+            result_dict = {}
+            # AAA-000
+            result_dict['id'] = test_step[0]
+            # In the UI, it should be displayed as, AAA-000: Test For 'X'
+            result_dict['text'] = '%s: %s' % (result_dict['id'], test_step[1])
+            result_dict['status'] = test_step[2]
+            results.append(result_dict)
+
+        has_next_page = data['has_next']
+
+    json = simplejson.dumps({'items': results, 'more': has_next_page})
+    
+    #json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
+
+
 
 def SearchTestCase(request):
     Conn = GetConnection()
@@ -11857,7 +11896,7 @@ def Get_Filtered_Users(request):
             project = request.GET.get(u'project_id', '')
             team = request.GET.get(u'team_id','')
             # print milestone
-            query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti, project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.project_id='"+project+"' and ptm.team_id='"+team+"' and ptm.team_id=ti.team_id::text"
+            query = "select distinct pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti, project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.project_id='"+project+"' and ptm.team_id='"+team+"' and ptm.team_id=ti.team_id::text"
             results = DB.GetData(Conn, query, False)
     json = simplejson.dumps(results)
     return HttpResponse(json, content_type='application/json')
@@ -11870,7 +11909,7 @@ def Get_Filtered_Testers(request):
             project = request.GET.get(u'project_id', '')
             team = request.GET.get(u'team_id','')
             # print milestone
-            query = "select pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti, project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.project_id='"+project+"' and ptm.team_id='"+team+"' and ptm.team_id=ti.team_id::text and pul.user_level='assigned_tester'"
+            query = "select distinct pul.user_id,user_names,user_level from permitted_user_list pul,team_info ti, project_team_map ptm where pul.user_id=cast(ti.user_id as int) and ptm.project_id='"+project+"' and ptm.team_id='"+team+"' and ptm.team_id=ti.team_id::text and pul.user_level='assigned_tester'"
             results = DB.GetData(Conn, query, False)
     json = simplejson.dumps(results)
     return HttpResponse(json, content_type='application/json')
