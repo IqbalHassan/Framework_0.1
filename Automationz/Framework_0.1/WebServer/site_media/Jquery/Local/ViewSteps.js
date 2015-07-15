@@ -41,7 +41,7 @@ function form_table(divname,column,data,total_data,type_case){
     var tooltip=type_case||':)';
     var message='';
     message+= "<p class='Text hint--right hint--bounce hint--rounded' data-hint='" + tooltip + "' style='color:#0000ff; font-size:14px; padding-left: 12px;'>" + total_data + " " + type_case+"</p>";
-    message+='<table class="two-column-emphasis">';
+    message+='<table class="two-column-emphasis" id="table_vai_table">';
     message+='<tr>';
     for(var i=0;i<column.length;i++){
         message+='<th>'+column[i]+'</th>';
@@ -67,6 +67,52 @@ function form_table(divname,column,data,total_data,type_case){
     }
     message+='</table>';
     $('#'+divname).html(message);
+
+    $("#table_vai_table tr td:nth-child(11)").each(function(){
+        $(this).on('click',function(){
+            var stepname = $(this).parent().find('td:first-child').text().trim();
+            var hobe = $(this).parent().find('td:nth-child(10)').text().trim();
+            //reset();
+            if(hobe!="0"){
+                //alertify.set({ delay: 300000 });
+                alertify.log("This step cannot be deleted! Its being used in "+ hobe + " testcase(s).","",0);
+            }
+            else{
+                var message='';
+                message+='<div>';
+                message+='<p style="font-size:140%">Are you sure to delete step <b>' + stepname + '</b>?</p>';
+                message+='<br/>';
+                message+='</div>';
+                alertify.confirm(message, function (e) {
+                    if (e) {
+                        $.ajax({
+                            url:"TestStep_Delete",
+                            dataType:"json",
+                            data:{term:stepname,project_id:project_id,team_id:team_id},
+                            success:function(data){
+                                var count=data[0];
+                                console.log(count);
+                                if(count>0){
+                                    alertify.log("This test step can't be deleted. There are "+count+" test cases using this test step '"+name+"'","",0);
+                                    //$("#delete_error").html("<p><b>This test step can't be deleted. There are "+count+" test cases using this test step '"+name+"'</b></p>");
+                                }
+                                if(count==0){
+                                    alertify.set({ delay: 300000 });
+                                    alertify.success("Test Step '"+stepname+"' deleted successfully!");
+                                    get_steps(project_id, team_id,test_case_per_page,test_case_page_current);
+                                }
+                            }
+                        });
+                        
+                    } else {
+                        alertify.set({ delay: 300000 });
+                        alertify.error("You've clicked Cancel");
+                    }
+                });
+                return false;
+            }
+       });
+    });
 }
 
 function get_steps(project_id,team_id,test_case_per_page,test_case_page_current){

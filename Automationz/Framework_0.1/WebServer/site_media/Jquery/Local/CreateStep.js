@@ -522,9 +522,9 @@ function get_cases(UserText,itemPerPage,PageCurrent){
     },function(data) {
             if (data['TableData'].length == 0)
             {
-                alertify.log("Sorry There is No Test Cases For Selected Query!","",0);
+                alertify.log("Sorry! There is No Test Cases For Selected Query!","",0);
                 $('#search_result').children().remove();
-                $('#search_result').append("<p class = 'Text'><b>Sorry There is No Test Cases For Selected Query!!!</b></p>");
+                $('#search_result').append("<p class = 'Text'><b>Sorry! There is No Test Cases For Selected Query!!!</b></p>");
                 //$("#DepandencyCheckboxes").children().remove();
                 //$('#DepandencyCheckboxes').append("<p class = 'Text'><b>No Depandency Found</b></p>");
             }
@@ -872,7 +872,7 @@ function recursivelyAddFeature(_this){
 function submit_step(){
 
     $("#submit_button").live('click',function(e){
-        if ($("#step_name").select2("val") === "" || $("#step_name").select2("val") === []) {
+        if($("#step_name").select2("val") === "" || $("#step_name").select2("val") === []) {
                 e.preventDefault();
                 alertify.set({ delay: 300000 });
                 alertify.error("Please provide the <span style='font-weight: bold;'>Test Step title</span>");

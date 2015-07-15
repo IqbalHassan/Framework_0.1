@@ -7588,16 +7588,18 @@ def TestStep_Delete(request):
     results = []
     if request.method == "GET":
         value = request.GET.get(u'term', '')
+        project_id = request.GET.get(u'project_id', '')
+        team_id = request.GET.get(u'team_id', '')
         results = DB.GetData(
             Conn,
             "select count(*) from test_steps where step_id=(select step_id from test_steps_list where stepname='" +
             value +
-            "')")
+            "' and project_id='"+project_id+"' and team_id='"+team_id+"')")
         if(results[0] == 0):
             testrunenv = DB.DeleteRecord(
                 Conn,
                 "test_steps_list",
-                stepname=value)
+                stepname=value,project_id=project_id,team_id=team_id)
     json = simplejson.dumps(results)
     return HttpResponse(json, content_type='application/json')
 

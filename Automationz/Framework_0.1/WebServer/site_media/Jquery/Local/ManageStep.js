@@ -535,14 +535,14 @@ function populate_footer_div(){
     $("#get_cases").click(function(){
         var UserText=$("#step_name").val();
         itemPerPage = $("#perpageitem").val();
-        get_cases(UserText,itemPerPage, PageCurrent);
+        get_cases(UserText,project_id,team_id,itemPerPage, PageCurrent);
         $('#perpageitem').on('change',function(){
             if($(this).val()!=''){
                 itemPerPage=$(this).val();
                 current_page=1;
                 $('#pagination_tab').pagination('destroy');
                 window.location.hash = "#1";
-                get_cases(UserText,itemPerPage, PageCurrent);
+                get_cases(UserText,project_id,team_id,itemPerPage, PageCurrent);
             }
         });
 
@@ -595,7 +595,7 @@ function populate_footer_div(){
         $.ajax({
             url:"TestStep_Delete",
             dataType:"json",
-            data:{term:name},
+            data:{term:name,project_id:project_id,team_id:team_id},
             success:function(data){
                 var count=data[0];
                 console.log(count);
@@ -612,8 +612,28 @@ function populate_footer_div(){
         });
     });
 }
-function get_cases(UserText,itemPerPage,PageCurrent){
-    $.get("TestCase_Results",{Query: UserText,itemPerPage:itemPerPage,PageCurrent:PageCurrent},function(data) {
+function implementDropDown(wheretoplace){
+    $(wheretoplace+" tr td:nth-child(1)").css({'color' : 'blue','cursor' : 'pointer'});
+    $(wheretoplace+" tr td:nth-child(1)").each(function() {
+        var ID=$(this).closest('tr').find('td:nth-child(1)').text().trim();
+        var name=$(this).text().trim();
+        $(this).html('<div id="'+ID+'name">'+name+'</div><div id="'+ID+'detail" style="display:none;"></div>');
+        $.get("TestStepWithTypeInTable",{RunID: ID},function(data) {
+            var data_list=data['Result'];
+            var column=data['column'];
+            ResultTable('#'+ID+'detail',column,data_list,"");
+            $('#'+ID+'detail tr').each(function(){
+                $(this).css({'textAlign':'left'});
+            });
+        });
+        $(this).live('click',function(){
+            $('#'+ID+'detail').slideToggle("slow");
+        });
+    });
+}
+
+function get_cases(UserText,project_id,team_id,itemPerPage,PageCurrent){
+    $.get("TestCase_Results",{Query: UserText,test_case_per_page:itemPerPage,test_case_page_current:PageCurrent,project_id:project_id,team_id:team_id,test_status_request:true},function(data) {
 
             if (data['TableData'].length == 0)
             {
@@ -638,7 +658,7 @@ function get_cases(UserText,itemPerPage,PageCurrent){
                     hrefTextPrefix:'#',
                     onPageClick:function(PageNumber){
                         //PerformSearch(project_id,team_id,user_text,itemPerPage,PageNumber);
-                        get_cases(UserText,itemPerPage,PageNumber);
+                        get_cases(UserText,project_id,team_id,itemPerPage,PageNumber);
                     }
                 });
 
