@@ -4661,6 +4661,46 @@ def BugSearch_Drop(request):
 
 
 
+def MilestoneSearch(request):
+    Conn = GetConnection()
+    results = []
+    items_per_page = 10
+    has_next_page = False
+    
+    if request.method == "GET":
+        value = request.GET.get(u'term', '')
+        project = request.GET.get(u'project_id','')
+        team = request.GET.get(u'team_id','')
+        requested_page = int(request.GET.get(u'page', ''))
+        data = DB.GetData(
+            Conn,
+            "select mi.name,mi.status from milestone_info mi, team_wise_settings tws where mi.id=tws.parameters and tws.type='Milestone' and tws.project_id='"+project+"' and tws.team_id="+team+"",
+            bList=False,
+            dict_cursor=False,
+            paginate=True,
+            page=requested_page,
+            page_limit=items_per_page,
+            order_by='name') 
+        # if len(results)>0:
+        #  results.append("*Dev")
+        for test_step in data['rows']:
+            result_dict = {}
+            # AAA-000
+            result_dict['id'] = test_step[0]
+            # In the UI, it should be displayed as, AAA-000: Test For 'X'
+            result_dict['text'] = '%s: %s' % (result_dict['id'], test_step[1])
+            #result_dict['status'] = test_step[2]
+            results.append(result_dict)
+
+        has_next_page = data['has_next']
+
+    json = simplejson.dumps({'items': results, 'more': has_next_page})
+    
+    #json = simplejson.dumps(results)
+    return HttpResponse(json, content_type='application/json')
+
+
+
 def SearchTestCase(request):
     Conn = GetConnection()
     results = []

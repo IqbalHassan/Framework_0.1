@@ -4,6 +4,7 @@
 var operation = 1;
 var project_id= $.session.get('project_id');
 var team_id= $.session.get('default_team_identity');
+var new_test_step_text = "New Milestone";
 
 $(document).ready(function(){
    //MileStoneTab();
@@ -17,7 +18,7 @@ $(document).ready(function(){
     console.log("Edit Index:"+indx);
     if(indx!=-1){
         var referred_ms=URL.substring((URL.lastIndexOf("EditMilestone/")+("EditMilestone/").length),(URL.length-1));
-
+        
         PopulateMSInfo(referred_ms);
         operation=2;
     }
@@ -102,6 +103,8 @@ function PopulateMSInfo(value){
     $("#renamebox").show();
     $.get("GetMileStoneByID",{term : value.trim(),project_id:project_id,team_id:team_id},function(data)
     {
+        $("#msinput").select2("data", {"id": "Edit milestone", "text": "Edit milestone" + ": " + data[0][1]});
+        //$("#msinput").val(referred_ms);
         $("#msinput").val(data[0][1]);
         $("#status").val(data[0][4]);
 
@@ -267,7 +270,97 @@ function New_UI(){
     $('#starting_date').datepicker({ dateFormat: "yy-mm-dd" });
     $('#ending_date').datepicker({ dateFormat: "yy-mm-dd" });
 
-    $('#msinput').autocomplete({
+    $("#msinput").select2({
+        placeholder: "Enter the title...",
+//      minimumInputLength: 3,
+        width: 460,
+        quietMillis: 250,
+        ajax: {
+            url: "MilestoneSearch/",
+            dataType: "json",
+            queitMillis: 250,
+            data: function(term, page) {
+                return {
+                    'term': term,
+                    'page': page,
+                    'project_id': project_id,
+                    'team_id': team_id
+                };
+            },
+            results: function(data, page) {
+                return {
+                    results: data.items,
+                    more: data.more
+                }
+            }
+        },
+        createSearchChoice: function(term) {
+            return {id: new_test_step_text, text: new_test_step_text + ": " + term};
+        },
+        createSearchChoicePosition: "top",
+        formatResult: formatTestSteps
+    })
+    // Listens for changes so that we can prompt the user if they want to edit or
+    // copy existing test cases
+    .on("change", function(e) {
+//      console.log(JSON.stringify({val: e.val, added: e.added, removed: e.removed}));
+        if (e.val === new_test_step_text) {
+//          console.log("New test case is being created!");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var desc = $(this).select2("data")["text"].substr(start, length - 1);
+            
+        } else {
+//          console.log("Existing test case has been selected.");
+            var start = $(this).select2("data")["text"].indexOf(":") + 1;
+            var length = $(this).select2("data")["text"].length;
+            
+            var status = $(this).select2("data")["text"].substr(start, length - 1);
+        
+            var step_name = $(this).val();
+            //var msid = "";
+            $.get("GetMileStoneID",{term : step_name.trim(),project_id:project_id, team_id:team_id},function(data)
+            {
+                //var location='/Home/EditMilestone/'+data+'/';
+                //window.location=location;
+                $("#title_prompt").html(
+                    '<p style="text-align: center">You have selected milestone - ' +
+                    '<span style="font-weight: bold;">' + step_name + '</span>' +
+                    '<br/> What do you want to do?' +
+                    '</p><br>' +
+                    '<div style="padding-left: 18%">' +
+                    '<a class="twitter" href="/Home/EditMilestone/'+data+'">Edit Milestone</a>' +
+                    //'<a class="twitter" href="/Home/ManageTestCases/CreateNew/'+tc_id+'">Copy</a>' +
+                    '<a class="dribble" href="#" rel="modal:close">Cancel</a>' +
+                    '</div>'
+                );
+              $("#title_prompt").modal();
+              return false;
+
+            });
+            //$("#step_name").val(step_name);
+            
+        }
+
+    });
+
+    function formatTestSteps(step_details) {
+        var start = step_details.text.indexOf(":") + 1;
+        var length = step_details.text.length;
+        
+        var status = step_details.text.substr(start, length - 1);
+        var markup =
+            '<div>' +
+            '<i class="fa fa-file-text fa-fw"></i> <span style="font-weight: bold;">' + step_details.id + '</span>' +
+            ': ' +
+            '<span>' + status + '</span>'
+            '</div>';
+        
+        return markup;
+    }
+
+    /*$('#msinput').autocomplete({
         source:function(request,response){
             if($('#operation_milestone option:selected').val()!="0"){
                 $.ajax({
@@ -317,7 +410,7 @@ function New_UI(){
                     $('a[value="over_due"]').addClass('selected')
                 }*/
 
-                $("#msinput2").val(ui.item[0]);
+                /*$("#msinput2").val(ui.item[0]);
                 $("#ms_desc").val(ui.item[2]);
                 $("#starting_date").val(ui.item[3]);
                 $("#ending_date").val(ui.item[4]);
@@ -344,7 +437,7 @@ function New_UI(){
                 });*/
 
 
-                Other_Info(value);
+                /*Other_Info(value);
 
                 return false;
             }
@@ -354,7 +447,7 @@ function New_UI(){
             .data( "ui-autocomplete-item", item )
             .append( "<a><strong>" + item[0] + "</strong> - "+item[1] +"</a>" )
             .appendTo( ul );
-    };
+    };*/
 
 
     $('#msinput2').autocomplete({
@@ -409,10 +502,33 @@ function New_UI(){
 
        // var operation=$('#operation_milestone option:selected').val();
         if(operation==1){
-            var new_name=$('#msinput').val();
+            var start = $("#msinput").select2("data")["text"].indexOf(":") + 1;
+            var length = $("#msinput").select2("data")["text"].length;
+            
+            var new_name = $("#msinput").select2("data")["text"].substr(start, length - 1);
+
+            //var new_name=$('#msinput').val();
             var start_date = $("#starting_date").val();
             var end_date = $("#ending_date").val();
             created_by = $.session.get('fullname');
+
+            if($("#msinput").select2("val") === "" || $("#msinput").select2("val") === []) {
+                e.preventDefault();
+                alertify.set({ delay: 300000 });
+                alertify.error("Please provide the <span style='font-weight: bold;'>Milestone title</span>");
+
+                $("#msinput").select2("open");
+
+//                setTimeout(function() {
+//                    $("#titlebox").css({
+//                        "border-color": "",
+//                        "box-shadow": ""
+//                    });
+//                }, 1500);
+
+                return false;
+            }
+
 
         }
         else if(operation==2){
