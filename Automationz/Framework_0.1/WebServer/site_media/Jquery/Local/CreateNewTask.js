@@ -953,9 +953,9 @@ function Submit_button_preparation(){
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
                 'labels':labels.join("|"),
-                test_cases:test_cases.join("|"),
-                requirements:requirements.join("|"),
-                bugs:bugs.join("|")
+                'test_cases':test_cases.join("|"),
+                'requirements':requirements.join("|"),
+                'bugs':bugs.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
@@ -984,9 +984,9 @@ function Submit_button_preparation(){
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
                 'labels':labels.join("|"),
-                test_cases:test_cases.join("|"),
-                requirements:requirements.join("|"),
-                bugs:bugs.join("|")
+                'test_cases':test_cases.join("|"),
+                'requirements':requirements.join("|"),
+                'bugs':bugs.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
@@ -1014,9 +1014,9 @@ function Submit_button_preparation(){
                 'feature_path':newFeaturePath,
                 'user_name':$.session.get('fullname'),
                 'labels':labels.join("|"),
-                test_cases:test_cases.join("|"),
-                requirements:requirements.join("|"),
-                bugs:bugs.join("|")
+                'test_cases':test_cases.join("|"),
+                'requirements':requirements.join("|"),
+                'bugs':bugs.join("|")
 
             },function(data){
                 window.location=('/Home/'+ $.session.get('project_id')+'/EditTask/'+data);
