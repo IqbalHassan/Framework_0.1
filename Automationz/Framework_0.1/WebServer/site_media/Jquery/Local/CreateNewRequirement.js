@@ -257,10 +257,7 @@ $(document).ready(function(){
             team.push($(this).val());
         });*/
 
-        var start = $("#title").select2("data")["text"].indexOf(":") + 1;
-        var length = $("#title").select2("data")["text"].length;
-        
-        var title = $("#title").select2("data")["text"].substr(start, length - 1);
+
         
 
         //var priority="";
@@ -320,6 +317,11 @@ $(document).ready(function(){
             alertify.error("Please select a milestone!");
         }
         else if(operation==1){
+            var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+            var length = $("#title").select2("data")["text"].length;
+            
+            var title = $("#title").select2("data")["text"].substr(start, length - 1);
+
             $.get("SubmitCreateRequirement/",{
                 'title':title.trim(),
                 'description':requirement_description.trim(),
@@ -341,6 +343,11 @@ $(document).ready(function(){
             });
         }
         else if(operation==2){
+            var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+            var length = $("#title").select2("data")["text"].length;
+            
+            var title = $("#title").select2("data")["text"].substr(start, length - 1);
+
             $.get("SubmitEditRequirement/",{
                 'req_id':req_id,
                 'title':title.trim(),
@@ -363,6 +370,11 @@ $(document).ready(function(){
             });
         }
         else if(operation==3){
+            var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+            var length = $("#title").select2("data")["text"].length;
+            
+            var title = $("#title").select2("data")["text"].substr(start, length - 1);
+            
             $.get("SubmitChildRequirement/",{
                 'title':title.trim(),
                 'description':requirement_description.trim(),

@@ -842,10 +842,6 @@ function Submit_button_preparation(){
 
         //var title=$('#title').val().trim();
 
-        var start = $("#title").select2("data")["text"].indexOf(":") + 1;
-        var length = $("#title").select2("data")["text"].length;
-        
-        var title = $("#title").select2("data")["text"].substr(start, length - 1);
         
         /*if($("#section-flag").hasClass("unfilled")){
             alertify.error("You need to choose a section!");
@@ -937,6 +933,11 @@ function Submit_button_preparation(){
             alertify.error("Please select a milestone!");
         }
         else if(operation==1){
+            var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+            var length = $("#title").select2("data")["text"].length;
+        
+            var title = $("#title").select2("data")["text"].substr(start, length - 1);
+
             $.get('SubmitNewTask/',{
                 'title':title,
                 'status':status,
@@ -962,6 +963,11 @@ function Submit_button_preparation(){
             });
         }
         else if(operation==2){
+            var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+            var length = $("#title").select2("data")["text"].length;
+        
+            var title = $("#title").select2("data")["text"].substr(start, length - 1);
+
             $.get('SubmitEditedTask/',{
                 'task_id':task_id,
                 'title':title,
@@ -988,6 +994,11 @@ function Submit_button_preparation(){
             });
         }
         else if(operation==3){
+            var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+            var length = $("#title").select2("data")["text"].length;
+        
+            var title = $("#title").select2("data")["text"].substr(start, length - 1);
+
             $.get('SubmitChildTask/',{
                 'title':title,
                 'status':status,

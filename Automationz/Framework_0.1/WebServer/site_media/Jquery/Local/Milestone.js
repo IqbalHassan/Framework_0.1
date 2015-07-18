@@ -502,10 +502,7 @@ function New_UI(){
 
        // var operation=$('#operation_milestone option:selected').val();
         if(operation==1){
-            var start = $("#msinput").select2("data")["text"].indexOf(":") + 1;
-            var length = $("#msinput").select2("data")["text"].length;
             
-            var new_name = $("#msinput").select2("data")["text"].substr(start, length - 1);
 
             //var new_name=$('#msinput').val();
             var start_date = $("#starting_date").val();
@@ -513,7 +510,7 @@ function New_UI(){
             created_by = $.session.get('fullname');
 
             if($("#msinput").select2("val") === "" || $("#msinput").select2("val") === []) {
-                e.preventDefault();
+                //e.preventDefault();
                 alertify.set({ delay: 300000 });
                 alertify.error("Please provide the <span style='font-weight: bold;'>Milestone title</span>");
 
@@ -528,6 +525,11 @@ function New_UI(){
 
                 return false;
             }
+
+            var start = $("#msinput").select2("data")["text"].indexOf(":") + 1;
+            var length = $("#msinput").select2("data")["text"].length;
+            
+            var new_name = $("#msinput").select2("data")["text"].substr(start, length - 1);
 
 
         }

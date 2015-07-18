@@ -121,6 +121,8 @@ $(document).ready(function(){
     ButtonSet();
     BugSearchAuto();
     TestCaseLinking();
+    RequirementLinking(project_id,team_id);
+    AutoCompleteTask();
 
 
 
@@ -145,10 +147,7 @@ $(document).ready(function(){
         var priority=$('input[name="priority"]:checked').val();
         var milestone=$(".milestone").val();
 
-        var start = $("#title").select2("data")["text"].indexOf(":") + 1;
-        var length = $("#title").select2("data")["text"].length;
         
-        var title = $("#title").select2("data")["text"].substr(start, length - 1);
         //var title=$('#title').val();
         //var creator = $("#created_by").val();
         //var testers= $("#tester").text();
@@ -214,6 +213,10 @@ $(document).ready(function(){
             alertify.error("Please select a milestone!");
         }
         else if(operation==1){
+            var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+            var length = $("#title").select2("data")["text"].length;
+            
+            var title = $("#title").select2("data")["text"].substr(start, length - 1);
                 $.get("LogNewBug/",{
                     title:title.trim(),
                     description:bug_desc.trim(),
@@ -236,6 +239,10 @@ $(document).ready(function(){
                 });
             }
             else if(operation==2){
+                var start = $("#title").select2("data")["text"].indexOf(":") + 1;
+                var length = $("#title").select2("data")["text"].length;
+                
+                var title = $("#title").select2("data")["text"].substr(start, length - 1);
                 $.get("ModifyBug/",{
                     bug_id:bugid,
                     title:title.trim(),
@@ -997,5 +1004,158 @@ function PerformSearch() {
                 $(".Buttons[title='Select User']").fadeOut();
             }
         });
+    });
+}
+
+function RequirementLinking(project_id,team_id){
+
+    $(".search_req").autocomplete({
+
+        source:function(request,response){
+            $.ajax({
+                url:"AutoCompleteRequirements/",
+                dataType:"json",
+                data:{
+                    term:request.term,
+                    project_id:project_id,
+                    team_id:team_id
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select : function(event, ui) {
+
+            //var value = ui.item[0]
+            //var name = ui.item[1]
+
+            /*var tc_id_name = ui.item[0].split(" - ");
+             var value = "";
+             if (tc_id_name != null)
+             {
+             value = tc_id_name[0].trim();
+             name = tc_id_name[1].trim();
+             }*/
+
+            var value=ui.item[0].trim();
+            //var name=ui.item[1].trim();
+
+            if(value!=""){
+                $(".req_linking").append('<tr>' +
+                '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+                + '<td>'
+                + '<input type="checkbox" class="Buttons" checked="true" name="requirements" value="'
+                + ui.item[0]
+                + '"/>' +
+                '</td><td>'
+                + ui.item[0]
+                + "</td><td>" +
+                ui.item[1] +
+                '</td><td>' +
+                ui.item[2] +
+                '</td><td>' +
+                ui.item[3] +
+                '</td>' +
+                "</tr>");
+            }
+
+            //$(".search_case").remove();
+
+            /*$("#test_cases").append('<tr class="linking">' +
+             '<td><input class="search_case textbox" placeholder="Search Test Case" style="width: auto" /></td>' +
+             '</tr>');
+             TestCaseLinking();*/
+
+            //$("#tester th").css('display', 'block');
+
+            $(".search_req").val("");
+            return false;
+
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+
+    $(".search_req").keypress(function(event) {
+        if (event.which == 13) {
+
+            event.preventDefault();
+
+        }
+    });
+    $("#DeleteCase").live('click', function() {
+
+        $(this).parent().next().remove();
+        $(this).remove();
+
+    });
+}
+
+function AutoCompleteTask(){
+    $('.search_task').autocomplete({
+        source:function(request,response){
+            $.ajax({
+                url:"AutoCompleteTask/",
+                dataType:"json",
+                data:{
+                    term:request.term,
+                    project_id:$.session.get('project_id'),
+                    team_id: $.session.get('default_team_identity')
+                },
+                success:function(data){
+                    response(data);
+                }
+            });
+        },
+        select:function(request,ui){
+            console.log(ui);
+            var id=ui.item[0].trim();
+            var name=ui.item[1].trim();
+            if(id!=""){
+                $(".task_linking").append('<tr>' +
+                '<td><!--img class="delete" id = "DeleteCase" title = "TestCaseDelete" src="/site_media/delete4.png" style="width: 30px; height: 30px"/--></td>'
+                + '<td>'
+                + '<input type="checkbox" checked="true" name="tasks" value="'
+                + id
+                + '"/>' +
+                '</td><td>' +
+                id +
+                '</td><td>'
+                + name
+                + '</td>' +
+                '<td>' +
+                ui.item[2] +
+                '</td>' +
+                '<td>' +
+                ui.item[3] +
+                '</td>' +
+                '<td>' +
+                ui.item[4] +
+                '</td>' +
+                '<td>' +
+                ui.item[5] +
+                '</td>' +
+                '<td>' +
+                ui.item[6] +
+                '</td>' +
+                "</tr>");
+            }
+            return false;
+        }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "ui-autocomplete-item", item )
+            .append( "<a>" + item[0] + "<strong> - " + item[1] + "</strong></a>" )
+            .appendTo( ul );
+    };
+    $(".search_task").keypress(function(event) {
+        if (event.which == 13) {
+            event.preventDefault();
+
+        }
     });
 }
