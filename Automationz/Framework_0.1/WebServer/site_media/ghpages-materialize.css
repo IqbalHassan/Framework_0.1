@@ -4870,6 +4870,15 @@ button.btn-floating {
     .fixed-action-btn ul a.btn-floating {
       opacity: 0; }
 
+.fixed-action-btn-mas {
+  position: fixed;
+  right: 23px;
+  bottom: 23px;
+  padding-top: 15px;
+  margin-bottom: 0;
+  z-index: 998; }
+
+
 .btn-flat {
   box-shadow: none;
   background-color: transparent;
@@ -4892,7 +4901,7 @@ button.btn-floating {
   background-color: #fff;
   margin: 0;
   display: none;
-  min-width: 100px;
+  min-width: 150px;
   max-height: 650px;
   overflow-y: auto;
   opacity: 0;
@@ -4910,13 +4919,18 @@ button.btn-floating {
     .dropdown-content li:hover, .dropdown-content li.active {
       background-color: #eee; }
     .dropdown-content li > a, .dropdown-content li > span {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #26a69a;
       display: block;
-      padding: 1rem 1rem; }
+      padding: 0.8rem 0.8rem; }
     .dropdown-content li > a > i {
       height: inherit;
       line-height: inherit; }
+
+.divider {
+  height: 1px;
+  overflow: hidden;
+  background-color: #e0e0e0; }
 
 
 .z-depth-1, nav, .card-panel, .card, .toast, .btn, .btn-large, .btn-floating, .dropdown-content, .collapsible, .side-nav {
