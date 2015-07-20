@@ -12,8 +12,8 @@ else:
     from AutomationFW.MacDesktop import MacCommonFoldersPaths as WinCommonFoldersPaths
 
 ###########Production / Dev Config variables######################
-#Environment = "Test"
-Environment = "Production"
+Environment = "Test"
+#Environment = "Production"
 if Environment == "Test":
     ###########Dev Config Variables############################
     print "Running on Test Environment..."
@@ -24,7 +24,7 @@ if Environment == "Test":
     #database ip
     database_ip = "127.0.0.1"
     #database_ip = "135.23.123.67"
-
+    adb_port=5037
     #Email List for Daily Build
     dl_list = "test@test.com"
 
@@ -45,7 +45,7 @@ elif Environment == "Production":
 
     #database ip
     database_ip = "24.212.218.235"
-
+    adb_port=5037
     #Folder Paths
     if os.name == 'nt':
         #Email List for Daily Build
